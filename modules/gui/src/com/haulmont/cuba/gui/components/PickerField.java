@@ -155,6 +155,9 @@ public interface PickerField extends Field, Component.ActionsHolder {
         protected DialogParams lookupScreenDialogParams;
         protected Map<String, Object> lookupScreenParams;
 
+        protected AfterLookupCloseHandler afterLookupCloseHandler;
+        protected AfterLookupSelectionHandler afterLookupSelectionHandler;
+
         protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
 
         public LookupAction(PickerField pickerField) {
@@ -162,6 +165,14 @@ public interface PickerField extends Field, Component.ActionsHolder {
             caption = "";
             icon = "components/pickerfield/images/lookup-btn.png";
             setShortcut(clientConfig.getPickerLookupShortcut());
+        }
+
+        public void setAfterLookupCloseHandler(AfterLookupCloseHandler afterLookupCloseHandler) {
+            this.afterLookupCloseHandler = afterLookupCloseHandler;
+        }
+
+        public void setAfterLookupSelectionHandler(AfterLookupSelectionHandler afterLookupSelectionHandler) {
+            this.afterLookupSelectionHandler = afterLookupSelectionHandler;
         }
 
         public String getLookupScreen() {
@@ -281,6 +292,9 @@ public interface PickerField extends Field, Component.ActionsHolder {
                                     pickerField.setValue(newValue);
 
                                     afterSelect(items);
+                                    if (afterLookupSelectionHandler != null) {
+                                        afterLookupSelectionHandler.onSelect(items);
+                                    }
                                 }
                             }
                         },
@@ -292,6 +306,9 @@ public interface PickerField extends Field, Component.ActionsHolder {
                     pickerField.requestFocus();
 
                     afterCloseLookup(actionId);
+                    if (afterLookupCloseHandler != null) {
+                        afterLookupCloseHandler.onClose(lookupWindow, actionId);
+                    }
                 });
             }
         }
@@ -350,6 +367,14 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 pickerField.setValue(null);
             }
         }
+    }
+
+    interface AfterLookupCloseHandler {
+        void onClose(Window window, String actionId);
+    }
+
+    interface AfterLookupSelectionHandler {
+        void onSelect(Collection items);
     }
 
     /**

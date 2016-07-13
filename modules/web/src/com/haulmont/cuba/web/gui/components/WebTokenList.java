@@ -322,6 +322,20 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             } else {
                 lookupPickerField.removeAction(lookupAction);
             }
+
+            lookupAction.setAfterLookupCloseHandler((window, actionId) -> {
+                if (afterLookupCloseHandler != null) {
+                    afterLookupCloseHandler.onClose(window, actionId);
+                }
+            });
+
+
+            lookupAction.setAfterLookupSelectionHandler(items -> {
+                if (afterLookupSelectionHandler != null) {
+                    afterLookupSelectionHandler.onSelect(items);
+                }
+            });
+
         }
         this.lookup = lookup;
         component.refreshComponent();
@@ -584,6 +598,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             } else {
                 lookupPickerField.setVisible(false);
             }
+
             addButton.setVisible(isSimple());
             addButton.setStyleName("add-btn");
 
