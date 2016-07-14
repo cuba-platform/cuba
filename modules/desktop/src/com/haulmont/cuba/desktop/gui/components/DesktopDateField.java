@@ -25,10 +25,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.TimeZones;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
@@ -38,6 +35,7 @@ import com.haulmont.cuba.desktop.sys.vcl.DatePicker.DatePicker;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.desktop.sys.vcl.FocusableComponent;
 import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -55,6 +53,7 @@ import java.util.*;
 import java.util.List;
 
 public class DesktopDateField extends DesktopAbstractField<JPanel> implements DateField {
+    protected Messages messages;
     protected Resolution resolution;
     protected Datasource datasource;
     protected String dateTimeFormat;
@@ -77,10 +76,13 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
     protected Datasource.ItemChangeListener itemChangeListener;
     protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
+    protected Date startDate;
+    protected Date endDate;
 
     public DesktopDateField() {
         impl = new FocusableComposition();
 
+        messages = AppBeans.get(Messages.NAME);
         initComponentParts();
         setResolution(Resolution.MIN);
 
@@ -106,11 +108,19 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
         timeField = new DesktopTimeField();
         timeField.addValueChangeListener(e -> {
+            if (!checkRange(constructDate())) {
+                return;
+            }
+
             updateInstance();
         });
 
         datePicker.addPropertyChangeListener(evt -> {
             if ("date".equals(evt.getPropertyName())) {
+                if (!checkRange(constructDate())) {
+                    return;
+                }
+
                 updateInstance();
                 updateMissingValueState();
             }
@@ -208,6 +218,54 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
                     TimeZone.getDefault(), timeZone != null ? timeZone : TimeZone.getDefault());
             updateComponent(newValue);
         }
+    }
+
+    @Override
+    public void setRangeStart(Date value) {
+        startDate = value;
+    }
+
+    @Override
+    public Date getRangeStart() {
+        return startDate;
+    }
+
+    @Override
+    public void setRangeEnd(Date value) {
+        endDate = value;
+    }
+
+    @Override
+    public Date getRangeEnd() {
+        return endDate;
+    }
+
+    private boolean checkRange(Date value) {
+        if (value != null) {
+            if (startDate != null && value.before(startDate)) {
+                if (getFrame() != null) {
+                    getFrame().showNotification(messages.getMainMessage("dateField.dateOutOfRangeMessage"),
+                            Frame.NotificationType.WARNING);
+                }
+
+                datePicker.setDate((Date) prevValue);
+                timeField.setValue((Date) prevValue);
+                return false;
+            }
+
+            if (endDate != null && value.after(endDate)) {
+                if (getFrame() != null) {
+                    getFrame().showNotification(messages.getMainMessage("dateField.dateOutOfRangeMessage"),
+                            Frame.NotificationType.WARNING);
+                }
+
+                datePicker.setDate((Date) prevValue);
+                timeField.setValue((Date) prevValue);
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -426,12 +484,10 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         try {
             if (datasource != null && metaPropertyPath != null) {
                 Date value = constructDate();
-
                 if (ObjectUtils.equals(prevValue, value)) {
                     valid = true;
                     return;
                 }
-
                 setValueToDs(value);
             }
             valid = true;

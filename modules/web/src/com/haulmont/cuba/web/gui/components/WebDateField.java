@@ -22,10 +22,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.TimeZones;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -70,6 +67,8 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
     protected Datasource.ItemChangeListener itemChangeListener;
 
+    protected Messages messages;
+
     public WebDateField() {
         innerLayout = new HorizontalLayout();
         innerLayout.setSpacing(true);
@@ -97,10 +96,16 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         setResolution(Resolution.MIN);
 
         component = new CubaDateFieldWrapper(this, innerLayout);
+
+        messages = AppBeans.get(Messages.NAME);
     }
 
     protected Property.ValueChangeListener createDateValueChangeListener() {
         return e -> {
+            if (!checkRange(constructDate())) {
+                return;
+            }
+
             updateInstance();
 
             if (component != null) {
@@ -111,7 +116,13 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     }
 
     protected Component.ValueChangeListener createTimeValueChangeListener() {
-        return event -> updateInstance();
+        return event -> {
+            if (!checkRange(constructDate())) {
+                return;
+            }
+
+            updateInstance();
+        };
     }
 
     public CubaDateField getDateField() {
@@ -132,6 +143,54 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         this.resolution = resolution;
         __setResolution(resolution);
         updateLayout();
+    }
+
+    @Override
+    public void setRangeStart(Date value) {
+        dateField.setRangeStart(value);
+    }
+
+    @Override
+    public Date getRangeStart() {
+        return dateField.getRangeStart();
+    }
+
+    @Override
+    public void setRangeEnd(Date value) {
+        dateField.setRangeEnd(value);
+    }
+
+    @Override
+    public Date getRangeEnd() {
+        return dateField.getRangeEnd();
+    }
+
+    private boolean checkRange(Date value) {
+        if (value != null) {
+            if (dateField.getRangeStart() != null && value.before(dateField.getRangeStart())) {
+                if (getFrame() != null) {
+                    getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
+                            Frame.NotificationType.WARNING);
+                }
+
+                dateField.setValue((Date) prevValue);
+                timeField.setValue((Date) prevValue);
+                return false;
+            }
+
+            if (dateField.getRangeEnd() != null && value.after(dateField.getRangeEnd())) {
+                if (getFrame() != null) {
+                    getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
+                            Frame.NotificationType.WARNING);
+                }
+
+                dateField.setValue((Date) prevValue);
+                timeField.setValue((Date) prevValue);
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -281,8 +340,9 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
         updatingInstance = true;
         try {
-            Date value = constructDate();
             if (datasource != null && metaPropertyPath != null) {
+                Date value = constructDate();
+
                 if (datasource.getItem() != null) {
                     InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
                 }

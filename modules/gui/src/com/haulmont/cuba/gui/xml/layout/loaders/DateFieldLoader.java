@@ -18,12 +18,19 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateDatatype;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.DateField;
 import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.TemporalType;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class DateFieldLoader extends AbstractFieldLoader<DateField> {
+    protected static final String DATE_PATTERN_DAY = "yyyy-MM-dd";
+    protected static final String DATE_PATTERN_MIN = "yyyy-MM-dd hh:mm";
+
     @Override
     public void createComponent() {
         resultComponent = (DateField) factory.createComponent(DateField.NAME);
@@ -80,5 +87,44 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
             }
         }
         resultComponent.setDateFormat(formatStr);
+
+        loadRangeStart();
+        loadRangeEnd();
+    }
+
+    protected void loadRangeStart() {
+        String rangeStart = element.attributeValue("rangeStart");
+        if (StringUtils.isNotEmpty(rangeStart)) {
+            try {
+                resultComponent.setRangeStart(parseDateOrDateTime(rangeStart));
+            } catch (ParseException e) {
+                throw new GuiDevelopmentException(
+                        "'rangeStart' parsing error for date picker: " +
+                                rangeStart, context.getFullFrameId(), "DatePicker ID", resultComponent.getId());
+            }
+        }
+    }
+
+    protected void loadRangeEnd() {
+        String rangeEnd = element.attributeValue("rangeEnd");
+        if (StringUtils.isNotEmpty(rangeEnd)) {
+            try {
+                resultComponent.setRangeEnd(parseDateOrDateTime(rangeEnd));
+            } catch (ParseException e) {
+                throw new GuiDevelopmentException(
+                        "'rangeEnd' parsing error for date picker: " +
+                                rangeEnd, context.getFullFrameId(), "DatePicker ID", resultComponent.getId());
+            }
+        }
+    }
+
+    protected Date parseDateOrDateTime(String value) throws ParseException {
+        SimpleDateFormat rangeDF;
+        if (value.length() == 10) {
+            rangeDF = new SimpleDateFormat(DATE_PATTERN_DAY);
+        } else {
+            rangeDF = new SimpleDateFormat(DATE_PATTERN_MIN);
+        }
+        return rangeDF.parse(value);
     }
 }

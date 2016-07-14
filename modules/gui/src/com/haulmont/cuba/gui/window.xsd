@@ -776,6 +776,10 @@
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
                 </xs:sequence>
+
+                <xs:attribute name="rangeStart" type="xs:string"/>
+                <xs:attribute name="rangeEnd" type="xs:string"/>
+
                 <xs:attribute name="resolution" type="dateFieldResolution"/>
                 <xs:attribute name="dateFormat" type="xs:string"/>
             </xs:extension>

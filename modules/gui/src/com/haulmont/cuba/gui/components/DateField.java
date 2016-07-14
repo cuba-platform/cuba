@@ -42,6 +42,12 @@ public interface DateField extends Field {
     TimeZone getTimeZone();
     void setTimeZone(TimeZone timeZone);
 
+    void setRangeStart(Date value);
+    Date getRangeStart();
+
+    void setRangeEnd(Date value);
+    Date getRangeEnd();
+
     @SuppressWarnings("unchecked")
     @Override
     Date getValue();
