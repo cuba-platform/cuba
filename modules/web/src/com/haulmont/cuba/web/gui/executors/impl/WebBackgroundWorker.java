@@ -49,17 +49,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Component(BackgroundWorker.NAME)
 public class WebBackgroundWorker implements BackgroundWorker {
 
-    private Logger log = LoggerFactory.getLogger(WebBackgroundWorker.class);
+    private final Logger log = LoggerFactory.getLogger(WebBackgroundWorker.class);
 
     @Inject
-    private WatchDog watchDog;
+    protected WatchDog watchDog;
 
     @Inject
-    private UserSessionSource userSessionSource;
+    protected UserSessionSource userSessionSource;
 
-    private Configuration configuration;
+    protected Configuration configuration;
 
-    private ExecutorService executorService;
+    protected ExecutorService executorService;
+
+    public WebBackgroundWorker() {
+    }
 
     @Inject
     public void setConfiguration(Configuration configuration) {
@@ -75,13 +78,12 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         WebConfig webConfig = configuration.getConfig(WebConfig.class);
         ThreadFactory threadFactory = new ThreadFactory() {
-            final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
+            private final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
 
             @Override
             public Thread newThread(@Nonnull final Runnable r) {
                 Thread thread = defaultFactory.newThread(r);
                 thread.setName("BackgroundTaskThread-" + thread.getName());
-                thread.setDaemon(true);
                 return thread;
             }
         };

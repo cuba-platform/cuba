@@ -44,7 +44,7 @@ public class ServerInfo implements ServerInfoAPI, AppContext.Listener {
     public static final String CUBA_RELEASE_NUMBER_PATH = "/com/haulmont/cuba/core/global/release.number";
     public static final String CUBA_RELEASE_TIMESTAMP_PATH = "/com/haulmont/cuba/core/global/release.timestamp";
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    protected Logger log = LoggerFactory.getLogger(ServerInfo.class);
 
     protected String releaseNumber = "?";
     protected String releaseTimestamp = "?";
@@ -53,7 +53,7 @@ public class ServerInfo implements ServerInfoAPI, AppContext.Listener {
 
     protected volatile String serverId;
 
-    private GlobalConfig globalConfig;
+    protected GlobalConfig globalConfig;
 
     @Inject
     protected TimeSource timeSource;
@@ -62,7 +62,9 @@ public class ServerInfo implements ServerInfoAPI, AppContext.Listener {
     protected Persistence persistence;
 
     @Inject
-    private UuidSource uuidSource;
+    protected UuidSource uuidSource;
+
+    protected Timer infoUpdateTimer;
 
     public ServerInfo() {
         AppContext.addListener(this);
@@ -115,11 +117,13 @@ public class ServerInfo implements ServerInfoAPI, AppContext.Listener {
     @Override
     public void applicationStarted() {
         if (!globalConfig.getTestMode()) {
-            Timer timer = new Timer(true);
-            timer.schedule(
+            infoUpdateTimer = new Timer(true);
+            infoUpdateTimer.schedule(
                     new TimerTask() {
                         @Override
                         public void run() {
+                            Thread.currentThread().setName("ServerInfoTimer");
+
                             if (AppContext.isStarted()) {
                                 updateCurrentServer();
                             }
@@ -134,6 +138,9 @@ public class ServerInfo implements ServerInfoAPI, AppContext.Listener {
     @Override
     public void applicationStopped() {
         try {
+            infoUpdateTimer.cancel();
+            infoUpdateTimer.purge();
+
             log.trace("Updating server information in the database");
 
             DbTypeConverter types = persistence.getDbTypeConverter();
@@ -149,11 +156,11 @@ public class ServerInfo implements ServerInfoAPI, AppContext.Listener {
                     new int[]{tsType, boolType, Types.VARCHAR}
             );
         } catch (Exception e) {
-            log.error("Unable to update SYS_SERVER: " + e);
+            log.error("Unable to update SYS_SERVER: {}", e);
         }
     }
 
-    void updateCurrentServer() {
+    protected void updateCurrentServer() {
         try {
             log.trace("Updating server information in the database");
             String serverId = getServerId();
@@ -182,7 +189,7 @@ public class ServerInfo implements ServerInfoAPI, AppContext.Listener {
                 );
             }
         } catch (Exception e) {
-            log.error("Unable to update SYS_SERVER: " + e);
+            log.error("Unable to update SYS_SERVER: {}", e);
         }
     }
 }
