@@ -19,6 +19,8 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.global.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.BeanFactory;
@@ -30,8 +32,7 @@ import java.lang.reflect.Field;
 import java.util.Set;
 
 /**
- * Helps to inject Config interfaces into Spring beans.
- *
+ * Helps to inject Config interfaces and Loggers into Spring beans.
  */
 public class CubaDefaultListableBeanFactory extends DefaultListableBeanFactory {
 
@@ -40,8 +41,14 @@ public class CubaDefaultListableBeanFactory extends DefaultListableBeanFactory {
     }
 
     @Override
-    public Object resolveDependency(DependencyDescriptor descriptor, String beanName, Set<String> autowiredBeanNames, TypeConverter typeConverter) throws BeansException {
+    public Object resolveDependency(DependencyDescriptor descriptor, String beanName, Set<String> autowiredBeanNames,
+                                    TypeConverter typeConverter) throws BeansException {
         Field field = descriptor.getField();
+
+        if (field != null && Logger.class == descriptor.getDependencyType()) {
+            return LoggerFactory.getLogger(getDeclaringClass(descriptor));
+        }
+
         if (field != null && Config.class.isAssignableFrom(field.getType())) {
             return getConfig(field.getType());
         }
@@ -74,5 +81,17 @@ public class CubaDefaultListableBeanFactory extends DefaultListableBeanFactory {
                 registerDependentBean(beanName, dependentBean);
             }
         }
+    }
+
+    protected Class<?> getDeclaringClass(DependencyDescriptor descriptor) {
+        MethodParameter methodParameter = descriptor.getMethodParameter();
+        if (methodParameter != null) {
+            return methodParameter.getDeclaringClass();
+        }
+        Field field = descriptor.getField();
+        if (field != null) {
+            return field.getDeclaringClass();
+        }
+        throw new AssertionError("Injection must be into a method parameter or field.");
     }
 }

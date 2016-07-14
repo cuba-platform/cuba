@@ -137,7 +137,7 @@ public class ControllerDependencyInjector {
             throw new IllegalStateException("Can inject to fields and setter methods only");
         }
 
-        Object instance = getInjectedInstance(type, name, annotationClass);
+        Object instance = getInjectedInstance(type, name, annotationClass, element);
 
         if (instance != null) {
             assignValue(element, instance);
@@ -160,7 +160,7 @@ public class ControllerDependencyInjector {
         }
     }
 
-    private Object getInjectedInstance(Class<?> type, String name, Class annotationClass) {
+    private Object getInjectedInstance(Class<?> type, String name, Class annotationClass, AnnotatedElement element) {
         if (annotationClass == WindowParam.class) {
             //Injecting a parameter
             return params.get(name);
@@ -203,6 +203,8 @@ public class ControllerDependencyInjector {
             ClientConfiguration configuration = AppBeans.get(Configuration.NAME);
             return configuration.getConfigCached((Class<? extends Config>) type);
 
+        } else if (Logger.class == type && element instanceof Field) {
+            return LoggerFactory.getLogger(((Field) element).getDeclaringClass());
         } else {
             Object instance;
             // Try to find a Spring bean

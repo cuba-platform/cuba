@@ -146,7 +146,7 @@ public class CompanionDependencyInjector {
         } else
             throw new IllegalStateException("Can inject to fields and setter methods only");
 
-        Object instance = getInjectedInstance(type, name);
+        Object instance = getInjectedInstance(type, name, element);
         if (instance == null) {
             log.warn("Unable to find an instance of type " + type + " named " + name);
         } else {
@@ -154,7 +154,7 @@ public class CompanionDependencyInjector {
         }
     }
 
-    private Object getInjectedInstance(Class<?> type, String name) {
+    private Object getInjectedInstance(Class<?> type, String name, AnnotatedElement element) {
         if (Component.class.isAssignableFrom(type)) {
             // Injecting a UI component
             return frame.getComponent(name);
@@ -188,6 +188,8 @@ public class CompanionDependencyInjector {
             ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);
             return themeManager.getConstants();
 
+        } else if (Logger.class == type && element instanceof Field) {
+            return LoggerFactory.getLogger(((Field) element).getDeclaringClass());
         } else if (Config.class.isAssignableFrom(type)) {
             //noinspection unchecked
             ClientConfiguration configuration = AppBeans.get(Configuration.NAME);
