@@ -132,6 +132,18 @@ public class QueryParserAstBasedTest {
     }
 
     @Test
+    public void testEnumMacro() {
+        DomainModel model = prepareDomainModel();
+        QueryParserAstBased parser = new QueryParserAstBased(model,
+                "select r from sec$Role r where r.type = @enum(com.haulmont.cuba.security.entity.RoleType.STANDARD)");
+        parser.getEntityName();
+
+        parser = new QueryParserAstBased(model,
+                "select r from sec$Role r where (select r1.type from sec$Role r1 where r1.id = r.id) = @enum(com.haulmont.cuba.security.entity.RoleType.STANDARD)");
+        parser.getEntityName();
+    }
+
+    @Test
     public void testGetNestedEntityNameIfNestedSelected() throws Exception {
         DomainModel model = prepareDomainModel();
         QueryParserAstBased parser = new QueryParserAstBased(model,

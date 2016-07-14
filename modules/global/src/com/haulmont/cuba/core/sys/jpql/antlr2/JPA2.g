@@ -461,7 +461,8 @@ nullif_expression
 
 extension_functions
     : 'CAST(' function_arg WORD ('('INT_NUMERAL (',' INT_NUMERAL)*  ')')* ')'
-    | 'EXTRACT(' date_part 'FROM' function_arg ')';
+    | 'EXTRACT(' date_part 'FROM' function_arg ')'
+    | '@ENUM' '(' enum_value_literal ')';
 
 fragment date_part
     : 'EPOCH' | 'YEAR' | 'QUARTER' | 'MONTH' | 'WEEK' |'DAY' | 'HOUR' |'MINUTE' | 'SECOND';
@@ -532,6 +533,8 @@ collection_valued_input_parameter
     : input_parameter;
 single_valued_input_parameter
     : input_parameter;
+enum_value_literal
+    : WORD ('.'  WORD)*;
 
 // Lexical Rules
 //fix trim character
