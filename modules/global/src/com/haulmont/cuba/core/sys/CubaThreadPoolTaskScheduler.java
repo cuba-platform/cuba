@@ -19,15 +19,18 @@ package com.haulmont.cuba.core.sys;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+import javax.annotation.Nonnull;
 import java.util.concurrent.*;
 
-public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler {
+public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler implements ApplicationListener<ContextClosedEvent> {
 
     private static final long serialVersionUID = -2882103892163602009L;
 
-    private StatisticsAccumulator statisticsAccumulator;
+    protected StatisticsAccumulator statisticsAccumulator;
 
     public void setStatisticsAccumulator(StatisticsAccumulator statisticsAccumulator) {
         this.statisticsAccumulator = statisticsAccumulator;
@@ -68,12 +71,17 @@ public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler {
         return new TaskDecorator<>(task, statisticsAccumulator);
     }
 
+    @Override
+    public void onApplicationEvent(ContextClosedEvent event) {
+        getScheduledExecutor().shutdown();
+    }
+
     protected static class TaskDecorator<V> implements RunnableScheduledFuture<V> {
 
-        protected RunnableScheduledFuture<V> delegate;
-        private StatisticsAccumulator statisticsAccumulator;
+        private final Logger log = LoggerFactory.getLogger(TaskDecorator.class);
 
-        protected Logger log = LoggerFactory.getLogger(getClass());
+        protected RunnableScheduledFuture<V> delegate;
+        protected StatisticsAccumulator statisticsAccumulator;
 
         public TaskDecorator(RunnableScheduledFuture<V> delegate, StatisticsAccumulator statisticsAccumulator) {
             this.delegate = delegate;
@@ -88,7 +96,7 @@ public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler {
         @Override
         public void run() {
             if (log.isTraceEnabled())
-                log.trace("before execution: SecurityContext=" + AppContext.getSecurityContext());
+                log.trace("before execution: SecurityContext={}", AppContext.getSecurityContext());
 
             if (statisticsAccumulator != null)
                 statisticsAccumulator.incSpringScheduledTasksCount();
@@ -99,7 +107,7 @@ public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler {
                 delegate.run();
 
                 if (log.isTraceEnabled())
-                    log.trace("after execution: SecurityContext=" + AppContext.getSecurityContext());
+                    log.trace("after execution: SecurityContext={}", AppContext.getSecurityContext());
             } finally {
                 cleanContext();
             }
@@ -130,17 +138,17 @@ public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler {
         }
 
         @Override
-        public V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+        public V get(long timeout, @Nonnull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
             return delegate.get(timeout, unit);
         }
 
         @Override
-        public long getDelay(TimeUnit unit) {
+        public long getDelay(@Nonnull TimeUnit unit) {
             return delegate.getDelay(unit);
         }
 
         @Override
-        public int compareTo(Delayed o) {
+        public int compareTo(@Nonnull Delayed o) {
             return delegate.compareTo(o);
         }
     }
