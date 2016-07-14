@@ -16,22 +16,21 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.TabSheet;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -291,9 +290,10 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     public TabSheet.Tab addLazyTab(String name,
                                    Element descriptor,
                                    ComponentLoader loader) {
-        WebVBoxLayout tabContent = new WebVBoxLayout();
+        ComponentsFactory cf = AppBeans.get(ComponentsFactory.NAME);
+        BoxLayout tabContent = (BoxLayout) cf.createComponent(VBoxLayout.NAME);
 
-        Layout layout = (Layout) tabContent.getComponent();
+        Layout layout = tabContent.unwrap(Layout.class);
         layout.setSizeFull();
 
         Tab tab = new Tab(name, tabContent);
@@ -310,7 +310,9 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         context = loader.getContext();
 
         if (!postInitTaskAdded) {
-            context.addPostInitTask((context1, window) -> initComponentTabChangeListener());
+            context.addPostInitTask((context1, window) ->
+                    initComponentTabChangeListener()
+            );
             postInitTaskAdded = true;
         }
 
@@ -434,6 +436,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
             component.addSelectedTabChangeListener(event -> {
                 if (context != null) {
                     context.executeInjectTasks();
+                    context.executeInitTasks();
                 }
                 // Fire GUI listener
                 fireTabChanged();
@@ -447,7 +450,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
                 if (window != null) {
                     ((DsContextImplementation) window.getDsContext()).resumeSuspended();
                 } else {
-                    LogFactory.getLog(WebTabSheet.class).warn("Please specify Frame for TabSheet");
+                    LoggerFactory.getLogger(WebTabSheet.class).warn("Please specify Frame for TabSheet");
                 }
             });
             componentTabChangeListenerInitialized = true;
@@ -466,11 +469,11 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     }
 
     protected class LazyTabChangeListener implements com.vaadin.ui.TabSheet.SelectedTabChangeListener {
-        protected WebAbstractBox tabContent;
+        protected BoxLayout tabContent;
         protected Element descriptor;
         protected ComponentLoader loader;
 
-        public LazyTabChangeListener(WebAbstractBox tabContent, Element descriptor, ComponentLoader loader) {
+        public LazyTabChangeListener(BoxLayout tabContent, Element descriptor, ComponentLoader loader) {
             this.tabContent = tabContent;
             this.descriptor = descriptor;
             this.loader = loader;
@@ -479,7 +482,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         @Override
         public void selectedTabChange(com.vaadin.ui.TabSheet.SelectedTabChangeEvent event) {
             com.vaadin.ui.Component selectedTab = WebTabSheet.this.component.getSelectedTab();
-            com.vaadin.ui.Component tabComponent = tabContent.getComponent();
+            com.vaadin.ui.Component tabComponent = tabContent.unwrap(com.vaadin.ui.Component.class);
             if (selectedTab == tabComponent && lazyTabs.remove(tabComponent)) {
                 loader.createComponent();
 

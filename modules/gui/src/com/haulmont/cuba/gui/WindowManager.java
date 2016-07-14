@@ -836,6 +836,10 @@ public abstract class WindowManager {
 
         context.executeInjectTasks();
         context.setFrame(component);
+
+        // init of frame
+        context.executeInitTasks();
+
         context.executePostInitTasks();
 
         loadDescriptorWatch.stop();
@@ -1018,6 +1022,8 @@ public abstract class WindowManager {
         context.executeInjectTasks();
 
         init(wrappingWindow, params);
+
+        context.executeInitTasks();
     }
 
     protected void init(Window window, Map<String, Object> params) {

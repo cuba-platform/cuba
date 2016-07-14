@@ -19,7 +19,10 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Accordion;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -28,8 +31,8 @@ import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.toolkit.ui.CubaAccordion;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -400,6 +403,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
             component.addSelectedTabChangeListener(event -> {
                 if (context != null) {
                     context.executeInjectTasks();
+                    context.executeInitTasks();
                 }
                 // Fire GUI listener
                 fireTabChanged();
@@ -413,7 +417,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
                 if (window != null) {
                     ((DsContextImplementation) window.getDsContext()).resumeSuspended();
                 } else {
-                    LogFactory.getLog(WebAccordion.class).warn("Please specify Frame for Accordion");
+                    LoggerFactory.getLogger(WebAccordion.class).warn("Please specify Frame for Accordion");
                 }
             });
             componentTabChangeListenerInitialized = true;

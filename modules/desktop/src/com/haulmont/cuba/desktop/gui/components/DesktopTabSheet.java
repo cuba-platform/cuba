@@ -44,7 +44,6 @@ import java.awt.event.WindowEvent;
 import java.util.*;
 
 public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> implements TabSheet, DesktopContainer, AutoExpanding {
-
     protected Map<Component, String> components = new HashMap<>();
 
     protected List<TabImpl> tabs = new ArrayList<>();
@@ -61,8 +60,16 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
 
     protected Set<TabChangeListener> listeners = new HashSet<>();
 
+    // CAUTION do not add ChangeListeners directly to impl
+    protected List<ChangeListener> implTabSheetChangeListeners = new ArrayList<>();
+
     public DesktopTabSheet() {
         impl = new JTabbedPaneExt();
+        impl.addChangeListener(e -> {
+            for (ChangeListener listener : new ArrayList<>(implTabSheetChangeListeners)) {
+                listener.stateChanged(e);
+            }
+        });
 
         setWidth("100%");
     }
@@ -239,26 +246,16 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
         lazyTabs.add(new LazyTabInfo(tab, tabContent, descriptor, loader));
 
         if (!initLazyTabListenerAdded) {
-            impl.addChangeListener(
-                    new ChangeListener() {
-                        @Override
-                        public void stateChanged(ChangeEvent e) {
-                            initLazyTab((JComponent) impl.getSelectedComponent());
-                        }
-                    }
-            );
+            implTabSheetChangeListeners.add(new LazyTabChangeListener());
             initLazyTabListenerAdded = true;
         }
 
         context = loader.getContext();
 
         if (!postInitTaskAdded) {
-            context.addPostInitTask(new ComponentLoader.PostInitTask() {
-                @Override
-                public void execute(ComponentLoader.Context context, Frame window) {
-                    initComponentTabChangeListener();
-                }
-            });
+            context.addPostInitTask((context1, window) ->
+                    initComponentTabChangeListener()
+            );
             postInitTaskAdded = true;
         }
         return tab;
@@ -374,30 +371,41 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
         // init component SelectedTabChangeListener only when needed, making sure it is
         // after all lazy tabs listeners
         if (!componentTabChangeListenerInitialized) {
-            impl.addChangeListener(e -> {
-                if (context != null) {
-                    context.executeInjectTasks();
-                }
-                // Init lazy tab if needed
-                initLazyTab((JComponent) impl.getSelectedComponent());
-
-                // Fire GUI listener
-                fireTabChanged();
-
-                // Execute outstanding post init tasks after GUI listener.
-                // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
-                if (context != null) {
-                    context.executePostInitTasks();
-                }
-
-                Window window = ComponentsHelper.getWindow(DesktopTabSheet.this);
-                if (window != null) {
-                    ((DsContextImplementation) window.getDsContext()).resumeSuspended();
-                } else {
-                    log.warn("Please specify Frame for TabSheet");
-                }
-            });
+            implTabSheetChangeListeners.add(new ComponentTabChangeListener());
             componentTabChangeListenerInitialized = true;
+        }
+    }
+
+    protected class ComponentTabChangeListener implements ChangeListener {
+        @Override
+        public void stateChanged(ChangeEvent e) {
+            if (context != null) {
+                context.executeInjectTasks();
+                context.executeInitTasks();
+            }
+
+            // Fire GUI listener
+            fireTabChanged();
+
+            // Execute outstanding post init tasks after GUI listener.
+            // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
+            if (context != null) {
+                context.executePostInitTasks();
+            }
+
+            Window window = ComponentsHelper.getWindow(DesktopTabSheet.this);
+            if (window != null) {
+                ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+            } else {
+                log.warn("Please specify Frame for TabSheet");
+            }
+        }
+    }
+
+    protected class LazyTabChangeListener implements ChangeListener {
+        @Override
+        public void stateChanged(ChangeEvent e) {
+            initLazyTab((JComponent) impl.getSelectedComponent());
         }
     }
 
