@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.sys;
 
+import ch.qos.logback.classic.LoggerContext;
 import com.google.common.base.Splitter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -43,7 +44,6 @@ import java.util.regex.Pattern;
 
 /**
  * Base class for {@link AppContext} loaders of web applications.
- *
  */
 public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoader implements ServletContextListener {
 
@@ -83,6 +83,10 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         AppContext.Internals.stopContext();
         AppContext.Internals.setApplicationContext(null);
+
+        if (LoggerFactory.getILoggerFactory() instanceof LoggerContext) {
+            ((LoggerContext) LoggerFactory.getILoggerFactory()).stop();
+        }
     }
 
     protected void initAppComponents(ServletContext sc) {
@@ -127,7 +131,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
         StrTokenizer tokenizer = new StrTokenizer(propsConfigName);
         tokenizer.setQuoteChar('"');
         for (String str : tokenizer.getTokenArray()) {
-            log.trace("Processing properties location: " + str);
+            log.trace("Processing properties location: {}", str);
             InputStream stream = null;
             try {
                 if (ResourceUtils.isUrl(str) || str.startsWith(ResourceLoader.CLASSPATH_URL_PREFIX)) {
@@ -139,13 +143,13 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
                 }
 
                 if (stream != null) {
-                    log.trace("Loading app properties from " + str);
-                    try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8.name())) {
+                    log.trace("Loading app properties from {}", str);
+                    try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
                         properties.load(reader);
                     }
-                } else
-                    log.trace("Resource " + str + " not found, ignore it");
-
+                } else {
+                    log.trace("Resource {} not found, ignore it", str);
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
