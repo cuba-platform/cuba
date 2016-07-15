@@ -274,11 +274,20 @@ public interface PickerField extends Field, Component.ActionsHolder {
                                     Object oldValue = pickerField.getValue();
 
                                     if (pickerField instanceof LookupField) {
-                                        LookupField lookupPickerField = ((LookupField) pickerField);
+                                        LookupField lookupField = (LookupField) pickerField;
 
-                                        CollectionDatasource optionsDatasource = lookupPickerField.getOptionsDatasource();
-                                        if (optionsDatasource != null && optionsDatasource.containsItem(item.getId())) {
-                                            optionsDatasource.updateItem(item);
+                                        CollectionDatasource optionsDatasource = lookupField.getOptionsDatasource();
+                                        if (optionsDatasource != null) {
+                                            if (optionsDatasource.containsItem(item.getId())) {
+                                                optionsDatasource.updateItem(item);
+                                            }
+
+                                            if (lookupField instanceof LookupPickerField) {
+                                                LookupPickerField lookupPickerField = (LookupPickerField) lookupField;
+                                                if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
+                                                    optionsDatasource.refresh();
+                                                }
+                                            }
                                         }
                                     }
 

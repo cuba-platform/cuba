@@ -219,6 +219,16 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     }
 
     @Override
+    public void setRefreshOptionsOnLookupClose(boolean refresh) {
+        lookupPickerField.setRefreshOptionsOnLookupClose(refresh);
+    }
+
+    @Override
+    public boolean isRefreshOptionsOnLookupClose() {
+        return lookupPickerField.isRefreshOptionsOnLookupClose();
+    }
+
+    @Override
     public void setDatasource(Datasource datasource, String property) {
         throw new UnsupportedOperationException("TokenList does not support datasource with property");
     }
@@ -664,6 +674,10 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                         Window.Lookup lookup = wm.openLookup(windowInfo, new Window.Lookup.Handler() {
                             @Override
                             public void handleLookup(Collection items) {
+                                if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
+                                    lookupPickerField.getOptionsDatasource().refresh();
+                                }
+
                                 if (isEditable()) {
                                     if (items == null || items.isEmpty()) return;
                                     for (final Object item : items) {
@@ -871,10 +885,21 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         if (itemChangeHandler != null) {
             itemChangeHandler.addItem(newItem);
         } else {
-            if (datasource != null)
+            if (datasource != null && !datasource.getItems().contains(newItem)) {
                 datasource.addItem(newItem);
+            }
         }
         lookupPickerField.setValue(null);
+
+
+        if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
+            for (Object obj : getDatasource().getItems()) {
+                Entity entity = (Entity) obj;
+                if (getOptionsDatasource().containsItem(entity.getId())) {
+                    datasource.updateItem(getOptionsDatasource().getItem(entity.getId()));
+                }
+            }
+        }
     }
 
     @Override
