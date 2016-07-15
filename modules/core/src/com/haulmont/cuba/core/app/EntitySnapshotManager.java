@@ -20,6 +20,9 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
+import com.haulmont.cuba.core.app.serialization.ViewSerializationAPI;
+import com.haulmont.cuba.core.app.serialization.ViewSerializationOption;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
@@ -45,22 +48,28 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     @Inject
-    private Persistence persistence;
+    protected Persistence persistence;
 
     @Inject
-    private Metadata metadata;
+    protected Metadata metadata;
 
     @Inject
-    private EntityDiffManager diffManager;
+    protected EntityDiffManager diffManager;
 
     @Inject
-    private ExtendedEntities extendedEntities;
+    protected ExtendedEntities extendedEntities;
 
     @Inject
-    private UserSessionSource userSessionSource;
+    protected UserSessionSource userSessionSource;
 
     @Inject
-    private TimeSource timeSource;
+    protected TimeSource timeSource;
+
+    @Inject
+    protected EntitySerializationAPI entitySerializationAPI;
+
+    @Inject
+    protected ViewSerializationAPI viewSerializationAPI;
 
     @Override
     public List<EntitySnapshot> getSnapshots(MetaClass metaClass, UUID id) {
@@ -125,6 +134,9 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     }
 
     private String processViewXml(String viewXml, Map<Class, Class> classMapping) {
+        if (!isXml(viewXml)) {
+            return viewXml;
+        }
         for (Map.Entry<Class, Class> classEntry : classMapping.entrySet()) {
             Class beforeClass = classEntry.getKey();
             Class afterClass = classEntry.getValue();
@@ -141,6 +153,9 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     }
 
     private String processSnapshotXml(String snapshotXml, Map<Class, Class> classMapping) {
+        if (!isXml(snapshotXml)) {
+            return snapshotXml;
+        }
         Document document;
         try {
             document = DocumentHelper.parseText(snapshotXml);
@@ -226,9 +241,8 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         MetaClass metaClass = getOriginalOrCurrentMetaClass(entity.getClass());
 
         snapshot.setEntityMetaClass(metaClass.getName());
-
-        snapshot.setViewXml(toXML(view));
-        snapshot.setSnapshotXml(toXML(entity));
+        snapshot.setViewXml(viewSerializationAPI.toJson(view, ViewSerializationOption.COMPACT_FORMAT));
+        snapshot.setSnapshotXml(entitySerializationAPI.toJson(entity));
         snapshot.setSnapshotDate(snapshotDate);
         snapshot.setAuthor(author);
 
@@ -247,14 +261,26 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     @Override
     public Entity extractEntity(EntitySnapshot snapshot) {
-        String xml = snapshot.getSnapshotXml();
-        return (BaseUuidEntity) fromXML(xml);
+        String rawResult = snapshot.getSnapshotXml();
+        BaseUuidEntity entity;
+        if (isXml(rawResult)) {
+            entity = (BaseUuidEntity) fromXML(snapshot.getSnapshotXml());
+        } else {
+            entity = entitySerializationAPI.entityFromJson(rawResult, metadata.getClass(snapshot.getEntityMetaClass()));
+        }
+        return entity;
     }
 
     @Override
     public View extractView(EntitySnapshot snapshot) {
-        String xml = snapshot.getViewXml();
-        return (View) fromXML(xml);
+        String rawResult = snapshot.getViewXml();
+        View view;
+        if (isXml(rawResult)) {
+            view = (View) fromXML(rawResult);
+        } else {
+            view = viewSerializationAPI.fromJson(rawResult);
+        }
+        return view;
     }
 
     @Override
@@ -281,9 +307,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         return xStream.fromXML(xml);
     }
 
-    private String toXML(Object obj) {
-        XStream xStream = new XStream();
-        xStream.getConverterRegistry().removeConverter(ExternalizableConverter.class);
-        return xStream.toXML(obj);
+    protected boolean isXml(String value) {
+        return value != null && value.trim().startsWith("<");
     }
 }
