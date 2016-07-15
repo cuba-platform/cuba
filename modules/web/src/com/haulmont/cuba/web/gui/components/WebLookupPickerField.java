@@ -38,6 +38,7 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
 
     protected WebPickerField pickerField;
     protected boolean updateComponentValue = false;
+    protected boolean refreshOptionsOnLookupClose = false;
 
     public WebLookupPickerField() {
     }
@@ -266,5 +267,15 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
     @Override
     public boolean isRequired() {
         return pickerField.isRequired();
+    }
+
+    @Override
+    public void setRefreshOptionsOnLookupClose(boolean refresh) {
+        refreshOptionsOnLookupClose = refresh;
+    }
+
+    @Override
+    public boolean isRefreshOptionsOnLookupClose() {
+        return refreshOptionsOnLookupClose;
     }
 }

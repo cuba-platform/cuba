@@ -32,6 +32,7 @@ import java.util.Collection;
 public class DesktopLookupPickerField extends DesktopLookupField implements LookupPickerField {
 
     protected DesktopPickerField pickerField;
+    protected boolean isRefreshOptionsOnLookupClose = false;
 
     public DesktopLookupPickerField() {
         pickerField = new DesktopPickerField(new Picker());
@@ -161,6 +162,16 @@ public class DesktopLookupPickerField extends DesktopLookupField implements Look
         super.updateEnabled();
 
         pickerField.setParentEnabled(isEnabledWithParent());
+    }
+
+    @Override
+    public boolean isRefreshOptionsOnLookupClose() {
+        return isRefreshOptionsOnLookupClose;
+    }
+
+    @Override
+    public void setRefreshOptionsOnLookupClose(boolean refresh) {
+        isRefreshOptionsOnLookupClose = refresh;
     }
 
     private class Picker extends com.haulmont.cuba.desktop.sys.vcl.Picker {

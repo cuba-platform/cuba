@@ -24,4 +24,10 @@ package com.haulmont.cuba.gui.components;
 public interface LookupPickerField extends LookupField, PickerField {
 
     String NAME = "lookupPickerField";
+
+    /**
+     * Use this method to enable items refreshing in component after closing lookup window
+     * */
+    void setRefreshOptionsOnLookupClose(boolean refresh);
+    boolean isRefreshOptionsOnLookupClose();
 }

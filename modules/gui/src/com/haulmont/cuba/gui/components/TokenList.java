@@ -50,6 +50,12 @@ public interface TokenList extends Field, Component.BelongToFrame, Component.Has
     CollectionDatasource getOptionsDatasource();
     void setOptionsDatasource(CollectionDatasource datasource);
 
+    /**
+     * Use this method to enable items refreshing in component after closing lookup window
+     * */
+    void setRefreshOptionsOnLookupClose(boolean refresh);
+    boolean isRefreshOptionsOnLookupClose();
+
     java.util.List getOptionsList();
     void setOptionsList(java.util.List optionsList);
 

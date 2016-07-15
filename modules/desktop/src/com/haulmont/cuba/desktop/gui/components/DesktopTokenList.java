@@ -235,6 +235,16 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     }
 
     @Override
+    public void setRefreshOptionsOnLookupClose(boolean refresh) {
+        lookupPickerField.setRefreshOptionsOnLookupClose(refresh);
+    }
+
+    @Override
+    public boolean isRefreshOptionsOnLookupClose() {
+        return lookupPickerField.isRefreshOptionsOnLookupClose();
+    }
+
+    @Override
     public List getOptionsList() {
         return lookupPickerField.getOptionsList();
     }
@@ -804,6 +814,10 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
             Window.Lookup lookupWindow = wm.openLookup(windowInfo, new Window.Lookup.Handler() {
                 @Override
                 public void handleLookup(Collection items) {
+                    if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
+                        lookupPickerField.getOptionsDatasource().refresh();
+                    }
+
                     if (isEditable()) {
                         if (items == null || items.isEmpty()) return;
                         for (final Object item : items) {
@@ -1129,15 +1143,25 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     }
 
     protected void addValueFromLookupPickerField() {
-        Entity newItem = lookupPickerField.getValue();
+        final Entity newItem = lookupPickerField.getValue();
         if (newItem == null) return;
         if (itemChangeHandler != null) {
             itemChangeHandler.addItem(newItem);
         } else {
-            if (datasource != null)
+            if (datasource != null && !datasource.getItems().contains(newItem)) {
                 datasource.addItem(newItem);
+            }
         }
         lookupPickerField.setValue(null);
+
+        if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
+            for (Object obj : getDatasource().getItems()) {
+                Entity entity = (Entity) obj;
+                if (getOptionsDatasource().containsItem(entity.getId())) {
+                    datasource.updateItem(getOptionsDatasource().getItem(entity.getId()));
+                }
+            }
+        }
     }
 
     @Override
