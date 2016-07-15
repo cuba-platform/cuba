@@ -39,9 +39,6 @@ import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableMapSerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableMultimapSerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
-import de.javakaffee.kryoserializers.jodatime.JodaDateTimeSerializer;
-import de.javakaffee.kryoserializers.jodatime.JodaLocalDateSerializer;
-import de.javakaffee.kryoserializers.jodatime.JodaLocalDateTimeSerializer;
 import org.apache.commons.lang.ClassUtils;
 import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.indirection.IndirectContainer;
@@ -50,7 +47,6 @@ import org.eclipse.persistence.internal.indirection.jdk8.IndirectList;
 import org.eclipse.persistence.internal.indirection.jdk8.IndirectMap;
 import org.eclipse.persistence.internal.indirection.jdk8.IndirectSet;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.objenesis.instantiator.ObjectInstantiator;
 import org.objenesis.strategy.InstantiatorStrategy;
 import org.objenesis.strategy.StdInstantiatorStrategy;
@@ -61,15 +57,10 @@ import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.zip.DeflaterInputStream;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.InflaterInputStream;
 
 /**
  * The serialization implementation using Kryo serialization
