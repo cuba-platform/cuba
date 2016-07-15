@@ -49,6 +49,7 @@ import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.BooleanUtils;
@@ -1778,7 +1779,10 @@ public class DesktopWindowManager extends WindowManager {
     protected String getConfigValueIfConnected(Provider<String> valueProvider,
                                                String fallbackProperty, String fallbackValue) {
         if (App.getInstance().getConnection().isConnected()) {
-            return valueProvider.get();
+            try {
+                return valueProvider.get();
+            } catch (NoUserSessionException ignored) {
+            }
         }
 
         String propertyValue = AppContext.getProperty(fallbackProperty);
