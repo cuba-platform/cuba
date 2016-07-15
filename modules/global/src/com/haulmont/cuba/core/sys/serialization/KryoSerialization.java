@@ -67,6 +67,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.zip.DeflaterInputStream;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.InflaterInputStream;
 
 /**
  * The serialization implementation using Kryo serialization
@@ -114,9 +117,6 @@ public class KryoSerialization implements Serialization {
         SynchronizedCollectionsSerializer.registerSerializers(kryo);
 
         kryo.register(CGLibProxySerializer.CGLibProxyMarker.class, new CGLibProxySerializer());
-        kryo.register(DateTime.class, new JodaDateTimeSerializer());
-        kryo.register(LocalDate.class, new JodaLocalDateSerializer());
-        kryo.register(LocalDateTime.class, new JodaLocalDateTimeSerializer());
         ImmutableListSerializer.registerSerializers(kryo);
         ImmutableSetSerializer.registerSerializers(kryo);
         ImmutableMapSerializer.registerSerializers(kryo);
@@ -134,7 +134,6 @@ public class KryoSerialization implements Serialization {
         kryo.register(ArrayListMultimap.class, new CubaJavaSerializer());
         kryo.register(MetaClassImpl.class, new CubaJavaSerializer());
         kryo.register(MetaPropertyImpl.class, new CubaJavaSerializer());
-//        kryo.register(LoadContext.class, new CubaJavaSerializer());
 
         return kryo;
     }
