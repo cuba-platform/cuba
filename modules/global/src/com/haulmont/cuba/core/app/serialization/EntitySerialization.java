@@ -388,7 +388,7 @@ public class EntitySerialization implements EntitySerializationAPI {
                         }
                     }
                 } else {
-                    throw new EntitySerializationException("Entity " + entity.getMetaClass().getName() + " doesn't contain a '" + propertyName + "' property");
+                    log.warn("Entity {} doesn't contain a '{}' property", entity.getMetaClass().getName(), propertyName);
                 }
             }
 
