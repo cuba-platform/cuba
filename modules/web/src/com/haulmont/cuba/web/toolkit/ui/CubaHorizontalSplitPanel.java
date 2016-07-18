@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.split.CubaHorizontalSplitPanelState;
+import com.haulmont.cuba.web.toolkit.ui.client.split.SplitPanelDockMode;
 import com.vaadin.ui.HorizontalSplitPanel;
 
 public class CubaHorizontalSplitPanel extends HorizontalSplitPanel {
@@ -40,6 +41,14 @@ public class CubaHorizontalSplitPanel extends HorizontalSplitPanel {
         if (isDockable() != usePinButton) {
             getState().dockable = usePinButton;
         }
+    }
+
+    public void setDockMode(SplitPanelDockMode dockMode) {
+        getState().dockMode = dockMode;
+    }
+
+    public SplitPanelDockMode getDockMode() {
+        return getState(false).dockMode;
     }
 
     public String getDefaultPosition() {
