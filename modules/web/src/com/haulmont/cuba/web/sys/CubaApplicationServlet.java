@@ -154,7 +154,6 @@ public class CubaApplicationServlet extends VaadinServlet {
         boolean needRedirect = action != null;
         if (needRedirect) {
             if (webConfig.getUseRedirectWithBlankPageForLinkAction() &&
-                    action != null &&
                     request.getParameter(FROM_HTML_REDIRECT_PARAM) == null) {
                 redirectWithBlankHtmlPage(request, response);
             } else {
@@ -198,14 +197,20 @@ public class CubaApplicationServlet extends VaadinServlet {
 
     protected void redirectToApp(HttpServletRequest request, HttpServletResponse response,
                                  String contextName, String[] uriParts, String action) throws IOException {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder redirectAddress = new StringBuilder();
         for (int i = 0; i < uriParts.length; i++) {
-            sb.append(uriParts[i]);
+            redirectAddress.append(uriParts[i]);
             if (uriParts[i].equals(contextName)) {
                 break;
             }
-            if (i < uriParts.length - 1)
-                sb.append("/");
+            if (i < uriParts.length - 1) {
+                redirectAddress.append("/");
+            }
+        }
+
+        // redirect to ROOT context
+        if (redirectAddress.length() == 0) {
+            redirectAddress.append("/");
         }
 
         HttpSession httpSession = request.getSession();
@@ -226,7 +231,7 @@ public class CubaApplicationServlet extends VaadinServlet {
 
         statisticsCounter.incWebRequestsCount();
         String httpSessionId = httpSession.getId();
-        log.debug("Redirect to application " + httpSessionId);
+        log.debug("Redirect to application {}", httpSessionId);
 
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
@@ -235,7 +240,7 @@ public class CubaApplicationServlet extends VaadinServlet {
                 break;
             }
         }
-        response.sendRedirect(sb.toString());
+        response.sendRedirect(redirectAddress.toString());
     }
 
     protected void serviceAppRequest(HttpServletRequest request, HttpServletResponse response)
