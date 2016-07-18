@@ -24,6 +24,20 @@ import com.vaadin.client.ui.VOverlay;
 import com.vaadin.client.ui.VSplitPanelHorizontal;
 
 public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
+    /**
+     * Styles for widget
+     */
+    protected static final String SP_DOCK_BUTTON = "cuba-splitpanel-dock-button";
+    protected static final String SP_DOCK_BUTTON_LEFT = "cuba-splitpanel-dock-button-left";
+    protected static final String SP_DOCK_BUTTON_RIGHT = "cuba-splitpanel-dock-button-right";
+    protected static final String SP_DOCK_OVERLAY = "cuba-splitpanel-dock-overlay";
+    protected static final String SP_DOCK_LEFT = "cuba-splitpanel-dock-left";
+    protected static final String SP_DOCK_RIGHT = "cuba-splitpanel-dock-right";
+    protected static final String SP_DOCKABLE_LEFT = "cuba-splitpanel-dockable-left";
+    protected static final String SP_DOCKABLE_RIGHT = "cuba-splitpanel-dockable-right";
+
+    protected static final int BUTTON_WIDTH_SPACE = 20;
+    protected boolean reversed;
 
     protected enum DockButtonState {
         LEFT,
@@ -32,7 +46,6 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
 
     protected DockButtonState dockButtonState = DockButtonState.LEFT;
 
-    // todo artamonov implement SplitPanelDockMode.RIGHT
     protected SplitPanelDockMode dockMode = SplitPanelDockMode.LEFT;
 
     protected String defaultPosition = null;
@@ -51,8 +64,8 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
 
         if (dockable) {
             dockButton = new CubaPlaceHolderWidget();
-            dockButton.setStyleName("cuba-splitpanel-dock-button");
-            dockButton.addStyleName("cuba-splitpanel-dock-button-left");
+            dockButton.setStyleName(SP_DOCK_BUTTON);
+            dockButton.addStyleName(SP_DOCK_BUTTON_LEFT);
             dockButton.addDomHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
@@ -61,13 +74,13 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
             }, ClickEvent.getType());
 
             dockButtonContainer = new VOverlay();
-            dockButtonContainer.addStyleName("cuba-splitpanel-dock-overlay");
+            dockButtonContainer.addStyleName(SP_DOCK_OVERLAY);
             dockButtonContainer.getElement().getStyle().setZIndex(9999);
 
             if (dockMode == SplitPanelDockMode.LEFT) {
-                dockButtonContainer.setStyleName("cuba-splitpanel-dock-left");
-            } else {
-                dockButtonContainer.setStyleName("cuba-splitpanel-dock-right");
+                dockButtonContainer.setStyleName(SP_DOCK_LEFT);
+            } else if (dockMode == SplitPanelDockMode.RIGHT) {
+                dockButtonContainer.setStyleName(SP_DOCK_RIGHT);
             }
 
             dockButtonContainer.setOwner(this);
@@ -96,7 +109,14 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
             } else if (defaultPosition != null) {
                 newPosition = defaultPosition;
             }
-        } // todo artamonov SplitPanelDockMode.RIGHT
+        } else if (dockMode == SplitPanelDockMode.RIGHT) {
+            if (dockButtonState == DockButtonState.RIGHT) {
+                defaultPosition = position;
+                newPosition = reversed ? "0px" : getAbsoluteRight() + "px";
+            } else if (defaultPosition != null) {
+                newPosition = defaultPosition;
+            }
+        }
 
         setSplitPosition(newPosition);
         fireEvent(new SplitterMoveHandler.SplitterMoveEvent(this));
@@ -114,35 +134,75 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
             if (dockMode == SplitPanelDockMode.LEFT) {
                 int left = splitter.getAbsoluteLeft();
 
-                if (left > 20) {
+                if (left > BUTTON_WIDTH_SPACE) {
                     dockButtonContainer.setPopupPosition(
                             left - (dockButton.getOffsetWidth() - getSplitterSize()),
-                            splitter.getAbsoluteTop() + splitter.getOffsetHeight() / 2 - dockButton.getOffsetHeight() / 2);
+                            getDockBtnContainerVerticalPosition());
 
                     if (dockButtonState == DockButtonState.RIGHT) {
-                        dockButton.removeStyleName("cuba-splitpanel-dock-button-right");
-                        dockButton.addStyleName("cuba-splitpanel-dock-button-left");
+                        updateDockButtonStyle(SP_DOCK_BUTTON_LEFT, SP_DOCK_BUTTON_RIGHT);
                         dockButtonState = DockButtonState.LEFT;
                     }
 
-                    this.removeStyleName("cuba-splitpanel-dockable-right");
-                    this.addStyleName("cuba-splitpanel-dockable-left");
+                    updateSplitPanelStyle(SP_DOCKABLE_LEFT, SP_DOCKABLE_RIGHT);
                 } else {
                     dockButtonContainer.setPopupPosition(
                             left,
-                            splitter.getAbsoluteTop() + splitter.getOffsetHeight() / 2 - dockButton.getOffsetHeight() / 2);
+                            getDockBtnContainerVerticalPosition());
 
                     if (dockButtonState == DockButtonState.LEFT) {
-                        dockButton.removeStyleName("cuba-splitpanel-dock-button-left");
-                        dockButton.addStyleName("cuba-splitpanel-dock-button-right");
+                        updateDockButtonStyle(SP_DOCK_BUTTON_RIGHT, SP_DOCK_BUTTON_LEFT);
                         dockButtonState = DockButtonState.RIGHT;
                     }
 
-                    this.removeStyleName("cuba-splitpanel-dockable-left");
-                    this.addStyleName("cuba-splitpanel-dockable-right");
+                    updateSplitPanelStyle(SP_DOCKABLE_RIGHT, SP_DOCKABLE_LEFT);
                 }
-            } // todo artamonov SplitPanelDockMode.RIGHT
+            } else if (dockMode == SplitPanelDockMode.RIGHT) {
+                int right = splitter.getAbsoluteRight();
+
+                if (right < getAbsoluteRight() - BUTTON_WIDTH_SPACE) {
+                    dockButtonContainer.setPopupPosition(
+                            right - getSplitterSize(),
+                            getDockBtnContainerVerticalPosition());
+
+                    if (dockButtonState == DockButtonState.LEFT) {
+                        updateDockButtonStyle(SP_DOCK_BUTTON_RIGHT, SP_DOCK_BUTTON_LEFT);
+                        dockButtonState = DockButtonState.RIGHT;
+                    }
+
+                    updateSplitPanelStyle(SP_DOCKABLE_RIGHT, SP_DOCKABLE_LEFT);
+                } else {
+                    dockButtonContainer.setPopupPosition(
+                            right - (dockButton.getOffsetWidth()),
+                            getDockBtnContainerVerticalPosition());
+
+                    if (dockButtonState == DockButtonState.RIGHT) {
+                        updateDockButtonStyle(SP_DOCK_BUTTON_LEFT, SP_DOCK_BUTTON_RIGHT);
+                        dockButtonState = DockButtonState.LEFT;
+                    }
+
+                    updateSplitPanelStyle(SP_DOCKABLE_LEFT, SP_DOCKABLE_RIGHT);
+                }
+            }
         }
+    }
+
+    private void updateDockButtonStyle(String newStyle, String oldStyle) {
+        dockButton.removeStyleName(oldStyle);
+        dockButton.addStyleName(newStyle);
+    }
+
+    private void updateSplitPanelStyle(String newStyle, String oldStyle) {
+        this.removeStyleName(oldStyle);
+        this.addStyleName(newStyle);
+    }
+
+    private int getDockBtnContainerVerticalPosition() {
+        return splitter.getAbsoluteTop() + splitter.getOffsetHeight() / 2 - dockButton.getOffsetHeight() / 2;
+    }
+
+    public int getAbsoluteRight() {
+        return getOffsetWidth();
     }
 
     @Override
@@ -161,5 +221,12 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
         if (dockButtonContainer != null) {
             dockButtonContainer.hide();
         }
+    }
+
+    @Override
+    public void setPositionReversed(boolean reversed) {
+        super.setPositionReversed(reversed);
+
+        this.reversed = reversed;
     }
 }
