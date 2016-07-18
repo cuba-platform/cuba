@@ -102,6 +102,13 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
         getWidget().useInlineCaption = getState().useInlineCaption;
 
         super.onConnectorHierarchyChange(event);
+
+        if (getState().useInlineCaption) {
+            needUpdateCaptionSizes = true;
+
+            // always relayout after caption changes
+            getLayoutManager().setNeedsLayout(CubaFieldGroupLayoutConnector.this);
+        }
     }
 
     protected void updateCaptionSizes(int index, VGridLayout.Cell[] column) {
