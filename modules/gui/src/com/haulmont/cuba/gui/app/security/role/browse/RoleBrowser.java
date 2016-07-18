@@ -157,7 +157,8 @@ public class RoleBrowser extends AbstractLookup {
         });
 
 
-        rolesTable.addAction(new ExportAction());
+        ExportAction action = new ExportAction();
+        rolesTable.addAction(action);
 
         importRolesUpload.addFileUploadSucceedListener(event -> {
             File file = fileUploadingAPI.getFile(importRolesUpload.getFileId());
@@ -187,6 +188,7 @@ public class RoleBrowser extends AbstractLookup {
                 showNotification(formatMessage("importError", e.getMessage()), NotificationType.ERROR);
             }
         });
+        importRolesUpload.setCaption(null);
     }
 
     protected EntityImportView createRolesImportView() {
@@ -198,8 +200,6 @@ public class RoleBrowser extends AbstractLookup {
     protected class ExportAction extends ItemTrackingAction {
         public ExportAction() {
             super("export");
-
-            setCaption(messages.getMainMessage("actions.Export"));
         }
 
         @Override
@@ -217,6 +217,11 @@ public class RoleBrowser extends AbstractLookup {
                     log.error("Roles export failed", e);
                 }
             }
+        }
+
+        @Override
+        public String getCaption() {
+            return null;
         }
     }
 }
