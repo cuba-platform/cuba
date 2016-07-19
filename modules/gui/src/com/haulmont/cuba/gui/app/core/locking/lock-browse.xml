@@ -61,7 +61,7 @@
                         <action id="edit"/>
                         <action id="remove"/>
                         <action id="refresh"/>
-                        <action invoke="reloadConfig" caption="msg://reloadconfig" id="reloadConfiguration"/>
+                        <action invoke="reloadConfig" caption="msg://reloadConfig" id="reloadConfiguration"/>
                     </actions>
                     <buttonsPanel >
                         <button action="setupTable.create"/>
