@@ -41,6 +41,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import java.util.*;
+import java.util.function.Predicate;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -107,7 +108,6 @@ public class RdbmsStore implements DataStore {
         }
 
         E result = null;
-        boolean needToApplyInMemoryConstraints = needToApplyInMemoryConstraints(context);
         try (Transaction tx = persistence.createTransaction(storeName)) {
             final EntityManager em = persistence.getEntityManager(storeName);
 
@@ -129,7 +129,7 @@ public class RdbmsStore implements DataStore {
                 result = resultList.get(0);
             }
 
-            if (result != null && needToApplyInMemoryConstraints && security.filterByConstraints(result)) {
+            if (result != null && needToApplyInMemoryReadConstraints(context) && security.filterByConstraints(result)) {
                 result = null;
             }
 
@@ -141,7 +141,7 @@ public class RdbmsStore implements DataStore {
         }
 
         if (result != null) {
-            if (needToApplyInMemoryConstraints) {
+            if (needToApplyConstraints(context)) {
                 security.applyConstraints(result);
             }
             attributeSecurity.afterLoad(result);
@@ -199,7 +199,7 @@ public class RdbmsStore implements DataStore {
             tx.commit();
         }
 
-        if (needToApplyInMemoryConstraints(context)) {
+        if (needToApplyConstraints(context)) {
             security.applyConstraints((Collection<Entity>) resultList);
         }
 
@@ -499,7 +499,7 @@ public class RdbmsStore implements DataStore {
         View view = context.getView() != null ? context.getView() :
                 viewRepository.getView(metadata.getClassNN(context.getMetaClass()), View.LOCAL);
         View copy = View.copy(attributeSecurity.createRestrictedView(view));
-        if (context.isLoadPartialEntities() && !needToApplyInMemoryConstraints(context)) {
+        if (context.isLoadPartialEntities() && !needToApplyInMemoryReadConstraints(context)) {
             copy.setLoadPartialEntities(true);
         }
         return copy;
@@ -512,7 +512,7 @@ public class RdbmsStore implements DataStore {
         if (initialSize == 0) {
             return list;
         }
-        boolean needApplyConstraints = needToApplyInMemoryConstraints(context);
+        boolean needApplyConstraints = needToApplyInMemoryReadConstraints(context);
         boolean filteredByConstraints = false;
         if (needApplyConstraints) {
             filteredByConstraints = security.filterByConstraints((Collection<Entity>) list);
@@ -735,19 +735,27 @@ public class RdbmsStore implements DataStore {
         return null;
     }
 
-    protected boolean needToApplyInMemoryConstraints(LoadContext context) {
+    protected boolean needToApplyInMemoryReadConstraints(LoadContext context) {
+        return needToApplyConstraints(context, metaClass -> security.hasMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL));
+    }
+
+    protected boolean needToApplyConstraints(LoadContext context) {
+        return needToApplyConstraints(context, metaClass -> security.hasConstraints(metaClass));
+    }
+
+    protected boolean needToApplyConstraints(LoadContext context, Predicate<MetaClass> hasConstraints) {
         if (!isAuthorizationRequired() || !userSessionSource.getUserSession().hasConstraints()) {
             return false;
         }
 
         if (context.getView() == null) {
             MetaClass metaClass = metadata.getSession().getClassNN(context.getMetaClass());
-            return security.hasMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL);
+            return hasConstraints.test(metaClass);
         }
 
         Session session = metadata.getSession();
         for (Class aClass : collectEntityClasses(context.getView(), new HashSet<>())) {
-            if (security.hasMemoryConstraints(session.getClassNN(aClass), ConstraintOperationType.READ, ConstraintOperationType.ALL)) {
+            if (hasConstraints.test(session.getClassNN(aClass))) {
                 return true;
             }
         }
