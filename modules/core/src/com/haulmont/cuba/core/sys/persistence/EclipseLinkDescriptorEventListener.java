@@ -105,12 +105,14 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
 
     @Override
     public void postDelete(DescriptorEvent event) {
-        manager.fireListener((Entity) event.getSource(), EntityListenerType.AFTER_DELETE);
+        String storeName = support.getStorageName(event.getSession());
+        manager.fireListener((Entity) event.getSource(), EntityListenerType.AFTER_DELETE, storeName);
     }
 
     @Override
     public void postInsert(DescriptorEvent event) {
-        manager.fireListener((Entity) event.getSource(), EntityListenerType.AFTER_INSERT);
+        String storeName = support.getStorageName(event.getSession());
+        manager.fireListener((Entity) event.getSource(), EntityListenerType.AFTER_INSERT, storeName);
     }
 
     @Override
@@ -129,7 +131,8 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
 
     @Override
     public void postUpdate(DescriptorEvent event) {
-        manager.fireListener((Entity) event.getSource(), EntityListenerType.AFTER_UPDATE);
+        String storeName = support.getStorageName(event.getSession());
+        manager.fireListener((Entity) event.getSource(), EntityListenerType.AFTER_UPDATE, storeName);
     }
 
     @Override

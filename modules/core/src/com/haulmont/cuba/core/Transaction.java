@@ -64,21 +64,35 @@ public interface Transaction extends AutoCloseable {
     }
 
     /**
-     * Executes the action specified by the given single method object within a transaction.
-	 * <p>Returns a result object created within the transaction.
-     * <p>A {@code RuntimeException} thrown in the transactional code enforces a rollback.
-     * @param callable  transactional code in the form of {@link Callable}
-     * @param <T>       result type
-     * @return          result object
+     * Executes the action specified by the given single method object within a transaction in the main data store.
+     * @see #execute(String, Callable)
      */
     <T> T execute(Callable<T> callable);
 
     /**
      * Executes the action specified by the given single method object within a transaction.
+     * <p>Returns a result object created within the transaction.
      * <p>A {@code RuntimeException} thrown in the transactional code enforces a rollback.
-     * @param runnable  transactional code in the form of {@link Runnable}
+     * @param storeName data store name
+     * @param callable  transactional code in the form of {@link Callable}
+     * @param <T>       result type
+     * @return          result object
+     */
+    <T> T execute(String storeName, Callable<T> callable);
+
+    /**
+     * Executes the action specified by the given single method object within a transaction in the main data store.
+     * @see #execute(String, Runnable)
      */
     void execute(Runnable runnable);
+
+    /**
+     * Executes the action specified by the given single method object within a transaction.
+     * <p>A {@code RuntimeException} thrown in the transactional code enforces a rollback.
+     * @param storeName data store name
+     * @param runnable  transactional code in the form of {@link Runnable}
+     */
+    void execute(String storeName, Runnable runnable);
 
     /**
      * Commit current transaction.

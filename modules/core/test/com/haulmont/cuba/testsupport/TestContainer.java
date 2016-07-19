@@ -25,11 +25,11 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.sys.*;
 import com.haulmont.cuba.core.sys.persistence.EclipseLinkCustomizer;
-import com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
@@ -302,16 +302,7 @@ public class TestContainer extends ExternalResource {
     }
 
     protected void initPersistenceConfig() {
-        String configProperty = AppContext.getProperty(AppContextLoader.PERSISTENCE_CONFIG);
-        StrTokenizer tokenizer = new StrTokenizer(configProperty);
-
-        PersistenceConfigProcessor processor = new PersistenceConfigProcessor();
-        processor.setSourceFiles(tokenizer.getTokenList());
-
-        String dataDir = AppContext.getProperty("cuba.dataDir");
-        processor.setOutputFile(dataDir + "/persistence.xml");
-
-        processor.create();
+        Stores.getAll().forEach(AppContextLoader::createPersistenceXml);
     }
 
     protected void initAppComponents() {

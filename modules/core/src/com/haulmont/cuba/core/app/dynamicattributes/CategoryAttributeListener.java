@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.app.dynamicattributes;
 
+import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
@@ -27,12 +28,12 @@ import org.springframework.stereotype.Component;
 public class CategoryAttributeListener implements BeforeInsertEntityListener<CategoryAttribute>,
                                                   BeforeUpdateEntityListener<CategoryAttribute> {
     @Override
-    public void onBeforeInsert(CategoryAttribute entity) {
+    public void onBeforeInsert(CategoryAttribute entity, EntityManager entityManager) {
         setCategoryEntityType(entity);
     }
 
     @Override
-    public void onBeforeUpdate(CategoryAttribute entity) {
+    public void onBeforeUpdate(CategoryAttribute entity, EntityManager entityManager) {
         setCategoryEntityType(entity);
     }
 

@@ -23,8 +23,7 @@ import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import javax.sql.DataSource;
 
 /**
- * Central infrastructure interface to provide persistence functionality.
- *
+ * Central infrastructure interface to provide persistence through {@link com.haulmont.cuba.core.app.RdbmsStore}.
  */
 public interface Persistence {
 
@@ -32,42 +31,69 @@ public interface Persistence {
 
     /**
      * Convenient access to {@link PersistenceTools} bean.
+     *
      * @return  PersistenceTools instance
      */
     PersistenceTools getTools();
 
     /**
-     * Returns DbTypeConverter for the current DBMS.
+     * Returns DbTypeConverter for the current DBMS of the main data store.
      *
      * @return DbTypeConverter instance
      */
     DbTypeConverter getDbTypeConverter();
 
     /**
-     * Executes the action specified by the given single method object within a new transaction.
-     * <p>Returns a result object created within the transaction.
-     * <p>A {@code RuntimeException} thrown in the transactional code enforces a rollback.
-     * @param callable  transactional code in the form of {@link com.haulmont.cuba.core.Transaction.Callable}
-     * @param <T>       result type
-     * @return          result object
+     * Returns DbTypeConverter for the current DBMS of the specified data store.
+     *
+     * @param storeName data store name
+     * @return DbTypeConverter instance
+     */
+    DbTypeConverter getDbTypeConverter(String storeName);
+
+    /**
+     * Executes the action specified by the given single method object within a new transaction in the main data store.
+     *
+     * @see #callInTransaction(String, Transaction.Callable)
      * @see #runInTransaction(Transaction.Runnable)
      */
     <T> T callInTransaction(Transaction.Callable<T> callable);
 
     /**
      * Executes the action specified by the given single method object within a new transaction.
+     * <p>Returns a result object created within the transaction.
      * <p>A {@code RuntimeException} thrown in the transactional code enforces a rollback.
-     * @param runnable  transactional code in the form of {@link com.haulmont.cuba.core.Transaction.Runnable}
+     *
+     * @param storeName data store name
+     * @param callable  transactional code in the form of {@link com.haulmont.cuba.core.Transaction.Callable}
+     * @param <T>       result type
+     * @return          result object
+     * @see #runInTransaction(Transaction.Runnable)
+     */
+    <T> T callInTransaction(String storeName, Transaction.Callable<T> callable);
+
+    /**
+     * Executes the action specified by the given single method object within a new transaction in the main data store.
+     *
+     * @see #runInTransaction(String, Transaction.Runnable)
      * @see #callInTransaction(Transaction.Callable)
      */
     void runInTransaction(Transaction.Runnable runnable);
 
     /**
-     * Creates a new transaction.<br>
-     * If there is an active transaction, it will be suspended.
+     * Executes the action specified by the given single method object within a new transaction.
+     * <p>A {@code RuntimeException} thrown in the transactional code enforces a rollback.
      *
-     * @param params    new transaction parameters
-     * @return new transaction
+     * @param storeName data store name
+     * @param runnable  transactional code in the form of {@link com.haulmont.cuba.core.Transaction.Runnable}
+     * @see #callInTransaction(Transaction.Callable)
+     */
+    void runInTransaction(String storeName, Transaction.Runnable runnable);
+
+    /**
+     * Creates a new transaction in the main data store.
+     *
+     * @see #createTransaction(TransactionParams)
      */
     Transaction createTransaction(TransactionParams params);
 
@@ -75,9 +101,34 @@ public interface Persistence {
      * Creates a new transaction.<br>
      * If there is an active transaction, it will be suspended.
      *
-     * @return object to control the new transaction
+     * @param storeName data store name
+     * @param params    new transaction parameters
+     * @return new transaction
+     */
+    Transaction createTransaction(String storeName, TransactionParams params);
+
+    /**
+     * Creates a new transaction in the main data store.<br>
+     *
+     * @see #createTransaction(String)
      */
     Transaction createTransaction();
+
+    /**
+     * Creates a new transaction.<br>
+     * If there is an active transaction, it will be suspended.
+     *
+     * @param storeName data store name
+     * @return object to control the new transaction
+     */
+    Transaction createTransaction(String storeName);
+
+    /**
+     * Creates a new transaction in the main data store if there is no one at the moment.
+     *
+     * @see #getTransaction(String)
+     */
+    Transaction getTransaction();
 
     /**
      * Creates a new transaction if there is no one at the moment.
@@ -89,9 +140,10 @@ public interface Persistence {
      *     throw an exception.</li>
      * </ul>
      *
+     * @param storeName data store name
      * @return object to control the transaction
      */
-    Transaction getTransaction();
+    Transaction getTransaction(String storeName);
 
     /**
      * Current transaction status.
@@ -101,13 +153,21 @@ public interface Persistence {
     boolean isInTransaction();
 
     /**
+     * Returns existing or creates a new transaction-bound EntityManager for the main data store,
+     * which will be closed on transaction commit/rollback.
+     *
+     * @see #getTransaction(String)
+     */
+    EntityManager getEntityManager();
+
+    /**
      * Returns existing or creates a new transaction-bound EntityManager,
      * which will be closed on transaction commit/rollback.
-     * <p>Must be invoked inside transaction.</p>
+     * <p>Must be invoked inside a transaction.</p>
      *
      * @return EntityManager instance
      */
-    EntityManager getEntityManager();
+    EntityManager getEntityManager(String storeName);
 
     /**
      * Global soft deletion attribute. True by default.
@@ -130,12 +190,26 @@ public interface Persistence {
     DataSource getDataSource();
 
     /**
-     * Returns context of the current EntityManager.<br/>
-     * If not exists, a new instance of context created and returned.
+     * @return JDBC DataSource of the give data store
+     */
+    DataSource getDataSource(String storeName);
+
+    /**
+     * Returns context of the current EntityManager in the main data store.
      *
+     * @see #getEntityManagerContext(String)
      * @return context
      */
     EntityManagerContext getEntityManagerContext();
+
+    /**
+     * Returns context of the current EntityManager.<br/>
+     * If not exists, a new instance of context created and returned.
+     *
+     * @param storeName data store name
+     * @return context
+     */
+    EntityManagerContext getEntityManagerContext(String storeName);
 
     /**
      * Destroys the persistence configuration. Further use of this bean instance is impossible.

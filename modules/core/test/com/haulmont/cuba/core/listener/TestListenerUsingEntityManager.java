@@ -34,7 +34,7 @@ public class TestListenerUsingEntityManager
     private Persistence persistence;
 
     @Override
-    public void onBeforeInsert(Server entity) {
+    public void onBeforeInsert(Server entity, EntityManager entityManager) {
         EntityManager em = persistence.getEntityManager();
 
         FileDescriptor related = new FileDescriptor();
@@ -46,7 +46,7 @@ public class TestListenerUsingEntityManager
     }
 
     @Override
-    public void onBeforeUpdate(Server entity) {
+    public void onBeforeUpdate(Server entity, EntityManager entityManager) {
         EntityManager em = persistence.getEntityManager();
 
         UUID relatedId = UUID.fromString(entity.getData());
@@ -59,7 +59,7 @@ public class TestListenerUsingEntityManager
     }
 
     @Override
-    public void onBeforeDelete(Server entity) {
+    public void onBeforeDelete(Server entity, EntityManager entityManager) {
         EntityManager em = persistence.getEntityManager();
 
         UUID relatedId = UUID.fromString(entity.getData());

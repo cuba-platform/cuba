@@ -32,13 +32,14 @@ import com.haulmont.cuba.core.entity.BaseLongIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.*;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.MetadataBuildSupport.EntityClassInfo;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -46,6 +47,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Component(Metadata.NAME)
 public class MetadataImpl implements Metadata {
@@ -104,9 +106,12 @@ public class MetadataImpl implements Metadata {
         return tools;
     }
 
-    protected void loadMetadata(MetadataLoader loader, Map<String, List<String>> packages) {
-        for (Map.Entry<String, List<String>> entry : packages.entrySet()) {
-            loader.loadModel(entry.getKey(), entry.getValue());
+    protected void loadMetadata(MetadataLoader loader, Map<String, List<EntityClassInfo>> packages) {
+        for (Map.Entry<String, List<EntityClassInfo>> entry : packages.entrySet()) {
+            List<String> classNames = entry.getValue().stream()
+                    .map(entityClassInfo -> entityClassInfo.name)
+                    .collect(Collectors.toList());
+            loader.loadModel(entry.getKey(), classNames);
         }
     }
 
@@ -127,7 +132,13 @@ public class MetadataImpl implements Metadata {
     protected void assignIdentifier(Entity entity) {
         if (!(entity instanceof BaseGenericIdEntity))
             return;
+
         MetaClass metaClass = getClassNN(entity.getClass());
+
+        // assign ID only if the entity is stored to the main database
+        if (!Stores.MAIN.equals(tools.getStoreName(metaClass)))
+            return;
+
         if (entity instanceof BaseLongIdEntity) {
             ((BaseGenericIdEntity<Long>) entity).setId(numberIdSource.createLongId(metaClass.getName()));
         } else if (entity instanceof BaseIntegerIdEntity) {
@@ -182,11 +193,13 @@ public class MetadataImpl implements Metadata {
         log.info("Initializing metadata");
         long startTime = System.currentTimeMillis();
 
-        loadMetadata(metadataLoader, metadataBuildSupport.getEntityPackages());
+        Map<String, List<EntityClassInfo>> entityPackages = metadataBuildSupport.getEntityPackages();
+        loadMetadata(metadataLoader, entityPackages);
         metadataLoader.postProcess();
 
         Session session = metadataLoader.getSession();
 
+        initStoreMetaAnnotations(session, entityPackages);
         initExtensionMetaAnnotations(session);
 
         List<MetadataBuildSupport.XmlAnnotations> xmlAnnotations = metadataBuildSupport.getEntityAnnotations();
@@ -255,6 +268,28 @@ public class MetadataImpl implements Metadata {
         }
 
         sw.stop();
+    }
+
+    protected void initStoreMetaAnnotations(Session session, Map<String, List<EntityClassInfo>> entityPackages) {
+        if (Stores.getAdditional().isEmpty())
+            return;
+
+        Map<String, String> nameToStoreMap = new HashMap<>();
+        for (List<EntityClassInfo> list : entityPackages.values()) {
+            for (EntityClassInfo entityClassInfo : list) {
+                if (nameToStoreMap.containsKey(entityClassInfo.name)) {
+                    throw new IllegalStateException("Entity cannot belong to more than one store: " + entityClassInfo.name);
+                }
+                nameToStoreMap.put(entityClassInfo.name, entityClassInfo.store);
+            }
+        }
+
+        for (MetaClass metaClass : session.getClasses()) {
+            String className = metaClass.getJavaClass().getName();
+            String store = nameToStoreMap.get(className);
+            if (store != null)
+                metaClass.getAnnotations().put(Stores.PROP_NAME, store);
+        }
     }
 
     /**

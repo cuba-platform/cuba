@@ -18,20 +18,41 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.global.Resources;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.dom4j.Document;
 import org.dom4j.Element;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.*;
 
 @Component("cuba_MetadataBuildSupport")
 public class MetadataBuildSupport {
+
+    public static class EntityClassInfo {
+        public final String store;
+        public final String name;
+
+        public EntityClassInfo(String store, String name) {
+            this.store = store;
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name + " - " + store;
+        }
+    }
+
+    private Logger log = LoggerFactory.getLogger(MetadataBuildSupport.class);
 
     public static final String PERSISTENCE_CONFIG = "cuba.persistenceConfig";
     public static final String METADATA_CONFIG = "cuba.metadataConfig";
@@ -40,13 +61,21 @@ public class MetadataBuildSupport {
     private Resources resources;
 
     /**
-     * @return location of persistent entities descriptor
+     * @param storeName data store name
+     * @return location of persistent entities descriptor or null if not defined
      */
-    public String getPersistenceConfig() {
-        String config = AppContext.getProperty(PERSISTENCE_CONFIG);
-        if (StringUtils.isBlank(config))
-            throw new IllegalStateException(PERSISTENCE_CONFIG + " application property is not defined");
-        return config;
+    @Nullable
+    public String getPersistenceConfig(String storeName) {
+        String propName = PERSISTENCE_CONFIG;
+        if (!Stores.isMain(storeName))
+            propName = propName + "_" + storeName;
+
+        String config = AppContext.getProperty(propName);
+        if (StringUtils.isBlank(config)) {
+            log.trace("Property {} is not set, assuming {} is not a RdbmsStore", propName, storeName);
+            return null;
+        } else
+            return config;
     }
 
     /**
@@ -59,16 +88,16 @@ public class MetadataBuildSupport {
         return config;
     }
 
-    public Map<String, List<String>> getEntityPackages() {
-        Map<String, List<String>> packages = new LinkedHashMap<>();
+    public Map<String, List<EntityClassInfo>> getEntityPackages() {
+        Map<String, List<EntityClassInfo>> packages = new LinkedHashMap<>();
 
         loadFromMetadataConfig(packages);
-        loadFromPersistenceConfig(packages);
+        Stores.getAll().forEach(db -> loadFromPersistenceConfig(packages, db));
 
         return packages;
     }
 
-    protected void loadFromMetadataConfig(Map<String, List<String>> packages) {
+    protected void loadFromMetadataConfig(Map<String, List<EntityClassInfo>> packages) {
         StrTokenizer metadataFilesTokenizer = new StrTokenizer(getMetadataConfig());
         for (String fileName : metadataFilesTokenizer.getTokenArray()) {
             Element root = readXml(fileName);
@@ -78,20 +107,23 @@ public class MetadataBuildSupport {
                 if (StringUtils.isBlank(rootPackage))
                     throw new IllegalStateException("metadata-model/@root-package is empty in " + fileName);
 
-                List<String> classNames = packages.get(rootPackage);
+                List<EntityClassInfo> classNames = packages.get(rootPackage);
                 if (classNames == null) {
                     classNames = new ArrayList<>();
                     packages.put(rootPackage, classNames);
                 }
                 for (Element classEl : Dom4j.elements(element, "class")) {
-                    classNames.add(classEl.getText().trim());
+                    classNames.add(new EntityClassInfo(classEl.attributeValue("store"), classEl.getText().trim()));
                 }
             }
         }
     }
 
-    protected void loadFromPersistenceConfig(Map<String, List<String>> packages) {
-        StrTokenizer persistenceFilestokenizer = new StrTokenizer(getPersistenceConfig());
+    protected void loadFromPersistenceConfig(Map<String, List<EntityClassInfo>> packages, String db) {
+        String persistenceConfig = getPersistenceConfig(db);
+        if (persistenceConfig == null)
+            return;
+        StrTokenizer persistenceFilestokenizer = new StrTokenizer(persistenceConfig);
         for (String fileName : persistenceFilestokenizer.getTokenArray()) {
             Element root = readXml(fileName);
             Element puEl = root.element("persistence-unit");
@@ -103,19 +135,12 @@ public class MetadataBuildSupport {
                 boolean included = false;
                 for (String rootPackage : packages.keySet()) {
                     if (className.startsWith(rootPackage + ".")) {
-                        // check if the class is already included into a model
-                        for (Map.Entry<String, List<String>> entry : packages.entrySet()) {
-                            if (entry.getValue().contains(className)) {
-                                throw new IllegalStateException("Class " + className
-                                        + " is already included into model " + entry.getKey());
-                            }
-                        }
-                        List<String> classNames = packages.get(rootPackage);
+                        List<EntityClassInfo> classNames = packages.get(rootPackage);
                         if (classNames == null) {
                             classNames = new ArrayList<>();
                             packages.put(rootPackage, classNames);
                         }
-                        classNames.add(className);
+                        classNames.add(new EntityClassInfo(db, className));
                         included = true;
                         break;
                     }

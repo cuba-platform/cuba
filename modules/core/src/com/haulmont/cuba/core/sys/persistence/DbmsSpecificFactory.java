@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.global.Stores;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -34,19 +35,35 @@ import org.apache.commons.lang.StringUtils;
 public class DbmsSpecificFactory {
 
     public static DbmsFeatures getDbmsFeatures() {
-        return create(DbmsFeatures.class);
+        return create(DbmsFeatures.class, Stores.MAIN);
+    }
+
+    public static DbmsFeatures getDbmsFeatures(String storeName) {
+        return create(DbmsFeatures.class, storeName);
     }
 
     public static SequenceSupport getSequenceSupport() {
-        return create(SequenceSupport.class);
+        return create(SequenceSupport.class, Stores.MAIN);
+    }
+
+    public static SequenceSupport getSequenceSupport(String storeName) {
+        return create(SequenceSupport.class, storeName);
     }
 
     public static DbTypeConverter getDbTypeConverter() {
-        return create(DbTypeConverter.class);
+        return create(DbTypeConverter.class, Stores.MAIN);
+    }
+
+    public static DbTypeConverter getDbTypeConverter(String storeName) {
+        return create(DbTypeConverter.class, storeName);
     }
 
     public static <T> T create(Class<T> intf) {
-        return create(intf, DbmsType.getType(), StringUtils.trimToEmpty(DbmsType.getVersion()));
+        return create(intf, Stores.MAIN);
+    }
+
+    public static <T> T create(Class<T> intf, String storeName) {
+        return create(intf, DbmsType.getType(storeName), StringUtils.trimToEmpty(DbmsType.getVersion(storeName)));
     }
 
     public static <T> T create(Class<T> intf, String dbmsType, String dbmsVersion) {

@@ -175,7 +175,7 @@ public class EntityListenerManager {
     }
 
     @SuppressWarnings("unchecked")
-    public void fireListener(Entity entity, EntityListenerType type) {
+    public void fireListener(Entity entity, EntityListenerType type, String storeName) {
         if (!enabled)
             return;
 
@@ -192,7 +192,7 @@ public class EntityListenerManager {
                 switch (type) {
                     case BEFORE_DETACH:
                         logExecution(type, entity);
-                        ((BeforeDetachEntityListener) listener).onBeforeDetach(entity, persistence.getEntityManager());
+                        ((BeforeDetachEntityListener) listener).onBeforeDetach(entity, persistence.getEntityManager(storeName));
                         break;
                     case BEFORE_ATTACH:
                         logExecution(type, entity);
@@ -200,27 +200,27 @@ public class EntityListenerManager {
                         break;
                     case BEFORE_INSERT:
                         logExecution(type, entity);
-                        ((BeforeInsertEntityListener) listener).onBeforeInsert(entity);
+                        ((BeforeInsertEntityListener) listener).onBeforeInsert(entity, persistence.getEntityManager(storeName));
                         break;
                     case AFTER_INSERT:
                         logExecution(type, entity);
-                        ((AfterInsertEntityListener) listener).onAfterInsert(entity);
+                        ((AfterInsertEntityListener) listener).onAfterInsert(entity, persistence.getEntityManager(storeName).getConnection());
                         break;
                     case BEFORE_UPDATE:
                         logExecution(type, entity);
-                        ((BeforeUpdateEntityListener) listener).onBeforeUpdate(entity);
+                        ((BeforeUpdateEntityListener) listener).onBeforeUpdate(entity, persistence.getEntityManager(storeName));
                         break;
                     case AFTER_UPDATE:
                         logExecution(type, entity);
-                        ((AfterUpdateEntityListener) listener).onAfterUpdate(entity);
+                        ((AfterUpdateEntityListener) listener).onAfterUpdate(entity, persistence.getEntityManager(storeName).getConnection());
                         break;
                     case BEFORE_DELETE:
                         logExecution(type, entity);
-                        ((BeforeDeleteEntityListener) listener).onBeforeDelete(entity);
+                        ((BeforeDeleteEntityListener) listener).onBeforeDelete(entity, persistence.getEntityManager(storeName));
                         break;
                     case AFTER_DELETE:
                         logExecution(type, entity);
-                        ((AfterDeleteEntityListener) listener).onAfterDelete(entity);
+                        ((AfterDeleteEntityListener) listener).onAfterDelete(entity, persistence.getEntityManager(storeName).getConnection());
                         break;
                     default:
                         throw new UnsupportedOperationException("Unsupported EntityListenerType: " + type);

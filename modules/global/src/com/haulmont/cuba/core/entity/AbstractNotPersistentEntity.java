@@ -41,6 +41,8 @@ public abstract class AbstractNotPersistentEntity
 
     protected UUID id;
 
+    protected boolean __new = true;
+
     protected AbstractNotPersistentEntity() {
         id = UuidProvider.createUuid();
     }

@@ -21,13 +21,6 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 
     <persistence-unit name="cuba" transaction-type="RESOURCE_LOCAL">
-        <class>com.haulmont.cuba.core.entity.BaseGenericIdEntity</class>
-        <class>com.haulmont.cuba.core.entity.BaseUuidEntity</class>
-        <class>com.haulmont.cuba.core.entity.BaseLongIdEntity</class>
-        <class>com.haulmont.cuba.core.entity.BaseIntegerIdEntity</class>
-        <class>com.haulmont.cuba.core.entity.BaseStringIdEntity</class>
-        <class>com.haulmont.cuba.core.entity.BaseIdentityIdEntity</class>
-        <class>com.haulmont.cuba.core.entity.StandardEntity</class>
         <class>com.haulmont.cuba.core.entity.Server</class>
         <class>com.haulmont.cuba.core.entity.Config</class>
         <class>com.haulmont.cuba.core.entity.FileDescriptor</class>
@@ -43,8 +36,6 @@
         <class>com.haulmont.cuba.core.entity.ScheduledTask</class>
         <class>com.haulmont.cuba.core.entity.ScheduledExecution</class>
         <class>com.haulmont.cuba.core.entity.QueryResult</class>
-
-        <class>com.haulmont.cuba.core.entity.EmbeddableEntity</class>
 
         <class>com.haulmont.cuba.security.entity.User</class>
         <class>com.haulmont.cuba.security.entity.Role</class>
@@ -72,22 +63,6 @@
         <class>com.haulmont.cuba.core.entity.JmxInstance</class>
         <class>com.haulmont.cuba.security.entity.RememberMeToken</class>
 
-        <class>com.haulmont.cuba.core.entity.dummy.DummyStringIdEntity</class>
-        <class>com.haulmont.cuba.core.entity.dummy.DummyIntegerIdEntity</class>
-        <class>com.haulmont.cuba.core.entity.dummy.DummyLongIdEntity</class>
-        <class>com.haulmont.cuba.core.entity.dummy.DummyIdentityIdEntity</class>
         <class>com.haulmont.cuba.core.entity.dummy.DummyCategorizedEntity</class>
-        <class>com.haulmont.cuba.core.entity.dummy.DummyEmbeddableEntity</class>
-
-        <properties>
-            <property name="eclipselink.weaving"
-                      value="static"/>
-
-            <property name="eclipselink.logging.logger"
-                      value="com.haulmont.cuba.core.sys.logging.EclipseLinkLog"/>
-
-            <property name="eclipselink.session-event-listener"
-                            value="com.haulmont.cuba.core.sys.persistence.EclipseLinkSessionEventListener"/>
-        </properties>
     </persistence-unit>
 </persistence>

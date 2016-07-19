@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
@@ -33,6 +34,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationHandler;
@@ -48,20 +50,20 @@ public class PersistenceImpl implements Persistence {
 
     private volatile boolean softDeletion = true;
 
-    private ThreadLocal<EntityManagerContext> contextHolder = new ThreadLocal<>();
+    private EntityManagerContextHolder contextHolder = new EntityManagerContextHolder();
 
     @Inject
     private PersistenceTools tools;
 
     private EntityManagerFactory jpaEmf;
 
-    @Inject
+    @Inject @Named("transactionManager")
     private PlatformTransactionManager transactionManager;
 
     @Inject
     private UserSessionSource userSessionSource;
 
-    @Inject
+    @Inject @Named("entityManagerFactory")
     public void setFactory(LocalContainerEntityManagerFactoryBean factoryBean) {
         this.jpaEmf = factoryBean.getObject();
     }
@@ -77,8 +79,18 @@ public class PersistenceImpl implements Persistence {
     }
 
     @Override
+    public DbTypeConverter getDbTypeConverter(String store) {
+        return DbmsSpecificFactory.getDbTypeConverter(store);
+    }
+
+    @Override
     public void runInTransaction(Transaction.Runnable runnable) {
         createTransaction().execute(runnable);
+    }
+
+    @Override
+    public void runInTransaction(String store, Transaction.Runnable runnable) {
+        createTransaction(store).execute(store, runnable);
     }
 
     @Override
@@ -87,18 +99,38 @@ public class PersistenceImpl implements Persistence {
     }
 
     @Override
+    public <T> T callInTransaction(String store, Transaction.Callable<T> callable) {
+        return createTransaction(store).execute(store, callable);
+    }
+
+    @Override
     public Transaction createTransaction(TransactionParams params) {
-        return new TransactionImpl(transactionManager, this, false, params);
+        return new TransactionImpl(transactionManager, this, false, params, Stores.MAIN);
+    }
+
+    @Override
+    public Transaction createTransaction(String store, TransactionParams params) {
+        return new TransactionImpl(getTransactionManager(store), this, false, params, store);
     }
 
     @Override
     public Transaction createTransaction() {
-        return new TransactionImpl(transactionManager, this, false, null);
+        return new TransactionImpl(transactionManager, this, false, null, Stores.MAIN);
+    }
+
+    @Override
+    public Transaction createTransaction(String store) {
+        return new TransactionImpl(getTransactionManager(store), this, false, null, store);
     }
 
     @Override
     public Transaction getTransaction() {
-        return new TransactionImpl(transactionManager, this, true, null);
+        return new TransactionImpl(transactionManager, this, true, null, Stores.MAIN);
+    }
+
+    @Override
+    public Transaction getTransaction(String store) {
+        return new TransactionImpl(getTransactionManager(store), this, true, null, store);
     }
 
     @Override
@@ -108,29 +140,43 @@ public class PersistenceImpl implements Persistence {
 
     @Override
     public EntityManager getEntityManager() {
+        return getEntityManager(Stores.MAIN);
+    }
+
+    @Override
+    public EntityManager getEntityManager(String store) {
         if (!TransactionSynchronizationManager.isActualTransactionActive())
             throw new IllegalStateException("No active transaction");
 
-        javax.persistence.EntityManager jpaEm = EntityManagerFactoryUtils.doGetTransactionalEntityManager(jpaEmf, null);
+        EntityManagerFactory emf;
+        if (Stores.isMain(store))
+            emf = this.jpaEmf;
+        else
+            emf = AppBeans.get("entityManagerFactory_" + store);
+
+        javax.persistence.EntityManager jpaEm = EntityManagerFactoryUtils.doGetTransactionalEntityManager(emf, null);
+
+        if (!jpaEm.isJoinedToTransaction())
+            throw new IllegalStateException("No active transaction for " + store + " database");
 
         UserSession userSession = userSessionSource.checkCurrentUserSession() ? userSessionSource.getUserSession() : null;
 
         EntityManagerImpl impl = new EntityManagerImpl(jpaEm, userSession);
 
-        EntityManagerContext ctx = contextHolder.get();
+        EntityManagerContext ctx = contextHolder.get(store);
         if (ctx != null) {
             impl.setSoftDeletion(ctx.isSoftDeletion());
         } else {
             ctx = new EntityManagerContext();
             ctx.setSoftDeletion(isSoftDeletion());
-            contextHolder.set(ctx);
+            contextHolder.set(ctx, store);
             impl.setSoftDeletion(isSoftDeletion());
         }
 
         EntityManager em = (EntityManager) Proxy.newProxyInstance(
                 getClass().getClassLoader(),
                 new Class[]{EntityManager.class},
-                new EntityManagerInvocationHandler(impl)
+                new EntityManagerInvocationHandler(impl, store)
         );
         return em;
     }
@@ -147,13 +193,26 @@ public class PersistenceImpl implements Persistence {
 
     @Override
     public DataSource getDataSource() {
-        return (DataSource) AppBeans.get("cubaDataSource");
+        return getDataSource(Stores.MAIN);
+    }
+
+    @Override
+    public DataSource getDataSource(String store) {
+        if (Stores.isMain(store))
+            return (DataSource) AppBeans.get("cubaDataSource");
+        else
+            return (DataSource) AppBeans.get("cubaDataSource_" + store);
     }
 
     @Override
     @Nonnull
     public EntityManagerContext getEntityManagerContext() {
-        EntityManagerContext emCtx = contextHolder.get();
+        return getEntityManagerContext(Stores.MAIN);
+    }
+
+    @Override
+    public EntityManagerContext getEntityManagerContext(String store) {
+        EntityManagerContext emCtx = contextHolder.get(store);
         if (emCtx == null)
             emCtx = new EntityManagerContext();
         return emCtx;
@@ -162,25 +221,34 @@ public class PersistenceImpl implements Persistence {
     @Override
     public void dispose() {
         jpaEmf.close();
+        for (String store : Stores.getAdditional()) {
+            EntityManagerFactory emf = AppBeans.get("entityManagerFactory_" + store);
+            emf.close();
+        }
     }
 
-    public TransactionSynchronization createSynchronization() {
-        return new EntityManagerContextSynchronization();
+    public TransactionSynchronization createSynchronization(String store) {
+        return new EntityManagerContextSynchronization(store);
     }
 
     private class EntityManagerContextSynchronization implements TransactionSynchronization, Ordered {
 
         private EntityManagerContext context;
+        private String store;
+
+        public EntityManagerContextSynchronization(String store) {
+            this.store = store;
+        }
 
         @Override
         public void suspend() {
-            context = contextHolder.get();
-            contextHolder.remove();
+            context = contextHolder.get(store);
+            contextHolder.remove(store);
         }
 
         @Override
         public void resume() {
-            contextHolder.set(context);
+            contextHolder.set(context, store);
         }
 
         @Override
@@ -192,7 +260,7 @@ public class PersistenceImpl implements Persistence {
             if (readOnly)
                 return;
 
-            EntityManagerContext context = contextHolder.get();
+            EntityManagerContext context = contextHolder.get(store);
             if (context != null) {
                 List<Runnable> list = context.getAttribute(RUN_BEFORE_COMMIT_ATTR);
                 if (list != null && !list.isEmpty()) {
@@ -213,7 +281,7 @@ public class PersistenceImpl implements Persistence {
 
         @Override
         public void afterCompletion(int status) {
-            contextHolder.remove();
+            contextHolder.remove(store);
         }
 
         @Override
@@ -222,27 +290,41 @@ public class PersistenceImpl implements Persistence {
         }
     }
 
-    protected EntityManagerFactory getJpaEmf() {
-        return jpaEmf;
+    protected EntityManagerFactory getJpaEmf(String store) {
+        if (Stores.isMain(store))
+            return jpaEmf;
+        else
+            return AppBeans.get("entityManagerFactory_" + store);
+    }
+
+    protected PlatformTransactionManager getTransactionManager(String store) {
+        PlatformTransactionManager tm;
+        if (Stores.isMain(store))
+            tm = this.transactionManager;
+        else
+            tm = AppBeans.get("transactionManager_" + store, PlatformTransactionManager.class);
+        return tm;
     }
 
     private class EntityManagerInvocationHandler implements InvocationHandler {
 
         private EntityManagerImpl impl;
+        private String store;
 
-        private EntityManagerInvocationHandler(EntityManagerImpl impl) {
+        private EntityManagerInvocationHandler(EntityManagerImpl impl, String store) {
             this.impl = impl;
+            this.store = store;
         }
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             if (method.getName().equals("setSoftDeletion")) {
-                EntityManagerContext ctx = contextHolder.get();
+                EntityManagerContext ctx = contextHolder.get(store);
                 if (ctx == null) {
                     ctx = new EntityManagerContext();
                 }
                 ctx.setSoftDeletion((Boolean) args[0]);
-                contextHolder.set(ctx);
+                contextHolder.set(ctx, store);
             }
             try {
                 return method.invoke(impl, args);

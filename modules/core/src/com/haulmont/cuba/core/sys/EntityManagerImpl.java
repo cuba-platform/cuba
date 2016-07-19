@@ -29,13 +29,17 @@ import com.haulmont.cuba.core.sys.listener.EntityListenerType;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.collections.CollectionUtils;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.persistence.EntityNotFoundException;
 import java.sql.Connection;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
 public class EntityManagerImpl implements EntityManager {
 
@@ -87,7 +91,8 @@ public class EntityManagerImpl implements EntityManager {
         if (PersistenceHelper.isManaged(entity))
             return entity;
 
-        entityListenerMgr.fireListener(entity, EntityListenerType.BEFORE_ATTACH);
+        String storeName = support.getStorageName(delegate.unwrap(UnitOfWork.class));
+        entityListenerMgr.fireListener(entity, EntityListenerType.BEFORE_ATTACH, storeName);
 
         if (PersistenceHelper.isNew(entity) && entity.getId() != null) {
             // if a new instance is passed to merge(), we suppose it is persistent but "not detached"
@@ -271,7 +276,7 @@ public class EntityManagerImpl implements EntityManager {
     @Override
     public void flush() {
         log.debug("flush");
-        support.fireEntityListeners();
+        support.fireEntityListeners(this);
         delegate.flush();
     }
 

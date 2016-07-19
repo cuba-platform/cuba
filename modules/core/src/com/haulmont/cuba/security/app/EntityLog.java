@@ -255,15 +255,17 @@ public class EntityLog implements EntityLogAPI {
         if (doNotRegister(entity))
             return;
 
-        try {
-            String entityName = getEntityName(entity);
-            Set<String> attributes = getLoggedAttributes(entityName, auto);
-            if (attributes != null && attributes.contains("*")) {
-                attributes = getAllAttributes(entity);
-            }
-            if (attributes == null) {
-                return;
-            }
+        String entityName = getEntityName(entity);
+        Set<String> attributes = getLoggedAttributes(entityName, auto);
+        if (attributes != null && attributes.contains("*")) {
+            attributes = getAllAttributes(entity);
+        }
+        if (attributes == null) {
+            return;
+        }
+
+        // Join to an existing transaction in main DB or create a new one if we came here with a tx for an additional DB
+        try (Transaction tx = persistence.getTransaction()) {
             Date ts = timeSource.currentTimestamp();
             EntityManager em = persistence.getEntityManager();
 
@@ -292,6 +294,7 @@ public class EntityLog implements EntityLogAPI {
                 em.persist(item);
             }
 
+            tx.commit();
         } catch (Exception e) {
             log.warn("Unable to log entity " + entity + ", id=" + entity.getId(), e);
         }

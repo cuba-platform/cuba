@@ -43,7 +43,7 @@ public class GroupEntityListener implements
     protected Metadata metadata;
 
     @Override
-    public void onBeforeInsert(Group entity) {
+    public void onBeforeInsert(Group entity, EntityManager entityManager) {
         createNewHierarchy(entity, entity.getParent());
     }
 
@@ -86,7 +86,7 @@ public class GroupEntityListener implements
     }
 
     @Override
-    public void onBeforeUpdate(Group entity) {
+    public void onBeforeUpdate(Group entity, EntityManager entityManager) {
         if (!persistence.getTools().getDirtyFields(entity).contains("parent"))
             return;
 

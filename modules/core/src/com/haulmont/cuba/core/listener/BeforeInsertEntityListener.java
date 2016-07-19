@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.listener;
 
+import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.entity.Entity;
 
 /**
@@ -27,7 +28,8 @@ public interface BeforeInsertEntityListener<T extends Entity> {
     /**
      * Executes before the object has been inserted into DB.
      *
-     * @param entity updated entity
+     * @param entity        inserted entity instance
+     * @param entityManager EntityManager that owns the entity instance
      */
-    void onBeforeInsert(T entity);
+    void onBeforeInsert(T entity, EntityManager entityManager);
 }

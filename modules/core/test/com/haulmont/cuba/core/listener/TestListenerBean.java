@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.entity.Server;
 
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,21 +38,21 @@ public class TestListenerBean implements
     public final List<String> events = new ArrayList<>();
 
     @Override
-    public void onAfterDelete(Server entity) {
+    public void onAfterDelete(Server entity, Connection connection) {
         if (persistence == null)
             throw new IllegalStateException("Injected value is null");
         events.add("onAfterDelete: " + entity.getId());
     }
 
     @Override
-    public void onAfterInsert(Server entity) {
+    public void onAfterInsert(Server entity, Connection connection) {
         if (persistence == null)
             throw new IllegalStateException("Injected value is null");
         events.add("onAfterInsert: " + entity.getId());
     }
 
     @Override
-    public void onAfterUpdate(Server entity) {
+    public void onAfterUpdate(Server entity, Connection connection) {
         if (persistence == null)
             throw new IllegalStateException("Injected value is null");
         events.add("onAfterUpdate: " + entity.getId());

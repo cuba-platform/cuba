@@ -237,21 +237,25 @@ configure(globalModule) {
     task enhance(type: CubaEnhancing)
 
     task filterDummyEntities {
-        ext.srcFile = file('src/cuba-persistence.xml')
+        ext.srcFile1 = file('src/base-persistence.xml')
+        ext.srcFile2 = file('src/cuba-persistence.xml')
         ext.dstDir = file("$buildDir/tmp/filtered")
-        ext.dstFile = new File(ext.dstDir, "cuba-persistence.xml")
-        inputs.file srcFile
-        outputs.file dstFile
+        ext.dstFile1 = new File(ext.dstDir, "base-persistence.xml")
+        ext.dstFile2 = new File(ext.dstDir, "cuba-persistence.xml")
+        inputs.file srcFile1
+        inputs.file srcFile2
+        outputs.file dstFile1
+        outputs.file dstFile2
         doLast {
             dstDir.mkdirs()
-            List lines = srcFile.readLines()
-            def result = lines.findAll{ !it.contains('.entity.dummy.') }.join('\n')
-            dstFile.write(result)
+            dstFile1.write(srcFile1.readLines().findAll{ !it.contains('.entity.dummy.') }.join('\n'))
+            dstFile2.write(srcFile2.readLines().findAll{ !it.contains('.entity.dummy.') }.join('\n'))
         }
     }
 
     jar {
         exclude '**/entity/dummy/*'
+        exclude { it.file == file("$buildDir/resources/main/base-persistence.xml") }
         exclude { it.file == file("$buildDir/resources/main/cuba-persistence.xml") }
         from "$buildDir/tmp/filtered"
 
@@ -265,7 +269,7 @@ configure(globalModule) {
     sourceJar {
         exclude '**/entity/dummy/*'
         exclude {
-            it.file.name == 'cuba-persistence.xml' && sourceSets.main.java.srcDirs.contains(it.file.parentFile)
+            (it.file.name == 'base-persistence.xml' || it.file.name == 'cuba-persistence.xml') && sourceSets.main.java.srcDirs.contains(it.file.parentFile)
         }
         from "$buildDir/tmp/filtered"
     }

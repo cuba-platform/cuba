@@ -40,10 +40,14 @@
 
     <xs:complexType name="metadataModelType">
         <xs:sequence>
-            <xs:element type="xs:string" name="class" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element type="classType" name="class" maxOccurs="unbounded" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute type="xs:string" name="root-package" use="required"/>
         <xs:attribute type="xs:string" name="namespace"/>
+    </xs:complexType>
+
+    <xs:complexType name="classType" mixed="true">
+        <xs:attribute type="xs:string" name="store"/>
     </xs:complexType>
 
     <xs:complexType name="annotationsType">
@@ -71,5 +75,4 @@
         <xs:attribute type="xs:string" name="name" use="required"/>
         <xs:attribute type="xs:string" name="value" use="required"/>
     </xs:complexType>
-
 </xs:schema>

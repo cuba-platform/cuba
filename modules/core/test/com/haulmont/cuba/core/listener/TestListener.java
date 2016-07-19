@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.AppBeans;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,12 +41,12 @@ public class TestListener implements
     public static final List<String> events = new ArrayList<>();
 
     @Override
-    public void onAfterInsert(Server entity) {
+    public void onAfterInsert(Server entity, Connection connection) {
         events.add("onAfterInsert: " + entity.getId());
     }
 
     @Override
-    public void onAfterUpdate(Server entity) {
+    public void onAfterUpdate(Server entity, Connection connection) {
         events.add("onAfterUpdate: " + entity.getId());
 
         Set<String> dirtyFields = persistence.getTools().getDirtyFields(entity);
@@ -78,7 +79,7 @@ public class TestListener implements
     }
 
     @Override
-    public void onAfterDelete(Server entity) {
+    public void onAfterDelete(Server entity, Connection connection) {
         events.add("onAfterDelete: " + entity.getId());
     }
 }

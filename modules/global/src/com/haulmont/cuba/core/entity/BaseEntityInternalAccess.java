@@ -21,15 +21,23 @@ import com.google.common.collect.Multimap;
 import java.util.UUID;
 
 /**
- * For internal use only.
+ * INTERNAL
  */
 public final class BaseEntityInternalAccess {
 
     private BaseEntityInternalAccess() {
     }
 
+    public static boolean isNew(AbstractNotPersistentEntity entity) {
+        return entity.__new;
+    }
+
     public static boolean isNew(BaseGenericIdEntity entity) {
         return entity.__new;
+    }
+
+    public static void setNew(AbstractNotPersistentEntity entity, boolean cubaNew) {
+        entity.__new = cubaNew;
     }
 
     public static void setNew(BaseGenericIdEntity entity, boolean cubaNew) {

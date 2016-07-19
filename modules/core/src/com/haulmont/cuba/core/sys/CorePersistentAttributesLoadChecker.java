@@ -26,8 +26,10 @@ import com.haulmont.cuba.core.global.GlobalPersistentAttributesLoadChecker;
 import com.haulmont.cuba.core.global.MetadataTools;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManagerFactory;
 
 public class CorePersistentAttributesLoadChecker extends GlobalPersistentAttributesLoadChecker {
+
     @Inject
     protected Persistence persistence;
 
@@ -43,6 +45,7 @@ public class CorePersistentAttributesLoadChecker extends GlobalPersistentAttribu
             // throws exception if embedded entity refers to persistent entity
             return checkIsLoadedWithGetter(entity, property);
         }
-        return ((PersistenceImpl) persistence).getJpaEmf().getPersistenceUnitUtil().isLoaded(entity, property);
+        EntityManagerFactory jpaEmf = ((PersistenceImpl) persistence).getJpaEmf(metadataTools.getStoreName(metaClass));
+        return jpaEmf.getPersistenceUnitUtil().isLoaded(entity, property);
     }
 }

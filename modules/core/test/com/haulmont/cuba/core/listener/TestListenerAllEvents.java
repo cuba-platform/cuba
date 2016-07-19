@@ -19,10 +19,12 @@ package com.haulmont.cuba.core.listener;
 
 import com.haulmont.bali.db.ArrayHandler;
 import com.haulmont.bali.db.QueryRunner;
+import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.AppBeans;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +58,7 @@ public class TestListenerAllEvents implements
     }
 
     @Override
-    public void onBeforeInsert(Server entity) {
+    public void onBeforeInsert(Server entity, EntityManager entityManager) {
         Object[] objects = selectObjectFromDb("select id from sys_server where id = ?", entity);
         assertNull(objects);
 
@@ -64,7 +66,7 @@ public class TestListenerAllEvents implements
     }
 
     @Override
-    public void onAfterInsert(Server entity) {
+    public void onAfterInsert(Server entity, Connection connection) {
         Object[] objects = selectObjectFromDb("select id from sys_server where id = ?", entity);
         assertEquals(entity.getId().toString(), objects[0]);
 
@@ -72,7 +74,7 @@ public class TestListenerAllEvents implements
     }
 
     @Override
-    public void onBeforeUpdate(Server entity) {
+    public void onBeforeUpdate(Server entity, EntityManager entityManager) {
         Object[] objects = selectObjectFromDb("select name from sys_server where id = ?", entity);
         assertEquals("localhost", objects[0]);
 
@@ -80,7 +82,7 @@ public class TestListenerAllEvents implements
     }
 
     @Override
-    public void onAfterUpdate(Server entity) {
+    public void onAfterUpdate(Server entity, Connection connection) {
         Object[] objects = selectObjectFromDb("select name from sys_server where id = ?", entity);
         assertEquals("changed", objects[0]);
 
@@ -88,7 +90,7 @@ public class TestListenerAllEvents implements
     }
 
     @Override
-    public void onBeforeDelete(Server entity) {
+    public void onBeforeDelete(Server entity, EntityManager entityManager) {
         Object[] objects = selectObjectFromDb("select id from sys_server where id = ?", entity);
         assertEquals(entity.getId().toString(), objects[0]);
 
@@ -96,7 +98,7 @@ public class TestListenerAllEvents implements
     }
 
     @Override
-    public void onAfterDelete(Server entity) {
+    public void onAfterDelete(Server entity, Connection connection) {
         Object[] objects = selectObjectFromDb("select id from sys_server where id = ?", entity);
         assertNull(objects);
 

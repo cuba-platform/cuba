@@ -17,9 +17,16 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.global.Stores;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.util.ClassUtils;
+
+import java.lang.reflect.Method;
 
 public class TransactionalInterceptor {
 
@@ -30,9 +37,16 @@ public class TransactionalInterceptor {
     }
 
     private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {
-        if (persistence.isInTransaction())
-            TransactionSynchronizationManager.registerSynchronization(
-                    ((PersistenceImpl) persistence).createSynchronization());
+        Method method = ((MethodSignature) ctx.getSignature()).getMethod();
+        Method specificMethod = ClassUtils.getMostSpecificMethod(method, ctx.getTarget().getClass());
+        Transactional transactional = specificMethod.getAnnotation(Transactional.class);
+        if (transactional == null)
+            throw new IllegalStateException("Cannot determine data store of the current transaction");
+
+        String storeName = Strings.isNullOrEmpty(transactional.value()) ? Stores.MAIN : transactional.value();
+
+        TransactionSynchronizationManager.registerSynchronization(
+                ((PersistenceImpl) persistence).createSynchronization(storeName));
 
         return ctx.proceed();
     }

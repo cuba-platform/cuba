@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
+import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
 
@@ -33,13 +34,29 @@ import org.apache.commons.lang.StringUtils;
 public class DbmsType {
 
     public static String getType() {
-        String id = AppContext.getProperty("cuba.dbmsType");
+        return getType(Stores.MAIN);
+    }
+
+    public static String getType(String storeName) {
+        String propName = "cuba.dbmsType";
+        if (!Stores.isMain(storeName))
+            propName = propName + "_" + storeName;
+
+        String id = AppContext.getProperty(propName);
         if (StringUtils.isBlank(id))
-            throw new IllegalStateException("cuba.dbmsType is not set");
+            throw new IllegalStateException("Property " + propName + " is not set");
         return id;
     }
 
     public static String getVersion() {
-        return StringUtils.trimToEmpty(AppContext.getProperty("cuba.dbmsVersion"));
+        return getVersion(Stores.MAIN);
+    }
+
+    public static String getVersion(String storeName) {
+        String propName = "cuba.dbmsVersion";
+        if (!Stores.isMain(storeName))
+            propName = propName + "_" + storeName;
+
+        return StringUtils.trimToEmpty(AppContext.getProperty(propName));
     }
 }

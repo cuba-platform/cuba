@@ -25,15 +25,14 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Central interface to provide CRUD functionality.
- *
- * <p>Works with non-managed (new or detached) entities, always starts and commits new transactions. Can be used on
- * both middle and client tiers.</p>
- *
- * <p>When used on the client tier - always applies security restrictions.
- * <p>When used on the middleware - does not apply security restrictions by default. If you want to apply security,
- * get {@link #secure()} instance or set the {@code cuba.dataManagerChecksSecurityOnMiddleware} application property
- * to use it by default.
+ * Central interface to provide CRUD functionality. Can be used on both middle and client tiers.
+ * <p>
+ * In case of {@code RdbmsStore}, works with non-managed (new or detached) entities, always starts and commits new
+ * transactions.
+ * <p>
+ * When used on the client tier - always applies security restrictions. When used on the middleware - does not apply
+ * security restrictions by default. If you want to apply security, get {@link #secure()} instance or set the
+ * {@code cuba.dataManagerChecksSecurityOnMiddleware} application property to use it by default.
  *
  */
 public interface DataManager {
@@ -62,12 +61,12 @@ public interface DataManager {
     /**
      * Returns the number of entity instances for the given query passed in the {@link LoadContext}.
      * @param context   defines the query
-     * @return          number of instances in the database
+     * @return          number of instances in the data store
      */
     long getCount(LoadContext<? extends Entity> context);
 
     /**
-     * Reloads the entity instance from database with the view specified.
+     * Reloads the entity instance from data store with the view specified.
      * @param entity        reloading instance
      * @param viewName      view name
      * @return              reloaded instance
@@ -76,7 +75,7 @@ public interface DataManager {
     <E extends Entity> E reload(E entity, String viewName);
 
     /**
-     * Reloads the entity instance from database with the view specified.
+     * Reloads the entity instance from data store with the view specified.
      * @param entity        reloading instance
      * @param view          view object
      * @return              reloaded instance
@@ -85,7 +84,7 @@ public interface DataManager {
     <E extends Entity> E reload(E entity, View view);
 
     /**
-     * Reloads the entity instance from database with the view specified. Loading instance class may differ from original
+     * Reloads the entity instance from data store with the view specified. Loading instance class may differ from original
      * instance if we want to load an ancestor or a descendant.
      * @param entity        reloading instance
      * @param view          view object
@@ -96,7 +95,7 @@ public interface DataManager {
     <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass);
 
     /**
-     * Reloads the entity instance from database with the view specified. Loading instance class may differ from original
+     * Reloads the entity instance from data store with the view specified. Loading instance class may differ from original
      * instance if we want to load an ancestor or a descendant.
      * @param entity                    reloading instance
      * @param view                      view object
@@ -108,14 +107,14 @@ public interface DataManager {
     <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean loadDynamicAttributes);
 
     /**
-     * Commits a collection of new or detached entity instances to the database.
+     * Commits a collection of new or detached entity instances to the data store.
      * @param context   {@link com.haulmont.cuba.core.global.CommitContext} object, containing committing entities and other information
      * @return          set of committed instances
      */
     Set<Entity> commit(CommitContext context);
 
     /**
-     * Commits the entity to the database.
+     * Commits the entity to the data store.
      * @param entity    entity instance
      * @param view      view object, affects the returned committed instance
      * @return          committed instance
@@ -123,7 +122,7 @@ public interface DataManager {
     <E extends Entity> E commit(E entity, @Nullable View view);
 
     /**
-     * Commits the entity to the database.
+     * Commits the entity to the data store.
      * @param entity    entity instance
      * @param viewName  view name, affects the returned committed instance
      * @return          committed instance
@@ -131,14 +130,14 @@ public interface DataManager {
     <E extends Entity> E commit(E entity, @Nullable String viewName);
 
     /**
-     * Commits the entity to the database.
+     * Commits the entity to the data store.
      * @param entity    entity instance
      * @return          committed instance
      */
     <E extends Entity> E commit(E entity);
 
     /**
-     * Removes the entity instance from the database.
+     * Removes the entity instance from the data store.
      * @param entity    entity instance
      */
     void remove(Entity entity);

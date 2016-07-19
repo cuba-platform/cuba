@@ -18,24 +18,29 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TransactionParams;
+import com.haulmont.cuba.core.global.Stores;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import javax.annotation.Nullable;
+
 public class TransactionImpl implements Transaction {
 
     private final PlatformTransactionManager tm;
     private final PersistenceImpl persistence;
+    private final String storeName;
     private final DefaultTransactionDefinition td;
     private TransactionStatus ts;
     private boolean committed;
 
     public TransactionImpl(PlatformTransactionManager transactionManager, PersistenceImpl persistence, boolean join,
-                           TransactionParams params) {
+                           @Nullable TransactionParams params, String storeName) {
         this.tm = transactionManager;
         this.persistence = persistence;
+        this.storeName = storeName;
 
         td = new DefaultTransactionDefinition();
         if (join)
@@ -50,13 +55,18 @@ public class TransactionImpl implements Transaction {
 
         ts = tm.getTransaction(td);
 
-        TransactionSynchronizationManager.registerSynchronization(persistence.createSynchronization());
+        TransactionSynchronizationManager.registerSynchronization(persistence.createSynchronization(storeName));
     }
 
     @Override
     public <T> T execute(Callable<T> callable) {
+        return execute(Stores.MAIN, callable);
+    }
+
+    @Override
+    public <T> T execute(String storeName, Callable<T> callable) {
         try {
-            T result = callable.call(persistence.getEntityManager());
+            T result = callable.call(persistence.getEntityManager(storeName));
             commit();
             return result;
         } finally {
@@ -66,8 +76,13 @@ public class TransactionImpl implements Transaction {
 
     @Override
     public void execute(Runnable runnable) {
+        execute(Stores.MAIN, runnable);
+    }
+
+    @Override
+    public void execute(String storeName, Runnable runnable) {
         try {
-            runnable.run(persistence.getEntityManager());
+            runnable.run(persistence.getEntityManager(storeName));
             commit();
         } finally {
             end();
@@ -96,7 +111,7 @@ public class TransactionImpl implements Transaction {
             tm.commit(ts);
 
             ts = tm.getTransaction(td);
-            TransactionSynchronizationManager.registerSynchronization(persistence.createSynchronization());
+            TransactionSynchronizationManager.registerSynchronization(persistence.createSynchronization(storeName));
 
         } catch (Exception e) {
             throw new RuntimeException(e);

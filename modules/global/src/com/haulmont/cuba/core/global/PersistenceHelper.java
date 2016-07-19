@@ -17,6 +17,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
@@ -35,17 +36,20 @@ public class PersistenceHelper {
      * Determines whether the instance is <em>New</em>, i.e. just created and not stored in database yet.
      *
      * @param entity entity instance
-     * @return  <li>true if the instance is new or if it is not a persistent entity, or if it is actually in Managed state
+     * @return  <li>true if the instance is a new persistent entity, or if it is actually in Managed state
      *              but newly-persisted in this transaction
+     *          <li>true if the instance is a new non-persistent entity never returned from DataManager
      *          <li>false otherwise
      * @throws IllegalArgumentException if entity instance is null
      */
     public static boolean isNew(Object entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
-        if (entity instanceof BaseGenericIdEntity && !BaseEntityInternalAccess.isNew((BaseGenericIdEntity) entity)) {
-            return false;
+        if (entity instanceof BaseGenericIdEntity) {
+            return BaseEntityInternalAccess.isNew((BaseGenericIdEntity) entity);
+        } else if (entity instanceof AbstractNotPersistentEntity) {
+            return BaseEntityInternalAccess.isNew((AbstractNotPersistentEntity) entity);
         }
-        return true;
+        return false;
     }
 
     /**

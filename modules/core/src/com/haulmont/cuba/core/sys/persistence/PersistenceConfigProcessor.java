@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import org.apache.commons.io.IOUtils;
@@ -43,8 +44,9 @@ public class PersistenceConfigProcessor {
     private String baseDir;
     private List<String> sourceFileNames;
     private String outFileName;
+    private String storeName;
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private Logger log = LoggerFactory.getLogger(PersistenceConfigProcessor.class);
 
     public void setBaseDir(String baseDir) {
         this.baseDir = baseDir;
@@ -58,6 +60,10 @@ public class PersistenceConfigProcessor {
         outFileName = file;
     }
 
+    public void setStorageName(String storeName) {
+        this.storeName = storeName;
+    }
+
     public void create() {
         if (sourceFileNames == null || sourceFileNames.isEmpty())
             throw new IllegalStateException("Source file list not set");
@@ -67,7 +73,7 @@ public class PersistenceConfigProcessor {
         Map<String, String> classes = new LinkedHashMap<>();
         Map<String, String> properties = new HashMap<>();
 
-        properties.putAll(DbmsSpecificFactory.getDbmsFeatures().getJpaParameters());
+        properties.putAll(DbmsSpecificFactory.getDbmsFeatures(storeName).getJpaParameters());
 
         for (String fileName : sourceFileNames) {
             Document doc = getDocument(fileName);
@@ -83,6 +89,9 @@ public class PersistenceConfigProcessor {
                 properties.put(name, AppContext.getProperty(name));
             }
         }
+
+        if (!Stores.isMain(storeName))
+            properties.put(Stores.PROP_NAME, storeName);
 
         File outFile;
         try {
@@ -109,6 +118,8 @@ public class PersistenceConfigProcessor {
 
         String puName = AppContext.getProperty("cuba.persistenceUnitName");
         if (!StringUtils.isEmpty(puName)) {
+            if (!Stores.isMain(storeName))
+                puName = puName + "_" + storeName;
             puElem.addAttribute("name", puName);
         }
 

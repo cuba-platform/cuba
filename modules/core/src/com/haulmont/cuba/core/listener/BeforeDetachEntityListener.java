@@ -29,8 +29,8 @@ public interface BeforeDetachEntityListener<T extends Entity> {
     /**
      * Executes before the object is detached from an EntityManager on transaction commit.
      *
-     * @param entity        entity in managed state
-     * @param entityManager current EntityManager
+     * @param entity        entity instance in managed state
+     * @param entityManager EntityManager that owns the entity instance
      */
     void onBeforeDetach(T entity, EntityManager entityManager);
 }

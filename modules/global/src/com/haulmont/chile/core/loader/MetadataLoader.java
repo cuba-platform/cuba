@@ -21,9 +21,6 @@ import com.haulmont.chile.core.model.Session;
 
 import java.util.List;
 
-/**
- * @version $Id: MetadataBuildSupport.java 12898 2013-09-16 10:23:29Z krivopustov $
- */
 public interface MetadataLoader {
     
     void loadModel(String modelName, List<String> classNames);

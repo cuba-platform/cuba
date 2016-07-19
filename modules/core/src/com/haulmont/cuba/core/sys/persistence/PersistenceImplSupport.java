@@ -17,10 +17,12 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.app.FtsSender;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.global.FtsConfigHelper;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
@@ -31,6 +33,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +71,7 @@ public class PersistenceImplSupport {
             throw new RuntimeException("No transaction");
 
         UnitOfWork unitOfWork = entityManager.getDelegate().unwrap(UnitOfWork.class);
-        getInstanceContainerResourceHolder().registerInstanceForUnitOfWork(entity, unitOfWork);
+        getInstanceContainerResourceHolder(getStorageName(unitOfWork)).registerInstanceForUnitOfWork(entity, unitOfWork);
 
         if (entity instanceof BaseGenericIdEntity) {
             BaseEntityInternalAccess.setDetached((BaseGenericIdEntity) entity, false);
@@ -83,7 +86,7 @@ public class PersistenceImplSupport {
         if (!(session instanceof UnitOfWork))
             throw new RuntimeException("Session is not a UnitOfWork: " + session);
 
-        getInstanceContainerResourceHolder().registerInstanceForUnitOfWork(object, (UnitOfWork) session);
+        getInstanceContainerResourceHolder(getStorageName(session)).registerInstanceForUnitOfWork(object, (UnitOfWork) session);
     }
 
     public Collection<Object> getInstances(EntityManager entityManager) {
@@ -91,16 +94,21 @@ public class PersistenceImplSupport {
             throw new RuntimeException("No transaction");
 
         UnitOfWork unitOfWork = entityManager.getDelegate().unwrap(UnitOfWork.class);
-        return getInstanceContainerResourceHolder().getInstances(unitOfWork);
+        return getInstanceContainerResourceHolder(getStorageName(unitOfWork)).getInstances(unitOfWork);
     }
 
-    protected ContainerResourceHolder getInstanceContainerResourceHolder() {
+    public String getStorageName(Session session) {
+        String storeName = (String) session.getProperty(Stores.PROP_NAME);
+        return Strings.isNullOrEmpty(storeName) ? Stores.MAIN : storeName;
+    }
+
+    protected ContainerResourceHolder getInstanceContainerResourceHolder(String storeName) {
         ContainerResourceHolder holder =
                 (ContainerResourceHolder) TransactionSynchronizationManager.getResource(RESOURCE_HOLDER_KEY);
         if (holder != null)
             return holder;
 
-        holder = new ContainerResourceHolder();
+        holder = new ContainerResourceHolder(storeName);
         TransactionSynchronizationManager.bindResource(RESOURCE_HOLDER_KEY, holder);
         holder.setSynchronizedWithTransaction(true);
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
@@ -110,8 +118,10 @@ public class PersistenceImplSupport {
         return holder;
     }
 
-    public void fireEntityListeners() {
-        traverseEntities(getInstanceContainerResourceHolder(), new OnFlushEntityVisitor());
+    public void fireEntityListeners(EntityManager entityManager) {
+        UnitOfWork unitOfWork = entityManager.getDelegate().unwrap(UnitOfWork.class);
+        String storeName = getStorageName(unitOfWork);
+        traverseEntities(getInstanceContainerResourceHolder(storeName), new OnFlushEntityVisitor(storeName));
     }
 
     protected boolean isDeleted(BaseGenericIdEntity entity, AttributeChangeListener changeListener) {
@@ -159,6 +169,16 @@ public class PersistenceImplSupport {
     public static class ContainerResourceHolder extends ResourceHolderSupport {
 
         protected Map<UnitOfWork, Set<Object>> unitOfWorkMap = new HashMap<>();
+
+        protected String storeName;
+
+        public ContainerResourceHolder(String storeName) {
+            this.storeName = storeName;
+        }
+
+        public String getStorageName() {
+            return storeName;
+        }
 
         protected void registerInstanceForUnitOfWork(Object instance, UnitOfWork unitOfWork) {
             if (log.isTraceEnabled())
@@ -210,7 +230,7 @@ public class PersistenceImplSupport {
             if (log.isTraceEnabled())
                 log.trace("ContainerResourceSynchronization.beforeCommit: instances = " + container.getAllInstances());
 
-            traverseEntities(container, new OnCommitEntityVisitor());
+            traverseEntities(container, new OnCommitEntityVisitor(container.getStorageName()));
 
             Collection<Object> instances = container.getAllInstances();
             for (Object instance : instances) {
@@ -223,7 +243,7 @@ public class PersistenceImplSupport {
                             entity._persistence_setFetchGroup(new CubaEntityFetchGroup(fetchGroup));
                     }
 
-                    entityListenerManager.fireListener((Entity) instance, EntityListenerType.BEFORE_DETACH);
+                    entityListenerManager.fireListener((Entity) instance, EntityListenerType.BEFORE_DETACH, container.getStorageName());
                 }
             }
         }
@@ -252,10 +272,17 @@ public class PersistenceImplSupport {
     }
 
     protected class OnCommitEntityVisitor implements EntityVisitor {
+
+        private String storeName;
+
+        public OnCommitEntityVisitor(String storeName) {
+            this.storeName = storeName;
+        }
+
         @Override
         public boolean visit(BaseGenericIdEntity entity) {
             if (BaseEntityInternalAccess.isNew(entity)) {
-                entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_INSERT);
+                entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_INSERT, storeName);
                 entityLog.registerCreate(entity, true);
                 enqueueForFts(entity, FtsChangeType.INSERT);
                 ormCacheSupport.evictMasterEntity(entity, null);
@@ -268,7 +295,7 @@ public class PersistenceImplSupport {
                 return false;
 
             if (isDeleted(entity, changeListener)) {
-                entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_DELETE);
+                entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_DELETE, storeName);
                 entityLog.registerDelete(entity, true);
                 if ((entity instanceof SoftDelete))
                     processDeletePolicy(entity);
@@ -281,7 +308,7 @@ public class PersistenceImplSupport {
                 // add changes before listener
                 changes.addChanges(changeListener.getObjectChangeSet());
 
-                entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_UPDATE);
+                entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_UPDATE, storeName);
                 // add changes after listener
                 changes.addChanges(changeListener.getObjectChangeSet());
 
@@ -320,10 +347,17 @@ public class PersistenceImplSupport {
     }
 
     protected class OnFlushEntityVisitor implements EntityVisitor {
+
+        private String storeName;
+
+        public OnFlushEntityVisitor(String storeName) {
+            this.storeName = storeName;
+        }
+
         @Override
         public boolean visit(BaseGenericIdEntity entity) {
             if (BaseEntityInternalAccess.isNew(entity)) {
-                entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_INSERT);
+                entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_INSERT, storeName);
                 return true;
             }
 
@@ -333,11 +367,11 @@ public class PersistenceImplSupport {
                 return false;
 
             if (isDeleted(entity, changeListener)) {
-                entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_DELETE);
+                entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_DELETE, storeName);
                 return true;
 
             } else if (changeListener.hasChanges()) {
-                entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_UPDATE);
+                entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_UPDATE, storeName);
                 return true;
             }
 

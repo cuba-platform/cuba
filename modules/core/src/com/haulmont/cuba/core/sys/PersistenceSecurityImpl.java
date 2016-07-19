@@ -152,12 +152,15 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
     @Override
     @SuppressWarnings("unchecked")
     public void restoreFilteredData(BaseGenericIdEntity<?> resultEntity) {
-        EntityManager entityManager = persistence.getEntityManager();
+        MetaClass metaClass = metadata.getClassNN(resultEntity.getClass());
+
+        String storeName = metadataTools.getStoreName(metaClass);
+        EntityManager entityManager = persistence.getEntityManager(storeName);
 
         securityTokenManager.readSecurityToken(resultEntity);
 
         if (BaseEntityInternalAccess.getSecurityToken(resultEntity) == null) {
-            List<ConstraintData> existingConstraints = getConstraints(resultEntity.getMetaClass(),
+            List<ConstraintData> existingConstraints = getConstraints(metaClass,
                     constraint -> constraint.getCheckType().memory());
             if (CollectionUtils.isNotEmpty(existingConstraints)) {
                 throw new RowLevelSecurityException(format("Could not read security token from entity %s, " +
@@ -171,7 +174,6 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
             return;
         }
 
-        MetaClass metaClass = resultEntity.getMetaClass();
         for (Map.Entry<String, Collection<UUID>> entry : filtered.asMap().entrySet()) {
             MetaProperty property = metaClass.getPropertyNN(entry.getKey());
             Collection<UUID> filteredIds = entry.getValue();

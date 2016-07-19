@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.listener;
 
+import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.entity.Entity;
 
 /**
@@ -28,7 +29,8 @@ public interface BeforeDeleteEntityListener<T extends Entity> {
     /**
      * Executes before the object has been deleted or marked as deleted in DB.
      *
-     * @param entity deleted entity
+     * @param entity        deleted entity instance
+     * @param entityManager EntityManager that owns the entity instance
      */
-    void onBeforeDelete(T entity);
+    void onBeforeDelete(T entity, EntityManager entityManager);
 }

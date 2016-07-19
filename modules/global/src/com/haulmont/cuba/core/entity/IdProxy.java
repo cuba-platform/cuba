@@ -26,15 +26,18 @@ import java.util.UUID;
 
 /**
  * Class that is used as an entity ID when an actual identifier value is not available until the object is persisted
- * to the database, which is the case for {@link BaseIdentityIdEntity}.
+ * to the database.
  * <p>
  * If you need to create a proxy for an existing ID, use {@link #of(Long)} method.
+ *
+ * @see BaseDbGeneratedIdEntity
+ * @see BaseIdentityIdEntity
  */
-public class IdProxy implements Serializable {
+public class IdProxy extends Number implements Serializable {
 
     private static final long serialVersionUID = 1591247506604691467L;
 
-    private BaseIdentityIdEntity entity;
+    private BaseDbGeneratedIdEntity entity;
 
     private UUID uuid;
 
@@ -42,7 +45,7 @@ public class IdProxy implements Serializable {
 
     private Long value;
 
-    IdProxy(BaseIdentityIdEntity entity) {
+    IdProxy(BaseDbGeneratedIdEntity entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
         this.entity = entity;
         if (entity instanceof HasUuid) {
@@ -73,7 +76,7 @@ public class IdProxy implements Serializable {
      */
     @Nullable
     public Long get() {
-        return value != null ? value : entity.id;
+        return value != null ? value : entity.getDbGeneratedId();
     }
 
     /**
@@ -84,9 +87,9 @@ public class IdProxy implements Serializable {
         if (value != null)
             return value;
 
-        if (entity.id == null)
+        if (entity.getDbGeneratedId() == null)
             throw new IllegalStateException("ID is not assigned for entity " + entity);
-        return entity.id;
+        return entity.getDbGeneratedId();
     }
 
     /**
@@ -104,6 +107,30 @@ public class IdProxy implements Serializable {
     }
 
     @Override
+    public int intValue() {
+        Long v = get();
+        return v == null ? 0 : v.intValue();
+    }
+
+    @Override
+    public long longValue() {
+        Long v = get();
+        return v == null ? 0 : v.longValue();
+    }
+
+    @Override
+    public float floatValue() {
+        Long v = get();
+        return v == null ? 0 : v.floatValue();
+    }
+
+    @Override
+    public double doubleValue() {
+        Long v = get();
+        return v == null ? 0 : v.doubleValue();
+    }
+
+    @Override
     public boolean equals(Object other) {
         if (this == other)
             return true;
@@ -116,10 +143,10 @@ public class IdProxy implements Serializable {
         if (value != null)
             return value.equals(that.value);
 
-        if (entity.id == null || that.entity.id == null)
+        if (entity.getDbGeneratedId() == null || that.entity.getDbGeneratedId() == null)
             return Objects.equals(uuid, that.uuid);
 
-        return Objects.equals(entity.id, that.entity.id);
+        return Objects.equals(entity.getDbGeneratedId(), that.entity.getDbGeneratedId());
     }
 
     @Override
@@ -132,8 +159,8 @@ public class IdProxy implements Serializable {
         if (value != null)
             return value.toString();
 
-        if (entity.id != null)
-            return entity.id.toString();
+        if (entity.getDbGeneratedId() != null)
+            return entity.getDbGeneratedId().toString();
         else
             return "?(" + uuid + ")";
     }

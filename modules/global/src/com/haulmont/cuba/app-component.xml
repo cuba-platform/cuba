@@ -19,7 +19,7 @@
     <module name="global" blocks="*">
         <artifact name="cuba-global" appJar="true"/>
 
-        <property name="cuba.persistenceConfig" value="cuba-persistence.xml"/>
+        <property name="cuba.persistenceConfig" value="base-persistence.xml cuba-persistence.xml"/>
         <property name="cuba.metadataConfig" value="cuba-metadata.xml"/>
         <property name="cuba.viewsConfig" value="cuba-views.xml"/>
         <property name="cuba.creditsConfig" value="cuba-credits.xml"/>
