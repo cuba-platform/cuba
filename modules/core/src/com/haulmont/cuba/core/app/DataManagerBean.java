@@ -132,7 +132,7 @@ public class DataManagerBean implements DataManager {
                 continue;
             CommitContext cc = storeToContextMap.get(storeName);
             if (cc == null) {
-                cc = new CommitContext();
+                cc = createCommitContext(context);
                 storeToContextMap.put(storeName, cc);
             }
             cc.getCommitInstances().add(entity);
@@ -147,7 +147,7 @@ public class DataManagerBean implements DataManager {
                 continue;
             CommitContext cc = storeToContextMap.get(storeName);
             if (cc == null) {
-                cc = new CommitContext();
+                cc = createCommitContext(context);
                 storeToContextMap.put(storeName, cc);
             }
             cc.getRemoveInstances().add(entity);
@@ -210,6 +210,16 @@ public class DataManagerBean implements DataManager {
     protected boolean entityHasDynamicAttributes(Entity entity) {
         return entity instanceof BaseGenericIdEntity
                 && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null;
+    }
+
+    protected CommitContext createCommitContext(CommitContext context) {
+        if (context instanceof NotDetachedCommitContext) {
+            NotDetachedCommitContext newCtx = new NotDetachedCommitContext();
+            newCtx.setNewInstanceIds(((NotDetachedCommitContext) context).getNewInstanceIds());
+            return newCtx;
+        } else {
+            return new CommitContext();
+        }
     }
 
     @Override
