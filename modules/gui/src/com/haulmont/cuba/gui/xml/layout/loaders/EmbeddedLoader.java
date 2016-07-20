@@ -45,23 +45,26 @@ public class EmbeddedLoader extends AbstractComponentLoader<Embedded> {
         String typeAttribute = element.attributeValue("type");
         if (StringUtils.isNotEmpty(typeAttribute)) {
             Embedded.Type type = Embedded.Type.valueOf(typeAttribute);
-            if (type != null) {
-                resultComponent.setType(type);
-            }
+            resultComponent.setType(type);
         }
 
         String srcAttr = element.attributeValue("src");
         if (srcAttr != null) {
             if (srcAttr.startsWith(URL_PREFIX)) {
+                String src = srcAttr.substring(URL_PREFIX.length());
+
+                URL targetUrl;
                 try {
-                    String src = srcAttr.substring(URL_PREFIX.length());
-                    resultComponent.setType(Embedded.Type.BROWSER);
-                    resultComponent.setSource(new URL(src));
+                    targetUrl = new URL(src);
                 } catch (MalformedURLException e) {
-                    throw new GuiDevelopmentException("Unable to instantiate component", context.getFullFrameId(),
+                    throw new GuiDevelopmentException("Incorrect URL in Embedded src attribute", context.getFullFrameId(),
                             "src", srcAttr);
                 }
-            } if (srcAttr.startsWith(THEME_PREFIX)) {
+
+                resultComponent.setType(Embedded.Type.BROWSER);
+                resultComponent.setSource(targetUrl);
+
+            } else if (srcAttr.startsWith(THEME_PREFIX)) {
                 resultComponent.setSource(srcAttr);
             } else if (srcAttr.startsWith(FILE_PREFIX)) {
                 String src = srcAttr.substring(FILE_PREFIX.length());
@@ -74,6 +77,7 @@ public class EmbeddedLoader extends AbstractComponentLoader<Embedded> {
         }
 
         loadVisible(resultComponent, element);
+        loadEnable(resultComponent, element);
         loadStyleName(resultComponent, element);
 
         loadHeight(resultComponent, element);

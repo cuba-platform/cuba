@@ -89,6 +89,8 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container {
     public CubaTabSheet() {
         registerRpc(rpc);
 
+        setShim(false);
+
         setCloseHandler(new CloseHandler() {
             @Override
             public void onTabClose(com.vaadin.ui.TabSheet tabsheet, Component tabContent) {
