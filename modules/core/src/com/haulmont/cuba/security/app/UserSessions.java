@@ -114,6 +114,7 @@ public final class UserSessions implements UserSessionsAPI {
                     public void receive(UserSessionInfo message) {
                         UUID id = message.session.getId();
                         if (message.lastUsedTs == 0) {
+                            log.debug("Removing session due to cluster message: " + message);
                             cache.remove(id);
                         } else {
                             UserSessionInfo usi = cache.get(id);
@@ -177,10 +178,12 @@ public final class UserSessions implements UserSessionsAPI {
     @Override
     public void remove(UserSession session) {
         UserSessionInfo usi = cache.remove(session.getId());
-
-        if (!session.isSystem() && usi != null) {
-            usi.lastUsedTs = 0;
-            clusterManager.send(usi);
+        if (usi != null) {
+            log.debug("Removed session: " + usi);
+            if (!session.isSystem()) {
+                usi.lastUsedTs = 0;
+                clusterManager.send(usi);
+            }
         }
     }
 
@@ -263,10 +266,12 @@ public final class UserSessions implements UserSessionsAPI {
     }
 
     @Override
-    public void killSession(UUID id){
+    public void killSession(UUID id) {
         UserSessionInfo usi = cache.remove(id);
 
         if (usi != null) {
+            log.debug("Killed session: " + usi);
+
             usi.lastUsedTs = 0;
             clusterManager.send(usi);
         }
@@ -282,6 +287,8 @@ public final class UserSessions implements UserSessionsAPI {
         for (Iterator<UserSessionInfo> it = cache.values().iterator(); it.hasNext();) {
             UserSessionInfo usi = it.next();
             if (now > (usi.lastUsedTs + expirationTimeout * 1000)) {
+                log.debug("Removing session due to timeout: " + usi);
+
                 it.remove();
 
                 usi.lastUsedTs = 0;
