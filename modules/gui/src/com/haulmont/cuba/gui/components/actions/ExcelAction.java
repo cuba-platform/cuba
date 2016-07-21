@@ -80,33 +80,37 @@ public class ExcelAction extends BaseAction {
     @Override
     public void actionPerform(Component component) {
         if (table.getSelected().size() > 0) {
-            String title = messages.getMainMessage("actions.exportSelectedTitle");
-            String caption = messages.getMainMessage("actions.exportSelectedCaption");
-            Action[] actions = new Action[] {
-                    new AbstractAction("actions.export.SELECTED_ROWS", Status.PRIMARY) {
-                        {
-                            setCaption(messages.getMainMessage(getId()));
-                        }
+            if (table.getSelected().size() > 1) {
+                String title = messages.getMainMessage("actions.exportSelectedTitle");
+                String caption = messages.getMainMessage("actions.exportSelectedCaption");
+                Action[] actions = new Action[]{
+                        new AbstractAction("actions.export.SELECTED_ROWS", Status.PRIMARY) {
+                            {
+                                setCaption(messages.getMainMessage(getId()));
+                            }
 
-                        @Override
-                        public void actionPerform(Component component) {
-                            export(ExportMode.SELECTED_ROWS);
-                        }
-                    },
-                    new AbstractAction("actions.export.ALL_ROWS") {
-                        {
-                            setCaption(messages.getMainMessage(getId()));
-                        }
+                            @Override
+                            public void actionPerform(Component component) {
+                                export(ExportMode.SELECTED_ROWS);
+                            }
+                        },
+                        new AbstractAction("actions.export.ALL_ROWS") {
+                            {
+                                setCaption(messages.getMainMessage(getId()));
+                            }
 
-                        @Override
-                        public void actionPerform(Component component) {
-                            export(ExportMode.ALL_ROWS);
-                        }
-                    },
-                    new DialogAction(Type.CANCEL)
-            };
-            Frame frame = table.getFrame();
-            frame.showOptionDialog(title, caption, Frame.MessageType.CONFIRMATION, actions);
+                            @Override
+                            public void actionPerform(Component component) {
+                                export(ExportMode.ALL_ROWS);
+                            }
+                        },
+                        new DialogAction(Type.CANCEL)
+                };
+                Frame frame = table.getFrame();
+                frame.showOptionDialog(title, caption, Frame.MessageType.CONFIRMATION, actions);
+            } else {
+                export(ExportMode.SELECTED_ROWS);
+            }
         } else {
             export(ExportMode.ALL_ROWS);
         }
