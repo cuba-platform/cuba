@@ -24,9 +24,11 @@ import com.vaadin.data.util.converter.DefaultConverterFactory;
 import com.vaadin.server.VaadinSession;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
+import org.junit.Ignore;
 
 import java.util.Locale;
 
+@Ignore
 public class WebLabelTest extends LabelTest {
 
     @Mocked
