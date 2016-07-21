@@ -24,8 +24,8 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.QueryUtils;
-import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.core.global.filter.Op;
+import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
@@ -139,7 +139,13 @@ public class PropertyCondition extends AbstractCondition {
             if (operator.isUnary()) {
                 unary = true;
                 inExpr = false;
-                setParam(new Param(paramName, Boolean.class, null, null, null, false, required));
+                Param param = Param.Builder.getInstance()
+                        .setName(paramName)
+                        .setJavaClass(Boolean.class)
+                        .setInExpr(false)
+                        .setRequired(required)
+                        .build();
+                setParam(param);
             } else {
                 unary = false;
                 inExpr = operator.equals(Op.IN) || operator.equals(Op.NOT_IN);

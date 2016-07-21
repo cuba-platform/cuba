@@ -146,7 +146,12 @@ public class DynamicAttributesCondition extends AbstractCondition {
             if (operator.isUnary()) {
                 unary = true;
                 inExpr = false;
-                setParam(new Param(paramName, Boolean.class, null, null, null, false, required));
+                Param param = Param.Builder.getInstance()
+                        .setName(paramName)
+                        .setJavaClass(Boolean.class)
+                        .setInExpr(false)
+                        .setRequired(required).build();
+                setParam(param);
             } else {
                 unary = false;
                 inExpr = operator.equals(Op.IN) || operator.equals(Op.NOT_IN);

@@ -33,25 +33,25 @@ import java.util.Map;
 @Component(ConditionParamBuilder.NAME)
 public class ConditionParamBuilderImpl implements ConditionParamBuilder{
 
-    protected Map<Class, Builder> builders = new HashMap<>();
+    protected Map<Class, ParameterInstantiationStrategy> strategies = new HashMap<>();
 
-    protected Builder defaultBuilder;
+    protected ParameterInstantiationStrategy defaultParameterInstantiationStrategy;
 
     @PostConstruct
-    public void initBuilders() {
-        builders.put(PropertyCondition.class, new PropertyParamBuilder());
-        builders.put(DynamicAttributesCondition.class, new DynamicPropertyParamBuilder());
-        defaultBuilder = new DefaultParamBuilder();
+    public void initCreatingStrategies() {
+        strategies.put(PropertyCondition.class, new PropertyParameterInstantiationStrategy());
+        strategies.put(DynamicAttributesCondition.class, new DynamicPropertyParameterInstantiationStrategy());
+        defaultParameterInstantiationStrategy = new DefaultParameterInstantiationStrategy();
     }
 
     @Override
     public Param createParam(AbstractCondition condition) {
-        Builder builder = builders.get(condition.getClass());
-        if (builder == null) {
-            builder = defaultBuilder;
+        ParameterInstantiationStrategy parameterInstantiationStrategy = strategies.get(condition.getClass());
+        if (parameterInstantiationStrategy == null) {
+            parameterInstantiationStrategy = defaultParameterInstantiationStrategy;
         }
 
-        return builder.createParam(condition);
+        return parameterInstantiationStrategy.createParam(condition);
     }
 
     @Override
@@ -60,49 +60,71 @@ public class ConditionParamBuilderImpl implements ConditionParamBuilder{
                 condition.getName().replace('.', '_').replace(" ", "_") + RandomStringUtils.randomNumeric(5);
     }
 
-    protected interface Builder {
+    protected interface ParameterInstantiationStrategy {
         Param createParam(AbstractCondition condition);
     }
 
-    protected class DefaultParamBuilder implements Builder {
+    protected class DefaultParameterInstantiationStrategy implements ParameterInstantiationStrategy {
 
-        @Override
         public Param createParam(AbstractCondition condition) {
-            if (condition.getUnary())
-                return new Param(condition.getParamName(), null, null, null, null, false, condition.getRequired());
+            Param.Builder builder = getParamBuilder(condition);
+            return builder.build();
+        }
 
-            return new Param(condition.getParamName(), condition.getParamClass() == null ? condition.getJavaClass() : condition.getParamClass(),
-                    condition.getEntityParamWhere(), condition.getEntityParamView(), condition.getDatasource(), condition.getInExpr(), condition.getRequired());
+        protected Param.Builder getParamBuilder(AbstractCondition condition) {
+            Param.Builder builder = Param.Builder.getInstance()
+                    .setName(condition.getParamName())
+                    .setRequired(condition.getRequired());
+
+            if (!condition.getUnary()) {
+                builder.setJavaClass(condition.getParamClass() == null ?
+                        condition.getJavaClass() : condition.getParamClass());
+                builder.setEntityWhere(condition.getEntityParamWhere());
+                builder.setEntityView(condition.getEntityParamView());
+                builder.setDataSource(condition.getDatasource());
+                builder.setInExpr(condition.getInExpr());
+            }
+
+            return builder;
         }
     }
 
-    protected class PropertyParamBuilder implements Builder {
-
+    protected class PropertyParameterInstantiationStrategy extends DefaultParameterInstantiationStrategy {
         @Override
-        public Param createParam(AbstractCondition condition) {
-            if (condition.getUnary())
-                return new Param(condition.getParamName(), Boolean.class, null, null, null, false, condition.getRequired());
-
+        public Param.Builder getParamBuilder(AbstractCondition condition) {
+            Param.Builder builder = super.getParamBuilder(condition);
             MetaProperty metaProperty = condition.getDatasource().getMetaClass().getProperty(condition.getName());
-            return new Param(condition.getParamName(), condition.getJavaClass(), condition.getEntityParamWhere(), condition.getEntityParamView(),
-                    condition.getDatasource(), metaProperty, condition.getInExpr(), condition.getRequired());
+            if (!condition.getUnary())
+                builder.setJavaClass(condition.getJavaClass())
+                        .setProperty(metaProperty);
+            return builder;
         }
     }
 
-    protected class DynamicPropertyParamBuilder extends DefaultParamBuilder {
+    protected class DynamicPropertyParameterInstantiationStrategy extends DefaultParameterInstantiationStrategy {
         @Override
-        public Param createParam(AbstractCondition condition) {
+        public Param.Builder getParamBuilder(AbstractCondition condition) {
+            Param.Builder builder;
             DynamicAttributesCondition _condition = (DynamicAttributesCondition) condition;
             if (_condition.getCategoryAttributeId() != null) {
                 Class paramJavaClass = _condition.getUnary() ? Boolean.class : _condition.getJavaClass();
 
-                MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(_condition.getDatasource().getMetaClass(), _condition.getCategoryAttributeId());
-                return new Param(_condition.getParamName(), paramJavaClass, null, null, _condition.getDatasource(),
-                        metaPropertyPath != null ? metaPropertyPath.getMetaProperty() : null,
-                        _condition.getInExpr(), _condition.getRequired(), _condition.getCategoryAttributeId());
-            } else {
-                return super.createParam(condition);
-            }
+                MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(
+                        _condition.getDatasource().getMetaClass(), _condition.getCategoryAttributeId());
+
+                builder = Param.Builder.getInstance()
+                        .setJavaClass(paramJavaClass)
+                        .setEntityWhere(null)
+                        .setEntityView(null)
+                        .setDataSource(_condition.getDatasource())
+                        .setProperty(metaPropertyPath != null ? metaPropertyPath.getMetaProperty() : null)
+                        .setInExpr(_condition.getInExpr())
+                        .setCategoryAttrId(_condition.getCategoryAttributeId())
+                        .setRequired(condition.getRequired());
+            } else
+                builder = super.getParamBuilder(condition);
+
+            return builder;
         }
     }
 }

@@ -369,9 +369,15 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
         String entityParamView = entityParamViewField.getValue();
         condition.setEntityParamView(entityParamView);
 
-        Param param = new Param(
-                paramName, javaClass, entityParamWhere, entityParamView, condition.getDatasource(),
-                condition.getInExpr(), condition.getRequired());
+        Param param = Param.Builder.getInstance()
+                .setName(paramName)
+                .setJavaClass(javaClass)
+                .setEntityWhere(entityParamWhere)
+                .setEntityView(entityParamView)
+                .setDataSource(condition.getDatasource())
+                .setInExpr(condition.getInExpr())
+                .setRequired(condition.getRequired())
+                .build();
 
         param.setDefaultValue(condition.getParam().getDefaultValue());
 
@@ -510,7 +516,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
             int cursorPos = hintRequest.getPosition();
             String lastWord = getLastWord(input, cursorPos);
             return (":".equals(lastWord)) ?
-                    hintParameterNames(lastWord):
+                    hintParameterNames(lastWord) :
                     super.requestHint(hintRequest);
         }
 

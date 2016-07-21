@@ -175,8 +175,15 @@ public class RelatedAction extends AbstractAction {
         @SuppressWarnings("ConstantConditions")
         Class idType = metaClass.getProperty(primaryKey).getJavaType();
 
-        Param param = new Param(paramBuilder.createParamName(condition), idType, "", "", component.getDatasource(),
-                metaClass.getProperty(primaryKey), true, true);
+        Param param = Param.Builder.getInstance().setName(paramBuilder.createParamName(condition))
+                .setJavaClass(idType)
+                .setEntityWhere("")
+                .setEntityView("")
+                .setDataSource(component.getDatasource())
+                .setProperty(metaClass.getProperty(primaryKey))
+                .setInExpr(true)
+                .setRequired(true)
+                .build();
         param.setValue(ids);
 
         condition.setParam(param);

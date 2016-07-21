@@ -29,11 +29,11 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
-import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.filter.OpManager;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
@@ -185,9 +185,16 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         condition.setOperator(operationLookup.<Op>getValue());
         Class paramJavaClass = op.isUnary() ? Boolean.class : javaClass;
         condition.setJavaClass(javaClass);
-        Param param = new Param(paramName, paramJavaClass, null, null, condition.getDatasource(),
-                DynamicAttributesUtils.getMetaPropertyPath(null, attribute).getMetaProperty(),
-                condition.getInExpr(), condition.getRequired(), attribute.getId());
+
+        Param param = Param.Builder.getInstance()
+                .setName(paramName)
+                .setJavaClass(paramJavaClass)
+                .setDataSource(condition.getDatasource())
+                .setProperty(DynamicAttributesUtils.getMetaPropertyPath(null, attribute).getMetaProperty())
+                .setInExpr(condition.getInExpr())
+                .setRequired(condition.getRequired())
+                .setCategoryAttrId(attribute.getId())
+                .build();
 
         Object defaultValue = condition.getParam().getDefaultValue();
         param.setDefaultValue(defaultValue);
