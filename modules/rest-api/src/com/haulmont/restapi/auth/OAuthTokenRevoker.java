@@ -30,7 +30,6 @@ import javax.inject.Inject;
 
 /**
  */
-@Component
 public class OAuthTokenRevoker {
     private static final Logger log = LoggerFactory.getLogger(OAuthTokenRevoker.class);
 

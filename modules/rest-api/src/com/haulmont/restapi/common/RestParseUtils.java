@@ -32,8 +32,7 @@ import java.util.UUID;
 
 /**
  */
-@Component
-public class ParseUtils {
+public class RestParseUtils {
 
     @Inject
     protected EntitySerializationAPI entitySerializationAPI;

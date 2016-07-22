@@ -20,6 +20,12 @@ package com.haulmont.cuba.portal.sys;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.sys.AbstractWebAppContextLoader;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.CubaXmlWebApplicationContext;
+import com.haulmont.cuba.core.sys.ServletContextHolder;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
+
+import javax.servlet.ServletContext;
 
 /**
  * {@link AppContext} loader of the web portal client application.
@@ -37,5 +43,26 @@ public class PortalAppContextLoader extends AbstractWebAppContextLoader {
         super.beforeInitAppContext();
 
         AppContext.setProperty("cuba.clientType", ClientType.PORTAL.toString());
+    }
+
+    @Override
+    protected ApplicationContext createApplicationContext(String[] locations) {
+        CubaXmlWebApplicationContext webContext = new CubaXmlWebApplicationContext();
+        String[] classPathLocations = new String[locations.length];
+        for (int i = 0; i < locations.length; i++) {
+            classPathLocations[i] = "classpath:" + locations[i];
+        }
+        webContext.setConfigLocations(classPathLocations);
+        webContext.setServletContext(ServletContextHolder.getServletContext());
+        webContext.refresh();
+
+        ServletContext servletContext = ServletContextHolder.getServletContext();
+        if (servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE) != null) {
+            throw new IllegalStateException(
+                    "Cannot initialize context because there is already a root application context present - " +
+                            "check whether you have multiple ContextLoader* definitions in your web.xml!");
+        }
+        servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, webContext);
+        return webContext;
     }
 }

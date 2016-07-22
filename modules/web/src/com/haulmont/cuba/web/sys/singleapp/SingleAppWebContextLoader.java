@@ -100,7 +100,7 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
     }
 
     @Override
-    protected ClassPathXmlApplicationContext createClassPathXmlApplicationContext(String[] locations) {
+    protected ClassPathXmlApplicationContext createApplicationContext(String[] locations) {
         return new CubaClassPathXmlApplicationContext(locations) {
             /**
              * Here we create resource resolver which scans only web jars (and avoid putting core beans to web context)

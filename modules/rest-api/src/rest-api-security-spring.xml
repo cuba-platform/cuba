@@ -31,10 +31,17 @@
        http://www.springframework.org/schema/context/spring-context-4.2.xsd">
 
     <context:annotation-config/>
-    <context:component-scan base-package="com.haulmont.restapi"/>
+
+    <bean class="com.haulmont.cuba.core.sys.CubaPropertyPlaceholderConfigurer"/>
+
+    <!-- Module beans -->
+    <bean id="cuba_OAuthTokenRevoker" class="com.haulmont.restapi.auth.OAuthTokenRevoker"/>
+    <bean id="cuba_RestQueriesManager" class="com.haulmont.restapi.query.RestQueriesManager"/>
+    <bean id="cuba_RestServiceInvoker" class="com.haulmont.restapi.service.RestServiceInvoker"/>
+    <bean id="cuba_RestParseUtils" class="com.haulmont.restapi.common.RestParseUtils"/>
 
     <!-- According to the spec the token endpoint should be secured by the basic authentication -->
-    <http pattern="/dispatch/api/oauth/**"
+    <http pattern="${cuba.rest.url.oauthPattern}"
           create-session="stateless"
           authentication-manager-ref="clientAuthenticationManager"
           xmlns="http://www.springframework.org/schema/security">
@@ -42,6 +49,8 @@
         <http-basic entry-point-ref="clientAuthenticationEntryPoint"/>
         <csrf disabled="true"/>
     </http>
+
+    <bean id="clientAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint"/>
 
     <!-- Authentication manager that is used by token endpoint. Checks client credentials in http header -->
     <security:authentication-manager id="clientAuthenticationManager">
@@ -56,25 +65,26 @@
     accessing the auth token -->
     <oauth2:client-details-service id="clientDetailsService">
         <oauth2:client
-                client-id="client"
-                secret="secret"
+                client-id="${cuba.rest.client.id}"
+                secret="${cuba.rest.client.secret}"
+                access-token-validity="${cuba.rest.client.tokenExpirationTimeSec}"
                 authorized-grant-types="password"
                 scope="rest-api"/>
     </oauth2:client-details-service>
 
     <!-- Specifies token endpoint.-->
     <oauth2:authorization-server
-            token-endpoint-url="/api/oauth/token"
+            token-endpoint-url="${cuba.rest.url.oauthToken}"
             client-details-service-ref="clientDetailsService"
             token-services-ref="tokenServices" >
         <oauth2:password authentication-manager-ref="userAuthenticationManager"/>
     </oauth2:authorization-server>
 
-    <bean id="userAuthenticationProvider" class="com.haulmont.restapi.auth.CubaUserAuthenticationProvider"/>
-
     <security:authentication-manager alias="userAuthenticationManager">
         <security:authentication-provider ref="userAuthenticationProvider"/>
     </security:authentication-manager>
+
+    <bean id="userAuthenticationProvider" class="com.haulmont.restapi.auth.CubaUserAuthenticationProvider"/>
 
     <!--todo MG try to remove clientDetailsService-->
     <bean id="tokenServices" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
@@ -86,27 +96,24 @@
 
     <oauth2:resource-server id="resourceFilter" token-services-ref="tokenServices" />
 
-    <http pattern="/dispatch/api/**"
+    <!--todo MG remove hasRole check-->
+    <http pattern="${cuba.rest.url.apiPattern}"
           create-session="stateless"
           entry-point-ref="oauthAuthenticationEntryPoint"
           xmlns="http://www.springframework.org/schema/security">
-        <intercept-url pattern="/dispatch/api/entities/**" access="hasRole('USER')"/>
-        <intercept-url pattern="/dispatch/api/queries/**" access="hasRole('USER')"/>
-        <intercept-url pattern="/dispatch/api/services/**" access="hasRole('USER')"/>
+        <intercept-url pattern="/**" access="hasRole('USER')"/>
         <anonymous enabled="false"/>
         <csrf disabled="true"/>
         <custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER"/>
     </http>
 
-    <bean id="clientAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint"/>
-
-    <bean id="clientCredentialsTokenEndpointFilter"
-          class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
-        <property name="authenticationManager" ref="clientAuthenticationManager"/>
-    </bean>
+    <!--<bean id="clientCredentialsTokenEndpointFilter"-->
+          <!--class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">-->
+        <!--<property name="authenticationManager" ref="clientAuthenticationManager"/>-->
+    <!--</bean>-->
 
     <bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
-        <property name="realmName" value="test" />
+        <property name="realmName" value="rest-api" />
     </bean>
 
 </beans>

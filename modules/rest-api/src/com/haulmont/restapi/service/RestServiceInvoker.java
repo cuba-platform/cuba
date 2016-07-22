@@ -25,10 +25,9 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.restapi.common.ParseUtils;
+import com.haulmont.restapi.common.RestParseUtils;
 import com.haulmont.restapi.exception.RestAPIException;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 import javax.inject.Inject;
@@ -42,11 +41,10 @@ import java.util.Map;
 /**
  * Class is used for invoking middleware services from REST API service controller
  */
-@Component
 public class RestServiceInvoker {
 
     @Inject
-    protected ParseUtils parseUtils;
+    protected RestParseUtils restParseUtils;
 
     @Inject
     protected EntitySerializationAPI entitySerializationAPI;
@@ -86,7 +84,7 @@ public class RestServiceInvoker {
         for (int i = 0; i < types.length; i++) {
             Class<?> aClass = types[i];
             try {
-                paramValues.add(parseUtils.toObject(aClass, paramValuesStr.get(i)));
+                paramValues.add(restParseUtils.toObject(aClass, paramValuesStr.get(i)));
             } catch (ParseException e) {
                 throw new RestAPIException("Invalid parameter value",
                         e.getMessage(),

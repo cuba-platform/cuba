@@ -20,6 +20,7 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.sys.persistence.EclipseLinkCustomizer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.ResourceUtils;
 
@@ -52,7 +53,7 @@ public abstract class AbstractAppContextLoader {
         String[] locations = tokenizer.getTokenArray();
         replaceLocationsFromConf(locations);
 
-        ClassPathXmlApplicationContext appContext = createClassPathXmlApplicationContext(locations);
+        ApplicationContext appContext = createApplicationContext(locations);
         AppContext.Internals.setApplicationContext(appContext);
     }
 
@@ -74,7 +75,7 @@ public abstract class AbstractAppContextLoader {
         }
     }
 
-    protected ClassPathXmlApplicationContext createClassPathXmlApplicationContext(String[] locations) {
+    protected ApplicationContext createApplicationContext(String[] locations) {
         return new CubaClassPathXmlApplicationContext(locations);
     }
 

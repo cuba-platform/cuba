@@ -86,7 +86,7 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
     }
 
     @Override
-    protected ClassPathXmlApplicationContext createClassPathXmlApplicationContext(String[] locations) {
+    protected ClassPathXmlApplicationContext createApplicationContext(String[] locations) {
         return new CubaCoreApplicationContext(locations);
     }
 

@@ -741,6 +741,8 @@ configure(restApiModule) {
         compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
         compile(group: 'org.springframework', name: 'spring-context-support', version: springVersion)
         compile(group: 'org.json', name: 'json', version: '20140107')
+        compile(group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: '2.8.0')
+
         compile(groovyArtifact)
 
         compile(group: 'org.springframework.security', name: 'spring-security-core', version: springSecurityVersion)
