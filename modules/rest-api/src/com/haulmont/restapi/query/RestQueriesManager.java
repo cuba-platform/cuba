@@ -16,8 +16,10 @@
 
 package com.haulmont.restapi.query;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -39,8 +41,12 @@ import java.util.stream.Collectors;
 
 
 /**
- * Class is used for loading and storing of predefined JPQL queries that are used by the REST API.
- * Queries are loaded from configuration files defined by the {@code cuba.rest.queriesConfig} application property.
+ * Class is used for loading and storing of predefined JPQL queries that are used by the REST API. Queries are loaded
+ * from configuration files defined by the {@code cuba.rest.queriesConfig} application property.
+ * <p>
+ * Queries with the name defined by the {@link #ALL_ENTITIES_QUERY_NAME} field should not be present in the queries
+ * config. If the query with this name is requested, the {@link QueryInfo} for the query that returns all entities will
+ * be returned.
  */
 public class RestQueriesManager {
 
@@ -57,10 +63,13 @@ public class RestQueriesManager {
 
     protected List<QueryInfo> queries = new ArrayList<>();
 
+    protected String ALL_ENTITIES_QUERY_NAME = "all";
+
     /**
      * Returns a query description with the given name for the given entity.
+     *
      * @param entityName entity name
-     * @param queryName query name
+     * @param queryName  query name
      * @return query description
      */
     @Nullable
@@ -68,6 +77,9 @@ public class RestQueriesManager {
         lock.readLock().lock();
         try {
             checkInitialized();
+            if (ALL_ENTITIES_QUERY_NAME.equalsIgnoreCase(queryName)) {
+                return createAllEntitiesQuery(entityName);
+            }
             for (QueryInfo query : queries) {
                 if (queryName.equals(query.getName()) && entityName.equals(query.getEntityName())) {
                     return query;
@@ -141,9 +153,30 @@ public class RestQueriesManager {
     protected void loadConfig(Element rootElem) {
         for (Element queryElem : Dom4j.elements(rootElem, "query")) {
             String queryName = queryElem.attributeValue("name");
+            if (ALL_ENTITIES_QUERY_NAME.equalsIgnoreCase(queryName)) {
+                log.error("{} is a predefined query name. It can not be used.", queryName);
+                continue;
+            }
             String entityName = queryElem.attributeValue("entity");
             String viewName = queryElem.attributeValue("view");
             String jpql = queryElem.elementText("jpql");
+
+            if (Strings.isNullOrEmpty(queryName)) {
+                log.error("queryName attribute is not defined");
+                continue;
+            }
+            if (Strings.isNullOrEmpty(entityName)) {
+                log.error("entityName attribute is not defined");
+                continue;
+            }
+            if (Strings.isNullOrEmpty(viewName)) {
+                log.error("viewName attribute is not defined");
+                continue;
+            }
+            if (Strings.isNullOrEmpty(jpql)) {
+                log.error("Query jpql is not defined");
+                continue;
+            }
 
             QueryInfo queryInfo = new QueryInfo();
             queryInfo.setName(queryName);
@@ -163,6 +196,14 @@ public class RestQueriesManager {
         }
     }
 
+    protected QueryInfo createAllEntitiesQuery(String entityName) {
+        QueryInfo queryInfo = new QueryInfo();
+        queryInfo.setName(ALL_ENTITIES_QUERY_NAME);
+        queryInfo.setEntityName(entityName);
+        queryInfo.setViewName(View.MINIMAL);
+        queryInfo.setJpql(String.format("select e from %s e", entityName));
+        return queryInfo;
+    }
 
     /**
      * Class stores an information about the predefined JPQL query

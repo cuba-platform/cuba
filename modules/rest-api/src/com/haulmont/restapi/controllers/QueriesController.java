@@ -64,7 +64,30 @@ public class QueriesController {
     public String executeQuery(@PathVariable String entityName,
                                @PathVariable String queryName,
                                @RequestParam Map<String, String> params) throws ClassNotFoundException, ParseException {
+        LoadContext<Entity> ctx = createQueryLoadContext(entityName, queryName, params);
+        List<Entity> entities = dataManager.loadList(ctx);
+        return entitySerializationAPI.toJson(entities);
+    }
 
+    @RequestMapping(value = "/{entityName}/{queryName}/count", method = RequestMethod.GET)
+    public String getCount(@PathVariable String entityName,
+                               @PathVariable String queryName,
+                               @RequestParam Map<String, String> params) throws ClassNotFoundException, ParseException {
+        LoadContext<Entity> ctx = createQueryLoadContext(entityName, queryName, params);
+        long count = dataManager.getCount(ctx);
+        return String.valueOf(count);
+    }
+
+    @RequestMapping(value = "/{entityName}", method = RequestMethod.GET)
+    public List<RestQueriesManager.QueryInfo> loadQueriesList(@PathVariable String entityName) {
+        MetaClass metaClass = getMetaClass(entityName);
+        checkCanReadEntity(metaClass);
+        return restQueriesManager.getQueries(entityName);
+    }
+
+    protected LoadContext<Entity> createQueryLoadContext(String entityName,
+                                                         String queryName,
+                                                         Map<String, String> params) throws ClassNotFoundException, ParseException {
         MetaClass metaClass = getMetaClass(entityName);
         checkCanReadEntity(metaClass);
 
@@ -94,17 +117,8 @@ public class QueriesController {
 
         ctx.setQuery(query);
         ctx.setView(queryInfo.getViewName());
-        List<Entity> entities = dataManager.loadList(ctx);
-        return entitySerializationAPI.toJson(entities);
+        return ctx;
     }
-
-    @RequestMapping(value = "/{entityName}", method = RequestMethod.GET)
-    public List<RestQueriesManager.QueryInfo> loadQueriesList(@PathVariable String entityName) {
-        MetaClass metaClass = getMetaClass(entityName);
-        checkCanReadEntity(metaClass);
-        return restQueriesManager.getQueries(entityName);
-    }
-
 
     //TODO extract to the helper class
     protected MetaClass getMetaClass(String entityName) {
