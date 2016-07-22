@@ -41,6 +41,10 @@
         <when-type-is class="com.vaadin.client.communication.XhrConnection"/>
     </replace-with>
 
+    <replace-with class="com.haulmont.cuba.web.toolkit.ui.client.notification.CubaNotification">
+        <when-type-is class="com.vaadin.client.ui.VNotification"/>
+    </replace-with>
+
     <!-- Text selection enable functions deferred binding -->
 
     <define-property name="ie11orHigher" values="no,yes"/>
