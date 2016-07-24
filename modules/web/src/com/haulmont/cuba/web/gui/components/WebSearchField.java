@@ -198,7 +198,7 @@ public class WebSearchField extends WebLookupField implements SearchField {
     }
 
     @Override
-    public void setOptionsMap(Map<String, Object> options) {
+    public void setOptionsMap(Map<String, ?> options) {
         throw new UnsupportedOperationException();
     }
 

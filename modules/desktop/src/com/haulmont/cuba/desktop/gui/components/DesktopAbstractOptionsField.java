@@ -60,7 +60,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
 
     protected CollectionDatasource<Entity<Object>, Object> optionsDatasource;
     protected List optionsList;
-    protected Map<String, Object> optionsMap;
+    protected Map<String, ?> optionsMap;
     protected Class<? extends EnumClass> optionsEnum;
 
     protected Datasource datasource;
@@ -104,12 +104,12 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     }
 
     @Override
-    public Map<String, Object> getOptionsMap() {
+    public Map<String, ?> getOptionsMap() {
         return optionsMap;
     }
 
     @Override
-    public void setOptionsMap(Map<String, Object> map) {
+    public void setOptionsMap(Map<String, ?> map) {
         optionsMap = map;
     }
 
@@ -262,7 +262,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
 
         Object selectedItem;
         if (optionsMap != null) {
-            for (Map.Entry<String, Object> entry : optionsMap.entrySet()) {
+            for (Map.Entry<String, ?> entry : optionsMap.entrySet()) {
                 if (value.equals(entry.getValue())) {
                     setSelectedItem(new MapKeyWrapper(entry.getKey()));
                     return;

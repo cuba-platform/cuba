@@ -287,7 +287,7 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     }
 
     @Override
-    public void setOptionsMap(Map<String, Object> options) {
+    public void setOptionsMap(Map<String, ?> options) {
         super.setOptionsMap(options);
 
         checkMissingValue();

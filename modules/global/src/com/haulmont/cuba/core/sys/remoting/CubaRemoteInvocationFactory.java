@@ -18,6 +18,8 @@ package com.haulmont.cuba.core.sys.remoting;
 
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.global.ClientBasedSession;
+import com.haulmont.cuba.security.global.UserSession;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationFactory;
@@ -27,6 +29,19 @@ public class CubaRemoteInvocationFactory implements RemoteInvocationFactory {
     @Override
     public RemoteInvocation createRemoteInvocation(MethodInvocation methodInvocation) {
         SecurityContext securityContext = AppContext.getSecurityContext();
-        return new CubaRemoteInvocation(methodInvocation, securityContext == null ? null : securityContext.getSessionId());
+
+        String requestScopeLocale = null;
+        if (securityContext != null) {
+            UserSession session = securityContext.getSession();
+            if (session instanceof ClientBasedSession) {
+                if (((ClientBasedSession) session).isLocaleRequestScoped()) {
+                    requestScopeLocale = session.getLocale() != null ? session.getLocale().toLanguageTag() : null;
+                }
+            }
+        }
+
+        return new CubaRemoteInvocation(methodInvocation,
+                securityContext == null ? null : securityContext.getSessionId(),
+                requestScopeLocale);
     }
 }

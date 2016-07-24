@@ -358,8 +358,27 @@ public class CubaVaadinServletService extends VaadinServletService {
                         Component component = (Component) connector;
                         String id = component.getId() == null ? super.createConnectorId(connector) : component.getId();
                         UserSession session = getAttribute(UserSession.class);
-                        String login = session != null ? session.getCurrentOrSubstitutedUser().getLogin() : null;
-                        return login != null ? login + "-" + id : id;
+
+                        String login = null;
+                        String locale = null;
+
+                        if (session != null) {
+                            login = session.getCurrentOrSubstitutedUser().getLogin();
+                            if (session.getLocale() != null) {
+                                locale = session.getLocale().toLanguageTag();
+                            }
+                        }
+
+                        List<String> idParts = new ArrayList<>(3);
+                        if (login != null) {
+                            idParts.add(login);
+                        }
+                        if (locale != null) {
+                            idParts.add(locale);
+                        }
+                        idParts.add(id);
+
+                        return StringUtils.join(idParts, "-");
                     }
                     return super.createConnectorId(connector);
                 }

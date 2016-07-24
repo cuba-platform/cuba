@@ -32,12 +32,6 @@
     </context-param>
 
     <context-param>
-        <description>Vaadin production mode</description>
-        <param-name>productionMode</param-name>
-        <param-value>false</param-value>
-    </context-param>
-
-    <context-param>
         <description>Web resources version for correct caching in browser</description>
         <param-name>webResourcesTs</param-name>
         <param-value>${webResourcesTs}</param-value>
@@ -53,26 +47,6 @@
     <servlet>
         <servlet-name>cuba_servlet</servlet-name>
         <servlet-class>com.haulmont.cuba.web.sys.CubaApplicationServlet</servlet-class>
-        <init-param>
-            <description>UI class</description>
-            <param-name>UI</param-name>
-            <param-value>com.haulmont.cuba.web.AppUI</param-value>
-        </init-param>
-        <init-param>
-            <description>UIProvider class</description>
-            <param-name>UIProvider</param-name>
-            <param-value>com.haulmont.cuba.web.sys.CubaUIProvider</param-value>
-        </init-param>
-        <init-param>
-            <description>Application class</description>
-            <param-name>Application</param-name>
-            <param-value>com.haulmont.cuba.web.DefaultApp</param-value>
-        </init-param>
-        <init-param>
-            <description>Widgetset name</description>
-            <param-name>widgetset</param-name>
-            <param-value>com.haulmont.cuba.web.toolkit.ui.WidgetSet</param-value>
-        </init-param>
         <load-on-startup>0</load-on-startup>
         <async-supported>true</async-supported>
     </servlet>

@@ -177,7 +177,7 @@ public class CubaWindow extends Window {
         }
     }
 
-    public void dispose() {
+    public void forceClose() {
         super.close();
     }
 }

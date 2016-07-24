@@ -25,9 +25,8 @@ import javax.annotation.Nullable;
 
 /**
  * Base class for controller of application Main window
- *
  */
-public class AbstractMainWindow extends AbstractWindow implements Window.MainWindow {
+public class AbstractMainWindow extends AbstractTopLevelWindow implements Window.MainWindow {
 
     private AppWorkArea workArea;
     private UserIndicator userIndicator;
@@ -61,20 +60,5 @@ public class AbstractMainWindow extends AbstractWindow implements Window.MainWin
 
     public void setFoldersPane(FoldersPane foldersPane) {
         this.foldersPane = foldersPane;
-    }
-
-    @Override
-    public boolean close(String actionId) {
-        throw new UnsupportedOperationException("Close operation for Main window is unsupported");
-    }
-
-    @Override
-    public boolean close(String actionId, boolean force) {
-        throw new UnsupportedOperationException("Close operation for Main window is unsupported");
-    }
-
-    @Override
-    public void closeAndRun(String actionId, Runnable runnable) {
-        throw new UnsupportedOperationException("Close operation for Main window is unsupported");
     }
 }

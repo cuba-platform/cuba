@@ -19,6 +19,7 @@ package com.haulmont.cuba.client;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.security.global.ClientBasedSession;
 import com.haulmont.cuba.security.global.UserSession;
 
 import java.io.Serializable;
@@ -28,12 +29,13 @@ import java.util.TimeZone;
 /**
  * Client-side extension of {@link UserSession}.
  *
- * <p>Sends updates of the user session properties to the middleware.</p>
- *
+ * <p>Sends updates of the user session properties to the middleware if authenticated.</p>
  */
-public class ClientUserSession extends UserSession {
+public class ClientUserSession extends UserSession implements ClientBasedSession {
 
     private static final long serialVersionUID = -5358664165808633540L;
+
+    protected volatile boolean authenticated = false; // indicates whether user passed authentication
 
     public ClientUserSession(UserSession src) {
         super(src);
@@ -42,35 +44,63 @@ public class ClientUserSession extends UserSession {
     @Override
     public void setAttribute(String name, Serializable value) {
         super.setAttribute(name, value);
-        UserSessionService uss = AppBeans.get(UserSessionService.NAME);
-        uss.setSessionAttribute(id, name, value);
+
+        if (authenticated) {
+            UserSessionService uss = AppBeans.get(UserSessionService.NAME);
+            uss.setSessionAttribute(id, name, value);
+        }
     }
 
     @Override
     public void setLocale(Locale locale) {
         super.setLocale(locale);
-        UserSessionService uss = AppBeans.get(UserSessionService.NAME);
-        uss.setSessionLocale(id, locale);
+
+        if (authenticated) {
+            UserSessionService uss = AppBeans.get(UserSessionService.NAME);
+            uss.setSessionLocale(id, locale);
+        }
     }
 
     @Override
     public void setTimeZone(TimeZone timeZone) {
         super.setTimeZone(timeZone);
-        UserSessionService uss = AppBeans.get(UserSessionService.NAME);
-        uss.setSessionTimeZone(id, timeZone);
+
+        if (authenticated) {
+            UserSessionService uss = AppBeans.get(UserSessionService.NAME);
+            uss.setSessionTimeZone(id, timeZone);
+        }
     }
 
     @Override
     public void setAddress(String address) {
         super.setAddress(address);
-        UserSessionService uss = AppBeans.get(UserSessionService.NAME);
-        uss.setSessionAddress(id, address);
+
+        if (authenticated) {
+            UserSessionService uss = AppBeans.get(UserSessionService.NAME);
+            uss.setSessionAddress(id, address);
+        }
     }
 
     @Override
     public void setClientInfo(String clientInfo) {
         super.setClientInfo(clientInfo);
-        UserSessionService uss = AppBeans.get(UserSessionService.NAME);
-        uss.setSessionClientInfo(id, clientInfo);
+
+        if (authenticated) {
+            UserSessionService uss = AppBeans.get(UserSessionService.NAME);
+            uss.setSessionClientInfo(id, clientInfo);
+        }
+    }
+
+    public boolean isAuthenticated() {
+        return authenticated;
+    }
+
+    public void setAuthenticated(boolean authenticated) {
+        this.authenticated = authenticated;
+    }
+
+    @Override
+    public boolean isLocaleRequestScoped() {
+        return !authenticated;
     }
 }

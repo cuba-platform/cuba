@@ -37,7 +37,7 @@ import java.util.List;
 
 public class AppLog {
 
-    private static Logger log = LoggerFactory.getLogger(AppLog.class);
+    private static final Logger log = LoggerFactory.getLogger(AppLog.class);
 
     private transient LinkedList<LogItem> items = new LinkedList<>();
 

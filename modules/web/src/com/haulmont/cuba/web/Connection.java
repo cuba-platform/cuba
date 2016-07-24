@@ -25,9 +25,15 @@ import java.util.Locale;
 
 /**
  * Interface to be implemented by objects that connect web-client to the middleware.
- *
  */
 public interface Connection {
+
+    String NAME = "cuba_Connection";
+
+    enum SessionMode {
+        AUTHENTICATED,
+        ANONYMOUS
+    }
 
     /**
      * Log in to the system.
@@ -37,6 +43,13 @@ public interface Connection {
      * @throws LoginException   in case of unsuccessful login due to wrong credentials or other issues
      */
     void login(String login, String password, Locale locale) throws LoginException;
+
+    /**
+     * Log in to the system.
+     * @param locale            user locale
+     * @throws LoginException   in case of unsuccessful login due to wrong credentials or other issues
+     */
+    void loginAnonymous(Locale locale) throws LoginException;
 
     /**
      * Log in to the system.
@@ -52,7 +65,7 @@ public interface Connection {
      * Returns URL to which the user will be redirected after logout.
      * @return redirection URL
      */
-    String logout();
+    void logout();
 
     /**
      * Substitute a user in the current session with another user. This method creates a new UserSession instance,
@@ -68,6 +81,12 @@ public interface Connection {
      * @return  true if connected
      */
     boolean isConnected();
+
+    /**
+     * Check if the client was authenticated.
+     * @return  true if authenticated
+     */
+    boolean isAuthenticated();
 
     /**
      * Check if session is alive on middleware
@@ -97,7 +116,7 @@ public interface Connection {
      * @param session           new UserSession object
      * @throws LoginException   in case of unsuccessful update
      */
-    void update(UserSession session) throws LoginException;
+    void update(UserSession session, SessionMode sessionMode) throws LoginException;
 
     /**
      * Add a connection listener.

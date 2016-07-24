@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
@@ -115,8 +114,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         // create task executor
-        AppWindow appWindow = appInstance.getAppWindow();
-        final WebTaskExecutor<T, V> taskExecutor = new WebTaskExecutor<>(appWindow, task);
+        final WebTaskExecutor<T, V> taskExecutor = new WebTaskExecutor<>(appInstance.getAppUI(), task);
 
         // add thread to taskSet
         appInstance.addBackgroundTask(taskExecutor.getFuture());
@@ -145,41 +143,34 @@ public class WebBackgroundWorker implements BackgroundWorker {
     }
 
     protected static void withUserSessionAsync(UI ui, Runnable handler) {
-        ui.access(() -> {
-            SecurityContext oldSecurityContext = AppContext.getSecurityContext();
-            try {
-                UserSession userSession = ui.getSession().getAttribute(UserSession.class);
-                if (userSession != null) {
-                    AppContext.setSecurityContext(new SecurityContext(userSession));
-                }
-
-                handler.run();
-            } finally {
-                AppContext.setSecurityContext(oldSecurityContext);
-            }
-        });
+        ui.access(() ->
+                executeOnUiThread(ui, handler)
+        );
     }
 
     protected static void withUserSessionInvoke(UI ui, Runnable handler) {
-        ui.accessSynchronously(() -> {
-            SecurityContext oldSecurityContext = AppContext.getSecurityContext();
-            try {
-                UserSession userSession = ui.getSession().getAttribute(UserSession.class);
-                if (userSession != null) {
-                    AppContext.setSecurityContext(new SecurityContext(userSession));
-                }
+        ui.accessSynchronously(() ->
+                executeOnUiThread(ui, handler)
+        );
+    }
 
-                handler.run();
-            } finally {
-                AppContext.setSecurityContext(oldSecurityContext);
+    protected static void executeOnUiThread(UI ui, Runnable handler) {
+        SecurityContext oldSecurityContext = AppContext.getSecurityContext();
+        try {
+            UserSession userSession = ui.getSession().getAttribute(UserSession.class);
+            if (userSession != null) {
+                AppContext.setSecurityContext(new SecurityContext(userSession));
             }
-        });
+
+            handler.run();
+        } finally {
+            AppContext.setSecurityContext(oldSecurityContext);
+        }
     }
 
     private class WebTaskExecutor<T, V> implements TaskExecutor<T, V>, Callable<V> {
 
-        private App app;
-        private AppWindow appWindow;
+        private AppUI ui;
 
         private FutureTask<V> future;
 
@@ -195,10 +186,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
         private Map<String, Object> params;
         private TaskHandlerImpl<T, V> taskHandler;
 
-        private WebTaskExecutor(AppWindow appWindow, BackgroundTask<T, V> runnableTask) {
+        private WebTaskExecutor(AppUI ui, BackgroundTask<T, V> runnableTask) {
             this.runnableTask = runnableTask;
-            this.appWindow = appWindow;
-            this.app = appWindow.getAppUI().getApp();
+            this.ui = ui;
 
             this.params = runnableTask.getParams() != null ?
                     Collections.unmodifiableMap(runnableTask.getParams()) :
@@ -294,7 +284,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
             // do not allow to cancel task from done listeners and exception handler
             isClosed = true;
 
-            app.removeBackgroundTask(future);
+            ui.getApp().removeBackgroundTask(future);
             watchDog.removeTask(taskHandler);
 
             try {
@@ -422,8 +412,6 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         protected final void withUserSessionAsync(Runnable handler) {
-            AppUI ui = appWindow.getAppUI();
-
             WebBackgroundWorker.withUserSessionAsync(ui, handler);
         }
     }

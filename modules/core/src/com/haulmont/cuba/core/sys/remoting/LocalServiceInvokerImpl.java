@@ -19,12 +19,14 @@ package com.haulmont.cuba.core.sys.remoting;
 
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.core.sys.UserInvocationContext;
 import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
 import org.apache.commons.lang.ClassUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Locale;
 
 public class LocalServiceInvokerImpl implements LocalServiceInvoker {
 
@@ -80,6 +82,11 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
             else
                 AppContext.setSecurityContext(null);
 
+            if (invocation.getLocale() != null) {
+                Locale locale = Locale.forLanguageTag(invocation.getLocale());
+                UserInvocationContext.setRequestScopeLocale(invocation.getSessionId(), locale);
+            }
+
             Method method = target.getClass().getMethod(invocation.getMethodName(), parameterTypes);
             Object data = method.invoke(target, arguments);
 
@@ -97,6 +104,7 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
         } finally {
             Thread.currentThread().setContextClassLoader(clientClassLoader);
             AppContext.setSecurityContext(null);
+            UserInvocationContext.clearRequestScopeLocale();
         }
     }
 }

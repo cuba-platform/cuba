@@ -582,7 +582,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     }
 
     @Override
-    public void setOptionsMap(Map<String, Object> map) {
+    public void setOptionsMap(Map<String, ?> map) {
         throw new UnsupportedOperationException();
     }
 

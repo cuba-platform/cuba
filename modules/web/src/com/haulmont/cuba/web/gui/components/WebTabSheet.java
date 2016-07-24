@@ -25,7 +25,7 @@ import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.AppWindow;
+import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.StringUtils;
@@ -515,8 +515,8 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
                     // init debug ids after all
                     if (AppUI.getCurrent().isTestMode()) {
                         context.addPostInitTask((context1, window1) -> {
-                            AppWindow appWindow = AppUI.getCurrent().getAppWindow();
-                            appWindow.getWindowManager().initDebugIds(window1);
+                            Window.TopLevelWindow appWindow = AppUI.getCurrent().getTopLevelWindow();
+                            ((WebWindowManager) appWindow.getWindowManager()).initDebugIds(window1);
                         });
                     }
                 }

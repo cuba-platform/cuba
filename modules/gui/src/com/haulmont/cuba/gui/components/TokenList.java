@@ -59,8 +59,8 @@ public interface TokenList extends Field, Component.BelongToFrame, Component.Has
     java.util.List getOptionsList();
     void setOptionsList(java.util.List optionsList);
 
-    Map<String, Object> getOptionsMap();
-    void setOptionsMap(Map<String, Object> map);
+    Map<String, ?> getOptionsMap();
+    void setOptionsMap(Map<String, ?> map);
 
     boolean isLookup();
     void setLookup(boolean lookup);

@@ -26,11 +26,13 @@ import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.config.type.Factory;
+import com.haulmont.cuba.core.config.type.UuidTypeFactory;
 import com.haulmont.cuba.core.sys.AvailableLocalesFactory;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Configuration parameters interface used by all layers: CORE, WEB, DESKTOP.
@@ -181,5 +183,8 @@ public interface GlobalConfig extends Config {
     @Property("cuba.numberIdCacheSize")
     @DefaultInt(100)
     int getNumberIdCacheSize();
-}
 
+    @Property("cuba.anonymousSessionId")
+    @Factory(factory = UuidTypeFactory.class)
+    UUID getAnonymousSessionId();
+}

@@ -289,12 +289,12 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     }
 
     @Override
-    public Map<String, Object> getOptionsMap() {
+    public Map<String, ?> getOptionsMap() {
         return lookupPickerField.getOptionsMap();
     }
 
     @Override
-    public void setOptionsMap(Map<String, Object> map) {
+    public void setOptionsMap(Map<String, ?> map) {
         lookupPickerField.setOptionsMap(map);
     }
 

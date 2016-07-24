@@ -478,7 +478,7 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     }
 
     @Override
-    public void setOptionsMap(Map<String, Object> map) {
+    public void setOptionsMap(Map<String, ?> map) {
         super.setOptionsMap(map);
         if (optionsInitialized) {
             optionsInitialized = false;

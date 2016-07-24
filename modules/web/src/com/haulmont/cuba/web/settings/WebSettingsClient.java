@@ -31,7 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * User settings provider for web application. Caches settings in HTTP session.
- *
  */
 @Component(SettingsClient.NAME)
 public class WebSettingsClient implements SettingsClient {
@@ -42,6 +41,7 @@ public class WebSettingsClient implements SettingsClient {
     @Override
     public String getSetting(String name) {
         Map<String, Optional<String>> settings = getCache();
+        //noinspection Guava
         Optional<String> cached = settings.get(name);
         if (cached != null) {
             return cached.orNull();
@@ -61,7 +61,7 @@ public class WebSettingsClient implements SettingsClient {
 
     @Override
     public void deleteSettings(String name) {
-        getCache().put(name, Optional.<String>absent());
+        getCache().put(name, Optional.absent());
         userSettingService.deleteSettings(ClientType.WEB, name);
     }
 

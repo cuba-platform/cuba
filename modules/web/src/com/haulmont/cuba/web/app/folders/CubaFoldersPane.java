@@ -40,7 +40,6 @@ import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
@@ -64,7 +63,6 @@ import static com.haulmont.cuba.gui.components.Window.COMMIT_ACTION_ID;
 
 /**
  * Left panel containing application and search folders.
- *
  */
 public class CubaFoldersPane extends VerticalLayout {
 
@@ -227,7 +225,7 @@ public class CubaFoldersPane extends VerticalLayout {
     protected void setupUpdateTimer() {
         int period = webConfig.getAppFoldersRefreshPeriodSec() * 1000;
 
-        AppWindow appWindow = App.getInstance().getAppWindow();
+        AppUI appWindow = AppUI.getCurrent();
         for (CubaTimer t : appWindow.getTimers()) {
             if (t instanceof FoldersPaneTimer) {
                 t.stop();

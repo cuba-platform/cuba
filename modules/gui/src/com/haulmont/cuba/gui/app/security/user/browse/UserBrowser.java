@@ -95,6 +95,8 @@ public class UserBrowser extends AbstractLookup {
 
     @Override
     public void init(Map<String, Object> params) {
+        super.init(params);
+
         MetaClass userMetaClass = metadata.getClassNN(User.class);
 
         final boolean hasPermissionsToCreateUsers =

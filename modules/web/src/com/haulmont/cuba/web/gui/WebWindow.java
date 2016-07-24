@@ -35,7 +35,6 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -44,6 +43,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -668,8 +668,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void addTimer(Timer timer) {
-        AppWindow appWindow = AppUI.getCurrent().getAppWindow();
-        appWindow.addTimer(((WebTimer) timer).getTimerImpl());
+        AppUI.getCurrent().addTimer(((WebTimer) timer).getTimerImpl());
 
         if (timers == null) {
             timers = new LinkedList<>();
@@ -687,12 +686,12 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     public void stopTimers() {
-        AppWindow appWindow = AppUI.getCurrent().getAppWindow();
+        AppUI appUI = AppUI.getCurrent();
         if (timers != null) {
             for (Timer timer : timers) {
                 timer.stop();
                 WebTimer webTimer = (WebTimer) timer;
-                appWindow.removeTimer(webTimer.getTimerImpl());
+                appUI.removeTimer(webTimer.getTimerImpl());
             }
         }
     }
@@ -1149,6 +1148,10 @@ public class WebWindow implements Window, Component.Wrapper,
             if (dialogWindow != null) {
                 dialogWindow.setCaption(caption);
             }
+        }
+
+        if (getWrapper() instanceof TopLevelWindow) {
+            Page.getCurrent().setTitle(caption);
         }
     }
 

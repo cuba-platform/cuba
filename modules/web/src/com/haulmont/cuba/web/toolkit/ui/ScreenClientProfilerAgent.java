@@ -20,26 +20,19 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.ScreenProfilerConfig;
 import com.haulmont.cuba.web.ScreenProfiler;
-import com.haulmont.cuba.web.toolkit.ui.client.profiler.ScreenClientProfilerState;
 import com.haulmont.cuba.web.toolkit.ui.client.profiler.ScreenClientProfilerServerRpc;
-import com.haulmont.cuba.web.toolkit.ui.client.profiler.ScreenProfilerClientEvent;
+import com.haulmont.cuba.web.toolkit.ui.client.profiler.ScreenClientProfilerState;
 import com.vaadin.server.AbstractClientConnector;
 import com.vaadin.server.AbstractExtension;
 
 public class ScreenClientProfilerAgent extends AbstractExtension {
 
+    protected ScreenProfiler screenProfiler = AppBeans.get(ScreenProfiler.NAME);
+
     public ScreenClientProfilerAgent() {
-        registerRpc(new ScreenClientProfilerServerRpc() {
-            @Override
-            public void flushEvents(ScreenProfilerClientEvent[] clientEvents) {
-                ScreenProfiler screenProfiler = AppBeans.get(ScreenProfiler.NAME);
-                screenProfiler.flush(clientEvents);
-            }
-        });
-        Configuration configuration = AppBeans.get(Configuration.class);
-        ScreenProfilerConfig screenProfilerConfig = configuration.getConfig(ScreenProfilerConfig.class);
-        getState().flushEventsCount = screenProfilerConfig.getFlushEventsCount();
-        getState().flushTimeout = screenProfilerConfig.getFlushTimeout();
+        registerRpc((ScreenClientProfilerServerRpc) clientEvents ->
+                screenProfiler.flush(clientEvents)
+        );
     }
 
     @Override
@@ -55,5 +48,21 @@ public class ScreenClientProfilerAgent extends AbstractExtension {
     @Override
     protected ScreenClientProfilerState getState(boolean markAsDirty) {
         return (ScreenClientProfilerState) super.getState(markAsDirty);
+    }
+
+    public void setFlushTimeout(int flushTimeout) {
+        getState().flushTimeout = flushTimeout;
+    }
+
+    public int getFlushTimeout() {
+        return getState(false).flushTimeout;
+    }
+
+    public void setFlushEventsCount(int flushEventsCount) {
+        getState().flushEventsCount = flushEventsCount;
+    }
+
+    public int getFlushEventsCount() {
+        return getState(false).flushEventsCount;
     }
 }

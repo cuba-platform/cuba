@@ -24,7 +24,6 @@ import com.haulmont.cuba.core.config.defaults.*;
 
 /**
  * Configuration parameters interface used by the CORE layer.
- *
  */
 @Source(type = SourceType.APP)
 public interface ServerConfig extends Config {
@@ -193,4 +192,9 @@ public interface ServerConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultInt(60)
     int getBruteForceBlockIntervalSec();
+
+    @Property("cuba.anonymousLogin")
+    @Source(type = SourceType.DATABASE)
+    @Default("anonymous")
+    String getAnonymousLogin();
 }

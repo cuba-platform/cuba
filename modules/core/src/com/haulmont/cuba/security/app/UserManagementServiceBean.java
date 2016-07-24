@@ -344,10 +344,12 @@ public class UserManagementServiceBean implements UserManagementService {
 
     @Override
     public void saveOwnLocale(String locale) {
-        log.debug("Saving user's language settings: " + locale);
+        UUID userId = userSessionSource.getUserSession().getUser().getId();
+        log.debug("Saving user's {} language settings: {}", userId, locale);
+
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
-            User user = em.find(User.class, userSessionSource.getUserSession().getUser().getId(), "user.locale");
+            User user = em.find(User.class, userId, "user.locale");
             if (user == null)
                 throw new EntityAccessException();
 

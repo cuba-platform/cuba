@@ -21,7 +21,7 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FtsConfigHelper;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
 import com.haulmont.cuba.gui.components.*;
@@ -32,7 +32,7 @@ import com.haulmont.cuba.gui.components.mainwindow.FtsField;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalSplitPanel;
-import com.vaadin.server.Sizeable;
+import com.vaadin.server.Sizeable.Unit;
 import org.apache.commons.lang.StringUtils;
 import org.vaadin.peter.contextmenu.ContextMenu;
 
@@ -84,20 +84,16 @@ public class AppMainWindow extends AbstractMainWindow {
         if (clientConfig.getLayoutAnalyzerEnabled()) {
             ContextMenu contextMenu = new ContextMenu();
             contextMenu.setOpenAutomatically(true);
-            contextMenu.setAsContextMenuOf(logoImage.unwrap(com.vaadin.ui.Embedded.class));
+            contextMenu.setAsContextMenuOf(logoImage.unwrap(com.vaadin.ui.AbstractComponent.class));
             ContextMenu.ContextMenuItem analyzeLayout = contextMenu.addItem(messages.getMainMessage("actions.analyzeLayout"));
-            analyzeLayout.addItemClickListener(new ContextMenu.ContextMenuItemClickListener() {
-                @Override
-                public void contextMenuItemClicked(ContextMenu.ContextMenuItemClickEvent event) {
-                    Window window = AppMainWindow.this;
-                    LayoutAnalyzer analyzer = new LayoutAnalyzer();
-                    List<LayoutTip> tipsList = analyzer.analyze(window);
+            analyzeLayout.addItemClickListener(event -> {
+                LayoutAnalyzer analyzer = new LayoutAnalyzer();
+                List<LayoutTip> tipsList = analyzer.analyze(this);
 
-                    if (tipsList.isEmpty()) {
-                        window.showNotification("No layout problems found", Frame.NotificationType.HUMANIZED);
-                    } else {
-                        window.openWindow("layoutAnalyzer", WindowManager.OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
-                    }
+                if (tipsList.isEmpty()) {
+                    showNotification("No layout problems found", NotificationType.HUMANIZED);
+                } else {
+                    openWindow("layoutAnalyzer", OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
                 }
             });
         }
@@ -119,7 +115,7 @@ public class AppMainWindow extends AbstractMainWindow {
 
             CubaHorizontalSplitPanel vSplitPanel = (CubaHorizontalSplitPanel) WebComponentsHelper.unwrap(foldersSplit);
             vSplitPanel.setDefaultPosition(webConfig.getFoldersPaneDefaultWidth() + "px");
-            vSplitPanel.setMaxSplitPosition(50, Sizeable.Unit.PERCENTAGE);
+            vSplitPanel.setMaxSplitPosition(50, Unit.PERCENTAGE);
             vSplitPanel.setDockable(true);
         } else {
             foldersPane.setEnabled(false);

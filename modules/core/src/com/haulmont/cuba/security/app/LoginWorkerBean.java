@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -144,8 +145,6 @@ public class LoginWorkerBean implements LoginWorker {
             UserSession session = userSessionManager.createSession(user, userLocale, false);
             checkPermissions(login, params, userLocale, session);
 
-            log.info("Logged in: " + session);
-
             tx.commit();
 
             userSessionManager.clearPermissionsOnUser(session);
@@ -161,6 +160,8 @@ public class LoginWorkerBean implements LoginWorker {
             } else {
                 userSessionManager.storeSession(session);
             }
+
+            log.info("Logged in: {}", session);
 
             return session;
         } finally {
@@ -179,16 +180,50 @@ public class LoginWorkerBean implements LoginWorker {
         Transaction tx = persistence.createTransaction();
         try {
             User user = loadUser(login);
-            if (user == null)
+            if (user == null) {
                 throw new LoginException(getInvalidCredentialsMessage(login, locale));
+            }
 
             UserSession session = userSessionManager.createSession(user, locale, true);
-            log.info("Logged in: " + session);
 
             tx.commit();
 
             userSessionManager.clearPermissionsOnUser(session);
             userSessionManager.storeSession(session);
+
+            log.info("Logged in: {}", session);
+
+            return session;
+        } finally {
+            tx.end();
+        }
+    }
+
+    @Override
+    public UserSession loginAnonymous() throws LoginException {
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
+        UUID anonymousSessionId = globalConfig.getAnonymousSessionId();
+
+        ServerConfig serverConfig = configuration.getConfig(ServerConfig.class);
+        String anonymousLogin = serverConfig.getAnonymousLogin();
+
+        Locale locale = messages.getTools().trimLocale(messages.getTools().getDefaultLocale());
+
+        Transaction tx = persistence.createTransaction();
+        try {
+            User user = loadUser(anonymousLogin);
+            if (user == null) {
+                throw new LoginException(getInvalidCredentialsMessage(anonymousLogin, locale));
+            }
+
+            UserSession session = userSessionManager.createSession(anonymousSessionId, user, locale, true);
+            session.setClientInfo("System anonymous session");
+            tx.commit();
+
+            userSessionManager.clearPermissionsOnUser(session);
+            userSessionManager.storeSession(session);
+
+            log.info("Logged in: {}", session);
 
             return session;
         } finally {
@@ -239,8 +274,9 @@ public class LoginWorkerBean implements LoginWorker {
             log.debug("Unable to check trusted client IP when obtaining system session");
         }
 
-        if (!trustedLoginHandler.checkPassword(password))
+        if (!trustedLoginHandler.checkPassword(password)) {
             throw new LoginException(getInvalidCredentialsMessage(login, locale));
+        }
 
         Transaction tx = persistence.createTransaction();
         try {
@@ -258,7 +294,7 @@ public class LoginWorkerBean implements LoginWorker {
             UserSession session = userSessionManager.createSession(user, userLocale, false);
             checkPermissions(login, params, userLocale, session);
 
-            log.info("Logged in: " + session);
+            log.info("Logged in: {}", session);
 
             tx.commit();
 
@@ -300,12 +336,12 @@ public class LoginWorkerBean implements LoginWorker {
             UserSession session = userSessionManager.createSession(user, userLocale, false);
             checkPermissions(login, params, userLocale, session);
 
-            log.info("Logged in: " + session);
-
             tx.commit();
 
             userSessionManager.clearPermissionsOnUser(session);
             userSessionManager.storeSession(session);
+
+            log.info("Logged in: {}", session);
 
             return session;
         } finally {
@@ -318,9 +354,9 @@ public class LoginWorkerBean implements LoginWorker {
         try {
             UserSession session = userSessionSource.getUserSession();
             userSessionManager.removeSession(session);
-            log.info("Logged out: " + session);
+            log.info("Logged out: {}", session);
         } catch (SecurityException e) {
-            log.warn("Couldn't logout: " + e);
+            log.warn("Couldn't logout: {}", e);
         } catch (NoUserSessionException e) {
             log.warn("NoUserSessionException thrown on logout");
         }
@@ -408,15 +444,40 @@ public class LoginWorkerBean implements LoginWorker {
 
     protected void checkPermissions(String login, Map<String, Object> params, Locale userLocale, UserSession session)
             throws LoginException {
-
         String clientTypeParam = (String) params.get(ClientType.class.getName());
         if (ClientType.DESKTOP.name().equals(clientTypeParam) || ClientType.WEB.name().equals(clientTypeParam)) {
             if (!session.isSpecificPermitted("cuba.gui.loginToClient")) {
-                log.warn(String.format("Attempt of login to %s for user '%s' without cuba.gui.loginToClient permission",
-                        clientTypeParam, login));
+                log.warn("Attempt of login to {} for user '{}' without cuba.gui.loginToClient permission",
+                        clientTypeParam, login);
 
                 throw new LoginException(getInvalidCredentialsMessage(login, userLocale));
             }
+        }
+    }
+
+    @PostConstruct
+    public void init() {
+        AppContext.addListener(new AppContext.Listener() {
+            @Override
+            public void applicationStarted() {
+                initializeAnonymousSession();
+            }
+
+            @Override
+            public void applicationStopped() {
+            }
+        });
+    }
+
+    protected void initializeAnonymousSession() {
+        log.debug("Initialize anonymous session");
+
+        try {
+            loginAnonymous();
+
+            log.debug("Anonymous session initialized");
+        } catch (LoginException e) {
+            log.error("Unable to login anonymous session", e);
         }
     }
 }

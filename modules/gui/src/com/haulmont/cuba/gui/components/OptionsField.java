@@ -41,8 +41,8 @@ public interface OptionsField extends Field {
     List getOptionsList();
     void setOptionsList(List optionsList);
 
-    Map<String, Object> getOptionsMap();
-    void setOptionsMap(Map<String, Object> map);
+    Map<String, ?> getOptionsMap();
+    void setOptionsMap(Map<String, ?> map);
 
     Class<? extends EnumClass> getOptionsEnum();
     void setOptionsEnum(Class<? extends EnumClass> optionsEnum);

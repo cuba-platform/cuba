@@ -46,7 +46,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         implements OptionsField {
 
     protected List optionsList;
-    protected Map<String, Object> optionsMap;
+    protected Map<String, ?> optionsMap;
     protected Class<? extends EnumClass> optionsEnum;
     protected CollectionDatasource optionsDatasource;
 
@@ -117,12 +117,12 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     }
 
     @Override
-    public void setOptionsMap(Map<String, Object> options) {
+    public void setOptionsMap(Map<String, ?> options) {
         if (metaProperty != null && metaProperty.getRange().isEnum()) {
             List constants = Arrays.asList(metaProperty.getRange().asEnumeration().getJavaClass().getEnumConstants());
             List opts = new ArrayList();
 
-            for (Map.Entry<String, Object> entry : options.entrySet()) {
+            for (Map.Entry<String, ?> entry : options.entrySet()) {
                 String key = entry.getKey();
                 Object itemId = entry.getValue();
 
@@ -138,7 +138,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             setCaptionMode(CaptionMode.ITEM);
         } else {
             List opts = new ArrayList();
-            for (Map.Entry<String, Object> entry : options.entrySet()) {
+            for (Map.Entry<String, ?> entry : options.entrySet()) {
                 String key = entry.getKey();
                 Object itemId = entry.getValue();
 
@@ -271,7 +271,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     }
 
     @Override
-    public Map<String, Object> getOptionsMap() {
+    public Map<String, ?> getOptionsMap() {
         return optionsMap;
     }
 

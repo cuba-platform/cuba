@@ -44,7 +44,6 @@ import java.util.UUID;
 
 /**
  * System-level class managing {@link UserSession}s.
- *
  */
 @Component(UserSessionManager.NAME)
 public class UserSessionManager implements UserSessionFinder {
@@ -79,13 +78,25 @@ public class UserSessionManager implements UserSessionFinder {
      * @return          new session instance
      */
     public UserSession createSession(User user, Locale locale, boolean system) {
+        return createSession(uuidSource.createUuid(), user, locale, system);
+    }
+
+    /**
+     * Create a new session and fill it with security data. Must be called inside a transaction.
+     * @param sessionId target session id
+     * @param user      user instance
+     * @param locale    user locale
+     * @param system    create system session
+     * @return          new session instance
+     */
+    public UserSession createSession(UUID sessionId, User user, Locale locale, boolean system) {
         List<Role> roles = new ArrayList<>();
         for (UserRole userRole : user.getUserRoles()) {
             if (userRole.getRole() != null) {
                 roles.add(userRole.getRole());
             }
         }
-        UserSession session = new UserSession(uuidSource.createUuid(), user, roles, locale, system);
+        UserSession session = new UserSession(sessionId, user, roles, locale, system);
         compilePermissions(session, roles);
         if (user.getGroup() == null)
             throw new IllegalStateException("User is not in a Group");
@@ -179,8 +190,8 @@ public class UserSessionManager implements UserSessionFinder {
         List<SessionAttribute> list = new ArrayList<>(group.getSessionAttributes());
 
         EntityManager em = persistence.getEntityManager();
-        Query q = em.createQuery("select a from sec$GroupHierarchy h join h.parent.sessionAttributes a " +
-                "where h.group.id = ?1 order by h.level desc");
+        TypedQuery<SessionAttribute> q = em.createQuery("select a from sec$GroupHierarchy h join h.parent.sessionAttributes a " +
+                "where h.group.id = ?1 order by h.level desc", SessionAttribute.class);
         q.setParameter(1, group);
         List<SessionAttribute> attributes = q.getResultList();
         list.addAll(attributes);

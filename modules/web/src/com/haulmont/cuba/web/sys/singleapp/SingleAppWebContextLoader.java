@@ -24,7 +24,6 @@ import com.haulmont.cuba.web.sys.CubaApplicationServlet;
 import com.haulmont.cuba.web.sys.CubaDispatcherServlet;
 import com.haulmont.cuba.web.sys.CubaHttpFilter;
 import com.haulmont.cuba.web.sys.WebAppContextLoader;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -38,7 +37,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * {@link AppContext} loader of the web application block packed in a WAR together with the middleware block.

@@ -22,14 +22,15 @@ import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.TestIdManager;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.MenuBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ public class MenuBuilder {
 
     protected CubaMenuBar menuBar;
 
-    protected AppWindow appWindow;
+    protected Window.TopLevelWindow topLevelWindow;
 
     protected MenuConfig menuConfig = AppBeans.get(MenuConfig.NAME);
 
@@ -59,7 +60,7 @@ public class MenuBuilder {
     public MenuBuilder(AppMenu menu) {
         this.session = uss.getUserSession();
         this.menuBar = (CubaMenuBar) WebComponentsHelper.unwrap(menu);
-        this.appWindow = ((AppUI) menuBar.getUI()).getAppWindow();
+        this.topLevelWindow = ((AppUI) menuBar.getUI()).getTopLevelWindow();
     }
 
     public void build() {
@@ -186,14 +187,14 @@ public class MenuBuilder {
     protected void assignShortcut(MenuBar.MenuItem menuItem, MenuItem item) {
         if (item.getShortcut() != null && menuItem.getCommand() != null) {
             MenuShortcutAction shortcut = new MenuShortcutAction(menuItem, "shortcut_" + item.getId(), item.getShortcut());
-            appWindow.addShortcutListener(shortcut);
+            topLevelWindow.unwrap(AbstractComponent.class).addShortcutListener(shortcut);
             menuBar.setShortcut(menuItem, item.getShortcut());
         }
     }
 
     protected void assignTestId(MenuBar.MenuItem menuItem, MenuItem conf) {
         if (menuBar.getId() != null && menuBar.getCubaId() != null && !conf.isSeparator()) {
-            TestIdManager testIdManager = appWindow.getAppUI().getTestIdManager();
+            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
 
             String id = testIdManager.normalize(conf.getId());
             String testId = menuBar.getId() + "_" + id;

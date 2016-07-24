@@ -16,51 +16,26 @@
  */
 
 @mixin cuba-login-window {
-
-  .cuba-login-bottom {
+  .cuba-login-panel {
     background: $cuba-loginform-background-color;
     border: thin solid $cuba-loginform-border-color;
     box-shadow: 0 0 5px rgba(0,0,0,0.25);
     -moz-box-shadow: 0 0 5px rgba(0,0,0,0.25);
     -webkit-box-shadow: 0 0 5px rgba(0,0,0,0.25);
-
-    .cuba-login-username-field.v-caption {
-      font-weight: bold;
-      font-size: 10pt;
-      color: #2B4666;
-    }
-
-    .v-captiontext {
-      padding-right: 5px;
-      float: none;
-    }
+    padding: 10px 40px 10px 40px;
   }
 
   .cuba-login-main-layout {
     background-color: #fff;
   }
 
-  .cuba-login-title {
-    padding-top: 3px;
+  .cuba-login-icon > img {
+    height: 32px;
   }
 
-  .cuba-login-form {
-    font-weight: normal;
-
-    .v-formlayout {
-      float: left;
-    }
-
-    legend {
-      display: none;
-    }
-  }
-
-  .cuba-login-form-caption {
-    padding-top: 5px;
-  }
-
-  .cuba-login-bottom > div:first-child {
-    padding-top: 5px;
+  .login-form-label {
+    font-weight: bold;
+    font-size: 10pt;
+    color: #2B4666;
   }
 }

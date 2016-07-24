@@ -18,24 +18,34 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.LoginFailedException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Default {@link Connection} implementation for web-client.
- *
  */
+@Component(Connection.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class DefaultConnection extends AbstractConnection implements ExternallyAuthenticatedConnection {
 
-    protected Configuration configuration = AppBeans.get(Configuration.NAME);
+    @Inject
+    protected GlobalConfig globalConfig;
+
+    @Inject
+    protected WebAuthConfig webAuthConfig;
 
     @Override
     public void login(String login, String password, Locale locale) throws LoginException {
@@ -43,22 +53,48 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
             throw new IllegalArgumentException("Locale is null");
         }
 
-        update(doLogin(login, password, locale, getLoginParams()));
+        update(doLogin(login, password, locale, getLoginParams()), SessionMode.AUTHENTICATED);
+    }
+
+    @Override
+    public void loginAnonymous(Locale locale) throws LoginException {
+        UUID anonymousSessionId = globalConfig.getAnonymousSessionId();
+
+        UserSession session = doLoginAnonymous(anonymousSessionId, locale);
+        if (session == null) {
+            throw new LoginFailedException("Unable to obtain anonymous session");
+        }
+        session.setLocale(locale);
+
+        update(session, SessionMode.ANONYMOUS);
     }
 
     /**
      * Forward login logic to {@link com.haulmont.cuba.security.app.LoginService}.
      * Can be overridden to change login logic.
      *
-     * @param login         login name
-     * @param password      encrypted password
-     * @param locale        client locale
-     * @param loginParams   login params
+     * @param login       login name
+     * @param password    encrypted password
+     * @param locale      client locale
+     * @param loginParams login params
      * @return created user session
      * @throws LoginException in case of unsuccessful login
      */
-    protected UserSession doLogin(String login, String password, Locale locale, Map<String, Object> loginParams) throws LoginException {
+    protected UserSession doLogin(String login, String password, Locale locale, Map<String, Object> loginParams)
+            throws LoginException {
         return loginService.login(login, password, locale, loginParams);
+    }
+
+    /**
+     * Forward login logic to {@link com.haulmont.cuba.security.app.LoginService}.
+     * Can be overridden to change login logic.
+     *
+     * @param locale client locale
+     * @return obtained user session
+     * @throws LoginException in case of unsuccessful login
+     */
+    protected UserSession doLoginAnonymous(UUID anonymousSessionId, Locale locale) throws LoginException {
+        return loginService.getSession(anonymousSessionId);
     }
 
     @Override
@@ -67,21 +103,22 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
             throw new IllegalArgumentException("Locale is null");
         }
 
-        update(doLoginByRememberMe(login, rememberMeToken, locale, getLoginParams()));
+        update(doLoginByRememberMe(login, rememberMeToken, locale, getLoginParams()), SessionMode.AUTHENTICATED);
     }
 
     /**
      * Forward login logic to {@link com.haulmont.cuba.security.app.LoginService}.
      * Can be overridden to change login logic.
      *
-     * @param login         login name
-     * @param password      encrypted password
-     * @param locale        client locale
-     * @param loginParams   login params
+     * @param login       login name
+     * @param password    encrypted password
+     * @param locale      client locale
+     * @param loginParams login params
      * @return created user session
      * @throws LoginException in case of unsuccessful login
      */
-    protected UserSession doLoginByRememberMe(String login, String password, Locale locale, Map<String, Object> loginParams) throws LoginException {
+    protected UserSession doLoginByRememberMe(String login, String password, Locale locale, Map<String, Object> loginParams)
+            throws LoginException {
         return loginService.loginByRememberMe(login, password, locale, loginParams);
     }
 
@@ -91,8 +128,8 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
             throw new IllegalArgumentException("Locale is null");
         }
 
-        String password = configuration.getConfig(WebAuthConfig.class).getTrustedClientPassword();
-        update(doLoginTrusted(login, password, locale, getLoginParams()));
+        String password = webAuthConfig.getTrustedClientPassword();
+        update(doLoginTrusted(login, password, locale, getLoginParams()), SessionMode.AUTHENTICATED);
 
         UserSession session = getSession();
         if (session == null) {
@@ -105,25 +142,20 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
      * Forward login logic to {@link com.haulmont.cuba.security.app.LoginService}.
      * Can be overridden to change login logic.
      *
-     * @param login         login name
-     * @param password      encrypted password
-     * @param locale        client locale
-     * @param loginParams   login params
+     * @param login       login name
+     * @param password    encrypted password
+     * @param locale      client locale
+     * @param loginParams login params
      * @return created user session
      * @throws LoginException in case of unsuccessful login
      */
-    protected UserSession doLoginTrusted(String login, String password, Locale locale, Map<String, Object> loginParams) throws LoginException {
+    protected UserSession doLoginTrusted(String login, String password, Locale locale, Map<String, Object> loginParams)
+            throws LoginException {
         return loginService.loginTrusted(login, password, locale, loginParams);
     }
 
     protected Map<String, Object> getLoginParams() {
         return ParamsMap.of(ClientType.class.getName(), ClientType.WEB.name());
-    }
-
-    @Override
-    public String logout() {
-        super.logout();
-        return configuration.getConfig(WebAuthConfig.class).getExternalAuthentication() ? "login" : "";
     }
 
     @Override

@@ -112,6 +112,8 @@ public class UserEditor extends AbstractEditor<User> {
 
     @Override
     public void init(Map<String, Object> params) {
+        super.init(params);
+
         userDs.addItemPropertyChangeListener(new NameBuilderListener<>(userDs));
         userDs.addItemPropertyChangeListener(e -> {
             if ("timeZoneAuto".equals(e.getProperty())) {

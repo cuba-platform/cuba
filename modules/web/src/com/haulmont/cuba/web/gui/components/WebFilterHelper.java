@@ -24,9 +24,6 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
@@ -35,7 +32,6 @@ import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
 import com.haulmont.cuba.web.app.folders.CubaFoldersPane;
@@ -85,8 +81,12 @@ public class WebFilterHelper implements FilterHelper {
     @Override
     @Nullable
     public AbstractSearchFolder saveFolder(AbstractSearchFolder folder) {
-        AppWindow appWindow = AppUI.getCurrent().getAppWindow();
-        FoldersPane foldersPane = appWindow.getMainWindow().getFoldersPane();
+        Window.TopLevelWindow topLevelWindow = AppUI.getCurrent().getTopLevelWindow();
+        FoldersPane foldersPane = null;
+        if (topLevelWindow instanceof Window.HasFoldersPane) {
+            foldersPane = ((Window.HasFoldersPane) topLevelWindow).getFoldersPane();
+        }
+
         if (foldersPane == null)
             return null;
 
@@ -214,8 +214,12 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public Object getFoldersPane() {
-        AppWindow appWindow = AppUI.getCurrent().getAppWindow();
-        FoldersPane foldersPane = appWindow.getMainWindow().getFoldersPane();
+        Window.TopLevelWindow topLevelWindow = AppUI.getCurrent().getTopLevelWindow();
+        FoldersPane foldersPane = null;
+        if (topLevelWindow instanceof Window.HasFoldersPane) {
+            foldersPane = ((Window.HasFoldersPane) topLevelWindow).getFoldersPane();
+        }
+
         if (foldersPane == null) {
             return null;
         }
@@ -225,8 +229,12 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void removeFolderFromFoldersPane(Folder folder) {
-        AppWindow appWindow = AppUI.getCurrent().getAppWindow();
-        FoldersPane foldersPane = appWindow.getMainWindow().getFoldersPane();
+        Window.TopLevelWindow topLevelWindow = AppUI.getCurrent().getTopLevelWindow();
+        FoldersPane foldersPane = null;
+        if (topLevelWindow instanceof Window.HasFoldersPane) {
+            foldersPane = ((Window.HasFoldersPane) topLevelWindow).getFoldersPane();
+        }
+
         if (foldersPane == null) {
             return;
         }

@@ -19,11 +19,14 @@ package com.haulmont.cuba.portal.sys.remoting;
 
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceDirectory;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceInvocation;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceInvocationResult;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceInvoker;
+import com.haulmont.cuba.security.global.ClientBasedSession;
+import com.haulmont.cuba.security.global.UserSession;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.remoting.support.RemoteAccessor;
@@ -123,9 +126,21 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
                 }
             }
 
-            UUID sessionId = AppContext.getSecurityContext() == null ? null : AppContext.getSecurityContext().getSessionId();
+            SecurityContext securityContext = AppContext.getSecurityContext();
+            UUID sessionId = securityContext == null ? null : securityContext.getSessionId();
+
+            String requestScopeLocale = null;
+            if (securityContext != null) {
+                UserSession session = securityContext.getSession();
+                if (session instanceof ClientBasedSession) {
+                    if (((ClientBasedSession) session).isLocaleRequestScoped()) {
+                        requestScopeLocale = session.getLocale() != null ? session.getLocale().toLanguageTag() : null;
+                    }
+                }
+            }
+
             LocalServiceInvocation invocation = new LocalServiceInvocation(
-                    method.getName(), parameterTypeNames, argumentsData, notSerializableArguments, sessionId);
+                    method.getName(), parameterTypeNames, argumentsData, notSerializableArguments, sessionId, requestScopeLocale);
 
             LocalServiceInvocationResult result = invoker.invoke(invocation);
             AppContext.setSecurityContext(AppContext.getSecurityContext());//need reset application name in LogMDC for the current thread

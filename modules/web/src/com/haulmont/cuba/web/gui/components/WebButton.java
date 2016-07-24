@@ -31,15 +31,12 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
 
     public WebButton() {
         component = new CubaButton();
-        component.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-            @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                beforeActionPerformed();
-                if (action != null) {
-                    performAction(action);
-                }
-                afterActionPerformed();
+        component.addClickListener((com.vaadin.ui.Button.ClickListener) event -> {
+            beforeActionPerformed();
+            if (action != null) {
+                performAction(action);
             }
+            afterActionPerformed();
         });
         component.setDescription(null);
     }
@@ -114,20 +111,17 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
 
                 action.addOwner(this);
 
-                actionPropertyChangeListener = new PropertyChangeListener() {
-                    @Override
-                    public void propertyChange(PropertyChangeEvent evt) {
-                        if (Action.PROP_ICON.equals(evt.getPropertyName())) {
-                            setIcon(WebButton.this.action.getIcon());
-                        } else if (Action.PROP_CAPTION.equals(evt.getPropertyName())) {
-                            setCaption(WebButton.this.action.getCaption());
-                        } else if (Action.PROP_DESCRIPTION.equals(evt.getPropertyName())) {
-                            setDescription(WebButton.this.action.getDescription());
-                        } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
-                            setEnabled(WebButton.this.action.isEnabled());
-                        } else if (Action.PROP_VISIBLE.equals(evt.getPropertyName())) {
-                            setVisible(WebButton.this.action.isVisible());
-                        }
+                actionPropertyChangeListener = evt -> {
+                    if (Action.PROP_ICON.equals(evt.getPropertyName())) {
+                        setIcon(WebButton.this.action.getIcon());
+                    } else if (Action.PROP_CAPTION.equals(evt.getPropertyName())) {
+                        setCaption(WebButton.this.action.getCaption());
+                    } else if (Action.PROP_DESCRIPTION.equals(evt.getPropertyName())) {
+                        setDescription(WebButton.this.action.getDescription());
+                    } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
+                        setEnabled(WebButton.this.action.isEnabled());
+                    } else if (Action.PROP_VISIBLE.equals(evt.getPropertyName())) {
+                        setVisible(WebButton.this.action.isVisible());
                     }
                 };
                 action.addPropertyChangeListener(actionPropertyChangeListener);

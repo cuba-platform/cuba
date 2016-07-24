@@ -272,4 +272,18 @@ public interface WebConfig extends Config {
     @Property("cuba.web.pushEnabled")
     @DefaultBoolean(value = true)
     boolean getPushEnabled();
+
+    /**
+     * @return true if production mode is enabled
+     */
+    @Property("cuba.web.productionMode")
+    @DefaultBoolean(value = true)
+    boolean getProductionMode();
+
+    /**
+     * @return GWT widgetset class
+     */
+    @Property("cuba.web.widgetSet")
+    @Default("com.haulmont.cuba.web.toolkit.ui.WidgetSet")
+    String getWidgetSet();
 }

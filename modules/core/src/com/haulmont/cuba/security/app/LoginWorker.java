@@ -95,6 +95,14 @@ public interface LoginWorker {
     UserSession loginSystem(String login) throws LoginException;
 
     /**
+     * Login anonymous session for trusted clients
+     *
+     * @return anonymous user session that is not replicated in cluster
+     * @throws LoginException
+     */
+    UserSession loginAnonymous() throws LoginException;
+
+    /**
      * @see com.haulmont.cuba.security.app.LoginService#checkRememberMe(String, String)
      */
     boolean checkRememberMe(String login, String rememberMeToken);

@@ -525,14 +525,24 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
         this.styleName = styleName;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <X> X unwrap(Class<X> internalComponentClass) {
-        return (X) getComponent();
+        if (getComponent() instanceof Component.Wrapper) {
+            return (X) ((Component.Wrapper) frame).getComponent();
+        }
+
+        return (X) frame;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <X> X unwrapComposition(Class<X> internalCompositionClass) {
-        return (X) getComponent();
+        if (getComposition() instanceof Component.Wrapper) {
+            return (X) ((Component.Wrapper) frame).getComposition();
+        }
+
+        return (X) frame;
     }
 
     @Override

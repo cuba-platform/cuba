@@ -124,6 +124,19 @@ public class CubaApplicationServlet extends VaadinServlet {
             initParameters.setProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(sessionPingPeriod));
         }
 
+        String widgetSet = webConfig.getWidgetSet();
+        initParameters.setProperty(Constants.PARAMETER_WIDGETSET, widgetSet);
+
+        boolean productionMode = webConfig.getProductionMode();
+        if (!productionMode) {
+            initParameters.setProperty(Constants.SERVLET_PARAMETER_PRODUCTION_MODE, String.valueOf(false));
+        }
+
+        initParameters.setProperty(Constants.SERVLET_PARAMETER_UI_PROVIDER, CubaUIProvider.class.getCanonicalName());
+
+        // not actually used by CubaUIProvider
+        initParameters.setProperty(VaadinSession.UI_PARAMETER, AppUI.class.getCanonicalName());
+
         return super.createDeploymentConfiguration(initParameters);
     }
 

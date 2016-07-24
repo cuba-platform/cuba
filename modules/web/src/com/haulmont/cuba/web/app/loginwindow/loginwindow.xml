@@ -1,0 +1,82 @@
+<!--
+  ~ Copyright (c) 2008-2016 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        class="com.haulmont.cuba.web.app.loginwindow.AppLoginWindow"
+        caption="mainMsg://loginWindow.caption">
+
+    <actions>
+        <action id="submit" shortcut="ENTER" invoke="login"
+                caption="mainMsg://loginWindow.okButton"
+                icon="app/images/login-button.png"/>
+    </actions>
+
+    <layout stylename="cuba-login-main-layout">
+        <vbox stylename="cuba-login-panel" width="AUTO"
+              margin="true" spacing="true" align="MIDDLE_CENTER">
+            <hbox stylename="cuba-login-title" spacing="true" align="MIDDLE_CENTER">
+                <embedded id="logoImage"
+                          width="AUTO"
+                          height="AUTO"
+                          type="IMAGE"
+                          align="MIDDLE_LEFT"
+                          stylename="cuba-login-icon"/>
+
+                <label id="welcomeLabel"
+                       align="MIDDLE_LEFT"
+                       stylename="cuba-login-caption"
+                       value="mainMsg://loginWindow.welcomeLabel"/>
+            </hbox>
+
+            <grid stylename="cuba-login-form" spacing="true">
+                <columns count="2"/>
+                <rows>
+                    <row>
+                        <label id="loginFieldLabel" value="mainMsg://loginWindow.loginField" align="MIDDLE_LEFT"
+                               stylename="login-form-label"/>
+
+                        <textField id="loginField" stylename="cuba-login-username"
+                                   width="theme://cuba.web.LoginWindow.field.width"/>
+                    </row>
+                    <row>
+                        <label id="passwordFieldLabel" value="mainMsg://loginWindow.passwordField" align="MIDDLE_LEFT"
+                               stylename="login-form-label"/>
+
+                        <passwordField id="passwordField" stylename="cuba-login-password" autocomplete="true"
+                                       width="theme://cuba.web.LoginWindow.field.width"/>
+                    </row>
+                    <row>
+                        <label id="localesSelectLabel" value="mainMsg://loginWindow.localesSelect" align="MIDDLE_LEFT"
+                               stylename="login-form-label"/>
+
+                        <lookupField id="localesSelect" width="theme://cuba.web.LoginWindow.field.width"
+                                     nullOptionVisible="false" textInputAllowed="false"/>
+                    </row>
+                    <row>
+                        <label id="rememberMeSpacer"/>
+
+                        <checkBox id="rememberMeCheckBox" caption="mainMsg://loginWindow.rememberMe"/>
+                    </row>
+                    <row>
+                        <label id="submitSpacer"/>
+
+                        <button id="loginButton" action="submit"/>
+                    </row>
+                </rows>
+            </grid>
+        </vbox>
+    </layout>
+</window>

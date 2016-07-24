@@ -17,8 +17,6 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.client.ClientUserSession;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -38,30 +36,46 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
  * Abstract class that encapsulates common connection behaviour for web-client.
- *
  */
 public abstract class AbstractConnection implements Connection {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger log = LoggerFactory.getLogger(AbstractConnection.class);
 
-    protected Map<ConnectionListener, Object> connListeners = new HashMap<>();
-    protected Map<UserSubstitutionListener, Object> usListeners = new HashMap<>();
+    protected List<ConnectionListener> connectionListeners = new ArrayList<>();
+    protected List<UserSubstitutionListener> userSubstitutionListeners = new ArrayList<>();
 
     protected boolean connected;
 
-    protected LoginService loginService = AppBeans.get(LoginService.NAME);
-    protected UserSessionService userSessionService = AppBeans.get(UserSessionService.NAME);
-    protected Messages messages = AppBeans.get(Messages.NAME);
+    @Inject
+    protected LoginService loginService;
+    @Inject
+    protected UserSessionService userSessionService;
+    @Inject
+    protected Messages messages;
+    @Inject
+    protected GlobalConfig globalConfig;
 
     @Override
     public boolean isConnected() {
         return connected;
+    }
+
+    @Override
+    public boolean isAuthenticated() {
+        if (!connected) {
+            return false;
+        }
+
+        UserSession session = getSession();
+        return session instanceof ClientUserSession
+                && ((ClientUserSession) session).isAuthenticated();
     }
 
     @Override
@@ -95,8 +109,9 @@ public abstract class AbstractConnection implements Connection {
     }
 
     @Override
-    public void update(UserSession session) throws LoginException {
+    public void update(UserSession session, SessionMode sessionMode) throws LoginException {
         ClientUserSession clientUserSession = new ClientUserSession(session);
+        clientUserSession.setAuthenticated(sessionMode == SessionMode.AUTHENTICATED);
 
         setSession(clientUserSession);
 
@@ -118,11 +133,17 @@ public abstract class AbstractConnection implements Connection {
 
         App app = App.getInstance();
 
-        if (!StringUtils.isBlank(session.getUser().getIpMask())) {
+        boolean sessionIsAuthenticated = true;
+        if (session instanceof ClientUserSession) {
+            sessionIsAuthenticated = ((ClientUserSession) session).isAuthenticated();
+        }
+
+        if (sessionIsAuthenticated && !StringUtils.isBlank(session.getUser().getIpMask())) {
             IpMatcher ipMatcher = new IpMatcher(session.getUser().getIpMask());
             if (!ipMatcher.match(app.getClientAddress())) {
-                log.info(String.format("IP address %s is not permitted for user %s", app.getClientAddress(), session.getUser().toString()));
-                throw new LoginException(messages.getMessage(getClass(), "login.invalidIP"));
+                log.info("IP address {} is not permitted for user {}", app.getClientAddress(), session.getUser());
+
+                throw new LoginException(messages.getMainMessage("login.invalidIP"));
             }
         }
 
@@ -130,29 +151,28 @@ public abstract class AbstractConnection implements Connection {
         String clientInfo = makeClientInfo();
         session.setClientInfo(clientInfo);
 
-        if (Boolean.TRUE.equals(session.getUser().getTimeZoneAuto()))
+        if (Boolean.TRUE.equals(session.getUser().getTimeZoneAuto())) {
             session.setTimeZone(detectTimeZone());
+        }
 
         fireConnectionListeners();
 
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Logged in: user=%s, ip=%s, clientInfo=%s",
-                    session.getUser().getLogin(), app.getClientAddress(), clientInfo));
-        }
+        log.debug("Logged in: user={}, ip={}, clientInfo={}",
+                session.getUser().getLogin(), app.getClientAddress(), clientInfo);
     }
 
     protected String makeClientInfo() {
         Page page = AppUI.getCurrent().getPage();
         WebBrowser webBrowser = page.getWebBrowser();
 
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
-        String serverInfo = "Web (" +
-                globalConfig.getWebHostName() + ":" +
-                globalConfig.getWebPort() + "/" +
-                globalConfig.getWebContextName() + ") ";
+        //noinspection UnnecessaryLocalVariable
+        String serverInfo = String.format("Web (%s:%s/%s) %s",
+                globalConfig.getWebHostName(),
+                globalConfig.getWebPort(),
+                globalConfig.getWebContextName(),
+                webBrowser.getBrowserApplication());
 
-        return serverInfo + webBrowser.getBrowserApplication();
+        return serverInfo;
     }
 
     protected TimeZone detectTimeZone() {
@@ -161,9 +181,9 @@ public abstract class AbstractConnection implements Connection {
 
         int offset = webBrowser.getTimezoneOffset() / 1000 / 60;
         String hours = StringUtils.leftPad(String.valueOf(offset / 60), 2, '0');
-        String mins = StringUtils.leftPad(String.valueOf(offset % 60), 2, '0');
+        String minutes = StringUtils.leftPad(String.valueOf(offset % 60), 2, '0');
         char sign = offset >= 0 ? '+' : '-';
-        return TimeZone.getTimeZone("GMT" + sign + hours + mins);
+        return TimeZone.getTimeZone("GMT" + sign + hours + minutes);
     }
 
     @Override
@@ -173,55 +193,59 @@ public abstract class AbstractConnection implements Connection {
     }
 
     @Override
-    public String logout() {
-        if (!connected)
-            return null;
+    public void logout() {
         internalLogout();
         try {
             fireConnectionListeners();
         } catch (LoginException e) {
             log.warn("Exception on logout:", e);
         }
-        return null;
     }
 
     protected void internalLogout() {
-        loginService.logout();
+        if (getSession() instanceof ClientUserSession
+                && ((ClientUserSession) getSession()).isAuthenticated()) {
+            loginService.logout();
+        }
 
         AppContext.setSecurityContext(null);
-        usListeners.clear();
+        userSubstitutionListeners.clear();
         connected = false;
         setSession(null);
     }
 
     @Override
     public void addConnectionListener(ConnectionListener listener) {
-        connListeners.put(listener, null);
+        if (!connectionListeners.contains(listener)) {
+            connectionListeners.add(listener);
+        }
     }
 
     @Override
     public void removeConnectionListener(ConnectionListener listener) {
-        connListeners.remove(listener);
+        connectionListeners.remove(listener);
     }
 
     @Override
     public void addSubstitutionListener(UserSubstitutionListener listener) {
-        usListeners.put(listener, null);
+        if (!userSubstitutionListeners.contains(listener)) {
+            userSubstitutionListeners.add(listener);
+        }
     }
 
     @Override
     public void removeSubstitutionListener(UserSubstitutionListener listener) {
-        usListeners.remove(listener);
+        userSubstitutionListeners.remove(listener);
     }
 
     protected void fireConnectionListeners() throws LoginException {
-        for (ConnectionListener listener : connListeners.keySet()) {
+        for (ConnectionListener listener : new ArrayList<>(connectionListeners)) {
             listener.connectionStateChanged(this);
         }
     }
 
     protected void fireSubstitutionListeners() {
-        for (UserSubstitutionListener listener : usListeners.keySet()) {
+        for (UserSubstitutionListener listener : new ArrayList<>(userSubstitutionListeners)) {
             listener.userSubstituted(this);
         }
     }

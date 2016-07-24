@@ -17,46 +17,74 @@
 
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.client.ClientUserSession;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.ScreenProfilerConfig;
 import com.haulmont.cuba.gui.TestIdManager;
+import com.haulmont.cuba.gui.components.Window.TopLevelWindow;
+import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.app.UserSettingsTools;
+import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.sys.LinkHandler;
-import com.haulmont.cuba.web.toolkit.ui.CubaClientManager;
+import com.haulmont.cuba.web.toolkit.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.client.appui.AppUIClientRpc;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
-import com.vaadin.server.*;
+import com.vaadin.server.ErrorHandler;
+import com.vaadin.server.Extension;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.WrappedSession;
 import com.vaadin.shared.ui.ui.Transport;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.UI;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import javax.inject.Inject;
+import java.util.*;
 
 /**
  * Single window / page of web application. Root component of Vaadin layout.
  */
+@org.springframework.stereotype.Component(AppUI.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Push(transport = Transport.WEBSOCKET_XHR)
 @PreserveOnRefresh
-public class AppUI extends UI implements ErrorHandler {
+public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.HistoryBackHandler {
 
-    public static final String APPLICATION_CLASS_CONFIG_KEY = "Application";
+    public static final String NAME = "cuba_AppUI";
 
     public static final String LAST_REQUEST_ACTION_ATTR = "lastRequestAction";
-
     public static final String LAST_REQUEST_PARAMS_ATTR = "lastRequestParams";
 
-    private final static Logger log = LoggerFactory.getLogger(AppUI.class);
+    private static final Logger log = LoggerFactory.getLogger(AppUI.class);
 
-    protected final App app;
+    protected App app;
 
-    protected boolean applicationInitRequired = false;
+    @Inject
+    protected Messages messages;
+
+    @Inject
+    protected GlobalConfig globalConfig;
+
+    @Inject
+    protected WebConfig webConfig;
+
+    @Inject
+    protected ScreenProfilerConfig screenProfilerConfig;
+
+    @Inject
+    protected UserSettingsTools userSettingsTools;
+
+    @Inject
+    protected ThemeConstantsRepository themeConstantsRepository;
 
     protected TestIdManager testIdManager = new TestIdManager();
 
@@ -68,47 +96,21 @@ public class AppUI extends UI implements ErrorHandler {
 
     protected CubaClientManager clientManager;
 
+    protected ScreenClientProfilerAgent clientProfiler;
+
+    protected CubaFileDownloader fileDownloader;
+
+    protected CubaHistoryControl historyControl;
+
+    protected TopLevelWindow topLevelWindow;
+
     public AppUI() {
-        log.trace("Creating UI {}", this);
-        if (!App.isBound()) {
-            app = createApplication();
-
-            VaadinSession vSession = VaadinSession.getCurrent();
-            vSession.setAttribute(App.class, app);
-
-            // set root error handler for all session
-            vSession.setErrorHandler((ErrorHandler) event -> {
-                try {
-                    app.getExceptionHandlers().handle(event);
-                    app.getAppLog().log(event);
-                } catch (Throwable e) {
-                    //noinspection ThrowableResultOfMethodCallIgnored
-                    log.error("Error handling exception\nOriginal exception:\n{}\nException in handlers:\n{}",
-                            ExceptionUtils.getStackTrace(event.getThrowable()), ExceptionUtils.getStackTrace(e)
-                    );
-                }
-            });
-
-            applicationInitRequired = true;
-        } else {
-            app = App.getInstance();
-        }
-
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        testMode = configuration.getConfig(GlobalConfig.class).getTestMode();
-
-        // do not grab focus
-        setTabIndex(-1);
-
-        initJsLibraries();
-
-        initInternalComponents();
     }
 
     /**
      * Dynamically init external JS libraries.
      * You should create JavaScriptExtension class and extend UI object here. <br/>
-     *
+     * <p>
      * Example: <br/>
      * <pre><code>
      * JavaScriptExtension:
@@ -132,7 +134,7 @@ public class AppUI extends UI implements ErrorHandler {
      * protected void initJsLibraries() {
      *     new JQueryIntegration().extend(this);
      * }</code></pre>
-     *
+     * <p>
      * If you want to include scripts to generated page statically see {@link com.haulmont.cuba.web.sys.CubaBootstrapListener}.
      */
     protected void initJsLibraries() {
@@ -141,45 +143,112 @@ public class AppUI extends UI implements ErrorHandler {
     protected void initInternalComponents() {
         clientManager = new CubaClientManager();
         clientManager.extend(this);
+
+        fileDownloader = new CubaFileDownloader();
+        fileDownloader.extend(this);
+
+        clientProfiler = new ScreenClientProfilerAgent();
+        clientProfiler.extend(this);
+
+        if (webConfig.getAllowHandleBrowserHistoryBack()) {
+            historyControl = new CubaHistoryControl();
+            historyControl.extend(this, this);
+        }
     }
 
     protected App createApplication() {
-        String applicationClass = getApplicationClass();
-        App application;
-        try {
-            Class<?> aClass = getClass().getClassLoader().loadClass(applicationClass);
-            application = (App) aClass.newInstance();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            throw new Error(String.format("Unable to create application '%s'", applicationClass), e);
-        }
-
-        return application;
-    }
-
-    protected String getApplicationClass() {
-        DeploymentConfiguration vConf = VaadinService.getCurrent().getDeploymentConfiguration();
-        return vConf.getApplicationOrSystemProperty(APPLICATION_CLASS_CONFIG_KEY,
-                DefaultApp.class.getCanonicalName());
+        return AppBeans.getPrototype(App.NAME);
     }
 
     @Override
     protected void init(VaadinRequest request) {
-        log.debug("Initializing AppUI");
-        if (applicationInitRequired) {
-            app.init();
+        log.trace("Initializing UI {}", this);
 
-            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            Locale locale = messageTools.trimLocale(request.getLocale());
-            app.setLocale(locale);
+        try {
+            this.testMode = globalConfig.getTestMode();
 
-            applicationInitRequired = false;
+            // init error handlers
+            setErrorHandler(this);
+
+            // do not grab focus
+            setTabIndex(-1);
+
+            initJsLibraries();
+
+            initInternalComponents();
+
+            if (!App.isBound()) {
+                App app = createApplication();
+                app.init(request.getLocale());
+
+                this.app = app;
+            } else {
+                this.app = App.getInstance();
+            }
+
+            setupUI();
+        } catch (Exception e) {
+            log.error("Unable to init ui", e);
+
+            // unable to connect to middle ware
+            showCriticalExceptionMessage(e);
+            return;
         }
-        // init error handlers
-        setErrorHandler(this);
-        // open login or main window
-        app.initView(this);
 
         processExternalLink(request);
+    }
+
+    protected void showCriticalExceptionMessage(Exception e) {
+        String initErrorCaption = messages.getMainMessage("app.initErrorCaption");
+        String initErrorMessage = messages.getMainMessage("app.initErrorMessage");
+
+        VerticalLayout content = new VerticalLayout();
+        content.setStyleName("cuba-init-error-view");
+        content.setSizeFull();
+
+        VerticalLayout errorPanel = new VerticalLayout();
+        errorPanel.setStyleName("cuba-init-error-panel");
+        errorPanel.setWidthUndefined();
+        errorPanel.setSpacing(true);
+
+        Label captionLabel = new Label(initErrorCaption);
+        captionLabel.setWidthUndefined();
+        captionLabel.setStyleName("cuba-init-error-caption");
+        captionLabel.addStyleName("h2");
+        captionLabel.setValue(initErrorCaption);
+
+        errorPanel.addComponent(captionLabel);
+
+        Label messageLabel = new Label(initErrorCaption);
+        messageLabel.setWidthUndefined();
+        messageLabel.setStyleName("cuba-init-error-message");
+        messageLabel.setValue(initErrorMessage);
+
+        errorPanel.addComponent(messageLabel);
+
+        Button retryButton = new Button(messages.getMainMessage("app.initRetry"));
+        retryButton.setStyleName("cuba-init-error-retry");
+        retryButton.addClickListener((Button.ClickListener) event -> {
+            // always restart UI
+            String url = ControllerUtils.getLocationWithoutParams() + "?restartApp";
+            getPage().open(url, "_self");
+        });
+
+        errorPanel.addComponent(retryButton);
+        errorPanel.setComponentAlignment(retryButton, Alignment.MIDDLE_CENTER);
+
+        content.addComponent(errorPanel);
+        content.setComponentAlignment(errorPanel, Alignment.MIDDLE_CENTER);
+
+        setContent(content);
+    }
+
+    protected void setupUI() throws LoginException {
+        if (!app.getConnection().isConnected() && !app.loginOnStart()) {
+            app.getConnection().loginAnonymous(app.getLocale());
+        } else {
+            app.createTopLevelWindow(this);
+        }
     }
 
     @Override
@@ -187,14 +256,15 @@ public class AppUI extends UI implements ErrorHandler {
         super.refresh(request);
 
         // handle page refresh
-        if (app.getConnection().isConnected()) {
+        if (app.getConnection().isAuthenticated()) {
             // Ping middleware session if connected
-            log.debug("Check middleware session");
+            log.debug("Ping middleware session");
 
             try {
                 UserSessionService service = AppBeans.get(UserSessionService.NAME);
                 UserSession session = app.getConnection().getSession();
-                if (session != null) {
+                if (session instanceof ClientUserSession
+                        && ((ClientUserSession) session).isAuthenticated()) {
                     service.getUserSession(session.getId());
                 }
             } catch (Exception e) {
@@ -207,17 +277,6 @@ public class AppUI extends UI implements ErrorHandler {
     public void handleRequest(VaadinRequest request) {
         // on refresh page call
         processExternalLink(request);
-    }
-
-    public void showView(UIView view) {
-        try {
-            setContent(view);
-            getPage().setTitle(view.getTitle());
-
-            view.show();
-        } catch (Exception e) {
-            error(new com.vaadin.server.ErrorEvent(e));
-        }
     }
 
     /**
@@ -234,15 +293,18 @@ public class AppUI extends UI implements ErrorHandler {
         return app;
     }
 
-    /**
-     * @return AppWindow instance or null if not logged in
-     */
-    public AppWindow getAppWindow() {
-        Component currentUIView = getContent();
-        if (currentUIView instanceof AppWindow) {
-            return (AppWindow) currentUIView;
-        } else {
-            return null;
+    public TopLevelWindow getTopLevelWindow() {
+        return topLevelWindow;
+    }
+
+    public void setTopLevelWindow(TopLevelWindow window) {
+        if (this.topLevelWindow != window) {
+            this.topLevelWindow = window;
+
+            // unregister previous components
+            setContent(null);
+
+            setContent(topLevelWindow.unwrapComposition(Component.class));
         }
     }
 
@@ -268,14 +330,14 @@ public class AppUI extends UI implements ErrorHandler {
     }
 
     public void processExternalLink(VaadinRequest request) {
-        String action = (String) request.getWrappedSession().getAttribute(LAST_REQUEST_ACTION_ATTR);
+        WrappedSession wrappedSession = request.getWrappedSession();
 
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        WebConfig webConfig = configuration.getConfig(WebConfig.class);
+        String action = (String) wrappedSession.getAttribute(LAST_REQUEST_ACTION_ATTR);
+
         if (webConfig.getLinkHandlerActions().contains(action)) {
             //noinspection unchecked
             Map<String, String> params =
-                    (Map<String, String>) request.getWrappedSession().getAttribute(LAST_REQUEST_PARAMS_ATTR);
+                    (Map<String, String>) wrappedSession.getAttribute(LAST_REQUEST_PARAMS_ATTR);
             if (params == null) {
                 log.warn("Unable to process the external link: lastRequestParams not found in session");
                 return;
@@ -327,14 +389,15 @@ public class AppUI extends UI implements ErrorHandler {
     }
 
     public void clearProfiledScreens(List<String> profilerMarkers) {
-        for (String profilerMarker : profilerMarkers) {
-            profiledScreens.remove(profilerMarker);
+        if (profiledScreens != null) {
+            for (String profilerMarker : profilerMarkers) {
+                profiledScreens.remove(profilerMarker);
+            }
         }
     }
 
     protected void updateClientSystemMessages(Locale locale) {
         CubaClientManager.SystemMessages msgs = new CubaClientManager.SystemMessages();
-        Messages messages = AppBeans.get(Messages.NAME);
 
         msgs.communicationErrorCaption = messages.getMainMessage("communicationErrorCaption", locale);
         msgs.communicationErrorMessage = messages.getMainMessage("communicationErrorMessage", locale);
@@ -349,5 +412,82 @@ public class AppUI extends UI implements ErrorHandler {
 
         getReconnectDialogConfiguration().setDialogText(messages.getMainMessage("reconnectDialogText", locale));
         getReconnectDialogConfiguration().setDialogTextGaveUp(messages.getMainMessage("reconnectDialogTextGaveUp", locale));
+    }
+
+    @Override
+    public void onHistoryBackPerformed() {
+        TopLevelWindow topLevelWindow = getTopLevelWindow();
+        if (topLevelWindow instanceof CubaHistoryControl.HistoryBackHandler) {
+            ((CubaHistoryControl.HistoryBackHandler) topLevelWindow).onHistoryBackPerformed();
+        }
+    }
+
+    protected AbstractComponent getTopLevelWindowComposition() {
+        if (topLevelWindow == null) {
+            throw new IllegalStateException("UI does not have top level window");
+        }
+
+        return topLevelWindow.unwrapComposition(AbstractComponent.class);
+    }
+
+    public List<CubaTimer> getTimers() {
+        AbstractComponent timersHolder = getTopLevelWindowComposition();
+
+        List<CubaTimer> timers = new ArrayList<>();
+        for (Extension extension : timersHolder.getExtensions()) {
+            if (extension instanceof CubaTimer) {
+                timers.add((CubaTimer) extension);
+            }
+        }
+        return timers;
+    }
+
+    public void addTimer(CubaTimer timer) {
+        AbstractComponent timersHolder = getTopLevelWindowComposition();
+
+        if (!timersHolder.getExtensions().contains(timer)) {
+            timer.extend(timersHolder);
+        }
+    }
+
+    public void removeTimer(CubaTimer timer) {
+        AbstractComponent timersHolder = getTopLevelWindowComposition();
+
+        timersHolder.removeExtension(timer);
+    }
+
+    public void beforeTopLevelWindowInit() {
+        updateUiTheme();
+
+        setProfilerParameters();
+
+        updateClientSystemMessages(app.getLocale());
+
+        getTestIdManager().reset();
+    }
+
+    protected void setProfilerParameters() {
+        clientProfiler.setFlushEventsCount(screenProfilerConfig.getFlushEventsCount());
+        clientProfiler.setFlushTimeout(screenProfilerConfig.getFlushTimeout());
+    }
+
+    protected void updateUiTheme() {
+        // load theme from user settings
+        String themeName = webConfig.getAppWindowTheme();
+
+        themeName = userSettingsTools.loadAppWindowTheme() == null ? themeName : userSettingsTools.loadAppWindowTheme();
+
+        if (!Objects.equals(themeName, getTheme())) {
+            // check theme support
+            Set<String> supportedThemes = themeConstantsRepository.getAvailableThemes();
+            if (supportedThemes.contains(themeName)) {
+                app.applyTheme(themeName);
+                setTheme(themeName);
+            }
+        }
+    }
+
+    public CubaFileDownloader getFileDownloader() {
+        return fileDownloader;
     }
 }

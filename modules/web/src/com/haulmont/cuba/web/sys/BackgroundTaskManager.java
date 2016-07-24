@@ -68,7 +68,7 @@ public class BackgroundTaskManager {
         // Clean task set
         taskSet.clear();
         if (count > 0) {
-            log.debug(String.format("Interrupted %s background tasks", count));
+            log.debug("Interrupted {} background tasks", count);
         }
     }
 }

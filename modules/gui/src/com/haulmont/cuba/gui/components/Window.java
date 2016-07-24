@@ -361,15 +361,25 @@ public interface Window extends Frame, Component.HasCaption {
         }
     }
 
-    interface MainWindow extends Window {
+    interface TopLevelWindow extends Window {
+    }
+
+    interface HasWorkArea {
         @Nullable
         AppWorkArea getWorkArea();
+    }
 
+    interface HasUserIndicator {
         @Nullable
         UserIndicator getUserIndicator();
+    }
 
+    interface HasFoldersPane {
         @Nullable
         FoldersPane getFoldersPane();
+    }
+
+    interface MainWindow extends TopLevelWindow, HasWorkArea, HasUserIndicator, HasFoldersPane {
     }
 
     /**

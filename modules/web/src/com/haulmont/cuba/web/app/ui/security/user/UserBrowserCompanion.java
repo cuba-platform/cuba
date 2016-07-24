@@ -17,12 +17,20 @@
 package com.haulmont.cuba.web.app.ui.security.user;
 
 import com.haulmont.cuba.gui.app.security.user.browse.UserBrowser;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.web.App;
 
 public class UserBrowserCompanion implements UserBrowser.Companion {
-
     @Override
     public void refreshUserSubstitutions() {
-        App.getInstance().getAppWindow().refreshUserSubstitutions();
+        Window.TopLevelWindow topLevelWindow = App.getInstance().getTopLevelWindow();
+
+        if (topLevelWindow instanceof Window.HasUserIndicator) {
+            UserIndicator userIndicator = ((Window.HasUserIndicator) topLevelWindow).getUserIndicator();
+            if (userIndicator != null) {
+                userIndicator.refreshUserSubstitutions();
+            }
+        }
     }
 }

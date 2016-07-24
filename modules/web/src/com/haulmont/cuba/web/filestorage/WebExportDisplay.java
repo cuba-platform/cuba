@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.export.*;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
 import com.vaadin.server.StreamResource;
@@ -100,7 +101,7 @@ public class WebExportDisplay implements ExportDisplay {
             }
         }
 
-        CubaFileDownloader fileDownloader = App.getInstance().getAppWindow().getFileDownloader();
+        CubaFileDownloader fileDownloader = AppUI.getCurrent().getFileDownloader();
 
         StreamResource resource = new StreamResource(new StreamResource.StreamSource() {
             @Override

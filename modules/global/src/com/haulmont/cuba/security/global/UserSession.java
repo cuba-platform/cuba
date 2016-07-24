@@ -18,6 +18,7 @@ package com.haulmont.cuba.security.global;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.sys.UserInvocationContext;
 import com.haulmont.cuba.security.entity.*;
 
 import javax.annotation.Nullable;
@@ -42,8 +43,8 @@ public class UserSession implements Serializable {
     protected UUID id;
     protected User user;
     protected User substitutedUser;
-    private List<String> roles = new ArrayList<>();
-    private EnumSet<RoleType> roleTypes = EnumSet.noneOf(RoleType.class);
+    protected List<String> roles = new ArrayList<>();
+    protected EnumSet<RoleType> roleTypes = EnumSet.noneOf(RoleType.class);
     protected Locale locale;
     protected TimeZone timeZone;
     protected String address;
@@ -162,6 +163,11 @@ public class UserSession implements Serializable {
      * User locale
      */
     public Locale getLocale() {
+        Locale requestScopeLocale = UserInvocationContext.getRequestScopeLocale(id);
+        if (requestScopeLocale != null) {
+            return requestScopeLocale;
+        }
+
         return locale;
     }
 

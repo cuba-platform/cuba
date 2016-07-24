@@ -23,11 +23,8 @@ import com.haulmont.cuba.gui.components.mainwindow.LogoutButton;
 import com.haulmont.cuba.web.Connection;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
-import com.haulmont.cuba.web.gui.components.WebButton;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.ui.Button;
-import org.apache.commons.lang.StringUtils;
 
 public class WebLogoutButton extends WebAbstractComponent<CubaButton> implements LogoutButton {
 
@@ -36,12 +33,9 @@ public class WebLogoutButton extends WebAbstractComponent<CubaButton> implements
     public WebLogoutButton() {
         component = new CubaButton();
         component.addStyleName(LOGOUT_BUTTON_STYLENAME);
-        component.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                logout();
-            }
-        });
+        component.addClickListener((Button.ClickListener) event ->
+                logout()
+        );
         component.setDescription(null);
     }
 
@@ -54,12 +48,9 @@ public class WebLogoutButton extends WebAbstractComponent<CubaButton> implements
         window.saveSettings();
 
         final WebWindowManager wm = (WebWindowManager) window.getWindowManager();
-        wm.checkModificationsAndCloseAll(new Runnable() {
-            @Override
-            public void run() {
-                Connection connection = wm.getApp().getConnection();
-                connection.logout();
-            }
+        wm.checkModificationsAndCloseAll(() -> {
+            Connection connection = wm.getApp().getConnection();
+            connection.logout();
         });
     }
 

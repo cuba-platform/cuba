@@ -17,23 +17,26 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class LocalServiceInvocation {
-
     private String methodName;
     private String[] parameterTypeNames;
     private byte[][] argumentsData;
     private Object[] notSerializableArguments;
     private UUID sessionId;
+    private String locale;
 
     public LocalServiceInvocation(String methodName, String[] parameterTypeNames,
-                                  byte[][] argumentsData, Object[] notSerializableArguments, UUID sessionId) {
+                                  byte[][] argumentsData, Object[] notSerializableArguments, UUID sessionId,
+                                  @Nullable String locale) {
         this.methodName = methodName;
         this.parameterTypeNames = parameterTypeNames;
         this.argumentsData = argumentsData;
         this.notSerializableArguments = notSerializableArguments;
         this.sessionId = sessionId;
+        this.locale = locale;
     }
 
     public byte[][] getArgumentsData() {
@@ -54,5 +57,9 @@ public class LocalServiceInvocation {
 
     public UUID getSessionId() {
         return sessionId;
+    }
+
+    public String getLocale() {
+        return locale;
     }
 }

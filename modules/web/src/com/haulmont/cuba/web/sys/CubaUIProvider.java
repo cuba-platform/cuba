@@ -22,11 +22,13 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.server.DefaultUIProvider;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.ui.ui.Transport;
+import com.vaadin.ui.UI;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.Cookie;
@@ -38,6 +40,9 @@ import java.util.Set;
  */
 public class CubaUIProvider extends DefaultUIProvider {
     protected Configuration configuration = AppBeans.get(Configuration.NAME);
+
+    public CubaUIProvider() {
+    }
 
     @Override
     public String getTheme(UICreateEvent event) {
@@ -95,5 +100,10 @@ public class CubaUIProvider extends DefaultUIProvider {
         }
 
         return super.getPushTransport(event);
+    }
+
+    @Override
+    public UI createInstance(UICreateEvent event) {
+        return AppBeans.getPrototype(AppUI.NAME);
     }
 }

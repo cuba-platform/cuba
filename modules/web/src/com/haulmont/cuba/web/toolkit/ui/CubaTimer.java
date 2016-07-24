@@ -19,11 +19,11 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
-import com.haulmont.cuba.web.UIView;
 import com.haulmont.cuba.web.toolkit.ui.client.timer.CubaTimerClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.timer.CubaTimerServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.timer.CubaTimerState;
 import com.vaadin.server.AbstractExtension;
+import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +42,8 @@ public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
         registerRpc(this);
     }
 
-    public void extend(UIView view) {
-        super.extend(view);
+    public void extend(AbstractComponent component) {
+        super.extend(component);
     }
 
     @Override
@@ -108,7 +108,8 @@ public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
 
             long endTime = System.currentTimeMillis();
             if (System.currentTimeMillis() - startTime > 2000) {
-                log.warn("Too long timer '" + getLoggingTimerId() + "' processing: " + (endTime - startTime) + " ms ");
+                long duration = endTime - startTime;
+                log.warn("Too long timer {} processing: {} ms ", getLoggingTimerId(), duration);
             }
         } catch (RuntimeException e) {
             handleOnTimerException(e);
@@ -124,13 +125,13 @@ public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
             for (RemoteException.Cause cause : re.getCauses()) {
                 //noinspection ThrowableResultOfMethodCallIgnored
                 if (cause.getThrowable() instanceof NoUserSessionException) {
-                    log.warn("NoUserSessionException in timer '" + getLoggingTimerId() + "', timer will be stopped");
+                    log.warn("NoUserSessionException in timer {}, timer will be stopped", getLoggingTimerId());
                     stop();
                     break;
                 }
             }
         } else if (ExceptionUtils.indexOfThrowable(e, NoUserSessionException.class) > -1) {
-            log.warn("NoUserSessionException in timer '" + getLoggingTimerId() + "', timer will be stopped");
+            log.warn("NoUserSessionException in timer {}, timer will be stopped", getLoggingTimerId());
             stop();
         }
 

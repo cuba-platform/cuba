@@ -158,7 +158,7 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
     }
 
     @Override
-    public void setOptionsMap(Map<String, Object> map) {
+    public void setOptionsMap(Map<String, ?> map) {
         if (optionsInitialized)
             return;
 

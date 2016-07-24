@@ -19,13 +19,14 @@ package com.haulmont.cuba.web.app.ui.security.user;
 
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
 import com.haulmont.cuba.gui.components.PasswordField;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 
 import javax.inject.Inject;
 
 public class UserEditorCompanion implements UserEditor.Companion {
-
     @Inject
     protected WebAuthConfig config;
 
@@ -36,6 +37,13 @@ public class UserEditorCompanion implements UserEditor.Companion {
 
     @Override
     public void refreshUserSubstitutions() {
-        App.getInstance().getAppWindow().refreshUserSubstitutions();
+        Window.TopLevelWindow topLevelWindow = App.getInstance().getTopLevelWindow();
+
+        if (topLevelWindow instanceof Window.HasUserIndicator) {
+            UserIndicator userIndicator = ((Window.HasUserIndicator) topLevelWindow).getUserIndicator();
+            if (userIndicator != null) {
+                userIndicator.refreshUserSubstitutions();
+            }
+        }
     }
 }

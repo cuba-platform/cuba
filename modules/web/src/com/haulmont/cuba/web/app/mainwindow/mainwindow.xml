@@ -17,7 +17,8 @@
 
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         xmlns:main="http://schemas.haulmont.com/cuba/mainwindow.xsd"
-        class="com.haulmont.cuba.web.app.mainwindow.AppMainWindow">
+        class="com.haulmont.cuba.web.app.mainwindow.AppMainWindow"
+        caption="mainMsg://application.caption">
 
     <layout expand="foldersSplit">
         <hbox id="titleBar" stylename="cuba-app-menubar"

@@ -23,21 +23,31 @@ import java.util.UUID;
 
 /**
  * Encapsulates a remote invocation of a middleware service.
- * Additionally transfers the current user session identifier.
- *
+ * Additionally transfers the current user session identifier and request scope locale (for anonymous sessions).
  */
 public class CubaRemoteInvocation extends RemoteInvocation {
 
     private static final long serialVersionUID = 5460262566597755733L;
 
     private UUID sessionId;
+    private String locale;
 
     public CubaRemoteInvocation(MethodInvocation methodInvocation, UUID sessionId) {
         super(methodInvocation);
         this.sessionId = sessionId;
     }
 
+    public CubaRemoteInvocation(MethodInvocation methodInvocation, UUID sessionId, String locale) {
+        super(methodInvocation);
+        this.sessionId = sessionId;
+        this.locale = locale;
+    }
+
     public UUID getSessionId() {
         return sessionId;
+    }
+
+    public String getLocale() {
+        return locale;
     }
 }

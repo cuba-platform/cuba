@@ -32,7 +32,6 @@ import java.util.List;
 /**
  * HttpInvokerRequestExecutor that executes a request on a server which is selected according to the current cluster
  * topology, provided by {@link ClusterInvocationSupport}.
- *
  */
 public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerRequestExecutor {
 
@@ -45,7 +44,8 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
     }
 
     @Override
-    protected RemoteInvocationResult doExecuteRequest(HttpInvokerClientConfiguration config, ByteArrayOutputStream baos) throws IOException, ClassNotFoundException {
+    protected RemoteInvocationResult doExecuteRequest(HttpInvokerClientConfiguration config, ByteArrayOutputStream baos)
+            throws IOException, ClassNotFoundException {
         List<String> urlList = support.getUrlList(config.getServiceUrl());
         if (urlList.isEmpty())
             throw new IllegalStateException("URL list is empty");
@@ -65,7 +65,8 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
                 result = readRemoteInvocationResult(responseBody, config.getCodebaseUrl());
                 break;
             } catch (IOException e) {
-                logger.info("Invocation of " + url + " failed: " + e);
+                logger.info(String.format("Invocation of %s failed: %s", url, e));
+
                 if (i < urlList.size() - 1) {
                     logger.info("Trying to invoke the next available URL: " + urlList.get(i + 1));
                     continue;
@@ -80,7 +81,7 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
     protected HttpURLConnection openConnection(String serviceUrl) throws IOException {
         URLConnection con = new URL(serviceUrl).openConnection();
         if (!(con instanceof HttpURLConnection)) {
-            throw new IOException("Service URL [" + serviceUrl + "] is not an HTTP URL");
+            throw new IOException(String.format("Service URL [%s] is not an HTTP URL", serviceUrl));
         }
         return (HttpURLConnection) con;
     }

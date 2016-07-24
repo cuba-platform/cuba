@@ -17,17 +17,20 @@
 
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.executors.IllegalConcurrentAccessException;
 import com.haulmont.cuba.gui.settings.SettingsClient;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.NoUserSessionException;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
@@ -37,20 +40,21 @@ import com.haulmont.cuba.web.sys.AppCookies;
 import com.haulmont.cuba.web.sys.BackgroundTaskManager;
 import com.haulmont.cuba.web.sys.LinkHandler;
 import com.vaadin.server.AbstractClientConnector;
+import com.vaadin.server.ErrorHandler;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Future;
 
 /**
@@ -60,11 +64,16 @@ import java.util.concurrent.Future;
  * Use {@link #getInstance()} static method to obtain the reference to the current App instance.
  */
 public abstract class App {
+
+    public static final String NAME = "cuba_App";
+
     public static final String USER_SESSION_ATTR = "userSessionId";
 
     public static final String APP_THEME_COOKIE_PREFIX = "APP_THEME_NAME_";
 
-    private static Logger log = LoggerFactory.getLogger(App.class);
+    public static final String COOKIE_LOCALE = "LAST_LOCALE";
+
+    private static final Logger log = LoggerFactory.getLogger(App.class);
 
     static {
         AbstractClientConnector.setIncorrectConcurrentAccessHandler(() -> {
@@ -78,21 +87,40 @@ public abstract class App {
 
     protected ExceptionHandlers exceptionHandlers;
 
-    protected final GlobalConfig globalConfig;
+    @Inject
+    protected GlobalConfig globalConfig;
 
-    protected final WebConfig webConfig;
+    @Inject
+    protected WebConfig webConfig;
 
-    protected final WebAuthConfig webAuthConfig;
+    @Inject
+    protected WebAuthConfig webAuthConfig;
+
+    @Inject
+    protected WindowConfig windowConfig;
+
+    @Inject
+    protected ThemeConstantsRepository themeConstantsRepository;
+
+    @Inject
+    protected ClientCacheManager clientCacheManager;
+
+    @Inject
+    protected UserSessionService userSessionService;
+
+    @Inject
+    protected MessageTools messageTools;
+
+    @Inject
+    protected SettingsClient settingsClient;
 
     protected AppCookies cookies;
 
     protected LinkHandler linkHandler;
 
-    protected final BackgroundTaskManager backgroundTaskManager;
+    protected BackgroundTaskManager backgroundTaskManager = new BackgroundTaskManager();
 
     protected Principal principal;
-
-    protected Locale locale = Locale.getDefault();
 
     protected String webResourceTimestamp = "DEBUG";
 
@@ -101,51 +129,23 @@ public abstract class App {
     protected ThemeConstants themeConstants;
 
     public App() {
-        log.trace("Creating application " + this);
-        try {
-            Configuration configuration = AppBeans.get(Configuration.NAME);
-
-            webConfig = configuration.getConfig(WebConfig.class);
-            webAuthConfig = configuration.getConfig(WebAuthConfig.class);
-            globalConfig = configuration.getConfig(GlobalConfig.class);
-
-            appLog = new AppLog();
-
-            connection = createConnection();
-            exceptionHandlers = new ExceptionHandlers(this);
-            cookies = new AppCookies();
-            backgroundTaskManager = new BackgroundTaskManager();
-
-            themeConstants = loadTheme();
-
-            VaadinServlet vaadinServlet = VaadinServlet.getCurrent();
-            ServletContext sc = vaadinServlet.getServletContext();
-            String resourcesTimestamp = sc.getInitParameter("webResourcesTs");
-            if (StringUtils.isNotEmpty(resourcesTimestamp)) {
-                this.webResourceTimestamp = resourcesTimestamp;
-            }
-        } catch (Exception e) {
-            log.error("Error initializing application", e);
-
-            throw new Error("Error initializing application. See log for details.");
-        }
+        log.trace("Creating application {}", this);
     }
 
     protected ThemeConstants loadTheme() {
-        ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
         String appWindowTheme = webConfig.getAppWindowTheme();
         String userAppTheme = cookies.getCookieValue(APP_THEME_COOKIE_PREFIX + globalConfig.getWebContextName());
         if (userAppTheme != null) {
             if (!StringUtils.equals(userAppTheme, appWindowTheme)) {
                 // check theme support
-                Set<String> supportedThemes = themeRepository.getAvailableThemes();
+                Set<String> supportedThemes = themeConstantsRepository.getAvailableThemes();
                 if (supportedThemes.contains(userAppTheme)) {
                     appWindowTheme = userAppTheme;
                 }
             }
         }
 
-        ThemeConstants theme = themeRepository.getConstants(appWindowTheme);
+        ThemeConstants theme = themeConstantsRepository.getConstants(appWindowTheme);
         if (theme == null) {
             throw new IllegalStateException("Unable to use theme constants '" + appWindowTheme + "'");
         }
@@ -154,11 +154,10 @@ public abstract class App {
     }
 
     protected void applyTheme(String appWindowTheme) {
-        ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
-        ThemeConstants theme = themeRepository.getConstants(appWindowTheme);
+        ThemeConstants theme = themeConstantsRepository.getConstants(appWindowTheme);
 
         if (theme == null) {
-            log.warn("Unable to use theme constants '" + appWindowTheme + "'");
+            log.warn("Unable to use theme constants '{}'", appWindowTheme);
         } else {
             this.themeConstants = theme;
             setUserAppTheme(appWindowTheme);
@@ -179,11 +178,8 @@ public abstract class App {
         }
     }
 
-    /**
-     * @return AppWindow displayed in the current UI. Can be null if not logged in.
-     */
-    public AppWindow getAppWindow() {
-        return AppUI.getCurrent().getAppWindow();
+    public Window.TopLevelWindow getTopLevelWindow() {
+        return getAppUI().getTopLevelWindow();
     }
 
     /**
@@ -203,36 +199,127 @@ public abstract class App {
             if (ui instanceof AppUI)
                 list.add((AppUI) ui);
             else
-                log.warn("Invalid UI in the session: " + ui);
+                log.warn("Invalid UI in the session: {}", ui);
         }
         return list;
     }
 
     protected abstract boolean loginOnStart();
 
-    protected abstract Connection createConnection();
+    protected Connection createConnection() {
+        return AppBeans.getPrototype(Connection.NAME);
+    }
 
     /**
      * Called when <em>the first</em> UI of the session is initialized.
      */
-    protected void init() {
+    protected void init(Locale requestLocale) {
+        VaadinSession vSession = VaadinSession.getCurrent();
+        vSession.setAttribute(App.class, this);
+
+        vSession.setLocale(messageTools.getDefaultLocale());
+
+        // set root error handler for all session
+        vSession.setErrorHandler((ErrorHandler) event -> {
+            try {
+                getExceptionHandlers().handle(event);
+                getAppLog().log(event);
+            } catch (Throwable e) {
+                //noinspection ThrowableResultOfMethodCallIgnored
+                log.error("Error handling exception\nOriginal exception:\n{}\nException in handlers:\n{}",
+                        ExceptionUtils.getStackTrace(event.getThrowable()), ExceptionUtils.getStackTrace(e)
+                );
+            }
+        });
+
+        appLog = new AppLog();
+
+        connection = createConnection();
+        exceptionHandlers = new ExceptionHandlers(this);
+        cookies = new AppCookies();
+
+        themeConstants = loadTheme();
+
+        VaadinServlet vaadinServlet = VaadinServlet.getCurrent();
+        ServletContext sc = vaadinServlet.getServletContext();
+        String resourcesTimestamp = sc.getInitParameter("webResourcesTs");
+        if (StringUtils.isNotEmpty(resourcesTimestamp)) {
+            this.webResourceTimestamp = resourcesTimestamp;
+        }
+
         log.debug("Initializing application");
 
         // get default locale from config
-        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-        locale = messageTools.getDefaultLocale();
+        Locale targetLocale = resolveLocale(requestLocale);
+        setLocale(targetLocale);
+
+        clientCacheManager.initialize();
 
         if (webAuthConfig.getExternalAuthentication()) {
             principal = RequestContext.get().getRequest().getUserPrincipal();
         }
     }
 
+    protected Locale resolveLocale(@Nullable Locale requestLocale) {
+        Map<String, Locale> locales = globalConfig.getAvailableLocales();
+
+        if (globalConfig.getLocaleSelectVisible()) {
+            String lastLocale = getCookieValue(COOKIE_LOCALE);
+            if (lastLocale != null) {
+                for (Locale locale : locales.values()) {
+                    if (locale.toLanguageTag().equals(lastLocale)) {
+                        return locale;
+                    }
+                }
+            }
+        }
+
+        if (requestLocale != null) {
+            Locale requestTrimmedLocale = messageTools.trimLocale(requestLocale);
+            if (locales.containsValue(requestTrimmedLocale)) {
+                return requestTrimmedLocale;
+            }
+
+            // if not found and application locale contains country, try to match by language only
+            if (!StringUtils.isEmpty(requestLocale.getCountry())) {
+                Locale appLocale = Locale.forLanguageTag(requestLocale.getLanguage());
+                for (Locale locale : locales.values()) {
+                    if (Locale.forLanguageTag(locale.getLanguage()).equals(appLocale)) {
+                        return locale;
+                    }
+                }
+            }
+        }
+
+        // return default locale
+        return messageTools.getDefaultLocale();
+    }
+
     /**
-     * Called on each UI initialization.
-     *
-     * @param ui initialized UI
+     * Called on each browser tab initialization.
      */
-    protected void initView(AppUI ui) {
+    public void createTopLevelWindow(AppUI ui) {
+        WebWindowManager wm = new WebWindowManager(ui);
+
+        String topLevelWindowId = routeTopLevelWindowId();
+        wm.createTopLevelWindow(windowConfig.getWindowInfo(topLevelWindowId));
+    }
+
+    protected abstract String routeTopLevelWindowId();
+
+    public void createTopLevelWindow() {
+        createTopLevelWindow(AppUI.getCurrent());
+    }
+
+    /**
+     * Initialize new TopLevelWindow and replace current
+     *
+     * @param topLevelWindowId target top level window id
+     */
+    public void navigateTo(String topLevelWindowId) {
+        WebWindowManager wm = new WebWindowManager(AppUI.getCurrent());
+
+        wm.createTopLevelWindow(windowConfig.getWindowInfo(topLevelWindowId));
     }
 
     /**
@@ -240,13 +327,14 @@ public abstract class App {
      * Used for ping middleware session and show session messages
      */
     public void onHeartbeat() {
-        if (getConnection().isConnected()) {
+        Connection connection = getConnection();
+
+        if (getConnection().isConnected() && connection.isAuthenticated()) {
             // Ping middleware session if connected and show messages
             log.debug("Ping session");
 
             try {
-                UserSessionService service = AppBeans.get(UserSessionService.NAME);
-                String message = service.getMessages();
+                String message = userSessionService.getMessages();
                 if (message != null) {
                     message = message.replace("\n", "<br/>");
                     getWindowManager().showNotification(message, Frame.NotificationType.ERROR_HTML);
@@ -291,15 +379,16 @@ public abstract class App {
     }
 
     /**
-     * @return WindowManager instance or null if the current UI has no AppWindow
+     * @return WindowManager instance or null if the current UI has no MainWindow
      */
     public WebWindowManager getWindowManager() {
         if (getAppUI() == null) {
             return null;
         }
 
-        AppWindow appWindow = getAppUI().getAppWindow();
-        return appWindow != null ? appWindow.getWindowManager() : null;
+        Window.TopLevelWindow topLevelWindow = getTopLevelWindow();
+
+        return topLevelWindow != null ? (WebWindowManager) topLevelWindow.getWindowManager() : null;
     }
 
     public AppLog getAppLog() {
@@ -308,26 +397,6 @@ public abstract class App {
 
     public ExceptionHandlers getExceptionHandlers() {
         return exceptionHandlers;
-    }
-
-    /**
-     * Create the login window instance.
-     *
-     * @param ui current UI
-     * @return login window
-     */
-    protected UIView createLoginWindow(AppUI ui) {
-        return new LoginWindow(ui);
-    }
-
-    /**
-     * Create the main window instance.
-     *
-     * @param ui current UI
-     * @return main window
-     */
-    protected AppWindow createAppWindow(AppUI ui) {
-        return new AppWindow(ui);
     }
 
     public String getCookieValue(String name) {
@@ -355,14 +424,27 @@ public abstract class App {
     }
 
     public Locale getLocale() {
-        return locale;
+        return VaadinSession.getCurrent().getLocale();
     }
 
     public void setLocale(Locale locale) {
-        this.locale = locale;
+        UserSession session = getConnection().getSession();
+        if (session != null) {
+            session.setLocale(locale);
+        }
 
-        UI.getCurrent().setLocale(locale);
-        VaadinSession.getCurrent().setLocale(locale);
+        AppUI currentUi = AppUI.getCurrent();
+
+        currentUi.getSession().setLocale(locale);
+        currentUi.updateClientSystemMessages(locale);
+
+        for (AppUI ui : getAppUIs()) {
+            if (ui != currentUi) {
+                ui.accessSynchronously(() ->
+                        ui.updateClientSystemMessages(locale)
+                );
+            }
+        }
     }
 
     public String getClientAddress() {
@@ -371,9 +453,10 @@ public abstract class App {
             String xForwardedFor = request.getHeader("X_FORWARDED_FOR");
             if (!StringUtils.isBlank(xForwardedFor)) {
                 String[] strings = xForwardedFor.split(",");
-                clientAddress = strings[strings.length - 1].trim();
-            } else
+                clientAddress = StringUtils.trimToEmpty(strings[strings.length - 1]);
+            } else {
                 clientAddress = request.getRemoteAddr();
+            }
         }
 
         return clientAddress;
@@ -385,10 +468,6 @@ public abstract class App {
 
     public String getWebResourceTimestamp() {
         return webResourceTimestamp;
-    }
-
-    public BackgroundTaskManager getTaskManager() {
-        return backgroundTaskManager;
     }
 
     public void addBackgroundTask(Future task) {
@@ -406,15 +485,16 @@ public abstract class App {
     public void closeAllWindows() {
         log.debug("Closing all windows");
         try {
-            for (final AppUI ui : getAppUIs()) {
+            for (AppUI ui : getAppUIs()) {
                 ui.accessSynchronously(() -> {
-                    AppWindow appWindow = ui.getAppWindow();
-                    if (appWindow != null) {
-                        WebWindowManager webWindowManager = appWindow.getWindowManager();
+                    Window.TopLevelWindow topLevelWindow = getTopLevelWindow();
+                    if (topLevelWindow != null) {
+                        WebWindowManager webWindowManager = (WebWindowManager) topLevelWindow.getWindowManager();
                         webWindowManager.disableSavingScreenHistory = true;
                         webWindowManager.closeAll();
                     }
 
+                    // also remove all native Vaadin windows, that is not under CUBA control
                     for (com.vaadin.ui.Window win : new ArrayList<>(ui.getWindows())) {
                         ui.removeWindow(win);
                     }
@@ -426,7 +506,6 @@ public abstract class App {
     }
 
     protected void clearSettingsCache() {
-        WebSettingsClient webSettingsClient = AppBeans.get(SettingsClient.NAME);
-        webSettingsClient.clearCache();
+        ((WebSettingsClient) settingsClient).clearCache();
     }
 }

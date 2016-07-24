@@ -501,7 +501,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     }
 
     @Override
-    public void setOptionsMap(Map<String, Object> map) {
+    public void setOptionsMap(Map<String, ?> map) {
         throw new UnsupportedOperationException();
     }
 

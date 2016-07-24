@@ -21,7 +21,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Embedded;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.security.global.UserSession;
@@ -44,12 +43,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> implements Embedded, Component.Disposable {
+public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> implements Embedded {
 
     protected Map<String, String> parameters = null;
     protected Type type = Type.IMAGE;
     protected Resource resource;
-    protected boolean disposed;
 
     public WebEmbedded() {
         component = new com.vaadin.ui.Embedded();
@@ -222,18 +220,7 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
         }
     }
 
-    @Override
-    public void dispose() {
-        disposed = true;
-    }
-
-    @Override
-    public boolean isDisposed() {
-        return disposed;
-    }
-
     protected static class EmptyStreamSource implements StreamResource.StreamSource {
-
         public static final String EMPTY_IMAGE_PATH = "/com/haulmont/cuba/web/gui/components/resources/empty.png";
 
         protected byte[] emptyImage;

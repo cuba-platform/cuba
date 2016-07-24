@@ -18,13 +18,10 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.historycontrol.CubaHistoryControlServerRpc;
-import com.vaadin.server.AbstractClientConnector;
 import com.vaadin.server.AbstractExtension;
-import com.vaadin.server.ClientConnector;
-import com.vaadin.ui.Layout;
+import com.vaadin.ui.AbstractComponent;
 
 public class CubaHistoryControl extends AbstractExtension {
-
     protected HistoryBackHandler handler;
 
     public CubaHistoryControl() {
@@ -35,15 +32,10 @@ public class CubaHistoryControl extends AbstractExtension {
         });
     }
 
-    public void extend(AbstractClientConnector target, HistoryBackHandler handler) {
+    public void extend(AbstractComponent target, HistoryBackHandler handler) {
         super.extend(target);
 
         this.handler = handler;
-    }
-
-    @Override
-    protected Class<? extends ClientConnector> getSupportedParentType() {
-        return Layout.class;
     }
 
     public interface HistoryBackHandler {

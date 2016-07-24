@@ -21,7 +21,6 @@ import com.haulmont.cuba.security.global.LoginException;
 /**
  * Listener of connection events. See {@link com.haulmont.cuba.web.Connection}.
  */
-public interface ConnectionListener
-{
+public interface ConnectionListener {
     void connectionStateChanged(Connection connection) throws LoginException;
 }
