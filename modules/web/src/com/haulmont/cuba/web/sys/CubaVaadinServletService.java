@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -81,12 +82,15 @@ public class CubaVaadinServletService extends VaadinServletService {
             WrappedSession wrappedSession = event.getSession().getSession();
             wrappedSession.setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
 
-            log.debug("HTTP session {} initialized, timeout={} sec",
-                    event.getSession(), wrappedSession.getMaxInactiveInterval());
+            HttpSession httpSession = wrappedSession instanceof WrappedHttpSession ? ((WrappedHttpSession) wrappedSession).getHttpSession() : null;
+            log.debug("HttpSession {} initialized, timeout={}sec",
+                    httpSession, wrappedSession.getMaxInactiveInterval());
         });
 
         addSessionDestroyListener(event -> {
-            log.debug("HTTP session destroyed: {}", event.getSession());
+            WrappedSession wrappedSession = event.getSession().getSession();
+            HttpSession httpSession = wrappedSession instanceof WrappedHttpSession ? ((WrappedHttpSession) wrappedSession).getHttpSession() : null;
+            log.debug("HttpSession destroyed: {}", httpSession);
             App app = event.getSession().getAttribute(App.class);
             if (app != null) {
                 app.cleanupBackgroundTasks();

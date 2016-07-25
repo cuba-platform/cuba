@@ -21,7 +21,7 @@ import com.vaadin.ui.InlineDateField;
 public class CubaDatePicker extends InlineDateField {
 
     public CubaDatePicker() {
-        setValidationVisible(true);
+        setValidationVisible(false);
         setShowBufferedSourceException(false);
     }
 }

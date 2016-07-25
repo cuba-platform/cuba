@@ -25,12 +25,11 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.server.WrappedSession;
+import com.vaadin.server.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.Map;
 
@@ -69,10 +68,14 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
                 VaadinService.reinitializeSession(VaadinService.getCurrentRequest());
 
                 WrappedSession session = VaadinSession.getCurrent().getSession();
-                session.setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
-            }
+                int timeout = webConfig.getHttpSessionExpirationTimeoutSec();
+                session.setMaxInactiveInterval(timeout);
 
-            log.debug("Creating AppWindow");
+                HttpSession httpSession = session instanceof WrappedHttpSession ? ((WrappedHttpSession) session).getHttpSession() : null;
+                log.debug("connectionStateChanged: HttpSession={}, timeout={}sec, UserSession={}", httpSession, timeout, connection.getSession());
+            } else {
+                log.debug("connectionStateChanged");
+            }
 
             initExceptionHandlers(true);
             for (final AppUI ui : getAppUIs()) {
