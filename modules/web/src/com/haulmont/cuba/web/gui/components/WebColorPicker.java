@@ -63,8 +63,8 @@ public class WebColorPicker extends WebAbstractField<CubaColorPicker> implements
     }
 
     @Override
-    public boolean getSwatchesVisible() {
-        return component.getSwatchesVisible();
+    public boolean isSwatchesVisible() {
+        return component.isSwatchesVisible();
     }
 
     @Override
@@ -73,8 +73,8 @@ public class WebColorPicker extends WebAbstractField<CubaColorPicker> implements
     }
 
     @Override
-    public boolean getRGBVisible() {
-        return component.getRGBVisible();
+    public boolean isRGBVisible() {
+        return component.isRGBVisible();
     }
 
     @Override
@@ -83,8 +83,8 @@ public class WebColorPicker extends WebAbstractField<CubaColorPicker> implements
     }
 
     @Override
-    public boolean getHSVVisible() {
-        return component.getHSVVisible();
+    public boolean isHSVVisible() {
+        return component.isHSVVisible();
     }
 
     @SuppressWarnings("unchecked")

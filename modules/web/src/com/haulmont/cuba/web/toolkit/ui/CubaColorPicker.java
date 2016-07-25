@@ -258,7 +258,7 @@ public class CubaColorPicker extends CustomField {
         field.setSwatchesVisibility(value);
     }
 
-    public boolean getSwatchesVisible() {
+    public boolean isSwatchesVisible() {
         return field.getSwatchesVisibility();
     }
 
@@ -266,7 +266,7 @@ public class CubaColorPicker extends CustomField {
         field.setRGBVisibility(value);
     }
 
-    public boolean getRGBVisible() {
+    public boolean isRGBVisible() {
         return field.getRGBVisibility();
     }
 
@@ -274,7 +274,7 @@ public class CubaColorPicker extends CustomField {
         field.setHSVVisibility(value);
     }
 
-    public boolean getHSVVisible() {
+    public boolean isHSVVisible() {
         return field.getHSVVisibility();
     }
 

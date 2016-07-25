@@ -20,56 +20,220 @@ public interface ColorPicker extends Field  {
 
     String NAME = "colorPicker";
 
-    void setPopupCaption(String caption);
+    /**
+     * Set caption for the popup window.
+     *
+     * @param popupCaption caption text.
+     */
+    void setPopupCaption(String popupCaption);
+    /**
+     * Return caption of the popup window.
+     *
+     * @return caption text.
+     */
     String getPopupCaption();
 
-    void setConfirmButtonCaption(String caption);
+    /**
+     * Set caption for the confirm button.
+     *
+     * @param confirmButtonCaption caption text.
+     */
+    void setConfirmButtonCaption(String confirmButtonCaption);
+    /**
+     * Return caption of the confirm button.
+     *
+     * @return caption text.
+     */
     String getConfirmButtonCaption();
 
-    void setCancelButtonCaption(String caption);
+    /**
+     * Set caption for the cancel button.
+     *
+     * @param cancelButtonCaption caption text.
+     */
+    void setCancelButtonCaption(String cancelButtonCaption);
+    /**
+     * Return caption of the cancel button.
+     *
+     * @return caption text.
+     */
     String getCancelButtonCaption();
 
-    void setSwatchesTabCaption(String caption);
+    /**
+     * Set caption for the swatches tab.
+     *
+     * @param swatchesTabCaption caption text.
+     */
+    void setSwatchesTabCaption(String swatchesTabCaption);
+    /**
+     * Return caption of the swatches tab.
+     *
+     * @return caption text.
+     */
     String getSwatchesTabCaption();
 
-    void setLookupAllCaption(String caption);
+    /**
+     * Set caption for the all colors in lookup.
+     *
+     * @param lookupAllCaption caption text.
+     */
+    void setLookupAllCaption(String lookupAllCaption);
+    /**
+     * Return caption of the all colors in lookup.
+     *
+     * @return caption text.
+     */
     String getLookupAllCaption();
 
-    void setLookupRedCaption(String caption);
+    /**
+     * Set caption for the red colors in lookup.
+     *
+     * @param lookupRedCaption caption text.
+     */
+    void setLookupRedCaption(String lookupRedCaption);
+    /**
+     * Return caption of the red colors in lookup.
+     *
+     * @return caption text.
+     */
     String getLookupRedCaption();
 
-    void setLookupGreenCaption(String caption);
+    /**
+     * Set caption for the green colors in lookup.
+     *
+     * @param lookupGreenCaption caption text.
+     */
+    void setLookupGreenCaption(String lookupGreenCaption);
+    /**
+     * Return caption of the green colors in lookup.
+     *
+     * @return caption text.
+     */
     String getLookupGreenCaption();
 
-    void setLookupBlueCaption(String caption);
+    /**
+     * Set caption for the blue colors in lookup.
+     *
+     * @param lookupBlueCaption caption text.
+     */
+    void setLookupBlueCaption(String lookupBlueCaption);
+    /**
+     * Return caption of the blue colors in lookup.
+     *
+     * @return caption text.
+     */
     String getLookupBlueCaption();
 
-    void setRedSliderCaption(String caption);
+    /**
+     * Set caption for the slider of red color.
+     *
+     * @param redSliderCaption caption text.
+     */
+    void setRedSliderCaption(String redSliderCaption);
+    /**
+     * Return caption of the slider for red color.
+     *
+     * @return caption text.
+     */
     String getRedSliderCaption();
 
-    void setGreenSliderCaption(String caption);
+    /**
+     * Set caption for the slider of green color.
+     *
+     * @param greenSliderCaption caption text.
+     */
+    void setGreenSliderCaption(String greenSliderCaption);
+    /**
+     * Return caption of the slider for green color.
+     *
+     * @return caption text.
+     */
     String getGreenSliderCaption();
 
-    void setBlueSliderCaption(String caption);
+    /**
+     * Set caption for the slider of blue color.
+     *
+     * @param blueSliderCaption caption text.
+     */
+    void setBlueSliderCaption(String blueSliderCaption);
+    /**
+     * Return caption of the slider for blue color.
+     *
+     * @return caption text.
+     */
     String getBlueSliderCaption();
 
-    void setHueSliderCaption(String caption);
+    /**
+     * Set caption for the HUE slider.
+     *
+     * @param hueSliderCaption caption text.
+     */
+    void setHueSliderCaption(String hueSliderCaption);
+    /**
+     * Return caption of the slider for HUE.
+     *
+     * @return caption text.
+     */
     String getHueSliderCaption();
 
-    void setSaturationSliderCaption(String caption);
+    /**
+     * Set caption for the saturation slider.
+     *
+     * @param saturationSliderCaption caption text.
+     */
+    void setSaturationSliderCaption(String saturationSliderCaption);
+    /**
+     * Return caption of the slider for saturation.
+     *
+     * @return caption text.
+     */
     String getSaturationSliderCaption();
 
-    void setValueSliderCaption(String caption);
+    /**
+     * Set caption for the value slider.
+     *
+     * @param valueSliderCaption caption text.
+     */
+    void setValueSliderCaption(String valueSliderCaption);
+    /**
+     * Return caption of the slider for value.
+     *
+     * @return caption text.
+     */
     String getValueSliderCaption();
 
-    void setSwatchesVisible(boolean value);
-    boolean getSwatchesVisible();
+    /**
+     *  Set visibility for swatches tab
+     *
+     *  @param swatchesVisible tab visibility.
+     */
+    void setSwatchesVisible(boolean swatchesVisible);
+    /**
+     * @return true if swatches tab is visibile.
+     */
+    boolean isSwatchesVisible();
 
-    void setRGBVisible(boolean value);
-    boolean getRGBVisible();
+    /**
+     *  Set visibility for RGB tab
+     *
+     *  @param rgbVisible tab visibility.
+     */
+    void setRGBVisible(boolean rgbVisible);
+    /**
+     * @return true if RGB tab is visible.
+     */
+    boolean isRGBVisible();
 
-    void setHSVVisible(boolean value);
-    boolean getHSVVisible();
+    /**
+     *  Set visibility for HSV tab
+     *
+     *  @param hsvVisible tab visibility.
+     */
+    void setHSVVisible(boolean hsvVisible);
+    /**
+     * @return true if HSV tab is visible.
+     */
+    boolean isHSVVisible();
 
     @Override
     String getValue();
