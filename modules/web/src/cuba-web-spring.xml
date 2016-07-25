@@ -143,8 +143,4 @@
                         fixed-delay="${cuba.backgroundWorker.timeoutCheckInterval?:5000}"/>
     </task:scheduled-tasks>
 
-    <mvc:cors>
-        <mvc:mapping path="/api/**" allowed-origins="*"/>
-    </mvc:cors>
-
 </beans>

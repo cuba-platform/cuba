@@ -68,9 +68,4 @@
     <bean id="thymeleafViewResolver" class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
         <property name="templateEngine" ref="thymeleafTemplateEngine" />
     </bean>
-
-    <mvc:cors>
-        <mvc:mapping path="/api/**" allowed-origins="*"/>
-    </mvc:cors>
-
 </beans>

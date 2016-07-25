@@ -48,6 +48,7 @@
         <anonymous enabled="false"/>
         <http-basic entry-point-ref="clientAuthenticationEntryPoint"/>
         <csrf disabled="true"/>
+        <cors configuration-source-ref="corsSource"/>
     </http>
 
     <bean id="clientAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint"/>
@@ -104,6 +105,7 @@
         <intercept-url pattern="/**" access="hasRole('USER')"/>
         <anonymous enabled="false"/>
         <csrf disabled="true"/>
+        <cors configuration-source-ref="corsSource"/>
         <custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER"/>
     </http>
 
@@ -114,6 +116,22 @@
 
     <bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
         <property name="realmName" value="rest-api" />
+    </bean>
+
+    <!-- The configuration defines a filter that handles CORS request first -->
+    <bean id="corsSource" class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
+        <property name="corsConfigurations">
+            <map>
+                <entry key="/**" value-ref="corsConfig"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="corsConfig" class="org.springframework.web.cors.CorsConfiguration">
+        <property name="allowedOrigins" value="${cuba.rest.allowedOrigins}"/>
+        <property name="allowedHeaders" value="*"/>
+        <property name="allowedMethods" value="*"/>
+        <property name="allowCredentials" value="true"/>
     </bean>
 
 </beans>
