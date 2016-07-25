@@ -42,10 +42,32 @@ public interface DateField extends Field {
     TimeZone getTimeZone();
     void setTimeZone(TimeZone timeZone);
 
-    void setRangeStart(Date value);
+    /**
+     * Set start of range. If the value is set before this
+     * date, the component will not validate.
+     *
+     * @param rangeStart allowed start of range
+     */
+    void setRangeStart(Date rangeStart);
+    /**
+     * Return start of range for a certain resolution.
+     *
+     * @return start of allowed range
+     */
     Date getRangeStart();
 
-    void setRangeEnd(Date value);
+    /**
+     * Set end of range. If the value is set after this
+     * date, the component will not validate.
+     *
+     * @param rangeEnd end of allowed range
+     */
+    void setRangeEnd(Date rangeEnd);
+    /**
+     * Return end of range for a certain resolution.
+     *
+     * @return end of allowed range
+     */
     Date getRangeEnd();
 
     @SuppressWarnings("unchecked")
