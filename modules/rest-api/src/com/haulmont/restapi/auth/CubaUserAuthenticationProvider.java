@@ -47,6 +47,9 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider, S
 
     protected Logger log = LoggerFactory.getLogger(getClass());
 
+    public CubaUserAuthenticationProvider() {
+    }
+
     @Inject
     protected LoginService loginService;
 
