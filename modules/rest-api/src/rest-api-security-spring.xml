@@ -41,7 +41,7 @@
     <bean id="cuba_RestParseUtils" class="com.haulmont.restapi.common.RestParseUtils"/>
 
     <!-- According to the spec the token endpoint should be secured by the basic authentication -->
-    <http pattern="${cuba.rest.url.oauthPattern}"
+    <http pattern="${cuba.rest.dispatcherPath}/api/oauth/**"
           create-session="stateless"
           authentication-manager-ref="clientAuthenticationManager"
           xmlns="http://www.springframework.org/schema/security">
@@ -75,7 +75,7 @@
 
     <!-- Specifies token endpoint.-->
     <oauth2:authorization-server
-            token-endpoint-url="${cuba.rest.url.oauthToken}"
+            token-endpoint-url="/api/oauth/token"
             client-details-service-ref="clientDetailsService"
             token-services-ref="tokenServices" >
         <oauth2:password authentication-manager-ref="userAuthenticationManager"/>
@@ -98,11 +98,13 @@
     <oauth2:resource-server id="resourceFilter" token-services-ref="tokenServices" />
 
     <!--todo MG remove hasRole check-->
-    <http pattern="${cuba.rest.url.apiPattern}"
+    <http pattern="${cuba.rest.dispatcherPath}/api/**"
           create-session="stateless"
           entry-point-ref="oauthAuthenticationEntryPoint"
           xmlns="http://www.springframework.org/schema/security">
-        <intercept-url pattern="/**" access="hasRole('USER')"/>
+        <intercept-url pattern="${cuba.rest.dispatcherPath}/api/entities/**" access="hasRole('USER')"/>
+        <intercept-url pattern="${cuba.rest.dispatcherPath}/api/queries/**" access="hasRole('USER')"/>
+        <intercept-url pattern="${cuba.rest.dispatcherPath}/api/services/**" access="hasRole('USER')"/>
         <anonymous enabled="false"/>
         <csrf disabled="true"/>
         <cors configuration-source-ref="corsSource"/>
