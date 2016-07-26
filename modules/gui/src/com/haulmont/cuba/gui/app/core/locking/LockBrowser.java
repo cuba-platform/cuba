@@ -73,5 +73,6 @@ public class LockBrowser extends AbstractWindow {
 
     public void reloadConfig() {
         service.reloadConfiguration();
+        showNotification(getMessage("locksConfigurationHasBeenReloaded"), NotificationType.HUMANIZED);
     }
 }
