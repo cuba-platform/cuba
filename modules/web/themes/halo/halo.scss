@@ -43,6 +43,7 @@
 @import "components/grouptable/grouptable";
 @import "components/fieldgroup/fieldgroup";
 @import "components/splitpanel/splitpanel";
+@import "components/scrollbox/scrollbox";
 @import "components/twincolumn/twincolumn";
 @import "components/flowlayout/flowlayout";
 @import "components/fileupload/fileupload";
@@ -102,6 +103,7 @@
   @include halo-tabsheet;
   @include halo-datefield;
   @include halo-splitpanel;
+  @include halo-scrollbox;
   @include halo-twincolumn;
   @include halo-optiongroup;
   @include halo-optionlist;

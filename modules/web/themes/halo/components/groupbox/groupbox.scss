@@ -21,8 +21,11 @@
   @include halo-panel($primary-stylename);
 
   .#{$primary-stylename} {
+    border: 0;
     font-size: 0;
     overflow: hidden !important;
+    box-shadow: none;
+    background: transparent;
   }
 
   .#{$primary-stylename}-content {
@@ -203,5 +206,9 @@
   .#{$primary-stylename}-caption-start-deco,
   .#{$primary-stylename}-caption-start-deco > div {
     @include box-defaults;
+  }
+
+  .v-scrollable > .#{$primary-stylename} {
+    overflow: auto;
   }
 }

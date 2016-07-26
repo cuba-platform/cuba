@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (c) 2008-2016 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,8 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-@mixin halo-panel($primary-stylename : v-panel) {
+@mixin halo-scrollbox($primary-stylename : cuba-scrollbox) {
+  .#{$primary-stylename} {
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .#{$primary-stylename} > .v-panel-content {
+    border: 0;
+  }
+
+  .#{$primary-stylename} > .v-panel-deco {
+    display: none;
+  }
+
+  .v-scrollable > .#{$primary-stylename} {
+    overflow: auto;
+  }
 }
