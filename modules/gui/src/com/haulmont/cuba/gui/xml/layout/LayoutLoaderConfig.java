@@ -100,6 +100,7 @@ public class LayoutLoaderConfig {
         config.register(Filter.NAME, FilterLoader.class);
         config.register(ButtonsPanel.NAME, ButtonsPanelLoader.class);
         config.register(PopupButton.NAME, PopupButtonLoader.class);
+        config.register(PopupView.NAME, PopupViewLoader.class);
         config.register(FieldGroup.NAME, FieldGroupLoader.class);
         config.register(TokenList.NAME, TokenListLoader.class);
         config.register(WidgetsTree.NAME, WidgetsTreeLoader.class);

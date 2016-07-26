@@ -86,6 +86,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(Filter.NAME, WebFilter.class);
         classes.put(ButtonsPanel.NAME, WebButtonsPanel.class);
         classes.put(PopupButton.NAME, WebPopupButton.class);
+        classes.put(PopupView.NAME, WebPopupView.class);
 
         classes.put(FieldGroup.NAME, WebFieldGroup.class);
         classes.put(TokenList.NAME, WebTokenList.class);

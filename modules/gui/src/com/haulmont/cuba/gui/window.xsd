@@ -1078,6 +1078,23 @@
         <xs:attribute name="focusable" type="xs:boolean"/>
     </xs:complexType>
 
+    <!-- PopupView -->
+    <xs:complexType name="popupViewComponent">
+        <xs:sequence>
+            <xs:group ref="singleLayoutOrComponent"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="hasId"/>
+        <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attribute name="minimizedValue" type="resourceString"/>
+        <xs:attribute name="captionAsHtml" type="xs:string"/>
+        <xs:attribute name="hideOnMouseOut" type="xs:string"/>
+    </xs:complexType>
+
     <!-- ButtonsPanel -->
     <xs:complexType name="buttonsPanelComponent">
         <xs:sequence>
@@ -1876,6 +1893,7 @@
                 <xs:element name="button" type="buttonComponent"/>
                 <xs:element name="linkButton" type="buttonComponent"/>
                 <xs:element name="popupButton" type="popupButtonComponent"/>
+                <xs:element name="popupView" type="popupViewComponent"/>
 
                 <xs:element name="label" type="labelComponent"/>
                 <xs:element name="link" type="linkComponent"/>
@@ -1929,6 +1947,16 @@
     <xs:group name="layoutOrComponent">
         <xs:sequence>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:group ref="component"/>
+                <xs:group ref="layout"/>
+                <xs:any namespace="##other" processContents="strict" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:group name="singleLayoutOrComponent">
+        <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="1">
                 <xs:group ref="component"/>
                 <xs:group ref="layout"/>
                 <xs:any namespace="##other" processContents="strict" minOccurs="0" maxOccurs="unbounded"/>
