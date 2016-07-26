@@ -37,11 +37,11 @@
             </columns>
             <rows>
                 <row>
-                    <label value="msg://mbean.jmxConnection"/>
+                    <label value="msg://mbean.jmxConnection" align="MIDDLE_LEFT"/>
                     <label datasource="mbeanDs" property="jmxInstance" stylename="h2"/>
                 </row>
                 <row>
-                    <label value="msg://mbean.name"/>
+                    <label value="msg://mbean.name" align="MIDDLE_LEFT"/>
                     <label datasource="mbeanDs" property="objectName" id="domain" stylename="h2"/>
                 </row>
                 <row>
