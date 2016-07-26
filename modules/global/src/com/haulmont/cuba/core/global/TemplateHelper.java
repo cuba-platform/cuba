@@ -23,12 +23,12 @@ import freemarker.cache.TemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import org.apache.commons.collections.map.LazyMap;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -36,7 +36,6 @@ import java.util.Map;
  * Does not cache templates.
  */
 public class TemplateHelper {
-
     public static String processTemplate(String templateStr, Map<String, ?> parameterValues) {
         final StringTemplateLoader templateLoader = new StringTemplateLoader();
         templateLoader.putTemplate("template", templateStr);
@@ -69,19 +68,24 @@ public class TemplateHelper {
 
             return writer.toString();
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to process template", e);
         }
     }
 
     private static Map<String, Object> prepareParams(Map<String, ?> parameterValues) {
-        Map<String, Object> params = new HashMap<>(parameterValues);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> params = LazyMap.decorate(parameterValues, name -> {
+            String propertyName = (String) name;
+
+            for (String appProperty : AppContext.getPropertyNames()) {
+                if (appProperty.replace(".", "_").equals(propertyName)) {
+                    return AppContext.getProperty(propertyName);
+                }
+            }
+            return null;
+        });
         params.put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
 
-        for (String name : AppContext.getPropertyNames()) {
-            params.put(name.replace(".", "_"), AppContext.getProperty(name));
-        }
         return params;
     }
-
-
 }

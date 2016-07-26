@@ -17,21 +17,17 @@
 package com.haulmont.cuba.core.sys;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Describes an app component which the current application depends on.
  */
 public class AppComponent implements Comparable<AppComponent> {
 
-    public static final String ATTR_ID = "App-Component-Id";
-    public static final String ATTR_VERSION = "App-Component-Version";
-
     private final String id;
     private final List<AppComponent> dependencies = new ArrayList<>();
     private Properties properties;
+    private Set<String> additiveProperties;
 
     public AppComponent(String id) {
         this.id = id;
@@ -79,9 +75,19 @@ public class AppComponent implements Comparable<AppComponent> {
      * INTERNAL.
      * Set a file-based app property defined in this app component.
      */
-    public void setProperty(String name, String value) {
+    public void setProperty(String name, String value, boolean additive) {
         if (properties == null)
             properties = new Properties();
+
+        if (additive) {
+            if (additiveProperties == null) {
+                additiveProperties = new HashSet<>();
+            }
+            additiveProperties.add(name);
+        } else if (additiveProperties != null) {
+            additiveProperties.remove(name);
+        }
+
         properties.setProperty(name, value);
     }
 
@@ -91,6 +97,10 @@ public class AppComponent implements Comparable<AppComponent> {
     @Nullable
     public String getProperty(String property) {
         return properties == null ? null : properties.getProperty(property);
+    }
+
+    public boolean isAdditiveProperty(String property) {
+        return additiveProperties != null && additiveProperties.contains(property);
     }
 
     @Override

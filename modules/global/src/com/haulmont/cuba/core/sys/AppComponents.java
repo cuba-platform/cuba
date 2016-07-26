@@ -41,7 +41,7 @@ import java.util.List;
  */
 public class AppComponents {
 
-    private Logger log = LoggerFactory.getLogger(AppComponents.class);
+    private final Logger log = LoggerFactory.getLogger(AppComponents.class);
 
     private final List<AppComponent> components = new ArrayList<>();
 
@@ -61,6 +61,7 @@ public class AppComponents {
      */
     public AppComponents(List<String> componentIds, String block) {
         this(block);
+
         for (String compId : componentIds) {
             AppComponent component = get(compId);
             if (component == null) {
@@ -70,14 +71,16 @@ public class AppComponents {
             if (!components.contains(component))
                 components.add(component);
         }
-        Collections.sort(components, (c1, c2) -> {
+
+        components.sort((c1, c2) -> {
             int res = c1.compareTo(c2);
             if (res != 0)
                 return res;
             else
                 return componentIds.indexOf(c1.getId()) - componentIds.indexOf(c2.getId());
         });
-        log.info("Using app components: " + components);
+
+        log.info("Using app components: {}", components);
     }
 
     /**
@@ -134,17 +137,39 @@ public class AppComponents {
                         String name = propertyEl.attributeValue("name");
                         String value = propertyEl.attributeValue("value");
                         String existingValue = component.getProperty(name);
+
+                        if (value.startsWith("\\+")) {
+                            if (existingValue != null) {
+                                log.debug("Overwrite value of property {} from {} to {}", name, existingValue, value);
+                            }
+
+                            component.setProperty(name, value.substring(1), false);
+                            continue;
+                        }
+
+                        if (!value.startsWith("+")) {
+                            if (existingValue != null) {
+                                log.debug("Overwrite value of property {} from {} to {}", name, existingValue, value);
+                            }
+
+                            component.setProperty(name, value, false);
+                            continue;
+                        }
+
+                        String cleanValue = value.substring(1);
+
                         if (existingValue != null) {
+
                             String newValue = existingValue;
                             Splitter splitter = Splitter.on(AppProperties.SEPARATOR_PATTERN).omitEmptyStrings();
                             List<String> existingParts = splitter.splitToList(existingValue);
-                            for (String part : splitter.split(value)) {
+                            for (String part : splitter.split(cleanValue)) {
                                 if (!existingParts.contains(part))
                                     newValue += " " + part;
                             }
-                            component.setProperty(name, newValue);
+                            component.setProperty(name, newValue, true);
                         } else {
-                            component.setProperty(name, value);
+                            component.setProperty(name, cleanValue, true);
                         }
                     }
                 }

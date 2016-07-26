@@ -53,6 +53,6 @@
     <xs:complexType name="propertyType">
         <xs:attribute type="xs:string" name="name" use="required"/>
         <xs:attribute type="xs:string" name="value" use="required"/>
+        <xs:attribute type="xs:boolean" name="additive" default="false"/>
     </xs:complexType>
-
 </xs:schema>

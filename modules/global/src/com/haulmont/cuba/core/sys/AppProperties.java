@@ -18,16 +18,14 @@ package com.haulmont.cuba.core.sys;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import com.haulmont.bali.datastruct.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
@@ -37,7 +35,7 @@ import java.util.regex.Pattern;
  */
 public class AppProperties {
 
-    private Logger log = LoggerFactory.getLogger(AppProperties.class);
+    private final Logger log = LoggerFactory.getLogger(AppProperties.class);
 
     public static final Pattern SEPARATOR_PATTERN = Pattern.compile("\\s");
 
@@ -96,7 +94,8 @@ public class AppProperties {
                         "cuba.restServicesConfig",
                         "cuba.windowConfig",
                         "cuba.menuConfig",
-                        "cuba.permissionConfig"
+                        "cuba.permissionConfig",
+                        "cuba.web.widgetSet"
                 ));
                 break;
             case "portal":
@@ -126,8 +125,9 @@ public class AppProperties {
 
     /**
      * Get property value defined in the set of <code>app.properties</code> files.
-     * @param key   property key
-     * @return      property value or null if the key is not found
+     *
+     * @param key property key
+     * @return property value or null if the key is not found
      */
     @Nullable
     public String getProperty(String key) {
@@ -158,31 +158,61 @@ public class AppProperties {
     }
 
     private String getSystemOrAppProperty(String key) {
-        String value = System.getProperty(key);
-        if (StringUtils.isEmpty(value)) {
+        String systemValue = System.getProperty(key);
+
+        String value = systemValue;
+        if (StringUtils.isEmpty(systemValue)) {
             value = properties.get(key);
         }
-        if (configPropertyNames.contains(key)) {
-            List<String> values = new ArrayList<>();
-            for (AppComponent component : appComponents.getComponents()) {
-                String compValue = component.getProperty(key);
-                if (!StringUtils.isEmpty(compValue)) {
-                    for (String compValuePart : split(compValue)) {
-                        if (!values.contains(compValuePart))
-                            values.add(compValuePart);
-                    }
-                }
-            }
-            if (!StringUtils.isEmpty(value)) {
-                for (String valuePart : split(value)) {
-                    if (!values.contains(valuePart))
-                        values.add(valuePart);
-                }
-            }
-            return Joiner.on(" ").join(values);
-        } else {
+
+        if (!configPropertyNames.contains(key)) {
             return value;
         }
+
+        List<String> values = new LinkedList<>();
+
+        if (StringUtils.isNotEmpty(value)) {
+            if (value.startsWith("\\+")) {
+                return value.substring(1);
+            }
+
+            if (!value.startsWith("+")) {
+                return value;
+            }
+
+            String cleanValue = value.substring(1);
+            int index = 0;
+            for (String valuePart : split(cleanValue)) {
+                if (!values.contains(valuePart)) {
+                    values.add(index, valuePart);
+                    index++;
+                }
+            }
+        }
+
+        for (AppComponent component : Lists.reverse(appComponents.getComponents())) {
+            String compValue = component.getProperty(key);
+            if (StringUtils.isNotEmpty(compValue)) {
+                int index = 0;
+                for (String valuePart : split(compValue)) {
+                    if (!values.contains(valuePart)) {
+                        values.add(index, valuePart);
+                        index++;
+                    }
+                }
+
+                if (!component.isAdditiveProperty(key)) {
+                    // we found overwrite, stop iteration
+                    break;
+                }
+            }
+        }
+
+        String joinedValue = Joiner.on(" ").join(values);
+
+        log.trace("Composite property {} is set to {}", key, joinedValue);
+
+        return joinedValue;
     }
 
     private Iterable<String> split(String compValue) {
@@ -202,5 +232,4 @@ public class AppProperties {
         else
             properties.put(key, value);
     }
-
 }
