@@ -26,6 +26,9 @@
         <label id="resultLabel" stylename="h2"/>
         <scrollBox id="resultContainer" width="100%" scrollBars="both">
         </scrollBox>
-        <button id="closeBtn" icon="icons/ok.png" caption="msg://actions.Close" invoke="close"/>
+        <hbox spacing="true">
+            <button id="closeBtn" icon="icons/ok.png" caption="msg://actions.Close" invoke="close"/>
+            <button id="exportBtn" icon="icons/download.png" caption="msg://actions.Export" invoke="exportToFile"/>
+        </hbox>
     </layout>
 </window>

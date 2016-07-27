@@ -17,11 +17,16 @@
 
 package com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.operation;
 
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
+import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
+import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.jmx.entity.AttributeHelper;
@@ -29,6 +34,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 
 import javax.inject.Inject;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 public class OperationResultWindow extends AbstractWindow {
@@ -42,6 +48,24 @@ public class OperationResultWindow extends AbstractWindow {
     @Inject
     protected ThemeConstants themeConstants;
 
+    @Inject
+    protected FileUploadingAPI fileUploading;
+
+    @Inject
+    protected ExportDisplay exportDisplay;
+
+    @Inject
+    protected TimeSource timeSource;
+
+    @WindowParam
+    protected Object result;
+
+    @WindowParam
+    protected String methodName;
+
+    @WindowParam
+    protected String beanName;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -52,7 +76,6 @@ public class OperationResultWindow extends AbstractWindow {
                 .setHeight(themeConstants.getInt("cuba.web.jmx.OperationResultWindow.height"));
 
         Throwable ex = (Throwable) params.get("exception");
-        Object result = params.get("result");
 
         ComponentsFactory componentsFactory = AppConfig.getFactory();
 
@@ -91,5 +114,19 @@ public class OperationResultWindow extends AbstractWindow {
 
     public void close() {
         close(CLOSE_ACTION_ID);
+    }
+
+    public void exportToFile() {
+        if (result != null) {
+            byte[] bytes = AttributeHelper.convertToString(result).getBytes();
+            exportDisplay.show(new ByteArrayDataProvider(bytes),
+                    String.format("jmx.%s-%s-%s.log",
+                            beanName,
+                            methodName,
+                            new SimpleDateFormat("HH:mm:ss").format(
+                                    timeSource.currentTimestamp())));
+        } else {
+            showNotification(getMessage("operationResult.resultIsEmpty"), NotificationType.HUMANIZED);
+        }
     }
 }

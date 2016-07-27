@@ -218,6 +218,8 @@ public class MbeanInspectWindow extends AbstractEditor {
             Object res = jmxControlAPI.invokeOperation(op, paramValues);
             if (res != null) {
                 params.put("result", res);
+                params.put("beanName", op.getMbean().getClassName());
+                params.put("methodName", op.getName());
             }
         } catch (Exception e) {
             params.put("exception", e);
