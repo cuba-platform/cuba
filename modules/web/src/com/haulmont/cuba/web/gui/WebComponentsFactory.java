@@ -21,17 +21,18 @@ import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.gui.components.mainwindow.*;
 
-import java.util.HashMap;
+import javax.inject.Inject;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @org.springframework.stereotype.Component(ComponentsFactory.NAME)
 public class WebComponentsFactory implements ComponentsFactory {
 
-    private static Map<String, Class<? extends Component>> classes = new HashMap<>();
+    private static Map<String, Class<? extends Component>> classes = new ConcurrentHashMap<>();
 
     private static Map<Class, String> names = new ConcurrentHashMap<>();
 
@@ -112,10 +113,18 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(TimeZoneIndicator.NAME, WebTimeZoneIndicator.class);
     }
 
+    /**
+     * @deprecated Use {@link com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource} or app-components mechanism
+     */
+    @Deprecated
     public static void registerComponent(String element, Class<? extends Component> componentClass) {
         classes.put(element, componentClass);
     }
 
+    /**
+     * @deprecated Use {@link com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource} or app-components mechanism
+     */
+    @Deprecated
     public static void registerComponents(ComponentPalette... palettes) {
         for (ComponentPalette palette : palettes) {
             Map<String, Class<? extends Component>> loaders = palette.getComponents();
@@ -125,8 +134,17 @@ public class WebComponentsFactory implements ComponentsFactory {
         }
     }
 
+    @Inject
+    protected ExternalUIComponentsSource externalUIComponentsSource;
+
+    public void register(String name, Class<? extends Component> componentClass) {
+        classes.put(name, componentClass);
+    }
+
     @Override
     public Component createComponent(String name) {
+        externalUIComponentsSource.checkInitialized();
+
         final Class<? extends Component> componentClass = classes.get(name);
         if (componentClass == null) {
             throw new IllegalStateException(String.format("Can't find component class for '%s'", name));
@@ -140,6 +158,8 @@ public class WebComponentsFactory implements ComponentsFactory {
 
     @Override
     public <T extends Component> T createComponent(Class<T> type) {
+        externalUIComponentsSource.checkInitialized();
+
         String name = names.get(type);
         if (name == null) {
             java.lang.reflect.Field nameField;

@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.components.Timer;
 /**
  * Factory to create UI components in client independent manner.
  * <p/> An instance of the factory can be injected into screen controllers or obtained through {@link com.haulmont.cuba.core.global.AppBeans}.
- *
  */
 public interface ComponentsFactory {
 

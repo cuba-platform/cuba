@@ -16,24 +16,25 @@
  */
 package com.haulmont.cuba.gui.xml.layout;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.*;
 import com.haulmont.cuba.gui.xml.layout.loaders.*;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LayoutLoaderConfig {
 
-    private Map<String, Class<? extends ComponentLoader>> loaders = new HashMap<>();
+    private Map<String, Class<? extends ComponentLoader>> loaders = new ConcurrentHashMap<>();
 
     private static LayoutLoaderConfig windowLoaders = new LayoutLoaderConfig();
     private static LayoutLoaderConfig editorLoaders = new LayoutLoaderConfig();
     private static LayoutLoaderConfig lookupLoaders = new LayoutLoaderConfig();
     private static LayoutLoaderConfig frameLoaders = new LayoutLoaderConfig();
 
-    private static Map<String, Class<? extends ComponentLoader>> customLoaders = new HashMap<>();
+    private static Map<String, Class<? extends ComponentLoader>> customLoaders = new ConcurrentHashMap<>();
 
     static {
         windowLoaders.register("window", WindowLoader.class);
@@ -126,6 +127,10 @@ public class LayoutLoaderConfig {
         customLoaders.put(tagName, aClass);
     }
 
+    /**
+     * @deprecated Use {@link com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource} or app-components mechanism
+     */
+    @Deprecated
     public static void registerLoaders(ComponentPalette... palettes) {
         for (ComponentPalette palette : palettes) {
             Map<String, Class<? extends ComponentLoader>> loaders = palette.getLoaders();
@@ -152,6 +157,9 @@ public class LayoutLoaderConfig {
     }
 
     public Class<? extends ComponentLoader> getLoader(String name) {
+        ExternalUIComponentsSource externalUIComponentsSource = AppBeans.get(ExternalUIComponentsSource.NAME);
+        externalUIComponentsSource.checkInitialized();
+
         final Class<? extends ComponentLoader> loader = customLoaders.get(name);
         if (loader == null) {
             return loaders.get(name);
@@ -160,7 +168,7 @@ public class LayoutLoaderConfig {
         return loader;
     }
 
-    protected void register(String name, Class<? extends ComponentLoader> loader) {
-        loaders.put(name, loader);
+    protected void register(String tagName, Class<? extends ComponentLoader> loaderClass) {
+        loaders.put(tagName, loaderClass);
     }
 }

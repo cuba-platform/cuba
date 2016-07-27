@@ -95,6 +95,7 @@ public class AppProperties {
                         "cuba.windowConfig",
                         "cuba.menuConfig",
                         "cuba.permissionConfig",
+                        "cuba.web.componentsConfig",
                         "cuba.web.widgetSet"
                 ));
                 break;

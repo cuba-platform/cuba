@@ -77,6 +77,7 @@
         <property name="cuba.menuConfig" value="cuba-web-menu.xml"/>
         <property name="cuba.permissionConfig" value="cuba-web-permissions.xml"/>
         <property name="cuba.web.widgetSet" value="com.haulmont.cuba.web.toolkit.ui.WidgetSet"/>
+        <property name="cuba.web.componentsConfig" value=""/>
     </module>
 
     <module name="web-toolkit" dependsOn="web" blocks="web">

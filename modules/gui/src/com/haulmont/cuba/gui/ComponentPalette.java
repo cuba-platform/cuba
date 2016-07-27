@@ -25,7 +25,9 @@ import java.util.Map;
 /**
  * Palette with UI components for screen descriptors
  *
+ * @deprecated Use {@link com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource} or app-components mechanism
  */
+@Deprecated
 public interface ComponentPalette {
 
     /**
