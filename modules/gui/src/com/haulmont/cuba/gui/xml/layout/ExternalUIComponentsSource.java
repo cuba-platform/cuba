@@ -16,8 +16,11 @@
 
 package com.haulmont.cuba.gui.xml.layout;
 
+/**
+ * INTERNAL
+ */
 public interface ExternalUIComponentsSource {
-    String NAME = "cuba_ExternalComponentsSource";
+    String NAME = "cuba_ExternalUIComponentsSource";
 
     void checkInitialized();
 }
