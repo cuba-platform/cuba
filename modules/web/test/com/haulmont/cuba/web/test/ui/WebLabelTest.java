@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.test.ui;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.LabelTest;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
+import com.haulmont.cuba.web.test.ui.util.TestComponentsFactory;
 import com.vaadin.data.util.converter.DefaultConverterFactory;
 import com.vaadin.server.VaadinSession;
 import mockit.Mocked;
@@ -33,10 +33,6 @@ public class WebLabelTest extends LabelTest {
 
     @Mocked
     protected VaadinSession vaadinSession;
-
-    public WebLabelTest() {
-        factory = new WebComponentsFactory();
-    }
 
     @Override
     protected void initExpectations() {
@@ -53,5 +49,7 @@ public class WebLabelTest extends LabelTest {
                 AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web";
             }
         };
+
+        factory = new TestComponentsFactory(externalUIComponentsSource);
     }
 }

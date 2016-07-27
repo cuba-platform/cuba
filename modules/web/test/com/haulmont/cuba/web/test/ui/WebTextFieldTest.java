@@ -20,7 +20,8 @@ package com.haulmont.cuba.web.test.ui;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.TextFieldTest;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource;
+import com.haulmont.cuba.web.test.ui.util.TestComponentsFactory;
 import com.vaadin.server.VaadinSession;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
@@ -31,10 +32,6 @@ public class WebTextFieldTest extends TextFieldTest {
 
     @Mocked
     protected VaadinSession vaadinSession;
-
-    public WebTextFieldTest() {
-        factory = new WebComponentsFactory();
-    }
 
     @Override
     protected void initExpectations() {
@@ -49,5 +46,7 @@ public class WebTextFieldTest extends TextFieldTest {
                 AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web";
             }
         };
+
+        factory = new TestComponentsFactory(externalUIComponentsSource);
     }
 }
