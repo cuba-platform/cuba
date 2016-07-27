@@ -66,6 +66,15 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
 
         loadClearEnabled(resultComponent, element);
         loadClearButton(resultComponent, element);
+
+        loadRefreshOptionsOnLookupClose(resultComponent, element);
+    }
+
+    protected void loadRefreshOptionsOnLookupClose(TokenList component, Element element) {
+        String refreshOptionsOnLookupClose = element.attributeValue("refreshOptionsOnLookupClose");
+        if (refreshOptionsOnLookupClose != null) {
+            component.setRefreshOptionsOnLookupClose(Boolean.valueOf(refreshOptionsOnLookupClose));
+        }
     }
 
     protected void loadClearEnabled(TokenList component, Element element) {

@@ -50,6 +50,11 @@ public class LookupPickerFieldLoader extends LookupFieldLoader {
             lookupPickerField.addLookupAction();
             lookupPickerField.addOpenAction();
         }
+
+        String refreshOptionsOnLookupClose = element.attributeValue("refreshOptionsOnLookupClose");
+        if (refreshOptionsOnLookupClose != null) {
+            lookupPickerField.setRefreshOptionsOnLookupClose(Boolean.valueOf(refreshOptionsOnLookupClose));
+        }
     }
 
     @Override
