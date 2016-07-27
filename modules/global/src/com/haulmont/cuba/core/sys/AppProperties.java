@@ -170,7 +170,7 @@ public class AppProperties {
             return value;
         }
 
-        List<String> values = new LinkedList<>();
+        List<String> values = null;
 
         if (StringUtils.isNotEmpty(value)) {
             if (value.startsWith("\\+")) {
@@ -184,6 +184,10 @@ public class AppProperties {
             String cleanValue = value.substring(1);
             int index = 0;
             for (String valuePart : split(cleanValue)) {
+                if (values == null) {
+                    values = new LinkedList<>();
+                }
+
                 if (!values.contains(valuePart)) {
                     values.add(index, valuePart);
                     index++;
@@ -196,6 +200,10 @@ public class AppProperties {
             if (StringUtils.isNotEmpty(compValue)) {
                 int index = 0;
                 for (String valuePart : split(compValue)) {
+                    if (values == null) {
+                        values = new LinkedList<>();
+                    }
+
                     if (!values.contains(valuePart)) {
                         values.add(index, valuePart);
                         index++;
@@ -207,6 +215,10 @@ public class AppProperties {
                     break;
                 }
             }
+        }
+
+        if (values == null) {
+            return null;
         }
 
         String joinedValue = Joiner.on(" ").join(values);
