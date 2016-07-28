@@ -103,7 +103,8 @@ public class AppProperties {
             case "portal":
                 configPropertyNames.addAll(Arrays.asList(
                         "cuba.dispatcherSpringContextConfig",
-                        "cuba.restServicesConfig"
+                        "cuba.restServicesConfig",
+                        "cuba.rest.queriesConfig"
                 ));
                 break;
             case "desktop":
