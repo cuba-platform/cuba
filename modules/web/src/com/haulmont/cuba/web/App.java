@@ -435,14 +435,16 @@ public abstract class App {
 
         AppUI currentUi = AppUI.getCurrent();
 
+        currentUi.setLocale(locale);
         currentUi.getSession().setLocale(locale);
         currentUi.updateClientSystemMessages(locale);
 
         for (AppUI ui : getAppUIs()) {
             if (ui != currentUi) {
-                ui.accessSynchronously(() ->
-                        ui.updateClientSystemMessages(locale)
-                );
+                ui.accessSynchronously(() -> {
+                    ui.setLocale(locale);
+                    ui.updateClientSystemMessages(locale);
+                });
             }
         }
     }
