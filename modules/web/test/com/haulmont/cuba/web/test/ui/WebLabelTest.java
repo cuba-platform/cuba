@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.test.ui;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.LabelTest;
-import com.haulmont.cuba.web.test.ui.util.TestComponentsFactory;
+import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import com.vaadin.data.util.converter.DefaultConverterFactory;
 import com.vaadin.server.VaadinSession;
 import mockit.Mocked;
@@ -50,6 +50,6 @@ public class WebLabelTest extends LabelTest {
             }
         };
 
-        factory = new TestComponentsFactory(externalUIComponentsSource);
+        factory = new WebComponentsFactory();
     }
 }

@@ -21,7 +21,6 @@ import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import org.junit.Before;
@@ -32,9 +31,6 @@ public abstract class AbstractComponentTest extends CubaClientTestCase {
 
     @Mocked
     protected BackgroundWorker backgroundWorker;
-
-    @Mocked
-    protected ExternalUIComponentsSource externalUIComponentsSource;
 
     @Before
     public void setUp() throws Exception {

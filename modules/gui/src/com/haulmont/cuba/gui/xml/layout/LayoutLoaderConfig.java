@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.gui.xml.layout;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.*;
@@ -157,9 +156,6 @@ public class LayoutLoaderConfig {
     }
 
     public Class<? extends ComponentLoader> getLoader(String name) {
-        ExternalUIComponentsSource externalUIComponentsSource = AppBeans.get(ExternalUIComponentsSource.NAME);
-        externalUIComponentsSource.checkInitialized();
-
         final Class<? extends ComponentLoader> loader = customLoaders.get(name);
         if (loader == null) {
             return loaders.get(name);

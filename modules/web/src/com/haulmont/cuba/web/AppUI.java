@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.global.ScreenProfilerConfig;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Window.TopLevelWindow;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
+import com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -85,6 +86,9 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
 
     @Inject
     protected ThemeConstantsRepository themeConstantsRepository;
+
+    @Inject
+    protected ExternalUIComponentsSource externalUIComponentsSource;
 
     protected TestIdManager testIdManager = new TestIdManager();
 
@@ -176,6 +180,8 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
             initJsLibraries();
 
             initInternalComponents();
+
+            externalUIComponentsSource.checkInitialized();
 
             if (!App.isBound()) {
                 App app = createApplication();

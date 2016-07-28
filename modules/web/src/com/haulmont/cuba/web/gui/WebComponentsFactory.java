@@ -21,11 +21,9 @@ import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.gui.components.mainwindow.*;
 
-import javax.inject.Inject;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -134,17 +132,12 @@ public class WebComponentsFactory implements ComponentsFactory {
         }
     }
 
-    @Inject
-    protected ExternalUIComponentsSource externalUIComponentsSource;
-
     public void register(String name, Class<? extends Component> componentClass) {
         classes.put(name, componentClass);
     }
 
     @Override
     public Component createComponent(String name) {
-        externalUIComponentsSource.checkInitialized();
-
         final Class<? extends Component> componentClass = classes.get(name);
         if (componentClass == null) {
             throw new IllegalStateException(String.format("Can't find component class for '%s'", name));
@@ -158,8 +151,6 @@ public class WebComponentsFactory implements ComponentsFactory {
 
     @Override
     public <T extends Component> T createComponent(Class<T> type) {
-        externalUIComponentsSource.checkInitialized();
-
         String name = names.get(type);
         if (name == null) {
             java.lang.reflect.Field nameField;
