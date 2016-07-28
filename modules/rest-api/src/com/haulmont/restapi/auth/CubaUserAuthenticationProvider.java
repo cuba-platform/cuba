@@ -32,7 +32,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -69,7 +68,8 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider, S
             try {
                 UserSession session = loginService.login(login, passwordEncryption.getPlainHash((String) token.getCredentials()), request.getLocale());
                 AppContext.setSecurityContext(new SecurityContext(session));
-                UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), getRoleUserAuthorities());
+                UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(),
+                        authentication.getCredentials(), getRoleUserAuthorities());
                 Map<String, String> details = (Map<String, String>) authentication.getDetails();
                 details.put("sessionId", session.getId().toString());
                 result.setDetails(details);
@@ -97,8 +97,6 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider, S
     }
 
     private List<GrantedAuthority> getRoleUserAuthorities() {
-        final List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        return grantedAuthorities;
+        return new ArrayList<>();
     }
 }

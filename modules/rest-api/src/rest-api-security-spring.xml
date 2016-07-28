@@ -102,9 +102,9 @@
           create-session="stateless"
           entry-point-ref="oauthAuthenticationEntryPoint"
           xmlns="http://www.springframework.org/schema/security">
-        <intercept-url pattern="${cuba.rest.dispatcherPath}/api/entities/**" access="hasRole('USER')"/>
-        <intercept-url pattern="${cuba.rest.dispatcherPath}/api/queries/**" access="hasRole('USER')"/>
-        <intercept-url pattern="${cuba.rest.dispatcherPath}/api/services/**" access="hasRole('USER')"/>
+        <intercept-url pattern="${cuba.rest.dispatcherPath}/api/entities/**" access="isAuthenticated()"/>
+        <intercept-url pattern="${cuba.rest.dispatcherPath}/api/queries/**" access="isAuthenticated()"/>
+        <intercept-url pattern="${cuba.rest.dispatcherPath}/api/services/**" access="isAuthenticated()"/>
         <anonymous enabled="false"/>
         <csrf disabled="true"/>
         <cors configuration-source-ref="corsSource"/>
