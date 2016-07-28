@@ -45,7 +45,10 @@ public class Connection {
 
     public void login(String login, String password, Locale locale) throws LoginException {
         UserSession userSession = doLogin(login, password, locale, getLoginParams());
-        session = new ClientUserSession(userSession);
+        ClientUserSession clientUserSession = new ClientUserSession(userSession);
+        clientUserSession.setAuthenticated(true);
+
+        session = clientUserSession;
         AppContext.setSecurityContext(new SecurityContext(session));
         log.info("Logged in: " + session);
 

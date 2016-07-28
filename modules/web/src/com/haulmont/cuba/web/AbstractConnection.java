@@ -188,7 +188,11 @@ public abstract class AbstractConnection implements Connection {
 
     @Override
     public void substituteUser(User substitutedUser) {
-        setSession(new ClientUserSession(loginService.substituteUser(substitutedUser)));
+        ClientUserSession clientUserSession = new ClientUserSession(loginService.substituteUser(substitutedUser));
+        clientUserSession.setAuthenticated(true);
+
+        setSession(clientUserSession);
+
         fireSubstitutionListeners();
     }
 
