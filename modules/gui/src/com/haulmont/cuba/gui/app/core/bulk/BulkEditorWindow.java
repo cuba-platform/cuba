@@ -171,6 +171,7 @@ public class BulkEditorWindow extends AbstractWindow {
         grid.setSpacing(true);
         grid.setColumns(4);
         grid.setRows((managedFields.size() + 1) / 2);
+        grid.setStyleName("bulk-editor-grid");
 
         contentPane.add(grid);
         grid.setFrame(frame);
@@ -189,7 +190,8 @@ public class BulkEditorWindow extends AbstractWindow {
             Label label = componentsFactory.createComponent(Label.class);
             label.setFrame(getFrame());
             label.setValue(field.getLocalizedName());
-            label.setAlignment(Alignment.MIDDLE_LEFT);
+            label.setAlignment(Alignment.TOP_LEFT);
+            label.setStyleName("field-label");
 
             grid.add(label);
 
@@ -225,13 +227,13 @@ public class BulkEditorWindow extends AbstractWindow {
                                 setIcon("icons/edit.png");
                                 clearButton.setDescription(getMessage("bulk.editAttribute"));
                             } else {
-                                setIcon("icons/erase.png");
+                                setIcon("icons/trash.png");
                                 clearButton.setDescription(getMessage("bulk.clearAttribute"));
                             }
                         }
                     };
                     action.setCaption("");
-                    action.setIcon("icons/erase.png");
+                    action.setIcon("icons/trash.png");
 
                     clearButton.setAction(action);
                     clearButton.setDescription(getMessage("bulk.clearAttribute"));

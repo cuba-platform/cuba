@@ -70,6 +70,7 @@
 @import "app/role-editor";
 @import "app/report-wizard";
 @import "app/breadcrumbs";
+@import "app/bulk-editor";
 @import "app/generic-filter";
 @import "app/table-presentations";
 @import "app/table-paging";
@@ -134,6 +135,7 @@
   @include cuba-role-editor;
   @include cuba-report-wizard;
   @include cuba-breadcrumbs;
+  @include cuba-bulk-editor;
   @include cuba-generic-filter;
   @include cuba-table-presentations;
   @include cuba-table-paging;
