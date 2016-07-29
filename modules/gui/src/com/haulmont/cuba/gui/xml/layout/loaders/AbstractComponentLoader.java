@@ -38,7 +38,6 @@ import com.haulmont.cuba.gui.xml.DeclarativeTrackingAction;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -463,7 +462,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                     id,
                     loadResourceString(element.attributeValue("caption")),
                     loadResourceString(element.attributeValue("description")),
-                    loadResourceString(element.attributeValue("icon")),
+                    loadResourceString(loadThemeString(element.attributeValue("icon"))),
                     element.attributeValue("enable"),
                     element.attributeValue("visible"),
                     element.attributeValue("invoke"),
@@ -475,7 +474,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                     id,
                     loadResourceString(element.attributeValue("caption")),
                     loadResourceString(element.attributeValue("description")),
-                    loadResourceString(element.attributeValue("icon")),
+                    loadResourceString(loadThemeString(element.attributeValue("icon"))),
                     element.attributeValue("enable"),
                     element.attributeValue("visible"),
                     element.attributeValue("invoke"),

@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.app.core.entityinspector;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
@@ -91,9 +92,6 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected Configuration configuration;
 
     @Inject
-    protected ThemeConstants themeConstants;
-
-    @Inject
     protected LookupField entitiesLookup;
 
     @Inject
@@ -113,6 +111,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
     @Inject
     protected FileUploadingAPI fileUploadingAPI;
+
+    @Inject
+    protected ThemeConstants themeConstants;
 
     protected Filter filter;
     protected Table entitiesTable;
@@ -290,7 +291,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         CreateAction createAction = new CreateAction();
         table.addAction(createAction);
         createButton.setAction(createAction);
-        createButton.setIcon("icons/create.png");
+        createButton.setIcon(themeConstants.get("actions.Create.icon"));
         createButton.setFrame(frame);
 
         editButton = componentsFactory.createComponent(Button.class);
@@ -298,7 +299,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         EditAction editAction = new EditAction();
         table.addAction(editAction);
         editButton.setAction(editAction);
-        editButton.setIcon("icons/edit.png");
+        editButton.setIcon(themeConstants.get("actions.Edit.icon"));
         editButton.setFrame(frame);
 
         removeButton = componentsFactory.createComponent(Button.class);
@@ -307,26 +308,28 @@ public class EntityInspectorBrowse extends AbstractLookup {
         removeAction.setAfterRemoveHandler(removedItems -> entitiesDs.refresh());
         table.addAction(removeAction);
         removeButton.setAction(removeAction);
-        removeButton.setIcon("icons/remove.png");
+        removeButton.setIcon(themeConstants.get("actions.Remove.icon"));
         removeButton.setFrame(frame);
 
         excelButton = componentsFactory.createComponent(Button.class);
         excelButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "excel"));
         excelButton.setAction(new ExcelAction(entitiesTable));
-        excelButton.setIcon("icons/excel.png");
+        excelButton.setIcon(themeConstants.get("actions.Excel.icon"));
         excelButton.setFrame(frame);
 
         refreshButton = componentsFactory.createComponent(Button.class);
         refreshButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "refresh"));
         refreshButton.setAction(new RefreshAction(entitiesTable));
-        refreshButton.setIcon("icons/refresh.png");
+        refreshButton.setIcon(themeConstants.get("actions.Refresh.icon"));
         refreshButton.setFrame(frame);
 
         exportButton = componentsFactory.createComponent(Button.class);
+        exportButton.setIcon("icons/download.png");
         exportButton.setAction(new ExportAction());
         exportButton.setCaption(getMessage("export"));
 
         importUpload = componentsFactory.createComponent(FileUploadField.class);
+        importUpload.setIcon("icons/upload.png");
         importUpload.setCaption(getMessage("import"));
         importUpload.addFileUploadSucceedListener(event -> {
             File file = fileUploadingAPI.getFile(importUpload.getFileId());
@@ -444,9 +447,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 return;
 
             Entity item = (Entity) selected.toArray()[0];
-            Map<String, Object> editorParams = new HashMap<>();
-            editorParams.put("item", item);
-            Window window = openWindow("entityInspector.edit", WINDOW_OPEN_TYPE, editorParams);
+
+            Window window = openWindow("entityInspector.edit", WINDOW_OPEN_TYPE, ParamsMap.of("item", item));
             window.addCloseListener(actionId -> {
                 entitiesDs.refresh();
                 entitiesTable.requestFocus();

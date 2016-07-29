@@ -42,11 +42,11 @@
                 <action id="excel"/>
             </actions>
             <buttonsPanel>
-                <button action="filesTable.create" icon="icons/create.png"/>
-                <button action="filesTable.edit" icon="icons/edit.png"/>
-                <button action="filesTable.remove" icon="icons/remove.png"/>
-                <button action="filesTable.excel" icon="icons/excel.png"/>
-                <button action="filesTable.download" icon="icons/save.png"/>
+                <button action="filesTable.create"/>
+                <button action="filesTable.edit"/>
+                <button action="filesTable.remove"/>
+                <button action="filesTable.excel"/>
+                <button action="filesTable.download" icon="icons/download.png"/>
                 <button id="multiUploadBtn" icon="icons/copy.png"/>
             </buttonsPanel>
             <rowsCount/>

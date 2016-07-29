@@ -15,8 +15,7 @@
   ~
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.app.core.appproperties.AppPropertiesBrowse"
         messagesPack="com.haulmont.cuba.gui.app.core.appproperties"
         caption="msg://browseCaption"
@@ -41,12 +40,13 @@
             <buttonsPanel>
                 <label value="msg://searchByName" align="MIDDLE_LEFT"/>
                 <textField id="searchField" />
-                <button action="paramsTable.refresh" icon="icons/refresh.png"/>
-                <button action="paramsTable.editValue" icon="icons/edit.png"/>
+                <button action="paramsTable.refresh"/>
+                <button action="paramsTable.editValue"/>
                 <button id="exportBtn" invoke="exportAsSql" icon="icons/download.png" description="mainMsg://actions.Export"/>
             </buttonsPanel>
             <actions>
-                <action id="editValue" invoke="editValue" caption="mainMsg://actions.Edit" enable="false"/>
+                <action id="editValue" invoke="editValue" enable="false"
+                        caption="mainMsg://actions.Edit" icon="theme://actions.Edit.icon"/>
                 <action id="refresh"/>
             </actions>
             <columns>

@@ -60,7 +60,7 @@
             <table id="attributesTable" width="100%" height="theme://cuba.web.mbean-inspect.attributesTable.height"
                    columnControlVisible="false" multiLineCells="true">
                 <actions>
-                    <action id="refresh" caption="msg://refresh" icon="icons/refresh.png"
+                    <action id="refresh" caption="msg://refresh" icon="theme://actions.Refresh.icon"
                             invoke="reloadAttributes"/>
                     <action id="edit" caption="msg://inspectmbean.attribute.edit" invoke="editAttribute"/>
                 </actions>
