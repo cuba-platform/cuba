@@ -54,7 +54,7 @@ public class Authentication {
 
     public static final String NAME = "cuba_Authentication";
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(Authentication.class);
 
     @Inject
     protected LoginWorker loginWorker;
@@ -90,7 +90,7 @@ public class Authentication {
                 log.trace("Already authenticated, do nothing");
                 cleanupCounter.set(cleanupCounter.get() + 1);
                 if (log.isTraceEnabled()) {
-                    log.trace("New cleanup counter value: " + cleanupCounter.get());
+                    log.trace("New cleanup counter value: {}", cleanupCounter.get());
                 }
                 return userSession;
             }
@@ -102,7 +102,7 @@ public class Authentication {
         }
 
         UserSession session = null;
-        log.trace("Authenticating as " + login);
+        log.trace("Authenticating as {}", login);
         UUID sessionId = sessions.get(login);
         if (sessionId != null) {
             session = userSessionManager.findSession(sessionId);
@@ -157,9 +157,7 @@ public class Authentication {
         } else {
             log.trace("Do not own authentication, cleanup not required");
             cleanupCounter.set(cleanupCounter.get() - 1);
-            if (log.isTraceEnabled()) {
-                log.trace("New cleanup counter value: " + cleanupCounter.get());
-            }
+            log.trace("New cleanup counter value: {}", cleanupCounter.get());
         }
     }
 

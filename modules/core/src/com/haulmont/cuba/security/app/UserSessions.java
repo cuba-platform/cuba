@@ -23,7 +23,6 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.security.global.UserSession;
@@ -40,17 +39,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * User sessions distributed cache.
  */
 @Component(UserSessionsAPI.NAME)
-public final class UserSessions implements UserSessionsAPI {
+public class UserSessions implements UserSessionsAPI {
 
-    static class UserSessionInfo implements Serializable {
+    protected static class UserSessionInfo implements Serializable {
         private static final long serialVersionUID = -4834267718111570841L;
 
-        final UserSession session;
-        final long since;
-        volatile long lastUsedTs; // set to 0 when propagating removal to cluster
-        volatile long lastSentTs;
+        protected final UserSession session;
+        protected final long since;
+        protected volatile long lastUsedTs; // set to 0 when propagating removal to cluster
+        protected volatile long lastSentTs;
 
-        UserSessionInfo(UserSession session, long now) {
+        public UserSessionInfo(UserSession session, long now) {
             this.session = session;
             this.since = now;
             this.lastUsedTs = now;
@@ -59,7 +58,8 @@ public final class UserSessions implements UserSessionsAPI {
 
         @Override
         public String toString() {
-            return session + ", since: " + new Date(since) + ", lastUsed: " + new Date(lastUsedTs);
+            return String.format("%s, since: %s, lastUsed: %s",
+                    session, new Date(since), new Date(lastSentTs));
         }
     }
 
@@ -88,7 +88,7 @@ public final class UserSessions implements UserSessionsAPI {
         noUser.setLogin("server");
         NO_USER_SESSION = new UserSession(
                 UUID.fromString("a66abe96-3b9d-11e2-9db2-3860770d7eaf"), noUser,
-                Collections.<Role>emptyList(), Locale.getDefault(), true) {
+                Collections.emptyList(), Locale.getDefault(), true) {
             @Override
             public UUID getId() {
                 return AppContext.NO_USER_CONTEXT.getSessionId();
@@ -114,7 +114,7 @@ public final class UserSessions implements UserSessionsAPI {
                     public void receive(UserSessionInfo message) {
                         UUID id = message.session.getId();
                         if (message.lastUsedTs == 0) {
-                            log.debug("Removing session due to cluster message: " + message);
+                            log.debug("Removing session due to cluster message: {}", message);
                             cache.remove(id);
                         } else {
                             UserSessionInfo usi = cache.get(id);
@@ -179,7 +179,7 @@ public final class UserSessions implements UserSessionsAPI {
     public void remove(UserSession session) {
         UserSessionInfo usi = cache.remove(session.getId());
         if (usi != null) {
-            log.debug("Removed session: " + usi);
+            log.debug("Removed session: {}", usi);
             if (!session.isSystem()) {
                 usi.lastUsedTs = 0;
                 clusterManager.send(usi);
@@ -270,7 +270,7 @@ public final class UserSessions implements UserSessionsAPI {
         UserSessionInfo usi = cache.remove(id);
 
         if (usi != null) {
-            log.debug("Killed session: " + usi);
+            log.debug("Killed session: {}", usi);
 
             usi.lastUsedTs = 0;
             clusterManager.send(usi);
@@ -286,8 +286,8 @@ public final class UserSessions implements UserSessionsAPI {
         long now = timeSource.currentTimeMillis();
         for (Iterator<UserSessionInfo> it = cache.values().iterator(); it.hasNext();) {
             UserSessionInfo usi = it.next();
-            if (now > (usi.lastUsedTs + expirationTimeout * 1000)) {
-                log.debug("Removing session due to timeout: " + usi);
+            if (!usi.session.isSystem() && now > (usi.lastUsedTs + expirationTimeout * 1000)) {
+                log.debug("Removing session due to timeout: {}", usi);
 
                 it.remove();
 

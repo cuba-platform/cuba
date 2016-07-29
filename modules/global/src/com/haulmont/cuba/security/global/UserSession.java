@@ -441,6 +441,7 @@ public class UserSession implements Serializable {
         return system;
     }
 
+    @Override
     public String toString() {
         return id + " ["
                 + user.getLogin() + (substitutedUser == null ? "" : " / " + substitutedUser.getLogin())
