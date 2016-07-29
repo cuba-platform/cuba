@@ -22,7 +22,7 @@
     box-shadow: 0 0 5px rgba(0,0,0,0.25);
     -moz-box-shadow: 0 0 5px rgba(0,0,0,0.25);
     -webkit-box-shadow: 0 0 5px rgba(0,0,0,0.25);
-    padding: 10px 40px 10px 40px;
+    padding: 10px 40px 10px 40px !important;
   }
 
   .cuba-login-main-layout {
@@ -34,7 +34,6 @@
   }
 
   .login-form-label {
-    font-weight: bold;
     font-size: 10pt;
     color: #2B4666;
   }

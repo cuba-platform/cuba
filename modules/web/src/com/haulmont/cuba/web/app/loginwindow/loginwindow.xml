@@ -45,21 +45,21 @@
                 <columns count="2"/>
                 <rows>
                     <row>
-                        <label id="loginFieldLabel" value="mainMsg://loginWindow.loginField" align="MIDDLE_LEFT"
+                        <label id="loginFieldLabel" value="mainMsg://loginWindow.loginField" align="MIDDLE_RIGHT"
                                stylename="login-form-label"/>
 
                         <textField id="loginField" stylename="cuba-login-username"
                                    width="theme://cuba.web.LoginWindow.field.width"/>
                     </row>
                     <row>
-                        <label id="passwordFieldLabel" value="mainMsg://loginWindow.passwordField" align="MIDDLE_LEFT"
+                        <label id="passwordFieldLabel" value="mainMsg://loginWindow.passwordField" align="MIDDLE_RIGHT"
                                stylename="login-form-label"/>
 
                         <passwordField id="passwordField" stylename="cuba-login-password" autocomplete="true"
                                        width="theme://cuba.web.LoginWindow.field.width"/>
                     </row>
                     <row>
-                        <label id="localesSelectLabel" value="mainMsg://loginWindow.localesSelect" align="MIDDLE_LEFT"
+                        <label id="localesSelectLabel" value="mainMsg://loginWindow.localesSelect" align="MIDDLE_RIGHT"
                                stylename="login-form-label"/>
 
                         <lookupField id="localesSelect" width="theme://cuba.web.LoginWindow.field.width"

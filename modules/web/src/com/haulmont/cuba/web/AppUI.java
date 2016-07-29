@@ -18,10 +18,7 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.client.ClientUserSession;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.ScreenProfilerConfig;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Window.TopLevelWindow;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
@@ -89,6 +86,9 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
 
     @Inject
     protected ExternalUIComponentsSource externalUIComponentsSource;
+
+    @Inject
+    protected UserSessionSource userSessionSource;
 
     protected TestIdManager testIdManager = new TestIdManager();
 
@@ -478,17 +478,21 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
     }
 
     protected void updateUiTheme() {
-        // load theme from user settings
-        String themeName = webConfig.getAppWindowTheme();
+        UserSession userSession = userSessionSource.getUserSession();
 
-        themeName = userSettingsTools.loadAppWindowTheme() == null ? themeName : userSettingsTools.loadAppWindowTheme();
+        if (userSession instanceof ClientUserSession && ((ClientUserSession) userSession).isAuthenticated()) {
+            // load theme from user settings
+            String themeName = webConfig.getAppWindowTheme();
 
-        if (!Objects.equals(themeName, getTheme())) {
-            // check theme support
-            Set<String> supportedThemes = themeConstantsRepository.getAvailableThemes();
-            if (supportedThemes.contains(themeName)) {
-                app.applyTheme(themeName);
-                setTheme(themeName);
+            themeName = userSettingsTools.loadAppWindowTheme() == null ? themeName : userSettingsTools.loadAppWindowTheme();
+
+            if (!Objects.equals(themeName, getTheme())) {
+                // check theme support
+                Set<String> supportedThemes = themeConstantsRepository.getAvailableThemes();
+                if (supportedThemes.contains(themeName)) {
+                    app.applyTheme(themeName);
+                    setTheme(themeName);
+                }
             }
         }
     }
