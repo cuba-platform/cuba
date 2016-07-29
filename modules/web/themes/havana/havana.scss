@@ -80,6 +80,7 @@
 @import "app/login-window";
 @import "app/logger-level";
 @import "app/breadcrumbs";
+@import "app/bulk-editor";
 @import "app/generic-filter";
 @import "app/table-paging";
 @import "app/table-showlink";
@@ -158,6 +159,7 @@
   @include cuba-table-presentations;
   @include cuba-folders-pane;
   @include cuba-breadcrumbs;
+  @include cuba-bulk-editor;
   @include cuba-log-control;
   @include cuba-jmx-console;
   @include cuba-role-editor;
