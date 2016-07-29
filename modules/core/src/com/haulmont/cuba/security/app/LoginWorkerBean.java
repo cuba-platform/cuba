@@ -473,9 +473,9 @@ public class LoginWorkerBean implements LoginWorker {
         log.debug("Initialize anonymous session");
 
         try {
-            loginAnonymous();
+            UserSession session = loginAnonymous();
 
-            log.debug("Anonymous session initialized");
+            log.debug("Anonymous session initialized with id {}", session.getId());
         } catch (LoginException e) {
             log.error("Unable to login anonymous session", e);
         }

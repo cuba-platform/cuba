@@ -62,7 +62,7 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
 
         UserSession session = doLoginAnonymous(anonymousSessionId, locale);
         if (session == null) {
-            throw new LoginFailedException("Unable to obtain anonymous session");
+            throw new LoginFailedException("Unable to obtain anonymous session with id {}", anonymousSessionId);
         }
         session.setLocale(locale);
 
