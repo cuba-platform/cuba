@@ -224,7 +224,7 @@ public class RdbmsStore implements DataStore {
 
         queryResultsManager.savePreviousQueryResults(context);
 
-        if (security.hasMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL)) {
+        if (security.hasInMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL)) {
             context = context.copy();
             List resultList;
             try (Transaction tx = persistence.createTransaction(storeName)) {
@@ -736,7 +736,7 @@ public class RdbmsStore implements DataStore {
     }
 
     protected boolean needToApplyInMemoryReadConstraints(LoadContext context) {
-        return needToApplyConstraints(context, metaClass -> security.hasMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL));
+        return needToApplyConstraints(context, metaClass -> security.hasInMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL));
     }
 
     protected boolean needToApplyConstraints(LoadContext context) {

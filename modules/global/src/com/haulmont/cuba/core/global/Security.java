@@ -141,5 +141,5 @@ public interface Security {
     /**
      * Check if there are registered memory constraints of specified {@param operationTypes} for the metaClass or it's original metaClass
      */
-    boolean hasMemoryConstraints(MetaClass metaClass, ConstraintOperationType... operationTypes);
+    boolean hasInMemoryConstraints(MetaClass metaClass, ConstraintOperationType... operationTypes);
 }
