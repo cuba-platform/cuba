@@ -30,11 +30,6 @@ import org.antlr.runtime.tree.CommonTree;
 import java.util.Deque;
 import java.util.List;
 
-/**
- * Author: Alexander Chevelev
- * Date: 30.10.2010
- * Time: 4:15:07
- */
 public class BaseJoinNode extends BaseCustomNode {
     protected String variableName;
 

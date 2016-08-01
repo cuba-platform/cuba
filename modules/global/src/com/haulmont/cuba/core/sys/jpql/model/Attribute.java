@@ -17,11 +17,6 @@
 
 package com.haulmont.cuba.core.sys.jpql.model;
 
-/**
- * Author: Alexander Chevelev
- * Date: 08.11.2010
- * Time: 20:28:04
- */
 public interface Attribute extends Cloneable {
     Class getSimpleType();
 

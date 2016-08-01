@@ -22,11 +22,6 @@ import com.haulmont.cuba.core.sys.jpql.InferredType;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Author: Alexander Chevelev
- * Date: 26.10.2010
- * Time: 23:27:24
- */
 public interface Entity {
 
     String getName();

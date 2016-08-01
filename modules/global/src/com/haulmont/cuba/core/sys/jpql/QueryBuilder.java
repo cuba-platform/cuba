@@ -17,11 +17,6 @@
 
 package com.haulmont.cuba.core.sys.jpql;
 
-/**
- * Author: Alexander Chevelev
- * Date: 29.03.2011
- * Time: 1:06:23
- */
 public class QueryBuilder {
     private StringBuilder sb = new StringBuilder();
 

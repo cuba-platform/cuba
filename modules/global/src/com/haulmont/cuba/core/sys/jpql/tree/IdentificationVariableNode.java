@@ -33,11 +33,6 @@ import javax.annotation.Nullable;
 import java.util.Deque;
 import java.util.List;
 
-/**
- * Author: Alexander Chevelev
- * Date: 30.10.2010
- * Time: 4:15:07
- */
 public class IdentificationVariableNode extends BaseCustomNode {
     private String variableName;
     private String effectiveEntityName;

@@ -21,11 +21,6 @@ import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.Tree;
 
-/**
- * Author: Alexander Chevelev
- * Date: 30.10.2010
- * Time: 4:15:07
- */
 public class AggregateExpressionNode extends BaseCustomNode {
     private AggregateExpressionNode(Token token) {
         super(token);
