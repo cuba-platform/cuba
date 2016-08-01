@@ -18,22 +18,36 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
+import org.springframework.stereotype.Component;
 
 /**
  * Factory to get {@link QueryParser} and {@link QueryTransformer} instances.
- *
  */
+@Component(QueryTransformerFactory.NAME)
 public class QueryTransformerFactory {
 
-    private static boolean useAst = AppBeans.<Configuration>get(Configuration.NAME)
-            .getConfig(GlobalConfig.class).getUseAstBasedJpqlTransformer();
+    public static final String NAME = "cuba_QueryTransformerFactory";
 
-    private static volatile DomainModel domainModel;
+    protected boolean useAst = true;
+
+    protected volatile DomainModel domainModel;
+
+    public void setConfiguration(Configuration configuration) {
+        useAst = configuration.getConfig(GlobalConfig.class).getUseAstBasedJpqlTransformer();
+    }
 
     public static QueryTransformer createTransformer(String query) {
+        return AppBeans.get(NAME, QueryTransformerFactory.class).transformer(query);
+    }
+
+    public static QueryParser createParser(String query) {
+        return AppBeans.get(NAME, QueryTransformerFactory.class).parser(query);
+    }
+
+    public QueryTransformer transformer(String query) {
         if (useAst) {
             if (domainModel == null) {
-                DomainModelBuilder builder = new DomainModelBuilder(false);
+                DomainModelBuilder builder = AppBeans.get(DomainModelBuilder.NAME);
                 domainModel = builder.produce();
             }
             return AppBeans.getPrototype(QueryTransformer.NAME, domainModel, query);
@@ -42,10 +56,10 @@ public class QueryTransformerFactory {
         }
     }
 
-    public static QueryParser createParser(String query) {
+    public QueryParser parser(String query) {
         if (useAst) {
             if (domainModel == null) {
-                DomainModelBuilder builder = new DomainModelBuilder(false);
+                DomainModelBuilder builder = AppBeans.get(DomainModelBuilder.NAME);
                 domainModel = builder.produce();
             }
             return AppBeans.getPrototype(QueryParser.NAME, domainModel, query);

@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
+import com.haulmont.cuba.core.sys.jpql.DomainModelWithCaptionsBuilder;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.JpqlSuggestionFactory;
@@ -474,7 +475,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
         String query = queryBuilder.toString();
         query = query.replace("{E}", entityAlias);
 
-        DomainModelBuilder builder = new DomainModelBuilder(metadata, messageTools, extendedEntities);
+        DomainModelBuilder builder = AppBeans.get(DomainModelWithCaptionsBuilder.NAME);
         DomainModel domainModel = builder.produce();
 
         return JpqlSuggestionFactory.requestHint(query, queryPosition, sender.getAutoCompleteSupport(), senderCursorPosition, new ExtHintProvider(domainModel));
