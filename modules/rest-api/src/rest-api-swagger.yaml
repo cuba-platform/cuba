@@ -1,0 +1,608 @@
+swagger: '2.0'
+
+info:
+  version: "6.3.0"
+  title: CUBA Platform REST API
+  description: |
+    REST API uses an OAuth2 resource owner password credentials grant to protect the endpoints.
+
+    ## Access Token Request
+
+    An authentication token can be obtained by the `/oauth/token` url.
+
+    Request method must be POST. Request format must be `application/x-www-form-urlencoded`. Request parameters must be
+    the following:
+
+    * grant_type: value must be set to "password"
+    * username: the platform user login
+    * password: the platform user password
+
+    The authentication token endpoint is protected with the basic authentication. The token request must contain an `Authorization`
+    header for basic authentication with REST API client credentials.
+
+    Access token request example:
+
+    ```
+    POST /token HTTP/1.1
+    Host: server.example.com
+    Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
+    Content-Type: application/x-www-form-urlencoded
+
+    grant_type=password&username=johndoe&password=A3ddj3w
+    ```
+
+    ## Access token response
+
+    ```
+    HTTP/1.1 200 OK
+    Content-Type: application/json;charset=UTF-8
+    Cache-Control: no-store
+    Pragma: no-cache
+
+    {
+      "access_token":"2YotnFZFEjr1zCsicMWpAA",
+      "token_type":"password",
+      "expires_in":3600
+    }
+    ```
+
+    ## Accessing protected endpoints
+
+    The access token must be placed to the `Authorization` header with the `Bearer` type, e.g.:
+
+    ```
+    GET /api/entities/sales$Order
+         Host: example.com
+         Authorization: Bearer 2YotnFZFEjr1zCsicMWpAA
+    ```
+
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+################################################################################
+#                  Host, Base Path, Schemes and Content Types                  #
+################################################################################
+
+basePath: /app/dispatch/api
+produces:
+  - application/json
+consumes:
+  - application/json
+
+################################################################################
+#                                   Parameters                                 #
+################################################################################
+parameters:
+  entityNameParam:
+    name: entityName
+    in: path
+    type: string
+    description: Entity name
+    required: true
+  entityIdParam:
+    name: entityId
+    in: path
+    type: string
+    description: Entity identifier
+    required: true
+  queryNameParam:
+    name: queryName
+    in: path
+    type: string
+    description: Query name
+    required: true
+  serviceNameParam:
+    name: serviceName
+    in: path
+    type: string
+    description: Service name
+    required: true
+  methodNameParam:
+    name: methodName
+    in: path
+    type: string
+    description: Method name
+    required: true
+  entityJsonParam:
+    name: entityJson
+    description: JSON object with the entity
+    in: body
+    schema:
+      "$ref": "#/definitions/entity"
+  entityViewParam:
+    name: view
+    in: query
+    description: Name of the view which is used for loading the entity
+    type: string
+
+
+################################################################################
+#                                   Definitions                                #
+################################################################################
+definitions:
+  error:
+    type: object
+    properties:
+      error:
+        type: string
+        description: Error message
+      error_description:
+        type: string
+        description: Detailed error description
+
+  token:
+    type: object
+    properties:
+      access_token:
+        type: string
+        example: 2YotnFZFEjr1zCsicMWpAA
+      token_type:
+        type: string
+        example: password
+      expires_in:
+        type: string
+        example: 3600
+      scope:
+        type: string
+        example: rest-api
+
+  tokenRevokeRequest:
+    type: object
+    properties:
+      token:
+        type: string
+        description: Token value
+        example: 2YotnFZFEjr1zCsicMWpAA
+      token_type:
+        type: string
+        description: Token type. Can be `access_token` or `refresh_token`
+        example: access_token
+    required: [token]
+
+  entity:
+    type: object
+    properties:
+      id:
+        type: string
+        example: 4d8ef1d4-90b6-c075-8bfd-79181ff889ef
+      otherEntityFields:
+        type: string
+        example: There must be a set of entity fields instead of this one here
+
+  entityFull:
+    type: object
+    properties:
+      id:
+        type: string
+        example: 4d8ef1d4-90b6-c075-8bfd-79181ff889ef
+      _entityName:
+        type: string
+        example: sec$User
+      otherEntityFields:
+        type: string
+        example: There must be a set of entity fields instead of this one here
+    required: [id, _entityName]
+
+
+  predefinedQuery:
+    type: object
+    properties:
+      name:
+        type: string
+      jpql:
+        type: string
+      entityName:
+        type: string
+      viewName:
+        type: string
+      params:
+        type: object
+        properties:
+          name:
+            type: string
+          type:
+            type: string
+
+  serviceInfo:
+    type: object
+    properties:
+      service:
+        type: string
+      methods:
+        type: array
+        items:
+          type: string
+
+################################################################################
+#                                   Responses                                  #
+################################################################################
+responses:
+  entityReadForbiddenResponse:
+    description: Forbiddden. The user doesn't have permissions to read the entity
+    schema:
+      $ref: '#/definitions/error'
+  metaClassNotFoundResponse:
+    description: Not found. MetaClass for the entity with the given name not found
+    schema:
+      $ref: '#/definitions/error'
+
+
+################################################################################
+#                                   Tags                                       #
+################################################################################
+tags:
+  - name: OAuth
+    description: Methods for working with authentication tokens
+  - name: Entities
+    description: CRUD entities operations
+  - name: Queries
+    description: Predefined queries execution
+  - name: Services
+    description: Middleware services execution
+
+################################################################################
+#                                  Security                                    #
+################################################################################
+securityDefinitions:
+  oauth2:
+    type: oauth2
+    flow: password
+    tokenUrl: http://localhost:8080/app/dispatch/api/oauth/token
+    scopes:
+      rest-api: use REST API
+  tokenEndpointBasic:
+    type: basic
+
+security:
+  - oauth2:
+    - rest-api
+
+################################################################################
+#                                   Paths                                      #
+################################################################################
+paths:
+
+############################### token ##########################################
+  /oauth/token:
+    post:
+      tags:
+        - OAuth
+      summary: Get an authentication token
+      description: |
+        Gets an authentication token.
+
+        The endpoint is protected with the basic authentication. The request must contain an `Authorization`
+        header for basic authentication with REST API client credentials.
+      consumes:
+        - application/x-www-form-urlencoded
+      parameters:
+        - name: grant_type
+          in: formData
+          type: string
+          description: OAuth grant type. Should be set to "password"
+        - name: username
+          in: formData
+          type: string
+          description: CUBA Platform user login
+        - name: password
+          in: formData
+          type: string
+          description: CUBA Platform user password
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/token'
+        401:
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/error'
+      security:
+        - tokenEndpointBasic
+
+  /oauth/revoke:
+    post:
+      tags:
+        - OAuth
+      summary: Revoke an authentication token
+      description: |
+        Revokes an authentication token. The endpoint is protected with the basic authentication. The request must
+        contain an `Authorization` header for basic authentication with REST API client credentials.
+      consumes:
+        - application/x-www-form-urlencoded
+      parameters:
+        - name: tokenRevokeRequest
+          in: body
+          schema:
+            $ref: '#/definitions/tokenRevokeRequest'
+      responses:
+        200:
+          description: OK
+
+############################### Entities ###################################
+  /entities/{entityName}:
+    parameters:
+      - $ref: '#/parameters/entityNameParam'
+    get:
+      tags:
+        - Entities
+      summary: Get a list of entities
+      description: |
+        Gets a list of entities
+      parameters:
+        - $ref: '#/parameters/entityViewParam'
+        - name: limit
+          in: query
+          description: Number of extracted entities
+          type: string
+        - name: offset
+          in: query
+          description: Position of the first result to retrieve
+          type: string
+        - name: sort
+          in: query
+          description: |
+            Name of the field to be sorted by. If the name is preceeding by the '+' character, then
+            the sort order is ascending, if by the '-' character then descending. If there is no special
+            character before the property name, then ascending sort will be used.
+          type: string
+
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              "$ref": "#/definitions/entityFull"
+        403:
+          description: Forbiddden. The user doesn't have permissions to read the entity
+          schema:
+            $ref: '#/definitions/error'
+        404:
+          $ref: '#/responses/metaClassNotFoundResponse'
+    post:
+      tags:
+        - Entities
+      summary: Create new entity
+      description: |
+        Creates new entity
+      parameters:
+        - name: entityJson
+          description: |
+            A JSON object with the entity
+          in: body
+          schema:
+            "$ref": "#/definitions/entity"
+      responses:
+        201:
+          description: Entity created
+          headers:
+            location:
+              type: string
+              description:
+                A URL the created object can be accessed with
+        403:
+          description: Forbiddden. The user doesn't have permissions to create the entity
+          schema:
+            $ref: '#/definitions/error'
+        404:
+          $ref: '#/responses/metaClassNotFoundResponse'
+
+
+  /entities/{entityName}/{entityId}:
+    parameters:
+      - $ref: '#/parameters/entityNameParam'
+      - $ref: '#/parameters/entityIdParam'
+    get:
+      tags:
+        - Entities
+      summary: Get a single entity by id
+      description: |
+        Gets a single entity by identifier
+      parameters:
+        - $ref: '#/parameters/entityViewParam'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/entityFull'
+        403:
+          description: Forbiddden. The user doesn't have permissions to read the entity
+          schema:
+            $ref: '#/definitions/error'
+        404:
+          description: |
+            MetaClass not found or entity with the five identifier not found.
+          schema:
+            $ref: '#/definitions/error'
+    put:
+      tags:
+        - Entities
+      summary: Update the entity
+      description: |
+        Updates the entity. Only fields that are passed in the JSON object (the request body) are updated.
+      parameters:
+        - $ref: '#/parameters/entityJsonParam'
+      responses:
+        200:
+          description: OK
+        403:
+          description: Forbiddden. The user doesn't have permissions to update the entity
+          schema:
+            $ref: '#/definitions/error'
+        404:
+          description: |
+            MetaClass not found or entity with the given identifier not found.
+          schema:
+            $ref: '#/definitions/error'
+    delete:
+      tags:
+        - Entities
+      summary: Delete the entity
+      description: Deletes the entity
+      responses:
+        200:
+          description: OK
+        403:
+          description: Forbiddden. The user doesn't have permissions to delete the entity
+          schema:
+            $ref: '#/definitions/error'
+        404:
+          description: |
+            MetaClass not found or entity with the given identifier not found.
+          schema:
+            $ref: '#/definitions/error'
+
+############################### Queries ########################################
+  /queries/{entityName}:
+    parameters:
+      - $ref: '#/parameters/entityNameParam'
+    get:
+      tags:
+        - Queries
+      summary: Get a list of queries
+      description: |
+        Gets a list of predefined queries for the entity
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/predefinedQuery'
+        403:
+          description: Forbiddden. The user doesn't have permissions to read the entity.
+          schema:
+            $ref: '#/definitions/error'
+        404:
+          description: |
+            MetaClass not found.
+
+
+  /queries/{entityName}/{queryName}:
+    parameters:
+      - $ref: '#/parameters/entityNameParam'
+      - $ref: '#/parameters/queryNameParam'
+    get:
+      tags:
+        - Queries
+      summary: Execute a query
+      description: |
+        Executes a predefined query
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/entityFull'
+        403:
+          description: Forbiddden. The user doesn't have permissions to read the entity.
+          schema:
+            $ref: '#/definitions/error'
+        404:
+          description: |
+            MetaClass not found or query with the given name not found
+          schema:
+            $ref: '#/definitions/error'
+
+  /queries/{entityName}/{queryName}/count:
+    parameters:
+      - $ref: '#/parameters/entityNameParam'
+      - $ref: '#/parameters/queryNameParam'
+    get:
+      tags:
+        - Queries
+      summary: Execute a query
+      description: |
+        Returns the number of entities that matches the query. You can use the `all` keyword for the `queryNameParam`
+        to get the number of all available entities.
+      responses:
+        200:
+          description: Successful response
+          schema:
+            title: Count
+            type: integer
+        403:
+          description: Forbiddden. The user doesn't have permissions to read the entity.
+          schema:
+            $ref: '#/definitions/error'
+        404:
+          description: |
+            MetaClass not found or query with the given name not found
+          schema:
+            $ref: '#/definitions/error'
+
+############################### Services #######################################
+  /services/{serviceName}:
+    parameters:
+      - $ref: '#/parameters/serviceNameParam'
+    get:
+      tags:
+        - Services
+      summary: Get a list of available service methods
+      description: |
+        Returns a list of available service methods
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/serviceInfo'
+        403:
+          description: Forbiddden. The user doesn't have permissions to invoke the service method.
+          schema:
+            $ref: '#/definitions/error'
+
+  /services/{serviceName}/{methodName}:
+    parameters:
+      - $ref: '#/parameters/serviceNameParam'
+      - $ref: '#/parameters/methodNameParam'
+    get:
+      tags:
+        - Services
+      summary: Execute service method
+      description: |
+        Executes the service method. This request expects query parameters with the names:
+        * param0..paramN - with parameters values
+        * param0_type..paramN_type - with parameters types (optional)
+      responses:
+        200:
+          description: |
+            Returns the result of the method execution. It can be of simple datatype
+            as well as JSON that represents an entity or entities collection
+          schema:
+            type: string
+        403:
+          description: Forbiddden. The user doesn't have permissions to invoke the service method.
+          schema:
+            $ref: '#/definitions/error'
+    post:
+      tags:
+        - Services
+      summary: Execute service method
+      description: |
+        Executes a method of the service
+      parameters:
+        - name: paramsObject
+          in: body
+          schema:
+            type: string
+          required: true
+          description: |
+            JSON object that contains fields with names param0..paramN with parameter values and
+            optional fields param0_type..paramN..type with parameter types information.
+
+            An entity or entities collection can be passed as a parameter.
+      responses:
+        200:
+          description: |
+            Returns the result of the method execution. It can be of simple datatype
+            as well as JSON that represents an entity or entities collection
+        403:
+          description: Forbiddden. The user doesn't have permissions to invoke the service method.
+          schema:
+            $ref: '#/definitions/error'

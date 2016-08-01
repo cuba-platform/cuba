@@ -97,7 +97,16 @@
 
     <oauth2:resource-server id="resourceFilter" token-services-ref="tokenServices" />
 
-    <!--todo MG remove hasRole check-->
+    <!-- Documentation endpoint should be allowed for anyone and support cross-domain requests -->
+    <http pattern="${cuba.rest.dispatcherPath}/api/docs/**"
+          create-session="stateless"
+          entry-point-ref="oauthAuthenticationEntryPoint"
+          xmlns="http://www.springframework.org/schema/security">
+        <csrf disabled="true"/>
+        <cors configuration-source-ref="corsSource"/>
+    </http>
+
+    <!-- API controllers endpoints -->
     <http pattern="${cuba.rest.dispatcherPath}/api/**"
           create-session="stateless"
           entry-point-ref="oauthAuthenticationEntryPoint"
