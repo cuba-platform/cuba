@@ -311,6 +311,18 @@ public interface PickerField extends Field, Component.ActionsHolder {
                         screenParams != null ? screenParams : Collections.emptyMap()
                 );
                 lookupWindow.addCloseListener(actionId -> {
+                    if (pickerField instanceof LookupField) {
+                        LookupField lookupField = (LookupField) pickerField;
+
+                        CollectionDatasource optionsDatasource = lookupField.getOptionsDatasource();
+                        if (optionsDatasource != null && lookupField instanceof LookupPickerField) {
+                            LookupPickerField lookupPickerField = (LookupPickerField) lookupField;
+                            if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
+                                optionsDatasource.refresh();
+                            }
+                        }
+                    }
+
                     // move focus to owner
                     pickerField.requestFocus();
 
