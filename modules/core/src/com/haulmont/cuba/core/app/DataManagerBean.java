@@ -214,7 +214,7 @@ public class DataManagerBean implements DataManager {
 
         queryResultsManager.savePreviousQueryResults(context);
 
-        if (security.hasMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL)) {
+        if (security.hasInMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL)) {
             context = context.copy();
             List resultList;
             try (Transaction tx = persistence.createTransaction()) {
@@ -814,12 +814,12 @@ public class DataManagerBean implements DataManager {
 
         if (context.getView() == null) {
             MetaClass metaClass = metadata.getSession().getClassNN(context.getMetaClass());
-            return security.hasMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL);
+            return security.hasInMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL);
         }
 
         Session session = metadata.getSession();
         for (Class aClass : collectEntityClasses(context.getView(), new HashSet<>())) {
-            if (security.hasMemoryConstraints(session.getClassNN(aClass), ConstraintOperationType.READ, ConstraintOperationType.ALL)) {
+            if (security.hasInMemoryConstraints(session.getClassNN(aClass), ConstraintOperationType.READ, ConstraintOperationType.ALL)) {
                 return true;
             }
         }

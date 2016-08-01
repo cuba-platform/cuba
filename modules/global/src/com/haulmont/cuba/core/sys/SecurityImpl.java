@@ -179,7 +179,7 @@ public class SecurityImpl implements Security {
     }
 
     @Override
-    public boolean hasMemoryConstraints(MetaClass metaClass, ConstraintOperationType... operationTypes) {
+    public boolean hasInMemoryConstraints(MetaClass metaClass, ConstraintOperationType... operationTypes) {
         UserSession userSession = userSessionSource.getUserSession();
         String mainMetaClassName = extendedEntities.getOriginalOrThisMetaClass(metaClass).getName();
         List<ConstraintData> constraints = userSession.getConstraints(mainMetaClassName, constraint ->
