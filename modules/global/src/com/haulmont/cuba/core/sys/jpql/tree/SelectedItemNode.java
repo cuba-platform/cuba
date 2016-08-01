@@ -26,11 +26,6 @@ import org.antlr.runtime.tree.Tree;
 
 import java.util.List;
 
-/**
- * Author: Alexander Chevelev
- * Date: 30.10.2010
- * Time: 4:15:07
- */
 public class SelectedItemNode extends BaseCustomNode {
     private SelectedItemNode(Token token) {
         super(token);

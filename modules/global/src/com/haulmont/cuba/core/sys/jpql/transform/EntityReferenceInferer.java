@@ -21,11 +21,6 @@ import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.model.VirtualEntity;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
 
-/**
- * Author: Alexander Chevelev
- * Date: 06.04.2011
- * Time: 16:32:06
- */
 public class EntityReferenceInferer {
     private String entityName;
 

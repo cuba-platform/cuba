@@ -1,14 +1,6 @@
 
 grammar JPA;
 
-// Alexander Kunkel
-// More JPA informations:
-// http://www.kunkelgmbh.de/jpa/jpa.html
-// 28.11.2009
-
-// Alexander Chevelev
-// 15.10.2010
-
 options{
         backtrack=true;
         output=AST;

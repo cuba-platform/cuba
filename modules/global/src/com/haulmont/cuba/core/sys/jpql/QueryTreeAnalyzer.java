@@ -36,11 +36,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Author: Alexander Chevelev
- * Date: 06.04.2011
- * Time: 18:31:25
- */
 public class QueryTreeAnalyzer {
     protected DomainModel model;
     protected IdVarSelector idVarSelector;

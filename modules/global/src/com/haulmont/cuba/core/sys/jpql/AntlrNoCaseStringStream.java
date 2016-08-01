@@ -20,11 +20,6 @@ package com.haulmont.cuba.core.sys.jpql;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
 
-/*
- * ANTLRNoCaseFileStream.java
- *
- * Created on January 25, 2008, 2:12 PM
- */
 public class AntlrNoCaseStringStream extends ANTLRStringStream {
     public AntlrNoCaseStringStream(String str) {
         super(str);
