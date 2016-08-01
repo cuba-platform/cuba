@@ -20,39 +20,39 @@ package com.haulmont.cuba.core.sys.jpql;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.ExtendedEntities;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
+import org.springframework.stereotype.Component;
 
-import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.util.Collection;
 
+/**
+ * INTERNAL.
+ * Generates domain model for use in JPQL parser.
+ */
+@Component(DomainModelBuilder.NAME)
 public class DomainModelBuilder {
+
+    public static final String NAME = "cuba_DomainModelBuilder";
+
+    @Inject
     protected Metadata metadata;
+
+    @Inject
     protected MetadataTools metadataTools;
+
+    @Inject
     protected MessageTools messageTools;
+
+    @Inject
     protected ExtendedEntities extendedEntities;
+
     protected boolean loadCaptions;
-
-    public DomainModelBuilder() {
-        this(AppBeans.get(Metadata.NAME), AppBeans.get(MessageTools.NAME), AppBeans.get(ExtendedEntities.NAME));
-    }
-
-    public DomainModelBuilder(boolean loadCaptions) {
-        this(AppBeans.get(Metadata.NAME), AppBeans.get(MessageTools.NAME), AppBeans.get(ExtendedEntities.NAME), loadCaptions);
-    }
-
-    public DomainModelBuilder(Metadata metadata, MessageTools messageTools, @Nullable ExtendedEntities extendedEntities) {
-        this(metadata, messageTools, extendedEntities, true);
-    }
-
-    private DomainModelBuilder(Metadata metadata, MessageTools messageTools, @Nullable ExtendedEntities extendedEntities, boolean loadCaptions) {
-        this.metadata = metadata;
-        this.metadataTools = metadata.getTools();
-        this.messageTools = messageTools;
-        this.extendedEntities = extendedEntities;
-        this.loadCaptions = loadCaptions;
-    }
 
     public DomainModel produce() {
         Collection<MetaClass> classes = metadata.getSession().getClasses();

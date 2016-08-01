@@ -17,8 +17,10 @@
 
 package com.haulmont.cuba.gui.components.autocomplete;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
+import com.haulmont.cuba.core.sys.jpql.DomainModelWithCaptionsBuilder;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintProvider;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintRequest;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintResponse;
@@ -50,7 +52,7 @@ public class JpqlSuggestionFactory {
 
     public static List<Suggestion> requestHint(String query, int queryPosition, AutoCompleteSupport sender,
                                                int senderCursorPosition, @Nullable HintProvider provider) {
-        DomainModelBuilder builder = new DomainModelBuilder();
+        DomainModelBuilder builder = AppBeans.get(DomainModelWithCaptionsBuilder.NAME);
         DomainModel domainModel = builder.produce();
         if (provider == null) {
             provider = new HintProvider(domainModel);
