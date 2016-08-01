@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
@@ -52,7 +53,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
     protected List<FieldGroup.FieldConfig> loadDynamicAttributeFields(Datasource ds) {
         if (ds != null && metadataTools.isPersistent(ds.getMetaClass())) {
             Set<CategoryAttribute> attributesToShow = dynamicAttributesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(),
-                    getFrameId(), resultComponent.getId());
+                    ComponentsHelper.getWindow(resultComponent).getId(), resultComponent.getId());
             if (!attributesToShow.isEmpty()) {
                 List<FieldGroup.FieldConfig> fields = new ArrayList<>();
                         ds.setLoadDynamicAttributes(true);
@@ -540,13 +541,5 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                 }
             }
         });
-    }
-
-    protected String getFrameId() {
-        Context context = getContext();
-        while (context.getParent() != null) {
-            context = context.getParent();
-        }
-        return context.getFullFrameId();
     }
 }
