@@ -50,22 +50,26 @@ public class UuidConverter implements Converter {
 
     @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
-        if (session.getPlatform() instanceof PostgreSQLPlatform) {
-            return dataValue;
-        } else if (session.getPlatform() instanceof OraclePlatform
-                || session.getPlatform() instanceof MySQLPlatform) {
-            if (dataValue instanceof String) {
-                StringBuilder sb = new StringBuilder((String) dataValue);
-                sb.insert(8, '-');
-                sb.insert(13, '-');
-                sb.insert(18, '-');
-                sb.insert(23, '-');
-                return UuidProvider.fromString(sb.toString());
-            } else {
+        try {
+            if (session.getPlatform() instanceof PostgreSQLPlatform) {
                 return dataValue;
+            } else if (session.getPlatform() instanceof OraclePlatform
+                    || session.getPlatform() instanceof MySQLPlatform) {
+                if (dataValue instanceof String) {
+                    StringBuilder sb = new StringBuilder((String) dataValue);
+                    sb.insert(8, '-');
+                    sb.insert(13, '-');
+                    sb.insert(18, '-');
+                    sb.insert(23, '-');
+                    return UuidProvider.fromString(sb.toString());
+                } else {
+                    return dataValue;
+                }
+            } else {
+                return dataValue instanceof String ? UuidProvider.fromString((String) dataValue) : dataValue;
             }
-        } else {
-            return dataValue instanceof String ? UuidProvider.fromString((String) dataValue) : dataValue;
+        } catch (Exception e) {
+            throw new RuntimeException("Error creating UUID from database value '" + dataValue + "'", e);
         }
     }
 
