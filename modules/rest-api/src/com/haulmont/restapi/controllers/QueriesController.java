@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.exception.RestAPIException;
 import com.haulmont.restapi.query.RestQueriesManager;
 import org.springframework.http.HttpStatus;
@@ -60,6 +61,9 @@ public class QueriesController {
     @Inject
     protected Security security;
 
+    @Inject
+    protected RestControllerUtils restControllerUtils;
+
     @RequestMapping(value = "/{entityName}/{queryName}", method = RequestMethod.GET)
     public String executeQuery(@PathVariable String entityName,
                                @PathVariable String queryName,
@@ -80,7 +84,7 @@ public class QueriesController {
 
     @RequestMapping(value = "/{entityName}", method = RequestMethod.GET)
     public List<RestQueriesManager.QueryInfo> loadQueriesList(@PathVariable String entityName) {
-        MetaClass metaClass = getMetaClass(entityName);
+        MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanReadEntity(metaClass);
         return restQueriesManager.getQueries(entityName);
     }
@@ -88,7 +92,7 @@ public class QueriesController {
     protected LoadContext<Entity> createQueryLoadContext(String entityName,
                                                          String queryName,
                                                          Map<String, String> params) throws ClassNotFoundException, ParseException {
-        MetaClass metaClass = getMetaClass(entityName);
+        MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanReadEntity(metaClass);
 
         RestQueriesManager.QueryInfo queryInfo = restQueriesManager.getQuery(entityName, queryName);
@@ -118,17 +122,6 @@ public class QueriesController {
         ctx.setQuery(query);
         ctx.setView(queryInfo.getViewName());
         return ctx;
-    }
-
-    //TODO extract to the helper class
-    protected MetaClass getMetaClass(String entityName) {
-        MetaClass metaClass = metadata.getClass(entityName);
-        if (metaClass == null) {
-            throw new RestAPIException("MetaClass not found",
-                    String.format("MetaClass %s not found", entityName),
-                    HttpStatus.NOT_FOUND);
-        }
-        return metaClass;
     }
 
     protected void checkCanReadEntity(MetaClass metaClass) {

@@ -21,15 +21,16 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
-import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.app.importexport.EntityImportViewBuilderAPI;
+import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
-import com.haulmont.restapi.exception.RestAPIException;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.restapi.common.RestControllerUtils;
+import com.haulmont.restapi.exception.RestAPIException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
@@ -68,11 +68,14 @@ public class EntitiesController {
     @Inject
     protected Security security;
 
+    @Inject
+    protected RestControllerUtils restControllerUtils;
+
     @RequestMapping(method = RequestMethod.GET, path = "/{entityName}/{entityId}")
     public String loadEntity(@PathVariable String entityName,
                              @PathVariable String entityId,
                              @RequestParam(required = false) String view) {
-        MetaClass metaClass = getMetaClass(entityName);
+        MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
 
         checkCanReadEntity(metaClass);
 
@@ -96,7 +99,7 @@ public class EntitiesController {
                                    @RequestParam(required = false) Integer limit,
                                    @RequestParam(required = false) Integer offset,
                                    @RequestParam(required = false) String sort) {
-        MetaClass metaClass = getMetaClass(entityName);
+        MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanReadEntity(metaClass);
 
         LoadContext<Entity> ctx = new LoadContext<>(metaClass);
@@ -132,7 +135,7 @@ public class EntitiesController {
     public ResponseEntity<String> createEntity(@RequestBody String entityJson,
                                        @PathVariable String entityName,
                                        UriComponentsBuilder uriComponentsBuilder) {
-        MetaClass metaClass = getMetaClass(entityName);
+        MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanCreateEntity(metaClass);
         //todo MG catch invalid json
         Entity entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
@@ -154,7 +157,7 @@ public class EntitiesController {
     public void updateEntity(@RequestBody String entityJson,
                              @PathVariable String entityName,
                              @PathVariable String entityId) {
-        MetaClass metaClass = getMetaClass(entityName);
+        MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanUpdateEntity(metaClass);
         Object id = getIdFromString(entityId, metaClass);
         Entity existingEntity = dataManager.load(new LoadContext(metaClass).setId(id));
@@ -176,7 +179,7 @@ public class EntitiesController {
         dataManager.remove(entity);
     }
 
-    private Object getIdFromString(@PathVariable String entityId, MetaClass metaClass) {
+    private Object getIdFromString(String entityId, MetaClass metaClass) {
         MetaProperty primaryKeyProperty = metadata.getTools().getPrimaryKeyProperty(metaClass);
         Class<?> declaringClass = primaryKeyProperty.getJavaType();
         Object id;
@@ -190,20 +193,6 @@ public class EntitiesController {
             id = entityId;
         }
         return id;
-    }
-
-    /**
-     * Finds metaClass by entityName. Throws a RestAPIException if metaClass not found
-     */
-    protected MetaClass getMetaClass(String entityName) {
-        MetaClass metaClass = metadata.getClass(entityName);
-        if (metaClass == null) {
-            throw new RestAPIException("MetaClass not found",
-                    String.format("MetaClass %s not found", entityName),
-                    HttpStatus.NOT_FOUND);
-        }
-
-        return metaClass;
     }
 
     protected void checkEntityIsNotNull(@PathVariable String entityName, @PathVariable String entityId, Entity entity) {
