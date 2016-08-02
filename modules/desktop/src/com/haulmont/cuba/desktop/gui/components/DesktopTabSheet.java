@@ -58,7 +58,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
     protected boolean postInitTaskAdded;
     protected boolean componentTabChangeListenerInitialized;
 
-    protected Set<TabChangeListener> listeners = new HashSet<>();
+    protected List<TabChangeListener> listeners = new ArrayList<>();
 
     // CAUTION do not add ChangeListeners directly to impl
     protected List<ChangeListener> implTabSheetChangeListeners = new ArrayList<>();
@@ -358,13 +358,16 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
 
     @Override
     public Collection<Tab> getTabs() {
-        return Collections.<Tab>unmodifiableCollection(tabs);
+        return Collections.unmodifiableCollection(tabs);
     }
 
     @Override
     public void addListener(TabChangeListener listener) {
         initComponentTabChangeListener();
-        listeners.add(listener);
+
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
     }
 
     protected void initComponentTabChangeListener() {

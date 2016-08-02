@@ -42,14 +42,14 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     protected boolean componentTabChangeListenerInitialized;
 
     protected ComponentLoader.Context context;
-    protected Map<String, Tab> tabs = new HashMap<>();
+    protected Map<String, Tab> tabs = new LinkedHashMap<>();
 
     protected Map<com.vaadin.ui.Component, ComponentDescriptor> tabMapping = new LinkedHashMap<>();
     protected Map<String, Component> componentByIds = new HashMap<>();
 
     protected Set<com.vaadin.ui.Component> lazyTabs = new HashSet<>();
 
-    protected Set<TabChangeListener> listeners = new HashSet<>();
+    protected List<TabChangeListener> listeners = null; // lazy initialized list
 
     public WebTabSheet() {
         component = createComponent();
@@ -426,7 +426,13 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     @Override
     public void addListener(TabChangeListener listener) {
         initComponentTabChangeListener();
-        listeners.add(listener);
+
+        if (listeners == null) {
+            listeners = new ArrayList<>();
+        }
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
     }
 
     private void initComponentTabChangeListener() {
@@ -459,12 +465,16 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
 
     @Override
     public void removeListener(TabChangeListener listener) {
-        listeners.remove(listener);
+        if (listeners != null) {
+            listeners.remove(listener);
+        }
     }
 
     protected void fireTabChanged() {
-        for (TabChangeListener listener : listeners) {
-            listener.tabChanged(getTab());
+        if (listeners != null) {
+            for (TabChangeListener listener : listeners) {
+                listener.tabChanged(getTab());
+            }
         }
     }
 
