@@ -40,8 +40,8 @@
                         <action id="unlock" invoke="unlock" trackSelection="true" caption="msg://unlock"/>
                     </actions>
                     <buttonsPanel>
-                        <button action="locks.refresh"/>
-                        <button action="locks.unlock"/>
+                        <button action="locks.refresh" icon="theme://actions.Refresh.icon"/>
+                        <button action="locks.unlock" icon="theme://actions.Unlock.icon"/>
                     </buttonsPanel>
                     <columns>
                         <column id="entityName" caption="msg://entityName">
