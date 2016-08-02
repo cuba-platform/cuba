@@ -25,6 +25,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
@@ -192,6 +193,9 @@ public class BulkEditorWindow extends AbstractWindow {
             label.setValue(field.getLocalizedName());
             label.setAlignment(Alignment.TOP_LEFT);
             label.setStyleName("field-label");
+            if (AppConfig.getClientType() == ClientType.DESKTOP) {
+                label.setHeight("25px");
+            }
 
             grid.add(label);
 
