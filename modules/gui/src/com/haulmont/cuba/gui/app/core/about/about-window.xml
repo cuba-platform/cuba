@@ -23,11 +23,12 @@
                 height="theme://cuba.gui.AboutWindow.height"
                 resizable="false"/>
 
-    <layout>
-        <tabSheet width="100%" height="100%">
+    <layout expand="mainTabSheet">
+        <tabSheet id="mainTabSheet" width="100%" height="100%">
             <tab id="creditsTab" caption="msg://credits" margin="true">
                 <frame id="credits" screen="creditsFrame" width="100%" height="100%"/>
             </tab>
         </tabSheet>
+        <button caption="mainMsg://actions.Close" invoke="close"/>
     </layout>
 </window>

@@ -21,4 +21,7 @@ import com.haulmont.cuba.gui.components.AbstractWindow;
 
 public class AboutWindow extends AbstractWindow {
 
+    public void close() {
+        close(CLOSE_ACTION_ID);
+    }
 }
