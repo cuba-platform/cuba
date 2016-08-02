@@ -36,6 +36,17 @@ public interface SplitPanel extends Component.Container, Component.BelongToFrame
     void setSplitPosition(int pos, int unit, boolean reversePosition);
 
     /**
+     * @return position of the splitter.
+     */
+    float getSplitPosition();
+
+    /**
+     * @return unit of the splitter position.
+     * See {@link Component#UNITS_PIXELS} and {@link Component#UNITS_PERCENTAGE}
+     */
+    int getSplitPositionUnit();
+
+    /**
      * Return from which side position is set.
      */
     boolean isSplitPositionReversed();

@@ -125,6 +125,16 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
     }
 
     @Override
+    public float getSplitPosition() {
+        return position;
+    }
+
+    @Override
+    public int getSplitPositionUnit() {
+        return UNITS_PERCENTAGE;
+    }
+
+    @Override
     public void setMaxSplitPosition(int pos, int unit) {
         if (unit != UNITS_PERCENTAGE) {
             // not supported

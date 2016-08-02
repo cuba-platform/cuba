@@ -281,6 +281,22 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     }
 
     @Override
+    public float getSplitPosition() {
+        return component.getSplitPosition();
+    }
+
+    @Override
+    public int getSplitPositionUnit() {
+        if (component.getSplitPositionUnit() == Sizeable.Unit.PIXELS) {
+            return UNITS_PIXELS;
+        } else if (component.getSplitPositionUnit() == Sizeable.Unit.PERCENTAGE) {
+            return UNITS_PERCENTAGE;
+        } else {
+            throw new IllegalArgumentException("Component has unsupported split position unit " + component.getSplitPositionUnit());
+        }
+    }
+
+    @Override
     public boolean isSplitPositionReversed() {
         return component.isSplitPositionReversed();
     }
