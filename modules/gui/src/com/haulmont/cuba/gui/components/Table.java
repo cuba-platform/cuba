@@ -19,9 +19,9 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -139,6 +139,14 @@ public interface Table<E extends Entity>
 
     void setColumnSortable(Column column, boolean sortable);
     boolean getColumnSortable(Column column);
+
+    /**
+     * Set focus on inner field of editable/generated column.
+     *
+     * @param entity   entity
+     * @param columnId column id
+     */
+    void requestFocus(E entity, String columnId);
 
     /**
      * Sort the table by a column.

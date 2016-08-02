@@ -62,6 +62,11 @@ public class CubaScrollTableConnector extends TableConnector {
             public void showCustomPopup() {
                 getWidget().showCustomPopup();
             }
+
+            @Override
+            public void requestFocus(String itemKey, String columnKey) {
+                getWidget().requestFocus(itemKey, columnKey);
+            }
         });
     }
 

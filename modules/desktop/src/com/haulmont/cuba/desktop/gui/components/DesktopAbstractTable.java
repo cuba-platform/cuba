@@ -2315,6 +2315,11 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
         return showSelection;
     }
 
+    @Override
+    public void requestFocus(E itemId, String columnId) {
+        // unsupported for desktop
+    }
+
     /**
      * Uses delegate renderer to create cell component.
      * Then applies desktop styles to cell component.

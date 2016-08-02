@@ -29,4 +29,6 @@ public interface CubaTableClientRpc extends ClientRpc {
     void hideContextMenuPopup();
 
     void showCustomPopup();
+
+    void requestFocus(String itemKey, String columnKey);
 }

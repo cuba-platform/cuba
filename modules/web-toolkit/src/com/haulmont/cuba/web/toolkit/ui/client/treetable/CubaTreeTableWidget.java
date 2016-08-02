@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.treetable;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
@@ -33,12 +34,15 @@ import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.AggregatableTable;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.profiler.ScreenClientProfiler;
+import com.haulmont.cuba.web.toolkit.ui.client.table.TableCellClickListener;
 import com.haulmont.cuba.web.toolkit.ui.client.tablesort.EnhancedCubaTableWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.tablesort.TableCustomSortDelegate;
-import com.haulmont.cuba.web.toolkit.ui.client.table.TableCellClickListener;
 import com.vaadin.client.*;
+import com.vaadin.client.Focusable;
 import com.vaadin.client.ui.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 
 import static com.haulmont.cuba.web.toolkit.ui.client.Tools.isAnyModifierKeyPressed;
@@ -550,6 +554,10 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
                 super(uidl, aligns);
             }
 
+            public ArrayList<Widget> getChildWidgets() {
+                return childWidgets;
+            }
+
             @Override
             protected void initCellWithWidget(Widget w, char align,
                                               String style, boolean sorted, TableCellElement td) {
@@ -837,6 +845,48 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
         });
 
         Tools.showPopup(customContextMenuPopup, left, top);
+    }
+
+    public void requestFocus(final String itemKey, final String columnKey) {
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                try {
+                    setFocus(itemKey, columnKey);
+                } catch (Exception e) {
+                    VConsole.error(e);
+                }
+            }
+        });
+    }
+
+    protected void setFocus(String itemKey, String columnKey) {
+        CubaTreeTableBody.CubaTreeTableRow row =
+                (CubaTreeTableBody.CubaTreeTableRow) getRenderedRowByKey(itemKey);
+
+        for (Widget childWidget : row.getChildWidgets()) {
+            int columnIndex = Arrays.asList(visibleColOrder).indexOf(columnKey);
+            if (row.getElement().getChild(columnIndex).getFirstChild() == childWidget.getElement().getParentNode()) {
+                focusWidget(childWidget);
+            }
+        }
+    }
+
+    protected boolean focusWidget(Widget widget) {
+        if (widget instanceof Focusable) {
+            ((Focusable) widget).focus();
+            return true;
+        } else if (widget instanceof com.google.gwt.user.client.ui.Focusable) {
+            ((com.google.gwt.user.client.ui.Focusable) widget).setFocus(true);
+            return true;
+        } else if (widget instanceof HasWidgets) {
+            for (Widget childWidget : (HasWidgets) widget) {
+                if (focusWidget(childWidget)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void showCustomPopup() {

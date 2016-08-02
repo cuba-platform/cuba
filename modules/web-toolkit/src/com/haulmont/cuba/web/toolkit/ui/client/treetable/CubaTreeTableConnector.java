@@ -68,6 +68,11 @@ public class CubaTreeTableConnector extends TreeTableConnector {
             public void showCustomPopup() {
                 getWidget().showCustomPopup();
             }
+
+            @Override
+            public void requestFocus(String itemKey, String columnKey) {
+                getWidget().requestFocus(itemKey, columnKey);
+            }
         });
     }
 

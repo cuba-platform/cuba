@@ -89,6 +89,8 @@ public interface CubaEnhancedTable extends AggregationContainer {
     boolean getColumnSortable(Object columnId);
     void setColumnSortable(Object columnId, boolean sortable);
 
+    void requestFocus(Object itemId, Object columnId);
+
     interface CellClickListener {
         void onClick(Object itemId, Object columnId);
     }

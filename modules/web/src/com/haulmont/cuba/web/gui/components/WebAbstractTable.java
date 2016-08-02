@@ -2593,4 +2593,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             component.setHeight(100, Unit.PERCENTAGE);
         }
     }
+
+    @Override
+    public void requestFocus(E item, String columnId) {
+        Preconditions.checkNotNullArgument(item);
+        Preconditions.checkNotNullArgument(columnId);
+
+        component.requestFocus(item.getId(), getColumn(columnId).getId());
+    }
 }

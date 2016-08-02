@@ -69,6 +69,8 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     protected Map<Object, String> columnDescriptions; // lazily initialized map
 
     protected Table.AggregationStyle aggregationStyle = Table.AggregationStyle.TOP;
+    protected Object focusColumn;
+    protected Object focusItem;
 
     public CubaTable() {
         registerRpc(new CubaTableServerRpc() {
@@ -604,6 +606,22 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     }
 
     @Override
+    public void requestFocus(Object itemId, Object columnId) {
+        if (!getItemIds().contains(itemId)) {
+            throw new IllegalArgumentException("Item doesn't exists");
+        }
+
+        if (!visibleColumns.contains(columnId)) {
+            throw new IllegalArgumentException("Column doesn't exists or not visible");
+        }
+
+        focusColumn = columnId;
+        focusItem = itemId;
+        setPageLength(-1);
+        markAsDirty();
+    }
+
+    @Override
     public Collection<?> getSortableContainerPropertyIds() {
         Collection<?> ids = new ArrayList<>(super.getSortableContainerPropertyIds());
         if (nonSortableProperties != null) {
@@ -623,6 +641,14 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
             if (Table.AggregationStyle.BOTTOM.equals(getAggregationStyle())) {
                 updateFooterAggregation();
             }
+        }
+
+        if (focusColumn != null) {
+            setCurrentPageFirstItemId(focusItem);
+            getRpcProxy(CubaTableClientRpc.class).requestFocus(itemIdMapper.key(focusItem), columnIdMap.key(focusColumn));
+
+            focusColumn = null;
+            focusItem = null;
         }
     }
 
