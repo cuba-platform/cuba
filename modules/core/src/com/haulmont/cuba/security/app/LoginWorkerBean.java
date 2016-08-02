@@ -242,8 +242,6 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
                 throw new LoginException(getInvalidCredentialsMessage(remoteClientInfo.getAddress(),
                         messages.getTools().getDefaultLocale()));
             }
-        } else {
-            log.debug("Unable to check trusted client IP when obtaining system session");
         }
 
         if (!trustedLoginHandler.checkPassword(trustedClientPassword)) {
