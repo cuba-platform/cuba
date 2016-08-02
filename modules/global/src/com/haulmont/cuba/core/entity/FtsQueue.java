@@ -21,14 +21,21 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity(name = "sys$FtsQueue")
 @Table(name = "SYS_FTS_QUEUE")
 @SystemLevel
-public class FtsQueue extends BaseUuidEntity {
+public class FtsQueue extends BaseUuidEntity implements Creatable {
 
     private static final long serialVersionUID = 6488459370269702942L;
+
+    @Column(name = "CREATE_TS")
+    protected Date createTs;
+
+    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    protected String createdBy;
 
     @Column(name = "ENTITY_ID")
     protected UUID entityId;
@@ -47,6 +54,26 @@ public class FtsQueue extends BaseUuidEntity {
 
     @Column(name = "FAKE")
     protected Boolean fake = false;
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public UUID getEntityId() {
         return entityId;
