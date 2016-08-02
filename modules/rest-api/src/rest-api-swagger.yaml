@@ -214,14 +214,24 @@ definitions:
         items:
           type: string
 
+  permission:
+    type: object
+    properties:
+      type:
+        type: string
+        enum: [SCREEN, ENTITY_OP, ENTITY_ATTR, SPECIFIC, UI]
+      target:
+        type: string
+      value:
+        type: string
+      intValue:
+        type: integer
+
+
 ################################################################################
 #                                   Responses                                  #
 ################################################################################
 responses:
-  entityReadForbiddenResponse:
-    description: Forbiddden. The user doesn't have permissions to read the entity
-    schema:
-      $ref: '#/definitions/error'
   metaClassNotFoundResponse:
     description: Not found. MetaClass for the entity with the given name not found
     schema:
@@ -240,6 +250,8 @@ tags:
     description: Predefined queries execution
   - name: Services
     description: Middleware services execution
+  - name: Permissions
+    description: Current user permissions
 
 ################################################################################
 #                                  Security                                    #
@@ -300,7 +312,7 @@ paths:
           schema:
             $ref: '#/definitions/error'
       security:
-        - tokenEndpointBasic
+        - tokenEndpointBasic: []
 
   /oauth/revoke:
     post:
@@ -606,3 +618,18 @@ paths:
           description: Forbiddden. The user doesn't have permissions to invoke the service method.
           schema:
             $ref: '#/definitions/error'
+
+  /permissions:
+    get:
+      tags:
+        - Permissions
+      summary: Get a list of current user security permissions
+      description: |
+        Gets a list of current user security permissions
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/permission'
