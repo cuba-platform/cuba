@@ -32,7 +32,8 @@
         <groupDatasource id="statisticsDs"
                          class="com.haulmont.cuba.web.app.ui.statistics.PerformanceParameter"
                          datasourceClass="com.haulmont.cuba.web.app.ui.statistics.StatisticsDatasource"
-                         view="_local">
+                         view="_local"
+                         allowCommit="false">
         </groupDatasource>
 
     </dsContext>
