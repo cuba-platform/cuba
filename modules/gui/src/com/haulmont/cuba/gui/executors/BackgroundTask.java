@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui.executors;
 
 import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.Window;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -98,10 +97,10 @@ public abstract class BackgroundTask<T, V> {
      * Create a task with timeout in default SECONDS unit.
      *
      * @param timeoutSeconds timeout in seconds
-     * @param ownerWindow    owner window
+     * @param ownerFrame     owner frame
      */
-    protected BackgroundTask(long timeoutSeconds, Window ownerWindow) {
-        this.ownerFrame = ownerWindow;
+    protected BackgroundTask(long timeoutSeconds, Frame ownerFrame) {
+        this.ownerFrame = ownerFrame;
         this.timeoutMilliseconds = TimeUnit.SECONDS.toMillis(timeoutSeconds);
     }
 
