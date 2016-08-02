@@ -49,6 +49,7 @@ public class SessionAttributeEditor extends AbstractEditor {
                         lookup.setDatasource(datasource, propertyId);
                         lookup.setRequiredMessage(getMessage("datatypeMsg"));
                         lookup.setRequired(true);
+                        lookup.setPageLength(15);
 
                         Map<String, Object> options = new TreeMap<>();
                         Set<String> names = Datatypes.getNames();
