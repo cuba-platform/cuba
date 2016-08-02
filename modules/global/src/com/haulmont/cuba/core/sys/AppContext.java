@@ -21,11 +21,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.OrderComparator;
 
 import javax.annotation.Nullable;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * System-level class with static methods providing access to some central application structures:
@@ -47,6 +46,17 @@ public class AppContext {
      * Implementors should be passed to {@link AppContext#addListener(com.haulmont.cuba.core.sys.AppContext.Listener)} method.
      */
     public interface Listener {
+
+        /**
+         * Defines the highest precedence for {@link org.springframework.core.Ordered} listeners added by the platform.
+         */
+        int HIGHEST_PLATFORM_PRECEDENCE = 100;
+
+        /**
+         * Defines the lowest precedence for {@link org.springframework.core.Ordered} listeners added by the platform.
+         */
+        int LOWEST_PLATFORM_PRECEDENCE = 1000;
+
         /**
          * Called by {@link AppContext} after successful application startup and initialization.
          */
@@ -66,7 +76,7 @@ public class AppContext {
 
     private static AppProperties appProperties;
 
-    private static Set<Listener> listeners = new LinkedHashSet<>();
+    private static List<Listener> listeners = new ArrayList<>();
 
     private static volatile boolean started;
     private static volatile boolean listenersNotified;
@@ -162,7 +172,8 @@ public class AppContext {
      * @param listener  listener implementation
      */
     public static void addListener(Listener listener) {
-        listeners.add(listener);
+        if (!listeners.contains(listener))
+            listeners.add(listener);
     }
 
     /**
@@ -184,6 +195,7 @@ public class AppContext {
             return;
 
         started = true;
+        listeners.sort(new OrderComparator());
         for (Listener listener : listeners) {
             listener.applicationStarted();
         }
@@ -198,7 +210,8 @@ public class AppContext {
             return;
 
         started = false;
-        for (Listener listener : listeners) {
+        for (int i = listeners.size() - 1; i >= 0; i--) {
+            Listener listener = listeners.get(i);
             listener.applicationStopped();
         }
         if (context != null && context instanceof ConfigurableApplicationContext) {

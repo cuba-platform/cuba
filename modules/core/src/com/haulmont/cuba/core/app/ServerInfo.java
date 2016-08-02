@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -39,7 +40,7 @@ import java.util.TimerTask;
 import java.util.UUID;
 
 @Component(ServerInfoAPI.NAME)
-public class ServerInfo implements ServerInfoAPI, AppContext.Listener {
+public class ServerInfo implements ServerInfoAPI, AppContext.Listener, Ordered {
 
     public static final String CUBA_RELEASE_NUMBER_PATH = "/com/haulmont/cuba/core/global/release.number";
     public static final String CUBA_RELEASE_TIMESTAMP_PATH = "/com/haulmont/cuba/core/global/release.timestamp";
@@ -191,5 +192,10 @@ public class ServerInfo implements ServerInfoAPI, AppContext.Listener {
         } catch (Exception e) {
             log.error("Unable to update SYS_SERVER: {}", e);
         }
+    }
+
+    @Override
+    public int getOrder() {
+        return HIGHEST_PLATFORM_PRECEDENCE + 10;
     }
 }

@@ -29,6 +29,7 @@ import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -46,7 +47,7 @@ import java.util.concurrent.atomic.LongAdder;
  * Standard implementation of middleware clustering based on JGroups.
  */
 @Component(ClusterManagerAPI.NAME)
-public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
+public class ClusterManager implements ClusterManagerAPI, AppContext.Listener, Ordered {
 
     protected Logger log = LoggerFactory.getLogger(ClusterManager.class);
 
@@ -348,6 +349,11 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
             return stat.getReceivedBytes();
         }
         return 0;
+    }
+
+    @Override
+    public int getOrder() {
+        return LOWEST_PLATFORM_PRECEDENCE - 100;
     }
 
     protected class ClusterReceiver implements Receiver {

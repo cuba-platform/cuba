@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
@@ -37,7 +38,8 @@ import java.util.concurrent.locks.Lock;
  * Provides ability to cache any abstract object in client application
  */
 @Component(ClientCacheManager.NAME)
-public class ClientCacheManager {
+public class ClientCacheManager implements AppContext.Listener, Ordered {
+
     public static final String NAME = "cuba_ClientCacheManager";
 
     private static final Logger log = LoggerFactory.getLogger(ClientCacheManager.class);
@@ -61,21 +63,7 @@ public class ClientCacheManager {
     });
 
     public ClientCacheManager() {
-        AppContext.addListener(new AppContext.Listener() {
-            @Override
-            public void applicationStarted() {
-
-            }
-
-            @Override
-            public void applicationStopped() {
-                try {
-                    executorService.shutdownNow();
-                } catch (Exception e) {
-                    //do nothing
-                }
-            }
-        });
+        AppContext.addListener(this);
     }
 
     public void initialize() {
@@ -156,5 +144,23 @@ public class ClientCacheManager {
 
     public ScheduledExecutorService getExecutorService() {
         return executorService;
+    }
+
+    @Override
+    public void applicationStarted() {
+    }
+
+    @Override
+    public void applicationStopped() {
+        try {
+            executorService.shutdownNow();
+        } catch (Exception e) {
+            //do nothing
+        }
+    }
+
+    @Override
+    public int getOrder() {
+        return HIGHEST_PLATFORM_PRECEDENCE - 100;
     }
 }
