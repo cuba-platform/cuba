@@ -76,5 +76,4 @@
 
     <screen id="loginWindow"
             template="/com/haulmont/cuba/web/app/loginwindow/loginwindow.xml"/>
-
 </screen-config>

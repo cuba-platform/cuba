@@ -31,14 +31,30 @@
         </xs:sequence>
     </xs:complexType>
 
+    <xs:simpleType name="screenAgent">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="DESKTOP"/>
+                    <xs:enumeration value="PHONE"/>
+                    <xs:enumeration value="TABLET"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
     <xs:complexType name="screenType">
         <xs:sequence>
             <xs:element type="paramType" name="param" maxOccurs="unbounded" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required"/>
-        <xs:attribute name="class" type="xs:string" use="optional"/>
-        <xs:attribute name="template" type="xs:string" use="optional"/>
-        <xs:attribute name="multipleOpen" type="xs:boolean" use="optional"/>
+        <xs:attribute name="class" type="xs:string"/>
+        <xs:attribute name="template" type="xs:string"/>
+        <xs:attribute name="multipleOpen" type="xs:boolean"/>
+        <xs:attribute name="agent" type="screenAgent"/>
     </xs:complexType>
 
     <xs:complexType name="includeType">
@@ -49,5 +65,4 @@
         <xs:attribute name="name" type="xs:string" use="required"/>
         <xs:attribute name="value" type="xs:string" use="required"/>
     </xs:complexType>
-
 </xs:schema>

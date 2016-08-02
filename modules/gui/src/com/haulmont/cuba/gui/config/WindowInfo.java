@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.config;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Scripting;
-import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
@@ -27,17 +26,18 @@ import javax.annotation.Nullable;
  * Screen's registration information.
  *
  * @see WindowConfig
- *
  */
 public class WindowInfo {
 
     private String id;
     private Element descriptor;
     private Class screenClass;
+    private ScreenAgent screenAgent;
 
-    public WindowInfo(String id, Element descriptor) {
+    public WindowInfo(String id, Element descriptor, @Nullable ScreenAgent screenAgent) {
         this.id = id;
         this.descriptor = descriptor;
+        this.screenAgent = screenAgent;
     }
 
     /**
@@ -83,6 +83,10 @@ public class WindowInfo {
 
     public void setDescriptor(Element descriptor) {
         this.descriptor = descriptor;
+    }
+
+    public ScreenAgent getScreenAgent() {
+        return screenAgent;
     }
 
     @Override

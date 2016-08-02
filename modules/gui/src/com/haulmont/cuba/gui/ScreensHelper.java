@@ -28,12 +28,12 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.FileNotFoundException;
@@ -43,10 +43,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component(ScreensHelper.NAME)
 public class ScreensHelper {
     public static final String NAME = "cuba_ScreensHelper";
-    private static final String EMPTY_SCREEN_CAPTION = "";
+
     private static final Map<String, Object> EMPTY_MAP = new HashMap<>();
 
-    private Logger log = LoggerFactory.getLogger(ScreensHelper.class);
+    private final Logger log = LoggerFactory.getLogger(ScreensHelper.class);
 
     @Inject
     protected WindowConfig windowConfig;
@@ -70,19 +70,16 @@ public class ScreensHelper {
      * Sorts window infos alphabetically, takes into account $ mark
      */
     public void sortWindowInfos(List<WindowInfo> windowInfoCollection) {
-        Collections.sort(windowInfoCollection, new Comparator<WindowInfo>() {
-            @Override
-            public int compare(WindowInfo w1, WindowInfo w2) {
-                int w1DollarIndex = w1.getId().indexOf("$");
-                int w2DollarIndex = w2.getId().indexOf("$");
+        Collections.sort(windowInfoCollection, (w1, w2) -> {
+            int w1DollarIndex = w1.getId().indexOf("$");
+            int w2DollarIndex = w2.getId().indexOf("$");
 
-                if ((w1DollarIndex > 0 && w2DollarIndex > 0) || (w1DollarIndex < 0 && w2DollarIndex < 0)) {
-                    return w1.getId().compareTo(w2.getId());
-                } else if (w1DollarIndex > 0) {
-                    return -1;
-                } else {
-                    return 1;
-                }
+            if ((w1DollarIndex > 0 && w2DollarIndex > 0) || (w1DollarIndex < 0 && w2DollarIndex < 0)) {
+                return w1.getId().compareTo(w2.getId());
+            } else if (w1DollarIndex > 0) {
+                return -1;
+            } else {
+                return 1;
             }
         });
     }
@@ -123,10 +120,19 @@ public class ScreensHelper {
             return screensMap;
         }
 
-        List<WindowInfo> windowInfoCollection = new ArrayList<>(windowConfig.getWindows());
+        Collection<WindowInfo> windowInfoCollection = windowConfig.getWindows();
         screensMap = new TreeMap<>();
+
+        Set<String> visitedWindowIds = new HashSet<>();
+
         for (WindowInfo windowInfo : windowInfoCollection) {
             String windowId = windowInfo.getId();
+
+            // just skip for now, we assume all versions of screen can operate with the same entity
+            if (visitedWindowIds.contains(windowId)) {
+                continue;
+            }
+
             String src = windowInfo.getTemplate();
             if (StringUtils.isNotEmpty(src)) {
                 try {
@@ -144,6 +150,8 @@ public class ScreensHelper {
                     log.error(e.getMessage());
                 }
             }
+
+            visitedWindowIds.add(windowId);
         }
         cacheScreens(key, screensMap);
         return screensMap;
@@ -241,7 +249,7 @@ public class ScreensHelper {
                 if (root.getName().equals(Window.NAME))
                     return root;
             } catch (RuntimeException e) {
-                log.error("Can't parse screen file: " + src);
+                log.error("Can't parse screen file: ", src);
             }
         } else {
             throw new FileNotFoundException("File doesn't exist or empty: " + src);
@@ -302,7 +310,7 @@ public class ScreensHelper {
                 return caption;
             }
         }
-        caption = EMPTY_SCREEN_CAPTION;
+        caption = StringUtils.EMPTY;
         cacheCaption(key, caption);
         return caption;
     }
