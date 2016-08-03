@@ -369,7 +369,8 @@ public class MetadataTools {
     }
 
     /**
-     * Determine whether the given metaclass is persistent, that is stored in the database.
+     * Determine whether the given metaclass represents a persistent entity.
+     * Mapped superclasses and Embeddables are not considered persistent.
      */
     public boolean isPersistent(MetaClass metaClass) {
         checkNotNullArgument(metaClass, "metaClass is null");
@@ -377,11 +378,27 @@ public class MetadataTools {
     }
 
     /**
-     * Determine whether the given class is persistent, that is stored in the database.
+     * Determine whether the given class represents a persistent entity.
+     * Mapped superclasses and Embeddables are not considered persistent.
      */
     public boolean isPersistent(Class aClass) {
         checkNotNullArgument(aClass, "class is null");
         return aClass.isAnnotationPresent(javax.persistence.Entity.class);
+    }
+
+    /**
+     * Determine whether the given metaclass represents a non-persistent entity.
+     */
+    public boolean isTransient(MetaClass metaClass) {
+        return isTransient(metaClass.getJavaClass());
+    }
+
+    /**
+     * Determine whether the given class represents a non-persistent entity.
+     */
+    public boolean isTransient(Class aClass) {
+        checkNotNullArgument(aClass, "class is null");
+        return AbstractNotPersistentEntity.class.isAssignableFrom(aClass);
     }
 
     /**
