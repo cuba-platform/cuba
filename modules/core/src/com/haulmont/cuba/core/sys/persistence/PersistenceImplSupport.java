@@ -61,6 +61,8 @@ public class PersistenceImplSupport {
     @Inject
     protected OrmCacheSupport ormCacheSupport;
 
+    protected ThreadLocal<Boolean> firingEntityListeners = new ThreadLocal<>();
+
     private static Logger log = LoggerFactory.getLogger(PersistenceImplSupport.class.getName());
 
     public void registerInstance(Entity entity, EntityManager entityManager) {
@@ -111,7 +113,14 @@ public class PersistenceImplSupport {
     }
 
     public void fireEntityListeners() {
-        traverseEntities(getInstanceContainerResourceHolder(), new OnFlushEntityVisitor());
+        if (Boolean.TRUE.equals(firingEntityListeners.get()))
+            return;
+        firingEntityListeners.set(true);
+        try {
+            traverseEntities(getInstanceContainerResourceHolder(), new OnFlushEntityVisitor());
+        } finally {
+            firingEntityListeners.remove();
+        }
     }
 
     protected boolean isDeleted(BaseGenericIdEntity entity, AttributeChangeListener changeListener) {
