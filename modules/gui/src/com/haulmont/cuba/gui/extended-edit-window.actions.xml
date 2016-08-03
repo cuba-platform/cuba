@@ -20,7 +20,7 @@
         <hbox spacing="true" stylename="cuba-extended-edit-window-actions">
             <button id="windowCommitAndClose" action="windowCommitAndClose" icon="theme://actions.Editor.Ok.icon"/>
             <button id="windowCommit" action="windowCommit"/>
-            <button id="windowClose" action="windowClose" icon="http://actions.Editor.Cancel.icon"/>
+            <button id="windowClose" action="windowClose" icon="theme://actions.Editor.Cancel.icon"/>
         </hbox>
     </layout>
 </window>
