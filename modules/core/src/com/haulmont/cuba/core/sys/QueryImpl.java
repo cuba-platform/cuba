@@ -25,11 +25,15 @@ import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.persistence.DbmsFeatures;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
+import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.jpa.JpaQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +54,8 @@ public class QueryImpl<T> implements TypedQuery<T> {
     private Metadata metadata;
     private javax.persistence.EntityManager emDelegate;
     private JpaQuery query;
+    private EntityManagerImpl entityManager;
+    private PersistenceImplSupport support;
     private boolean isNative;
     private String queryString;
     private Class resultClass;
@@ -65,14 +71,17 @@ public class QueryImpl<T> implements TypedQuery<T> {
     private Collection<QueryMacroHandler> macroHandlers;
 
     public QueryImpl(EntityManagerImpl entityManager, boolean isNative, @Nullable Class resultClass) {
+        this.entityManager = entityManager;
         this.emDelegate = entityManager.getDelegate();
         this.isNative = isNative;
         this.macroHandlers = AppBeans.getAll(QueryMacroHandler.class).values();
         //noinspection unchecked
         this.resultClass = resultClass;
+
         this.metadata = AppBeans.get(Metadata.NAME);
         this.fetchGroupMgr = AppBeans.get(FetchGroupManager.NAME);
         this.entityFetcher = AppBeans.get(EntityFetcher.NAME);
+        this.support = AppBeans.get(PersistenceImplSupport.NAME);
     }
 
     private JpaQuery<T> getQuery() {
@@ -252,7 +261,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         singleResultExpected = false;
 
-        List<T> resultList = getQuery().getResultList();
+        JpaQuery<T> query = getQuery();
+        preExecute(query);
+        List<T> resultList = query.getResultList();
         for (T result : resultList) {
             if (result instanceof Entity) {
                 for (View view : views) {
@@ -270,7 +281,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         singleResultExpected = true;
 
-        T result = getQuery().getSingleResult();
+        JpaQuery<T> jpaQuery = getQuery();
+        preExecute(jpaQuery);
+        T result = jpaQuery.getSingleResult();
         if (result instanceof Entity) {
             for (View view : views) {
                 entityFetcher.fetch((Entity) result, view);
@@ -288,7 +301,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
         Integer saveMaxResults = maxResults;
         maxResults = 1;
         try {
-            List<T> resultList = getQuery().getResultList();
+            JpaQuery<T> query = getQuery();
+            preExecute(query);
+            List<T> resultList = query.getResultList();
             if (resultList.isEmpty()) {
                 return null;
             } else {
@@ -307,17 +322,18 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     @Override
     public int executeUpdate() {
-        JpaQuery<T> query = getQuery();
+        JpaQuery<T> jpaQuery = getQuery();
         // In some cache configurations (in particular, when shared cache is on, but for some entities cache is set to ISOLATED),
         // EclipseLink does not evict updated entities from cache automatically.
-        Cache cache = query.getEntityManager().getEntityManagerFactory().getCache();
-        Class referenceClass = query.getDatabaseQuery().getReferenceClass();
+        Cache cache = jpaQuery.getEntityManager().getEntityManagerFactory().getCache();
+        Class referenceClass = jpaQuery.getDatabaseQuery().getReferenceClass();
         if (referenceClass != null) {
             cache.evict(referenceClass);
         } else {
             cache.evictAll();
         }
-        return query.executeUpdate();
+        preExecute(jpaQuery);
+        return jpaQuery.executeUpdate();
     }
 
     @Override
@@ -480,6 +496,17 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     public void setSingleResultExpected(boolean singleResultExpected) {
         this.singleResultExpected = singleResultExpected;
+    }
+
+    private void preExecute(JpaQuery jpaQuery) {
+        // copying behaviour of org.eclipse.persistence.internal.jpa.QueryImpl.executeReadQuery()
+        DatabaseQuery elDbQuery = ((EJBQueryImpl) jpaQuery).getDatabaseQueryInternal();
+        boolean isObjectLevelReadQuery = elDbQuery.isObjectLevelReadQuery();
+        if (jpaQuery.getFlushMode() == FlushModeType.AUTO
+                && (!isObjectLevelReadQuery || !((ObjectLevelReadQuery) elDbQuery).isReadOnly())) {
+            // flush is expected
+            support.fireEntityListeners(entityManager);
+        }
     }
 
     protected static class Param {
