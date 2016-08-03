@@ -21,7 +21,6 @@ import com.google.common.collect.Multimap;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.global.Configuration;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
@@ -29,6 +28,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +42,7 @@ public class SecurityTokenManager {
     public static final String NAME = "cuba_SecurityTokenManager";
 
     @Inject
-    private Configuration configuration;
+    protected ServerConfig config;
 
     /**
      * Encrypt filtered data and write the result to the security token
@@ -62,13 +62,14 @@ public class SecurityTokenManager {
         }
 
         String json = jsonObject.toString();
+        byte[] encrypted;
+        Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
         try {
-            Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
-            byte[] encrypted = cipher.doFinal(json.getBytes("UTF-8"));
-            BaseEntityInternalAccess.setSecurityToken(resultEntity, encrypted);
+            encrypted = cipher.doFinal(json.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while generating security token", e);
         }
+        BaseEntityInternalAccess.setSecurityToken(resultEntity, encrypted);
     }
 
     /**
@@ -80,10 +81,10 @@ public class SecurityTokenManager {
         }
 
         BaseEntityInternalAccess.setFilteredData(resultEntity, null);
+        Cipher cipher = getCipher(Cipher.DECRYPT_MODE);
         try {
-            Cipher cipher = getCipher(Cipher.DECRYPT_MODE);
             byte[] decrypted = cipher.doFinal(BaseEntityInternalAccess.getSecurityToken(resultEntity));
-            String json = new String(decrypted, "UTF-8");
+            String json = new String(decrypted, StandardCharsets.UTF_8);
             JSONObject jsonObject = new JSONObject(json);
             for (Object key : jsonObject.keySet()) {
                 String elementName = String.valueOf(key);
@@ -100,14 +101,13 @@ public class SecurityTokenManager {
 
     protected Cipher getCipher(int mode) {
         try {
-            ServerConfig config = configuration.getConfig(ServerConfig.class);
             Cipher cipher = Cipher.getInstance("AES");
-            byte[] encryptionKey = rightPad(substring(config.getKeyForSecurityTokenEncryption(), 0, 15), 16).getBytes();
+            byte[] encryptionKey = rightPad(substring(config.getKeyForSecurityTokenEncryption(), 0, 16), 16).getBytes();
             SecretKeySpec sKeySpec = new SecretKeySpec(encryptionKey, "AES");
             cipher.init(mode, sKeySpec);
             return cipher;
         } catch (Exception e) {
-            throw new RuntimeException("An error occurred while initiating encryption/decription", e);
+            throw new RuntimeException("An error occurred while initiating encryption/decryption", e);
         }
     }
 
