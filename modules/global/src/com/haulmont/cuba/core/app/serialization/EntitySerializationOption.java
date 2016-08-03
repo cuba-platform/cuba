@@ -32,5 +32,10 @@ public enum EntitySerializationOption {
      * If an entity occurs in object graph several times, then the second and next occurrences will be replaced just
      * with a JSON object with the single field - entity identified.
      */
-    COMPACT_REPEATED_ENTITIES
+    COMPACT_REPEATED_ENTITIES,
+
+    /**
+     * Specifies that fields with null values should be serialized. The default behavior is not to serialize nulls.
+     */
+    SERIALIZE_NULLS
 }

@@ -115,6 +115,11 @@ parameters:
     in: query
     description: Name of the view which is used for loading the entity
     type: string
+  returnNullsParam:
+    name: returnNulls
+    in: query
+    description: Specifies whether null fields will be written to the result JSON
+    type: boolean
 
 
 ################################################################################
@@ -397,6 +402,7 @@ paths:
             the sort order is ascending, if by the '-' character then descending. If there is no special
             character before the property name, then ascending sort will be used.
           type: string
+        - $ref: '#/parameters/returnNullsParam'
 
       responses:
         200:
@@ -452,6 +458,7 @@ paths:
         Gets a single entity by identifier
       parameters:
         - $ref: '#/parameters/entityViewParam'
+        - $ref: '#/parameters/returnNullsParam'
       responses:
         200:
           description: OK

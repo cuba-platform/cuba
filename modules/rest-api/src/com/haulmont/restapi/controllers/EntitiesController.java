@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.app.importexport.EntityImportViewBuilderAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
+import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
@@ -31,6 +32,7 @@ import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.exception.RestAPIException;
+import org.apache.commons.lang.BooleanUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,7 +76,8 @@ public class EntitiesController {
     @RequestMapping(method = RequestMethod.GET, path = "/{entityName}/{entityId}")
     public String loadEntity(@PathVariable String entityName,
                              @PathVariable String entityId,
-                             @RequestParam(required = false) String view) {
+                             @RequestParam(required = false) String view,
+                             @RequestParam(required = false) Boolean returnNulls) {
         MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
 
         checkCanReadEntity(metaClass);
@@ -90,7 +93,9 @@ public class EntitiesController {
         Entity entity = dataManager.load(ctx);
         checkEntityIsNotNull(entityName, entityId, entity);
 
-        return entitySerializationAPI.toJson(entity);
+        return BooleanUtils.isTrue(returnNulls) ?
+                entitySerializationAPI.toJson(entity, null, EntitySerializationOption.SERIALIZE_NULLS) :
+                entitySerializationAPI.toJson(entity);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/{entityName}")
@@ -98,7 +103,8 @@ public class EntitiesController {
                                    @RequestParam(required = false) String view,
                                    @RequestParam(required = false) Integer limit,
                                    @RequestParam(required = false) Integer offset,
-                                   @RequestParam(required = false) String sort) {
+                                   @RequestParam(required = false) String sort,
+                                   @RequestParam(required = false) Boolean returnNulls) {
         MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanReadEntity(metaClass);
 
@@ -128,7 +134,10 @@ public class EntitiesController {
         }
 
         List<Entity> entities = dataManager.loadList(ctx);
-        return entitySerializationAPI.toJson(entities, null);
+
+        return BooleanUtils.isTrue(returnNulls) ?
+                entitySerializationAPI.toJson(entities, null, EntitySerializationOption.SERIALIZE_NULLS) :
+                entitySerializationAPI.toJson(entities);
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/{entityName}")

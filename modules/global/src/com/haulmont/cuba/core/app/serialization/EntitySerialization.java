@@ -26,12 +26,14 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -63,6 +65,7 @@ public class EntitySerialization implements EntitySerializationAPI {
      */
     protected class EntitySerializationContext {
         protected Map<Object, Entity> processedEntities = new HashMap<>();
+
         protected Map<Object, Entity> getProcessedEntities() {
             return processedEntities;
         }
@@ -112,9 +115,14 @@ public class EntitySerialization implements EntitySerializationAPI {
     }
 
     protected Gson createGsonForSerialization(@Nullable View view, EntitySerializationOption... options) {
-        return new GsonBuilder()
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder
                 .registerTypeHierarchyAdapter(Entity.class, new EntitySerializer(view, options))
                 .create();
+        if (ArrayUtils.contains(options, EntitySerializationOption.SERIALIZE_NULLS)) {
+            gsonBuilder.serializeNulls();
+        }
+        return gsonBuilder.create();
     }
 
     protected Gson createGsonForDeserialization(@Nullable MetaClass metaClass, EntitySerializationOption... options) {
@@ -211,6 +219,12 @@ public class EntitySerialization implements EntitySerializationAPI {
                         viewProperty = view.getProperty(metaProperty.getName());
                         if (viewProperty == null) continue;
                     }
+
+                    if (!PersistenceHelper.isNew(entity)
+                            && !PersistenceHelper.isLoaded(entity, metaProperty.getName())) {
+                        continue;
+                    }
+
                     Field field = getField(entity.getClass(), metaProperty.getName());
                     if (field == null) {
                         log.error("Field {} for class {} not found", metaProperty.getName(), entity.getClass().getName());
@@ -224,7 +238,13 @@ public class EntitySerialization implements EntitySerializationAPI {
                     } catch (IllegalAccessException e) {
                         throw new EntitySerializationException("Error reading a value of field " + field.getName(), e);
                     }
-                    if (fieldValue == null) continue;
+
+                    //always write nulls here. GSON will not serialize them to the result if
+                    //EntitySerializationOptions.SERIALIZE_NULLS was not set.
+                    if (fieldValue == null) {
+                        jsonObject.add(metaProperty.getName(), null);
+                        continue;
+                    }
 
                     Range propertyRange = metaProperty.getRange();
                     if (propertyRange.isDatatype()) {
@@ -248,23 +268,19 @@ public class EntitySerialization implements EntitySerializationAPI {
             }
         }
 
-        protected void writeSimpleProperty(JsonObject jsonObject, Object fieldValue, MetaProperty property) {
+        protected void writeSimpleProperty(JsonObject jsonObject, @NotNull Object fieldValue, MetaProperty property) {
             String propertyName = property.getName();
-            if (fieldValue != null) {
-                if (fieldValue instanceof Number) {
-                    jsonObject.addProperty(propertyName, (Number) fieldValue);
-                } else if (fieldValue instanceof Boolean) {
-                    jsonObject.addProperty(propertyName, (Boolean) fieldValue);
-                } else {
-                    Datatype datatype = Datatypes.get(property.getJavaType());
-                    if (datatype != null) {
-                        jsonObject.addProperty(propertyName, datatype.format(fieldValue));
-                    } else {
-                        jsonObject.addProperty(propertyName, String.valueOf(fieldValue));
-                    }
-                }
+            if (fieldValue instanceof Number) {
+                jsonObject.addProperty(propertyName, (Number) fieldValue);
+            } else if (fieldValue instanceof Boolean) {
+                jsonObject.addProperty(propertyName, (Boolean) fieldValue);
             } else {
-                jsonObject.add(propertyName, null);
+                Datatype datatype = Datatypes.get(property.getJavaType());
+                if (datatype != null) {
+                    jsonObject.addProperty(propertyName, datatype.format(fieldValue));
+                } else {
+                    jsonObject.addProperty(propertyName, String.valueOf(fieldValue));
+                }
             }
         }
 
