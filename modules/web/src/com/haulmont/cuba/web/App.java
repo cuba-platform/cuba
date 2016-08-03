@@ -299,7 +299,8 @@ public abstract class App {
      * Called on each browser tab initialization.
      */
     public void createTopLevelWindow(AppUI ui) {
-        WebWindowManager wm = new WebWindowManager(ui);
+        WebWindowManager wm = AppBeans.getPrototype(WebWindowManager.NAME);
+        wm.setUi(ui);
 
         String topLevelWindowId = routeTopLevelWindowId();
         wm.createTopLevelWindow(windowConfig.getWindowInfo(topLevelWindowId));
@@ -317,7 +318,10 @@ public abstract class App {
      * @param topLevelWindowId target top level window id
      */
     public void navigateTo(String topLevelWindowId) {
-        WebWindowManager wm = new WebWindowManager(AppUI.getCurrent());
+        // todo artamonov we need to stop background tasks, timers and free resources
+
+        WebWindowManager wm = AppBeans.getPrototype(WebWindowManager.NAME);
+        wm.setUi(AppUI.getCurrent());
 
         wm.createTopLevelWindow(windowConfig.getWindowInfo(topLevelWindowId));
     }

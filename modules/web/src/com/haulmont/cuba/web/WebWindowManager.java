@@ -21,7 +21,6 @@ import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -68,8 +67,11 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.util.*;
 
 import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
@@ -79,7 +81,11 @@ import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertNotificationType;
 import static com.vaadin.server.Sizeable.Unit;
 
+@org.springframework.stereotype.Component(WebWindowManager.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class WebWindowManager extends WindowManager {
+
+    public static final String NAME = "cuba_WebWindowManager";
 
     public static final int HUMANIZED_NOTIFICATION_DELAY_MSEC = 3000;
     public static final int WARNING_NOTIFICATION_DELAY_MSEC = -1;
@@ -89,10 +95,14 @@ public class WebWindowManager extends WindowManager {
     protected App app;
     protected AppUI ui;
 
-    protected final WebConfig webConfig;
-    protected final ClientConfig clientConfig;
-
+    @Inject
+    protected WebConfig webConfig;
+    @Inject
+    protected ClientConfig clientConfig;
+    @Inject
     protected ScreenProfiler screenProfiler;
+    @Inject
+    protected ThemeConstantsManager themeConstantsManager;
 
     protected final Map<ComponentContainer, WindowBreadCrumbs> tabs = new HashMap<>();
     protected final Map<WindowBreadCrumbs, Stack<Pair<Window, Integer>>> stacks = new HashMap<>();
@@ -102,15 +112,13 @@ public class WebWindowManager extends WindowManager {
     protected boolean disableSavingScreenHistory;
     protected ScreenHistorySupport screenHistorySupport;
 
-    public WebWindowManager(AppUI ui) {
+    public WebWindowManager() {
+        screenHistorySupport = new ScreenHistorySupport();
+    }
+
+    public void setUi(AppUI ui) {
         this.ui = ui;
         this.app = ui.getApp();
-
-        webConfig = configuration.getConfig(WebConfig.class);
-        clientConfig = configuration.getConfig(ClientConfig.class);
-        screenProfiler = AppBeans.get(ScreenProfiler.NAME);
-
-        screenHistorySupport = new ScreenHistorySupport();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -814,11 +822,9 @@ public class WebWindowManager extends WindowManager {
                     messages.getMessage(WebWindow.class, "discardChangesOnClose"),
                     MessageType.WARNING,
                     new Action[]{
-                            new AbstractAction(messages.getMessage(WebWindow.class, "closeApplication")) {
-
+                            new AbstractAction(messages.getMainMessage("closeApplication")) {
                                 {
-                                    ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
-                                    icon = thCM.getThemeValue("actions.dialog.Ok.icon");
+                                    icon = themeConstantsManager.getThemeValue("actions.dialog.Ok.icon");
                                 }
 
                                 @Override
@@ -870,14 +876,13 @@ public class WebWindowManager extends WindowManager {
 
         if (modified) {
             showOptionDialog(
-                    messages.getMessage(WebWindow.class, "closeUnsaved.caption"),
-                    messages.getMessage(WebWindow.class, "discardChangesInTabs"),
+                    messages.getMainMessage("closeUnsaved.caption"),
+                    messages.getMainMessage("discardChangesInTabs"),
                     MessageType.WARNING,
                     new Action[]{
                             new AbstractAction(messages.getMessage(WebWindow.class, "closeTabs")) {
                                 {
-                                    ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
-                                    icon = thCM.getThemeValue("actions.dialog.Ok.icon");
+                                    icon = themeConstantsManager.getThemeValue("actions.dialog.Ok.icon");
                                 }
 
                                 @Override
@@ -1634,7 +1639,6 @@ public class WebWindowManager extends WindowManager {
 
             List<com.vaadin.event.Action> actions = new ArrayList<>(3);
 
-            ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
             if (clientConfig.getManualScreenSettingsSaving()) {
                 actions.add(saveSettingsAction);
                 actions.add(restoreToDefaultsAction);
