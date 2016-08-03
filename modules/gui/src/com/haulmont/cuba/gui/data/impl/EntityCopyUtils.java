@@ -20,6 +20,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
+import com.haulmont.cuba.core.entity.BaseDbGeneratedIdEntity;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
@@ -49,6 +50,10 @@ public class EntityCopyUtils {
     public static void copyCompositions(Entity source, Entity dest) {
         Preconditions.checkNotNullArgument(source, "source is null");
         Preconditions.checkNotNullArgument(dest, "dest is null");
+
+        if (source instanceof BaseDbGeneratedIdEntity && dest instanceof BaseDbGeneratedIdEntity) {
+            ((BaseDbGeneratedIdEntity) dest).setId(((BaseDbGeneratedIdEntity) source).getId());
+        }
 
         for (MetaProperty srcProperty : source.getMetaClass().getProperties()) {
             String name = srcProperty.getName();
