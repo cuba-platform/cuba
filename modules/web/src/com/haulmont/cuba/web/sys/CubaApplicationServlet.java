@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
@@ -55,7 +56,7 @@ public class CubaApplicationServlet extends VaadinServlet {
     public static final String FROM_HTML_REDIRECT_PARAM = "fromCubaHtmlRedirect";
     private static final String REDIRECT_PAGE_TEMPLATE_PATH = "/com/haulmont/cuba/web/sys/redirect-page-template.html";
 
-    private Logger log = LoggerFactory.getLogger(CubaApplicationServlet.class);
+    private final Logger log = LoggerFactory.getLogger(CubaApplicationServlet.class);
 
     protected WebConfig webConfig;
     protected Resources resources;
@@ -119,23 +120,33 @@ public class CubaApplicationServlet extends VaadinServlet {
         int sessionExpirationTimeout = webConfig.getHttpSessionExpirationTimeoutSec();
         int sessionPingPeriod = sessionExpirationTimeout / 3;
 
-        if (sessionPingPeriod > 0) {
-            // configure Vaadin heartbeat according to web config
-            initParameters.setProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(sessionPingPeriod));
+        if (Strings.isNullOrEmpty(initParameters.getProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL))) {
+            if (sessionPingPeriod > 0) {
+                // configure Vaadin heartbeat according to web config
+                initParameters.setProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(sessionPingPeriod));
+            }
         }
 
-        String widgetSet = webConfig.getWidgetSet();
-        initParameters.setProperty(Constants.PARAMETER_WIDGETSET, widgetSet);
-
-        boolean productionMode = webConfig.getProductionMode();
-        if (!productionMode) {
-            initParameters.setProperty(Constants.SERVLET_PARAMETER_PRODUCTION_MODE, String.valueOf(false));
+        if (Strings.isNullOrEmpty(initParameters.getProperty(Constants.PARAMETER_WIDGETSET))) {
+            String widgetSet = webConfig.getWidgetSet();
+            initParameters.setProperty(Constants.PARAMETER_WIDGETSET, widgetSet);
         }
 
-        initParameters.setProperty(Constants.SERVLET_PARAMETER_UI_PROVIDER, CubaUIProvider.class.getCanonicalName());
+        if (Strings.isNullOrEmpty(initParameters.getProperty(Constants.SERVLET_PARAMETER_PRODUCTION_MODE))) {
+            boolean productionMode = webConfig.getProductionMode();
+            if (!productionMode) {
+                initParameters.setProperty(Constants.SERVLET_PARAMETER_PRODUCTION_MODE, String.valueOf(false));
+            }
+        }
 
-        // not actually used by CubaUIProvider
-        initParameters.setProperty(VaadinSession.UI_PARAMETER, AppUI.class.getCanonicalName());
+        if (Strings.isNullOrEmpty(initParameters.getProperty(Constants.SERVLET_PARAMETER_UI_PROVIDER))) {
+            initParameters.setProperty(Constants.SERVLET_PARAMETER_UI_PROVIDER, CubaUIProvider.class.getCanonicalName());
+        }
+
+        if (Strings.isNullOrEmpty(initParameters.getProperty(VaadinSession.UI_PARAMETER))) {
+            // not actually used by CubaUIProvider
+            initParameters.setProperty(VaadinSession.UI_PARAMETER, AppUI.class.getCanonicalName());
+        }
 
         return super.createDeploymentConfiguration(initParameters);
     }
