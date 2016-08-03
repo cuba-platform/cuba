@@ -69,6 +69,7 @@ public class DesktopToolTipManager extends MouseAdapter {
             @Override
             public void actionPerformed(ActionEvent e) {
                 window.hide();
+                window = null;
                 tooltipShowing = false;
                 toolTipWindow.removeMouseListener(DesktopToolTipManager.this);
                 component.removeMouseListener(DesktopToolTipManager.this);
@@ -158,6 +159,7 @@ public class DesktopToolTipManager extends MouseAdapter {
         closeTimer.stop();
         if (window != null) {
             window.hide();
+            window = null;
             tooltipShowing = false;
             toolTipWindow.removeMouseListener(DesktopToolTipManager.this);
             component.removeMouseListener(DesktopToolTipManager.this);
