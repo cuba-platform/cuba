@@ -20,5 +20,5 @@ package com.haulmont.cuba.security.global;
  * Interface for client sessions that allow anonymous requests
  */
 public interface ClientBasedSession {
-    boolean isLocaleRequestScoped();
+    boolean hasRequestScopedInfo();
 }

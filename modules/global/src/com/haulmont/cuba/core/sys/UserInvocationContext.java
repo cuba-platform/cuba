@@ -19,39 +19,77 @@ package com.haulmont.cuba.core.sys;
 import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.UUID;
 
 /**
  * Parameters of user invocation, may be passed by client tier
  */
 public final class UserInvocationContext {
-    private static final ThreadLocal<RequestScopeLocale> userRequestScopeLocale = new ThreadLocal<>();
+    private static final ThreadLocal<RequestScopeUserInfo> userRequestScopeInfo = new ThreadLocal<>();
 
-    public static void setRequestScopeLocale(UUID sessionId, Locale locale) {
-        userRequestScopeLocale.set(new RequestScopeLocale(sessionId, locale));
+    public static void setRequestScopeInfo(UUID sessionId, Locale locale, TimeZone timeZone, String address,
+                                           String clientInfo) {
+        userRequestScopeInfo.set(new RequestScopeUserInfo(sessionId, locale, timeZone, address, clientInfo));
     }
 
     @Nullable
     public static Locale getRequestScopeLocale(UUID sessionId) {
-        RequestScopeLocale requestScopeLocale = userRequestScopeLocale.get();
-        if (requestScopeLocale != null && Objects.equals(sessionId, requestScopeLocale.getSessionId())) {
-            return requestScopeLocale.getLocale();
+        RequestScopeUserInfo requestScopeInfo = userRequestScopeInfo.get();
+        if (requestScopeInfo != null && Objects.equals(sessionId, requestScopeInfo.getSessionId())) {
+            return requestScopeInfo.getLocale();
         }
 
         return null;
     }
 
-    public static void clearRequestScopeLocale() {
-        userRequestScopeLocale.set(null);
+    @Nullable
+    public static TimeZone getRequestScopeTimeZone(UUID sessionId) {
+        RequestScopeUserInfo requestScopeInfo = userRequestScopeInfo.get();
+        if (requestScopeInfo != null && Objects.equals(sessionId, requestScopeInfo.getSessionId())) {
+            return requestScopeInfo.getTimeZone();
+        }
+
+        return null;
     }
 
-    protected static final class RequestScopeLocale {
+    @Nullable
+    public static String getRequestScopeAddress(UUID sessionId) {
+        RequestScopeUserInfo requestScopeInfo = userRequestScopeInfo.get();
+        if (requestScopeInfo != null && Objects.equals(sessionId, requestScopeInfo.getSessionId())) {
+            return requestScopeInfo.getAddress();
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static String getRequestScopeClientInfo(UUID sessionId) {
+        RequestScopeUserInfo requestScopeInfo = userRequestScopeInfo.get();
+        if (requestScopeInfo != null && Objects.equals(sessionId, requestScopeInfo.getSessionId())) {
+            return requestScopeInfo.getClientInfo();
+        }
+
+        return null;
+    }
+
+    public static void clearRequestScopeInfo() {
+        userRequestScopeInfo.set(null);
+    }
+
+    protected static final class RequestScopeUserInfo {
         private final UUID sessionId;
         private final Locale locale;
+        private final TimeZone timeZone;
+        private final String address;
+        private final String clientInfo;
 
-        public RequestScopeLocale(UUID sessionId, Locale locale) {
+        public RequestScopeUserInfo(UUID sessionId, Locale locale, TimeZone timeZone, String address, String clientInfo) {
             this.sessionId = sessionId;
             this.locale = locale;
+            this.timeZone = timeZone;
+            this.address = address;
+            this.clientInfo = clientInfo;
         }
 
         public UUID getSessionId() {
@@ -60,6 +98,18 @@ public final class UserInvocationContext {
 
         public Locale getLocale() {
             return locale;
+        }
+
+        public TimeZone getTimeZone() {
+            return timeZone;
+        }
+
+        public String getAddress() {
+            return address;
+        }
+
+        public String getClientInfo() {
+            return clientInfo;
         }
     }
 }

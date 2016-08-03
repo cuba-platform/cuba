@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
-import javax.annotation.Nullable;
+import java.util.TimeZone;
 import java.util.UUID;
 
 public class LocalServiceInvocation {
@@ -26,17 +26,20 @@ public class LocalServiceInvocation {
     private byte[][] argumentsData;
     private Object[] notSerializableArguments;
     private UUID sessionId;
+
+    // request scoped properties
     private String locale;
+    private TimeZone timeZone;
+    private String address;
+    private String clientInfo;
 
     public LocalServiceInvocation(String methodName, String[] parameterTypeNames,
-                                  byte[][] argumentsData, Object[] notSerializableArguments, UUID sessionId,
-                                  @Nullable String locale) {
+                                  byte[][] argumentsData, Object[] notSerializableArguments, UUID sessionId) {
         this.methodName = methodName;
         this.parameterTypeNames = parameterTypeNames;
         this.argumentsData = argumentsData;
         this.notSerializableArguments = notSerializableArguments;
         this.sessionId = sessionId;
-        this.locale = locale;
     }
 
     public byte[][] getArgumentsData() {
@@ -59,7 +62,35 @@ public class LocalServiceInvocation {
         return sessionId;
     }
 
+    public void setLocale(String locale) {
+        this.locale = locale;
+    }
+
     public String getLocale() {
         return locale;
+    }
+
+    public TimeZone getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(TimeZone timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getClientInfo() {
+        return clientInfo;
+    }
+
+    public void setClientInfo(String clientInfo) {
+        this.clientInfo = clientInfo;
     }
 }

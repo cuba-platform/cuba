@@ -129,18 +129,19 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
             SecurityContext securityContext = AppContext.getSecurityContext();
             UUID sessionId = securityContext == null ? null : securityContext.getSessionId();
 
-            String requestScopeLocale = null;
+            LocalServiceInvocation invocation = new LocalServiceInvocation(
+                    method.getName(), parameterTypeNames, argumentsData, notSerializableArguments, sessionId);
+
             if (securityContext != null) {
                 UserSession session = securityContext.getSession();
-                if (session instanceof ClientBasedSession) {
-                    if (((ClientBasedSession) session).isLocaleRequestScoped()) {
-                        requestScopeLocale = session.getLocale() != null ? session.getLocale().toLanguageTag() : null;
-                    }
+
+                if (session instanceof ClientBasedSession && ((ClientBasedSession) session).hasRequestScopedInfo()) {
+                    invocation.setLocale(session.getLocale() != null ? session.getLocale().toLanguageTag() : null);
+                    invocation.setTimeZone(session.getTimeZone());
+                    invocation.setAddress(session.getAddress());
+                    invocation.setClientInfo(session.getClientInfo());
                 }
             }
-
-            LocalServiceInvocation invocation = new LocalServiceInvocation(
-                    method.getName(), parameterTypeNames, argumentsData, notSerializableArguments, sessionId, requestScopeLocale);
 
             LocalServiceInvocationResult result = invoker.invoke(invocation);
             AppContext.setSecurityContext(AppContext.getSecurityContext());//need reset application name in LogMDC for the current thread

@@ -52,7 +52,7 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
     private GlobalConfig globalConfig;
 
     public CubaRemoteInvocationExecutor() {
-        userSessionManager = AppBeans.get("cuba_UserSessionManager");
+        userSessionManager = AppBeans.get(UserSessionManager.NAME);
         configuration = AppBeans.get(Configuration.NAME);
         globalConfig = configuration.getConfig(GlobalConfig.class);
     }
@@ -94,15 +94,24 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
             }
 
             if (cubaInvocation.getLocale() != null) {
-                Locale locale = Locale.forLanguageTag(cubaInvocation.getLocale());
-                if (globalConfig.getAvailableLocales().containsValue(locale)) {
-                    UserInvocationContext.setRequestScopeLocale(sessionId, locale);
+                Locale requestLocale = Locale.forLanguageTag(cubaInvocation.getLocale());
+                if (!globalConfig.getAvailableLocales().containsValue(requestLocale)) {
+                    requestLocale = null;
                 }
+
+                UserInvocationContext.setRequestScopeInfo(sessionId, requestLocale, cubaInvocation.getTimeZone(),
+                        cubaInvocation.getAddress(), cubaInvocation.getClientInfo());
             }
         }
-        Object result = invocation.invoke(targetObject);
-        AppContext.setSecurityContext(null);
-        UserInvocationContext.clearRequestScopeLocale();
+
+        Object result;
+        try {
+            result = invocation.invoke(targetObject);
+        } finally {
+            AppContext.setSecurityContext(null);
+            UserInvocationContext.clearRequestScopeInfo();
+        }
+
         return result;
     }
 

@@ -16,14 +16,15 @@
  */
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.util.Locale;
 import java.util.Map;
@@ -35,10 +36,13 @@ import java.util.UUID;
 @Component(LoginService.NAME)
 public class LoginServiceBean implements LoginService {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(LoginServiceBean.class);
 
     @Inject
     protected LoginWorker loginWorker;
+
+    @Inject
+    protected UserSessionSource userSessionSource;
 
     @Inject
     protected BruteForceProtectionAPI bruteForceProtectionAPI;
@@ -48,7 +52,7 @@ public class LoginServiceBean implements LoginService {
         try {
             return loginWorker.login(login, password, locale);
         } catch (LoginException e) {
-            log.info("Login failed: " + e.toString());
+            log.info("Login failed: {}", e.toString());
             throw e;
         } catch (Throwable e) {
             log.error("Login error", e);
@@ -61,7 +65,7 @@ public class LoginServiceBean implements LoginService {
         try {
             return loginWorker.login(login, password, locale, params);
         } catch (LoginException e) {
-            log.info("Login failed: " + e.toString());
+            log.info("Login failed: {}", e.toString());
             throw e;
         } catch (Throwable e) {
             log.error("Login error", e);
@@ -74,7 +78,7 @@ public class LoginServiceBean implements LoginService {
         try {
             return loginWorker.loginTrusted(login, password, locale);
         } catch (LoginException e) {
-            log.info("Login failed: " + e.toString());
+            log.info("Login failed: {}", e.toString());
             throw e;
         } catch (Throwable e) {
             log.error("Login error", e);
@@ -87,7 +91,7 @@ public class LoginServiceBean implements LoginService {
         try {
             return loginWorker.loginTrusted(login, password, locale, params);
         } catch (LoginException e) {
-            log.info("Login failed: " + e.toString());
+            log.info("Login failed: {}", e.toString());
             throw e;
         } catch (Throwable e) {
             log.error("Login error", e);
@@ -100,7 +104,7 @@ public class LoginServiceBean implements LoginService {
         try {
             return loginWorker.loginByRememberMe(login, rememberMeToken, locale);
         } catch (LoginException e) {
-            log.info("Login failed: " + e.toString());
+            log.info("Login failed: {}", e.toString());
             throw e;
         } catch (Throwable e) {
             log.error("Login error", e);
@@ -114,7 +118,7 @@ public class LoginServiceBean implements LoginService {
         try {
             return loginWorker.loginByRememberMe(login, rememberMeToken, locale, params);
         } catch (LoginException e) {
-            log.info("Login failed: " + e.toString());
+            log.info("Login failed: {}", e.toString());
             throw e;
         } catch (Throwable e) {
             log.error("Login error", e);
@@ -127,7 +131,7 @@ public class LoginServiceBean implements LoginService {
         try {
             return loginWorker.getSystemSession(trustedClientPassword);
         } catch (LoginException e) {
-            log.info("Login failed: " + e.toString());
+            log.info("Login failed: {}", e.toString());
             throw e;
         } catch (Throwable e) {
             log.error("Login error", e);
@@ -138,6 +142,12 @@ public class LoginServiceBean implements LoginService {
     @Override
     public void logout() {
         try {
+            UserSession session = userSessionSource.getUserSession();
+
+            if (session != null && session.isSystem()) {
+                throw new RuntimeException("Logout of system session from client is not permitted");
+            }
+
             loginWorker.logout();
         } catch (Throwable e) {
             log.error("Logout error", e);

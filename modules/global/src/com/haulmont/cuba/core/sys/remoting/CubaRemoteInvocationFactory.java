@@ -30,18 +30,20 @@ public class CubaRemoteInvocationFactory implements RemoteInvocationFactory {
     public RemoteInvocation createRemoteInvocation(MethodInvocation methodInvocation) {
         SecurityContext securityContext = AppContext.getSecurityContext();
 
-        String requestScopeLocale = null;
+        CubaRemoteInvocation remoteInvocation = new CubaRemoteInvocation(methodInvocation,
+                securityContext == null ? null : securityContext.getSessionId());
+
         if (securityContext != null) {
             UserSession session = securityContext.getSession();
-            if (session instanceof ClientBasedSession) {
-                if (((ClientBasedSession) session).isLocaleRequestScoped()) {
-                    requestScopeLocale = session.getLocale() != null ? session.getLocale().toLanguageTag() : null;
-                }
+
+            if (session instanceof ClientBasedSession && ((ClientBasedSession) session).hasRequestScopedInfo()) {
+                remoteInvocation.setLocale(session.getLocale() != null ? session.getLocale().toLanguageTag() : null);
+                remoteInvocation.setTimeZone(session.getTimeZone());
+                remoteInvocation.setAddress(session.getAddress());
+                remoteInvocation.setClientInfo(session.getClientInfo());
             }
         }
 
-        return new CubaRemoteInvocation(methodInvocation,
-                securityContext == null ? null : securityContext.getSessionId(),
-                requestScopeLocale);
+        return remoteInvocation;
     }
 }

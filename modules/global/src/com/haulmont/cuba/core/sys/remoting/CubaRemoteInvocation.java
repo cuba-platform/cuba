@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.sys.remoting;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.remoting.support.RemoteInvocation;
 
+import java.util.TimeZone;
 import java.util.UUID;
 
 /**
@@ -31,23 +32,48 @@ public class CubaRemoteInvocation extends RemoteInvocation {
 
     private UUID sessionId;
     private String locale;
+    private TimeZone timeZone;
+    private String address;
+    private String clientInfo;
 
     public CubaRemoteInvocation(MethodInvocation methodInvocation, UUID sessionId) {
         super(methodInvocation);
         this.sessionId = sessionId;
     }
 
-    public CubaRemoteInvocation(MethodInvocation methodInvocation, UUID sessionId, String locale) {
-        super(methodInvocation);
-        this.sessionId = sessionId;
-        this.locale = locale;
-    }
-
     public UUID getSessionId() {
         return sessionId;
     }
 
+    public void setLocale(String locale) {
+        this.locale = locale;
+    }
+
     public String getLocale() {
         return locale;
+    }
+
+    public TimeZone getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(TimeZone timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getClientInfo() {
+        return clientInfo;
+    }
+
+    public void setClientInfo(String clientInfo) {
+        this.clientInfo = clientInfo;
     }
 }

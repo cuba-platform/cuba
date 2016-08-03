@@ -183,6 +183,11 @@ public class UserSession implements Serializable {
      */
     @Nullable
     public TimeZone getTimeZone() {
+        TimeZone requestScopeTimeZone = UserInvocationContext.getRequestScopeTimeZone(id);
+        if (requestScopeTimeZone != null) {
+            return requestScopeTimeZone;
+        }
+
         return timeZone;
     }
 
@@ -197,6 +202,11 @@ public class UserSession implements Serializable {
      * Client IP-address
      */
     public String getAddress() {
+        String requestScopeAddress = UserInvocationContext.getRequestScopeAddress(id);
+        if (requestScopeAddress != null) {
+            return requestScopeAddress;
+        }
+
         return address;
     }
 
@@ -211,6 +221,11 @@ public class UserSession implements Serializable {
      * Client application info
      */
     public String getClientInfo() {
+        String requestScopeClientInfo = UserInvocationContext.getRequestScopeClientInfo(id);
+        if (requestScopeClientInfo != null) {
+            return requestScopeClientInfo;
+        }
+
         return clientInfo;
     }
 

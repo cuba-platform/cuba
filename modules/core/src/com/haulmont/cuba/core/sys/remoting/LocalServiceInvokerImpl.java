@@ -33,16 +33,18 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
     private Object target;
 
     public LocalServiceInvokerImpl(Object target) {
-        if (target == null)
+        if (target == null) {
             throw new IllegalArgumentException("Target object is null");
+        }
 
         this.target = target;
     }
 
     @Override
     public LocalServiceInvocationResult invoke(LocalServiceInvocation invocation) {
-        if (invocation == null)
+        if (invocation == null) {
             throw new IllegalArgumentException("Invocation is null");
+        }
 
         LocalServiceInvocationResult result = new LocalServiceInvocationResult();
         ClassLoader clientClassLoader = Thread.currentThread().getContextClassLoader();
@@ -60,9 +62,9 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
             byte[][] argumentsData = invocation.getArgumentsData();
             Object[] notSerializableArguments = invocation.getNotSerializableArguments();
             Object[] arguments;
-            if (argumentsData == null)
+            if (argumentsData == null) {
                 arguments = null;
-            else {
+            } else {
                 arguments = new Object[argumentsData.length];
                 for (int i = 0; i < argumentsData.length; i++) {
                     if (argumentsData[i] == null) {
@@ -77,14 +79,16 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
                 }
             }
 
-            if (invocation.getSessionId() != null)
-                AppContext.setSecurityContext(new SecurityContext(invocation.getSessionId()));
-            else
-                AppContext.setSecurityContext(null);
+            SecurityContext targetSecurityContext = null;
+            if (invocation.getSessionId() != null) {
+                targetSecurityContext = new SecurityContext(invocation.getSessionId());
+            }
+            AppContext.setSecurityContext(targetSecurityContext);
 
             if (invocation.getLocale() != null) {
                 Locale locale = Locale.forLanguageTag(invocation.getLocale());
-                UserInvocationContext.setRequestScopeLocale(invocation.getSessionId(), locale);
+                UserInvocationContext.setRequestScopeInfo(invocation.getSessionId(), locale, invocation.getTimeZone(),
+                        invocation.getAddress(), invocation.getClientInfo());
             }
 
             Method method = target.getClass().getMethod(invocation.getMethodName(), parameterTypes);
@@ -104,7 +108,7 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
         } finally {
             Thread.currentThread().setContextClassLoader(clientClassLoader);
             AppContext.setSecurityContext(null);
-            UserInvocationContext.clearRequestScopeLocale();
+            UserInvocationContext.clearRequestScopeInfo();
         }
     }
 }

@@ -100,7 +100,7 @@ public class ClientUserSession extends UserSession implements ClientBasedSession
     }
 
     @Override
-    public boolean isLocaleRequestScoped() {
+    public boolean hasRequestScopedInfo() {
         return !authenticated;
     }
 }
