@@ -596,8 +596,8 @@ public class UserManagementServiceBean implements UserManagementService {
         resultConstraint.setOperationType(constraint.getOperationType());
         resultConstraint.setJoinClause(constraint.getJoinClause());
         resultConstraint.setWhereClause(constraint.getWhereClause());
-        resultConstraint.setGroovyScript(constraint.getWhereClause());
-        resultConstraint.setFilterXml(constraint.getWhereClause());
+        resultConstraint.setGroovyScript(constraint.getGroovyScript());
+        resultConstraint.setFilterXml(constraint.getFilterXml());
         resultConstraint.setIsActive(constraint.getIsActive());
         resultConstraint.setGroup(group);
         return resultConstraint;
