@@ -21,7 +21,6 @@ import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import org.apache.commons.lang.StringUtils;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 public class WebButton extends WebAbstractComponent<CubaButton> implements Button {
@@ -158,5 +157,15 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
     @Override
     public void setFocusable(boolean focusable) {
         __setFocusable(focusable);
+    }
+
+    @Override
+    public void setDisableOnClick(boolean value) {
+        component.setDisableOnClick(value);
+    }
+
+    @Override
+    public boolean isDisableOnClick() {
+        return component.isDisableOnClick();
     }
 }

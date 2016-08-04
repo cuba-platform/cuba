@@ -75,5 +75,13 @@ public class ButtonLoader extends AbstractComponentLoader<Button> {
         loadInvoke(resultComponent, enabled, visible, element);
 
         loadFocusable(resultComponent, element);
+        loadDisableOnClick(resultComponent, element);
+    }
+
+    protected void loadDisableOnClick(Button component, Element element) {
+        String disableOnClick = element.attributeValue("disableOnClick");
+        if (StringUtils.isNotEmpty(disableOnClick)) {
+            component.setDisableOnClick(Boolean.parseBoolean(disableOnClick));
+        }
     }
 }

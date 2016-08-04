@@ -418,5 +418,14 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
         @Override
         public void setFocusable(boolean focusable) {
         }
+
+        @Override
+        public void setDisableOnClick(boolean value) {
+        }
+
+        @Override
+        public boolean isDisableOnClick() {
+            return false;
+        }
     }
 }

@@ -19,4 +19,17 @@ package com.haulmont.cuba.gui.components;
 public interface Button extends Component, Component.HasCaption, Component.BelongToFrame, Component.ActionOwner,
                                 Component.HasIcon, Component.Focusable {
     String NAME = "button";
+
+    /**
+     * Determines if a button is automatically disabled when clicked. If this is
+     * set to true the button will be automatically disabled when clicked,
+     * typically to prevent (accidental) extra clicks on a button.
+     *
+     * @param disableOnClick disable on click option.
+     */
+    void setDisableOnClick(boolean disableOnClick);
+    /**
+     * @return true if the button is disabled when clicked.
+     */
+    boolean isDisableOnClick();
 }

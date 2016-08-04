@@ -44,6 +44,7 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
     protected boolean shouldBeFocused = true;
 
     protected PropertyChangeListener actionPropertyChangeListener;
+    protected boolean disableOnClick = false;
 
     public DesktopButton() {
         impl = createImplementation();
@@ -57,6 +58,10 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
 
                     if (e.getWhen() <= responseEndTs) {
                         return;
+                    }
+
+                    if (disableOnClick) {
+                        impl.setEnabled(false);
                     }
 
                     try {
@@ -202,5 +207,15 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
     @Override
     public void setFocusable(boolean focusable) {
         impl.setFocusable(focusable);
+    }
+
+    @Override
+    public void setDisableOnClick(boolean disableOnClick) {
+        this.disableOnClick = disableOnClick;
+    }
+
+    @Override
+    public boolean isDisableOnClick() {
+        return disableOnClick;
     }
 }

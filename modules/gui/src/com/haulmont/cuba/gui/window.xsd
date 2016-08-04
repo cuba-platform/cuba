@@ -1046,6 +1046,7 @@
         <xs:attribute name="invoke" type="xs:string"/>
 
         <xs:attribute name="focusable" type="xs:boolean"/>
+        <xs:attribute name="disableOnClick" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- PopupButton -->
