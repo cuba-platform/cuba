@@ -2601,4 +2601,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         component.requestFocus(item.getId(), getColumn(columnId).getId());
     }
+
+    @Override
+    public void scrollTo(E item) {
+        Preconditions.checkNotNullArgument(item);
+        if (!component.getItemIds().contains(item.getId())) {
+            throw new IllegalArgumentException("Unable to find item in Table");
+        }
+
+        component.setCurrentPageFirstItemId(item.getId());
+    }
 }

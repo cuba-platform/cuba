@@ -149,6 +149,13 @@ public interface Table<E extends Entity>
     void requestFocus(E entity, String columnId);
 
     /**
+     * Scroll table to specified row.
+     *
+     * @param entity   entity
+     */
+    void scrollTo(E entity);
+
+    /**
      * Sort the table by a column.
      * For example:
      * <pre>table.sortBy(table.getDatasource().getMetaClass().getPropertyPath("name"), ascending);</pre>

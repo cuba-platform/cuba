@@ -2320,6 +2320,17 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
         // unsupported for desktop
     }
 
+    @Override
+    public void scrollTo(E item) {
+        Preconditions.checkNotNullArgument(item);
+        int rowIndex = tableModel.getRowIndex(item);
+        if (rowIndex == -1) {
+            throw new IllegalArgumentException("Unable to find item in Table");
+        }
+
+        impl.scrollRowToVisible(rowIndex);
+    }
+
     /**
      * Uses delegate renderer to create cell component.
      * Then applies desktop styles to cell component.
