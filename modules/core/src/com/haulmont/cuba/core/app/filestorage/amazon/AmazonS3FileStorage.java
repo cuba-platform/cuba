@@ -52,8 +52,9 @@ public class AmazonS3FileStorage implements FileStorageAPI {
     public long saveStream(FileDescriptor fileDescr, InputStream inputStream) throws FileStorageException {
         Preconditions.checkNotNullArgument(fileDescr.getSize());
 
+        int chunkSize = amazonS3Config.getChunkSize();
+        long fileSize = fileDescr.getSize();
         URL amazonUrl = getAmazonUrl(fileDescr);
-
         // set the markers indicating we're going to send the upload as a series
         // of chunks:
         //   -- 'x-amz-content-sha256' is the fixed marker indicating chunked
@@ -66,7 +67,7 @@ public class AmazonS3FileStorage implements FileStorageAPI {
         headers.put("x-amz-storage-class", "REDUCED_REDUNDANCY");
         headers.put("x-amz-content-sha256", AWS4SignerForChunkedUpload.STREAMING_BODY_SHA256);
         headers.put("content-encoding", "aws-chunked");
-        headers.put("x-amz-decoded-content-length", "" + fileDescr.getSize());
+        headers.put("x-amz-decoded-content-length", "" + fileSize);
 
         AWS4SignerForChunkedUpload signer = new AWS4SignerForChunkedUpload(
                 amazonUrl, "PUT", "s3", amazonS3Config.getRegionName());
@@ -74,7 +75,7 @@ public class AmazonS3FileStorage implements FileStorageAPI {
         // how big is the overall request stream going to be once we add the signature
         // 'headers' to each chunk?
         long totalLength = AWS4SignerForChunkedUpload.calculateChunkedContentLength(
-                fileDescr.getSize(), amazonS3Config.getChunkSize());
+                fileSize, chunkSize);
         headers.put("content-length", "" + totalLength);
 
         String authorization = signer.computeSignature(headers,
@@ -99,11 +100,12 @@ public class AmazonS3FileStorage implements FileStorageAPI {
 
             // get the request stream and start writing the user data as chunks, as outlined
             // above;
-            byte[] buffer = new byte[amazonS3Config.getChunkSize()];
-            DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
-
             int bytesRead;
-            while ((bytesRead = inputStream.read(buffer, 0, buffer.length)) != -1) {
+            byte[] buffer = new byte[chunkSize];
+            DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+            //guarantees that it will read as many bytes as possible, this may not always be the case for
+            //subclasses of InputStream
+            while ((bytesRead = IOUtils.read(inputStream, buffer, 0, chunkSize)) > 0) {
                 // process into a chunk
                 byte[] chunk = signer.constructSignedChunk(bytesRead, buffer);
 
