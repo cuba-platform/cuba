@@ -84,6 +84,9 @@ public class WebSearchField extends WebLookupField implements SearchField {
     }
 
     protected void executeSearch(final String newFilter) {
+        if (optionsDatasource == null)
+            return;
+
         String filterForDs = newFilter;
         if (mode == Mode.LOWER_CASE) {
             filterForDs = StringUtils.lowerCase(newFilter);
@@ -104,7 +107,7 @@ public class WebSearchField extends WebLookupField implements SearchField {
         }
 
         if (StringUtils.length(filterForDs) >= minSearchStringLength) {
-            optionsDatasource.refresh(Collections.singletonMap(SEARCH_STRING_PARAM, (Object) filterForDs));
+            optionsDatasource.refresh(Collections.singletonMap(SEARCH_STRING_PARAM, filterForDs));
 
             if (optionsDatasource.getState() == State.VALID) {
                 if (optionsDatasource.size() == 0) {
