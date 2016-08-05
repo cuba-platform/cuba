@@ -33,6 +33,8 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.exception.RestAPIException;
 import org.apache.commons.lang.BooleanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,10 +42,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 /**
  * Controller that performs CRUD entity operations
@@ -72,6 +74,8 @@ public class EntitiesController {
 
     @Inject
     protected RestControllerUtils restControllerUtils;
+
+    protected Logger log = LoggerFactory.getLogger(EntitiesController.class);
 
     @RequestMapping(method = RequestMethod.GET, path = "/{entityName}/{entityId}")
     public String loadEntity(@PathVariable String entityName,
@@ -142,28 +146,31 @@ public class EntitiesController {
 
     @RequestMapping(method = RequestMethod.POST, path = "/{entityName}")
     public ResponseEntity<String> createEntity(@RequestBody String entityJson,
-                                       @PathVariable String entityName,
-                                       UriComponentsBuilder uriComponentsBuilder) {
+                                               @PathVariable String entityName,
+                                               HttpServletRequest request) {
         MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanCreateEntity(metaClass);
         //todo MG catch invalid json
         Entity entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
-        entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
 
-        UriComponents uriComponents = uriComponentsBuilder
+        Collection<Entity> importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
+
+        //if multiple entities was created (because of @Composition references) we must find the main entity
+        String createdEntityJson = getMainEntityJson(importedEntities, metaClass);
+
+        UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString())
                 .path("/{id}")
                 .buildAndExpand(entity.getId().toString());
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(uriComponents.toUri());
-        //todo MG return response body?
-        return new ResponseEntity<>(httpHeaders, HttpStatus.CREATED);
+        return new ResponseEntity<>(createdEntityJson, httpHeaders, HttpStatus.CREATED);
     }
 
     @RequestMapping(method = RequestMethod.PUT, path = "/{entityName}/{entityId}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateEntity(@RequestBody String entityJson,
+    public String updateEntity(@RequestBody String entityJson,
                              @PathVariable String entityName,
                              @PathVariable String entityId) {
         MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
@@ -173,7 +180,10 @@ public class EntitiesController {
         checkEntityIsNotNull(entityName, entityId, existingEntity);
         Entity entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
-        entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
+        Collection<Entity> importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
+        //there may be multiple entities in importedEntities (because of @Composition references), so we must find
+        // the main entity that will be returned
+        return getMainEntityJson(importedEntities, metaClass);
     }
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/{entityName}/{entityId}")
@@ -242,5 +252,25 @@ public class EntitiesController {
                     String.format("Updating of the %s is forbidden", metaClass.getName()),
                     HttpStatus.FORBIDDEN);
         }
+    }
+
+    /**
+     * Finds entity with given metaClass and converts it to JSON.
+     */
+    @Nullable
+    protected String getMainEntityJson(Collection<Entity> importedEntities, MetaClass metaClass) {
+        Entity mainEntity = null;
+        if (importedEntities.size() > 1) {
+            Optional<Entity> first = importedEntities.stream().filter(e -> e.getMetaClass().equals(metaClass)).findFirst();
+            if (first.isPresent()) mainEntity = first.get();
+        } else {
+            mainEntity = importedEntities.iterator().next();
+        }
+
+        String entityJson = null;
+        if (mainEntity != null) {
+            entityJson = entitySerializationAPI.toJson(mainEntity);
+        }
+        return entityJson;
     }
 }
