@@ -30,7 +30,7 @@ import com.vaadin.data.Property;
 
 import java.util.*;
 
-public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
+public class ItemWrapper implements Item, Item.PropertySetChangeNotifier, UnsubscribableDsWrapper {
 
     protected Map<MetaPropertyPath, PropertyWrapper> properties = new HashMap<>();
 
@@ -40,6 +40,7 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
     protected Object item;
     protected MetaClass metaClass;
     protected CollectionDatasource.CollectionChangeListener cdsCollectionChangeListener;
+    protected WeakCollectionChangeListener weakCollectionChangeListener;
 
     public ItemWrapper(Object item, MetaClass metaClass) {
         this(item, metaClass, AppBeans.<MetadataTools>get(MetadataTools.NAME).getPropertyPaths(metaClass));
@@ -57,8 +58,9 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
             cdsCollectionChangeListener = e -> fireItemPropertySetChanged();
 
             CollectionDatasource datasource = (CollectionDatasource) item;
+            weakCollectionChangeListener = new WeakCollectionChangeListener(datasource, cdsCollectionChangeListener);
             //noinspection unchecked
-            datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, cdsCollectionChangeListener));
+            datasource.addCollectionChangeListener(weakCollectionChangeListener);
         }
     }
 
@@ -133,6 +135,22 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
     @Override
     public void removeListener(PropertySetChangeListener listener) {
         removePropertySetChangeListener(listener);
+    }
+
+    @Override
+    public void unsubscribe() {
+        if (item instanceof CollectionDatasource) {
+            CollectionDatasource datasource = (CollectionDatasource) item;
+            // noinspection unchecked
+            datasource.removeCollectionChangeListener(weakCollectionChangeListener);
+            weakCollectionChangeListener = null;
+        }
+
+        item = null;
+        metaClass = null;
+
+        properties.values().forEach(PropertyWrapper::unsubscribe);
+        properties.clear();
     }
 
     private class PropertySetChangeEvent implements Item.PropertySetChangeEvent {

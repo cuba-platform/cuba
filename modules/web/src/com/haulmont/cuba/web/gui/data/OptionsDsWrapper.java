@@ -22,10 +22,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
-import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
-import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
-import com.haulmont.cuba.gui.data.impl.WeakStateChangeListener;
+import com.haulmont.cuba.gui.data.impl.*;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -37,9 +34,8 @@ import java.util.*;
 
 /**
  * Uses any Object as his Id
- *
  */
-public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetChangeNotifier {
+public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetChangeNotifier, UnsubscribableDsWrapper {
 
     protected boolean autoRefresh;
     protected boolean ignoreListeners;
@@ -49,6 +45,8 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
     protected Datasource.StateChangeListener dsStateChangeListener;
     protected Datasource.ItemPropertyChangeListener dsItemPropertyChangeListener;
     protected CollectionDatasource.CollectionChangeListener cdsCollectionChangeListener;
+
+    protected WeakDsListenerAdapter weakDsListenerAdapter;
 
     protected Collection<MetaPropertyPath> properties = new ArrayList<>();
 
@@ -61,6 +59,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
         this(datasource, null, autoRefresh);
     }
 
+    @SuppressWarnings("unchecked")
     public OptionsDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, boolean autoRefresh) {
         this.datasource = datasource;
         this.autoRefresh = autoRefresh;
@@ -75,8 +74,6 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
         }
 
         dsStateChangeListener = e -> itemsCache.clear();
-        //noinspection unchecked
-        datasource.addStateChangeListener(new WeakStateChangeListener(datasource, dsStateChangeListener));
 
         dsItemPropertyChangeListener = e -> {
             Item wrapper = getItemWrapper(e.getItem());
@@ -91,8 +88,6 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
                 ((PropertyWrapper) itemProperty).fireValueChangeEvent();
             }
         };
-        //noinspection unchecked
-        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, dsItemPropertyChangeListener));
 
         cdsCollectionChangeListener = e -> {
             final boolean prevIgnoreListeners = ignoreListeners;
@@ -103,8 +98,11 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
                 ignoreListeners = prevIgnoreListeners;
             }
         };
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, cdsCollectionChangeListener));
+
+        weakDsListenerAdapter = new WeakDsListenerAdapter(datasource, dsItemPropertyChangeListener, dsStateChangeListener, cdsCollectionChangeListener);
+        datasource.addCollectionChangeListener(weakDsListenerAdapter);
+        datasource.addStateChangeListener(weakDsListenerAdapter);
+        datasource.addItemPropertyChangeListener(weakDsListenerAdapter);
     }
 
     protected void createProperties(View view, MetaClass metaClass) {
@@ -364,5 +362,16 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
     @Override
     public String toString() {
         return "{ds=" + (datasource == null ? "null" : datasource.getId() + "}");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void unsubscribe() {
+        this.datasource.removeCollectionChangeListener(weakDsListenerAdapter);
+        this.datasource.removeItemPropertyChangeListener(weakDsListenerAdapter);
+        this.datasource.removeStateChangeListener(weakDsListenerAdapter);
+
+        weakDsListenerAdapter = null;
+        datasource = null;
     }
 }

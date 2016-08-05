@@ -146,9 +146,11 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
     public void setDatasource(Datasource datasource, String property) {
         super.setDatasource(datasource, property);
 
-        Integer maxLength = (Integer) metaProperty.getAnnotations().get("length");
-        if (maxLength != null && this instanceof TextInputField.MaxLengthLimited) {
-            ((TextInputField.MaxLengthLimited)this).setMaxLength(maxLength);
+        if (metaProperty != null) {
+            Integer maxLength = (Integer) metaProperty.getAnnotations().get("length");
+            if (maxLength != null && this instanceof TextInputField.MaxLengthLimited) {
+                ((TextInputField.MaxLengthLimited) this).setMaxLength(maxLength);
+            }
         }
     }
 

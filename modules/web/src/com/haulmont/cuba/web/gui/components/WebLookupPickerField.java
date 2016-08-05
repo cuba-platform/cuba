@@ -229,7 +229,9 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
 
     @Override
     public void setDatasource(Datasource datasource, String property) {
-        pickerField.checkDatasourceProperty(datasource, property);
+        if (datasource != null) {
+            pickerField.checkDatasourceProperty(datasource, property);
+        }
         super.setDatasource(datasource, property);
         pickerField.setDatasource(datasource, property);
     }

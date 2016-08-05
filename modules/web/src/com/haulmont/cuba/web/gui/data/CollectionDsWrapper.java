@@ -21,10 +21,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
-import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
-import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
-import com.haulmont.cuba.gui.data.impl.WeakStateChangeListener;
+import com.haulmont.cuba.gui.data.impl.*;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -32,7 +29,7 @@ import com.vaadin.ui.UI;
 
 import java.util.*;
 
-public class CollectionDsWrapper implements Container, Container.ItemSetChangeNotifier {
+public class CollectionDsWrapper implements Container, Container.ItemSetChangeNotifier, UnsubscribableDsWrapper {
 
     protected boolean autoRefresh;
     protected boolean ignoreListeners;
@@ -47,10 +44,13 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     protected Datasource.ItemPropertyChangeListener cdsItemPropertyChangeListener;
     protected CollectionDatasource.CollectionChangeListener cdsCollectionChangeListener;
 
+    protected WeakDsListenerAdapter weakDsListenerAdapter;
+
     public CollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
         this(datasource, null, autoRefresh);
     }
 
+    @SuppressWarnings("unchecked")
     public CollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties,
                                boolean autoRefresh) {
         this.datasource = datasource;
@@ -65,17 +65,16 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
             this.properties.addAll(properties);
         }
 
-        cdsStateChangeListener = createStateChangeListener();
-        //noinspection unchecked
-        datasource.addStateChangeListener(new WeakStateChangeListener(datasource, cdsStateChangeListener));
-
         cdsItemPropertyChangeListener = createItemPropertyChangeListener();
-        //noinspection unchecked
-        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, cdsItemPropertyChangeListener));
-
+        cdsStateChangeListener = createStateChangeListener();
         cdsCollectionChangeListener = createCollectionChangeListener();
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, cdsCollectionChangeListener));
+
+        weakDsListenerAdapter = new WeakDsListenerAdapter(datasource, cdsItemPropertyChangeListener,
+                cdsStateChangeListener, cdsCollectionChangeListener);
+
+        datasource.addItemPropertyChangeListener(weakDsListenerAdapter);
+        datasource.addStateChangeListener(weakDsListenerAdapter);
+        datasource.addCollectionChangeListener(weakDsListenerAdapter);
     }
 
     protected CollectionDatasource.CollectionChangeListener createCollectionChangeListener() {
@@ -236,6 +235,17 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     @Override
     public void removeListener(ItemSetChangeListener listener) {
         removeItemSetChangeListener(listener);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void unsubscribe() {
+        datasource.removeCollectionChangeListener(weakDsListenerAdapter);
+        datasource.removeItemPropertyChangeListener(weakDsListenerAdapter);
+        datasource.removeStateChangeListener(weakDsListenerAdapter);
+
+        weakDsListenerAdapter = null;
+        datasource = null;
     }
 
     protected class ContainerDatasourceStateChangeListener implements Datasource.StateChangeListener {

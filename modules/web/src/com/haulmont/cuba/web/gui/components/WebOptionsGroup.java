@@ -32,6 +32,11 @@ public class WebOptionsGroup extends WebAbstractOptionsBase<CubaOptionGroup> imp
         component = new CubaOptionGroup() {
             @Override
             public void setPropertyDataSource(Property newDataSource) {
+                if (newDataSource == null) {
+                    super.setPropertyDataSource(null);
+                    return;
+                }
+
                 super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
 
                     @Override

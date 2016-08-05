@@ -34,14 +34,17 @@ import com.vaadin.data.util.converter.Converter;
 
 import java.text.ParseException;
 
-public class PropertyWrapper extends AbstractPropertyWrapper implements PropertyValueStringify {
+public class PropertyWrapper extends AbstractPropertyWrapper implements PropertyValueStringify, UnsubscribableDsWrapper {
 
     protected MetaPropertyPath propertyPath;
 
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
     protected Datasource.ItemChangeListener dsItemChangeListener;
+    protected WeakItemChangeListener weakItemChangeListener;
+
     protected Datasource.ItemPropertyChangeListener dsItemPropertyChangeListener;
+    protected WeakItemPropertyChangeListener weakItemPropertyChangeListener;
 
     public PropertyWrapper(Object item, MetaPropertyPath propertyPath) {
         this.item = item;
@@ -57,10 +60,13 @@ public class PropertyWrapper extends AbstractPropertyWrapper implements Property
 
             Datasource datasource = (Datasource) item;
 
+            weakItemChangeListener = new WeakItemChangeListener(datasource, dsItemChangeListener);
             //noinspection unchecked
-            datasource.addItemChangeListener(new WeakItemChangeListener(datasource, dsItemChangeListener));
+            datasource.addItemChangeListener(weakItemChangeListener);
+
+            weakItemPropertyChangeListener = new WeakItemPropertyChangeListener(datasource, dsItemPropertyChangeListener);
             //noinspection unchecked
-            datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, dsItemPropertyChangeListener));
+            datasource.addItemPropertyChangeListener(weakItemPropertyChangeListener);
         }
     }
 
@@ -141,5 +147,18 @@ public class PropertyWrapper extends AbstractPropertyWrapper implements Property
     @Override
     public String getFormattedValue() {
         return metadataTools.format(getValue(), propertyPath.getMetaProperty());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void unsubscribe() {
+        Datasource datasource = (Datasource) item;
+        datasource.removeItemChangeListener(weakItemChangeListener);
+        weakItemChangeListener = null;
+
+        datasource.removeItemPropertyChangeListener(weakItemPropertyChangeListener);
+        weakItemPropertyChangeListener = null;
+
+        propertyPath = null;
     }
 }

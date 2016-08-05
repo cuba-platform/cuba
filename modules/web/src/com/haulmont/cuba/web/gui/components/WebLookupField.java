@@ -33,6 +33,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.EnumerationContainer;
 import com.haulmont.cuba.web.gui.data.ObjectContainer;
 import com.haulmont.cuba.web.gui.data.OptionsDsWrapper;
+import com.haulmont.cuba.web.gui.data.UnsubscribableDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -252,18 +253,32 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
     @Override
     public void setOptionsDatasource(CollectionDatasource datasource) {
-        this.optionsDatasource = datasource;
-        component.setContainerDataSource(new LookupOptionsDsWrapper(datasource, true));
+        if (this.datasource == datasource)
+            return;
 
-        tryToAssignCaptionProperty();
-
-        if (nullOption != null) {
-            initNullEntity();
+        if (this.optionsDatasource != null) {
+            com.vaadin.data.Container container = component.getContainerDataSource();
+            if (container instanceof UnsubscribableDsWrapper) {
+                UnsubscribableDsWrapper wrapper = (UnsubscribableDsWrapper) container;
+                wrapper.unsubscribe();
+            }
+            component.setContainerDataSource(null);
         }
 
-        checkMissingValue();
+        this.optionsDatasource = datasource;
 
-        assignAutoDebugId();
+        if (datasource != null) {
+            component.setContainerDataSource(new LookupOptionsDsWrapper(datasource, true));
+
+            tryToAssignCaptionProperty();
+
+            if (nullOption != null)
+                initNullEntity();
+
+            checkMissingValue();
+
+            assignAutoDebugId();
+        }
     }
 
     protected void tryToAssignCaptionProperty() {

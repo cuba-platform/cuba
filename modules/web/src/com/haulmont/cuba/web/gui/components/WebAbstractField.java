@@ -37,7 +37,10 @@ import com.vaadin.ui.AbstractField;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
@@ -55,7 +58,10 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
 
     protected Object prevValue;
 
+    protected ItemWrapper itemWrapper;
+
     protected Datasource.ItemChangeListener<Entity> securityItemChangeListener;
+    protected WeakItemChangeListener securityWeakItemChangeListener;
 
     @Override
     public Datasource getDatasource() {
@@ -74,34 +80,59 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
 
     @Override
     public void setDatasource(Datasource datasource, String property) {
-        //noinspection unchecked
-        this.datasource = datasource;
+        if ((datasource == null && property != null) || (datasource != null && property == null))
+            throw new IllegalArgumentException("Datasource and property should be either null or not null at the same time");
 
-        final MetaClass metaClass = datasource.getMetaClass();
+        if (datasource == this.datasource && ((metaPropertyPath != null && metaPropertyPath.toString().equals(property)) ||
+                (metaPropertyPath == null && property == null)))
+            return;
 
-        resolveMetaPropertyPath(metaClass, property);
+        if (this.datasource != null) {
+            metaProperty = null;
+            metaPropertyPath = null;
 
-        metaProperty = metaPropertyPath.getMetaProperty();
+            component.setPropertyDataSource(null);
 
-        initFieldConverter();
+            //noinspection unchecked
+            this.datasource.removeItemChangeListener(securityWeakItemChangeListener);
+            securityWeakItemChangeListener = null;
 
-        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
-        component.setPropertyDataSource(wrapper.getItemProperty(metaPropertyPath));
+            this.datasource = null;
 
-        setRequired(metaProperty.isMandatory());
-        if (StringUtils.isEmpty(getRequiredMessage())) {
-            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
+            if (itemWrapper != null) {
+                itemWrapper.unsubscribe();
+            }
         }
 
-        if (metaProperty.isReadOnly()) {
-            setEditable(false);
-        }
+        if (datasource != null) {
+            //noinspection unchecked
+            this.datasource = datasource;
 
-        handleFilteredAttributes(this, this.datasource, metaPropertyPath);
-        securityItemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
-        //noinspection unchecked
-        this.datasource.addItemChangeListener(new WeakItemChangeListener(datasource, securityItemChangeListener));
+            final MetaClass metaClass = datasource.getMetaClass();
+            resolveMetaPropertyPath(metaClass, property);
+
+            initFieldConverter();
+
+            itemWrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
+            component.setPropertyDataSource(itemWrapper.getItemProperty(metaPropertyPath));
+
+            setRequired(metaProperty.isMandatory());
+            if (StringUtils.isEmpty(getRequiredMessage())) {
+                MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+                setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
+            }
+
+            if (metaProperty.isReadOnly()) {
+                setEditable(false);
+            }
+
+            handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+            securityItemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+
+            securityWeakItemChangeListener = new WeakItemChangeListener(datasource, securityItemChangeListener);
+            //noinspection unchecked
+            this.datasource.addItemChangeListener(securityWeakItemChangeListener);
+        }
     }
 
     protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {

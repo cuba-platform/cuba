@@ -29,7 +29,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaPickerField;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.vaadin.data.Property;
@@ -64,9 +63,11 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
 
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
-    protected Datasource.ItemChangeListener securityItemChangeListener;
     protected Datasource.ItemChangeListener itemChangeListener;
+    protected WeakItemChangeListener weakItemChangeListener;
+
     protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
+    protected WeakItemPropertyChangeListener weakItemPropertyChangeListener;
 
     public WebPickerField() {
         component = new Picker(this);
@@ -164,66 +165,102 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         return action;
     }
 
-    public void checkDatasourceProperty(Datasource datasource, String property){
+    public void checkDatasourceProperty(Datasource datasource, String property) {
         Preconditions.checkNotNullArgument(datasource);
         Preconditions.checkNotNullArgument(property);
 
         MetaPropertyPath metaPropertyPath = getResolvedMetaPropertyPath(datasource.getMetaClass(), property);
         if (!metaPropertyPath.getRange().isClass()) {
-            throw new DevelopmentException(String.format("property '%s.%s' should have Entity type",  datasource.getMetaClass().getName(), property));
+            throw new DevelopmentException(String.format("property '%s.%s' should have Entity type", datasource.getMetaClass().getName(), property));
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setDatasource(Datasource datasource, String property) {
-        checkDatasourceProperty(datasource, property);
+        if ((datasource == null && property != null) || (datasource != null && property == null))
+            throw new IllegalArgumentException("Datasource and property should be either null or not null at the same time");
 
-        this.datasource = datasource;
+        if (datasource == this.datasource && ((metaPropertyPath != null && metaPropertyPath.toString().equals(property)) ||
+                (metaPropertyPath == null && property == null)))
+            return;
 
-        metaPropertyPath = getResolvedMetaPropertyPath(datasource.getMetaClass(), property);
-        metaProperty = metaPropertyPath.getMetaProperty();
+        if (this.datasource != null) {
+            metaProperty = null;
+            metaPropertyPath = null;
 
-        ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
-        Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
+            component.setPropertyDataSource(null);
 
-        component.setPropertyDataSource(itemProperty);
+            this.datasource.removeItemChangeListener(securityWeakItemChangeListener);
+            securityWeakItemChangeListener = null;
 
-        itemChangeListener = e -> {
-            Object newValue = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
-            setValue(newValue);
-        };
-        //noinspection unchecked
-        datasource.addItemChangeListener(new WeakItemChangeListener(datasource, itemChangeListener));
+            this.datasource.removeItemChangeListener(weakItemChangeListener);
+            weakItemChangeListener = null;
 
-        itemPropertyChangeListener = e -> {
-            if (e.getProperty().equals(metaPropertyPath.toString())) {
-                setValue(e.getValue());
+            this.datasource.removeItemPropertyChangeListener(weakItemPropertyChangeListener);
+            weakItemPropertyChangeListener = null;
+
+            this.datasource = null;
+
+            if (itemWrapper != null) {
+                itemWrapper.unsubscribe();
             }
-        };
-        //noinspection unchecked
-        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
+        }
 
-        if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
-            if (property.equals(metaPropertyPath.toString())) {
-                Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
+        if (datasource != null) {
+            checkDatasourceProperty(datasource, property);
+
+            // noinspection unchecked
+            this.datasource = datasource;
+
+            metaPropertyPath = getResolvedMetaPropertyPath(datasource.getMetaClass(), property);
+            metaProperty = metaPropertyPath.getMetaProperty();
+
+            itemWrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
+            Property itemProperty = itemWrapper.getItemProperty(metaPropertyPath);
+
+            component.setPropertyDataSource(itemProperty);
+
+            itemChangeListener = e -> {
+                Object newValue = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
                 setValue(newValue);
+            };
+            weakItemChangeListener = new WeakItemChangeListener(datasource, itemChangeListener);
+            //noinspection unchecked
+            datasource.addItemChangeListener(weakItemChangeListener);
+
+            itemPropertyChangeListener = e -> {
+                if (e.getProperty().equals(metaPropertyPath.toString())) {
+                    setValue(e.getValue());
+                }
+            };
+            weakItemPropertyChangeListener = new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener);
+            //noinspection unchecked
+            datasource.addItemPropertyChangeListener(weakItemPropertyChangeListener);
+
+            if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
+                if (property.equals(metaPropertyPath.toString())) {
+                    Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
+                    setValue(newValue);
+                }
             }
-        }
 
-        setRequired(metaProperty.isMandatory());
-        if (StringUtils.isEmpty(getRequiredMessage())) {
-            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            setRequiredMessage(messageTools.getDefaultRequiredMessage(datasource.getMetaClass(), property));
-        }
+            setRequired(metaProperty.isMandatory());
+            if (StringUtils.isEmpty(getRequiredMessage())) {
+                MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+                setRequiredMessage(messageTools.getDefaultRequiredMessage(datasource.getMetaClass(), property));
+            }
 
-        if (metaProperty.isReadOnly()) {
-            setEditable(false);
-        }
+            if (metaProperty.isReadOnly()) {
+                setEditable(false);
+            }
 
-        handleFilteredAttributes(this, this.datasource, metaPropertyPath);
-        securityItemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
-        //noinspection unchecked
-        this.datasource.addItemChangeListener(new WeakItemChangeListener(datasource, securityItemChangeListener));
+            handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+            securityItemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+            securityWeakItemChangeListener = new WeakItemChangeListener(datasource, securityItemChangeListener);
+            //noinspection unchecked
+            this.datasource.addItemChangeListener(securityWeakItemChangeListener);
+        }
     }
 
     @Override

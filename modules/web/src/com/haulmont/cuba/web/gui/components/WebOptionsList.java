@@ -27,6 +27,11 @@ public class WebOptionsList extends WebAbstractOptionsBase<CubaListSelect> imple
         component = new CubaListSelect() {
             @Override
             public void setPropertyDataSource(Property newDataSource) {
+                if (newDataSource == null) {
+                    super.setPropertyDataSource(null);
+                    return;
+                }
+
                 super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
 
                     @Override

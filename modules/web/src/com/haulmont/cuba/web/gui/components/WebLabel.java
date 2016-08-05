@@ -27,9 +27,9 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
@@ -55,10 +55,18 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
 
     protected Formatter formatter;
 
+    protected String oldValue = "";
+
+    protected ItemWrapper itemWrapper;
+
     public WebLabel() {
         component = new CubaLabel();
-
         component.setSizeUndefined();
+        component.addValueChangeListener(event -> {
+            String newValue = component.getValue();
+            fireValueChanged(oldValue, newValue);
+            oldValue = newValue;
+        });
     }
 
     @Override
@@ -78,50 +86,75 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
 
     @Override
     public void setDatasource(Datasource datasource, String property) {
-        this.datasource = datasource;
-        resolveMetaPropertyPath(datasource.getMetaClass(), property);
+        if ((datasource == null && property != null) || (datasource != null && property == null))
+            throw new IllegalArgumentException("Datasource and property should be either null or not null at the same time");
 
-        switch (metaProperty.getType()) {
-            case ASSOCIATION:
-                component.setConverter(new StringToEntityConverter() {
-                    @Override
-                    public Formatter getFormatter() {
-                        return WebLabel.this.formatter;
-                    }
-                });
-                break;
+        if (datasource == this.datasource && metaPropertyPath != null && metaPropertyPath.toString().equals(property))
+            return;
 
-            case DATATYPE:
-                component.setConverter(new StringToDatatypeConverter(metaProperty.getRange().asDatatype()) {
-                    @Override
-                    public Formatter getFormatter() {
-                        return WebLabel.this.formatter;
-                    }
-                });
-                break;
+        if (this.datasource != null)
+            unsubscribeDatasource();
 
-            case ENUM:
-                //noinspection unchecked
-                component.setConverter(new StringToEnumConverter((Class<Enum>) metaProperty.getJavaType()) {
-                    @Override
-                    public Formatter getFormatter() {
-                        return WebLabel.this.formatter;
-                    }
-                });
-                break;
+        if (datasource != null) {
+            // noinspection unchecked
+            this.datasource = datasource;
+            this.metaPropertyPath = resolveMetaPropertyPath(datasource.getMetaClass(), property);
+            this.metaProperty = metaPropertyPath.getMetaProperty();
 
-            default:
-                component.setConverter(new StringToDatatypeConverter(Datatypes.getNN(String.class)) {
-                    @Override
-                    public Formatter getFormatter() {
-                        return WebLabel.this.formatter;
-                    }
-                });
-                break;
+            switch (metaProperty.getType()) {
+                case ASSOCIATION:
+                    component.setConverter(new StringToEntityConverter() {
+                        @Override
+                        public Formatter getFormatter() {
+                            return WebLabel.this.formatter;
+                        }
+                    });
+                    break;
+
+                case DATATYPE:
+                    component.setConverter(new StringToDatatypeConverter(metaProperty.getRange().asDatatype()) {
+                        @Override
+                        public Formatter getFormatter() {
+                            return WebLabel.this.formatter;
+                        }
+                    });
+                    break;
+
+                case ENUM:
+                    //noinspection unchecked
+                    component.setConverter(new StringToEnumConverter((Class<Enum>) metaProperty.getJavaType()) {
+                        @Override
+                        public Formatter getFormatter() {
+                            return WebLabel.this.formatter;
+                        }
+                    });
+                    break;
+
+                default:
+                    component.setConverter(new StringToDatatypeConverter(Datatypes.getNN(String.class)) {
+                        @Override
+                        public Formatter getFormatter() {
+                            return WebLabel.this.formatter;
+                        }
+                    });
+                    break;
+            }
+
+            itemWrapper = createDatasourceWrapper(datasource, Collections.singleton(this.metaPropertyPath));
+            component.setPropertyDataSource(itemWrapper.getItemProperty(this.metaPropertyPath));
         }
+    }
 
-        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
-        component.setPropertyDataSource(wrapper.getItemProperty(metaPropertyPath));
+    protected void unsubscribeDatasource() {
+        datasource = null;
+        metaProperty = null;
+        metaPropertyPath = null;
+        component.setPropertyDataSource(null);
+
+        if (itemWrapper != null) {
+            itemWrapper.unsubscribe();
+            itemWrapper = null;
+        }
     }
 
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
@@ -135,7 +168,6 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
 
     @Override
     public void setValue(Object value) {
-        final Object prevValue = getValue();
         if (metaProperty != null) {
             if (datasource.getItem() != null) {
                 InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
@@ -144,7 +176,6 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
             String text = formatValue(value);
             component.setValue(text);
         }
-        fireValueChanged(prevValue, value);
     }
 
     @Override
@@ -224,11 +255,12 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
         component.setContentMode(htmlEnabled ? ContentMode.HTML : ContentMode.TEXT);
     }
 
-    protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {
-        metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
+    protected MetaPropertyPath resolveMetaPropertyPath(MetaClass metaClass, String property) {
+        MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
                 .resolveMetaPropertyPath(metaClass, property);
         Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
-        this.metaProperty = metaPropertyPath.getMetaProperty();
+
+        return metaPropertyPath;
     }
 
     @Override

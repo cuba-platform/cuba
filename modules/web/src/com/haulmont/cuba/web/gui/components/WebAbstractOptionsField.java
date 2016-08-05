@@ -31,7 +31,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.EnumerationContainer;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.ObjectContainer;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect;
@@ -59,53 +58,78 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
      */
     protected boolean optionsInitialization = false;
 
-    protected Datasource.ItemChangeListener securitytemChangeListener;
-
     @Override
     public void setDatasource(Datasource datasource, String property) {
-        this.datasource = datasource;
+        if ((datasource == null && property != null) || (datasource != null && property == null))
+            throw new IllegalArgumentException("Datasource and property should be either null or not null at the same time");
 
-        MetaClass metaClass = datasource.getMetaClass();
-        resolveMetaPropertyPath(metaClass, property);
+        if (datasource == this.datasource && ((metaPropertyPath != null && metaPropertyPath.toString().equals(property)) ||
+                (metaPropertyPath == null && property == null)))
+            return;
 
-        if (metaProperty.getRange().getCardinality() != null) {
-            setMultiSelect(metaProperty.getRange().getCardinality().isMany());
-        }
+        if (this.datasource != null) {
+            metaProperty = null;
+            metaPropertyPath = null;
 
-        ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
-        Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
+            component.setPropertyDataSource(null);
 
-        setRequired(metaProperty.isMandatory());
-        if (StringUtils.isEmpty(getRequiredMessage())) {
-            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
-        }
+            //noinspection unchecked
+            this.datasource.removeItemChangeListener(securityWeakItemChangeListener);
+            securityWeakItemChangeListener = null;
 
-        if (metaProperty.getRange().isEnum()) {
-            Enumeration enumeration = metaProperty.getRange().asEnumeration();
-            List options = Arrays.asList(enumeration.getJavaClass().getEnumConstants());
-            setComponentContainerDs(createEnumContainer(options));
+            this.datasource = null;
 
-            setCaptionMode(CaptionMode.ITEM);
-        }
-
-        if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
-            CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-            if (categoryAttribute != null && categoryAttribute.getDataType() == PropertyType.ENUMERATION) {
-                setOptionsList(categoryAttribute.getEnumerationOptions());
+            if (itemWrapper != null) {
+                itemWrapper.unsubscribe();
             }
         }
 
-        component.setPropertyDataSource(itemProperty);
+        if (datasource != null) {
+            // noinspection unchecked
+            this.datasource = datasource;
+            MetaClass metaClass = datasource.getMetaClass();
+            resolveMetaPropertyPath(metaClass, property);
 
-        if (metaProperty.isReadOnly()) {
-            setEditable(false);
+            if (metaProperty.getRange().getCardinality() != null) {
+                setMultiSelect(metaProperty.getRange().getCardinality().isMany());
+            }
+
+            itemWrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
+            Property itemProperty = itemWrapper.getItemProperty(metaPropertyPath);
+
+            setRequired(metaProperty.isMandatory());
+            if (StringUtils.isEmpty(getRequiredMessage())) {
+                MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+                setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
+            }
+
+            if (metaProperty.getRange().isEnum()) {
+                Enumeration enumeration = metaProperty.getRange().asEnumeration();
+                List options = Arrays.asList(enumeration.getJavaClass().getEnumConstants());
+                setComponentContainerDs(createEnumContainer(options));
+
+                setCaptionMode(CaptionMode.ITEM);
+            }
+
+            if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+                CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
+                if (categoryAttribute != null && categoryAttribute.getDataType() == PropertyType.ENUMERATION) {
+                    setOptionsList(categoryAttribute.getEnumerationOptions());
+                }
+            }
+
+            component.setPropertyDataSource(itemProperty);
+
+            if (metaProperty.isReadOnly()) {
+                setEditable(false);
+            }
+
+            handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+            securityItemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+            securityWeakItemChangeListener = new WeakItemChangeListener(datasource, securityItemChangeListener);
+            //noinspection unchecked
+            this.datasource.addItemChangeListener(securityWeakItemChangeListener);
         }
-
-        handleFilteredAttributes(this, this.datasource, metaPropertyPath);
-        securitytemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
-        //noinspection unchecked
-        this.datasource.addItemChangeListener(new WeakItemChangeListener(datasource, securitytemChangeListener));
     }
 
     protected EnumerationContainer createEnumContainer(List options) {
@@ -282,11 +306,26 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
 
     @Override
     public void setOptionsDatasource(CollectionDatasource datasource) {
-        this.optionsDatasource = datasource;
-        setComponentContainerDs(new CollectionDsWrapper(datasource, true));
+        if (datasource == this.optionsDatasource)
+            return;
 
-        if (captionProperty != null) {
-            component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));
+        if (this.optionsDatasource != null) {
+            com.vaadin.data.Container containerDataSource = component.getContainerDataSource();
+            if (containerDataSource instanceof CollectionDsWrapper) {
+                CollectionDsWrapper wrapper = (CollectionDsWrapper) containerDataSource;
+                wrapper.unsubscribe();
+            }
+            setComponentContainerDs(null);
+        }
+
+        this.optionsDatasource = datasource;
+
+        if (datasource != null) {
+            setComponentContainerDs(new CollectionDsWrapper(datasource, true));
+
+            if (captionProperty != null) {
+                component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));
+            }
         }
     }
 
