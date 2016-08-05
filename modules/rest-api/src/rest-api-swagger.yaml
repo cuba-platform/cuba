@@ -432,7 +432,9 @@ paths:
             "$ref": "#/definitions/entity"
       responses:
         201:
-          description: Entity created
+          description: Entity created. The created entity is returned in the response body.
+          schema:
+            $ref: '#/definitions/entityFull'
           headers:
             location:
               type: string
@@ -483,7 +485,9 @@ paths:
         - $ref: '#/parameters/entityJsonParam'
       responses:
         200:
-          description: OK
+          description: OK. The updated entity is returned in the response body.
+          schema:
+            $ref: '#/definitions/entityFull'
         403:
           description: Forbiddden. The user doesn't have permissions to update the entity
           schema:
