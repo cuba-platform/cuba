@@ -19,7 +19,8 @@ package com.haulmont.cuba.gui.app.core.locking;
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.global.LockInfo;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -59,6 +60,16 @@ public class LockBrowser extends AbstractWindow {
         if (lockInfo != null) {
             service.unlock(lockInfo.getEntityName(), lockInfo.getEntityId());
             refresh();
+            if (lockInfo.getEntityId() != null) {
+                showNotification(formatMessage("hasBeenUnlockedWithId",
+                        lockInfo.getEntityName(),
+                        lockInfo.getEntityId()),
+                        NotificationType.HUMANIZED);
+            } else {
+                showNotification(formatMessage("hasBeenUnlockedWithoutId",
+                        lockInfo.getEntityName()),
+                        NotificationType.HUMANIZED);
+            }
         }
     }
 
