@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.test.ui;
+package com.haulmont.cuba.web.test.ds.api.consistency;
 
-import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.components.LabelTest;
+import com.haulmont.cuba.gui.components.ds.api.consistency.LabelDsTest;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
-import com.vaadin.data.util.converter.DefaultConverterFactory;
 import com.vaadin.server.VaadinSession;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
-import org.junit.Ignore;
 
-import java.util.Locale;
-
-@Ignore
-public class WebLabelTest extends LabelTest {
+public class WebLabelDsTest extends LabelDsTest {
 
     @Mocked
-    protected VaadinSession vaadinSession;
+    protected  VaadinSession vaadinSession;
+
+    public WebLabelDsTest() {
+        factory = new WebComponentsFactory();
+    }
 
     @Override
     protected void initExpectations() {
@@ -40,16 +38,9 @@ public class WebLabelTest extends LabelTest {
 
         new NonStrictExpectations() {
             {
-                vaadinSession.getLocale(); result = Locale.ENGLISH;
                 VaadinSession.getCurrent(); result = vaadinSession;
-
-                vaadinSession.getConverterFactory(); result = new DefaultConverterFactory();
-
-                globalConfig.getAvailableLocales(); result = ImmutableMap.of("en", Locale.ENGLISH);
                 AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web";
             }
         };
-
-        factory = new WebComponentsFactory();
     }
 }
