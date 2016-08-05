@@ -42,7 +42,7 @@ public class DesktopFileMultiUploadField extends DesktopAbstractUploadComponent<
 
     protected FileUploadingAPI fileUploading;
 
-    protected Map<UUID, String> filesMap = new HashMap<>();
+    protected Map<UUID, String> filesMap = new LinkedHashMap<>();
     protected String icon;
 
     protected List<FileUploadStartListener> fileUploadStartListeners;         // lazily initialized list
