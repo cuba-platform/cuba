@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
             .setView("user.browse");
     List&lt;User&gt; users = dataManager.loadList(context);
  * </pre>
- *
  */
 public class LoadContext<E extends Entity> implements Serializable {
 
@@ -49,9 +48,11 @@ public class LoadContext<E extends Entity> implements Serializable {
     protected boolean softDeletion = true;
     protected List<Query> prevQueries = new ArrayList<>();
     protected int queryKey;
-    protected Map<String, Object> dbHints = new HashMap<>();
-    protected boolean loadDynamicAttributes;
+
+    protected boolean loadDynamicAttributes = false;
     protected boolean loadPartialEntities = true;
+
+    protected Map<String, Object> dbHints; // lazy initialized map
 
     /**
      * Factory method to create a LoadContext instance.
@@ -207,6 +208,9 @@ public class LoadContext<E extends Entity> implements Serializable {
      * @return custom hints which can be used later during query construction
      */
     public Map<String, Object> getDbHints() {
+        if (dbHints == null) {
+            dbHints = new HashMap<>();
+        }
         return dbHints;
     }
 
@@ -239,8 +243,9 @@ public class LoadContext<E extends Entity> implements Serializable {
      * according to {@link #setView(View)}.
      * <p>The state of {@link View#loadPartialEntities} is ignored when the view is passed to {@link DataManager}.
      */
-    public void setLoadPartialEntities(boolean loadPartialEntities) {
+    public LoadContext<E> setLoadPartialEntities(boolean loadPartialEntities) {
         this.loadPartialEntities = loadPartialEntities;
+        return this;
     }
 
     /**
@@ -260,20 +265,19 @@ public class LoadContext<E extends Entity> implements Serializable {
         ctx.softDeletion = softDeletion;
         ctx.prevQueries.addAll(prevQueries.stream().map(Query::copy).collect(Collectors.toList()));
         ctx.queryKey = queryKey;
-        ctx.dbHints.putAll(dbHints);
+        if (dbHints != null) {
+            ctx.getDbHints().putAll(dbHints);
+        }
         ctx.loadDynamicAttributes = loadDynamicAttributes;
         return ctx;
     }
 
     @Override
     public String toString() {
-        return "LoadContext{" +
-                "metaClass='" + metaClass + '\'' +
-                ", query=" + query +
-                ", view=" + view +
-                ", id=" + id +
-                ", softDeletion=" + softDeletion +
-                '}';
+        return String.format(
+                "LoadContext{metaClass=%s, query=%s, view=%s, id=%s, softDeletion=%s, partialEntities=%s, dynamicAttributes=%s}",
+                metaClass, query, view, id, softDeletion, loadPartialEntities, loadDynamicAttributes
+        );
     }
 
     /**
