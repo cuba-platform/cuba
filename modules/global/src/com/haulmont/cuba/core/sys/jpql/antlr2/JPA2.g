@@ -23,6 +23,7 @@ tokens {
     T_ORDER_BY;
     T_ORDER_BY_FIELD;
     T_AGGREGATE_EXPR;
+    T_ENUM_MACROS;
     HAVING = 'HAVING';
     ASC = 'ASC';
     DESC = 'DESC';
@@ -69,6 +70,7 @@ import com.haulmont.cuba.core.sys.jpql.tree.OrderByFieldNode;
 import com.haulmont.cuba.core.sys.jpql.tree.AggregateExpressionNode;
 import com.haulmont.cuba.core.sys.jpql.tree.SelectedItemsNode;
 import com.haulmont.cuba.core.sys.jpql.tree.UpdateSetNode;
+import com.haulmont.cuba.core.sys.jpql.tree.EnumConditionNode;
 }
 
 @lexer::header {
@@ -462,7 +464,7 @@ nullif_expression
 extension_functions
     : 'CAST(' function_arg WORD ('('INT_NUMERAL (',' INT_NUMERAL)*  ')')* ')'
     | 'EXTRACT(' date_part 'FROM' function_arg ')'
-    | '@ENUM' '(' enum_value_literal ')';
+    | '@ENUM' '(' enum_value_literal ')' -> ^(T_ENUM_MACROS<EnumConditionNode>[$enum_value_literal.text]);
 
 fragment date_part
     : 'EPOCH' | 'YEAR' | 'QUARTER' | 'MONTH' | 'WEEK' |'DAY' | 'HOUR' |'MINUTE' | 'SECOND';
