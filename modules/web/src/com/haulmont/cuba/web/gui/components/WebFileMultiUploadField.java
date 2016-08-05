@@ -52,7 +52,7 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<UploadCo
 
     private final Logger log = LoggerFactory.getLogger(WebFileMultiUploadField.class);
 
-    protected final Map<UUID, String> files = new HashMap<>();
+    protected final Map<UUID, String> files = new LinkedHashMap<>();
     protected FileUploadingAPI fileUploading;
     protected UUID tempFileId;
     protected String accept;
