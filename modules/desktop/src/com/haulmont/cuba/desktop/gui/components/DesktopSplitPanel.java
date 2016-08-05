@@ -126,7 +126,7 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
 
     @Override
     public float getSplitPosition() {
-        return position;
+        return impl.getUI().getDividerLocation(impl);
     }
 
     @Override
