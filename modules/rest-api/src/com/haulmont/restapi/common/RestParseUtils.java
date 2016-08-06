@@ -16,6 +16,8 @@
 
 package com.haulmont.restapi.common;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
@@ -68,7 +70,16 @@ public class RestParseUtils {
         if (Collection.class.isAssignableFrom(clazz)) {
             return entitySerializationAPI.<Entity>entitiesCollectionFromJson(value, null);
         }
-        throw new IllegalArgumentException("Parameters of type " + clazz.getName() + " are not supported");
+        return deserializePOJO(value, clazz);
     }
 
+    public Object deserializePOJO(String json, Class clazz) {
+        Gson gson = new Gson();
+        return gson.fromJson(json, clazz);
+    }
+
+    public String serializePOJO(Object pojoInstance, Class clazz) {
+        Gson gson = new Gson();
+        return gson.toJson(pojoInstance, clazz);
+    }
 }

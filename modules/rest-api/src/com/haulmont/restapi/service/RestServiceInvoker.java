@@ -112,7 +112,7 @@ public class RestServiceInvoker {
             if (datatype != null) {
                 return datatype.format(methodResult);
             } else {
-                return methodResult.toString();
+                return restParseUtils.serializePOJO(methodResult, methodReturnType);
             }
         }
     }
