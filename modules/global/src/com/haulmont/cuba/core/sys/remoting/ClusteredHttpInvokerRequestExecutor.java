@@ -17,11 +17,13 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
+import com.google.common.io.CountingInputStream;
 import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientConfiguration;
 import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
 import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationResult;
+import org.springframework.util.StopWatch;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -55,14 +57,25 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
             String url = urlList.get(i);
             HttpURLConnection con = openConnection(url);
             try {
+                StopWatch sw = new StopWatch();
                 prepareConnection(con, baos.size());
                 writeRequestBody(config, con, baos);
+                sw.start("waiting time");
                 validateResponse(config, con);
-                InputStream responseBody = readResponseBody(config, con);
+                CountingInputStream responseInputStream = new CountingInputStream(readResponseBody(config, con));
+                sw.stop();
                 if (i > 0) {
                     support.updateUrlPriority(url);
                 }
-                result = readRemoteInvocationResult(responseBody, config.getCodebaseUrl());
+                sw.start("reading time");
+                try (ObjectInputStream ois = createObjectInputStream(decorateInputStream(responseInputStream), config.getCodebaseUrl())) {
+                    result = doReadRemoteInvocationResult(ois);
+                }
+                sw.stop();
+                if (logger.isDebugEnabled()) {
+                    logger.debug(String.format("Receiving HTTP invoker response for service at [%s], with size %s, %s", config.getServiceUrl(),
+                            responseInputStream.getCount(), printStopWatch(sw)));
+                }
                 break;
             } catch (IOException e) {
                 logger.info(String.format("Invocation of %s failed: %s", url, e));
@@ -94,5 +107,18 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
     @Override
     protected RemoteInvocationResult doReadRemoteInvocationResult(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         return (RemoteInvocationResult) SerializationSupport.deserialize(ois);
+    }
+
+    protected String printStopWatch(StopWatch sw) {
+        StringBuilder sb = new StringBuilder();
+        StopWatch.TaskInfo[] tasks = sw.getTaskInfo();
+        for (int i = 0; i < tasks.length; i++) {
+            StopWatch.TaskInfo task = tasks[i];
+            sb.append(task.getTaskName()).append(" ").append(task.getTimeMillis());
+            if (i < tasks.length - 1) {
+                sb.append(", ");
+            }
+        }
+        return sb.toString();
     }
 }
