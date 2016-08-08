@@ -19,10 +19,9 @@ package com.haulmont.cuba.core.sys.jpql;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.ExtendedEntities;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,41 +29,41 @@ import java.util.stream.Collectors;
 
 @NotThreadSafe
 public class DomainModel {
-    protected Map<String, Entity> entities = new HashMap<>();
+    protected Map<String, JpqlEntityModel> entities = new HashMap<>();
     protected ExtendedEntities extendedEntities;
 
-    public DomainModel(ExtendedEntities extendedEntities, Entity... initialEntities) {
+    public DomainModel(ExtendedEntities extendedEntities, JpqlEntityModel... initialEntities) {
         this(initialEntities);
         this.extendedEntities = extendedEntities;
     }
 
-    public DomainModel(Entity... initialEntities) {
-        for (Entity initialEntity : initialEntities) {
+    public DomainModel(JpqlEntityModel... initialEntities) {
+        for (JpqlEntityModel initialEntity : initialEntities) {
             add(initialEntity);
         }
     }
 
-    public void add(Entity entity) {
+    public void add(JpqlEntityModel entity) {
         if (entity == null)
             throw new NullPointerException("No entity passed");
 
         entities.put(entity.getName(), entity);
     }
 
-    public List<Entity> findEntitiesStartingWith(String lastWord) {
-        List<Entity> result = entities.values().stream()
+    public List<JpqlEntityModel> findEntitiesStartingWith(String lastWord) {
+        List<JpqlEntityModel> result = entities.values().stream()
                 .filter(entity -> entity.getName().startsWith(lastWord))
                 .collect(Collectors.toList());
         return result;
     }
 
-    public Entity getEntityByName(String requiredEntityName) throws UnknownEntityNameException {
+    public JpqlEntityModel getEntityByName(String requiredEntityName) throws UnknownEntityNameException {
         if (extendedEntities != null) {
             MetaClass effectiveMetaClass = extendedEntities.getEffectiveMetaClass(requiredEntityName);
             requiredEntityName = effectiveMetaClass.getName();
         }
 
-        Entity entity = entities.get(requiredEntityName);
+        JpqlEntityModel entity = entities.get(requiredEntityName);
         if (entity == null) {
             throw new UnknownEntityNameException(requiredEntityName);
         } else {

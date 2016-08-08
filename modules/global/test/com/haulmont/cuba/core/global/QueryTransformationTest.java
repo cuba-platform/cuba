@@ -18,7 +18,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import org.junit.Test;
@@ -48,9 +48,9 @@ public class QueryTransformationTest {
         builder.addReferenceAttribute("parent", "sec$GroupHierarchy");
         builder.addReferenceAttribute("other", "sec$GroupHierarchy");
         builder.addCollectionReferenceAttribute("constraints", "sec$Constraint");
-        Entity groupHierarchy = builder.produce();
+        JpqlEntityModel groupHierarchy = builder.produce();
 
-        Entity constraintEntity = builder.produceImmediately("sec$Constraint");
+        JpqlEntityModel constraintEntity = builder.produceImmediately("sec$Constraint");
         return new DomainModel(groupHierarchy, constraintEntity);
     }
 }

@@ -19,9 +19,9 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
-import com.haulmont.cuba.core.sys.jpql.model.EntityImpl;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModelImpl;
 import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import org.antlr.runtime.RecognitionException;
 import org.junit.Before;
@@ -33,11 +33,6 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-/**
- * Author: Alexander Chevelev
- * Date: 26.03.2011
- * Time: 1:23:25
- */
 public class QueryTransformerAstBasedTest {
 
     @Before
@@ -47,7 +42,7 @@ public class QueryTransformerAstBasedTest {
     @Test
     public void getResult_noChangesMade() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        EntityImpl playerEntity = builder.produceImmediately("Player");
+        JpqlEntityModelImpl playerEntity = builder.produceImmediately("Player");
         DomainModel model = new DomainModel(playerEntity);
 
         assertTransformsToSame(model, "SELECT p FROM Player p");
@@ -58,12 +53,12 @@ public class QueryTransformerAstBasedTest {
         EntityBuilder builder = new EntityBuilder();
         builder.startNewEntity("Team");
         builder.addStringAttribute("name");
-        Entity teamEntity = builder.produce();
+        JpqlEntityModel teamEntity = builder.produce();
 
         builder.startNewEntity("Player");
         builder.addStringAttribute("nickname");
         builder.addReferenceAttribute("team", "Team");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
         DomainModel model = new DomainModel(playerEntity, teamEntity);
 
         assertTransformsToSame(model, "SELECT p.team.name, p.nickname FROM Player p");
@@ -72,8 +67,8 @@ public class QueryTransformerAstBasedTest {
     @Test
     public void getResult_noChangesMade_withMultiEntitySelect() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team");
-        Entity playerEntity = builder.produceImmediately("Player");
+        JpqlEntityModel teamEntity = builder.produceImmediately("Team");
+        JpqlEntityModel playerEntity = builder.produceImmediately("Player");
         DomainModel model = new DomainModel(playerEntity, teamEntity);
 
         assertTransformsToSame(model, "SELECT p, t FROM Player p, Team t");
@@ -82,11 +77,11 @@ public class QueryTransformerAstBasedTest {
     @Test
     public void getResult_noChangesMade_withAggregateExpression() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name");
+        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name");
         builder.startNewEntity("Player");
         builder.addSingleValueAttribute(Integer.class, "age");
         builder.addReferenceAttribute("team", "Team");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
         DomainModel model = new DomainModel(playerEntity, teamEntity);
 
         assertTransformsToSame(model, "SELECT count(p) FROM Player p");
@@ -101,11 +96,11 @@ public class QueryTransformerAstBasedTest {
     @Test
     public void getResult_noChangesMade_withMacros() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name");
+        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name");
         builder.startNewEntity("Player");
         builder.addSingleValueAttribute(Date.class, "birthDate");
         builder.addReferenceAttribute("team", "Team");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
         DomainModel model = new DomainModel(playerEntity, teamEntity);
 
         QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model, "SELECT p FROM Player p where @between(p.birthDate, now-2, now+2, month) ");
@@ -133,12 +128,12 @@ public class QueryTransformerAstBasedTest {
     @Test
     public void getResult_noChangesMade_withWhere() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name");
+        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name");
 
         builder.startNewEntity("Player");
         builder.addReferenceAttribute("team", "Team");
         builder.addStringAttribute("name");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
         DomainModel model = new DomainModel(playerEntity, teamEntity);
 
         assertTransformsToSame(model, "SELECT p FROM Player p where p.name = 'de Souza'");
@@ -151,30 +146,30 @@ public class QueryTransformerAstBasedTest {
     @Test
     public void getResult_noChangesMade_withJoin() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity personEntity = builder.produceImmediately("Person", "personName");
+        JpqlEntityModel personEntity = builder.produceImmediately("Person", "personName");
 
         builder.startNewEntity("Team");
         builder.addStringAttribute("name");
         builder.addStringAttribute("owner");
         builder.addReferenceAttribute("manager", "Person");
-        Entity teamEntity = builder.produce();
+        JpqlEntityModel teamEntity = builder.produce();
 
         builder.startNewEntity("Player");
         builder.addStringAttribute("name");
         builder.addStringAttribute("nickname");
         builder.addReferenceAttribute("team", "Team");
         builder.addReferenceAttribute("agent", "Person");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
 
         builder.startNewEntity("League");
         builder.addStringAttribute("name");
         builder.addCollectionReferenceAttribute("teams", "Team");
-        Entity leagueEntity = builder.produce();
+        JpqlEntityModel leagueEntity = builder.produce();
 
         builder.startNewEntity("Country");
         builder.addStringAttribute("flag");
         builder.addReferenceAttribute("league", "League");
-        Entity countryEntity = builder.produce();
+        JpqlEntityModel countryEntity = builder.produce();
 
         DomainModel model = new DomainModel(teamEntity, playerEntity, leagueEntity, personEntity, countryEntity);
 
@@ -190,20 +185,20 @@ public class QueryTransformerAstBasedTest {
     @Test
     public void getResult_noChangesMade_withLeft_InnerJoinFetch() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity personEntity = builder.produceImmediately("Person", "personName");
+        JpqlEntityModel personEntity = builder.produceImmediately("Person", "personName");
 
         builder.startNewEntity("Team");
         builder.addStringAttribute("name");
         builder.addStringAttribute("owner");
         builder.addReferenceAttribute("manager", "Person");
-        Entity teamEntity = builder.produce();
+        JpqlEntityModel teamEntity = builder.produce();
 
         builder.startNewEntity("Player");
         builder.addStringAttribute("name");
         builder.addStringAttribute("nickname");
         builder.addReferenceAttribute("team", "Team");
         builder.addReferenceAttribute("agent", "Person");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
 
         DomainModel model = new DomainModel(teamEntity, playerEntity, personEntity);
 
@@ -219,30 +214,30 @@ public class QueryTransformerAstBasedTest {
     @Test
     public void getResult_noChangesMade_withDistinct() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity personEntity = builder.produceImmediately("Person", "personName");
+        JpqlEntityModel personEntity = builder.produceImmediately("Person", "personName");
 
         builder.startNewEntity("Team");
         builder.addStringAttribute("name");
         builder.addStringAttribute("owner");
         builder.addReferenceAttribute("manager", "Person");
-        Entity teamEntity = builder.produce();
+        JpqlEntityModel teamEntity = builder.produce();
 
         builder.startNewEntity("Player");
         builder.addStringAttribute("name");
         builder.addStringAttribute("nickname");
         builder.addReferenceAttribute("team", "Team");
         builder.addReferenceAttribute("agent", "Person");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
 
         builder.startNewEntity("League");
         builder.addStringAttribute("name");
         builder.addCollectionReferenceAttribute("teams", "Team");
-        Entity leagueEntity = builder.produce();
+        JpqlEntityModel leagueEntity = builder.produce();
 
         builder.startNewEntity("Country");
         builder.addStringAttribute("flag");
         builder.addReferenceAttribute("league", "League");
-        Entity countryEntity = builder.produce();
+        JpqlEntityModel countryEntity = builder.produce();
 
         DomainModel model = new DomainModel(teamEntity, playerEntity, leagueEntity, personEntity, countryEntity);
 
@@ -253,13 +248,13 @@ public class QueryTransformerAstBasedTest {
 //    @Test
 //    public void getResult_noChangesMade_withSubqueries() throws RecognitionException {
 //        EntityBuilder builder = new EntityBuilder();
-//        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+//        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name", "owner");
 //
 //        builder.startNewEntity("Player");
 //        builder.addStringAttribute("name");
 //        builder.addStringAttribute("nickname");
 //        builder.addReferenceAttribute("team", "Team");
-//        Entity playerEntity = builder.produce();
+//        JpqlEntityModel playerEntity = builder.produce();
 //
 //        DomainModel model = new DomainModel(playerEntity, teamEntity);
 //
@@ -272,13 +267,13 @@ public class QueryTransformerAstBasedTest {
 //    @Test
 //    public void getResult_noChangesMade_severalLevelsOfSubquery() throws RecognitionException {
 //        EntityBuilder builder = new EntityBuilder();
-//        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+//        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name", "owner");
 //
 //        builder.startNewEntity("Player");
 //        builder.addStringAttribute("name");
 //        builder.addStringAttribute("nickname");
 //        builder.addReferenceAttribute("team", "Team");
-//        Entity playerEntity = builder.produce();
+//        JpqlEntityModel playerEntity = builder.produce();
 //
 //        DomainModel model = new DomainModel(playerEntity, teamEntity);
 //
@@ -292,13 +287,13 @@ public class QueryTransformerAstBasedTest {
     @Test
     public void getResult_noChangesMade_subqueries() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name", "owner");
 
         builder.startNewEntity("Player");
         builder.addStringAttribute("name");
         builder.addStringAttribute("nickname");
         builder.addReferenceAttribute("team", "Team");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
 
         DomainModel model = new DomainModel(playerEntity, teamEntity);
 
@@ -310,7 +305,7 @@ public class QueryTransformerAstBasedTest {
     @Test
     public void getResult_noChangesMade_withParameters() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity playerEntity = builder.produceImmediately("Player", "name", "nickname");
+        JpqlEntityModel playerEntity = builder.produceImmediately("Player", "name", "nickname");
 
         DomainModel model = new DomainModel(playerEntity);
 
@@ -324,17 +319,17 @@ public class QueryTransformerAstBasedTest {
     @Test
     public void getResult_noChangesMade_with_in_collections() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity driver = builder.produceImmediately("Driver", "name", "signal");
+        JpqlEntityModel driver = builder.produceImmediately("Driver", "name", "signal");
 
         builder.startNewEntity("HomeBase");
         builder.addStringAttribute("city");
-        Entity homeBase = builder.produce();
+        JpqlEntityModel homeBase = builder.produce();
 
         builder.startNewEntity("Car");
         builder.addStringAttribute("model");
         builder.addCollectionReferenceAttribute("drivers", "Driver");
         builder.addReferenceAttribute("station", "HomeBase");
-        Entity car = builder.produce();
+        JpqlEntityModel car = builder.produce();
         DomainModel model = new DomainModel(car, driver, homeBase);
 
         assertTransformsToSame(model, "select d.name from Car c, in(c.drivers) d where d.name = ?1");
@@ -345,12 +340,12 @@ public class QueryTransformerAstBasedTest {
     @Test
     public void getResult_noChangesMade_withGroupByHavingOrderBy() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity playerEntity = builder.produceImmediately("Player", "name", "nickname", "level");
+        JpqlEntityModel playerEntity = builder.produceImmediately("Player", "name", "nickname", "level");
 
         builder.startNewEntity("Team");
         builder.addCollectionReferenceAttribute("players", "Player");
         builder.addStringAttribute("title");
-        Entity team = builder.produce();
+        JpqlEntityModel team = builder.produce();
 
         DomainModel model = new DomainModel(playerEntity, team);
         assertTransformsToSame(model, "select p from Team t join t.players p " +
@@ -430,11 +425,11 @@ public class QueryTransformerAstBasedTest {
     @Test
     public void getResult_noChangesMade_parametersWithDot() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name");
+        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name");
         builder.startNewEntity("Player");
         builder.addSingleValueAttribute(Date.class, "birthDate");
         builder.addReferenceAttribute("team", "Team");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
         DomainModel model = new DomainModel(playerEntity, teamEntity);
 
         QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model, "SELECT p FROM Player p where p.birthDate = :d.option");
@@ -445,12 +440,12 @@ public class QueryTransformerAstBasedTest {
     @Test
     public void getResult_noChangesMade_orderBySeveralFields() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name");
+        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name");
         builder.startNewEntity("Player");
         builder.addSingleValueAttribute(Date.class, "birthDate");
         builder.addStringAttribute("surname");
         builder.addReferenceAttribute("team", "Team");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
         DomainModel model = new DomainModel(playerEntity, teamEntity);
 
         QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model, "SELECT p FROM Player p order by p.birthDate, p.surname");
@@ -477,7 +472,7 @@ public class QueryTransformerAstBasedTest {
         builder.startNewEntity("sec$Car");
         builder.addStringAttribute("model");
         builder.addStringAttribute("vin");
-        Entity car = builder.produce();
+        JpqlEntityModel car = builder.produce();
         DomainModel model = new DomainModel(car);
 
         QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
@@ -532,9 +527,9 @@ public class QueryTransformerAstBasedTest {
         builder.startNewEntity("Car");
         builder.addStringAttribute("model");
         builder.addReferenceAttribute("driver", "Person");
-        Entity car = builder.produce();
+        JpqlEntityModel car = builder.produce();
 
-        Entity person = builder.produceImmediately("Person", "fullname");
+        JpqlEntityModel person = builder.produceImmediately("Person", "fullname");
         DomainModel model = new DomainModel(car, person);
 
         QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
@@ -561,14 +556,14 @@ public class QueryTransformerAstBasedTest {
         builder.addReferenceAttribute("token", "fake$EmbeddedToken", "token", true);
 
         builder.addCollectionReferenceAttribute("constraints", "sec$Constraint");
-        Entity groupHierarchy = builder.produce();
+        JpqlEntityModel groupHierarchy = builder.produce();
 
         builder = new EntityBuilder();
         builder.startNewEntity("sec$Constraint");
         builder.addReferenceAttribute("group", "sec$GroupHierarchy");
-        Entity constraintEntity = builder.produce();
+        JpqlEntityModel constraintEntity = builder.produce();
 
-        Entity userEntity = builder.produceImmediately("sec$User", "login");
+        JpqlEntityModel userEntity = builder.produceImmediately("sec$User", "login");
 
         builder = new EntityBuilder();
         builder.startNewEntity("fake$EmbeddedToken");
@@ -576,7 +571,7 @@ public class QueryTransformerAstBasedTest {
         builder.addStringAttribute("code");
         builder.addReferenceAttribute("manager", "sec$User");
         builder.addReferenceAttribute("parentToken", "fake$EmbeddedToken", "parentToken", true);
-        Entity token = builder.produce();
+        JpqlEntityModel token = builder.produce();
 
         return new DomainModel(groupHierarchy, constraintEntity, userEntity, token);
     }
@@ -762,19 +757,19 @@ public class QueryTransformerAstBasedTest {
 //
 //        builder.startNewEntity("HomeBase");
 //        builder.addStringAttribute("name");
-//        Entity homeBase = builder.produce();
+//        JpqlEntityModel homeBase = builder.produce();
 //
 //        builder.startNewEntity("Driver");
 //        builder.addStringAttribute("name");
 //        builder.addStringAttribute("signal");
 //        builder.addReferenceAttribute("home", "HomeBase");
-//        Entity driver = builder.produce();
+//        JpqlEntityModel driver = builder.produce();
 //
 //        builder.startNewEntity("Car");
 //        builder.addStringAttribute("model");
 //        builder.addCollectionReferenceAttribute("drivers", "Driver");
 //        builder.addReferenceAttribute("station", "HomeBase");
-//        Entity car = builder.produce();
+//        JpqlEntityModel car = builder.produce();
 //        DomainModel model = new DomainModel(car, driver, homeBase);
 //
 //        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
@@ -1042,16 +1037,16 @@ public class QueryTransformerAstBasedTest {
         builder.startNewEntity("sec$Car");
         builder.addStringAttribute("model");
         builder.addReferenceAttribute("colour", "sec$Colour");
-        Entity car = builder.produce();
+        JpqlEntityModel car = builder.produce();
 
         builder.startNewEntity("sec$Colour");
         builder.addStringAttribute("name");
         builder.addStringAttribute("createdBy");
         builder.addSingleValueAttribute(Integer.class, "version");
         builder.addReferenceAttribute("manufacturer", "Manufacturer");
-        Entity colour = builder.produce();
+        JpqlEntityModel colour = builder.produce();
 
-        Entity manufacturer = builder.produceImmediately("Manufacturer", "companyName");
+        JpqlEntityModel manufacturer = builder.produceImmediately("Manufacturer", "companyName");
         DomainModel model = new DomainModel(car, colour, manufacturer);
 
         QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,

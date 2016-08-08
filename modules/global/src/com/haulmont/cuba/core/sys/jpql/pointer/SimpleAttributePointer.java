@@ -19,13 +19,13 @@ package com.haulmont.cuba.core.sys.jpql.pointer;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 
 public class SimpleAttributePointer implements Pointer {
-    private Entity entity;
+    private JpqlEntityModel entity;
     private Attribute attribute;
 
-    SimpleAttributePointer(Entity entity, Attribute attribute) {
+    SimpleAttributePointer(JpqlEntityModel entity, Attribute attribute) {
         this.entity = entity;
         this.attribute = attribute;
     }

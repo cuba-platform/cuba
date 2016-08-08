@@ -18,7 +18,7 @@
 package com.haulmont.cuba.core.sys.jpql;
 
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.pointer.EntityPointer;
 import com.haulmont.cuba.core.sys.jpql.pointer.Pointer;
 import com.haulmont.cuba.core.sys.jpql.transform.NodesFinder;
@@ -94,7 +94,7 @@ public class QueryTreeAnalyzer {
         return (PathNode) selectedItemNode.getChild(0);
     }
 
-    public Entity getSelectedEntity(PathNode path) {
+    public JpqlEntityModel getSelectedEntity(PathNode path) {
         Pointer pointer = path.walk(model, getRootQueryVariableContext());
         if (!(pointer instanceof EntityPointer)) {
             throw new IllegalStateException("A path resulting in an entity is assumed to be selected");

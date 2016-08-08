@@ -20,7 +20,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.cuba.core.sys.PerformanceLog;
 import com.haulmont.cuba.core.sys.jpql.*;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.transform.ParameterCounter;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
@@ -161,7 +161,7 @@ public class QueryParserAstBased implements QueryParser {
         QueryVariableContext rootQueryVariableContext = getQueryAnalyzer().getRootQueryVariableContext();
         PathNode pathNode = returnedPathNodes.get(0);
         if (pathNode.getChildren() == null) {
-            Entity entity = rootQueryVariableContext.getEntityByVariableName(pathNode.getEntityVariableName());
+            JpqlEntityModel entity = rootQueryVariableContext.getEntityByVariableName(pathNode.getEntityVariableName());
             if (!entity.getName().equals(getEntityName())) {
                 return new EntityNameAndPath(entity.getName(), pathNode.getEntityVariableName());
             }
@@ -179,7 +179,7 @@ public class QueryParserAstBased implements QueryParser {
         }
 
         String entityName = getEntityName();
-        Entity entity;
+        JpqlEntityModel entity;
         String entityPath;
         try {
             entity = model.getEntityByName(entityName);

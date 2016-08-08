@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.Parser;
 import com.haulmont.cuba.core.sys.jpql.TreeToQuery;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 import com.haulmont.cuba.core.sys.jpql.transform.PathEntityReference;
 import com.haulmont.cuba.core.sys.jpql.transform.QueryTreeTransformer;
@@ -35,11 +35,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-/**
- * Author: Alexander Chevelev
- * Date: 01.04.2011
- * Time: 21:06:39
- */
 public class QueryAnalyzerTest {
     @Test
     public void testTree() throws RecognitionException {
@@ -121,18 +116,18 @@ public class QueryAnalyzerTest {
 
         builder.startNewEntity("HomeBase");
         builder.addStringAttribute("name");
-        Entity homeBase = builder.produce();
+        JpqlEntityModel homeBase = builder.produce();
 
         builder.startNewEntity("Driver");
         builder.addStringAttribute("name");
         builder.addStringAttribute("signal");
-        Entity driver = builder.produce();
+        JpqlEntityModel driver = builder.produce();
 
         builder.startNewEntity("Car");
         builder.addStringAttribute("model");
         builder.addCollectionReferenceAttribute("drivers", "Driver");
         builder.addReferenceAttribute("station", "HomeBase");
-        Entity car = builder.produce();
+        JpqlEntityModel car = builder.produce();
         DomainModel model = new DomainModel(car, driver, homeBase);
 
         JoinVariableNode join = Parser.parseJoinClause("join c.station h").get(0);
@@ -282,13 +277,13 @@ public class QueryAnalyzerTest {
         builder.addStringAttribute("name");
         builder.addStringAttribute("signal");
         builder.addReferenceAttribute("car", "Driver");
-        Entity driver = builder.produce();
+        JpqlEntityModel driver = builder.produce();
 
         builder.startNewEntity("Car");
         builder.addStringAttribute("model");
         builder.addStringAttribute("regNumber");
         builder.addCollectionReferenceAttribute("drivers", "Driver");
-        Entity car = builder.produce();
+        JpqlEntityModel car = builder.produce();
         return new DomainModel(car, driver);
     }
 }

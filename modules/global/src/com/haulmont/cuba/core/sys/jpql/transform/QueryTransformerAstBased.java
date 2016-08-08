@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.global.QueryTransformer;
 import com.haulmont.cuba.core.sys.PerformanceLog;
 import com.haulmont.cuba.core.sys.jpql.*;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.JoinVariableNode;
 import org.antlr.runtime.RecognitionException;
@@ -69,7 +69,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
     private String getReturnedEntityName() {
         if (returnedEntityName == null) {
             String returnedVariableName = getQueryTransformer().getFirstReturnedVariableName();
-            Entity entity = getQueryTransformer().getRootQueryVariableContext().getEntityByVariableName(returnedVariableName);
+            JpqlEntityModel entity = getQueryTransformer().getRootQueryVariableContext().getEntityByVariableName(returnedVariableName);
             if (entity != null) {
                 returnedEntityName = entity.getName();
             }
@@ -82,7 +82,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
             IdentificationVariableNode mainEntityIdentification = getQueryTransformer().getMainEntityIdentification();
             if (mainEntityIdentification != null) {
                 try {
-                    Entity entityByName = model.getEntityByName(mainEntityIdentification.getEntityNameFromQuery());
+                    JpqlEntityModel entityByName = model.getEntityByName(mainEntityIdentification.getEntityNameFromQuery());
                     mainEntityName = entityByName.getName();
                 } catch (UnknownEntityNameException e) {
                     throw new RuntimeException("Could not resolve entity for name " + mainEntityIdentification.getEntityNameFromQuery());

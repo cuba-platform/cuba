@@ -17,8 +17,9 @@
 
 package com.haulmont.cuba.core.sys.jpql;
 
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
-import com.haulmont.cuba.core.sys.jpql.model.VirtualEntity;
+import com.haulmont.bali.util.Preconditions;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
+import com.haulmont.cuba.core.sys.jpql.model.VirtualJpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.tree.QueryNode;
 
 import java.util.ArrayList;
@@ -27,33 +28,31 @@ import java.util.List;
 import java.util.Map;
 
 public class QueryVariableContext {
-    private Map<String, Entity> entityVariableName2entity = new HashMap<>();
+    private Map<String, JpqlEntityModel> entityVariableName2entity = new HashMap<>();
     private QueryNode node;
     private List<QueryVariableContext> children = new ArrayList<>();
-    private Entity entity;
+    private JpqlEntityModel entity;
     private boolean propagateVariablesUpstairs = true;
     private QueryVariableContext parent = null;
 
     public QueryVariableContext(DomainModel model, QueryNode node) {
-        if (model == null)
-            throw new NullPointerException("No model passed");
-        if (node == null)
-            throw new NullPointerException("No node passed");
+        Preconditions.checkNotNullArgument(model);
+        Preconditions.checkNotNullArgument(node);
 
         this.node = node;
-        this.entity = new VirtualEntity();
+        this.entity = new VirtualJpqlEntityModel();
     }
 
     public boolean isPropagateVariablesUpstairs() {
         return propagateVariablesUpstairs;
     }
 
-    public void setPropagateVariablesUp(boolean propateVariablesUpdatairs) {
-        this.propagateVariablesUpstairs = propateVariablesUpdatairs;
+    public void setPropagateVariablesUp(boolean propagateVariablesUpstairs) {
+        this.propagateVariablesUpstairs = propagateVariablesUpstairs;
     }
 
-    public Entity getEntityByVariableName(String entityVariableName) {
-        Entity result = entityVariableName2entity.get(entityVariableName);
+    public JpqlEntityModel getEntityByVariableName(String entityVariableName) {
+        JpqlEntityModel result = entityVariableName2entity.get(entityVariableName);
         if (result != null) {
             return result;
         }
@@ -65,9 +64,9 @@ public class QueryVariableContext {
      * Internal method to register entity variables found in query
      *
      * @param variableName - found entity variable name
-     * @param entity
+     * @param entity entity model
      */
-    public void addEntityVariable(String variableName, Entity entity) {
+    public void addEntityVariable(String variableName, JpqlEntityModel entity) {
         if (variableName == null) {
             throw new NullPointerException("No entity variable name passed");
         }
@@ -75,7 +74,7 @@ public class QueryVariableContext {
             throw new NullPointerException("No entity passed");
         }
         if (entityVariableName2entity.containsKey(variableName))
-            throw new IllegalArgumentException("Trying to rebing variable [" + variableName + "]");
+            throw new IllegalArgumentException(String.format("Trying to rebind variable [%s]", variableName));
         
         entityVariableName2entity.put(variableName, entity);
     }
@@ -105,11 +104,11 @@ public class QueryVariableContext {
         children.add(child);
     }
 
-    public Entity getEntity() {
+    public JpqlEntityModel getEntity() {
         return entity;
     }
 
-    public void setEntity(Entity entity) {
+    public void setEntity(JpqlEntityModel entity) {
         this.entity = entity;
     }
 
@@ -125,7 +124,7 @@ public class QueryVariableContext {
         if (entityName == null)
             throw new NullPointerException("No entity name passed");
 
-        for (Map.Entry<String, Entity> entry : entityVariableName2entity.entrySet()) {
+        for (Map.Entry<String, JpqlEntityModel> entry : entityVariableName2entity.entrySet()) {
             if (entityName.equals(entry.getValue().getName())) {
                 return entry.getKey();
             }

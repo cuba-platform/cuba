@@ -23,11 +23,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-/**
- * Author: Alexander Chevelev
- * Date: 08.04.2011
- * Time: 0:11:17
- */
 public class EntityPathTest {
     @Test
     public void parseEntityPath() {
@@ -56,5 +51,4 @@ public class EntityPathTest {
         assertEquals(null, path.lastEntityFieldPattern);
         assertArrayEquals(new String[0], path.traversedFields);
     }
-
 }

@@ -17,20 +17,20 @@
 
 package com.haulmont.cuba.core.sys.jpql.pointer;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 
 public class CollectionPointer implements com.haulmont.cuba.core.sys.jpql.pointer.Pointer {
-    private Entity entity;
+    private JpqlEntityModel entity;
 
-    public CollectionPointer(Entity entity) {
-        if (entity == null)
-            throw new NullPointerException("No entity passed");
+    public CollectionPointer(JpqlEntityModel entity) {
+        Preconditions.checkNotNullArgument(entity);
 
         this.entity = entity;
     }
 
-    public Entity getEntity() {
+    public JpqlEntityModel getEntity() {
         return entity;
     }
 

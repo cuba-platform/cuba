@@ -17,8 +17,8 @@
 
 package com.haulmont.cuba.core.sys.jpql.transform;
 
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
-import com.haulmont.cuba.core.sys.jpql.model.VirtualEntity;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
+import com.haulmont.cuba.core.sys.jpql.model.VirtualJpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
 
 public class EntityReferenceInferer {
@@ -37,14 +37,13 @@ public class EntityReferenceInferer {
             return new VariableEntityReference(entityName, entityVariableNameInQuery);
         }
         PathNode path = queryAnalyzer.getSelectedPathNode();
-        Entity entity = queryAnalyzer.getSelectedEntity(path);
-        if (!(entity instanceof VirtualEntity) && entity.getName().equals(entityName)) {
-            Entity pathStartingEntity = queryAnalyzer.getRootQueryVariableContext().
+        JpqlEntityModel entity = queryAnalyzer.getSelectedEntity(path);
+        if (!(entity instanceof VirtualJpqlEntityModel) && entity.getName().equals(entityName)) {
+            JpqlEntityModel pathStartingEntity = queryAnalyzer.getRootQueryVariableContext().
                     getEntityByVariableName(path.getEntityVariableName());
             return new PathEntityReference(path, pathStartingEntity.getName());
         }
-        throw new RuntimeException("No variable or selected field of entity " + entityName + " found in query");
-
+        throw new RuntimeException(String.format("No variable or selected field of entity %s found in query", entityName));
     }
 
     public String getEntityName() {

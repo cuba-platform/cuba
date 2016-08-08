@@ -19,8 +19,8 @@ package com.haulmont.cuba.gui.components.autocomplete.impl;
 
 import com.haulmont.cuba.core.sys.jpql.*;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
-import com.haulmont.cuba.core.sys.jpql.model.NoEntity;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
+import com.haulmont.cuba.core.sys.jpql.model.NoJpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.pointer.CollectionPointer;
 import com.haulmont.cuba.core.sys.jpql.pointer.EntityPointer;
 import com.haulmont.cuba.core.sys.jpql.pointer.NoPointer;
@@ -135,8 +135,8 @@ public class HintProvider {
         }
 
         List<Option> options = new ArrayList<>();
-        Entity targetEntity = ((EntityPointer) pointer).getEntity();
-        if (targetEntity instanceof NoEntity)
+        JpqlEntityModel targetEntity = ((EntityPointer) pointer).getEntity();
+        if (targetEntity instanceof NoJpqlEntityModel)
             return new HintResponse(options, path.lastEntityFieldPattern);
 
         List<Attribute> attributes = targetEntity.findAttributesStartingWith(
@@ -164,10 +164,10 @@ public class HintProvider {
     }
 
     private HintResponse hintEntityName(String lastWord) {
-        List<Entity> matchingEntities = model.findEntitiesStartingWith(lastWord);
+        List<JpqlEntityModel> matchingEntities = model.findEntitiesStartingWith(lastWord);
 
         List<Option> options = new ArrayList<>();
-        for (Entity entity : matchingEntities) {
+        for (JpqlEntityModel entity : matchingEntities) {
             options.add(new Option(entity.getName(), entity.getUserFriendlyName()));
         }
         return new HintResponse(options, lastWord);

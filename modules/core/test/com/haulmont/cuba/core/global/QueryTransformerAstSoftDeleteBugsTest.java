@@ -18,7 +18,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import junit.framework.TestCase;
@@ -93,12 +93,12 @@ public class QueryTransformerAstSoftDeleteBugsTest extends TestCase {
 
     private DomainModel createDomainModel() {
         EntityBuilder builder = new EntityBuilder();
-        Entity debtorEntity = builder.produceImmediately("dn$Debtor", "id", "id");
-        Entity agentEntity = builder.produceImmediately("dn$Agent", "id", "id");
-        Entity userEntity = builder.produceImmediately("sec$User", "active", "deleteTs");
-        Entity agentAllocation = builder.produceImmediately("dn$AgentAllocation", "agent", "debtor");
-        Entity scheduleOperation = builder.produceImmediately("dn$ScheduleOperation");
-        Entity bailiffDaySchedule = builder.produceImmediately("dn$BailiffDaySchedule", "day");
+        JpqlEntityModel debtorEntity = builder.produceImmediately("dn$Debtor", "id", "id");
+        JpqlEntityModel agentEntity = builder.produceImmediately("dn$Agent", "id", "id");
+        JpqlEntityModel userEntity = builder.produceImmediately("sec$User", "active", "deleteTs");
+        JpqlEntityModel agentAllocation = builder.produceImmediately("dn$AgentAllocation", "agent", "debtor");
+        JpqlEntityModel scheduleOperation = builder.produceImmediately("dn$ScheduleOperation");
+        JpqlEntityModel bailiffDaySchedule = builder.produceImmediately("dn$BailiffDaySchedule", "day");
         scheduleOperation.addReferenceAttribute("dn$BailiffDaySchedule", "bailiffDaySchedule", "bailiffDaySchedule", false);
         scheduleOperation.addReferenceAttribute("dn$Debtor", "debtor", "debtor", false);
 

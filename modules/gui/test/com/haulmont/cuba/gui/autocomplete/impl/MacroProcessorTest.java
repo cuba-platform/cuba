@@ -27,11 +27,6 @@ import java.util.EnumSet;
 
 import static junit.framework.Assert.assertEquals;
 
-/**
- * Author: Alexander Chevelev
- * Date: 24.03.2011
- * Time: 21:36:09
- */
 public class MacroProcessorTest {
     private MacroProcessor processor;
 

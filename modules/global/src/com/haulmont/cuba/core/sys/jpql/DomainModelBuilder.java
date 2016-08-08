@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 import org.springframework.stereotype.Component;
 
@@ -68,7 +68,7 @@ public class DomainModelBuilder {
                     addProperty(builder, aClass, prop);
             }
 
-            Entity entity = builder.produce();
+            JpqlEntityModel entity = builder.produce();
             result.add(entity);
         }
         return result;

@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.sys.jpql.QueryTreeAnalyzer;
 import com.haulmont.cuba.core.sys.jpql.UnknownEntityNameException;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.tree.*;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.tree.CommonTree;
@@ -277,7 +277,7 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         String entityName = orderingFieldRef.getPathStartingEntityName();
 
         try {
-            Entity entity = model.getEntityByName(entityName);
+            JpqlEntityModel entity = model.getEntityByName(entityName);
 
             for (int i = 0; i < pathNode.getChildCount(); i++) {
                 String fieldName = pathNode.getChild(i).toString();

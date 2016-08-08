@@ -22,19 +22,19 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 
 public class EntityBuilder {
-    private EntityImpl result;
+    private JpqlEntityModelImpl result;
 
-    public EntityImpl produceImmediately(String entityName) {
-        return new EntityImpl(entityName);
+    public JpqlEntityModelImpl produceImmediately(String entityName) {
+        return new JpqlEntityModelImpl(entityName);
     }
 
     public void startNewEntity(MetaClass metaClass) {
-        result = new EntityImpl(metaClass.getName());
+        result = new JpqlEntityModelImpl(metaClass.getName());
         result.setUserFriendlyName(AppBeans.get(MessageTools.class).getEntityCaption(metaClass));
     }
 
-    public Entity produceImmediately(String entityName, String... stringAttributeNames) {
-        EntityImpl result = new EntityImpl(entityName);
+    public JpqlEntityModel produceImmediately(String entityName, String... stringAttributeNames) {
+        JpqlEntityModelImpl result = new JpqlEntityModelImpl(entityName);
         for (String stringAttributeName : stringAttributeNames) {
             result.addSingleValueAttribute(String.class, stringAttributeName);
         }
@@ -42,7 +42,7 @@ public class EntityBuilder {
     }
 
     public void startNewEntity(String name) {
-        result = new EntityImpl(name);
+        result = new JpqlEntityModelImpl(name);
     }
 
     public void addStringAttribute(String name) {
@@ -73,8 +73,8 @@ public class EntityBuilder {
         result.addCollectionReferenceAttribute(referencedEntityName, name, userFriendlyName);
     }
 
-    public Entity produce() {
-        EntityImpl returnedEntity = result;
+    public JpqlEntityModel produce() {
+        JpqlEntityModelImpl returnedEntity = result;
         result = null;
         return returnedEntity;
     }

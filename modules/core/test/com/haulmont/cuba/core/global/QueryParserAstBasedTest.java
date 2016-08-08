@@ -18,9 +18,8 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
-import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import org.junit.Test;
 
 import java.util.Set;
@@ -215,21 +214,21 @@ public class QueryParserAstBasedTest {
         builder.addReferenceAttribute("parent", "sec$GroupHierarchy");
         builder.addReferenceAttribute("other", "sec$GroupHierarchy");
         builder.addCollectionReferenceAttribute("constraints", "sec$Constraint");
-        Entity groupHierarchy = builder.produce();
+        JpqlEntityModel groupHierarchy = builder.produce();
 
         builder = new EntityBuilder();
         builder.startNewEntity("sec$Constraint");
         builder.addReferenceAttribute("group", "sec$GroupHierarchy");
-        Entity constraintEntity = builder.produce();
+        JpqlEntityModel constraintEntity = builder.produce();
 
 
-        Entity groupEntity = builder.produceImmediately("sec$Group", "name");
+        JpqlEntityModel groupEntity = builder.produceImmediately("sec$Group", "name");
 
         builder = new EntityBuilder();
         builder.startNewEntity("sec$User");
         builder.addStringAttribute("login");
         builder.addReferenceAttribute("group", "sec$Group");
-        Entity userEntity = builder.produce();
+        JpqlEntityModel userEntity = builder.produce();
 
         return new DomainModel(groupHierarchy, constraintEntity, userEntity, groupEntity);
     }

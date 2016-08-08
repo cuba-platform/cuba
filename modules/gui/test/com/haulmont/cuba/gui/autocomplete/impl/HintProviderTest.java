@@ -19,13 +19,13 @@ package com.haulmont.cuba.gui.autocomplete.impl;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.InferredType;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
-import com.haulmont.cuba.core.sys.jpql.model.EntityImpl;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModelImpl;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintProvider;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintResponse;
-import junit.framework.Assert;
 import org.antlr.runtime.RecognitionException;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Date;
@@ -40,7 +40,7 @@ public class HintProviderTest {
     @Test
     public void requestHint_entityNameHint_simple() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        EntityImpl playerEntity = builder.produceImmediately("Player");
+        JpqlEntityModelImpl playerEntity = builder.produceImmediately("Player");
         DomainModel model = new DomainModel();
         model.add(playerEntity);
 
@@ -58,8 +58,8 @@ public class HintProviderTest {
     @Test
     public void requestHint_entityNameHint_order() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        EntityImpl playerEntity = builder.produceImmediately("Player");
-        EntityImpl parentEntity = builder.produceImmediately("Parent");
+        JpqlEntityModelImpl playerEntity = builder.produceImmediately("Player");
+        JpqlEntityModelImpl parentEntity = builder.produceImmediately("Parent");
         DomainModel model = new DomainModel();
         model.add(playerEntity);
         model.add(parentEntity);
@@ -79,7 +79,7 @@ public class HintProviderTest {
     @Test
     public void requestHint_erroneous() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        EntityImpl playerEntity = builder.produceImmediately("Player");
+        JpqlEntityModelImpl playerEntity = builder.produceImmediately("Player");
         DomainModel model = new DomainModel();
         model.add(playerEntity);
 
@@ -96,7 +96,7 @@ public class HintProviderTest {
     @Test
     public void requestHint_fieldNameHint_simple() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity playerEntity = builder.produceImmediately("Player", "name", "nickname");
+        JpqlEntityModel playerEntity = builder.produceImmediately("Player", "name", "nickname");
         DomainModel model = new DomainModel();
         model.add(playerEntity);
 
@@ -120,7 +120,7 @@ public class HintProviderTest {
     @Test
     public void requestHint_fieldNameHint_simple_wherePart() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name", "owner");
         DomainModel model = new DomainModel();
         model.add(teamEntity);
 
@@ -156,13 +156,13 @@ public class HintProviderTest {
     @Test
     public void requestHint_fieldNameHint_simple_referencedEntity() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name");
+        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name");
 
         builder.startNewEntity("Player");
         builder.addStringAttribute("name");
         builder.addStringAttribute("nickname");
         builder.addReferenceAttribute("team", "Team");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
 
         DomainModel model = new DomainModel();
         model.add(teamEntity);
@@ -188,18 +188,18 @@ public class HintProviderTest {
     @Test
     public void requestHint_fieldNameHint_simple_referencedEntity_collections() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name");
+        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name");
 
         builder.startNewEntity("Player");
         builder.addStringAttribute("name");
         builder.addStringAttribute("nickname");
         builder.addReferenceAttribute("team", "Team");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
 
         builder.startNewEntity("League");
         builder.addStringAttribute("name");
         builder.addCollectionReferenceAttribute("teams", "Team");
-        Entity leagueEntity = builder.produce();
+        JpqlEntityModel leagueEntity = builder.produce();
 
         DomainModel model = new DomainModel();
         model.add(teamEntity);
@@ -234,13 +234,13 @@ public class HintProviderTest {
 //    @Test
 //    public void requestHint_fieldNameHint_subqueryEntity() throws RecognitionException {
 //        EntityBuilder builder = new EntityBuilder();
-//        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+//        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name", "owner");
 //
 //        builder.startNewEntity("Player");
 //        builder.addStringAttribute("name");
 //        builder.addStringAttribute("nickname");
 //        builder.addReferenceAttribute("team", "Team");
-//        Entity playerEntity = builder.produce();
+//        JpqlEntityModel playerEntity = builder.produce();
 //
 //        DomainModel model = new DomainModel();
 //        model.add(teamEntity);
@@ -277,13 +277,13 @@ public class HintProviderTest {
 //    @Test
 //    public void requestHint_fieldNameHint_severalLevelsOfSubquery() throws RecognitionException {
 //        EntityBuilder builder = new EntityBuilder();
-//        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+//        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name", "owner");
 //
 //        builder.startNewEntity("Player");
 //        builder.addStringAttribute("name");
 //        builder.addStringAttribute("nickname");
 //        builder.addReferenceAttribute("team", "Team");
-//        Entity playerEntity = builder.produce();
+//        JpqlEntityModel playerEntity = builder.produce();
 //
 //        DomainModel model = new DomainModel();
 //        model.add(teamEntity);
@@ -332,13 +332,13 @@ public class HintProviderTest {
 //    @Test
 //    public void requestHint_fieldNameHint_subqueries_using_AS() throws RecognitionException {
 //        EntityBuilder builder = new EntityBuilder();
-//        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+//        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name", "owner");
 //
 //        builder.startNewEntity("Player");
 //        builder.addStringAttribute("name");
 //        builder.addStringAttribute("nickname");
 //        builder.addReferenceAttribute("team", "Team");
-//        Entity playerEntity = builder.produce();
+//        JpqlEntityModel playerEntity = builder.produce();
 //
 //        DomainModel model = new DomainModel();
 //        model.add(teamEntity);
@@ -356,13 +356,13 @@ public class HintProviderTest {
     @Test
     public void requestHint_entityNameHint_subquery() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name", "owner");
 
         builder.startNewEntity("Player");
         builder.addStringAttribute("name");
         builder.addStringAttribute("nickname");
         builder.addReferenceAttribute("team", "Team");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
 
         DomainModel model = new DomainModel();
         model.add(teamEntity);
@@ -379,13 +379,13 @@ public class HintProviderTest {
     @Test
     public void requestHint_fieldNameHint_where_in_topLevelVariablesUse() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name", "owner");
 
         builder.startNewEntity("Player");
         builder.addStringAttribute("name");
         builder.addStringAttribute("nickname");
         builder.addReferenceAttribute("team", "Team");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
 
         DomainModel model = new DomainModel();
         model.add(teamEntity);
@@ -428,13 +428,13 @@ public class HintProviderTest {
     @Test
     public void requestHint_fieldNameHint_where_exists() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
+        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name", "owner");
 
         builder.startNewEntity("Player");
         builder.addStringAttribute("name");
         builder.addStringAttribute("nickname");
         builder.addReferenceAttribute("team", "Team");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
 
         DomainModel model = new DomainModel();
         model.add(teamEntity);
@@ -482,8 +482,8 @@ public class HintProviderTest {
 //    @Test
 //    public void requestHint_fieldNameHint_wherein_subquerywhere() throws RecognitionException {
 //        EntityBuilder builder = new EntityBuilder();
-//        Entity teamEntity = builder.produceImmediately("Team", "name", "owner");
-//        Entity playerEntity = builder.produceImmediately("Player", "nickname", "name");
+//        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name", "owner");
+//        JpqlEntityModel playerEntity = builder.produceImmediately("Player", "nickname", "name");
 //        DomainModel model = new DomainModel();
 //        model.add(playerEntity);
 //        model.add(teamEntity);
@@ -506,20 +506,20 @@ public class HintProviderTest {
     @Test
     public void requestHint_fieldNameHint_join() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity personEntity = builder.produceImmediately("Person", "name");
+        JpqlEntityModel personEntity = builder.produceImmediately("Person", "name");
 
         builder.startNewEntity("Team");
         builder.addStringAttribute("name");
         builder.addStringAttribute("owner");
         builder.addReferenceAttribute("manager", "Person");
-        Entity teamEntity = builder.produce();
+        JpqlEntityModel teamEntity = builder.produce();
 
         builder.startNewEntity("Player");
         builder.addStringAttribute("name");
         builder.addStringAttribute("nickname");
         builder.addReferenceAttribute("team", "Team");
         builder.addReferenceAttribute("agent", "Person");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
 
         DomainModel model = new DomainModel();
         model.add(teamEntity);
@@ -584,25 +584,25 @@ public class HintProviderTest {
     @Test
     public void requestHint_fieldNameHint_join_withCollections() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity personEntity = builder.produceImmediately("Person", "name");
+        JpqlEntityModel personEntity = builder.produceImmediately("Person", "name");
 
         builder.startNewEntity("Team");
         builder.addStringAttribute("name");
         builder.addStringAttribute("owner");
         builder.addReferenceAttribute("manager", "Person");
-        Entity teamEntity = builder.produce();
+        JpqlEntityModel teamEntity = builder.produce();
 
         builder.startNewEntity("Player");
         builder.addStringAttribute("name");
         builder.addStringAttribute("nickname");
         builder.addReferenceAttribute("team", "Team");
         builder.addReferenceAttribute("agent", "Person");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
 
         builder.startNewEntity("League");
         builder.addStringAttribute("name");
         builder.addCollectionReferenceAttribute("teams", "Team");
-        Entity leagueEntity = builder.produce();
+        JpqlEntityModel leagueEntity = builder.produce();
 
         DomainModel model = new DomainModel();
         model.add(teamEntity);
@@ -632,17 +632,17 @@ public class HintProviderTest {
     @Test
     public void requestHint_fieldNameHint_join_and_collection() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity driver = builder.produceImmediately("Driver", "name", "signal");
+        JpqlEntityModel driver = builder.produceImmediately("Driver", "name", "signal");
 
         builder.startNewEntity("HomeBase");
         builder.addStringAttribute("city");
-        Entity homeBase = builder.produce();
+        JpqlEntityModel homeBase = builder.produce();
 
         builder.startNewEntity("Car");
         builder.addStringAttribute("model");
         builder.addCollectionReferenceAttribute("drivers", "Driver");
         builder.addReferenceAttribute("station", "HomeBase");
-        Entity car = builder.produce();
+        JpqlEntityModel car = builder.produce();
         DomainModel model = new DomainModel(car, driver, homeBase);
 
         HintProvider hp = new HintProvider(model);
@@ -655,30 +655,30 @@ public class HintProviderTest {
     @Test
     public void requestHint_fieldNameHint_join_throughSeveralFields() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity personEntity = builder.produceImmediately("Person", "personName");
+        JpqlEntityModel personEntity = builder.produceImmediately("Person", "personName");
 
         builder.startNewEntity("Team");
         builder.addStringAttribute("name");
         builder.addStringAttribute("owner");
         builder.addReferenceAttribute("manager", "Person");
-        Entity teamEntity = builder.produce();
+        JpqlEntityModel teamEntity = builder.produce();
 
         builder.startNewEntity("Player");
         builder.addStringAttribute("name");
         builder.addStringAttribute("nickname");
         builder.addReferenceAttribute("team", "Team");
         builder.addReferenceAttribute("agent", "Person");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
 
         builder.startNewEntity("League");
         builder.addStringAttribute("name");
         builder.addCollectionReferenceAttribute("teams", "Team");
-        Entity leagueEntity = builder.produce();
+        JpqlEntityModel leagueEntity = builder.produce();
 
         builder.startNewEntity("Country");
         builder.addStringAttribute("flag");
         builder.addReferenceAttribute("league", "League");
-        Entity countryEntity = builder.produce();
+        JpqlEntityModel countryEntity = builder.produce();
 
         DomainModel model = new DomainModel(teamEntity, playerEntity, leagueEntity, personEntity, countryEntity);
 
@@ -703,7 +703,7 @@ public class HintProviderTest {
     @Test
     public void requestHint_fieldNameHint_keywordCaseInsensitivity() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity playerEntity = builder.produceImmediately("Player", "name", "nickname");
+        JpqlEntityModel playerEntity = builder.produceImmediately("Player", "name", "nickname");
         DomainModel model = new DomainModel();
         model.add(playerEntity);
 
@@ -718,7 +718,7 @@ public class HintProviderTest {
     @Test
     public void requestHint_fieldNameHint_returnedFieldOrder() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity playerEntity = builder.produceImmediately("Player", "nickname", "name");
+        JpqlEntityModel playerEntity = builder.produceImmediately("Player", "nickname", "name");
         DomainModel model = new DomainModel();
         model.add(playerEntity);
 
@@ -737,7 +737,7 @@ public class HintProviderTest {
         builder.addStringAttribute("nickname");
         builder.addStringAttribute("name");
         builder.addSingleValueAttribute(Date.class, "joinDate");
-        Entity playerEntity = builder.produce();
+        JpqlEntityModel playerEntity = builder.produce();
         DomainModel model = new DomainModel();
         model.add(playerEntity);
 
@@ -759,12 +759,12 @@ public class HintProviderTest {
     @Test
     public void requestHint_with_in_collections() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity driver = builder.produceImmediately("Driver", "name", "signal");
+        JpqlEntityModel driver = builder.produceImmediately("Driver", "name", "signal");
 
         builder.startNewEntity("Car");
         builder.addStringAttribute("model");
         builder.addCollectionReferenceAttribute("drivers", "Driver");
-        Entity car = builder.produce();
+        JpqlEntityModel car = builder.produce();
         DomainModel model = new DomainModel(car, driver);
 
         HintProvider hintProvider = createTestHintProvider(model);
@@ -789,37 +789,36 @@ public class HintProviderTest {
     @Test
     public void requestHint_with_variableRebinding() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity driver = builder.produceImmediately("Driver", "name", "signal");
+        JpqlEntityModel driver = builder.produceImmediately("Driver", "name", "signal");
 
         builder.startNewEntity("Car");
         builder.addStringAttribute("model");
         builder.addCollectionReferenceAttribute("drivers", "Driver");
-        Entity car = builder.produce();
+        JpqlEntityModel car = builder.produce();
         DomainModel model = new DomainModel(car, driver);
 
         HintProvider hintProvider = createTestHintProvider(model);
         try {
             hintProvider.requestHint("select a.~ from Car a, in(a.drivers) a where a.model = ?1");
             Assert.fail();
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ignored) {
         }
     }
 
     @Test
     public void requestHint_with_templateParam() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
-        Entity driver = builder.produceImmediately("Driver", "name", "signal");
+        JpqlEntityModel driver = builder.produceImmediately("Driver", "name", "signal");
 
         builder.startNewEntity("Car");
         builder.addStringAttribute("model");
         builder.addCollectionReferenceAttribute("drivers", "Driver");
-        Entity car = builder.produce();
+        JpqlEntityModel car = builder.produce();
         DomainModel model = new DomainModel(car, driver);
 
         HintProvider hintProvider = createTestHintProvider(model);
         HintResponse response = hintProvider.requestHint("select a.~ from Car a where a.model = ${param}");
         List<String> options = response.getOptions();
-        options = response.getOptions();
         assertEquals(2, options.size());
         assertEquals("drivers", options.get(0));
         assertEquals("model", options.get(1));

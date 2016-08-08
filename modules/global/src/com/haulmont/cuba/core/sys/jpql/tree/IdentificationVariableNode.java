@@ -85,11 +85,11 @@ public class IdentificationVariableNode extends BaseCustomNode {
             if (variableName != null) {
                 try {
                     String entityName = child0.token.getText();
-                    Entity entity = model.getEntityByName(entityName);
+                    JpqlEntityModel entity = model.getEntityByName(entityName);
                     effectiveEntityName = entity.getName();
                     stack.peekLast().addEntityVariable(variableName, entity);
                 } catch (UnknownEntityNameException e) {
-                    stack.peekLast().addEntityVariable(variableName, NoEntity.getInstance());
+                    stack.peekLast().addEntityVariable(variableName, NoJpqlEntityModel.getInstance());
                 }
             }
         }
@@ -108,7 +108,7 @@ public class IdentificationVariableNode extends BaseCustomNode {
             Pointer pointer = pathNode.walk(model, queryVC);
 
             if (pointer instanceof NoPointer) {
-                queryVC.setEntity(NoEntity.getInstance());
+                queryVC.setEntity(NoJpqlEntityModel.getInstance());
                 return;
             }
 
@@ -118,7 +118,7 @@ public class IdentificationVariableNode extends BaseCustomNode {
             } else if (pointer instanceof EntityPointer) {
                 if (T_SELECTED_ITEMS_NODE.getChildren().size() != 1) {
                     //todo implement
-                    throw new RuntimeException("Не реализован вариант, когда возвращается массив");
+                    throw new UnsupportedOperationException("Unimplemented variant with returned array");
                 } else {
                     queryVC.setEntity(((EntityPointer) pointer).getEntity());
                 }
@@ -141,7 +141,6 @@ public class IdentificationVariableNode extends BaseCustomNode {
 
     @Override
     public CommonTree treeToQueryPost(QueryBuilder sb, List<ErrorRec> invalidNodes) {
-        // должно появится после определения сущности, из которой выбирают, поэтому в post
         sb.appendSpace();
         sb.appendString(variableName);
         return this;
