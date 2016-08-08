@@ -99,7 +99,7 @@ public class PresentationEditor extends CubaWindow {
 
         defaultField = new CheckBox();
         defaultField.setCaption(getMessage("PresentationsEditor.default"));
-        defaultField.setValue(BooleanUtils.isTrue(presentation.getDefault()));
+        defaultField.setValue(BooleanUtils.isTrue(presentation.getId().equals(component.getDefaultPresentationId())));
         root.addComponent(defaultField);
 
         if (allowGlobalPresentations) {
