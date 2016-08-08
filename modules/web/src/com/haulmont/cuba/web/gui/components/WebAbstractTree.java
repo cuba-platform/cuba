@@ -39,7 +39,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     protected ButtonsPanel buttonsPanel;
     protected HorizontalLayout topPanel;
     protected VerticalLayout componentComposition;
-    protected IconProvider iconProvider;
+    protected IconProvider<? super E> iconProvider;
 
     @Override
     public HierarchicalDatasource getDatasource() {
@@ -170,7 +170,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     }
 
     @Override
-    public void setStyleProvider(@Nullable Tree.StyleProvider styleProvider) {
+    public void setStyleProvider(@Nullable Tree.StyleProvider<? super E> styleProvider) {
         if (styleProvider != null) {
             if (this.styleProviders == null) {
                 this.styleProviders = new LinkedList<>();
@@ -190,11 +190,10 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
         } else {
             component.markAsDirty();
         }
-
     }
 
     @Override
-    public void addStyleProvider(Tree.StyleProvider styleProvider) {
+    public void addStyleProvider(Tree.StyleProvider<? super E> styleProvider) {
         if (this.styleProviders == null) {
             this.styleProviders = new LinkedList<>();
         }
@@ -212,7 +211,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     }
 
     @Override
-    public void removeStyleProvider(Tree.StyleProvider styleProvider) {
+    public void removeStyleProvider(Tree.StyleProvider<? super E> styleProvider) {
         if (this.styleProviders != null) {
             if (this.styleProviders.remove(styleProvider)) {
                 component.markAsDirty();
@@ -245,7 +244,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     }
 
     @Override
-    public void setIconProvider(IconProvider iconProvider) {
+    public void setIconProvider(IconProvider<? super E> iconProvider) {
         if (this.iconProvider != iconProvider) {
             this.iconProvider = iconProvider;
 
@@ -253,7 +252,8 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
                 component.setItemIconProvider(null);
             } else {
                 component.setItemIconProvider(itemId -> {
-                    Entity item = datasource.getItem(itemId);
+                    @SuppressWarnings("unchecked")
+                    E item = (E) datasource.getItem(itemId);
                     if (item == null) {
                         return null;
                     }

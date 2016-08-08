@@ -1291,7 +1291,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     }
 
     @Override
-    public void setStyleProvider(StyleProvider styleProvider) {
+    public void setStyleProvider(StyleProvider<? super E> styleProvider) {
         if (styleProvider != null) {
             if (this.styleProviders == null) {
                 this.styleProviders = new LinkedList<>();
@@ -1308,7 +1308,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     }
 
     @Override
-    public void addStyleProvider(StyleProvider styleProvider) {
+    public void addStyleProvider(StyleProvider<? super E> styleProvider) {
         if (this.styleProviders == null) {
             this.styleProviders = new LinkedList<>();
         }
@@ -1321,7 +1321,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     }
 
     @Override
-    public void removeStyleProvider(StyleProvider styleProvider) {
+    public void removeStyleProvider(StyleProvider<? super E> styleProvider) {
         if (this.styleProviders != null) {
             if (this.styleProviders.remove(styleProvider)) {
                 refreshCellStyles();
@@ -1381,12 +1381,12 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     }
 
     @Override
-    public void addGeneratedColumn(String columnId, ColumnGenerator<E> generator) {
+    public void addGeneratedColumn(String columnId, ColumnGenerator<? super E> generator) {
         addGeneratedColumn(columnId, generator, null);
     }
 
     @Override
-    public void addGeneratedColumn(String columnId, ColumnGenerator<E> generator,
+    public void addGeneratedColumn(String columnId, ColumnGenerator<? super E> generator,
                                    Class<? extends com.haulmont.cuba.gui.components.Component> componentClass) {
         checkArgument(columnId != null, "columnId is null");
         checkArgument(generator != null, "generator is null for column id '%s'", columnId);
@@ -1612,7 +1612,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     }
 
     @Override
-    public void addPrintable(String columnId, Printable printable) {
+    public void addPrintable(String columnId, Printable<? super E, ?> printable) {
         printables.put(columnId, printable);
     }
 

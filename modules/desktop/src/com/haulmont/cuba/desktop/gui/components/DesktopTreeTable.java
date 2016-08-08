@@ -408,7 +408,7 @@ public class DesktopTreeTable<E extends Entity> extends DesktopAbstractTable<JXT
     }
 
     @Override
-    public void addGeneratedColumn(String columnId, ColumnGenerator<E> generator,
+    public void addGeneratedColumn(String columnId, ColumnGenerator<? super E> generator,
                                    Class<? extends com.haulmont.cuba.gui.components.Component> componentClass) {
         if (columnId == null)
             throw new IllegalArgumentException("columnId is null");

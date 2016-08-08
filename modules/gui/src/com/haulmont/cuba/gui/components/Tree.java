@@ -59,11 +59,10 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
     void setItemClickAction(Action action);
     Action getItemClickAction();
 
-    void setStyleProvider(@Nullable StyleProvider<E> styleProvider);
+    void setStyleProvider(@Nullable StyleProvider<? super E> styleProvider);
 
-    void addStyleProvider(StyleProvider<E> styleProvider);
-
-    void removeStyleProvider(StyleProvider<E> styleProvider);
+    void addStyleProvider(StyleProvider<? super E> styleProvider);
+    void removeStyleProvider(StyleProvider<? super E> styleProvider);
 
     interface StyleProvider<E extends Entity> {
         @Nullable
@@ -73,7 +72,7 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
     /**
      * Set the icon provider for the tree.
      */
-    void setIconProvider(IconProvider<E> iconProvider);
+    void setIconProvider(IconProvider<? super E> iconProvider);
 
     /**
      * Repaint UI representation of the tree including style providers and icon providers without refreshing the tree data.

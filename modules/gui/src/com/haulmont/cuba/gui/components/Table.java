@@ -103,7 +103,7 @@ public interface Table<E extends Entity>
     Action getItemClickAction();
 
     /**
-     * Assign acion to be executed on Enter key press.
+     * Assign action to be executed on Enter key press.
      * <p>If such action is not set, the table responds to pressing Enter by trying to find and execute the following
      * actions:
      * <ul>
@@ -237,24 +237,24 @@ public interface Table<E extends Entity>
      * Set the cell style provider for the table. <br/>
      * All style providers added before this call will be removed.
      */
-    void setStyleProvider(@Nullable StyleProvider<E> styleProvider);
+    void setStyleProvider(@Nullable StyleProvider<? super E> styleProvider);
 
     /**
      * Add style provider for the table. <br/>
      * Table can use several providers to obtain many style names for cells and rows.
      */
-    void addStyleProvider(StyleProvider<E> styleProvider);
+    void addStyleProvider(StyleProvider<? super E> styleProvider);
     /**
      * Remove style provider for the table.
      */
-    void removeStyleProvider(StyleProvider<E> styleProvider);
+    void removeStyleProvider(StyleProvider<? super E> styleProvider);
 
     /**
      * Set the row icon provider for the table.
      *
      * @see #setRowHeaderWidth(int)
      */
-    void setIconProvider(IconProvider<E> iconProvider);
+    void setIconProvider(IconProvider<? super E> iconProvider);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -323,29 +323,29 @@ public interface Table<E extends Entity>
      * @param columnId  column identifier as defined in XML descriptor. May or may not correspond to an entity property.
      * @param generator column generator instance
      */
-    void addGeneratedColumn(String columnId, ColumnGenerator<E> generator);
+    void addGeneratedColumn(String columnId, ColumnGenerator<? super E> generator);
 
     /**
      * Add a generated column to the table.
-     * <p/> This method useful for desktop UI. Table can make addititional look, feel and performance tweaks
+     * <p/> This method useful for desktop UI. Table can make additional look, feel and performance tweaks
      * if it knows the class of components that will be generated.
      *
      * @param columnId       column identifier as defined in XML descriptor. May or may not correspond to an entity property.
      * @param generator      column generator instance
      * @param componentClass class of components that generator will provide
      */
-    void addGeneratedColumn(String columnId, ColumnGenerator<E> generator, Class<? extends Component> componentClass);
+    void addGeneratedColumn(String columnId, ColumnGenerator<? super E> generator, Class<? extends Component> componentClass);
 
     void removeGeneratedColumn(String columnId);
 
     /**
      * Adds {@link Printable} representation for column. <br/>
-     * Excplicitly added Printable will be used instead of inherited from generated column.
+     * Explicitly added Printable will be used instead of inherited from generated column.
      *
      * @param columnId  column id
      * @param printable printable representation
      */
-    void addPrintable(String columnId, Printable printable);
+    void addPrintable(String columnId, Printable<? super E, ?> printable);
 
     /**
      * Removes {@link Printable} representation of column. <br/>
@@ -650,7 +650,7 @@ public interface Table<E extends Entity>
 
     /**
      * Special component for generated columns which will be rendered as simple text cell.
-     * Very usefull for heavy tables to decrease rendering time in browser.
+     * Very useful for heavy tables to decrease rendering time in browser.
      */
     class PlainTextCell implements Component {
         

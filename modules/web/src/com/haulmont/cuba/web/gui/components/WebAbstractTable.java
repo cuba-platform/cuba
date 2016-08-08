@@ -95,7 +95,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     protected Action enterPressAction;
 
     protected List<Table.StyleProvider> styleProviders; // lazily initialized List
-    protected Table.IconProvider iconProvider;
+    protected Table.IconProvider<? super E> iconProvider;
 
     protected Map<Table.Column, String> requiredColumns; // lazily initialized Map
 
@@ -242,7 +242,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void addPrintable(String columnId, Printable printable) {
+    public void addPrintable(String columnId, Printable<? super E, ?> printable) {
         if (printables == null) {
             printables = new HashMap<>();
         }
@@ -1103,7 +1103,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void setStyleProvider(@Nullable Table.StyleProvider styleProvider) {
+    public void setStyleProvider(@Nullable Table.StyleProvider<? super E> styleProvider) {
         if (styleProvider != null) {
             if (this.styleProviders == null) {
                 this.styleProviders = new LinkedList<>();
@@ -1120,7 +1120,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void addStyleProvider(StyleProvider styleProvider) {
+    public void addStyleProvider(StyleProvider<? super E> styleProvider) {
         if (this.styleProviders == null) {
             this.styleProviders = new LinkedList<>();
         }
@@ -1133,7 +1133,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void removeStyleProvider(StyleProvider styleProvider) {
+    public void removeStyleProvider(StyleProvider<? super E> styleProvider) {
         if (this.styleProviders != null) {
             if (this.styleProviders.remove(styleProvider)) {
                 component.refreshCellStyles();
@@ -1142,7 +1142,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void setIconProvider(IconProvider iconProvider) {
+    public void setIconProvider(IconProvider<? super E> iconProvider) {
         this.iconProvider = iconProvider;
         if (iconProvider != null) {
             setRowHeaderMode(RowHeaderMode.ICON);
@@ -1158,7 +1158,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         if (iconProvider == null) {
             return null;
         }
-        Entity item = datasource.getItem(itemId);
+        E item = (E) datasource.getItem(itemId);
         if (item == null) {
             return null;
         }
@@ -1413,7 +1413,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void addGeneratedColumn(String columnId, ColumnGenerator<E> generator) {
+    public void addGeneratedColumn(String columnId, ColumnGenerator<? super E> generator) {
         checkNotNullArgument(columnId, "columnId is null");
         checkNotNullArgument(generator, "generator is null for column id '%s'", columnId);
 
@@ -1493,7 +1493,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void addGeneratedColumn(String columnId, ColumnGenerator<E> generator,
+    public void addGeneratedColumn(String columnId, ColumnGenerator<? super E> generator,
                                    Class<? extends com.haulmont.cuba.gui.components.Component> componentClass) {
         // web ui doesn't make any improvements with componentClass known
         addGeneratedColumn(columnId, generator);

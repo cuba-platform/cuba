@@ -545,22 +545,22 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
     }
 
     @Override
-    public void setStyleProvider(@Nullable StyleProvider styleProvider) {
+    public void setStyleProvider(@Nullable StyleProvider<? super E> styleProvider) {
         // do nothing
     }
 
     @Override
-    public void addStyleProvider(StyleProvider styleProvider) {
+    public void addStyleProvider(StyleProvider<? super E> styleProvider) {
         // do nothing
     }
 
     @Override
-    public void removeStyleProvider(StyleProvider styleProvider) {
+    public void removeStyleProvider(StyleProvider<? super E> styleProvider) {
         // do nothing
     }
 
     @Override
-    public void setIconProvider(IconProvider iconProvider) {
+    public void setIconProvider(IconProvider<? super E> iconProvider) {
         // do nothing
     }
 
