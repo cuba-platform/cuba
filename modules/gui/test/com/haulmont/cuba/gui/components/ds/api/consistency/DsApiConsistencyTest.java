@@ -31,9 +31,11 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
+import org.junit.Ignore;
 
 import java.util.UUID;
 
+@Ignore
 public abstract class DsApiConsistencyTest extends AbstractComponentTest {
 
     @Mocked
