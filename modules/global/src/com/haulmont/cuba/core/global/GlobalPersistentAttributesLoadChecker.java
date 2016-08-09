@@ -76,12 +76,20 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
                         return false;
                 }
             }
-        }
 
-        if (entity instanceof FetchGroupTracker) {
-            FetchGroup fetchGroup = ((FetchGroupTracker) entity)._persistence_getFetchGroup();
-            if (fetchGroup != null)
-                return fetchGroup.getAttributeNames().contains(property);
+            if (entity instanceof FetchGroupTracker) {
+                FetchGroup fetchGroup = ((FetchGroupTracker) entity)._persistence_getFetchGroup();
+                if (fetchGroup != null) {
+                    boolean inFetchGroup = fetchGroup.getAttributeNames().contains(property);
+                    if (!inFetchGroup) {
+                        // definitely not loaded
+                        return false;
+                    } else {
+                        // requires additional check specific for the tier
+                        return null;
+                    }
+                }
+            }
         }
 
         return null;
