@@ -261,7 +261,6 @@ public class EntityManagerImpl implements EntityManager {
         return (T) resultEntity;
     }
 
-    @Nullable
     @Override
     public <T extends Entity> T reloadNN(T entity, String... viewNames) {
         T reloaded = reload(entity, viewNames);
