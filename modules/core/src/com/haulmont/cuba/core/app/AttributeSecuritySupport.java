@@ -222,7 +222,9 @@ public class AttributeSecuritySupport {
             if (!security.isEntityAttrReadPermitted(metaClass, property.getName())) {
                 addInaccessibleAttribute((BaseGenericIdEntity) entity, property.getName());
                 if (!metadataTools.isSystem(property) && !property.isReadOnly()) {
-                    entity.setValue(property.getName(), null);
+                    // Using reflective access to field because the attribute can be unfetched if loading not partial entities,
+                    // which is the case when in-memory constraints exist
+                    BaseEntityInternalAccess.setValue((BaseGenericIdEntity) entity, property.getName(), null);
                 }
             }
         }
@@ -235,7 +237,9 @@ public class AttributeSecuritySupport {
             if (!security.isEntityAttrReadPermitted(metaClass, property.getName())) {
                 addInaccessibleAttribute((BaseGenericIdEntity) entity, property.getName());
                 if (!metadataTools.isSystem(property) && !property.isReadOnly()) {
-                    entity.setValue(property.getName(), null);
+                    // Using reflective access to field because the attribute can be unfetched if loading not partial entities,
+                    // which is the case when in-memory constraints exist
+                    BaseEntityInternalAccess.setValue((BaseGenericIdEntity) entity, property.getName(), null);
                 }
             }
         }

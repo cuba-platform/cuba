@@ -17,7 +17,11 @@
 package com.haulmont.cuba.core.entity;
 
 import com.google.common.collect.Multimap;
+import com.haulmont.bali.util.Preconditions;
+import org.apache.commons.lang.reflect.FieldUtils;
 
+import javax.annotation.Nullable;
+import java.lang.reflect.Field;
 import java.util.UUID;
 
 /**
@@ -90,5 +94,17 @@ public final class BaseEntityInternalAccess {
 
     public static void setFilteredAttributes(BaseGenericIdEntity entity, String[] filteredAttributes) {
         entity.__filteredAttributes = filteredAttributes;
+    }
+
+    public static void setValue(BaseGenericIdEntity entity, String attribute, @Nullable Object value) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+        Field field = FieldUtils.getField(entity.getClass(), attribute, true);
+        if (field == null)
+            throw new RuntimeException("Cannot find field '" + attribute + "' in class " + entity.getClass().getName());
+        try {
+            field.set(entity, value);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Unable to set value to " + entity.getClass().getSimpleName() + "." + attribute, e);
+        }
     }
 }
