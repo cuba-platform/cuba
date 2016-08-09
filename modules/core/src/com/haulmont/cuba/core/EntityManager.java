@@ -211,7 +211,6 @@ public interface EntityManager {
      * @return              reloaded entity instance
      * @throws javax.persistence.EntityNotFoundException if the entity has been deleted
      */
-    @Nullable
     <T extends Entity> T reloadNN(T entity, String... viewNames);
 
     /**
