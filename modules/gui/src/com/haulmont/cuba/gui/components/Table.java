@@ -479,7 +479,7 @@ public interface Table<E extends Entity>
         public void setDescription(String description) {
             this.description = description;
             if (owner != null) {
-                owner.setColumnDescription(this, caption);
+                owner.setColumnDescription(this, description);
             }
         }
 
