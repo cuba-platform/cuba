@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.sys.jpql.ErrorRec;
 import com.haulmont.cuba.core.sys.jpql.QueryBuilder;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.tree.Tree;
 
 import java.util.List;
 
@@ -39,5 +40,10 @@ public class EnumConditionNode extends BaseCustomNode {
         sb.appendString(enumName);
         sb.appendString(")");
         return this;
+    }
+
+    @Override
+    public Tree dupNode() {
+        return new EnumConditionNode(getType(), enumName);
     }
 }
