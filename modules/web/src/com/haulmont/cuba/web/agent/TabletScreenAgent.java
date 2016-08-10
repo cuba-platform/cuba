@@ -28,7 +28,8 @@ public class TabletScreenAgent implements ScreenAgent {
     @Override
     public boolean isSupported(DeviceInfo device) {
         return device.isIPad()
-                || ((device.isAndroid() || device.isWindowsPhone()) && device.getAspectRatio() < 1.32);
+                || ((device.isAndroid() || device.isWindowsPhone())
+                    && (device.getAspectRatio() < 1.32) || (device.getMaximumDimension() > 800));
     }
 
     @Override

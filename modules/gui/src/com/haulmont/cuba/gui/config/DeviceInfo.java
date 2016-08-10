@@ -22,7 +22,7 @@ import java.util.Locale;
  * Class that represents information about the web browser the user is using.
  * Provides information such as browser name and version, screen resolution and IP address.
  */
-public final class DeviceInfo {
+public class DeviceInfo {
     private int screenHeight = -1;
     private int screenWidth = -1;
 
@@ -375,6 +375,9 @@ public final class DeviceInfo {
         this.address = address;
     }
 
+    /**
+     * @return operating system of device, one of {@link OperatingSystem}
+     */
     public OperatingSystem getOperatingSystem() {
         return operatingSystem;
     }
@@ -383,6 +386,9 @@ public final class DeviceInfo {
         this.operatingSystem = operatingSystem;
     }
 
+    /***
+     * @return aspect ratio of device view port
+     */
     public double getAspectRatio() {
         if (screenHeight <= 0 || screenWidth <= 0) {
             return -1;
@@ -392,6 +398,20 @@ public final class DeviceInfo {
         double min = Math.min(screenHeight, screenWidth);
 
         return max / min;
+    }
+
+    /**
+     * @return maximum of {@link #getScreenHeight()} and {@link #getScreenWidth()}
+     */
+    public double getMaximumDimension() {
+        return Math.max(screenHeight, screenWidth);
+    }
+
+    /**
+     * @return minimum of {@link #getScreenHeight()} and {@link #getScreenWidth()}
+     */
+    public double getMinimumDimension() {
+        return Math.max(screenHeight, screenWidth);
     }
 
     public enum OperatingSystem {
