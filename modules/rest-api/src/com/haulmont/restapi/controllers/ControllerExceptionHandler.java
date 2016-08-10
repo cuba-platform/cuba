@@ -44,7 +44,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseEntity<ErrorInfo> handleException(Exception e) {
-        ErrorInfo errorInfo = new ErrorInfo(e.getMessage(), "");
+        ErrorInfo errorInfo = new ErrorInfo("Server error", "");
         return new ResponseEntity<>(errorInfo, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
