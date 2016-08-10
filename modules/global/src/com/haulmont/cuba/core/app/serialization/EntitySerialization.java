@@ -225,19 +225,7 @@ public class EntitySerialization implements EntitySerializationAPI {
                         continue;
                     }
 
-                    Field field = getField(entity.getClass(), metaProperty.getName());
-                    if (field == null) {
-                        log.error("Field {} for class {} not found", metaProperty.getName(), entity.getClass().getName());
-                        continue;
-                    }
-                    makeFieldAccessible(field);
-
-                    Object fieldValue;
-                    try {
-                        fieldValue = field.get(entity);
-                    } catch (IllegalAccessException e) {
-                        throw new EntitySerializationException("Error reading a value of field " + field.getName(), e);
-                    }
+                    Object fieldValue = entity.getValue(metaProperty.getName());
 
                     //always write nulls here. GSON will not serialize them to the result if
                     //EntitySerializationOptions.SERIALIZE_NULLS was not set.
@@ -386,10 +374,10 @@ public class EntitySerialization implements EntitySerializationAPI {
                     } else if (propertyRange.isEnum()) {
                         String stringValue = propertyValue.getAsString();
                         try {
-                            Object value = propertyRange.asEnumeration().parse(stringValue);
-                            entity.setValue(propertyName, value);
-                        } catch (ParseException e) {
-                            throw new EntitySerializationException(String.format("An error occurred while parsing enum. Class [%s]. Value [%s].", propertyType, stringValue), e);
+                            Enum enumValue = Enum.valueOf((Class<Enum>) propertyType, stringValue);
+                            entity.setValue(propertyName, enumValue);
+                        } catch (Exception e) {
+                            log.error(String.format("An error occurred while parsing enum. Class [%s]. Value [%s].", propertyType, stringValue), e);
                         }
                     } else if (propertyRange.isClass()) {
                         if (Entity.class.isAssignableFrom(propertyType)) {
