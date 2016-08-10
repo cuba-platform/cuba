@@ -39,6 +39,13 @@
     <bean class="com.haulmont.cuba.web.controllers.CachedAnnotationMethodHandlerAdapter"/>
 
     <!-- Log all exceptions that occur in controllers-->
-    <bean id="cuba_LoggingHandlerExceptionResolver" class="com.haulmont.cuba.web.sys.LoggingHandlerExceptionResolver"/>
+    <bean id="cuba_LoggingHandlerExceptionResolver"
+          class="com.haulmont.cuba.web.sys.LoggingHandlerExceptionResolver">
+        <property name="excludedExceptions">
+            <list>
+                <value>com.haulmont.restapi.exception.RestAPIException</value>
+            </list>
+        </property>
+    </bean>
 
 </beans>

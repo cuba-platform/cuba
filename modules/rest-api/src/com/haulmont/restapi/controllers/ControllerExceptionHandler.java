@@ -18,6 +18,8 @@ package com.haulmont.restapi.controllers;
 
 import com.haulmont.restapi.exception.ErrorInfo;
 import com.haulmont.restapi.exception.RestAPIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -29,9 +31,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ControllerAdvice("com.haulmont.restapi.controllers")
 public class ControllerExceptionHandler {
 
+    protected Logger log = LoggerFactory.getLogger(ControllerExceptionHandler.class);
+
     @ExceptionHandler(RestAPIException.class)
     @ResponseBody
     public ResponseEntity<ErrorInfo> handleRestAPIException(RestAPIException e) {
+        log.info("RestAPIException: {}, {}", e.getMessage(), e.getDetails());
         ErrorInfo errorInfo = new ErrorInfo(e.getMessage(), e.getDetails());
         return new ResponseEntity<>(errorInfo, e.getHttpStatus());
     }
@@ -39,10 +44,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseEntity<ErrorInfo> handleException(Exception e) {
-        ErrorInfo errorInfo = new ErrorInfo(e.getMessage(),
-//                ExceptionUtils.getStackTrace(e)
-                ""
-        );
+        ErrorInfo errorInfo = new ErrorInfo(e.getMessage(), "");
         return new ResponseEntity<>(errorInfo, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

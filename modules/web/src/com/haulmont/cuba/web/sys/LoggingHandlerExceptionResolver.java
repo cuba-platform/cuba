@@ -24,6 +24,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Logs all exceptions that occur in MVC controllers
@@ -32,6 +34,15 @@ public class LoggingHandlerExceptionResolver implements HandlerExceptionResolver
 
     protected Logger log = LoggerFactory.getLogger(getClass());
 
+    protected List<Class<? extends Exception>> excludedExceptions = new ArrayList<>();
+
+    /**
+     * Sets the list of exception classes that must not be logged
+     */
+    public void setExcludedExceptions(List<Class<? extends Exception>> excludedExceptions) {
+        this.excludedExceptions = excludedExceptions;
+    }
+
     @Override
     public int getOrder() {
         return Integer.MIN_VALUE;
@@ -39,7 +50,9 @@ public class LoggingHandlerExceptionResolver implements HandlerExceptionResolver
 
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        log.error("Exception in MVC controller", ex);
+        if (!excludedExceptions.contains(ex.getClass())) {
+            log.error("Exception in MVC controller", ex);
+        }
         return null;
     }
 }
