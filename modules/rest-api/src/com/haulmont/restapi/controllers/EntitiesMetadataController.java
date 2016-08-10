@@ -22,9 +22,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.serialization.ViewSerializationAPI;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.exception.RestAPIException;
 import org.slf4j.Logger;
@@ -57,6 +55,9 @@ public class EntitiesMetadataController {
 
     @Inject
     protected ViewRepository viewRepository;
+
+    @Inject
+    protected Messages messages;
 
     @RequestMapping(path = "/entities/{entityName}", method = RequestMethod.GET)
     public MetaClassInfo getMetaClassInfo(@PathVariable String entityName) {
@@ -124,6 +125,7 @@ public class EntitiesMetadataController {
         public boolean mandatory;
         public boolean readOnly;
         boolean isTransient;
+        public String description;
 
         public MetaPropertyInfo(MetaProperty metaProperty) {
             this.name = metaProperty.getName();
@@ -144,6 +146,7 @@ public class EntitiesMetadataController {
             this.readOnly = metaProperty.isReadOnly();
             this.mandatory = metaProperty.isMandatory();
             this.isTransient = metadata.getTools().isTransient(metaProperty);
+            this.description = messages.getTools().getPropertyCaption(metaProperty);
         }
 
         public boolean getTransient() {
