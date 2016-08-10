@@ -249,6 +249,11 @@
     }
 
     .#{$primary-stylename}-header-cell .#{$primary-stylename}-sort-indicator {
+      display: none;
+    }
+
+    .#{$primary-stylename}-header-cell.#{$primary-stylename}-header-sortable .#{$primary-stylename}-sort-indicator {
+      display: block;
       width: 10px;
       height: 12px;
       background: transparent;
