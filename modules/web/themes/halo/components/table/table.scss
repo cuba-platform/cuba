@@ -197,6 +197,11 @@
   }
 
   .#{$primary-stylename}-header-cell .#{$primary-stylename}-sort-indicator {
+    display: none;
+  }
+
+  .#{$primary-stylename}-header-cell.#{$primary-stylename}-header-sortable .#{$primary-stylename}-sort-indicator {
+    display: block;
     background: transparent;
     width: round($v-unit-size/2);
     height: $v-table-row-height;
