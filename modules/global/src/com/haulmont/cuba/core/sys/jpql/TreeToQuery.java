@@ -56,6 +56,7 @@ public class TreeToQuery implements TreeVisitorAction {
                 node.getType() == JPA2Lexer.AND ||
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_ORDER_BY_FIELD ||
                 node.getType() == JPA2Lexer.OR ||
+                node.getType() == JPA2Lexer.NOT ||
                 node.getType() == JPA2Lexer.DISTINCT && node.childIndex == 0 ||
                 node.getType() == JPA2Lexer.JOIN ||
                 node.getType() == JPA2Lexer.LEFT ||
