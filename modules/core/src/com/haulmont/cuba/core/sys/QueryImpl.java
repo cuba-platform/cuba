@@ -178,6 +178,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
     private String transformQueryString() {
         String result = expandMacros(queryString);
 
+        boolean rebuildParser = false;
         QueryParser parser = QueryTransformerFactory.createParser(result);
 
         String entityName = parser.getEntityName();
@@ -187,6 +188,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(result);
             transformer.replaceEntityName(effectiveEntityName);
             result = transformer.getResult();
+            rebuildParser = true;
         }
 
         for (Iterator<Param> iterator = params.iterator(); iterator.hasNext(); ) {
@@ -201,6 +203,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
             }
         }
 
+        if (rebuildParser) {
+            parser = QueryTransformerFactory.createParser(result);
+        }
         String nestedEntityName = parser.getEntityNameIfSecondaryReturnedInsteadOfMain();
         String nestedEntityPath = parser.getEntityPathIfSecondaryReturnedInsteadOfMain();
         if (nestedEntityName != null) {
