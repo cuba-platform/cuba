@@ -27,16 +27,13 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.exception.RestAPIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,7 +42,9 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping(value = "/api/metadata", produces = "application/json; charset=UTF-8")
-public class MetadataController {
+public class EntitiesMetadataController {
+
+    protected Logger log = LoggerFactory.getLogger(EntitiesMetadataController.class);
 
     @Inject
     protected Metadata metadata;
@@ -60,14 +59,18 @@ public class MetadataController {
     protected ViewRepository viewRepository;
 
     @RequestMapping(path = "/entities/{entityName}", method = RequestMethod.GET)
-    public MetaClassInfo getMetaCassInfo(@PathVariable String entityName) {
+    public MetaClassInfo getMetaClassInfo(@PathVariable String entityName) {
         MetaClass metaClass = restControllersUtils.getMetaClass(entityName);
         return new MetaClassInfo(metaClass);
     }
 
     @RequestMapping(path = "/entities", method = RequestMethod.GET)
-    public Collection<MetaClassInfo> getAllMetaCassesInfo() {
-        return metadata.getClasses().stream()
+    public Collection<MetaClassInfo> getAllMetaClassesInfo() {
+        Set<MetaClass> metaClasses = new HashSet<>(metadata.getTools().getAllPersistentMetaClasses());
+        metaClasses.addAll(metadata.getTools().getAllEmbeddableMetaClasses());
+
+        return metaClasses.stream()
+                .filter(metaClass -> metadata.getExtendedEntities().getExtendedClass(metaClass) == null)
                 .map(MetaClassInfo::new)
                 .collect(Collectors.toList());
     }
@@ -125,10 +128,17 @@ public class MetadataController {
         public MetaPropertyInfo(MetaProperty metaProperty) {
             this.name = metaProperty.getName();
             this.attributeType = metaProperty.getType();
-            if (attributeType == MetaProperty.Type.ASSOCIATION || attributeType == MetaProperty.Type.COMPOSITION) {
-                this.type = metaProperty.getRange().asClass().getName();
-            } else {
-                this.type = metaProperty.getJavaType().getName();
+            switch (attributeType) {
+                case DATATYPE:
+                    this.type = metaProperty.getRange().asDatatype().getName();
+                    break;
+                case ASSOCIATION:
+                case COMPOSITION:
+                    this.type = metaProperty.getRange().asClass().getName();
+                    break;
+                case ENUM:
+                    this.type = metaProperty.getRange().asEnumeration().getJavaClass().getName();
+                    break;
             }
             this.cardinality = metaProperty.getRange().getCardinality();
             this.readOnly = metaProperty.isReadOnly();
