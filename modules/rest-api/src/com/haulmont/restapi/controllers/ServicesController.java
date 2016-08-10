@@ -20,6 +20,7 @@ import com.haulmont.cuba.restapi.RestServicePermissions;
 import com.haulmont.restapi.exception.RestAPIException;
 import com.haulmont.restapi.service.RestServiceInvoker;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -39,19 +40,35 @@ public class ServicesController {
     protected RestServicePermissions restServicePermissions;
 
     @RequestMapping(path = "/{serviceName}/{methodName}", method = RequestMethod.POST)
-    public String invokeServiceMethodPost(@PathVariable String serviceName,
-                                          @PathVariable String methodName,
-                                          @RequestBody(required = false) String paramsJson) {
+    public ResponseEntity<String> invokeServiceMethodPost(@PathVariable String serviceName,
+                                                          @PathVariable String methodName,
+                                                          @RequestBody(required = false) String paramsJson) {
         checkServicePermissions(serviceName, methodName);
-        return restServiceInvoker.invokeServiceMethod(serviceName, methodName, paramsJson);
+        String result = restServiceInvoker.invokeServiceMethod(serviceName, methodName, paramsJson);
+        HttpStatus status;
+        if (result == null) {
+            status = HttpStatus.NO_CONTENT;
+            result = "";
+        } else {
+            status = HttpStatus.OK;
+        }
+        return new ResponseEntity<>(result, status);
     }
 
     @RequestMapping(path = "/{serviceName}/{methodName}", method = RequestMethod.GET)
-    public String invokeServiceMethodGet(@PathVariable String serviceName,
+    public ResponseEntity<String> invokeServiceMethodGet(@PathVariable String serviceName,
                                          @PathVariable String methodName,
                                          @RequestParam Map<String, String> paramsMap) {
         checkServicePermissions(serviceName, methodName);
-        return restServiceInvoker.invokeServiceMethod(serviceName, methodName, paramsMap);
+        String result  = restServiceInvoker.invokeServiceMethod(serviceName, methodName, paramsMap);
+        HttpStatus status;
+        if (result == null) {
+            status = HttpStatus.NO_CONTENT;
+            result = "";
+        } else {
+            status = HttpStatus.OK;
+        }
+        return new ResponseEntity<>(result, status);
     }
 
     @RequestMapping(method = RequestMethod.GET)

@@ -633,9 +633,13 @@ paths:
         200:
           description: |
             Returns the result of the method execution. It can be of simple datatype
-            as well as JSON that represents an entity or entities collection
+            as well as JSON that represents an entity or entities collection.
           schema:
             type: string
+        204:
+          description: |
+            No content. This status is returned when the service method was executed successfully but returns null or
+            is of void type.
         403:
           description: Forbiddden. The user doesn't have permissions to invoke the service method.
           schema:
@@ -661,7 +665,11 @@ paths:
         200:
           description: |
             Returns the result of the method execution. It can be of simple datatype
-            as well as JSON that represents an entity or entities collection
+            as well as JSON that represents an entity or entities collection.
+        204:
+          description: |
+            No content. This status is returned when the service method was executed successfully but returns null or
+            is of void type.
         403:
           description: Forbiddden. The user doesn't have permissions to invoke the service method.
           schema:

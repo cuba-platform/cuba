@@ -30,6 +30,7 @@ import com.haulmont.restapi.exception.RestAPIException;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.ClassUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.lang.reflect.Method;
 import java.text.ParseException;
@@ -49,6 +50,7 @@ public class RestServiceInvoker {
     @Inject
     protected EntitySerializationAPI entitySerializationAPI;
 
+    @Nullable
     public String invokeServiceMethod(String serviceName, String methodName, String paramsJson) {
         List<String> paramValuesStr = new ArrayList<>();
         List<Class> paramTypes = new ArrayList<>();
@@ -58,6 +60,7 @@ public class RestServiceInvoker {
         return _invokeServiceMethod(serviceName, methodName, paramValuesStr, paramTypes);
     }
 
+    @Nullable
     public String invokeServiceMethod(String serviceName, String methodName, Map<String, String> paramsMap) {
         List<String> paramValuesStr = new ArrayList<>();
         List<Class> paramTypes = new ArrayList<>();
@@ -67,6 +70,7 @@ public class RestServiceInvoker {
         return _invokeServiceMethod(serviceName, methodName, paramValuesStr, paramTypes);
     }
 
+    @Nullable
     protected String _invokeServiceMethod(String serviceName, String methodName, List<String> paramValuesStr, List<Class> paramTypes) {
         if (!paramTypes.isEmpty() && paramValuesStr.size() != paramTypes.size()) {
             throw new RestAPIException(
