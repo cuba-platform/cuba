@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.sys.CubaEnhancingDisabled;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -39,6 +40,7 @@ import java.util.Map;
  *
  */
 @com.haulmont.chile.core.annotations.MetaClass(name = "sys$KeyValueEntity")
+@SystemLevel
 public class KeyValueEntity extends AbstractNotPersistentEntity implements CubaEnhancingDisabled {
 
     private Map<String, Object> properties = new LinkedHashMap<>();

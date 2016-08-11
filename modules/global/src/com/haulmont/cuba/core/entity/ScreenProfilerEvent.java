@@ -18,10 +18,12 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import java.util.Date;
 
 @MetaClass(name = "sys$ScreenProfilerEvent")
+@SystemLevel
 public class ScreenProfilerEvent extends AbstractNotPersistentEntity {
 
     @MetaProperty
