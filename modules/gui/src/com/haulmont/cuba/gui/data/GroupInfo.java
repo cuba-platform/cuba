@@ -20,20 +20,20 @@ import org.apache.commons.collections.map.LinkedMap;
 
 public class GroupInfo<P> {
 
-    private LinkedMap group;
+    private LinkedMap groupingValues;
     private P groupProperty;
-    
-    public GroupInfo(LinkedMap group) {
-        this.group = new LinkedMap(group);
+
+    public GroupInfo(LinkedMap groupingValues) {
+        this.groupingValues = new LinkedMap(groupingValues);
         //noinspection unchecked
-        groupProperty = (P) group.get(group.size() - 1);
+        groupProperty = (P) groupingValues.get(groupingValues.size() - 1);
     }
 
     public Object getPropertyValue(P propertyPath) {
-        if (!group.containsKey(propertyPath)) {
+        if (!groupingValues.containsKey(propertyPath)) {
             throw new IllegalArgumentException();
         }
-        return group.get(propertyPath);
+        return groupingValues.get(propertyPath);
     }
 
     public P getProperty() {
@@ -50,10 +50,10 @@ public class GroupInfo<P> {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
-        for (int groupIndex = 0; groupIndex < group.size(); groupIndex++) {
-            final Object value = group.getValue(groupIndex);
+        for (int groupIndex = 0; groupIndex < groupingValues.size(); groupIndex++) {
+            final Object value = groupingValues.getValue(groupIndex);
             sb.append("[")
-                    .append(group.get(groupIndex))
+                    .append(groupingValues.get(groupIndex))
                     .append(":")
                     .append(value != null
                             ? value.toString() : "")

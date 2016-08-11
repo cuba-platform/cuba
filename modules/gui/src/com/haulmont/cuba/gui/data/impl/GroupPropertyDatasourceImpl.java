@@ -98,4 +98,24 @@ public class GroupPropertyDatasourceImpl<T extends Entity<K>, K>
     public boolean containsGroup(GroupInfo groupId) {
         return groupDelegate.containsGroup(groupId);
     }
+
+    @Override
+    public List<Entity> getOwnChildItems(GroupInfo groupId) {
+        return groupDelegate.getOwnChildItems(groupId);
+    }
+
+    @Override
+    public List<Entity> getChildItems(GroupInfo groupId) {
+        return groupDelegate.getChildItems(groupId);
+    }
+
+    @Override
+    public GroupInfo getParentGroup(Entity entity) {
+        return groupDelegate.getParentGroup(entity);
+    }
+
+    @Override
+    public List<GroupInfo> getGroupPath(Entity entity) {
+        return groupDelegate.getGroupPath(entity);
+    }
 }

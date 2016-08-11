@@ -66,6 +66,26 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
+    public List<Entity> getOwnChildItems(GroupInfo groupId) {
+        return groupDelegate.getOwnChildItems(groupId);
+    }
+
+    @Override
+    public List<Entity> getChildItems(GroupInfo groupId) {
+        return groupDelegate.getChildItems(groupId);
+    }
+
+    @Override
+    public GroupInfo getParentGroup(Entity entity) {
+        return groupDelegate.getParentGroup(entity);
+    }
+
+    @Override
+    public List<GroupInfo> getGroupPath(Entity entity) {
+        return groupDelegate.getGroupPath(entity);
+    }
+
+    @Override
     public Object getGroupProperty(GroupInfo groupId) {
         return groupDelegate.getGroupProperty(groupId);
     }
