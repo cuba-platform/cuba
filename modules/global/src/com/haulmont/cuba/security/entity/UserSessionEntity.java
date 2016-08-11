@@ -20,6 +20,7 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import java.util.Date;
 
@@ -28,6 +29,7 @@ import java.util.Date;
  *
  */
 @MetaClass(name = "sec$UserSessionEntity")
+@SystemLevel
 public class UserSessionEntity extends AbstractNotPersistentEntity {
 
     private static final long serialVersionUID = 7730031482721158275L;
