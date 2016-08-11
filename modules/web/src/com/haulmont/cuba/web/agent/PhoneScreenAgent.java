@@ -28,7 +28,8 @@ public class PhoneScreenAgent implements ScreenAgent {
     @Override
     public boolean isSupported(DeviceInfo device) {
         return device.isIPhone()
-                || ((device.isAndroid() || device.isWindowsPhone()) && device.getAspectRatio() > 1.32);
+                || ((device.isAndroid() || device.isWindowsPhone())
+                    && (device.getAspectRatio() > 1.32 && device.getMaximumDimension() < 800));
     }
 
     @Override
