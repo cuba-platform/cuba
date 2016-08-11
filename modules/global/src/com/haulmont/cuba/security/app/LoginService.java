@@ -111,8 +111,9 @@ public interface LoginService {
     UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale, Map<String, Object> params) throws LoginException;
 
     /**
-     * Get system user session from a trusted client.
-     * Do not call {@link #logout()} for obtained user session. It is cached on middleware for multiple clients.
+     * Get system user session from a trusted client. <br/>
+     * Do not call {@link #logout()} for obtained user session. It is cached on middleware for multiple clients. <br/>
+     * Do not cache system session on clients since it is not replicated in cluster.
      *
      * @param trustedClientPassword trusted client password
      * @return created user session
