@@ -39,6 +39,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
 
     protected boolean autoRefresh;
     protected boolean ignoreListeners;
+    protected boolean executeAutoRefreshInvalid = true;
 
     protected CollectionDatasource datasource;
 
@@ -167,22 +168,24 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
 
     @Override
     public Collection getItemIds() {
-        if (UI.getCurrent().getConnectorTracker().isWritingResponse()) {
-            try {
-                CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
-            } catch (IllegalStateException ex) {
-                if (StringUtils.contains(ex.getMessage(), "A connector should not be marked as dirty while a response is being written")) {
-                    // explain exception
-                    String message = String.format(
-                            "Some datasource listener has modified the component while it is in rendering state. Please refresh datasource '%s' explicitly",
-                            datasource.getId());
-                    throw new IllegalStateException(message, ex);
-                }
+        if (executeAutoRefreshInvalid) {
+            if (UI.getCurrent().getConnectorTracker().isWritingResponse()) {
+                try {
+                    CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
+                } catch (IllegalStateException ex) {
+                    if (StringUtils.contains(ex.getMessage(), "A connector should not be marked as dirty while a response is being written")) {
+                        // explain exception
+                        String message = String.format(
+                                "Some datasource listener has modified the component while it is in rendering state. Please refresh datasource '%s' explicitly",
+                                datasource.getId());
+                        throw new IllegalStateException(message, ex);
+                    }
 
-                throw ex;
+                    throw ex;
+                }
+            } else {
+                CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
             }
-        } else {
-            CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
         }
 
         Collection itemIds = datasource.getItemIds();
@@ -373,5 +376,9 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
 
         weakDsListenerAdapter = null;
         datasource = null;
+    }
+
+    public void setExecuteAutoRefreshInvalid(boolean executeAutoRefreshInvalid) {
+        this.executeAutoRefreshInvalid = executeAutoRefreshInvalid;
     }
 }

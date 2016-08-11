@@ -192,7 +192,9 @@ public class WebSearchField extends WebLookupField implements SearchField {
     public void setOptionsDatasource(CollectionDatasource datasource) {
         super.setOptionsDatasource(datasource);
 
-        ((LookupOptionsDsWrapper) component.getContainerDataSource()).setAutoRefresh(false);
+        LookupOptionsDsWrapper containerDataSource = (LookupOptionsDsWrapper) component.getContainerDataSource();
+        containerDataSource.setExecuteAutoRefreshInvalid(false);
+        containerDataSource.setAutoRefresh(false);
     }
 
     @Override
