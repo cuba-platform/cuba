@@ -1,6 +1,6 @@
 # CUBA Platform
 
-[CUBA Platform](https://www.cuba-platform.com) is a high level framework for rapid development of enterprise applications with rich web interface.
+[CUBA Platform](https://www.cuba-platform.com) is a high level framework for rapid development of enterprise applications with a rich web interface.
 
 The simplest way to start using the platform is to [download](https://www.cuba-platform.com/download) CUBA Studio and create a new project in it. A released version of the platform will be downloaded automatically from the artifact repository.
 
@@ -8,8 +8,8 @@ You can also build a snapshot version of the platform from the source code and u
 
 ## Building from Source
 
-In order to build the platform from source, you need to install the following:
-* Java 8 Development Kit (JDK)
+In order to build the platform from source, you'll need to install the following:
+* [Java 8 Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 * [Gradle](https://gradle.org) (tested on 2.13, but newer versions may also work)
 * [CUBA Gradle Plugin](https://github.com/cuba-platform/cuba-gradle-plugin)
 
