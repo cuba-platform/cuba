@@ -21,27 +21,21 @@ import com.google.common.base.Splitter;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.AppContextLoader;
 import com.haulmont.cuba.core.sys.CubaCoreApplicationContext;
+import com.haulmont.cuba.core.sys.SingleAppResourcePatternResolver;
 import com.haulmont.cuba.core.sys.remoting.RemotingServlet;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 import javax.servlet.*;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * {@link AppContext} loader of the middleware application block packed in a WAR together with the web block.
  */
 public class SingleAppCoreContextLoader extends AppContextLoader {
-
-    public static final Pattern JAR_NAME_PATTERN = Pattern.compile(".*/(.+?\\.jar).*");
 
     private Set<String> dependencyJars;
 
@@ -90,27 +84,7 @@ public class SingleAppCoreContextLoader extends AppContextLoader {
                     throw new RuntimeException("No JARs defined for the 'core' block. " +
                             "Please check that core.dependencies file exists in WEB-INF directory.");
                 }
-
-                return new PathMatchingResourcePatternResolver(this) {
-                    @Override
-                    public Resource[] getResources(String locationPattern) throws IOException {
-                        Resource[] resources = super.getResources(locationPattern);
-                        return Arrays.stream(resources).filter(resource -> {
-                                    try {
-                                        String url = resource.getURL().toString();
-                                        Matcher matcher = JAR_NAME_PATTERN.matcher(url);
-                                        if (matcher.find()) {
-                                            String jarName = matcher.group(1);
-                                            return dependencyJars.contains(jarName);
-                                        }
-                                        return true;
-                                    } catch (IOException e) {
-                                        throw new RuntimeException("An error occurred while looking for resources", e);
-                                    }
-                                }
-                        ).toArray(Resource[]::new);
-                    }
-                };
+                return new SingleAppResourcePatternResolver(this, dependencyJars);
             }
         };
     }
