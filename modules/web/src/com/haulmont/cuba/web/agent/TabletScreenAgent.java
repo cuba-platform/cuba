@@ -18,10 +18,11 @@ package com.haulmont.cuba.web.agent;
 
 import com.haulmont.cuba.gui.config.DeviceInfo;
 import com.haulmont.cuba.gui.config.ScreenAgent;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 @Component(TabletScreenAgent.NAME)
-public class TabletScreenAgent implements ScreenAgent {
+public class TabletScreenAgent implements ScreenAgent, Ordered {
 
     public static final String NAME = "cuba_TabletScreenAgent";
 
@@ -35,5 +36,10 @@ public class TabletScreenAgent implements ScreenAgent {
     @Override
     public String getAlias() {
         return "TABLET";
+    }
+
+    @Override
+    public int getOrder() {
+        return HIGHEST_PLATFORM_PRECEDENCE + 10;
     }
 }

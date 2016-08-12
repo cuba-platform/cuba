@@ -32,6 +32,7 @@ import org.apache.commons.lang.text.StrTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.Ordered;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
@@ -100,7 +101,25 @@ public class WindowConfig {
         Map<String, ScreenAgent> agentMap = AppBeans.getAll(ScreenAgent.class);
 
         Map<String, ScreenAgent> screenAgents = new HashMap<>();
-        for (ScreenAgent screenAgent : agentMap.values()) {
+        List<ScreenAgent> availableAgents = new ArrayList<>(agentMap.values());
+
+        availableAgents.sort((a1, a2) -> {
+            if (a1 instanceof Ordered && a2 instanceof Ordered) {
+                return Integer.compare(((Ordered) a1).getOrder(), ((Ordered) a2).getOrder());
+            }
+
+            if (a1 instanceof Ordered) {
+                return 1;
+            }
+
+            if (a2 instanceof Ordered) {
+                return -1;
+            }
+
+            return 0;
+        });
+
+        for (ScreenAgent screenAgent : availableAgents) {
             screenAgents.put(screenAgent.getAlias(), screenAgent);
         }
         this.activeScreenAgents = screenAgents;
