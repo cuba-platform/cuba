@@ -31,7 +31,6 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.Connection;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
-import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaCopyButtonExtension;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
@@ -57,11 +56,9 @@ import java.util.UUID;
 
 /**
  * This dialog can be used by exception handlers to show an information about error.
- *
  */
 public class ExceptionDialog extends CubaWindow {
-
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(ExceptionDialog.class);
 
     protected VerticalLayout mainLayout;
 
@@ -80,6 +77,12 @@ public class ExceptionDialog extends CubaWindow {
     protected ClientConfig clientConfig = AppBeans.<Configuration>get(Configuration.NAME).getConfig(ClientConfig.class);
 
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+
+    protected TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+
+    protected EmailService emailService = AppBeans.get(EmailService.NAME);
+
+    protected Security security = AppBeans.get(Security.NAME);
 
     public ExceptionDialog(Throwable throwable) {
         this(throwable, null, null);
@@ -128,7 +131,15 @@ public class ExceptionDialog extends CubaWindow {
         TextArea textArea = new TextArea();
         textArea.setHeight(theme.get("cuba.web.ExceptionDialog.textArea.height"));
         textArea.setWidth(100, Unit.PERCENTAGE);
-        textArea.setValue(text);
+
+        boolean showExceptionDetails = userSessionSource.getUserSession() != null
+                && security.isSpecificPermitted("cuba.gui.showExceptionDetails");
+
+        if (showExceptionDetails) {
+            textArea.setValue(text);
+        } else {
+            textArea.setValue(messages.getMainMessage("exceptionDialog.contactAdmin"));
+        }
         textArea.setReadOnly(true);
 
         mainLayout.addComponent(textArea);
@@ -139,22 +150,17 @@ public class ExceptionDialog extends CubaWindow {
         mainLayout.addComponent(buttonsLayout);
 
         Button closeButton = new CubaButton(messages.getMainMessage("exceptionDialog.closeBtn"));
-        closeButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                ExceptionDialog.this.close();
-            }
-        });
+        closeButton.addClickListener((Button.ClickListener) event ->
+                this.close()
+        );
         buttonsLayout.addComponent(closeButton);
 
         showStackTraceButton = new CubaButton(messages.getMainMessage("exceptionDialog.showStackTrace"));
-        showStackTraceButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                setStackTraceVisible(!isStackTraceVisible);
-            }
-        });
+        showStackTraceButton.addClickListener((Button.ClickListener) event ->
+                setStackTraceVisible(!isStackTraceVisible)
+        );
         buttonsLayout.addComponent(showStackTraceButton);
+        showStackTraceButton.setVisible(showExceptionDetails);
 
         Label spacer = new Label();
         buttonsLayout.addComponent(spacer);
@@ -176,29 +182,23 @@ public class ExceptionDialog extends CubaWindow {
 
         if (userSessionSource.getUserSession() != null) {
             if (!StringUtils.isBlank(clientConfig.getSupportEmail())) {
-                final Button reportButton = new CubaButton(messages.getMainMessage("exceptionDialog.reportBtn"));
-                reportButton.addClickListener(new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(Button.ClickEvent event) {
-                        sendSupportEmail(text, htmlStackTrace);
-                        reportButton.setEnabled(false);
-                    }
+                Button reportButton = new CubaButton(messages.getMainMessage("exceptionDialog.reportBtn"));
+                reportButton.addClickListener((Button.ClickListener) event -> {
+                    sendSupportEmail(text, htmlStackTrace);
+                    reportButton.setEnabled(false);
                 });
                 buttonsLayout.addComponent(reportButton);
 
                 if (ui.isTestMode()) {
-                    reportButton.setCubaId("reportButton");
+                    reportButton.setCubaId("errorReportButton");
                 }
             }
         }
 
         Button logoutButton = new CubaButton(messages.getMainMessage("exceptionDialog.logout"));
-        logoutButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                logoutPrompt();
-            }
-        });
+        logoutButton.addClickListener((Button.ClickListener) event ->
+                logoutPrompt()
+        );
         buttonsLayout.addComponent(logoutButton);
 
         stackTraceTextArea = new TextArea();
@@ -290,7 +290,6 @@ public class ExceptionDialog extends CubaWindow {
                     if (guiDevException.getFrameId() != null) {
                         params.put("Frame ID", guiDevException.getFrameId());
                         try {
-                            WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
                             params.put("XML descriptor",
                                     windowConfig.getWindowInfo(guiDevException.getFrameId()).getTemplate());
                         } catch (Exception e) {
@@ -356,7 +355,6 @@ public class ExceptionDialog extends CubaWindow {
     public void sendSupportEmail(String message, String stackTrace) {
         try {
             User user = userSessionSource.getUserSession().getUser();
-            TimeSource timeSource = AppBeans.get(TimeSource.NAME);
             String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(timeSource.currentTimestamp());
 
             //noinspection StringBufferReplaceableByString
@@ -374,7 +372,6 @@ public class ExceptionDialog extends CubaWindow {
                 info.setFrom(user.getEmail());
             }
 
-            EmailService emailService = AppBeans.get(EmailService.NAME);
             emailService.sendEmail(info);
             Notification.show(messages.getMainMessage("exceptionDialog.emailSent"));
         } catch (Throwable e) {

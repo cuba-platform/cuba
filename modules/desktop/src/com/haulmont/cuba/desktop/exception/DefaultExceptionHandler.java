@@ -69,6 +69,15 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     }
 
     protected ErrorInfo createErrorInfo(Throwable exception) {
+        UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+        Security security = AppBeans.get(Security.NAME);
+        if (userSessionSource.getUserSession() == null
+                || !security.isSpecificPermitted("cuba.gui.showExceptionDetails")) {
+            return new ErrorInfo(
+                    getMessage("errorPane.title"), getMessage("exceptionDialog.contactAdmin"),
+                    null, null, null, null, null);
+        }
+
         Throwable rootCause = ExceptionUtils.getRootCause(exception);
         if (rootCause == null)
             rootCause = exception;

@@ -76,6 +76,12 @@ public class JXErrorPaneExt extends JXErrorPane {
         };
         copyButton.addActionListener(copyToClipboardListener);
 
+        UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+        Security security = AppBeans.get(Security.NAME);
+        if (userSessionSource == null || !security.isSpecificPermitted("cuba.gui.showExceptionDetails")) {
+            copyButton.setVisible(false);
+        }
+
         String supportEmail = null;
         if (App.getInstance().getConnection().isConnected()) {
             supportEmail = clientConfig.getSupportEmail();
