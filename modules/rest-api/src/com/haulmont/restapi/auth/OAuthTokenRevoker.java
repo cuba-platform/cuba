@@ -29,14 +29,15 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
+ * Bean that is used for access token revocation
  */
 public class OAuthTokenRevoker {
-    private static final Logger log = LoggerFactory.getLogger(OAuthTokenRevoker.class);
+    protected static final Logger log = LoggerFactory.getLogger(OAuthTokenRevoker.class);
 
     @Inject
-    private TokenStore tokenStore;
+    protected TokenStore tokenStore;
 
-    public boolean revokeToken(final String token, final String tokenHint, final Authentication clientAuth) {
+    public boolean revokeToken(String token, String tokenHint, Authentication clientAuth) {
         log.debug("revokeToken; token = {}, tokenHint = {}, clientAuth = {}", token, tokenHint, clientAuth);
 
         // Check the refresh_token store first. Fall back to the access token store if we don't
@@ -50,11 +51,11 @@ public class OAuthTokenRevoker {
         return revokeAccessToken(token, clientAuth) || revokeRefreshToken(token, clientAuth);
     }
 
-    private boolean revokeRefreshToken(final String token, final Authentication clientAuth) {
-        final OAuth2RefreshToken refreshToken = tokenStore.readRefreshToken(token);
+    protected boolean revokeRefreshToken(String token, Authentication clientAuth) {
+        OAuth2RefreshToken refreshToken = tokenStore.readRefreshToken(token);
         if (refreshToken != null) {
             log.debug("Found refresh token {}.", token);
-            final OAuth2Authentication authToRevoke = tokenStore.readAuthenticationForRefreshToken(refreshToken);
+            OAuth2Authentication authToRevoke = tokenStore.readAuthenticationForRefreshToken(refreshToken);
             checkIfTokenIsIssuedToClient(clientAuth, authToRevoke);
             tokenStore.removeAccessTokenUsingRefreshToken(refreshToken);
             tokenStore.removeRefreshToken(refreshToken);
@@ -66,11 +67,11 @@ public class OAuthTokenRevoker {
         return false;
     }
 
-    private boolean revokeAccessToken(final String token, final Authentication clientAuth) {
-        final OAuth2AccessToken accessToken = tokenStore.readAccessToken(token);
+    protected boolean revokeAccessToken(String token, Authentication clientAuth) {
+        OAuth2AccessToken accessToken = tokenStore.readAccessToken(token);
         if (accessToken != null) {
             log.debug("Found access token {}.", token);
-            final OAuth2Authentication authToRevoke = tokenStore.readAuthentication(accessToken);
+            OAuth2Authentication authToRevoke = tokenStore.readAuthentication(accessToken);
             checkIfTokenIsIssuedToClient(clientAuth, authToRevoke);
             if (accessToken.getRefreshToken() != null) {
                 tokenStore.removeRefreshToken(accessToken.getRefreshToken());
@@ -84,14 +85,13 @@ public class OAuthTokenRevoker {
         return false;
     }
 
-    private void checkIfTokenIsIssuedToClient(final Authentication clientAuth,
-                                              final OAuth2Authentication authToRevoke) {
-        final String requestingClientId = clientAuth.getName();
-        final String tokenClientId = authToRevoke.getOAuth2Request().getClientId();
+    protected void checkIfTokenIsIssuedToClient(Authentication clientAuth,
+                                              OAuth2Authentication authToRevoke) {
+        String requestingClientId = clientAuth.getName();
+        String tokenClientId = authToRevoke.getOAuth2Request().getClientId();
         if (!requestingClientId.equals(tokenClientId)) {
             log.debug("Revoke FAILED: requesting client = {}, token's client = {}.", requestingClientId, tokenClientId);
             throw new InvalidGrantException("Cannot revoke tokens issued to other clients.");
         }
-        log.debug("OK to revoke; token is issued to client \"{}\"", requestingClientId);
     }
 }

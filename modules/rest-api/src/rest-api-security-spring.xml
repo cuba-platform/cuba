@@ -46,7 +46,7 @@
           create-session="stateless"
           authentication-manager-ref="clientAuthenticationManager"
           xmlns="http://www.springframework.org/schema/security">
-        <anonymous enabled="false"/>
+        <intercept-url pattern="/**" access="isAuthenticated()"/>
         <http-basic entry-point-ref="clientAuthenticationEntryPoint"/>
         <csrf disabled="true"/>
         <cors configuration-source-ref="corsSource"/>
@@ -122,11 +122,6 @@
         <cors configuration-source-ref="corsSource"/>
         <custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER"/>
     </http>
-
-    <!--<bean id="clientCredentialsTokenEndpointFilter"-->
-          <!--class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">-->
-        <!--<property name="authenticationManager" ref="clientAuthenticationManager"/>-->
-    <!--</bean>-->
 
     <bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
         <property name="realmName" value="rest-api" />

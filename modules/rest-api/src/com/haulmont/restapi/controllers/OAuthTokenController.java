@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,6 +32,7 @@ import javax.inject.Inject;
 import java.security.Principal;
 
 /**
+ * REST controller that is used for token revocation
  */
 @RestController
 public class OAuthTokenController {
@@ -41,9 +43,14 @@ public class OAuthTokenController {
     private OAuthTokenRevoker oAuthTokenRevoker;
 
     @RequestMapping(value = "/api/oauth/revoke", method = RequestMethod.POST)
-    public ResponseEntity<Void> revokeToken(@RequestParam("token") final String token,
-                                            @RequestParam(value = "token_hint", required = false) final String tokenHint, final Principal principal) {
-        log.info("POST {}, /oauth/revoke; token = {}, tokenHint = {}", token, tokenHint);
+    public ResponseEntity<Void> revokeToken(@RequestParam("token") String token,
+                                            @RequestParam(value = "token_hint", required = false) String tokenHint,
+                                            Principal principal) {
+        if (!(principal instanceof Authentication)) {
+            throw new InsufficientAuthenticationException(
+                    "There is no client authentication. Try adding an appropriate authentication filter.");
+        }
+        log.info("POST /oauth/revoke; token = {}, tokenHint = {}", token, tokenHint);
         // Invalid token revocations (token does not exist) still respond
         // with HTTP 200. Still, log the result anyway for posterity.
         // See: https://tools.ietf.org/html/rfc7009#section-2.2
