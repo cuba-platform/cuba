@@ -38,7 +38,8 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
     protected SuggestionExtension suggestionExtension;
 
     public WebSourceCodeEditor() {
-        component = new CubaSourceCodeEditor();
+        component = createCubaSourceCodeEditor();
+
         component.setMode(AceMode.text);
         component.setImmediate(true);
         component.setInvalidCommitted(true);
@@ -46,6 +47,10 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
         component.setBuffered(false);
 
         attachListener(component);
+    }
+
+    protected CubaSourceCodeEditor createCubaSourceCodeEditor() {
+        return new CubaSourceCodeEditor();
     }
 
     @Override

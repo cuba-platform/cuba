@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.sourcecodeeditor;
 
+import com.google.gwt.core.client.GWT;
 import com.vaadin.shared.ui.Connect;
 import org.vaadin.aceeditor.SuggestionExtension;
 import org.vaadin.aceeditor.client.SuggestPopup;
@@ -27,7 +28,7 @@ public class CubaSuggesterConnector extends SuggesterConnector {
 
     @Override
     protected SuggestPopup createSuggestionPopup() {
-        SuggestPopup sp = new CubaSuggestPopup();
+        SuggestPopup sp = GWT.create(CubaSuggestPopup.class);
         sp.setOwner(widget);
         updatePopupPosition(sp);
         sp.setSuggestionSelectedListener(this);
