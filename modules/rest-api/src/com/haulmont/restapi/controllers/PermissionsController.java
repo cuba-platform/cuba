@@ -16,110 +16,28 @@
 
 package com.haulmont.restapi.controllers;
 
-import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.security.entity.PermissionType;
-import com.haulmont.restapi.exception.RestAPIException;
-import org.springframework.http.HttpStatus;
+import com.haulmont.restapi.data.PermissionInfo;
+import com.haulmont.restapi.service.PermissionsControllerManager;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 /**
+ * Controller that is used for getting current user permissions
  */
-@RestController()
+@RestController
+@RequestMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class PermissionsController {
 
     @Inject
-    protected UserSessionSource userSessionSource;
+    protected PermissionsControllerManager permissionsControllerManager;
 
-    @RequestMapping(value = "/api/permissions", method = RequestMethod.GET)
+    @GetMapping("/api/permissions")
     public Collection<PermissionInfo> getPermissions() {
-        Collection<PermissionInfo> result = new ArrayList<>();
-        for (PermissionType permissionType : PermissionType.values()) {
-            Map<String, Integer> permissionsMap = userSessionSource.getUserSession().getPermissionsByType(permissionType);
-            for (Map.Entry<String, Integer> entry : permissionsMap.entrySet()) {
-                String target = entry.getKey();
-                Integer value = entry.getValue();
-                PermissionInfo permissionInfo = new PermissionInfo(permissionType.name(),
-                        target,
-                        getPermissionValueStr(permissionType, value),
-                        value);
-                result.add(permissionInfo);
-            }
-        }
-        return result;
-    }
-
-    protected String getPermissionValueStr(PermissionType permissionType, int value) {
-        switch (permissionType) {
-            case SCREEN:
-            case SPECIFIC:
-            case ENTITY_OP:
-                return value == 1 ? "ALLOW" : "DENY";
-            case ENTITY_ATTR:
-                switch (value) {
-                    case 0: return "DENY";
-                    case 1: return "VIEW";
-                    case 2: return "MODIFY";
-                }
-            case UI:
-                switch (value) {
-                    case 0: return "HIDE";
-                    case 1: return "READ_ONLY";
-                    case 2: return "SHOW";
-                }
-        }
-        throw new RestAPIException("Cannot evaluate permission value", "", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    protected class PermissionInfo {
-        protected String type;
-        protected String target;
-        protected String value;
-        protected int intValue;
-
-        public PermissionInfo(String type, String target, String value, int intValue) {
-            this.type = type;
-            this.target = target;
-            this.value = value;
-            this.intValue = intValue;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public String getTarget() {
-            return target;
-        }
-
-        public void setTarget(String target) {
-            this.target = target;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
-
-        public int getIntValue() {
-            return intValue;
-        }
-
-        public void setIntValue(int intValue) {
-            this.intValue = intValue;
-        }
+        return permissionsControllerManager.getPermissionInfos();
     }
 }

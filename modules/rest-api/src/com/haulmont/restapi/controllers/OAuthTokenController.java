@@ -19,12 +19,9 @@ package com.haulmont.restapi.controllers;
 import com.haulmont.restapi.auth.OAuthTokenRevoker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,10 +39,10 @@ public class OAuthTokenController {
     @Inject
     private OAuthTokenRevoker oAuthTokenRevoker;
 
-    @RequestMapping(value = "/api/oauth/revoke", method = RequestMethod.POST)
-    public ResponseEntity<Void> revokeToken(@RequestParam("token") String token,
-                                            @RequestParam(value = "token_hint", required = false) String tokenHint,
-                                            Principal principal) {
+    @PostMapping("/api/oauth/revoke")
+    public void revokeToken(@RequestParam("token") String token,
+                            @RequestParam(value = "token_hint", required = false) String tokenHint,
+                            Principal principal) {
         if (!(principal instanceof Authentication)) {
             throw new InsufficientAuthenticationException(
                     "There is no client authentication. Try adding an appropriate authentication filter.");
@@ -57,6 +54,5 @@ public class OAuthTokenController {
         if (!oAuthTokenRevoker.revokeToken(token, tokenHint, (Authentication) principal)) {
             log.debug("No token with value {} was revoked.", token);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

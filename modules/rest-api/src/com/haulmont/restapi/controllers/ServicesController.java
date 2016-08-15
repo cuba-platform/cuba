@@ -17,14 +17,14 @@
 package com.haulmont.restapi.controllers;
 
 import com.haulmont.cuba.restapi.RestServicePermissions;
-import com.haulmont.restapi.exception.RestAPIException;
-import com.haulmont.restapi.service.RestServiceInvoker;
+import com.haulmont.restapi.service.ServicesControllerManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Controller that is used for service method invocations with the REST API
@@ -34,17 +34,13 @@ import java.util.*;
 public class ServicesController {
 
     @Inject
-    protected RestServiceInvoker restServiceInvoker;
+    protected ServicesControllerManager servicesControllerManager;
 
-    @Inject
-    protected RestServicePermissions restServicePermissions;
-
-    @RequestMapping(path = "/{serviceName}/{methodName}", method = RequestMethod.POST)
+    @PostMapping("/{serviceName}/{methodName}")
     public ResponseEntity<String> invokeServiceMethodPost(@PathVariable String serviceName,
                                                           @PathVariable String methodName,
                                                           @RequestBody(required = false) String paramsJson) {
-        checkServicePermissions(serviceName, methodName);
-        String result = restServiceInvoker.invokeServiceMethod(serviceName, methodName, paramsJson);
+        String result = servicesControllerManager.invokeServiceMethodPost(serviceName, methodName, paramsJson);
         HttpStatus status;
         if (result == null) {
             status = HttpStatus.NO_CONTENT;
@@ -55,12 +51,11 @@ public class ServicesController {
         return new ResponseEntity<>(result, status);
     }
 
-    @RequestMapping(path = "/{serviceName}/{methodName}", method = RequestMethod.GET)
+    @GetMapping("/{serviceName}/{methodName}")
     public ResponseEntity<String> invokeServiceMethodGet(@PathVariable String serviceName,
-                                         @PathVariable String methodName,
-                                         @RequestParam Map<String, String> paramsMap) {
-        checkServicePermissions(serviceName, methodName);
-        String result  = restServiceInvoker.invokeServiceMethod(serviceName, methodName, paramsMap);
+                                                         @PathVariable String methodName,
+                                                         @RequestParam Map<String, String> paramsMap) {
+        String result = servicesControllerManager.invokeServiceMethodGet(serviceName, methodName, paramsMap);
         HttpStatus status;
         if (result == null) {
             status = HttpStatus.NO_CONTENT;
@@ -71,27 +66,13 @@ public class ServicesController {
         return new ResponseEntity<>(result, status);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public Collection<RestServicePermissions.ServiceInfo> getServiceInfos() {
-        return restServicePermissions.getServiceInfos();
+        return servicesControllerManager.getServiceInfos();
     }
 
-    @RequestMapping(path = "/{serviceName}", method = RequestMethod.GET)
+    @GetMapping("/{serviceName}")
     public RestServicePermissions.ServiceInfo getServiceInfo(@PathVariable String serviceName) {
-        RestServicePermissions.ServiceInfo serviceInfo = restServicePermissions.getServiceInfo(serviceName);
-        if (serviceInfo == null) {
-            throw new RestAPIException("Service not allowed",
-                    "The service with the given name not allowed for using with REST API",
-                    HttpStatus.FORBIDDEN);
-        }
-        return serviceInfo;
-    }
-
-    protected void checkServicePermissions(String serviceName, String methodName) {
-        if (!restServicePermissions.isPermitted(serviceName, methodName)) {
-            throw new RestAPIException("Method not available",
-                    String.format("Method %s of service %s is not available", methodName, serviceName),
-                    HttpStatus.FORBIDDEN);
-        }
+        return servicesControllerManager.getServiceInfo(serviceName);
     }
 }

@@ -16,27 +16,14 @@
 
 package com.haulmont.restapi.controllers;
 
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.*;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.restapi.common.RestControllerUtils;
-import com.haulmont.restapi.exception.RestAPIException;
 import com.haulmont.restapi.query.RestQueriesManager;
-import org.springframework.http.HttpStatus;
-import org.springframework.util.ClassUtils;
+import com.haulmont.restapi.service.QueriesControllerManager;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -47,114 +34,24 @@ import java.util.*;
 public class QueriesController {
 
     @Inject
-    protected RestQueriesManager restQueriesManager;
+    protected QueriesControllerManager queriesControllerManager;
 
-    @Inject
-    protected DataManager dataManager;
-
-    @Inject
-    protected Metadata metadata;
-
-    @Inject
-    protected EntitySerializationAPI entitySerializationAPI;
-
-    @Inject
-    protected Security security;
-
-    @Inject
-    protected RestControllerUtils restControllerUtils;
-
-    @RequestMapping(value = "/{entityName}/{queryName}", method = RequestMethod.GET)
+    @GetMapping("/{entityName}/{queryName}")
     public String executeQuery(@PathVariable String entityName,
                                @PathVariable String queryName,
                                @RequestParam Map<String, String> params) throws ClassNotFoundException, ParseException {
-        LoadContext<Entity> ctx = createQueryLoadContext(entityName, queryName, params);
-        List<Entity> entities = dataManager.loadList(ctx);
-        return entitySerializationAPI.toJson(entities);
+        return queriesControllerManager.executeQuery(entityName, queryName, params);
     }
 
-    @RequestMapping(value = "/{entityName}/{queryName}/count", method = RequestMethod.GET)
+    @GetMapping("/{entityName}/{queryName}/count")
     public String getCount(@PathVariable String entityName,
-                               @PathVariable String queryName,
-                               @RequestParam Map<String, String> params) throws ClassNotFoundException, ParseException {
-        LoadContext<Entity> ctx = createQueryLoadContext(entityName, queryName, params);
-        long count = dataManager.getCount(ctx);
-        return String.valueOf(count);
+                           @PathVariable String queryName,
+                           @RequestParam Map<String, String> params) throws ClassNotFoundException, ParseException {
+        return queriesControllerManager.getCount(entityName, queryName, params);
     }
 
-    @RequestMapping(value = "/{entityName}", method = RequestMethod.GET)
+    @GetMapping("/{entityName}")
     public List<RestQueriesManager.QueryInfo> loadQueriesList(@PathVariable String entityName) {
-        MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
-        checkCanReadEntity(metaClass);
-        return restQueriesManager.getQueries(entityName);
-    }
-
-    protected LoadContext<Entity> createQueryLoadContext(String entityName,
-                                                         String queryName,
-                                                         Map<String, String> params) throws ClassNotFoundException, ParseException {
-        MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
-        checkCanReadEntity(metaClass);
-
-        RestQueriesManager.QueryInfo queryInfo = restQueriesManager.getQuery(entityName, queryName);
-        if (queryInfo == null) {
-            throw new RestAPIException("Query not found",
-                    String.format("Query with name %s for entity %s not found", queryName, entityName),
-                    HttpStatus.NOT_FOUND);
-        }
-
-        LoadContext<Entity> ctx = new LoadContext<>(metaClass);
-        LoadContext.Query query = new LoadContext.Query(queryInfo.getJpql());
-
-        for (RestQueriesManager.QueryParamInfo paramInfo : queryInfo.getParams()) {
-            String paramName = paramInfo.getName();
-            String requestParamValue = params.get(paramName);
-            if (requestParamValue == null) {
-                throw new RestAPIException("Query parameter not found",
-                        String.format("Query parameter %s not found", paramName),
-                        HttpStatus.BAD_REQUEST);
-            }
-
-            Class<?> clazz = ClassUtils.forName(paramInfo.getType(), getClass().getClassLoader());
-            Object objectParamValue = toObject(clazz, requestParamValue);
-            query.setParameter(paramName, objectParamValue);
-        }
-
-        ctx.setQuery(query);
-        ctx.setView(queryInfo.getViewName());
-        return ctx;
-    }
-
-    protected void checkCanReadEntity(MetaClass metaClass) {
-        if (!security.isEntityOpPermitted(metaClass, EntityOp.READ)) {
-            throw new RestAPIException("Reading forbidden",
-                    String.format("Reading of the %s is forbidden", metaClass.getName()),
-                    HttpStatus.FORBIDDEN);
-        }
-    }
-
-
-    protected Object toObject(Class clazz, String value) throws ParseException {
-        if (String.class == clazz) return value;
-        if (Integer.class == clazz || Integer.TYPE == clazz
-                || Byte.class == clazz || Byte.TYPE == clazz
-                || Short.class == clazz || Short.TYPE == clazz) return Datatypes.get(IntegerDatatype.NAME).parse(value);
-        if (Date.class == clazz) {
-            try {
-                return Datatypes.get(DateTimeDatatype.NAME).parse(value);
-            } catch (ParseException e) {
-                try {
-                    return Datatypes.get(DateDatatype.NAME).parse(value);
-                } catch (ParseException e1) {
-                    return Datatypes.get(TimeDatatype.NAME).parse(value);
-                }
-            }
-        }
-        if (BigDecimal.class == clazz) return Datatypes.get(BigDecimalDatatype.NAME).parse(value);
-        if (Boolean.class == clazz || Boolean.TYPE == clazz) return Datatypes.get(BooleanDatatype.NAME).parse(value);
-        if (Long.class == clazz || Long.TYPE == clazz) return Datatypes.get(LongDatatype.NAME).parse(value);
-        if (Double.class == clazz || Double.TYPE == clazz
-                || Float.class == clazz || Float.TYPE == clazz) return Datatypes.get(DoubleDatatype.NAME).parse(value);
-        if (UUID.class == clazz) return UUID.fromString(value);
-        throw new IllegalArgumentException("Parameters of type " + clazz.getName() + " are not supported");
+        return queriesControllerManager.loadQueriesList(entityName);
     }
 }

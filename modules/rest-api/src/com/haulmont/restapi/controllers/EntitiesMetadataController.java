@@ -17,22 +17,17 @@
 package com.haulmont.restapi.controllers;
 
 
-import com.google.common.base.Joiner;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Range;
-import com.haulmont.cuba.core.app.serialization.ViewSerializationAPI;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.restapi.common.RestControllerUtils;
-import com.haulmont.restapi.exception.RestAPIException;
+import com.haulmont.restapi.data.MetaClassInfo;
+import com.haulmont.restapi.service.EntitiesMetadataControllerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
 
 /**
  * Controller that is used for getting entities metadata. User permissions for entities access aren't taken into account
@@ -45,112 +40,27 @@ public class EntitiesMetadataController {
     protected Logger log = LoggerFactory.getLogger(EntitiesMetadataController.class);
 
     @Inject
-    protected Metadata metadata;
+    protected EntitiesMetadataControllerManager controllerManager;
 
-    @Inject
-    protected RestControllerUtils restControllersUtils;
-
-    @Inject
-    protected ViewSerializationAPI viewSerializationAPI;
-
-    @Inject
-    protected ViewRepository viewRepository;
-
-    @Inject
-    protected Messages messages;
-
-    @RequestMapping(path = "/entities/{entityName}", method = RequestMethod.GET)
+    @GetMapping("/entities/{entityName}")
     public MetaClassInfo getMetaClassInfo(@PathVariable String entityName) {
-        MetaClass metaClass = restControllersUtils.getMetaClass(entityName);
-        return new MetaClassInfo(metaClass);
+        return controllerManager.getMetaClassInfo(entityName);
     }
 
-    @RequestMapping(path = "/entities", method = RequestMethod.GET)
+    @GetMapping("/entities")
     public Collection<MetaClassInfo> getAllMetaClassesInfo() {
-        Set<MetaClass> metaClasses = new HashSet<>(metadata.getTools().getAllPersistentMetaClasses());
-        metaClasses.addAll(metadata.getTools().getAllEmbeddableMetaClasses());
-
-        return metaClasses.stream()
-                .filter(metaClass -> metadata.getExtendedEntities().getExtendedClass(metaClass) == null)
-                .map(MetaClassInfo::new)
-                .collect(Collectors.toList());
+        return controllerManager.getAllMetaClassesInfo();
     }
 
-    @RequestMapping(path = "/entities/{entityName}/views/{viewName}", method = RequestMethod.GET)
+    @GetMapping("/entities/{entityName}/views/{viewName}")
     public String getView(@PathVariable String entityName,
                           @PathVariable String viewName) {
-        MetaClass metaClass = restControllersUtils.getMetaClass(entityName);
-        View view = viewRepository.findView(metaClass, viewName);
-        if (view == null) {
-            throw new RestAPIException("View not found",
-                    String.format("View %s for metaClass %s not found", viewName, entityName),
-                    HttpStatus.NOT_FOUND);
-        }
-        return viewSerializationAPI.toJson(view);
+        return controllerManager.getView(entityName, viewName);
     }
 
-    @RequestMapping(path = "/entities/{entityName}/views", method = RequestMethod.GET)
+    @GetMapping("/entities/{entityName}/views")
     public String getAllViewsForMetaClass(@PathVariable String entityName) {
-        MetaClass metaClass = restControllersUtils.getMetaClass(entityName);
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        List<String> jsonViews = new ArrayList<>();
-        for (String viewName : viewRepository.getViewNames(metaClass)) {
-            View view = viewRepository.getView(metaClass, viewName);
-            jsonViews.add(viewSerializationAPI.toJson(view));
-        }
-        sb.append(Joiner.on(",").join(jsonViews));
-        sb.append("]");
-        return sb.toString();
+        return controllerManager.getAllViewsForMetaClass(entityName);
     }
 
-    protected class MetaClassInfo {
-        public String entityName;
-        public List<MetaPropertyInfo> properties = new ArrayList<>();
-
-        public MetaClassInfo(MetaClass metaClass) {
-            this.entityName = metaClass.getName();
-
-            properties.addAll(metaClass.getProperties().stream()
-                    .map(MetaPropertyInfo::new)
-                    .collect(Collectors.toList()));
-        }
-    }
-
-    protected class MetaPropertyInfo {
-        public String name;
-        public MetaProperty.Type attributeType;
-        public String type;
-        public Range.Cardinality cardinality;
-        public boolean mandatory;
-        public boolean readOnly;
-        boolean isTransient;
-        public String description;
-
-        public MetaPropertyInfo(MetaProperty metaProperty) {
-            this.name = metaProperty.getName();
-            this.attributeType = metaProperty.getType();
-            switch (attributeType) {
-                case DATATYPE:
-                    this.type = metaProperty.getRange().asDatatype().getName();
-                    break;
-                case ASSOCIATION:
-                case COMPOSITION:
-                    this.type = metaProperty.getRange().asClass().getName();
-                    break;
-                case ENUM:
-                    this.type = metaProperty.getRange().asEnumeration().getJavaClass().getName();
-                    break;
-            }
-            this.cardinality = metaProperty.getRange().getCardinality();
-            this.readOnly = metaProperty.isReadOnly();
-            this.mandatory = metaProperty.isMandatory();
-            this.isTransient = metadata.getTools().isTransient(metaProperty);
-            this.description = messages.getTools().getPropertyCaption(metaProperty);
-        }
-
-        public boolean getTransient() {
-            return isTransient;
-        }
-    }
 }

@@ -16,18 +16,14 @@
 
 package com.haulmont.restapi.controllers;
 
-import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.restapi.exception.RestAPIException;
-import org.springframework.http.HttpStatus;
+import com.haulmont.restapi.data.EnumInfo;
+import com.haulmont.restapi.service.EnumsControllerManager;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,68 +34,16 @@ import java.util.List;
 public class EnumsController {
 
     @Inject
-    protected MetadataTools metadataTools;
+    protected EnumsControllerManager enumsControllerManager;
 
-    @Inject
-    protected Messages messages;
-
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public List<EnumInfo> getAllEnumInfos() {
-        List<EnumInfo> results = new ArrayList<>();
-
-        metadataTools.getAllEnums().stream()
-                .filter(enumClass -> EnumClass.class.isAssignableFrom(enumClass) && enumClass.isEnum())
-                .forEach(enumClass -> {
-                    List<EnumValueInfo> enumValues = new ArrayList<>();
-                    Object[] enumConstants = enumClass.getEnumConstants();
-                    for (Object enumConstant : enumConstants) {
-                        Enum enumValue = (Enum) enumConstant;
-                        EnumValueInfo enumValueInfo = new EnumValueInfo(enumValue.name(), ((EnumClass) enumValue).getId(), messages.getMessage(enumValue));
-                        enumValues.add(enumValueInfo);
-                    }
-                    results.add(new EnumInfo(enumClass.getName(), enumValues));
-                });
-
-        return results;
+        return enumsControllerManager.getAllEnumInfos();
     }
 
-    @RequestMapping(value = "/{enumClassName:.+}", method = RequestMethod.GET)
+    @GetMapping("/{enumClassName:.+}")
     public EnumInfo getEnumInfo(@PathVariable String enumClassName) {
-        Class<?> enumClass;
-        try {
-            enumClass = Class.forName(enumClassName);
-        } catch (ClassNotFoundException e) {
-            throw new RestAPIException("Enum not found", "Enum with class name " + enumClassName + " not found", HttpStatus.NOT_FOUND);
-        }
-        List<EnumValueInfo> enumValues = new ArrayList<>();
-        Object[] enumConstants = enumClass.getEnumConstants();
-        for (Object enumConstant : enumConstants) {
-            Enum enumValue = (Enum) enumConstant;
-            EnumValueInfo enumValueInfo = new EnumValueInfo(enumValue.name(), ((EnumClass) enumValue).getId(), messages.getMessage(enumValue));
-            enumValues.add(enumValueInfo);
-        }
-        return new EnumInfo(enumClass.getName(), enumValues);
+        return enumsControllerManager.getEnumInfo(enumClassName);
     }
 
-    protected class EnumInfo {
-        public String name;
-        public List<EnumValueInfo> values;
-
-        public EnumInfo(String name, List<EnumValueInfo> values) {
-            this.name = name;
-            this.values = values;
-        }
-    }
-
-    protected class EnumValueInfo {
-        public String name;
-        public Object id;
-        public String description;
-
-        public EnumValueInfo(String name, Object id, String description) {
-            this.name = name;
-            this.id = id;
-            this.description = description;
-        }
-    }
 }

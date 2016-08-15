@@ -40,6 +40,13 @@
     <bean id="cuba_RestServiceInvoker" class="com.haulmont.restapi.service.RestServiceInvoker"/>
     <bean id="cuba_RestParseUtils" class="com.haulmont.restapi.common.RestParseUtils"/>
     <bean id="cuba_RestControllerUtils" class="com.haulmont.restapi.common.RestControllerUtils"/>
+    <bean id="cuba_EntitiesControllerManager" class="com.haulmont.restapi.service.EntitiesControllerManager"/>
+    <bean id="cuba_PermissionsControllerManager" class="com.haulmont.restapi.service.PermissionsControllerManager"/>
+    <bean id="cuba_EntitiesMetadataControllerManager" class="com.haulmont.restapi.service.EntitiesMetadataControllerManager"/>
+    <bean id="cuba_QueriesControllerManager" class="com.haulmont.restapi.service.QueriesControllerManager"/>
+    <bean id="cuba_DatatypesControllerManager" class="com.haulmont.restapi.service.DatatypesControllerManager"/>
+    <bean id="cuba_ServicesControllerManager" class="com.haulmont.restapi.service.ServicesControllerManager"/>
+    <bean id="cuba_EnumsControllerManager" class="com.haulmont.restapi.service.EnumsControllerManager"/>
 
     <!-- According to the spec the token endpoint should be secured by the basic authentication -->
     <http pattern="${cuba.rest.dispatcherPath}/api/oauth/**"
