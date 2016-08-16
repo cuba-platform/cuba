@@ -31,4 +31,14 @@ public interface GroupBoxLayout
 
     Orientation getOrientation();
     void setOrientation(Orientation orientation);
+
+    /**
+     * Set layout style as Vaadin Panel
+     * @param shownAsPanel
+     */
+    void setShownAsPanel(boolean shownAsPanel);
+    /**
+     * @return true if layout looks like Vaadin Panel
+     */
+    boolean isShownAsPanel();
 }

@@ -373,6 +373,16 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     }
 
     @Override
+    public void setShownAsPanel(boolean shownAsPanel) {
+        component.setShownAsPanel(shownAsPanel);
+    }
+
+    @Override
+    public boolean isShownAsPanel() {
+        return component.isShownAsPanel();
+    }
+
+    @Override
     public String getCaption() {
         return component.getCaption();
     }

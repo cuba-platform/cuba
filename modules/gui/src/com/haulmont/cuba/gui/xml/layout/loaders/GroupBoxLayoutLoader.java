@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.GroupBoxLayout;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 public class GroupBoxLayoutLoader extends ContainerLoader<GroupBoxLayout> {
@@ -54,6 +55,7 @@ public class GroupBoxLayoutLoader extends ContainerLoader<GroupBoxLayout> {
         loadSpacing(resultComponent, element);
 
         loadSubComponentsAndExpand(resultComponent, element);
+        loadShownAsPanel(resultComponent, element);
     }
 
     protected void loadOrientation(GroupBoxLayout component, Element element) {
@@ -69,6 +71,13 @@ public class GroupBoxLayoutLoader extends ContainerLoader<GroupBoxLayout> {
             component.setOrientation(GroupBoxLayout.Orientation.VERTICAL);
         } else {
             throw new GuiDevelopmentException("Invalid groupBox orientation value: " + orientation, context.getFullFrameId());
+        }
+    }
+
+    protected void loadShownAsPanel(GroupBoxLayout component, Element element) {
+        String shownAsPanel = element.attributeValue("shownAsPanel");
+        if (StringUtils.isNotEmpty(shownAsPanel)) {
+            component.setShownAsPanel(Boolean.parseBoolean(shownAsPanel));
         }
     }
 }

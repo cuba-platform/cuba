@@ -17,9 +17,9 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.groupbox;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
@@ -32,6 +32,8 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
     protected boolean expanded = true;
 
     protected boolean collapsable = false;
+
+    protected boolean shownAsPanel = false;
 
     private boolean enabled = true;
 
@@ -50,31 +52,35 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
         setStyleName(primaryStyleName);
 
         captionWrap = captionNode.getParentElement().cast();
+        captionTextNode = (Element) captionNode.getChild(0);
+    }
 
-        captionNode.setClassName(primaryStyleName + "-caption");
-        contentNode.setClassName(primaryStyleName + "-content");
-        bottomDecoration.setClassName(primaryStyleName + "-deco");
-        expander.setClassName(primaryStyleName + "-expander");
+    public void init() {
+        if (!isShownAsPanel()) {
+            captionNode.setClassName(getStylePrimaryName() + "-caption");
+            contentNode.setClassName(getStylePrimaryName() + "-content");
+            bottomDecoration.setClassName(getStylePrimaryName() + "-deco");
+            expander.setClassName(getStylePrimaryName() + "-expander");
 
-        contentNode.getStyle().clearPosition();
+            contentNode.getStyle().clearPosition();
 
-        setExpanded(true);
+            setExpanded(true);
 
-        captionStartDeco.appendChild(DOM.createDiv());
-        captionStartDeco.setClassName(primaryStyleName + "-caption-start-deco");
-        captionWrap.insertFirst(captionStartDeco);
+            captionStartDeco.appendChild(DOM.createDiv());
+            captionStartDeco.setClassName(getStylePrimaryName() + "-caption-start-deco");
+            captionWrap.insertFirst(captionStartDeco);
 
-        captionEndDeco.appendChild(DOM.createDiv());
-        captionEndDeco.setClassName(primaryStyleName + "-caption-end-deco");
-        captionWrap.appendChild(captionEndDeco);
+            captionEndDeco.appendChild(DOM.createDiv());
+            captionEndDeco.setClassName(getStylePrimaryName() + "-caption-end-deco");
+            captionWrap.appendChild(captionEndDeco);
 
-        captionNode.insertFirst(expander);
+            captionNode.insertFirst(expander);
 
-        captionTextNode = (Element) captionNode.getChild(1);
-        captionTextNode.setClassName(primaryStyleName + "-caption-text");
+            captionTextNode.setClassName(getStylePrimaryName() + "-caption-text");
 
-        DOM.sinkEvents(expander, Event.ONCLICK);
-        DOM.sinkEvents(captionTextNode, Event.ONCLICK);
+            DOM.sinkEvents(expander, Event.ONCLICK);
+            DOM.sinkEvents(captionTextNode, Event.ONCLICK);
+        }
     }
 
     public CubaGroupBoxWidget() {
@@ -162,6 +168,16 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
             }
         }
         DOM.eventCancelBubble(event, true);
+    }
+
+    public void setShownAsPanel(boolean shownAsPanel) {
+        if (isShownAsPanel() != shownAsPanel) {
+            this.shownAsPanel = shownAsPanel;
+        }
+    }
+
+    public boolean isShownAsPanel() {
+        return shownAsPanel;
     }
 
     public interface ExpandHandler {

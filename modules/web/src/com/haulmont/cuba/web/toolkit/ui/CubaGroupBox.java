@@ -201,4 +201,22 @@ public class CubaGroupBox extends Panel implements ComponentContainer {
     public interface ExpandChangeHandler {
         void expandStateChanged(boolean expanded);
     }
+
+    public void setShownAsPanel(boolean shownAsPanel) {
+        if (getState(false).shownAsPanel != shownAsPanel) {
+            if (shownAsPanel) {
+                setStyleName("v-panel");
+                setPrimaryStyleName("v-panel");
+            } else {
+                setStyleName("cuba-groupbox");
+                setPrimaryStyleName("cuba-groupbox");
+            }
+
+            getState().shownAsPanel = shownAsPanel;
+        }
+    }
+
+    public boolean isShownAsPanel() {
+        return getState(false).shownAsPanel;
+    }
 }

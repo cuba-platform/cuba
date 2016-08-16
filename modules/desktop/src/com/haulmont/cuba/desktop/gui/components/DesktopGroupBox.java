@@ -38,6 +38,7 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
     protected List<ExpandedStateChangeListener> expandedStateChangeListeners;
 
     protected boolean settingsEnabled = true;
+    protected boolean shownAsPanel;
 
     public DesktopGroupBox() {
         collapsiblePanel = new CollapsiblePanel(super.getComposition());
@@ -220,6 +221,16 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
 
         collapsiblePanel.revalidate();
         collapsiblePanel.repaint();
+    }
+
+    @Override
+    public void setShownAsPanel(boolean shownAsPanel) {
+        this.shownAsPanel = shownAsPanel;
+    }
+
+    @Override
+    public boolean isShownAsPanel() {
+        return shownAsPanel;
     }
 
     @Override

@@ -28,6 +28,7 @@ import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaGroupBox.class)
 public class CubaGroupBoxConnector extends PanelConnector {
+    protected boolean widgetInitialized = false;
 
     @Override
     public CubaGroupBoxWidget getWidget() {
@@ -50,23 +51,20 @@ public class CubaGroupBoxConnector extends PanelConnector {
                 getRpcProxy(CubaGroupBoxServerRpc.class).collapse();
             }
         };
-
-        LayoutManager layoutManager = getLayoutManager();
-        layoutManager.registerDependency(this, widget.captionStartDeco);
-        layoutManager.registerDependency(this, widget.captionEndDeco);
-        layoutManager.registerDependency(this, widget.captionTextNode);
     }
 
     @Override
     public void onUnregister() {
         super.onUnregister();
 
-        LayoutManager layoutManager = getLayoutManager();
-        CubaGroupBoxWidget widget = getWidget();
+        if (!getState().shownAsPanel && widgetInitialized) {
+            LayoutManager layoutManager = getLayoutManager();
+            CubaGroupBoxWidget widget = getWidget();
 
-        layoutManager.unregisterDependency(this, widget.captionStartDeco);
-        layoutManager.unregisterDependency(this, widget.captionEndDeco);
-        layoutManager.unregisterDependency(this, widget.captionTextNode);
+            layoutManager.unregisterDependency(this, widget.captionStartDeco);
+            layoutManager.unregisterDependency(this, widget.captionEndDeco);
+            layoutManager.unregisterDependency(this, widget.captionTextNode);
+        }
     }
 
     @Override
@@ -78,20 +76,29 @@ public class CubaGroupBoxConnector extends PanelConnector {
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         super.updateFromUIDL(uidl, client);
 
-        // replace VPanel class names
-        CubaGroupBoxWidget widget = getWidget();
+        if (!getState().shownAsPanel) {
+            // replace VPanel class names
+            CubaGroupBoxWidget widget = getWidget();
 
-        Tools.replaceClassNames(widget.captionNode, VPanel.CLASSNAME, widget.getStylePrimaryName());
-        Tools.replaceClassNames(widget.captionWrap, VPanel.CLASSNAME, widget.getStylePrimaryName());
-        Tools.replaceClassNames(widget.contentNode, VPanel.CLASSNAME, widget.getStylePrimaryName());
-        Tools.replaceClassNames(widget.bottomDecoration, VPanel.CLASSNAME, widget.getStylePrimaryName());
-        Tools.replaceClassNames(widget.getElement(), VPanel.CLASSNAME, widget.getStylePrimaryName());
+            Tools.replaceClassNames(widget.captionNode, VPanel.CLASSNAME, widget.getStylePrimaryName());
+            Tools.replaceClassNames(widget.captionWrap, VPanel.CLASSNAME, widget.getStylePrimaryName());
+            Tools.replaceClassNames(widget.contentNode, VPanel.CLASSNAME, widget.getStylePrimaryName());
+            Tools.replaceClassNames(widget.bottomDecoration, VPanel.CLASSNAME, widget.getStylePrimaryName());
+            Tools.replaceClassNames(widget.getElement(), VPanel.CLASSNAME, widget.getStylePrimaryName());
+        }
     }
 
     @Override
     public void layout() {
-        CubaGroupBoxWidget panel = getWidget();
+        if (!getState().shownAsPanel) {
+            layoutGroupBox();
+        } else {
+            super.layout();
+        }
+    }
 
+    protected void layoutGroupBox() {
+        CubaGroupBoxWidget panel = getWidget();
         boolean bordersVisible = panel.captionStartDeco.getOffsetWidth() > 0 || panel.captionEndDeco.getOffsetWidth() > 0;
 
         Style captionWrapStyle = panel.captionWrap.getStyle();
@@ -157,6 +164,19 @@ public class CubaGroupBoxConnector extends PanelConnector {
 
         widget.setCollapsable(getState().collapsable);
         widget.setExpanded(getState().expanded);
+        widget.setShownAsPanel(getState().shownAsPanel);
+
+        if (!widgetInitialized) {
+            widget.init();
+            if (!getState().shownAsPanel) {
+                LayoutManager layoutManager = getLayoutManager();
+                layoutManager.registerDependency(this, widget.captionStartDeco);
+                layoutManager.registerDependency(this, widget.captionEndDeco);
+                layoutManager.registerDependency(this, widget.captionTextNode);
+            }
+
+            widgetInitialized = true;
+        }
 
         if (stateChangeEvent.hasPropertyChanged("caption")) {
             getLayoutManager().setNeedsMeasure(this);

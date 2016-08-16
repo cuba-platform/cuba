@@ -27,4 +27,6 @@ public class CubaGroupBoxState extends PanelState {
     public boolean collapsable = false;
 
     public boolean expanded = true;
+
+    public boolean shownAsPanel = false;
 }
