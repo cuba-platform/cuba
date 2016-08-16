@@ -47,6 +47,7 @@
     <bean id="cuba_DatatypesControllerManager" class="com.haulmont.restapi.service.DatatypesControllerManager"/>
     <bean id="cuba_ServicesControllerManager" class="com.haulmont.restapi.service.ServicesControllerManager"/>
     <bean id="cuba_EnumsControllerManager" class="com.haulmont.restapi.service.EnumsControllerManager"/>
+    <bean id="cuba_UserInfoControllerManager" class="com.haulmont.restapi.service.UserInfoControllerManager"/>
 
     <!-- According to the spec the token endpoint should be secured by the basic authentication -->
     <http pattern="${cuba.rest.dispatcherPath}/api/oauth/**"
@@ -124,6 +125,7 @@
         <intercept-url pattern="${cuba.rest.dispatcherPath}/api/services/**" access="isAuthenticated()"/>
         <intercept-url pattern="${cuba.rest.dispatcherPath}/api/permissions" access="isAuthenticated()"/>
         <intercept-url pattern="${cuba.rest.dispatcherPath}/api/metadata/**" access="isAuthenticated()"/>
+        <intercept-url pattern="${cuba.rest.dispatcherPath}/api/userInfo" access="isAuthenticated()"/>
         <anonymous enabled="false"/>
         <csrf disabled="true"/>
         <cors configuration-source-ref="corsSource"/>
