@@ -97,7 +97,10 @@ public interface Query {
 
     /**
      * Bind an argument to a named parameter.<br>
-     * Native Query doesn't support named parameters.
+     * <p>
+     * In the query text, named parameters are marked with colon (e.g. <code>:foo</code>) in JPQL queries or with
+     * number sign in native SQL queries (e.g. <code>#foo</code>).
+     *
      * @param name                      parameter name
      * @param value                     parameter value. Entity instance replaced with its ID.
      * @return the same query instance
@@ -108,7 +111,10 @@ public interface Query {
 
     /**
      * Bind an argument to a named parameter.<br>
-     * Native Query doesn't support named parameters.
+     * <p>
+     * In the query text, named parameters are marked with colon (e.g. <code>:foo</code>) in JPQL queries or with
+     * number sign in native SQL queries (e.g. <code>#foo</code>).
+     *
      * @param name                      parameter name
      * @param value                     parameter value
      * @param implicitConversions       whether to make parameter value conversions, e.g. convert an entity to its ID
@@ -120,10 +126,13 @@ public interface Query {
 
     /**
      * Bind an instance of java.util.Date to a named parameter.<br>
-     * Native Query doesn't support named parameters.
-     * @param name
-     * @param value
-     * @param temporalType
+     * <p>
+     * In the query text, named parameters are marked with colon (e.g. <code>:foo</code>) in JPQL queries or with
+     * number sign in native SQL queries (e.g. <code>#foo</code>).
+     *
+     * @param name          parameter name
+     * @param value         parameter value
+     * @param temporalType  type of Date value
      * @return the same query instance
      * @throws IllegalArgumentException if parameter name does not correspond to parameter in query string
      */
@@ -131,6 +140,9 @@ public interface Query {
 
     /**
      * Bind an argument to a positional parameter.
+     * <p>
+     * In the query text, positional parameters are marked with ?N (e.g. <code>?1</code>).
+     *
      * @param position                  parameter position, starting with 1
      * @param value                     parameter value. Entity instance replaced with its ID.
      * @return the same query instance
@@ -141,6 +153,9 @@ public interface Query {
 
     /**
      * Bind an argument to a positional parameter.
+     * <p>
+     * In the query text, positional parameters are marked with ?N (e.g. <code>?1</code>).
+     *
      * @param position                  parameter position, starting with 1
      * @param value                     parameter value
      * @param implicitConversions       whether to make parameter value conversions, e.g. convert an entity to its ID
@@ -152,9 +167,12 @@ public interface Query {
 
     /**
      * Bind an instance of java.util.Date to a positional parameter.
-     * @param position
-     * @param value
-     * @param temporalType
+     * <p>
+     * In the query text, positional parameters are marked with ?N (e.g. <code>?1</code>).
+     *
+     * @param position      parameter position, starting with 1
+     * @param value         parameter value
+     * @param temporalType  type of Date value
      * @return the same query instance
      * @throws IllegalArgumentException if position does not correspond to positional parameter of query
      */

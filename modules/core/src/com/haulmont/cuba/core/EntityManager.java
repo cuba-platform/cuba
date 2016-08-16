@@ -170,7 +170,6 @@ public interface EntityManager {
 
     /**
      * Create an instance of Query for executing a native SQL statement, e.g., for update or delete.<br>
-     * Native Query doesn't support named parameters.
      *
      * @param sqlString a native SQL query string
      * @return the new query instance
@@ -179,7 +178,6 @@ public interface EntityManager {
 
     /**
      * Create an instance of Query for executing a native SQL statement and map its result to an entity.<br>
-     * Native Query doesn't support named parameters.
      *
      * @param sqlString a native SQL query string
      * @param resultClass expected result class
