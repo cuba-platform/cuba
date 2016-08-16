@@ -32,6 +32,7 @@ import com.haulmont.restapi.query.RestQueriesManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.ClassUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -62,8 +63,10 @@ public class QueriesControllerManager {
 
     public String executeQuery(String entityName,
                                String queryName,
+                               @Nullable Integer limit,
+                               @Nullable Integer offset,
                                Map<String, String> params) throws ClassNotFoundException, ParseException {
-        LoadContext<Entity> ctx = createQueryLoadContext(entityName, queryName, params);
+        LoadContext<Entity> ctx = createQueryLoadContext(entityName, queryName, limit, offset, params);
         List<Entity> entities = dataManager.loadList(ctx);
         return entitySerializationAPI.toJson(entities);
     }
@@ -71,7 +74,7 @@ public class QueriesControllerManager {
     public String getCount(String entityName,
                            String queryName,
                            Map<String, String> params) throws ClassNotFoundException, ParseException {
-        LoadContext<Entity> ctx = createQueryLoadContext(entityName, queryName, params);
+        LoadContext<Entity> ctx = createQueryLoadContext(entityName, queryName, null, null, params);
         long count = dataManager.getCount(ctx);
         return String.valueOf(count);
     }
@@ -84,6 +87,8 @@ public class QueriesControllerManager {
 
     protected LoadContext<Entity> createQueryLoadContext(String entityName,
                                                          String queryName,
+                                                         @Nullable Integer limit,
+                                                         @Nullable Integer offset,
                                                          Map<String, String> params) throws ClassNotFoundException, ParseException {
         MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanReadEntity(metaClass);
@@ -97,6 +102,13 @@ public class QueriesControllerManager {
 
         LoadContext<Entity> ctx = new LoadContext<>(metaClass);
         LoadContext.Query query = new LoadContext.Query(queryInfo.getJpql());
+
+        if (limit != null) {
+            query.setMaxResults(limit);
+        }
+        if (offset != null) {
+            query.setFirstResult(offset);
+        }
 
         for (RestQueriesManager.QueryParamInfo paramInfo : queryInfo.getParams()) {
             String paramName = paramInfo.getName();
@@ -124,7 +136,6 @@ public class QueriesControllerManager {
                     HttpStatus.FORBIDDEN);
         }
     }
-
 
     protected Object toObject(Class clazz, String value) throws ParseException {
         if (String.class == clazz) return value;

@@ -185,11 +185,13 @@ public class RestQueriesManager {
             queryInfo.setJpql(jpql);
 
             Element paramsEl = queryElem.element("params");
-            for (Element paramElem : Dom4j.elements(paramsEl, "param")) {
-                String paramName = paramElem.attributeValue("name");
-                String paramType = paramElem.attributeValue("type");
-                QueryParamInfo param = new QueryParamInfo(paramName, paramType);
-                queryInfo.getParams().add(param);
+            if (paramsEl != null) {
+                for (Element paramElem : Dom4j.elements(paramsEl, "param")) {
+                    String paramName = paramElem.attributeValue("name");
+                    String paramType = paramElem.attributeValue("type");
+                    QueryParamInfo param = new QueryParamInfo(paramName, paramType);
+                    queryInfo.getParams().add(param);
+                }
             }
 
             queries.add(queryInfo);
