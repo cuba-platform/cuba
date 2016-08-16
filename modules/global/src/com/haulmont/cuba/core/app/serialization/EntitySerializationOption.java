@@ -37,5 +37,10 @@ public enum EntitySerializationOption {
     /**
      * Specifies that fields with null values should be serialized. The default behavior is not to serialize nulls.
      */
-    SERIALIZE_NULLS
+    SERIALIZE_NULLS,
+
+    /**
+     * Specifies that entity instance name will be serialized. The default behavior is not to serialize instance name.
+     */
+    SERIALIZE_INSTANCE_NAME
 }

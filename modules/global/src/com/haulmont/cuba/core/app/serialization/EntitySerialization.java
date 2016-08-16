@@ -46,6 +46,7 @@ public class EntitySerialization implements EntitySerializationAPI {
     protected Logger log = LoggerFactory.getLogger(EntitySerialization.class);
 
     protected static final String ENTITY_NAME_PROP = "_entityName";
+    protected static final String INSTANCE_NAME_PROP = "_instanceName";
 
     @Inject
     protected MetadataTools metadataTools;
@@ -153,6 +154,7 @@ public class EntitySerialization implements EntitySerializationAPI {
 
         protected boolean complexIdFormat;
         protected boolean compactRepeatedEntities = false;
+        protected boolean serializeInstanceName;
         protected View view;
 
         public EntitySerializer(@Nullable View view, EntitySerializationOption... options) {
@@ -163,6 +165,8 @@ public class EntitySerialization implements EntitySerializationAPI {
                         complexIdFormat = true;
                     if (option == EntitySerializationOption.COMPACT_REPEATED_ENTITIES)
                         compactRepeatedEntities = true;
+                    if (option == EntitySerializationOption.SERIALIZE_INSTANCE_NAME)
+                        serializeInstanceName = true;
                 }
             }
         }
@@ -178,6 +182,9 @@ public class EntitySerialization implements EntitySerializationAPI {
             if (!metadataTools.isEmbeddable(metaClass)) {
                 if (!complexIdFormat) {
                     jsonObject.addProperty(ENTITY_NAME_PROP, metaClass.getName());
+                }
+                if (serializeInstanceName) {
+                    jsonObject.addProperty(INSTANCE_NAME_PROP, entity.getInstanceName());
                 }
                 writeIdField(entity, jsonObject);
                 if (compactRepeatedEntities) {

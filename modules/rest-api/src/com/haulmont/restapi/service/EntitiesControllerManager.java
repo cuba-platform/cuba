@@ -90,9 +90,12 @@ public class EntitiesControllerManager {
         Entity entity = dataManager.load(ctx);
         checkEntityIsNotNull(entityName, entityId, entity);
 
-        return BooleanUtils.isTrue(returnNulls) ?
-                entitySerializationAPI.toJson(entity, null, EntitySerializationOption.SERIALIZE_NULLS) :
-                entitySerializationAPI.toJson(entity);
+        List<EntitySerializationOption> serializationOptions = new ArrayList<>();
+        serializationOptions.add(EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
+        if (BooleanUtils.isTrue(returnNulls)) serializationOptions.add(EntitySerializationOption.SERIALIZE_NULLS);
+
+        return entitySerializationAPI.toJson(entity, null, serializationOptions.toArray(new EntitySerializationOption[0]));
+
     }
 
     public String loadEntitiesList(String entityName,
@@ -131,9 +134,11 @@ public class EntitiesControllerManager {
 
         List<Entity> entities = dataManager.loadList(ctx);
 
-        return BooleanUtils.isTrue(returnNulls) ?
-                entitySerializationAPI.toJson(entities, null, EntitySerializationOption.SERIALIZE_NULLS) :
-                entitySerializationAPI.toJson(entities);
+        List<EntitySerializationOption> serializationOptions = new ArrayList<>();
+        serializationOptions.add(EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
+        if (BooleanUtils.isTrue(returnNulls)) serializationOptions.add(EntitySerializationOption.SERIALIZE_NULLS);
+
+        return entitySerializationAPI.toJson(entities, null, serializationOptions.toArray(new EntitySerializationOption[0]));
     }
 
     public CreatedEntityInfo createEntity(String entityJson, String entityName) {
