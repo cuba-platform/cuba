@@ -16,21 +16,7 @@
 
 package com.haulmont.restapi.controllers;
 
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
-import com.haulmont.cuba.core.app.importexport.EntityImportView;
-import com.haulmont.cuba.core.app.importexport.EntityImportViewBuilderAPI;
-import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.data.CreatedEntityInfo;
-import com.haulmont.restapi.exception.RestAPIException;
 import com.haulmont.restapi.service.EntitiesControllerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,19 +27,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
 
 /**
  * Controller that performs CRUD entity operations
  */
 @RestController
-@RequestMapping(value = "/api/entities", produces = "application/json; charset=UTF-8")
+@RequestMapping(value = "/v2/entities", produces = "application/json; charset=UTF-8")
 public class EntitiesController {
-
-    protected Logger log = LoggerFactory.getLogger(EntitiesController.class);
 
     @Inject
     protected EntitiesControllerManager entitiesControllerManager;

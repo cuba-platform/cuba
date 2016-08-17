@@ -28,10 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.inject.Inject;
 import java.io.IOException;
 
-/**
- */
 @RestController
-@RequestMapping("/api/docs")
+@RequestMapping("/v2/docs")
 public class DocumentationController {
     @Inject
     protected Resources resources;
@@ -45,7 +43,7 @@ public class DocumentationController {
     public String getSwaggerJson() {
         String yaml = getSwaggerYaml();
         ObjectMapper yamlReader = new ObjectMapper(new YAMLFactory());
-        Object obj = null;
+        Object obj;
         try {
             obj = yamlReader.readValue(yaml, Object.class);
             ObjectMapper jsonWriter = new ObjectMapper();

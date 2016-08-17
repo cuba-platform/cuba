@@ -30,7 +30,7 @@ import java.util.Map;
  * Controller that is used for service method invocations with the REST API
  */
 @RestController
-@RequestMapping(value = "/api/services", produces = "application/json; charset=UTF-8")
+@RequestMapping(value = "/v2/services", produces = "application/json; charset=UTF-8")
 public class ServicesController {
 
     @Inject

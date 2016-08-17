@@ -38,7 +38,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
-
 /**
  * Class is used for loading and storing of predefined JPQL queries that are used by the REST API. Queries are loaded
  * from configuration files defined by the {@code cuba.rest.queriesConfig} application property.

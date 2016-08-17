@@ -26,12 +26,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-/**
- */
 @ControllerAdvice("com.haulmont.restapi.controllers")
 public class ControllerExceptionHandler {
 
-    protected Logger log = LoggerFactory.getLogger(ControllerExceptionHandler.class);
+    private final Logger log = LoggerFactory.getLogger(ControllerExceptionHandler.class);
 
     @ExceptionHandler(RestAPIException.class)
     @ResponseBody

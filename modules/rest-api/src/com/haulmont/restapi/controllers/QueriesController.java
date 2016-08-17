@@ -25,12 +25,11 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * Controller that is used for operations with predefined JPQL queries
  */
 @RestController
-@RequestMapping("/api/queries")
+@RequestMapping("/v2/queries")
 public class QueriesController {
 
     @Inject

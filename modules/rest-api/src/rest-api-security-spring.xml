@@ -50,7 +50,7 @@
     <bean id="cuba_RestServicesConfiguration" class="com.haulmont.restapi.config.RestServicesConfiguration"/>
 
     <!-- According to the spec the token endpoint should be secured by the basic authentication -->
-    <http pattern="${cuba.rest.dispatcherPath}/api/oauth/**"
+    <http pattern="/rest/v2/oauth/**"
           create-session="stateless"
           authentication-manager-ref="clientAuthenticationManager"
           xmlns="http://www.springframework.org/schema/security">
@@ -84,7 +84,7 @@
 
     <!-- Specifies token endpoint.-->
     <oauth2:authorization-server
-            token-endpoint-url="/api/oauth/token"
+            token-endpoint-url="/v2/oauth/token"
             client-details-service-ref="clientDetailsService"
             token-services-ref="tokenServices" >
         <oauth2:password authentication-manager-ref="userAuthenticationManager"/>
@@ -107,7 +107,7 @@
     <oauth2:resource-server id="resourceFilter" token-services-ref="tokenServices" />
 
     <!-- Documentation endpoint should be allowed for anyone and support cross-domain requests -->
-    <http pattern="${cuba.rest.dispatcherPath}/api/docs/**"
+    <http pattern="/rest/v2/docs/**"
           create-session="stateless"
           entry-point-ref="oauthAuthenticationEntryPoint"
           xmlns="http://www.springframework.org/schema/security">
@@ -116,16 +116,16 @@
     </http>
 
     <!-- API controllers endpoints -->
-    <http pattern="${cuba.rest.dispatcherPath}/api/**"
+    <http pattern="/rest/v2/**"
           create-session="stateless"
           entry-point-ref="oauthAuthenticationEntryPoint"
           xmlns="http://www.springframework.org/schema/security">
-        <intercept-url pattern="${cuba.rest.dispatcherPath}/api/entities/**" access="isAuthenticated()"/>
-        <intercept-url pattern="${cuba.rest.dispatcherPath}/api/queries/**" access="isAuthenticated()"/>
-        <intercept-url pattern="${cuba.rest.dispatcherPath}/api/services/**" access="isAuthenticated()"/>
-        <intercept-url pattern="${cuba.rest.dispatcherPath}/api/permissions" access="isAuthenticated()"/>
-        <intercept-url pattern="${cuba.rest.dispatcherPath}/api/metadata/**" access="isAuthenticated()"/>
-        <intercept-url pattern="${cuba.rest.dispatcherPath}/api/userInfo" access="isAuthenticated()"/>
+        <intercept-url pattern="/rest/v2/entities/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/rest/v2/queries/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/rest/v2/services/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/rest/v2/permissions" access="isAuthenticated()"/>
+        <intercept-url pattern="/rest/v2/metadata/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/rest/v2/userInfo" access="isAuthenticated()"/>
         <anonymous enabled="false"/>
         <csrf disabled="true"/>
         <cors configuration-source-ref="corsSource"/>
@@ -151,5 +151,4 @@
         <property name="allowedMethods" value="*"/>
         <property name="allowCredentials" value="true"/>
     </bean>
-
 </beans>

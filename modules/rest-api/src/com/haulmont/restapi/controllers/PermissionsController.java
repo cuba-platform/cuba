@@ -36,7 +36,7 @@ public class PermissionsController {
     @Inject
     protected PermissionsControllerManager permissionsControllerManager;
 
-    @GetMapping("/api/permissions")
+    @GetMapping("/v2/permissions")
     public Collection<PermissionInfo> getPermissions() {
         return permissionsControllerManager.getPermissionInfos();
     }

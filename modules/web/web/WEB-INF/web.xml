@@ -57,14 +57,25 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
+    <servlet>
+        <servlet-name>rest_api</servlet-name>
+        <servlet-class>com.haulmont.restapi.sys.CubaRestApiServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>cuba_servlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/dispatch/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>cuba_servlet</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <servlet-name>rest_api</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
 
     <filter>
@@ -79,14 +90,20 @@
     </filter-mapping>
 
     <filter>
-        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-name>restSpringSecurityFilterChain</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-        <async-supported>true</async-supported>
+        <init-param>
+            <param-name>contextAttribute</param-name>
+            <param-value>org.springframework.web.servlet.FrameworkServlet.CONTEXT.rest_api</param-value>
+        </init-param>
+        <init-param>
+            <param-name>targetBeanName</param-name>
+            <param-value>springSecurityFilterChain</param-value>
+        </init-param>
     </filter>
 
     <filter-mapping>
-        <filter-name>springSecurityFilterChain</filter-name>
-        <url-pattern>/dispatch/api/*</url-pattern>
+        <filter-name>restSpringSecurityFilterChain</filter-name>
+        <url-pattern>/rest/*</url-pattern>
     </filter-mapping>
-
 </web-app>

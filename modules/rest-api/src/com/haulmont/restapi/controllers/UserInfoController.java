@@ -28,7 +28,7 @@ import javax.inject.Inject;
  * REST controller that is used for getting an information about the current user
  */
 @RestController
-@RequestMapping(value = "/api/userInfo", produces = "application/json; charset=UTF-8")
+@RequestMapping(value = "/v2/userInfo", produces = "application/json; charset=UTF-8")
 public class UserInfoController {
 
     @Inject

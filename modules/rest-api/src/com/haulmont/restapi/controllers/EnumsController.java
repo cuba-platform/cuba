@@ -30,9 +30,8 @@ import java.util.List;
  * REST controller that is used for getting an information about enums
  */
 @RestController
-@RequestMapping(path = "/api/metadata/enums", produces = "application/json; charset=UTF-8")
+@RequestMapping(path = "/v2/metadata/enums", produces = "application/json; charset=UTF-8")
 public class EnumsController {
-
     @Inject
     protected EnumsControllerManager enumsControllerManager;
 
@@ -45,5 +44,4 @@ public class EnumsController {
     public EnumInfo getEnumInfo(@PathVariable String enumClassName) {
         return enumsControllerManager.getEnumInfo(enumClassName);
     }
-
 }

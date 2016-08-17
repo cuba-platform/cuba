@@ -34,12 +34,12 @@ import java.security.Principal;
 @RestController
 public class OAuthTokenController {
 
-    protected static final Logger log = LoggerFactory.getLogger(OAuthTokenController.class);
+    private final Logger log = LoggerFactory.getLogger(OAuthTokenController.class);
 
     @Inject
     private OAuthTokenRevoker oAuthTokenRevoker;
 
-    @PostMapping("/api/oauth/revoke")
+    @PostMapping("/v2/oauth/revoke")
     public void revokeToken(@RequestParam("token") String token,
                             Principal principal) {
         if (!(principal instanceof Authentication)) {

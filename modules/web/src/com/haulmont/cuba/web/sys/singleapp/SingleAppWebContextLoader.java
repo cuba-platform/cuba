@@ -25,8 +25,11 @@ import com.haulmont.cuba.web.sys.CubaApplicationServlet;
 import com.haulmont.cuba.web.sys.CubaDispatcherServlet;
 import com.haulmont.cuba.web.sys.CubaHttpFilter;
 import com.haulmont.cuba.web.sys.WebAppContextLoader;
+import com.haulmont.restapi.sys.CubaRestApiServlet;
+import com.haulmont.restapi.sys.SingleAppRestApiServlet;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.web.filter.DelegatingFilterProxy;
 
 import javax.servlet.*;
 import java.io.IOException;
@@ -58,6 +61,19 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
         super.contextInitialized(servletContextEvent);
 
         ServletContext servletContext = servletContextEvent.getServletContext();
+
+        registerAppServlet(servletContext);
+
+        registerDispatchServlet(servletContext);
+
+        registerRestApiServlet(servletContext);
+
+        registerCubaHttpFilter(servletContext);
+
+        registerClassLoaderFilter(servletContext);
+    }
+
+    protected void registerAppServlet(ServletContext servletContext) {
         CubaApplicationServlet cubaServlet = new CubaApplicationServlet();
         cubaServlet.setClassLoader(Thread.currentThread().getContextClassLoader());
         try {
@@ -69,7 +85,9 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
         cubaServletReg.setLoadOnStartup(0);
         cubaServletReg.setAsyncSupported(true);
         cubaServletReg.addMapping("/*");
+    }
 
+    protected void registerDispatchServlet(ServletContext servletContext) {
         CubaDispatcherServlet cubaDispatcherServlet = new SingleAppDispatcherServlet(dependencyJars);
         try {
             cubaDispatcherServlet.init(new CubaServletConfig("dispatcher", servletContext));
@@ -79,16 +97,41 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
         ServletRegistration.Dynamic cubaDispatcherServletReg = servletContext.addServlet("dispatcher", cubaDispatcherServlet);
         cubaDispatcherServletReg.setLoadOnStartup(1);
         cubaDispatcherServletReg.addMapping("/dispatch/*");
+    }
 
+    protected void registerRestApiServlet(ServletContext servletContext) {
+        CubaRestApiServlet cubaRestApiServlet = new SingleAppRestApiServlet(dependencyJars);
+        try {
+            cubaRestApiServlet.init(new CubaServletConfig("rest_api", servletContext));
+        } catch (ServletException e) {
+            throw new RuntimeException("An error occurred while initializing dispatcher servlet", e);
+        }
+        ServletRegistration.Dynamic cubaRestApiServletReg = servletContext.addServlet("rest_api", cubaRestApiServlet);
+        cubaRestApiServletReg.setLoadOnStartup(2);
+        cubaRestApiServletReg.addMapping("/rest/*");
+
+        DelegatingFilterProxy restSpringSecurityFilterChain = new DelegatingFilterProxy();
+        restSpringSecurityFilterChain.setContextAttribute("org.springframework.web.servlet.FrameworkServlet.CONTEXT.rest_api");
+        restSpringSecurityFilterChain.setTargetBeanName("springSecurityFilterChain");
+
+        FilterRegistration.Dynamic restSpringSecurityFilterChainReg =
+                servletContext.addFilter("restSpringSecurityFilterChain", restSpringSecurityFilterChain);
+        restSpringSecurityFilterChainReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/rest/*");
+    }
+
+    protected void registerCubaHttpFilter(ServletContext servletContext) {
         CubaHttpFilter cubaHttpFilter = new CubaHttpFilter();
         FilterRegistration.Dynamic cubaHttpFilterReg = servletContext.addFilter("CubaHttpFilter", cubaHttpFilter);
         cubaHttpFilterReg.setAsyncSupported(true);
         cubaHttpFilterReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+    }
 
+    protected void registerClassLoaderFilter(ServletContext servletContext) {
         FilterRegistration.Dynamic filterReg = servletContext.addFilter("WebSingleWarHttpFilter", new SetClassLoaderFilter());
         filterReg.setAsyncSupported(true);
         filterReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
         filterReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/dispatch/*");
+        filterReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/rest/*");
     }
 
     @Override

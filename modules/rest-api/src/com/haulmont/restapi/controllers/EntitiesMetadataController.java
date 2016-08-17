@@ -16,11 +16,8 @@
 
 package com.haulmont.restapi.controllers;
 
-
 import com.haulmont.restapi.data.MetaClassInfo;
 import com.haulmont.restapi.service.EntitiesMetadataControllerManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,11 +31,8 @@ import java.util.Collection;
  * at the moment.
  */
 @RestController
-@RequestMapping(value = "/api/metadata", produces = "application/json; charset=UTF-8")
+@RequestMapping(value = "/v2/metadata", produces = "application/json; charset=UTF-8")
 public class EntitiesMetadataController {
-
-    protected Logger log = LoggerFactory.getLogger(EntitiesMetadataController.class);
-
     @Inject
     protected EntitiesMetadataControllerManager controllerManager;
 
@@ -62,5 +56,4 @@ public class EntitiesMetadataController {
     public String getAllViewsForMetaClass(@PathVariable String entityName) {
         return controllerManager.getAllViewsForMetaClass(entityName);
     }
-
 }

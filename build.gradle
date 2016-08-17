@@ -787,6 +787,11 @@ configure(portalModule) {
         scanForTestClasses = false
         includes = ['**/*Test.class']
     }
+
+    task deploy(dependsOn: assemble, type: CubaDeployment) {
+        appName = 'cuba-portal'
+        appJars('cuba-global', 'cuba-client', 'cuba-portal', 'cuba-rest-api')
+    }
 }
 
 task restart(dependsOn: ['stop', ':cuba-core:deploy', ':cuba-web:deploy', ':cuba-web-toolkit:deploy'],
