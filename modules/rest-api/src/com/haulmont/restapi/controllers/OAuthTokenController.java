@@ -41,17 +41,14 @@ public class OAuthTokenController {
 
     @PostMapping("/api/oauth/revoke")
     public void revokeToken(@RequestParam("token") String token,
-                            @RequestParam(value = "token_hint", required = false) String tokenHint,
                             Principal principal) {
         if (!(principal instanceof Authentication)) {
             throw new InsufficientAuthenticationException(
                     "There is no client authentication. Try adding an appropriate authentication filter.");
         }
-        log.info("POST /oauth/revoke; token = {}, tokenHint = {}", token, tokenHint);
-        // Invalid token revocations (token does not exist) still respond
-        // with HTTP 200. Still, log the result anyway for posterity.
-        // See: https://tools.ietf.org/html/rfc7009#section-2.2
-        if (!oAuthTokenRevoker.revokeToken(token, tokenHint, (Authentication) principal)) {
+        log.info("POST /oauth/revoke; token = {},", token);
+        // Invalid token revocations (token does not exist) must respond with 200 code
+        if (!oAuthTokenRevoker.revokeToken(token, (Authentication) principal)) {
             log.debug("No token with value {} was revoked.", token);
         }
     }
