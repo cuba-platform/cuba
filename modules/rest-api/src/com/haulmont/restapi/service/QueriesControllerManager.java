@@ -28,7 +28,7 @@ import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.exception.RestAPIException;
-import com.haulmont.restapi.query.RestQueriesManager;
+import com.haulmont.restapi.config.RestQueriesConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.ClassUtils;
 
@@ -44,7 +44,7 @@ import java.util.UUID;
 public class QueriesControllerManager {
 
     @Inject
-    protected RestQueriesManager restQueriesManager;
+    protected RestQueriesConfiguration restQueriesConfiguration;
 
     @Inject
     protected DataManager dataManager;
@@ -79,10 +79,10 @@ public class QueriesControllerManager {
         return String.valueOf(count);
     }
 
-    public List<RestQueriesManager.QueryInfo> loadQueriesList(String entityName) {
+    public List<RestQueriesConfiguration.QueryInfo> loadQueriesList(String entityName) {
         MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanReadEntity(metaClass);
-        return restQueriesManager.getQueries(entityName);
+        return restQueriesConfiguration.getQueries(entityName);
     }
 
     protected LoadContext<Entity> createQueryLoadContext(String entityName,
@@ -93,7 +93,7 @@ public class QueriesControllerManager {
         MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanReadEntity(metaClass);
 
-        RestQueriesManager.QueryInfo queryInfo = restQueriesManager.getQuery(entityName, queryName);
+        RestQueriesConfiguration.QueryInfo queryInfo = restQueriesConfiguration.getQuery(entityName, queryName);
         if (queryInfo == null) {
             throw new RestAPIException("Query not found",
                     String.format("Query with name %s for entity %s not found", queryName, entityName),
@@ -110,7 +110,7 @@ public class QueriesControllerManager {
             query.setFirstResult(offset);
         }
 
-        for (RestQueriesManager.QueryParamInfo paramInfo : queryInfo.getParams()) {
+        for (RestQueriesConfiguration.QueryParamInfo paramInfo : queryInfo.getParams()) {
             String paramName = paramInfo.getName();
             String requestParamValue = params.get(paramName);
             if (requestParamValue == null) {

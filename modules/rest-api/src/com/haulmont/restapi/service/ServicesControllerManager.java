@@ -16,57 +16,140 @@
 
 package com.haulmont.restapi.service;
 
-import com.haulmont.cuba.restapi.RestServicePermissions;
+import com.google.common.base.Strings;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.restapi.common.RestParseUtils;
+import com.haulmont.restapi.config.RestServicesConfiguration;
 import com.haulmont.restapi.exception.RestAPIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.text.ParseException;
+import java.util.*;
 
+
+/**
+ * Class that executes business logic required by the {@link com.haulmont.restapi.controllers.ServicesController}. It
+ * performs middleware services invocations.
+ */
 public class ServicesControllerManager {
-    @Inject
-    protected RestServiceInvoker restServiceInvoker;
 
     @Inject
-    protected RestServicePermissions restServicePermissions;
+    protected RestServicesConfiguration restServicesConfiguration;
+
+    @Inject
+    protected EntitySerializationAPI entitySerializationAPI;
+
+    @Inject
+    protected RestParseUtils restParseUtils;
+
+    protected Logger log = LoggerFactory.getLogger(ServicesControllerManager.class);
 
     @Nullable
-    public String invokeServiceMethodPost(String serviceName,
-                                          String methodName,
-                                          @Nullable String paramsJson) {
-        checkServicePermissions(serviceName, methodName);
-        return restServiceInvoker.invokeServiceMethod(serviceName, methodName, paramsJson);
+    public String invokeServiceMethodGet(String serviceName, String methodName, Map<String, String> paramsMap) {
+        List<String> paramNames = new ArrayList<>(paramsMap.keySet());
+        List<String> paramValuesStr = new ArrayList<>(paramsMap.values());
+        return _invokeServiceMethod(serviceName, methodName, paramNames, paramValuesStr);
     }
 
     @Nullable
-    public String invokeServiceMethodGet(String serviceName,
-                                         String methodName,
-                                         Map<String, String> paramsMap) {
-        checkServicePermissions(serviceName, methodName);
-        return restServiceInvoker.invokeServiceMethod(serviceName, methodName, paramsMap);
+    public String invokeServiceMethodPost(String serviceName, String methodName, String paramsJson) {
+        Map<String, String> paramsMap = parseParamsJson(paramsJson);
+        List<String> paramNames = new ArrayList<>(paramsMap.keySet());
+        List<String> paramValuesStr = new ArrayList<>(paramsMap.values());
+        return _invokeServiceMethod(serviceName, methodName, paramNames, paramValuesStr);
     }
 
-    public Collection<RestServicePermissions.ServiceInfo> getServiceInfos() {
-        return restServicePermissions.getServiceInfos();
+    public Collection<RestServicesConfiguration.RestServiceInfo> getServiceInfos() {
+        return restServicesConfiguration.getServiceInfos();
     }
 
-    public RestServicePermissions.ServiceInfo getServiceInfo(String serviceName) {
-        RestServicePermissions.ServiceInfo serviceInfo = restServicePermissions.getServiceInfo(serviceName);
+    public RestServicesConfiguration.RestServiceInfo getServiceInfo(String serviceName) {
+        RestServicesConfiguration.RestServiceInfo serviceInfo = restServicesConfiguration.getServiceInfo(serviceName);
         if (serviceInfo == null) {
-            throw new RestAPIException("Service not allowed",
-                    "The service with the given name not allowed for using with REST API",
-                    HttpStatus.FORBIDDEN);
+            throw new RestAPIException("Service not found",
+                    String.format("Service %s not found", serviceName),
+                    HttpStatus.NOT_FOUND);
         }
         return serviceInfo;
     }
 
-    protected void checkServicePermissions(String serviceName, String methodName) {
-        if (!restServicePermissions.isPermitted(serviceName, methodName)) {
-            throw new RestAPIException("Method not available",
-                    String.format("Method %s of service %s is not available", methodName, serviceName),
-                    HttpStatus.FORBIDDEN);
+    private Map<String, String> parseParamsJson(String paramsJson) {
+        Map<String, String> result = new LinkedHashMap<>();
+        if (Strings.isNullOrEmpty(paramsJson)) return result;
+
+        JsonParser jsonParser = new JsonParser();
+        JsonObject jsonObject = jsonParser.parse(paramsJson).getAsJsonObject();
+
+        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+            String paramName = entry.getKey();
+            JsonElement paramValue = entry.getValue();
+            if (paramValue.isJsonPrimitive()) {
+                result.put(paramName, paramValue.getAsString());
+            } else {
+                result.put(paramName, paramValue.toString());
+            }
+        }
+
+        return result;
+    }
+
+    @Nullable
+    protected String _invokeServiceMethod(String serviceName, String methodName, List<String> paramNames, List<String> paramValuesStr) {
+        Object service = AppBeans.get(serviceName);
+        Method serviceMethod = restServicesConfiguration.getServiceMethod(serviceName, methodName, paramNames);
+        if (serviceMethod == null) {
+            throw new RestAPIException("Service method not found",
+                    "Service method not found",
+                    HttpStatus.NOT_FOUND);
+        }
+        List<Object> paramValues = new ArrayList<>();
+        Class<?>[] types = serviceMethod.getParameterTypes();
+        for (int i = 0; i < types.length; i++) {
+            Class<?> aClass = types[i];
+            try {
+                paramValues.add(restParseUtils.toObject(aClass, paramValuesStr.get(i)));
+            } catch (ParseException e) {
+                log.error("Error on parsing service param value", e);
+                throw new RestAPIException("Invalid parameter value",
+                        "",
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        Object methodResult;
+        try {
+            methodResult = serviceMethod.invoke(service, paramValues.toArray());
+        } catch (Exception e) {
+            log.error("Error on service method invoke", e);
+            throw new RestAPIException("Error on service method invoke", "", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        if (methodResult == null) return null;
+
+        Class<?> methodReturnType = serviceMethod.getReturnType();
+        if (Entity.class.isAssignableFrom(methodReturnType)) {
+            return entitySerializationAPI.toJson((Entity) methodResult);
+        } else if (Collection.class.isAssignableFrom(methodReturnType)) {
+            return entitySerializationAPI.toJson((Collection<? extends Entity>) methodResult);
+        } else {
+            Datatype<?> datatype = Datatypes.get(methodReturnType);
+            if (datatype != null) {
+                return datatype.format(methodResult);
+            } else {
+                return restParseUtils.serializePOJO(methodResult, methodReturnType);
+            }
         }
     }
 }

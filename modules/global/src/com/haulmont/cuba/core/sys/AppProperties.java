@@ -93,6 +93,7 @@ public class AppProperties {
                         "cuba.dispatcherSpringContextConfig",
                         "cuba.restServicesConfig",
                         "cuba.rest.queriesConfig",
+                        "cuba.rest.servicesConfig",
                         "cuba.windowConfig",
                         "cuba.menuConfig",
                         "cuba.permissionConfig",
@@ -104,6 +105,7 @@ public class AppProperties {
                 configPropertyNames.addAll(Arrays.asList(
                         "cuba.dispatcherSpringContextConfig",
                         "cuba.restServicesConfig",
+                        "cuba.rest.servicesConfig",
                         "cuba.rest.queriesConfig"
                 ));
                 break;

@@ -16,7 +16,7 @@
 
 package com.haulmont.restapi.controllers;
 
-import com.haulmont.restapi.query.RestQueriesManager;
+import com.haulmont.restapi.config.RestQueriesConfiguration;
 import com.haulmont.restapi.service.QueriesControllerManager;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,7 +53,7 @@ public class QueriesController {
     }
 
     @GetMapping("/{entityName}")
-    public List<RestQueriesManager.QueryInfo> loadQueriesList(@PathVariable String entityName) {
+    public List<RestQueriesConfiguration.QueryInfo> loadQueriesList(@PathVariable String entityName) {
         return queriesControllerManager.loadQueriesList(entityName);
     }
 }

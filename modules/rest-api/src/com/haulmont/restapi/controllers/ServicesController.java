@@ -16,7 +16,7 @@
 
 package com.haulmont.restapi.controllers;
 
-import com.haulmont.cuba.restapi.RestServicePermissions;
+import com.haulmont.restapi.config.RestServicesConfiguration;
 import com.haulmont.restapi.service.ServicesControllerManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,12 +67,12 @@ public class ServicesController {
     }
 
     @GetMapping
-    public Collection<RestServicePermissions.ServiceInfo> getServiceInfos() {
+    public Collection<RestServicesConfiguration.RestServiceInfo> getServiceInfos() {
         return servicesControllerManager.getServiceInfos();
     }
 
     @GetMapping("/{serviceName}")
-    public RestServicePermissions.ServiceInfo getServiceInfo(@PathVariable String serviceName) {
+    public RestServicesConfiguration.RestServiceInfo getServiceInfo(@PathVariable String serviceName) {
         return servicesControllerManager.getServiceInfo(serviceName);
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.restapi.query;
+package com.haulmont.restapi.config;
 
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
@@ -27,7 +27,6 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -48,7 +47,7 @@ import java.util.stream.Collectors;
  * config. If the query with this name is requested, the {@link QueryInfo} for the query that returns all entities will
  * be returned.
  */
-public class RestQueriesManager {
+public class RestQueriesConfiguration {
 
     protected final String CUBA_REST_QUERIES_CONFIG_PROP_NAME = "cuba.rest.queriesConfig";
 
@@ -59,7 +58,7 @@ public class RestQueriesManager {
     @Inject
     protected Resources resources;
 
-    protected static Logger log = LoggerFactory.getLogger(RestQueriesManager.class);
+    protected static Logger log = LoggerFactory.getLogger(RestQueriesConfiguration.class);
 
     protected List<QueryInfo> queries = new ArrayList<>();
 
