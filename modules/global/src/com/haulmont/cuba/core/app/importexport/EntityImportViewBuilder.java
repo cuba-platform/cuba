@@ -66,7 +66,7 @@ public class EntityImportViewBuilder implements EntityImportViewBuilderAPI{
             if (metaProperty != null) {
                 Range propertyRange = metaProperty.getRange();
                 Class<?> propertyType = metaProperty.getJavaType();
-                if (propertyRange.isDatatype()) {
+                if (propertyRange.isDatatype() || propertyRange.isEnum()) {
                     if (security.isEntityAttrUpdatePermitted(metaClass, propertyName))
                         view.addProperty(propertyName);
                 } else if (propertyRange.isClass()) {
