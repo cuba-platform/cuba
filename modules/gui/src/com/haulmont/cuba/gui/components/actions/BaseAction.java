@@ -38,7 +38,8 @@ import java.util.List;
  *     <li>setEnabled(false) method was not called;</li>
  *     <li>there are no "hide" and "read-only" UI permissions for this action;</li>
  *     <li>isPermitted() method returns true;</li>
- *     <li>isApplicable() method returns true.</li>
+ *     <li>isApplicable() method returns true;</li>
+ *     <li>all {@link EnabledRule}s (if any) return true.</li>
  * </ul>
  * <p> Descendants may override {@link #isPermitted()} and {@link #isApplicable()} methods to define conditions in which
  * action will be enabled.
@@ -199,7 +200,7 @@ public abstract class BaseAction extends AbstractAction implements Action.HasTar
     }
 
     /**
-     * Callback closure which is invoked by the action to determine its enabled state.
+     * Callback interface which is invoked by the action to determine its enabled state.
      *
      * @see #addEnabledRule(EnabledRule)
      */

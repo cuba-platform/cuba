@@ -41,18 +41,21 @@ import java.util.Set;
  * Action's behaviour can be customized by providing arguments to constructor, setting properties, or overriding
  * method {@link #afterRemove(java.util.Set)} )}
  */
-public class RemoveAction extends ItemTrackingAction {
+public class RemoveAction extends ItemTrackingAction implements Action.HasBeforeActionPerformedHandler {
 
     public static final String ACTION_ID = ListActionType.REMOVE.getId();
 
     protected boolean autocommit;
 
+    protected boolean confirm;
     protected String confirmationMessage;
     protected String confirmationTitle;
 
     protected Security security = AppBeans.get(Security.NAME);
 
     protected AfterRemoveHandler afterRemoveHandler;
+
+    protected BeforeActionPerformedHandler beforeActionPerformedHandler;
 
     public interface AfterRemoveHandler {
         /**
@@ -145,10 +148,9 @@ public class RemoveAction extends ItemTrackingAction {
     }
 
     /**
-     * This method is invoked by action owner component. Don't override it, there are special methods to
-     * customize behaviour below.
+     * This method is invoked by the action owner component.
      *
-     * @param component component invoking action
+     * @param component component invoking the action
      */
     @Override
     public void actionPerform(Component component) {
@@ -156,9 +158,18 @@ public class RemoveAction extends ItemTrackingAction {
             return;
         }
 
+        if (beforeActionPerformedHandler != null) {
+            if (!beforeActionPerformedHandler.beforeActionPerformed())
+                return;
+        }
+
         Set selected = target.getSelected();
         if (!selected.isEmpty()) {
-            confirmAndRemove(selected);
+            if (confirm) {
+                confirmAndRemove(selected);
+            } else {
+                remove(selected);
+            }
         }
     }
 
@@ -171,15 +182,7 @@ public class RemoveAction extends ItemTrackingAction {
                         new DialogAction(Type.OK, Status.PRIMARY) {
                             @Override
                             public void actionPerform(Component component) {
-                                doRemove(selected, autocommit);
-
-                                // move focus to owner
-                                target.requestFocus();
-
-                                afterRemove(selected);
-                                if (afterRemoveHandler != null) {
-                                    afterRemoveHandler.handle(selected);
-                                }
+                                remove(selected);
                             }
                         },
                         new DialogAction(Type.CANCEL) {
@@ -191,6 +194,18 @@ public class RemoveAction extends ItemTrackingAction {
                         }
                 }
         );
+    }
+
+    protected void remove(Set selected) {
+        doRemove(selected, autocommit);
+
+        // move focus to owner
+        target.requestFocus();
+
+        afterRemove(selected);
+        if (afterRemoveHandler != null) {
+            afterRemoveHandler.handle(selected);
+        }
     }
 
     /**
@@ -205,6 +220,20 @@ public class RemoveAction extends ItemTrackingAction {
      */
     public void setAutocommit(boolean autocommit) {
         this.autocommit = autocommit;
+    }
+
+    /**
+     * @return  whether to show the confirmation dialog to user
+     */
+    public boolean isConfirm() {
+        return confirm;
+    }
+
+    /**
+     * @param confirm   whether to show the confirmation dialog to user
+     */
+    public void setConfirm(boolean confirm) {
+        this.confirm = confirm;
     }
 
     /**
@@ -271,5 +300,15 @@ public class RemoveAction extends ItemTrackingAction {
      */
     public void setAfterRemoveHandler(AfterRemoveHandler afterRemoveHandler) {
         this.afterRemoveHandler = afterRemoveHandler;
+    }
+
+    @Override
+    public BeforeActionPerformedHandler getBeforeActionPerformedHandler() {
+        return beforeActionPerformedHandler;
+    }
+
+    @Override
+    public void setBeforeActionPerformedHandler(BeforeActionPerformedHandler handler) {
+        beforeActionPerformedHandler = handler;
     }
 }

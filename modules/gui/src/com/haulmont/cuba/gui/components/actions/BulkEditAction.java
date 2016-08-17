@@ -28,12 +28,14 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import java.util.List;
 import java.util.Map;
 
-public class BulkEditAction extends ItemTrackingAction {
+public class BulkEditAction extends ItemTrackingAction implements Action.HasBeforeActionPerformedHandler  {
 
     protected OpenType openType = OpenType.DIALOG;
     protected String exclude;
     protected Map<String, Field.Validator> fieldValidators;
     protected List<Field.Validator> modelValidators;
+
+    protected BeforeActionPerformedHandler beforeActionPerformedHandler;
 
     public BulkEditAction(ListComponent target) {
         super(target, "bulkEdit");
@@ -81,6 +83,11 @@ public class BulkEditAction extends ItemTrackingAction {
 
     @Override
     public void actionPerform(Component component) {
+        if (beforeActionPerformedHandler != null) {
+            if (!beforeActionPerformedHandler.beforeActionPerformed())
+                return;
+        }
+
         if (!userSession.isSpecificPermitted(BulkEditor.PERMISSION)) {
             target.getFrame().showNotification(messages.getMainMessage("accessDenied.message"), Frame.NotificationType.ERROR);
             return;
@@ -117,5 +124,15 @@ public class BulkEditAction extends ItemTrackingAction {
             }
             target.requestFocus();
         });
+    }
+
+    @Override
+    public BeforeActionPerformedHandler getBeforeActionPerformedHandler() {
+        return beforeActionPerformedHandler;
+    }
+
+    @Override
+    public void setBeforeActionPerformedHandler(BeforeActionPerformedHandler handler) {
+        beforeActionPerformedHandler = handler;
     }
 }

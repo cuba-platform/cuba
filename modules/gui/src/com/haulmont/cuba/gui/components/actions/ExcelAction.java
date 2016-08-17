@@ -31,12 +31,14 @@ import static com.haulmont.cuba.gui.export.ExcelExporter.ExportMode;
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor or setting properties.
  */
-public class ExcelAction extends BaseAction {
+public class ExcelAction extends BaseAction implements Action.HasBeforeActionPerformedHandler {
 
     public static final String ACTION_ID = ListActionType.EXCEL.getId();
 
     protected final Table table;
     protected final ExportDisplay display;
+
+    protected BeforeActionPerformedHandler beforeActionPerformedHandler;
 
     /**
      * The simplest constructor. The action uses default name and other parameters.
@@ -79,6 +81,10 @@ public class ExcelAction extends BaseAction {
      */
     @Override
     public void actionPerform(Component component) {
+        if (beforeActionPerformedHandler != null) {
+            if (!beforeActionPerformedHandler.beforeActionPerformed())
+                return;
+        }
         if (table.getSelected().size() > 0) {
             if (table.getSelected().size() > 1) {
                 String title = messages.getMainMessage("actions.exportSelectedTitle");
@@ -122,5 +128,15 @@ public class ExcelAction extends BaseAction {
     protected void export(ExportMode exportMode) {
         ExcelExporter exporter = new ExcelExporter();
         exporter.exportTable(table, table.getNotCollapsedColumns(), display, exportMode);
+    }
+
+    @Override
+    public BeforeActionPerformedHandler getBeforeActionPerformedHandler() {
+        return beforeActionPerformedHandler;
+    }
+
+    @Override
+    public void setBeforeActionPerformedHandler(BeforeActionPerformedHandler handler) {
+        beforeActionPerformedHandler = handler;
     }
 }

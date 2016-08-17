@@ -41,7 +41,7 @@ import java.util.Map;
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor or setting properties.
  */
-public class AddAction extends BaseAction implements Action.HasOpenType {
+public class AddAction extends BaseAction implements Action.HasOpenType, Action.HasBeforeActionPerformedHandler  {
 
     public static final String ACTION_ID = ListActionType.ADD.getId();
 
@@ -52,6 +52,8 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
     protected String windowId;
     protected Map<String, Object> windowParams;
     protected Security security = AppBeans.get(Security.NAME);
+
+    protected BeforeActionPerformedHandler beforeActionPerformedHandler;
 
     /**
      * The simplest constructor. The action has default name and opens the lookup screen in THIS tab.
@@ -144,6 +146,11 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
      */
     @Override
     public void actionPerform(Component component) {
+        if (beforeActionPerformedHandler != null) {
+            if (!beforeActionPerformedHandler.beforeActionPerformed())
+                return;
+        }
+
         Map<String, Object> params = getWindowParams();
         if (params == null)
             params = new HashMap<>();
@@ -226,6 +233,17 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
 
     public interface AfterAddHandler {
         void handle(Collection items);
+    }
+
+
+    @Override
+    public BeforeActionPerformedHandler getBeforeActionPerformedHandler() {
+        return beforeActionPerformedHandler;
+    }
+
+    @Override
+    public void setBeforeActionPerformedHandler(BeforeActionPerformedHandler handler) {
+        beforeActionPerformedHandler = handler;
     }
 
     /**

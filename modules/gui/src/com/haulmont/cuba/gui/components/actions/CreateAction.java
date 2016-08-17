@@ -40,7 +40,7 @@ import java.util.Map;
  * Action's behaviour can be customized by providing arguments to constructor, setting properties, or overriding
  * methods {@link #afterCommit(com.haulmont.cuba.core.entity.Entity)}, {@link #afterWindowClosed(com.haulmont.cuba.gui.components.Window)}
  */
-public class CreateAction extends BaseAction implements Action.HasOpenType {
+public class CreateAction extends BaseAction implements Action.HasOpenType, Action.HasBeforeActionPerformedHandler  {
 
     public static final String ACTION_ID = ListActionType.CREATE.getId();
 
@@ -58,6 +58,8 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
     protected AfterWindowClosedHandler afterWindowClosedHandler;
 
     protected Window.CloseListener editorCloseListener;
+
+    protected BeforeActionPerformedHandler beforeActionPerformedHandler;
 
     public interface AfterCommitHandler {
         /**
@@ -150,6 +152,11 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
      */
     @Override
     public void actionPerform(Component component) {
+        if (beforeActionPerformedHandler != null) {
+            if (!beforeActionPerformedHandler.beforeActionPerformed())
+                return;
+        }
+
         final CollectionDatasource datasource = target.getDatasource();
         final DataSupplier dataservice = datasource.getDataSupplier();
 
@@ -352,5 +359,15 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
      */
     public void setEditorCloseListener(Window.CloseListener editorCloseListener) {
         this.editorCloseListener = editorCloseListener;
+    }
+
+    @Override
+    public BeforeActionPerformedHandler getBeforeActionPerformedHandler() {
+        return beforeActionPerformedHandler;
+    }
+
+    @Override
+    public void setBeforeActionPerformedHandler(BeforeActionPerformedHandler handler) {
+        beforeActionPerformedHandler = handler;
     }
 }

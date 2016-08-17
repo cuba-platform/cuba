@@ -40,8 +40,6 @@ public class ExcludeAction extends RemoveAction {
 
     public static final String ACTION_ID = ListActionType.EXCLUDE.getId();
 
-    protected boolean confirm;
-
     protected Metadata metadata;
 
     /**
@@ -103,6 +101,11 @@ public class ExcludeAction extends RemoveAction {
         if (!isEnabled())
             return;
 
+        if (beforeActionPerformedHandler != null) {
+            if (!beforeActionPerformedHandler.beforeActionPerformed())
+                return;
+        }
+
         Set selected = target.getSelected();
         if (!selected.isEmpty()) {
             if (confirm) {
@@ -155,19 +158,5 @@ public class ExcludeAction extends RemoveAction {
                 throw e;
             }
         }
-    }
-
-    /**
-     * @return  whether to show the confirmation dialog to user
-     */
-    public boolean isConfirm() {
-        return confirm;
-    }
-
-    /**
-     * @param confirm   whether to show the confirmation dialog to user
-     */
-    public void setConfirm(boolean confirm) {
-        this.confirm = confirm;
     }
 }

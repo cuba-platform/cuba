@@ -44,7 +44,7 @@ import java.util.Set;
  * Action's behaviour can be customized by providing arguments to constructor, setting properties, or overriding
  * methods {@link #afterCommit(com.haulmont.cuba.core.entity.Entity)}, {@link #afterWindowClosed(com.haulmont.cuba.gui.components.Window)}
  */
-public class EditAction extends ItemTrackingAction implements Action.HasOpenType {
+public class EditAction extends ItemTrackingAction implements Action.HasOpenType, Action.HasBeforeActionPerformedHandler {
 
     public static final String ACTION_ID = ListActionType.EDIT.getId();
 
@@ -61,6 +61,8 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
     protected AfterWindowClosedHandler afterWindowClosedHandler;
 
     protected Window.CloseListener editorCloseListener;
+
+    protected BeforeActionPerformedHandler beforeActionPerformedHandler;
 
     public interface AfterCommitHandler {
         /**
@@ -155,13 +157,17 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
     }
 
     /**
-     * This method is invoked by action owner component. Don't override it, there are special methods to
-     * customize behaviour below.
+     * This method is invoked by the action owner component.
      *
-     * @param component component invoking action
+     * @param component component invoking the action
      */
     @Override
     public void actionPerform(Component component) {
+        if (beforeActionPerformedHandler != null) {
+            if (!beforeActionPerformedHandler.beforeActionPerformed())
+                return;
+        }
+
         final Set selected = target.getSelected();
         if (selected.size() == 1) {
             Datasource parentDs = null;
@@ -300,5 +306,15 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      */
     public void setEditorCloseListener(Window.CloseListener editorCloseListener) {
         this.editorCloseListener = editorCloseListener;
+    }
+
+    @Override
+    public BeforeActionPerformedHandler getBeforeActionPerformedHandler() {
+        return beforeActionPerformedHandler;
+    }
+
+    @Override
+    public void setBeforeActionPerformedHandler(BeforeActionPerformedHandler handler) {
+        beforeActionPerformedHandler = handler;
     }
 }

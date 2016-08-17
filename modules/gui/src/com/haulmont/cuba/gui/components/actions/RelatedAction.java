@@ -42,7 +42,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
-public class RelatedAction extends AbstractAction {
+public class RelatedAction extends AbstractAction implements Action.HasBeforeActionPerformedHandler {
 
     public static final String ACTION_ID = "related";
 
@@ -57,6 +57,8 @@ public class RelatedAction extends AbstractAction {
 
     protected ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.NAME);
     protected RelatedEntitiesService relatedEntitiesService = AppBeans.get(RelatedEntitiesService.NAME);
+
+    protected BeforeActionPerformedHandler beforeActionPerformedHandler;
 
     public RelatedAction(String id, ListComponent target, MetaClass metaClass, MetaProperty metaProperty) {
         super(id);
@@ -95,6 +97,11 @@ public class RelatedAction extends AbstractAction {
 
     @Override
     public void actionPerform(Component component) {
+        if (beforeActionPerformedHandler != null) {
+            if (!beforeActionPerformedHandler.beforeActionPerformed())
+                return;
+        }
+
         final Set<Entity> selected = target.getSelected();
 
         if (!selected.isEmpty()) {
@@ -209,5 +216,15 @@ public class RelatedAction extends AbstractAction {
             List<Object> relatedIds = relatedEntitiesService.getRelatedIds(parentIds, parentMetaClass, metaProperty.getName());
             return relatedIds;
         }
+    }
+
+    @Override
+    public BeforeActionPerformedHandler getBeforeActionPerformedHandler() {
+        return beforeActionPerformedHandler;
+    }
+
+    @Override
+    public void setBeforeActionPerformedHandler(BeforeActionPerformedHandler handler) {
+        beforeActionPerformedHandler = handler;
     }
 }

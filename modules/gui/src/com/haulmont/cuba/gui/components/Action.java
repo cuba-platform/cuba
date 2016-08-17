@@ -137,11 +137,17 @@ public interface Action {
      */
     void removePropertyChangeListener(PropertyChangeListener listener);
 
+    /**
+     * Indicates that the action can be assigned a {@link WindowManager.OpenType} to open a related screen.
+     */
     interface HasOpenType extends Action {
         WindowManager.OpenType getOpenType();
         void setOpenType(WindowManager.OpenType openType);
     }
 
+    /**
+     * Indicates that the action can be affected by UI permissions.
+     */
     interface UiPermissionAware extends Action {
         boolean isEnabledByUiPermissions();
         void setEnabledByUiPermissions(boolean enabledByUiPermissions);
@@ -156,14 +162,28 @@ public interface Action {
         void setTarget(ListComponent target);
     }
 
-    interface HasBeforeAfterHandlers {
-        Runnable getBeforeActionPerformedHandler();
-        void setBeforeActionPerformedHandler(Runnable handler);
-
-        Runnable getAfterActionPerformedHandler();
-        void setAfterActionPerformedHandler(Runnable handler);
+    /**
+     * Callback interface which is invoked by the action before execution.
+     */
+    interface BeforeActionPerformedHandler {
+        /**
+         * Invoked by the action before execution.
+         * @return true to continue execution, false to abort
+         */
+        boolean beforeActionPerformed();
     }
 
+    /**
+     * Interface defining methods for adding and removing {@link BeforeActionPerformedHandler}s
+     */
+    interface HasBeforeActionPerformedHandler extends Action {
+        BeforeActionPerformedHandler getBeforeActionPerformedHandler();
+        void setBeforeActionPerformedHandler(BeforeActionPerformedHandler handler);
+    }
+
+    /**
+     * Used in dialogs to assign a special visual style for a button representing the action.
+     */
     enum Status {
         NORMAL,
 
