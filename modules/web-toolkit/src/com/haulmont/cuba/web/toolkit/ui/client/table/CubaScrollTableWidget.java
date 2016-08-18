@@ -114,16 +114,19 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             // Fix for #VAADIN-12970, relayout cell widgets
             // Haulmont API
             ComponentConnector connector = Util.findConnectorFor(this);
-            LayoutManager lm = connector.getLayoutManager();
+            // may be null if we switch tabs fast
+            if (connector != null) {
+                LayoutManager lm = connector.getLayoutManager();
 
-            for (Widget w : scrollBody) {
-                HasWidgets row = (HasWidgets) w;
-                for (Widget child : row) {
-                    ComponentConnector childConnector = Util.findConnectorFor(child);
-                    if (childConnector != null && childConnector.getConnectorId() != null) {
-                        if (childConnector instanceof ManagedLayout
-                                || childConnector instanceof AbstractLayoutConnector) {
-                            lm.setNeedsMeasure(childConnector);
+                for (Widget w : scrollBody) {
+                    HasWidgets row = (HasWidgets) w;
+                    for (Widget child : row) {
+                        ComponentConnector childConnector = Util.findConnectorFor(child);
+                        if (childConnector != null && childConnector.getConnectorId() != null) {
+                            if (childConnector instanceof ManagedLayout
+                                    || childConnector instanceof AbstractLayoutConnector) {
+                                lm.setNeedsMeasure(childConnector);
+                            }
                         }
                     }
                 }
