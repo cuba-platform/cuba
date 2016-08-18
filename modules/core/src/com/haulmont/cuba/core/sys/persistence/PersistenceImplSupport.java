@@ -159,7 +159,7 @@ public class PersistenceImplSupport {
                 continue;
 
             BaseGenericIdEntity entity = (BaseGenericIdEntity) instance;
-            possiblyChanged = visitor.visit(entity);
+            possiblyChanged = visitor.visit(entity) || possiblyChanged;
         }
         if (!possiblyChanged)
             return;
