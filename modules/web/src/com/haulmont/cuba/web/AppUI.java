@@ -299,10 +299,17 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
         return app;
     }
 
+    /**
+     * @return currently displayed top-level window
+     */
     public TopLevelWindow getTopLevelWindow() {
         return topLevelWindow;
     }
 
+    /**
+     * INTERNAL.
+     * Set currently displayed top-level window.
+     */
     public void setTopLevelWindow(TopLevelWindow window) {
         if (this.topLevelWindow != window) {
             this.topLevelWindow = window;

@@ -361,6 +361,10 @@ public interface Window extends Frame, Component.HasCaption {
         }
     }
 
+    /**
+     * Marker interface implemented by top-level windows of the application: login window and main window. Only one
+     * top-level window exists at a time, depending on the connection state.
+     */
     interface TopLevelWindow extends Window {
     }
 

@@ -178,6 +178,9 @@ public abstract class App {
         }
     }
 
+    /**
+     * @return currently displayed top-level window
+     */
     public Window.TopLevelWindow getTopLevelWindow() {
         return getAppUI().getTopLevelWindow();
     }
