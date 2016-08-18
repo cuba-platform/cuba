@@ -569,6 +569,62 @@ public class EntityCacheTestClass {
     }
 
     @Test
+    public void testSoftDelete() throws Exception {
+        User u;
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            u = cont.entityManager().find(User.class, this.user.getId());
+            cont.entityManager().remove(u);
+            tx.commit();
+        }
+        appender.clearMessages();
+
+        appender.clearMessages();
+        // loading first time - select is issued because the entity was evicted
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            u = cont.entityManager().find(User.class, this.user.getId());
+            tx.commit();
+        }
+        assertNull(u);
+        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+
+        appender.clearMessages();
+        // loading second time - select again because the previous query returned nothing
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            u = cont.entityManager().find(User.class, this.user.getId());
+            tx.commit();
+        }
+        assertNull(u);
+        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+    }
+
+    @Test
+    public void testSoftDeleteOff() throws Exception {
+        User u;
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            u = cont.entityManager().find(User.class, this.user.getId());
+            cont.entityManager().remove(u);
+            tx.commit();
+        }
+        appender.clearMessages();
+
+        appender.clearMessages();
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            cont.entityManager().setSoftDeletion(false);
+            u = cont.entityManager().find(User.class, this.user.getId());
+            tx.commit();
+        }
+        assertNotNull(u);
+        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+
+        appender.clearMessages();
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            u = cont.entityManager().find(User.class, this.user.getId());
+            tx.commit();
+        }
+        assertNull(u);
+    }
+
+    @Test
     public void testQuery() throws Exception {
         appender.clearMessages();
 

@@ -16,6 +16,7 @@
 package com.haulmont.cuba.soft_delete;
 
 import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.View;
@@ -24,6 +25,7 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.testsupport.TestContainer;
+import org.eclipse.persistence.internal.helper.CubaUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -44,9 +46,12 @@ public class SoftDeleteTest {
     private UUID role2Id;
     private UUID userRole1Id;
     private UUID userRole2Id;
+    private Persistence persistence;
 
     @Before
     public void setUp() throws Exception {
+        persistence = cont.persistence();
+
         Transaction tx = cont.persistence().createTransaction();
         try {
             EntityManager em = cont.persistence().getEntityManager();
@@ -104,6 +109,36 @@ public class SoftDeleteTest {
         cont.deleteRecord("SEC_ROLE", role2Id);
         cont.deleteRecord("SEC_USER", userId);
         cont.deleteRecord("SEC_GROUP", groupId);
+    }
+
+    @Test
+    public void testMultipleTransactions() throws Exception {
+        try (Transaction tx = persistence.createTransaction()) {
+            assertTrue(CubaUtil.isSoftDeletion());
+
+            EntityManager em = persistence.getEntityManager();
+            em.setSoftDeletion(false);
+            assertFalse(CubaUtil.isSoftDeletion());
+
+            tx.commit();
+        }
+
+        try (Transaction tx = persistence.createTransaction()) {
+            assertTrue(CubaUtil.isSoftDeletion());
+
+            EntityManager em = persistence.getEntityManager();
+            em.setSoftDeletion(false);
+            assertFalse(CubaUtil.isSoftDeletion());
+
+            try (Transaction tx1 = persistence.createTransaction()) {
+                assertTrue(CubaUtil.isSoftDeletion());
+
+                tx1.commit();
+            }
+            assertFalse(CubaUtil.isSoftDeletion());
+
+            tx.commit();
+        }
     }
 
     @Test

@@ -17,11 +17,11 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
-import org.eclipse.persistence.cuba.CubaUtil;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.CubaUtil;
 
 import java.io.IOException;
 import java.util.Vector;
@@ -45,14 +45,12 @@ public class CubaIsNullExpressionOperator extends ExpressionOperator {
         if (items.size() == 1
                 && items.get(0) instanceof QueryKeyExpression
                 && "deleteTs".equals(((QueryKeyExpression) items.get(0)).getName())) {
-            if (printer.getSession() != null) {
-                if (CubaUtil.isSoftDeleteDisabled(printer.getSession())) {
-                    try {
-                        printer.getWriter().write("(0=0)");
-                        return;
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+            if (!CubaUtil.isSoftDeletion()) {
+                try {
+                    printer.getWriter().write("(0=0)");
+                    return;
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }

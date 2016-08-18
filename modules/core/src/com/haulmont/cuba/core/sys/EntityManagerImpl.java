@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.sys.listener.EntityListenerType;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.collections.CollectionUtils;
+import org.eclipse.persistence.internal.helper.CubaUtil;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +76,7 @@ public class EntityManagerImpl implements EntityManager {
     @Override
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
-        disableSoftDelete(!softDeletion);
+        CubaUtil.setSoftDeletion(softDeletion);
     }
 
     @Override
@@ -155,7 +156,11 @@ public class EntityManagerImpl implements EntityManager {
         MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(entityClass);
         Class<T> javaClass = metaClass.getJavaClass();
 
-        return delegate.find(javaClass, realId);
+        T entity = delegate.find(javaClass, realId);
+        if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted() && isSoftDeletion())
+            return null; // in case of entity cache
+        else
+            return entity;
     }
 
     @Nullable
@@ -370,7 +375,7 @@ public class EntityManagerImpl implements EntityManager {
 
     protected <T extends Entity> T internalMerge(T entity) {
         try {
-            disableSoftDelete(true);
+            CubaUtil.setSoftDeletion(false);
 
             UUID uuid = null;
             if (entity.getId() instanceof IdProxy) {
@@ -386,12 +391,8 @@ public class EntityManagerImpl implements EntityManager {
             }
             return merged;
         } finally {
-            disableSoftDelete(!softDeletion);
+            CubaUtil.setSoftDeletion(softDeletion);
         }
-    }
-
-    protected void disableSoftDelete(boolean disable) {
-        delegate.setProperty("cuba.disableSoftDelete", disable);
     }
 
     private Object getRealId(Object id) {

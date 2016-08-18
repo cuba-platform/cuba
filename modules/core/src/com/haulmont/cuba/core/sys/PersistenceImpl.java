@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.security.global.UserSession;
+import org.eclipse.persistence.internal.helper.CubaUtil;
 import org.springframework.core.Ordered;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -233,22 +234,28 @@ public class PersistenceImpl implements Persistence {
 
     private class EntityManagerContextSynchronization implements TransactionSynchronization, Ordered {
 
+        private final boolean prevSoftDeletion;
         private EntityManagerContext context;
         private String store;
 
         public EntityManagerContextSynchronization(String store) {
             this.store = store;
+            prevSoftDeletion = CubaUtil.setSoftDeletion(softDeletion);
         }
 
         @Override
         public void suspend() {
             context = contextHolder.get(store);
             contextHolder.remove(store);
+            CubaUtil.setSoftDeletion(prevSoftDeletion);
         }
 
         @Override
         public void resume() {
             contextHolder.set(context, store);
+            if (context != null) {
+                CubaUtil.setSoftDeletion(context.isSoftDeletion());
+            }
         }
 
         @Override
@@ -282,6 +289,7 @@ public class PersistenceImpl implements Persistence {
         @Override
         public void afterCompletion(int status) {
             contextHolder.remove(store);
+            CubaUtil.setSoftDeletion(prevSoftDeletion);
         }
 
         @Override
