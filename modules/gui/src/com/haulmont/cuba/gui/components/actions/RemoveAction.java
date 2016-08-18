@@ -47,7 +47,7 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
 
     protected boolean autocommit;
 
-    protected boolean confirm;
+    protected boolean confirm = true;
     protected String confirmationMessage;
     protected String confirmationTitle;
 
