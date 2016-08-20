@@ -58,15 +58,6 @@ public class DbUpdaterEngine implements DbUpdater {
 
     protected boolean changelogTableExists = false;
 
-    protected final Map<String, String> requiredTables = new HashMap<>();
-
-    {
-        requiredTables.put("reports", "REPORT_REPORT");
-        requiredTables.put("workflow", "WF_PROC");
-        requiredTables.put("ccpayments", "CC_CREDIT_CARD");
-        requiredTables.put("bpm", "BPM_PROC_DEFINITION");
-    }
-
     // register handlers for script files
     protected final Map<String, FileHandler> extensionHandlers = new HashMap<>();
 
@@ -242,63 +233,42 @@ public class DbUpdaterEngine implements DbUpdater {
     }
 
     protected void runRequiredInitScripts() {
-        log.trace("Checking required tables");
-        for (String dirName : getModuleDirs()) {
-            String moduleName = dirName.substring(3);
-            String reqTable = requiredTables.get(moduleName);
-            if (reqTable != null) {
-                log.trace("Looking for table {}", reqTable);
-                if (!tableExists(reqTable)) {
-                    log.info("Required table for " + moduleName + " does not exist, running init scripts");
-                    List<ScriptResource> initScripts = getInitScripts(dirName);
-                    try {
-                        for (ScriptResource file : initScripts) {
-                            executeScript(file);
-                            markScript(getScriptName(file), true);
+        log.trace("Checking executed init scripts for components");
+        Set<String> executedScripts = getExecutedScripts();
+        List<String> dirs = getModuleDirs();
+        if (dirs.size() > 1) {
+            // check all db folders except the last because it is the folder of the app and we need only components
+            for (String dirName : dirs.subList(0, dirs.size() - 1)) {
+                List<ScriptResource> initScripts = getInitScripts(dirName);
+                if (!initScripts.isEmpty()) {
+                    for (ScriptResource initScript : initScripts) {
+                        boolean executed = false;
+                        String initScriptName = getScriptName(initScript);
+                        log.trace("Checking script {}", initScriptName);
+                        for (String executedScript : executedScripts) {
+                            if (initScriptName.length() > 3 && executedScript.length() > 3
+                                    && initScriptName.substring(3).equals(executedScript.substring(3))) {
+                                executed = true;
+                                break;
+                            }
                         }
-                    } finally {
-                        List<ScriptResource> updateFiles = getUpdateScripts(dirName);
-                        for (ScriptResource file : updateFiles)
-                            markScript(getScriptName(file), true);
+                        if (!executed) {
+                            log.info("Script " + initScriptName + " was not executed, running init scripts for " + dirName.substring(3));
+                            try {
+                                for (ScriptResource file : initScripts) {
+                                    executeScript(file);
+                                    markScript(getScriptName(file), true);
+                                }
+                            } finally {
+                                List<ScriptResource> updateFiles = getUpdateScripts(dirName);
+                                for (ScriptResource file : updateFiles)
+                                    markScript(getScriptName(file), true);
+                            }
+                        }
                     }
                 }
             }
         }
-    }
-
-    protected boolean tableExists(String tableName) {
-        Connection connection = null;
-        try {
-            connection = getDataSource().getConnection();
-            DbProperties dbProperties = new DbProperties(getConnectionUrl(connection));
-            String currentSchema = dbProperties.getCurrentSchemaProperty();
-            if (StringUtils.isNotEmpty(currentSchema)) {
-                DatabaseMetaData dbMetaData = connection.getMetaData();
-                ResultSet tables = dbMetaData.getTables(null, currentSchema, null, null);
-                while (tables.next()) {
-                    String tableNameFromDb = tables.getString("TABLE_NAME");
-                    if (tableName.equalsIgnoreCase(tableNameFromDb)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("An error occurred while checking required tables", e);
-        } finally {
-            DbUtils.closeQuietly(connection);
-        }
-        try {
-            executeSql("select * from " + tableName + " where 0=1");
-        } catch (SQLException e) {
-            String mark = dbmsType.equals("oracle") ? "ora-00942" : tableName.toLowerCase();
-            if (e.getMessage() != null && e.getMessage().toLowerCase().contains(mark)) {
-                return false;
-            } else {
-                throw new RuntimeException("An error occurred while checking required tables", e);
-            }
-        }
-        return true;
     }
 
     /**
