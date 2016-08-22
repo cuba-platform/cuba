@@ -164,7 +164,7 @@ public class CubaGroupBoxConnector extends PanelConnector {
 
         widget.setCollapsable(getState().collapsable);
         widget.setExpanded(getState().expanded);
-        widget.setShownAsPanel(getState().showAsPanel);
+        widget.setShowAsPanel(getState().showAsPanel);
 
         if (!widgetInitialized) {
             widget.init();
