@@ -88,7 +88,7 @@ public class HintProviderTest {
         List<String> options = response.getOptions();
         assertEquals(0, options.size());
         assertEquals("Query error", response.getErrorMessage());
-        assertArrayEquals(new String[]{"Cannot parse [p...]"},
+        assertArrayEquals(new String[]{"Cannot parse [p...]", "Error near: \"p\""},
                 response.getCauseErrorMessages().toArray()
         );
     }
