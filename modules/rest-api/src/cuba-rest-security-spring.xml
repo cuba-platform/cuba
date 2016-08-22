@@ -34,21 +34,6 @@
 
     <bean class="com.haulmont.cuba.core.sys.CubaPropertyPlaceholderConfigurer"/>
 
-    <!-- Module beans -->
-    <bean id="cuba_OAuthTokenRevoker" class="com.haulmont.restapi.auth.OAuthTokenRevoker"/>
-    <bean id="cuba_RestQueriesConfiguration" class="com.haulmont.restapi.config.RestQueriesConfiguration"/>
-    <bean id="cuba_RestParseUtils" class="com.haulmont.restapi.common.RestParseUtils"/>
-    <bean id="cuba_RestControllerUtils" class="com.haulmont.restapi.common.RestControllerUtils"/>
-    <bean id="cuba_EntitiesControllerManager" class="com.haulmont.restapi.service.EntitiesControllerManager"/>
-    <bean id="cuba_PermissionsControllerManager" class="com.haulmont.restapi.service.PermissionsControllerManager"/>
-    <bean id="cuba_EntitiesMetadataControllerManager" class="com.haulmont.restapi.service.EntitiesMetadataControllerManager"/>
-    <bean id="cuba_QueriesControllerManager" class="com.haulmont.restapi.service.QueriesControllerManager"/>
-    <bean id="cuba_DatatypesControllerManager" class="com.haulmont.restapi.service.DatatypesControllerManager"/>
-    <bean id="cuba_ServicesControllerManager" class="com.haulmont.restapi.service.ServicesControllerManager"/>
-    <bean id="cuba_EnumsControllerManager" class="com.haulmont.restapi.service.EnumsControllerManager"/>
-    <bean id="cuba_UserInfoControllerManager" class="com.haulmont.restapi.service.UserInfoControllerManager"/>
-    <bean id="cuba_RestServicesConfiguration" class="com.haulmont.restapi.config.RestServicesConfiguration"/>
-
     <!-- According to the spec the token endpoint should be secured by the basic authentication -->
     <http pattern="/rest/v2/oauth/**"
           create-session="stateless"

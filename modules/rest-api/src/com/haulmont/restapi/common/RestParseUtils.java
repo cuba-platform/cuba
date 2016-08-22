@@ -34,6 +34,7 @@ import java.util.UUID;
 
 /**
  */
+@Component("cuba_RestParseUtils")
 public class RestParseUtils {
 
     @Inject

@@ -21,6 +21,7 @@ import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.restapi.data.PermissionInfo;
 import com.haulmont.restapi.exception.RestAPIException;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.Map;
  * Class is used for getting current user permissions for the REST API. It contains a business logic required by the
  * {@link com.haulmont.restapi.controllers.PermissionsController}
  */
+@Component("cuba_PermissionsControllerManager")
 public class PermissionsControllerManager {
 
     @Inject

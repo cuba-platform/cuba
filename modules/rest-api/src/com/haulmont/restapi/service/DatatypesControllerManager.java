@@ -32,11 +32,13 @@ import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.List;
 
+@Component("cuba_DatatypesControllerManager")
 public class DatatypesControllerManager {
 
     protected Logger log = LoggerFactory.getLogger(DatatypesControllerManager.class);

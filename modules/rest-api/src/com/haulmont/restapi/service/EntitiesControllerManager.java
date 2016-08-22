@@ -37,6 +37,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -46,6 +47,7 @@ import java.util.*;
  * Class that executes business logic required by the {@link com.haulmont.restapi.controllers.EntitiesController}. It
  * performs CRUD operations with entities
  */
+@Component("cuba_EntitiesControllerManager")
 public class EntitiesControllerManager {
 
     @Inject

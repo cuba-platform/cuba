@@ -44,9 +44,7 @@
 
     <module name="rest-api" dependsOn="client" blocks="web,portal">
         <artifact name="cuba-rest-api" appJar="true"/>
-
-        <property name="cuba.springContextConfig" value="rest-api-security-spring.xml"/>
-        <property name="cuba.dispatcherSpringContextConfig" value="rest-api-dispatcher-spring.xml"/>
+        <property name="cuba.restSpringContextConfig" value="cuba-rest-security-spring.xml cuba-rest-dispatcher-spring.xml"/>
     </module>
 
     <module name="gui" dependsOn="client" blocks="web,desktop">

@@ -31,6 +31,7 @@ import javax.inject.Inject;
 /**
  * Bean that is used for access token revocation
  */
+@Component("cuba_OauthTokenRevoker")
 public class OAuthTokenRevoker {
     protected static final Logger log = LoggerFactory.getLogger(OAuthTokenRevoker.class);
 

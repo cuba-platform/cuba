@@ -28,6 +28,7 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 import javax.annotation.Nullable;
@@ -50,6 +51,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * Method parameter types can be omitted if the service doesn't contain an overloaded method with the same parameters
  * number. Otherwise, types must be defined.
  */
+@Component("cuba_RestServicesConfiguration")
 public class RestServicesConfiguration {
 
     protected Logger log = LoggerFactory.getLogger(RestServicesConfiguration.class);

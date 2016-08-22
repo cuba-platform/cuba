@@ -23,11 +23,13 @@ import com.haulmont.restapi.data.EnumInfo;
 import com.haulmont.restapi.data.EnumValueInfo;
 import com.haulmont.restapi.exception.RestAPIException;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component("cuba_EnumsControllerManager")
 public class EnumsControllerManager {
     @Inject
     protected MetadataTools metadataTools;

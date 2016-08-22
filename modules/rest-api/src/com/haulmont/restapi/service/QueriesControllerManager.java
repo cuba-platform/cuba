@@ -30,6 +30,7 @@ import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.exception.RestAPIException;
 import com.haulmont.restapi.config.RestQueriesConfiguration;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 import javax.annotation.Nullable;
@@ -41,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@Component("cuba_QueriesControllerManager")
 public class QueriesControllerManager {
 
     @Inject
