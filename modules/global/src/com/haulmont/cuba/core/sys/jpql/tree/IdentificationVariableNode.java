@@ -56,6 +56,16 @@ public class IdentificationVariableNode extends BaseCustomNode {
             List<ErrorRec> invalidIdVarNodes) {
         List children = getChildren();
 
+        if (variableName == null) {
+            invalidIdVarNodes.add(new ErrorRec(this, "No entity variable name"));
+            return;
+        }
+
+        if (children == null) {
+            invalidIdVarNodes.add(new ErrorRec(this, "Null children"));
+            return;
+        }
+
         if (children == null) {
             invalidIdVarNodes.add(new ErrorRec(this, "Null children"));
             return;

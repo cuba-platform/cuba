@@ -23366,4 +23366,9 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_date_time_timestamp_literal_in_synpred197_JPA23548 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_literal_in_synpred235_JPA24003 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_input_parameter_in_synpred237_JPA24019 = new BitSet(new long[]{0x0000000000000002L});
+
+	@Override
+	public void emitErrorMessage(String msg) {
+		//do nothing
+	}
 }

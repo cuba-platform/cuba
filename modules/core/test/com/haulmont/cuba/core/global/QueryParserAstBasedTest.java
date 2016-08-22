@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
+import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 import org.junit.Test;
@@ -53,6 +54,19 @@ public class QueryParserAstBasedTest {
         assertEquals("u", parser.getEntityAlias());
     }
 
+    @Test
+    public void testError() throws Exception {
+        DomainModel model = prepareDomainModel();
+        try {
+            QueryParserAstBased parser = new QueryParserAstBased(model,
+                    "select u from sec$Constraint"
+            );
+            parser.getEntityAlias();
+            fail();
+        } catch (JpqlSyntaxException e) {
+            //OK
+        }
+    }
 
     @Test
     public void testGetParamNames() throws Exception {
