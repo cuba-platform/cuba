@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
@@ -1160,5 +1161,12 @@ public class QueryTransformerAstBasedTest {
         } catch (JpqlSyntaxException e) {
             //expected
         }
+    }
+
+    @Test
+    public void testDeleteJpql() throws Exception {
+        DomainModel model = prepareDomainModel();
+        QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model, "delete from sec$GroupHierarchy g where g.createdBy = :createdBy");
+        assertEquals(transformerAstBased.getResult(), "delete from sec$GroupHierarchy g where g.createdBy = :createdBy");
     }
 }
