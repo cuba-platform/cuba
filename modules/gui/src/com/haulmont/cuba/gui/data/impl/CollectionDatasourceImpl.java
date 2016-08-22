@@ -38,6 +38,7 @@ import org.perf4j.log4j.Log4JStopWatch;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Most commonly used {@link CollectionDatasource} implementation.
@@ -216,13 +217,9 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         if (state == State.NOT_INITIALIZED) {
             return Collections.emptyList();
         } else {
-            return Collections2.transform(getItemIds(), new Function<K, T>() {
-                @Nullable
-                @Override
-                public T apply(@Nullable K id) {
-                    return id == null ? null : getItem(id);
-                }
-            });
+            return getItemIds().stream()
+                    .map(id -> id == null ? null : getItem(id))
+                    .collect(Collectors.toList());
         }
     }
 
