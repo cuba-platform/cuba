@@ -34,11 +34,11 @@ public interface GroupBoxLayout
 
     /**
      * Set layout style as Vaadin Panel
-     * @param shownAsPanel
+     * @param showAsPanel
      */
-    void setShownAsPanel(boolean shownAsPanel);
+    void setShowAsPanel(boolean showAsPanel);
     /**
      * @return true if layout looks like Vaadin Panel
      */
-    boolean isShownAsPanel();
+    boolean isShowAsPanel();
 }

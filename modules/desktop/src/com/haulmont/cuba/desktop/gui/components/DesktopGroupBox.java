@@ -224,12 +224,12 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
     }
 
     @Override
-    public void setShownAsPanel(boolean shownAsPanel) {
-        this.shownAsPanel = shownAsPanel;
+    public void setShowAsPanel(boolean showAsPanel) {
+        this.shownAsPanel = showAsPanel;
     }
 
     @Override
-    public boolean isShownAsPanel() {
+    public boolean isShowAsPanel() {
         return shownAsPanel;
     }
 

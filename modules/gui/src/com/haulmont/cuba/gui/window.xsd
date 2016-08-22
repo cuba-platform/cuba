@@ -1642,7 +1642,7 @@
         <xs:attribute name="collapsable" type="xs:boolean"/>
         <xs:attribute name="collapsed" type="xs:boolean"/>
         <xs:attribute name="orientation" type="orientation"/>
-        <xs:attribute name="shownAsPanel" type="xs:boolean"/>
+        <xs:attribute name="showAsPanel" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Frame -->

@@ -28,5 +28,5 @@ public class CubaGroupBoxState extends PanelState {
 
     public boolean expanded = true;
 
-    public boolean shownAsPanel = false;
+    public boolean showAsPanel = false;
 }
