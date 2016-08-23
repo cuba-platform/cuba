@@ -731,6 +731,20 @@ public class QueryTransformerAstBasedTest {
         assertEquals(
                 "select h from sec$GroupHierarchy h join h.parent.constraints c1 join h.constraints c2 where (h.group = :par) and (c.createdBy = :par2)",
                 res);
+
+        transformer.reset();
+        transformer.addJoinAndWhere("join {E}.parent p join p.constraints cr", "c.createdBy = :par2");
+        res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h join h.parent p join p.constraints cr where (h.group = :par) and (c.createdBy = :par2)",
+                res);
+
+        transformer.reset();
+        transformer.addJoinAndWhere("join replaceEntity.parent p join p.constraints cr", "c.createdBy = :par2");
+        res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h join h.parent p join p.constraints cr where (h.group = :par) and (c.createdBy = :par2)",
+                res);
     }
 
     @Test
