@@ -25,17 +25,12 @@ import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 
-import javax.inject.Inject;
-
 public class ChangePasswordLauncher implements Runnable {
-
-    @Inject
-    protected WindowConfig windowConfig;
-
     @Override
     public void run() {
         WindowManager wm = App.getInstance().getMainFrame().getWindowManager();
 
+        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo("sec$User.changePassword");
 
         wm.openWindow(windowInfo, OpenType.DIALOG, ParamsMap.of("currentPasswordRequired", true));
