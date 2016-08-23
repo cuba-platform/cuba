@@ -175,8 +175,10 @@ public class QueryTransformerAstBased implements QueryTransformer {
         try {
             if (StringUtils.isNotBlank(join)) {
                 List<JoinVariableNode> joinVariableNodes = Parser.parseJoinClause(join);
+                boolean firstJoin = true;
                 for (JoinVariableNode joinVariableNode : joinVariableNodes) {
-                    getQueryTransformer().mixinJoinIntoTree(joinVariableNode, ref, true);
+                    getQueryTransformer().mixinJoinIntoTree(joinVariableNode, ref, firstJoin);
+                    firstJoin = false;
                 }
             }
             for (int i = 1; i < strings.length; i++) {
