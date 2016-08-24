@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.sys.utils;
 
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.DBNotInitializedException;
 import com.haulmont.cuba.core.sys.dbupdate.DbUpdaterEngine;
 import com.haulmont.cuba.core.sys.dbupdate.ScriptResource;
@@ -153,6 +154,9 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
 
             dbmsType = cmd.getOptionValue(dbTypeOption.getOpt());
             dbmsVersion = StringUtils.trimToEmpty(cmd.getOptionValue(dbVersionOption.getOpt()));
+
+            AppContext.setProperty("cuba.dbmsType", dbmsType);
+            AppContext.setProperty("cuba.dbmsVersion", dbmsVersion);
 
             String dbDriver;
             if (!cmd.hasOption(dbDriverClassOption.getOpt())) {
