@@ -336,7 +336,7 @@ public class QueryCacheTestClass {
         assertEquals(this.group, u.getGroup());
         assertEquals(2, queryCache.size());
 
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
         appender.clearMessages();
 
         u = this.getResultListUserByLoginNamed(user3, true, em -> em.setSoftDeletion(false), null);
