@@ -33,6 +33,8 @@ public interface QueryParser {
     /** Main entity name */
     String getEntityName();
 
+    Set<String> getAllEntityNames();
+
     /** Main entity alias */
     String getEntityAlias(String targetEntity);
 
@@ -58,4 +60,6 @@ public interface QueryParser {
      */
     @Nullable
     String getEntityPathIfSecondaryReturnedInsteadOfMain();
+
+
 }

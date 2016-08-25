@@ -95,7 +95,7 @@ public class QueryTreeAnalyzer {
     }
 
     public JpqlEntityModel getSelectedEntity(PathNode path) {
-        Pointer pointer = path.walk(model, getRootQueryVariableContext());
+        Pointer pointer = path.resolvePointer(model, getRootQueryVariableContext());
         if (!(pointer instanceof EntityPointer)) {
             throw new IllegalStateException("A path resulting in an entity is assumed to be selected");
         }

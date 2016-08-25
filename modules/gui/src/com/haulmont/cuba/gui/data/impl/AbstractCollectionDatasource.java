@@ -58,6 +58,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     protected int maxResults;
     protected ParameterInfo[] queryParameters;
     protected boolean softDeletion = true;
+    protected boolean cacheable;
     protected ComponentValueListener componentValueListener;
     protected boolean refreshOnComponentValueChange;
     protected Sortable.SortInfo<MetaPropertyPath>[] sortInfos;
@@ -442,6 +443,16 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
+    public boolean isCacheable() {
+        return cacheable;
+    }
+
+    @Override
+    public void setCacheable(boolean cacheable) {
+        this.cacheable = cacheable;
+    }
+
+    @Override
     public void commit() {
         backgroundWorker.checkUIAccess();
 
@@ -538,6 +549,9 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 q = context.setQueryString("select e from " + metaClass.getName() + " e" + orderBy.toString());
             } else
                 q = context.setQueryString("select e from " + metaClass.getName() + " e");
+        }
+        if (q != null) {
+            q.setCacheable(isCacheable());
         }
         return q;
     }

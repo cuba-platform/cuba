@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import org.eclipse.persistence.jpa.JpaCache;
 import org.springframework.stereotype.Component;
 
@@ -71,7 +72,7 @@ public class OrmCacheSupport {
     }
 
     private void evictEntity(Object entity) {
-        if (entity != null) {
+        if (entity != null && !PersistenceHelper.isNew(entity)) {
             EntityManagerFactory emf = persistence.getEntityManager().getDelegate().getEntityManagerFactory();
             JpaCache cache = (JpaCache) emf.getCache();
             cache.evict(entity, true);

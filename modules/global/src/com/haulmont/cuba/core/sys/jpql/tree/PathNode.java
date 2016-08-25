@@ -50,22 +50,12 @@ public class PathNode extends BaseCustomNode {
         return result;
     }
 
-    public Pointer walk(DomainModel model, QueryVariableContext queryVC) {
-        List treeItems = getChildren();
-        if (treeItems == null) {
-            treeItems = Collections.emptyList();
-        }
-        String[] parts = new String[treeItems.size()];
-        for (int i = 0; i < treeItems.size(); i++) {
-            CommonTree treeItem = (CommonTree) treeItems.get(i);
-            parts[i] = treeItem.getText();
-        }
+    public Pointer resolvePointer(DomainModel model, QueryVariableContext queryVC) {
+        return createEntityPath().resolvePointer(model, queryVC);
+    }
 
-        EntityPath path = new EntityPath();
-        path.topEntityVariableName = entityVariableName;
-        path.lastEntityFieldPattern = null;
-        path.traversedFields = parts;
-        return path.walk(model, queryVC);
+    public List<Pointer> resolveTransitionalPointers(DomainModel model, QueryVariableContext queryVC) {
+        return createEntityPath().resolveTransitionalPointers(model, queryVC);
     }
 
     @Override
@@ -107,5 +97,23 @@ public class PathNode extends BaseCustomNode {
 
     public void addDefaultChild(String field) {
         addChild(new CommonTree(new CommonToken(JPA2Lexer.WORD, field)));
+    }
+
+    protected EntityPath createEntityPath() {
+        List treeItems = getChildren();
+        if (treeItems == null) {
+            treeItems = Collections.emptyList();
+        }
+        String[] parts = new String[treeItems.size()];
+        for (int i = 0; i < treeItems.size(); i++) {
+            CommonTree treeItem = (CommonTree) treeItems.get(i);
+            parts[i] = treeItem.getText();
+        }
+
+        EntityPath path = new EntityPath();
+        path.topEntityVariableName = entityVariableName;
+        path.lastEntityFieldPattern = null;
+        path.traversedFields = parts;
+        return path;
     }
 }

@@ -490,6 +490,9 @@ public class RdbmsStore implements DataStore {
                 query.setFirstResult(contextQuery.getFirstResult());
             if (contextQuery.getMaxResults() != 0)
                 query.setMaxResults(contextQuery.getMaxResults());
+            if (contextQuery.isCacheable()) {
+                query.setCacheable(contextQuery.isCacheable());
+            }
         }
 
         return query;

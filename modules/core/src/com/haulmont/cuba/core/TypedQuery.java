@@ -98,4 +98,11 @@ public interface TypedQuery<T> extends Query {
      * @return the same query instance
      */
     TypedQuery<T> addViewName(String viewName);
+
+    /**
+     * Set query results to be cached
+     * @param cacheable
+     * @return the same query instance
+     */
+    TypedQuery<T> setCacheable(boolean cacheable);
 }

@@ -21,7 +21,7 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 
-public class CollectionPointer implements com.haulmont.cuba.core.sys.jpql.pointer.Pointer {
+public class CollectionPointer implements HasEntityPointer {
     private JpqlEntityModel entity;
 
     public CollectionPointer(JpqlEntityModel entity) {

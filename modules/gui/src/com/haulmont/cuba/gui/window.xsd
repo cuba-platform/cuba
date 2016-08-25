@@ -1767,6 +1767,7 @@
         <xs:attribute name="query" type="xs:string"/>
         <xs:attribute name="refreshMode" type="refreshMode"/>
         <xs:attribute name="softDeletion" type="xs:boolean"/>
+        <xs:attribute name="cacheable" type="xs:boolean"/>
         <xs:attribute name="loadDynamicAttributes" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
@@ -1789,6 +1790,7 @@
         <xs:attribute name="hierarchyProperty" type="xs:string"/>
         <xs:attribute name="refreshMode" type="refreshMode"/>
         <xs:attribute name="softDeletion" type="xs:boolean"/>
+        <xs:attribute name="cacheable" type="xs:boolean"/>
         <xs:attribute name="loadDynamicAttributes" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
@@ -1811,6 +1813,7 @@
         <xs:attribute name="query" type="xs:string"/>
         <xs:attribute name="refreshMode" type="refreshMode"/>
         <xs:attribute name="softDeletion" type="xs:boolean"/>
+        <xs:attribute name="cacheable" type="xs:boolean"/>
         <xs:attribute name="loadDynamicAttributes" type="xs:boolean" use="optional"/>
     </xs:complexType>
 

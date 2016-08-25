@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.google.common.base.Preconditions;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
@@ -23,6 +24,8 @@ import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.entitycache.QueryCacheManager;
+import com.haulmont.cuba.core.sys.entitycache.QueryKey;
 import com.haulmont.cuba.core.sys.persistence.DbmsFeatures;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
@@ -38,11 +41,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import javax.persistence.Cache;
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Implementation of {@link TypedQuery} interface based on EclipseLink.
@@ -58,15 +59,18 @@ public class QueryImpl<T> implements TypedQuery<T> {
     private PersistenceImplSupport support;
     private boolean isNative;
     private String queryString;
+    private String transformedQueryString;
     private Class resultClass;
     private FetchGroupManager fetchGroupMgr;
     private EntityFetcher entityFetcher;
+    private QueryCacheManager queryCacheMgr;
     private Set<Param> params = new HashSet<>();
     private LockModeType lockMode;
     private List<View> views = new ArrayList<>();
     private Integer maxResults;
     private Integer firstResult;
     private boolean singleResultExpected;
+    private boolean cacheable;
 
     private Collection<QueryMacroHandler> macroHandlers;
 
@@ -82,6 +86,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         this.fetchGroupMgr = AppBeans.get(FetchGroupManager.NAME);
         this.entityFetcher = AppBeans.get(EntityFetcher.NAME);
         this.support = AppBeans.get(PersistenceImplSupport.NAME);
+        this.queryCacheMgr = AppBeans.get(QueryCacheManager.NAME);
     }
 
     private JpaQuery<T> getQuery() {
@@ -102,14 +107,14 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 }
             } else {
                 log.trace("Creating JPQL query: {}", queryString);
-                String s = transformQueryString();
-                log.trace("Transformed JPQL query: {}", s);
+                transformedQueryString = transformQueryString();
+                log.trace("Transformed JPQL query: {}", transformedQueryString);
 
                 Class effectiveClass = getEffectiveResultClass();
                 if (effectiveClass != null) {
-                    query = (JpaQuery) emDelegate.createQuery(s, effectiveClass);
+                    query = (JpaQuery) emDelegate.createQuery(transformedQueryString, effectiveClass);
                 } else {
-                    query = (JpaQuery) emDelegate.createQuery(s);
+                    query = (JpaQuery) emDelegate.createQuery(transformedQueryString);
                 }
                 if (view != null) {
                     MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
@@ -268,14 +273,14 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         JpaQuery<T> query = getQuery();
         preExecute(query);
-        List<T> resultList = query.getResultList();
-        for (T result : resultList) {
-            if (result instanceof Entity) {
+        @SuppressWarnings("unchecked")
+        List<T> resultList = (List<T>) getResultFromCache(query, false, obj -> {
+            ((List) obj).stream().filter(item -> item instanceof Entity).forEach(item -> {
                 for (View view : views) {
-                    entityFetcher.fetch((Entity) result, view);
+                    entityFetcher.fetch((Entity) item, view);
                 }
-            }
-        }
+            });
+        });
         return resultList;
     }
 
@@ -288,12 +293,14 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         JpaQuery<T> jpaQuery = getQuery();
         preExecute(jpaQuery);
-        T result = jpaQuery.getSingleResult();
-        if (result instanceof Entity) {
-            for (View view : views) {
-                entityFetcher.fetch((Entity) result, view);
+        @SuppressWarnings("unchecked")
+        T result = (T) getResultFromCache(jpaQuery, true, obj -> {
+            if (obj instanceof Entity) {
+                for (View view : views) {
+                    entityFetcher.fetch((Entity) obj, view);
+                }
             }
-        }
+        });
         return result;
     }
 
@@ -308,17 +315,22 @@ public class QueryImpl<T> implements TypedQuery<T> {
         try {
             JpaQuery<T> query = getQuery();
             preExecute(query);
-            List<T> resultList = query.getResultList();
+            @SuppressWarnings("unchecked")
+            List<T> resultList = (List<T>) getResultFromCache(query, false, obj -> {
+                List list = (List) obj;
+                if (!list.isEmpty()) {
+                    Object item = list.get(0);
+                    if (item instanceof Entity) {
+                        for (View view : views) {
+                            entityFetcher.fetch((Entity) item, view);
+                        }
+                    }
+                }
+            });
             if (resultList.isEmpty()) {
                 return null;
             } else {
-                T result = resultList.get(0);
-                if (result instanceof Entity) {
-                    for (View view : views) {
-                        entityFetcher.fetch((Entity) result, view);
-                    }
-                }
-                return result;
+                return resultList.get(0);
             }
         } finally {
             maxResults = saveMaxResults;
@@ -334,8 +346,10 @@ public class QueryImpl<T> implements TypedQuery<T> {
         Class referenceClass = jpaQuery.getDatabaseQuery().getReferenceClass();
         if (referenceClass != null) {
             cache.evict(referenceClass);
+            queryCacheMgr.invalidate(referenceClass, true);
         } else {
             cache.evictAll();
+            queryCacheMgr.invalidateAll(true);
         }
         preExecute(jpaQuery);
         return jpaQuery.executeUpdate();
@@ -499,11 +513,17 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return this;
     }
 
+    @Override
+    public TypedQuery<T> setCacheable(boolean cacheable) {
+        this.cacheable = cacheable;
+        return this;
+    }
+
     public void setSingleResultExpected(boolean singleResultExpected) {
         this.singleResultExpected = singleResultExpected;
     }
 
-    private void preExecute(JpaQuery jpaQuery) {
+    protected void preExecute(JpaQuery jpaQuery) {
         // copying behaviour of org.eclipse.persistence.internal.jpa.QueryImpl.executeReadQuery()
         DatabaseQuery elDbQuery = ((EJBQueryImpl) jpaQuery).getDatabaseQueryInternal();
         boolean isObjectLevelReadQuery = elDbQuery.isObjectLevelReadQuery();
@@ -512,6 +532,44 @@ public class QueryImpl<T> implements TypedQuery<T> {
             // flush is expected
             support.fireEntityListeners(entityManager);
         }
+    }
+
+    protected Object getResultFromCache(JpaQuery jpaQuery, boolean singleResult, Consumer<Object> fetcher) {
+        Preconditions.checkNotNull(fetcher);
+        boolean useQueryCache = cacheable && !isNative && queryCacheMgr.isEnabled() && lockMode == null;
+        Object result;
+        if (useQueryCache) {
+            QueryParser parser = QueryTransformerFactory.createParser(transformedQueryString);
+            String entityName = parser.getEntityName();
+            useQueryCache = parser.isEntitySelect(entityName);
+            QueryKey queryKey = null;
+            if (useQueryCache) {
+                queryKey = QueryKey.create(transformedQueryString, entityManager.isSoftDeletion(), singleResult, jpaQuery);
+                result = singleResult ? queryCacheMgr.getSingleResultFromCache(queryKey, views) :
+                        queryCacheMgr.getResultListFromCache(queryKey, views);
+                if (result != null) {
+                    return result;
+                }
+            }
+            try {
+                result = singleResult ? jpaQuery.getSingleResult() : jpaQuery.getResultList();
+            } catch (NoResultException | NonUniqueResultException ex) {
+                if (useQueryCache && singleResult) {
+                    queryCacheMgr.putResultToCache(queryKey, null, entityName, parser.getAllEntityNames(), ex);
+                }
+                throw ex;
+            }
+            fetcher.accept(result);
+            if (useQueryCache) {
+                queryCacheMgr.putResultToCache(queryKey,
+                        singleResult ? Collections.singletonList(result) : (List) result,
+                        entityName, parser.getAllEntityNames());
+            }
+        } else {
+            result = singleResult ? jpaQuery.getSingleResult() : jpaQuery.getResultList();
+            fetcher.accept(result);
+        }
+        return result;
     }
 
     protected static class Param {

@@ -25,7 +25,7 @@ import org.junit.runners.Suite;
 import java.util.Arrays;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({EntityCacheTestClass.class})
+@Suite.SuiteClasses({EntityCacheTestClass.class, QueryCacheTestClass.class})
 public class EntityCacheTestSuite {
 
     public static TestContainer cont = new TestContainer()

@@ -291,6 +291,7 @@ public class LoadContext<E extends Entity> implements Serializable {
         private String queryString;
         private int firstResult;
         private int maxResults;
+        private boolean cacheable;
 
         public static class TemporalValue implements Serializable {
 
@@ -381,6 +382,16 @@ public class LoadContext<E extends Entity> implements Serializable {
         }
 
         /**
+         * Set query results cacheable
+         * @param cacheable
+         * @return the same query instance
+         */
+        public Query setCacheable(boolean cacheable) {
+            this.cacheable = cacheable;
+            return this;
+        }
+
+        /**
          * @return results offset
          */
         public int getFirstResult() {
@@ -394,6 +405,11 @@ public class LoadContext<E extends Entity> implements Serializable {
             return maxResults;
         }
 
+
+        public boolean isCacheable() {
+            return cacheable;
+        }
+
         /**
          * Creates a copy of this Query instance.
          */
@@ -402,6 +418,7 @@ public class LoadContext<E extends Entity> implements Serializable {
             query.parameters.putAll(parameters);
             query.firstResult = firstResult;
             query.maxResults = maxResults;
+            query.cacheable = cacheable;
             return query;
         }
 

@@ -757,6 +757,15 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public void setSoftDeletion(boolean softDeletion) {
     }
 
+    @Override
+    public boolean isCacheable() {
+        return false;
+    }
+
+    @Override
+    public void setCacheable(boolean cacheable) {
+    }
+
     //Implementation of CollectionDatasource.Sortable<T, K> interface
     @Override
     public void sort(SortInfo[] sortInfos) {

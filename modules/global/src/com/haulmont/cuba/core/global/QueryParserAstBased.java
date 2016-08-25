@@ -21,7 +21,11 @@ import com.haulmont.cuba.core.sys.PerformanceLog;
 import com.haulmont.cuba.core.sys.jpql.*;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
+import com.haulmont.cuba.core.sys.jpql.pointer.EntityPointer;
+import com.haulmont.cuba.core.sys.jpql.pointer.HasEntityPointer;
+import com.haulmont.cuba.core.sys.jpql.pointer.Pointer;
 import com.haulmont.cuba.core.sys.jpql.transform.ParameterCounter;
+import com.haulmont.cuba.core.sys.jpql.EntitiesFinder;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
 import com.haulmont.cuba.core.sys.jpql.tree.SimpleConditionNode;
@@ -34,6 +38,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -83,6 +88,14 @@ public class QueryParserAstBased implements QueryParser {
         ParameterCounter parameterCounter = new ParameterCounter(true);
         visitor.visit(getQueryAnalyzer().getTree(), parameterCounter);
         return parameterCounter.getParameterNames();
+    }
+
+    @Override
+    public Set<String> getAllEntityNames() {
+        TreeVisitor visitor = new TreeVisitor();
+        EntitiesFinder finder = new EntitiesFinder();
+        visitor.visit(getQueryAnalyzer().getTree(), finder);
+        return finder.resolveEntityNames(model, getQueryAnalyzer().getRootQueryVariableContext());
     }
 
     @Override

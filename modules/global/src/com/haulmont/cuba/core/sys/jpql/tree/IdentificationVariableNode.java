@@ -115,7 +115,7 @@ public class IdentificationVariableNode extends BaseCustomNode {
             }
 
             PathNode pathNode = (PathNode) o;
-            Pointer pointer = pathNode.walk(model, queryVC);
+            Pointer pointer = pathNode.resolvePointer(model, queryVC);
 
             if (pointer instanceof NoPointer) {
                 queryVC.setEntity(NoJpqlEntityModel.getInstance());

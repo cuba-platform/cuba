@@ -76,7 +76,7 @@ public class BaseJoinNode extends BaseCustomNode {
 
         if (child0 instanceof PathNode) {
             PathNode pathNode = (PathNode) child0;
-            Pointer pointer = pathNode.walk(model, queryVC);
+            Pointer pointer = pathNode.resolvePointer(model, queryVC);
             if (pointer instanceof NoPointer) {
                 invalidNodes.add(new ErrorRec(this, "Cannot resolve joined entity"));
             } else if (pointer instanceof SimpleAttributePointer) {

@@ -35,10 +35,10 @@ public class EntityCacheTransportManager extends BroadcastTransportManager {
         super(rcm);
     }
 
-    protected EntityCacheRemoteConnection createConnection() throws RemoteCommandManagerException {
+    protected EntityCacheConnection createConnection() throws RemoteCommandManagerException {
         try {
             ClusterManager clusterManager = AppBeans.get(ClusterManager.class);
-            return new EntityCacheRemoteConnection(this.rcm, clusterManager);
+            return new EntityCacheConnection(this.rcm, clusterManager);
         } catch (Exception ex) {
             throw new RemoteCommandManagerException(ex.getMessage());
         }
@@ -88,5 +88,11 @@ public class EntityCacheTransportManager extends BroadcastTransportManager {
 
     @Override
     public void setConfig(String config) {
+    }
+
+    @Override
+    public void setRemoteCommandManager(RemoteCommandManager rcm) {
+        super.setRemoteCommandManager(rcm);
+        rcm.setSerializer(null);
     }
 }

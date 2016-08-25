@@ -130,6 +130,11 @@ public class QueryParserRegex implements QueryParser {
     }
 
     @Override
+    public Set<String> getAllEntityNames() {
+        return null;
+    }
+
+    @Override
     public String getEntityNameIfSecondaryReturnedInsteadOfMain() {
         return null;
     }

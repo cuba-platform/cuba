@@ -385,12 +385,14 @@ public class DsContextLoader {
 
         String deletion = element.attributeValue("softDeletion");
         boolean softDeletion = deletion == null || Boolean.parseBoolean(deletion);
+        boolean cacheable = Boolean.parseBoolean(element.attributeValue("cacheable"));
 
         builder.reset()
                 .setMetaClass(metaClass)
                 .setId(id)
                 .setViewName(viewName)
                 .setSoftDeletion(softDeletion)
+                .setCacheable(cacheable)
                 .setRefreshMode(getRefreshMode(element))
                 .setMaxResults(getMaxResults(element))
                 .setAllowCommit(getAllowCommit(element));

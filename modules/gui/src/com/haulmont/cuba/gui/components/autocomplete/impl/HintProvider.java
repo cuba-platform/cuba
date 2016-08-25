@@ -116,7 +116,7 @@ public class HintProvider {
         QueryVariableContext queryVC = root.getContextByCaretPosition(caretPosition);
 
         EntityPath path = EntityPath.parseEntityPath(lastWord);
-        Pointer pointer = path.walk(model, queryVC);
+        Pointer pointer = path.resolvePointer(model, queryVC);
         if (pointer instanceof NoPointer) {
             List<String> errorMessages = prepareErrorMessages(errorRecs);
             errorMessages.add(0, "Cannot parse [" + lastWord + "]");
