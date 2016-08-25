@@ -40,7 +40,7 @@ public interface GenericExceptionHandler {
      * to delegate execution to the next handler in the chain of responsibility.
      * @param exception     exception instance
      * @param windowManager WindowManager instance
-     * @return              true if the exception has been succesfully handled, false if not
+     * @return              true if the exception has been successfully handled, false if not
      */
     boolean handle(Throwable exception, WindowManager windowManager);
 }

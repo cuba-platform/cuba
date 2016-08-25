@@ -109,7 +109,7 @@ public interface FileUploadingAPI {
     /**
      * Remove a file from the temporary storage.
      * <p/>
-     * This method is automatically called from putFileIntoStorage() when the file is succesfully stored on the
+     * This method is automatically called from putFileIntoStorage() when the file is successfully stored on the
      * middleware.
      *
      * @param fileId temporary file ID
