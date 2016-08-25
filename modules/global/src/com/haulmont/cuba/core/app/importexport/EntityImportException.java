@@ -16,8 +16,13 @@
 
 package com.haulmont.cuba.core.app.importexport;
 
+import com.haulmont.cuba.core.global.Logging;
+import com.haulmont.cuba.core.global.SupportedByClient;
+
 /**
  */
+@SupportedByClient
+@Logging(Logging.Type.BRIEF)
 public class EntityImportException extends RuntimeException {
 
     public EntityImportException(String message) {

@@ -19,6 +19,7 @@ package com.haulmont.restapi.service;
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.app.importexport.EntityImportException;
 import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.app.importexport.EntityImportViewBuilderAPI;
@@ -150,7 +151,13 @@ public class EntitiesControllerManager {
         Entity entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
 
-        Collection<Entity> importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
+        Collection<Entity> importedEntities;
+        try {
+            importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
+        } catch (EntityImportException e) {
+            throw new RestAPIException("Invalid entity", e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
 
         //if multiple entities was created (because of @Composition references) we must find the main entity
         return getMainEntityInfo(importedEntities, metaClass);
@@ -166,7 +173,12 @@ public class EntitiesControllerManager {
         checkEntityIsNotNull(entityName, entityId, existingEntity);
         Entity entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
-        Collection<Entity> importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
+        Collection<Entity> importedEntities;
+        try {
+            importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
+        } catch (EntityImportException e) {
+            throw new RestAPIException("Invalid entity", e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
         //there may be multiple entities in importedEntities (because of @Composition references), so we must find
         // the main entity that will be returned
         return getMainEntityInfo(importedEntities, metaClass);
