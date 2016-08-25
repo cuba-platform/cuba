@@ -611,7 +611,7 @@ public class Param {
                         v = datatype.parse((String) e.getValue(), userSessionSource1.getLocale());
                     } catch (ParseException ex) {
                         WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
-                        wm.showNotification(messages.getMainMessage("Param.numberInvalid"), Frame.NotificationType.ERROR);
+                        wm.showNotification(messages.getMainMessage("filter.param.numberInvalid"), Frame.NotificationType.ERROR);
                         return;
                     }
                 }
@@ -673,7 +673,7 @@ public class Param {
                     try {
                         _setValue(UUID.fromString(strValue), valueProperty);
                     } catch (IllegalArgumentException ie) {
-                        AppBeans.get(WindowManagerProvider.class).get().showNotification(messages1.getMainMessage("Param.uuid.Err"), Frame.NotificationType.TRAY);
+                        AppBeans.get(WindowManagerProvider.class).get().showNotification(messages1.getMainMessage("filter.param.uuid.Err"), Frame.NotificationType.TRAY);
                     }
                 }
             } else if (StringUtils.isBlank(strValue)) {
