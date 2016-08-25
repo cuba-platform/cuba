@@ -115,7 +115,7 @@ public class Emailer implements EmailerMBean {
             String att = "<html><body><h1>Test attachment</h1></body></html>";
             EmailAttachment emailAtt = EmailAttachment.createTextAttachment(att, StandardCharsets.UTF_8.name(), "test attachment.html");
             emailer.sendEmail(addresses, "Test email", "<html><body><h1>Test email</h1></body></html>", emailAtt);
-            return "Email to '" + addresses + "' sent succesfully";
+            return "Email to '" + addresses + "' sent successfully";
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
         }
