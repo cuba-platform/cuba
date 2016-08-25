@@ -97,7 +97,9 @@ public class ServicesControllerManager {
         for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
             String paramName = entry.getKey();
             JsonElement paramValue = entry.getValue();
-            if (paramValue.isJsonPrimitive()) {
+            if (paramValue.isJsonNull()) {
+                result.put(paramName, null);
+            } else if (paramValue.isJsonPrimitive()) {
                 result.put(paramName, paramValue.getAsString());
             } else {
                 result.put(paramName, paramValue.toString());
