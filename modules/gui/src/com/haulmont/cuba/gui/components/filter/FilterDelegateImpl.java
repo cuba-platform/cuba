@@ -1280,16 +1280,31 @@ public class FilterDelegateImpl implements FilterDelegate {
             if (!textMaxResults) {
                 List<Integer> optionsList = ((LookupField) maxResultsField).getOptionsList();
                 if (!optionsList.contains(maxResults)) {
-                    ArrayList<Integer> newOptions = new ArrayList<>(optionsList);
-                    newOptions.add(maxResults);
-                    Collections.sort(newOptions);
-                    ((LookupField) maxResultsField).setOptionsList(newOptions);
+                    maxResults = findClosestValue(maxResults, optionsList);
+
+                    Collections.sort(optionsList);
+                    ((LookupField) maxResultsField).setOptionsList(optionsList);
                 }
             }
             maxResultsField.setValue(maxResults);
         }
 
         datasource.setMaxResults(maxResults);
+    }
+
+    protected int findClosestValue(int maxResults, List<Integer> optionsList) {
+        int minimumValue = Integer.MAX_VALUE;
+        int closest = maxResults;
+
+        for (int option : optionsList) {
+            int diff = Math.abs(option - maxResults);
+            if (diff < minimumValue) {
+                minimumValue = diff;
+                closest = option;
+            }
+        }
+
+        return closest;
     }
 
     protected boolean isFtsModeEnabled() {
