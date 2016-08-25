@@ -59,7 +59,7 @@ public class ConfigurationClientImpl implements ClientConfiguration {
         return new ConfigPersisterClientImpl(getConfigStorageService(), caching);
     }
 
-    protected ConfigStorageService getConfigStorageService() {
+    public ConfigStorageService getConfigStorageService() {
         return configStorageCache;
     }
 }
