@@ -12,4 +12,76 @@
   .#{$primary-stylename} .gwt-HTML.v-scrollable {
     font-size: $v-font-size;
   }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.boldLabel"]:before {
+    content: "\f032";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.italicLabel"]:before {
+    content: "\f033";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.underlineLabel"]:before {
+    content: "\f0cd";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.subscriptLabel"]:before {
+    content: "\f12c";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.superscriptLabel"]:before {
+    content: "\f12b";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.justifyLeftLabel"]:before {
+    content: "\f036";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.justifyCenterLabel"]:before {
+    content: "\f037";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.justifyRightLabel"]:before {
+    content: "\f038";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.strikethroughLabel"]:before {
+    content: "\f0cc";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.indentLabel"]:before {
+    content: "\f03c";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.outdentLabel"]:before {
+    content: "\f03b";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.hrLabel"]:before {
+    content: "\2014";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.olLabel"]:before {
+    content: "\f0cb";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.ulLabel"]:before {
+    content: "\f0ca";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.insertImageLabel"]:before {
+    content: "\f03e";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.createLinkLabel"]:before {
+    content: "\f0c1";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.removeLinkLabel"]:before {
+    content: "\f127";
+  }
+
+  .#{$primary-stylename} .gwt-RichTextToolbar-top div[icon-id="richTextArea.removeFormatLabel"]:before {
+    content: "\f12d";
+  }
 }
