@@ -310,7 +310,6 @@ public class QueryCacheTestClass {
     }
 
     @Test
-    @Ignore
     public void testSoftDeletion() throws Exception {
         appender.clearMessages();
 
@@ -1082,7 +1081,6 @@ public class QueryCacheTestClass {
         user = reserialize(resultList.get(0));
         assertNotNull(user.getLogin());
         assertNotNull(user.getName());
-        user.getGroup();
         assertFail(user::getGroup);
 
         user = reserialize(resultList.get(1));
