@@ -28,7 +28,6 @@
            http://www.springframework.org/schema/mvc
            http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-
     <mvc:annotation-driven/>
 
     <context:annotation-config/>
@@ -42,5 +41,4 @@
     <bean id="cuba_LoggingHandlerExceptionResolver"
           class="com.haulmont.cuba.web.sys.LoggingHandlerExceptionResolver">
     </bean>
-
 </beans>

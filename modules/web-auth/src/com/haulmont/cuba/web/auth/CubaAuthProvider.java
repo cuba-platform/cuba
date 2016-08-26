@@ -18,12 +18,13 @@
 package com.haulmont.cuba.web.auth;
 
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.UserSession;
 
+import javax.annotation.Nullable;
 import javax.servlet.Filter;
 import java.util.Locale;
 
 public interface CubaAuthProvider extends Filter {
-
     String NAME = "cuba_AuthProvider";
 
     /**
@@ -35,4 +36,30 @@ public interface CubaAuthProvider extends Filter {
      * @throws LoginException Login exception
      */
     void authenticate(String login, String password, Locale messagesLocale) throws LoginException;
+
+    /**
+     * Logout from external authentication
+     *
+     * @return target url of external identity provider or null
+     */
+    @Nullable
+    default String logout() {
+        return null;
+    }
+
+    /**
+     * Handler for user session logged in event. Called by application UI tier when CUBA user session is created.
+     *
+     * @param userSession user session
+     */
+    default void userSessionLoggedIn(UserSession userSession) {
+    }
+
+    /**
+     * Send ping to identity provider if supported by auth provider.
+     *
+     * @param userSession user session
+     */
+    default void pingUserSession(UserSession userSession) {
+    }
 }

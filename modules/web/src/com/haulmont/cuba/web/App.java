@@ -31,6 +31,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.auth.CubaAuthProvider;
 import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
@@ -113,6 +114,9 @@ public abstract class App {
 
     @Inject
     protected SettingsClient settingsClient;
+
+    @Inject
+    protected CubaAuthProvider authProvider;
 
     protected AppCookies cookies;
 
@@ -336,7 +340,7 @@ public abstract class App {
     public void onHeartbeat() {
         Connection connection = getConnection();
 
-        if (getConnection().isConnected() && connection.isAuthenticated()) {
+        if (connection.isAuthenticated()) {
             // Ping middleware session if connected and show messages
             log.debug("Ping session");
 
@@ -350,6 +354,24 @@ public abstract class App {
                 // ignore no user session exception
             } catch (Exception e) {
                 log.warn("Exception while session ping", e);
+            }
+        }
+
+        pingExternalAuthentication();
+    }
+
+    public void pingExternalAuthentication() {
+        if (getConnection().isConnected() && connection.isAuthenticated()) {
+            try {
+                // Ping external authentication
+                if (webAuthConfig.getExternalAuthentication()) {
+                    UserSession session = getConnection().getSession();
+                    if (session != null) {
+                        authProvider.pingUserSession(session);
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("Exception while external authenticated session ping", e);
             }
         }
     }

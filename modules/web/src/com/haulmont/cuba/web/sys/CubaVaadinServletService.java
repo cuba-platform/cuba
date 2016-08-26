@@ -28,6 +28,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.ScreenProfiler;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.auth.RequestContext;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
 import com.vaadin.server.*;
 import com.vaadin.server.communication.*;
@@ -57,6 +58,7 @@ public class CubaVaadinServletService extends VaadinServletService {
     private final Logger log = LoggerFactory.getLogger(CubaVaadinServletService.class);
 
     protected WebConfig webConfig;
+    protected WebAuthConfig webAuthConfig;
 
     protected final String webResourceTimestamp;
 
@@ -68,6 +70,7 @@ public class CubaVaadinServletService extends VaadinServletService {
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         webConfig = configuration.getConfig(WebConfig.class);
+        webAuthConfig = configuration.getConfig(WebAuthConfig.class);
         testMode = configuration.getConfig(GlobalConfig.class).getTestMode();
 
         ServletContext sc = servlet.getServletContext();
@@ -350,7 +353,7 @@ public class CubaVaadinServletService extends VaadinServletService {
 
     @Override
     protected VaadinSession createVaadinSession(VaadinRequest request) throws ServiceException {
-        if (testMode) {
+        if (testMode && !webAuthConfig.getExternalAuthentication()) {
             return new VaadinSession(this) {
                 @Override
                 public String createConnectorId(ClientConnector connector) {

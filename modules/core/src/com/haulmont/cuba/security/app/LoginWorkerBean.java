@@ -49,7 +49,7 @@ import java.util.*;
 @Component(LoginWorker.NAME)
 public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordered {
 
-    private Logger log = LoggerFactory.getLogger(LoginWorkerBean.class);
+    private final Logger log = LoggerFactory.getLogger(LoginWorkerBean.class);
 
     protected static final String MSG_PACK = "com.haulmont.cuba.security";
 
@@ -138,8 +138,7 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
                 throw new LoginException(getInvalidCredentialsMessage(login, locale));
 
             Locale userLocale = locale;
-            if (user.getLanguage() != null &&
-                    BooleanUtils.isFalse(configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible())) {
+            if (user.getLanguage() != null && !configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible()) {
                 userLocale = new Locale(user.getLanguage());
             }
 
@@ -439,6 +438,42 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
             tx.end();
         }
         return verified;
+    }
+
+    @Override
+    public User authenticate(String login, String password, Locale locale, Map<String, Object> params)
+            throws LoginException {
+        if (password == null)
+            throw new LoginException(getInvalidCredentialsMessage(login, locale));
+
+        Transaction tx = persistence.createTransaction();
+        try {
+            User user = loadUser(login);
+            if (user == null)
+                throw new LoginException(getInvalidCredentialsMessage(login, locale));
+
+            if (!passwordEncryption.checkPassword(user, password))
+                throw new LoginException(getInvalidCredentialsMessage(login, locale));
+
+            Locale userLocale = locale;
+            if (user.getLanguage() != null &&
+                    BooleanUtils.isFalse(configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible())) {
+                userLocale = new Locale(user.getLanguage());
+            }
+
+            UserSession session = userSessionManager.createSession(user, userLocale, false);
+            checkPermissions(login, params, userLocale, session);
+
+            tx.commit();
+
+            userSessionManager.clearPermissionsOnUser(session);
+
+            log.info("Authenticated: {}", session);
+
+            return user;
+        } finally {
+            tx.end();
+        }
     }
 
     protected void checkPermissions(String login, Map<String, Object> params, Locale userLocale, UserSession session)

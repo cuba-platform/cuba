@@ -45,7 +45,7 @@ public interface WebAuthConfig extends Config {
     boolean getExternalAuthentication();
 
     /**
-     * @return external authentification provider
+     * @return external authentication provider
      */
     @Property("cuba.web.externalAuthenticationProviderClass")
     @DefaultString("com.haulmont.cuba.web.auth.LdapAuthProvider")
@@ -73,4 +73,16 @@ public interface WebAuthConfig extends Config {
 
     @Property("cuba.web.ldap.password")
     String getLdapPassword();
+
+    /**
+     * @return Base URL of IDP server, e.g. http://localhost:8080/app/idp.
+     */
+    @Property("cuba.web.idp.baseUrl")
+    String getIdpBaseURL();
+
+    /**
+     * @return trusted password to access to IDP server.
+     */
+    @Property("cuba.web.idp.trustedServicePassword")
+    String getIdpTrustedServicePassword();
 }
