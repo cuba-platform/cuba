@@ -12,21 +12,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.haulmont.cuba.core.sys;
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.web.context.support.XmlWebApplicationContext;
 
-public class CubaXmlWebApplicationContext extends CubaDefaultXmlWebApplicationContext {
+public class CubaDefaultXmlWebApplicationContext extends XmlWebApplicationContext {
     @Override
-    protected DefaultListableBeanFactory createBeanFactory() {
-        BeanFactory parent = getParentBeanFactory();
-        if (parent instanceof ApplicationContext)
-            parent = ((ApplicationContext) parent).getAutowireCapableBeanFactory();
-        return new CubaDefaultListableBeanFactory(parent);
+    protected void initBeanDefinitionReader(XmlBeanDefinitionReader beanDefinitionReader) {
+        beanDefinitionReader.setValidating(false);
+
+        super.initBeanDefinitionReader(beanDefinitionReader);
     }
 }
