@@ -491,7 +491,13 @@ paths:
         - Entities
       summary: Create new entity
       description: |
-        Creates new entity
+        Creates new entity. The method expects a JSON with entity object in the request body. The entity object
+        may contain references to other entities. These references are processed according to the following rules:
+
+        * If the entity property is annotated with @Composition in the entity java class, then it will be saved with the
+        main entity
+        * Otherwise a referenced entity with the given id will be searched. If it is found then the saved entity will
+        have a reference to it. Otherwise, a response with code 400 will be returned.
       parameters:
         - name: entityJson
           description: |
@@ -509,6 +515,11 @@ paths:
               type: string
               description:
                 A URL the created object can be accessed with
+        400:
+          description: Bad request. For example, the entity may have a reference to the non-existing entity.
+          schema:
+            $ref: '#/definitions/error'
+
         403:
           description: Forbiddden. The user doesn't have permissions to create the entity
           schema:
