@@ -1,54 +1,29 @@
 swagger: '2.0'
 
 info:
-  version: "6.3.0"
+  version: "6.3"
   title: CUBA Platform REST API
   description: |
-    REST API uses an OAuth2 resource owner password credentials grant to protect the endpoints.
 
-    ## Access Token Request
+    ## General Overview
 
-    An authentication token can be obtained by the `/oauth/token` url.
+    CUBA Platform REST API offers the following functionality:
 
-    Request method must be POST. Request format must be `application/x-www-form-urlencoded`. Request parameters must be
-    the following:
+    * Entities CRUD operations
+    * Execution of predefined JPQL queries
+    * Execution of services methods
+    * Getting a metadata (entities, views, enumerations, datatypes)
+    * Getting current user permissions (access to entities, attributes, specific permissions)
+    * Getting current user information (name, language, time zone, etc.)
 
-    * grant_type: value must be set to "password"
-    * username: the platform user login
-    * password: the platform user password
+    ## Authentication
 
-    The authentication token endpoint is protected with the basic authentication. The token request must contain an `Authorization`
-    header for basic authentication with REST API client credentials.
+    CUBA Platform REST API uses an OAuth2 resource owner password credentials grant to protect the endpoints (https://tools.ietf.org/html/rfc6749#page-37).
 
-    Access token request example:
+    Before accessing a protected resource, the user must get an authentication token. The token can be obtained by the `/oauth/token` url.
+    See the `/oauth/token` endpoint documentaion for more details.
 
-    ```
-    POST /token HTTP/1.1
-    Host: server.example.com
-    Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
-    Content-Type: application/x-www-form-urlencoded
-
-    grant_type=password&username=johndoe&password=A3ddj3w
-    ```
-
-    ## Access token response
-
-    ```
-    HTTP/1.1 200 OK
-    Content-Type: application/json;charset=UTF-8
-    Cache-Control: no-store
-    Pragma: no-cache
-
-    {
-      "access_token":"2YotnFZFEjr1zCsicMWpAA",
-      "token_type":"password",
-      "expires_in":3600
-    }
-    ```
-
-    ## Accessing protected endpoints
-
-    The access token must be placed to the `Authorization` header with the `Bearer` type, e.g.:
+    When the token is obtained it must be placed to the `Authorization` header with the `Bearer` type to all further requests, e.g.:
 
     ```
     GET /api/entities/sales$Order
@@ -64,7 +39,7 @@ info:
 #                  Host, Base Path, Schemes and Content Types                  #
 ################################################################################
 
-basePath: /app/dispatch/api
+basePath: /app/rest/v2
 produces:
   - application/json
 consumes:
@@ -126,13 +101,23 @@ parameters:
 #                                   Definitions                                #
 ################################################################################
 definitions:
-  error:
+  oauthError:
     type: object
     properties:
       error:
         type: string
         description: Error message
       error_description:
+        type: string
+        description: Detailed error description
+
+  error:
+    type: object
+    properties:
+      error:
+        type: string
+        description: Error message
+      details:
         type: string
         description: Detailed error description
 
@@ -184,6 +169,9 @@ definitions:
       _entityName:
         type: string
         example: sec$User
+      _instanceName:
+        type: string
+        example: Smith [smith]
       otherEntityFields:
         type: string
         example: There must be a set of entity fields instead of this one here
@@ -212,12 +200,19 @@ definitions:
   serviceInfo:
     type: object
     properties:
-      service:
+      name:
         type: string
       methods:
         type: array
         items:
-          type: string
+          type: object
+          properties:
+            name:
+              type: string
+              description: Method argument name.
+            type:
+              type: string
+              description: Method argument type. A fully qualified java class name is returned here.
 
   permission:
     type: object
@@ -237,6 +232,7 @@ definitions:
     properties:
       entityName:
         type: string
+        example: ref$Driver
       properties:
         type: array
         items:
@@ -244,6 +240,7 @@ definitions:
           properties:
             name:
               type: string
+              example: name
             attributeType:
               type: string
               enum:
@@ -253,6 +250,11 @@ definitions:
                 - COMPOSITION
             type:
               type: string
+              example: string
+              description: |
+                For a simple datatype the will be a datatype name here (string, int, decimal, boolean, date, dateTime, etc.)
+                You can find all simple datatype names in the source code of the Datatypes class in the systemDatatypeNames property.
+                If the property is the link to the entity then an entity name will be placed to this field, e.g. ref$Colour
             cardinality:
               type: string
               enum:
@@ -267,6 +269,69 @@ definitions:
               type: boolean
             transient:
               type: boolean
+
+  enumMetadata:
+    type: object
+    properties:
+      name:
+        type: string
+        example: com.company.app.core.entity.DriverStatus
+      values:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+              example: ACTIVE
+            id:
+              type: string
+              example: 10
+              description: enum id - the value that is stored in the database
+            description:
+              type: string
+              description: localized enum value
+              example: Active
+
+  datatype:
+    type: object
+    properties:
+      name:
+        type: string
+        example: decimal
+      otherFields:
+        type: string
+        example: all other fields that are defined in the `datatypes.xml` file, e.g. format, decimalSeparator, etc.
+        description: all other fields that are defined in the `datatypes.xml` file, e.g. format, decimalSeparator, etc.
+
+  userInfo:
+    type: object
+    properties:
+      login:
+        type: string
+      name:
+        type: string
+      firstName:
+        type: string
+      middleName:
+        type: string
+      lastName:
+        type: string
+      position:
+        type: string
+      email:
+        type: string
+      timeZone:
+        type: string
+        example: Europe/London
+      language:
+        type: string
+        example: en
+      locale:
+        type: string
+        example: en_US
+      _instanceName:
+        type: string
 
 ################################################################################
 #                                   Responses                                  #
@@ -283,7 +348,7 @@ responses:
 ################################################################################
 tags:
   - name: OAuth
-    description: Methods for working with authentication tokens
+    description: Working with authentication tokens
   - name: Entities
     description: CRUD entities operations
   - name: Queries
@@ -294,6 +359,8 @@ tags:
     description: Current user permissions
   - name: Metadata
     description: Entities metadata
+  - name: UserInfo
+    description: User information
 
 ################################################################################
 #                                  Security                                    #
@@ -327,7 +394,9 @@ paths:
         Gets an authentication token.
 
         The endpoint is protected with the basic authentication. The request must contain an `Authorization`
-        header for basic authentication with REST API client credentials.
+        header for basic authentication with REST API client credentials. Please note, that client credentials
+        is not the user credentials. Te default client credentials are defined by the following application
+        properties: `cuba.rest.client.id` and `cuba.rest.client.secret`. The request format must be `application/x-www-form-urlencoded`.
       consumes:
         - application/x-www-form-urlencoded
       parameters:
@@ -352,7 +421,7 @@ paths:
         401:
           description: Unauthorized
           schema:
-            $ref: '#/definitions/error'
+            $ref: '#/definitions/oauthError'
       security:
         - tokenEndpointBasic: []
 
@@ -406,7 +475,7 @@ paths:
 
       responses:
         200:
-          description: OK
+          description: Successful. The list of entities is returned in the response body.
           schema:
             type: array
             items:
@@ -463,7 +532,7 @@ paths:
         - $ref: '#/parameters/returnNullsParam'
       responses:
         200:
-          description: OK
+          description: Successful. The entities is returned in the response body.
           schema:
             $ref: '#/definitions/entityFull'
         403:
@@ -485,7 +554,7 @@ paths:
         - $ref: '#/parameters/entityJsonParam'
       responses:
         200:
-          description: OK. The updated entity is returned in the response body.
+          description: Successful. The updated entity is returned in the response body.
           schema:
             $ref: '#/definitions/entityFull'
         403:
@@ -504,7 +573,7 @@ paths:
       description: Deletes the entity
       responses:
         200:
-          description: OK
+          description: Successful. Entity was deleted.
         403:
           description: Forbiddden. The user doesn't have permissions to delete the entity
           schema:
@@ -545,15 +614,23 @@ paths:
     parameters:
       - $ref: '#/parameters/entityNameParam'
       - $ref: '#/parameters/queryNameParam'
+      - name: limit
+        in: query
+        description: Number of extracted entities
+        type: string
+      - name: offset
+        in: query
+        description: Position of the first result to retrieve
+        type: string
     get:
       tags:
         - Queries
       summary: Execute a query
       description: |
-        Executes a predefined query
+        Executes a predefined query. Query parameters values must be defined in the request parameters with the same name.
       responses:
         200:
-          description: Successful response
+          description: Successful. A list of entitie is returned in the response body.
           schema:
             type: array
             items:
@@ -626,9 +703,8 @@ paths:
         - Services
       summary: Execute service method
       description: |
-        Executes the service method. This request expects query parameters with the names:
-        * param0..paramN - with parameters values
-        * param0_type..paramN_type - with parameters types (optional)
+        Executes the service method. This request expects query parameters with the names defined in services configuration
+        on the middleware.
       responses:
         200:
           description: |
@@ -657,15 +733,13 @@ paths:
             type: string
           required: true
           description: |
-            JSON object that contains fields with names param0..paramN with parameter values and
-            optional fields param0_type..paramN..type with parameter types information.
-
-            An entity or entities collection can be passed as a parameter.
+            JSON object that contains fields with parameter values. Parameter names are defined in services configuration
+            on the middleware. An entity, entities collection or POJO can be passed as a parameter.
       responses:
         200:
           description: |
             Returns the result of the method execution. It can be of simple datatype
-            as well as JSON that represents an entity or entities collection.
+            as well as JSON that represents an entity, entities collection or POJO.
         204:
           description: |
             No content. This status is returned when the service method was executed successfully but returns null or
@@ -675,24 +749,8 @@ paths:
           schema:
             $ref: '#/definitions/error'
 
-############################### Permissions ####################################
-  /permissions:
-    get:
-      tags:
-        - Permissions
-      summary: Get a list of current user security permissions
-      description: |
-        Gets a list of current user security permissions
-      responses:
-        200:
-          description: OK
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/permission'
-
 ############################### Metadata #######################################
-  /meatadata/entities:
+  /metadata/entities:
     get:
       tags:
         - Metadata
@@ -706,7 +764,7 @@ paths:
             items:
               $ref: '#/definitions/entityMetadata'
 
-  /meatadata/entities/{entityName}:
+  /metadata/entities/{entityName}:
     get:
       tags:
         - Metadata
@@ -729,7 +787,7 @@ paths:
           schema:
             $ref: '#/definitions/error'
 
-  /meatadata/entities/{entityName}/views:
+  /metadata/entities/{entityName}/views:
     get:
       tags:
         - Metadata
@@ -750,11 +808,11 @@ paths:
               type: object
         404:
           description: |
-            MetaClass not found or query with the given name not found
+            MetaClass not found
           schema:
             $ref: '#/definitions/error'
 
-  /meatadata/entities/{entityName}/views/{viewName}:
+  /metadata/entities/{entityName}/views/{viewName}:
     get:
       tags:
         - Metadata
@@ -778,6 +836,87 @@ paths:
             type: object
         404:
           description: |
-            MetaClass not found or query with the given name not found
+            MetaClass not found or view with the given name not found
           schema:
             $ref: '#/definitions/error'
+
+  /metadata/enums:
+    get:
+      tags:
+        - Metadata
+      summary: Get all enums metadata
+      description: Gets all enums metadata
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/enumMetadata'
+
+  /metadata/enums/{enumName}:
+    get:
+      tags:
+        - Metadata
+      summary: Get enum metadata
+      description: Gets enum metadata
+      parameters:
+        - name: enumName
+          in: path
+          type: string
+          required: true
+          description: Enum name
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/enumMetadata'
+        404:
+          description: |
+            Enum not found
+          schema:
+            $ref: '#/definitions/error'
+
+  /metadata/datatypes:
+    get:
+      tags:
+        - Metadata
+      summary: Get datatypes information
+      description: Gets datatypes information
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/datatype'
+
+############################### Permissions ####################################
+  /permissions:
+    get:
+      tags:
+        - Permissions
+      summary: Get a list of current user security permissions
+      description: |
+        Gets a list of current user security permissions
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/permission'
+
+
+############################### User infop #####################################
+  /userInfo:
+    get:
+      tags:
+        - UserInfo
+      summary: Get the current user information
+      description: Gets the current user information
+      responses:
+        200:
+          description: Successful
+          schema:
+            $ref: '#/definitions/userInfo'
