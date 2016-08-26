@@ -61,5 +61,10 @@ public interface QueryParser {
     @Nullable
     String getEntityPathIfSecondaryReturnedInsteadOfMain();
 
-
+    /**
+     * @return true if not main entity selected and it's path with collection
+     * Example: select u.group from sec$User u -> false
+     * Example: select u.userRoles from sec$User u -> true
+     */
+    boolean isCollectionSecondaryEntitySelect();
 }

@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.haulmont.cuba.core.global;
@@ -54,10 +53,16 @@ public class QueryParserAstBased implements QueryParser {
 
         String entityName;
         String entityPath;
+        boolean collectionSelect;
 
-        public EntityNameAndPath(String entityName, String entityPath) {
+        public EntityNameAndPath(String entityName, String entityPath, boolean collectionSelect) {
             this.entityName = entityName;
             this.entityPath = entityPath;
+            this.collectionSelect = collectionSelect;
+        }
+
+        public EntityNameAndPath(String entityName, String entityPath) {
+            this(entityName, entityPath, false);
         }
     }
 
@@ -165,6 +170,12 @@ public class QueryParserAstBased implements QueryParser {
         return entityNameAndAlias != null ? entityNameAndAlias.entityPath : null;
     }
 
+    @Override
+    public boolean isCollectionSecondaryEntitySelect() {
+        EntityNameAndPath entityNameAndAlias = getEntityNameAndPathIfSecondaryReturnedInsteadOfMain();
+        return entityNameAndAlias != null && entityNameAndAlias.collectionSelect;
+    }
+
     protected EntityNameAndPath getEntityNameAndPathIfSecondaryReturnedInsteadOfMain() {
         List<PathNode> returnedPathNodes = getQueryAnalyzer().getReturnedPathNodes();
         if (CollectionUtils.isEmpty(returnedPathNodes) || returnedPathNodes.size() > 1) {
@@ -194,15 +205,20 @@ public class QueryParserAstBased implements QueryParser {
         String entityName = getEntityName();
         JpqlEntityModel entity;
         String entityPath;
+        boolean collectionSelect = false;
         try {
             entity = model.getEntityByName(entityName);
             entityPath = pathNode.asPathString();
+
             for (int i = 0; i < pathNode.getChildCount(); i++) {
                 String fieldName = pathNode.getChild(i).toString();
                 Attribute entityAttribute = entity.getAttributeByName(fieldName);
                 if (entityAttribute != null && entityAttribute.isEntityReferenceAttribute()) {
                     entityName = entityAttribute.getReferencedEntityName();
                     entity = model.getEntityByName(entityName);
+                    if (!collectionSelect) {
+                        collectionSelect = entityAttribute.isCollection();
+                    }
                 } else {
                     return null;
                 }
@@ -211,6 +227,6 @@ public class QueryParserAstBased implements QueryParser {
             throw new RuntimeException("Could not find entity by name " + entityName, e);
         }
 
-        return entity != null && entity.getName() != null ? new EntityNameAndPath(entity.getName(), entityPath) : null;
+        return entity != null && entity.getName() != null ? new EntityNameAndPath(entity.getName(), entityPath, collectionSelect) : null;
     }
 }

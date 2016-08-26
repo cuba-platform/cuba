@@ -143,4 +143,9 @@ public class QueryParserRegex implements QueryParser {
     public String getEntityPathIfSecondaryReturnedInsteadOfMain() {
         return null;
     }
+
+    @Override
+    public boolean isCollectionSecondaryEntitySelect() {
+        return false;
+    }
 }
