@@ -109,6 +109,7 @@ public class MenuBuilder {
             createSubMenu(menuItem, item, session);
             assignTestId(menuItem, item);
             assignStyleName(menuItem, item);
+            assignIcon(menuItem, item);
             assignDescription(menuItem, item);
             if (isMenuItemEmpty(menuItem)) {
                 menuBar.removeItem(menuItem);
@@ -125,6 +126,7 @@ public class MenuBuilder {
                         assignShortcut(menuItem, child);
                         assignTestId(menuItem, child);
                         assignDescription(menuItem, child);
+                        assignIcon(menuItem, child);
                         assignStyleName(menuItem, child);
                     }
                 } else {
@@ -134,6 +136,7 @@ public class MenuBuilder {
                         createSubMenu(menuItem, child, session);
                         assignTestId(menuItem, child);
                         assignDescription(menuItem, child);
+                        assignIcon(menuItem, child);
                         assignStyleName(menuItem, child);
                         if (isMenuItemEmpty(menuItem)) {
                             vItem.removeChild(menuItem);
@@ -214,6 +217,12 @@ public class MenuBuilder {
     protected void assignDescription(MenuBar.MenuItem menuItem, MenuItem conf) {
         if (conf.getDescription() != null) {
             menuItem.setDescription(conf.getDescription());
+        }
+    }
+
+    protected void assignIcon(MenuBar.MenuItem menuItem, MenuItem conf) {
+        if (conf.getIcon() != null) {
+            menuItem.setIcon(WebComponentsHelper.getIcon(conf.getIcon()));
         }
     }
 }

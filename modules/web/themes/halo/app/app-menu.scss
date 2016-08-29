@@ -139,6 +139,18 @@
     }
   }
 
+  .v-menubar-submenu-has-icons .v-menubar-menuitem {
+    .v-icon {
+      margin-left: -$v-font-size--h1;
+      margin-right: 0;
+      width: $v-font-size--h1;
+    }
+
+    .v-menubar-menuitem-caption {
+      padding-left: $v-unit-size;
+    }
+  }
+
   @if ($v-support-inverse-menu) {
     .cuba-inverse-header.cuba-app-menubar {
       background: #1c1e20;
