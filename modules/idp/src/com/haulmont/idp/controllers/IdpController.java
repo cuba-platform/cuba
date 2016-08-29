@@ -76,13 +76,20 @@ public class IdpController {
     public String checkIdpSession(@RequestParam(value = "sp", defaultValue = "") String serviceProviderUrl,
                                   @CookieValue(value = CUBA_IDP_COOKIE_NAME, defaultValue = "") String idpSessionCookie,
                                   HttpServletResponse response) {
-        if (Strings.isNullOrEmpty(serviceProviderUrl)) {
-            return "redirect:login.html";
+        if (!Strings.isNullOrEmpty(serviceProviderUrl)
+                && !idpConfig.getServiceProviderUrls().contains(serviceProviderUrl)) {
+            log.warn("Incorrect serviceProviderUrl {} passed, will be used default", serviceProviderUrl);
+            serviceProviderUrl = null;
         }
 
-        if (!idpConfig.getServiceProviderUrls().contains(serviceProviderUrl)) {
-            log.debug("Incorrect serviceProviderUrl {}, will be used default", serviceProviderUrl);
-            return "redirect:login.html";
+        if (Strings.isNullOrEmpty(serviceProviderUrl)) {
+            if (!idpConfig.getServiceProviderUrls().isEmpty()) {
+                serviceProviderUrl = idpConfig.getServiceProviderUrls().get(0);
+            } else {
+                log.error("IDP property cuba.idp.serviceProviderUrls is not set");
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return null;
+            }
         }
 
         if (!Strings.isNullOrEmpty(idpSessionCookie)) {
@@ -109,6 +116,8 @@ public class IdpController {
                 log.info("New ticket {} created for logged in user", serviceProviderTicket);
 
                 return null;
+            } else {
+                log.debug("IDP session {} not found, login required", idpSessionCookie);
             }
         }
 
@@ -160,7 +169,9 @@ public class IdpController {
 
     @RequestMapping(value = "/auth", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     @ResponseBody
-    public AuthResponse authenticate(@RequestBody AuthRequest auth, HttpServletResponse response) {
+    public AuthResponse authenticate(@RequestBody AuthRequest auth,
+                                     @CookieValue(value = CUBA_IDP_COOKIE_NAME, defaultValue = "") String idpSessionCookie,
+                                     HttpServletResponse response) {
         String serviceProviderUrl = auth.getServiceProviderUrl();
 
         if (!Strings.isNullOrEmpty(serviceProviderUrl)
@@ -192,6 +203,16 @@ public class IdpController {
             sessionLocale = messageTools.getDefaultLocale();
         }
 
+        if (!Strings.isNullOrEmpty(idpSessionCookie)) {
+            boolean loggedOut = idpService.logout(idpSessionCookie);
+
+            if (loggedOut) {
+                log.info("Logged out IDP session {}", idpSessionCookie);
+
+                logoutCallbackInvoker.performLogoutOnServiceProviders(idpSessionCookie);
+            }
+        }
+
         IdpService.IdpLoginResult loginResult;
         try {
             loginResult = idpService.login(auth.getUsername(),
@@ -199,6 +220,11 @@ public class IdpController {
                     sessionLocale,
                     ImmutableMap.of(ClientType.class.getName(), ClientType.WEB.name()));
         } catch (LoginException e) {
+            // remove auth cookie
+            Cookie cookie = new Cookie(CUBA_IDP_COOKIE_NAME, "");
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+
             log.warn("Unable to login user {}", auth.getUsername());
             return AuthResponse.failed("invalid_credentials");
         }

@@ -36,7 +36,7 @@
     <mvc:resources mapping="/**" location="/idp/"/>
 
     <mvc:interceptors>
-        <bean class="com.haulmont.idp.sys.IdpSecurityContextInterceptor"/>
+        <bean id="cuba_IdpSecurityContextInterceptor" class="com.haulmont.idp.sys.IdpSecurityContextInterceptor"/>
     </mvc:interceptors>
 
     <bean id="idpScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">

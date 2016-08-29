@@ -805,20 +805,12 @@ configure(idpModule) {
         compile(sharedLibModule)
         provided(servletApi)
 
-        compile(groovyArtifact)
-        compile(group: 'org.json', name: 'json', version: '20140107')
-
         compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
         compile(group: 'org.springframework', name: 'spring-context-support', version: springVersion)
 
         compile(group: 'org.springframework.security', name: 'spring-security-core', version: springSecurityVersion)
         compile(group: 'org.springframework.security', name: 'spring-security-web', version: springSecurityVersion)
         compile(group: 'org.springframework.security', name: 'spring-security-config', version: springSecurityVersion)
-        compile(group: 'org.springframework.security', name: 'spring-security-taglibs', version: springSecurityVersion)
-
-        compile(group: 'org.thymeleaf', name: 'thymeleaf', version: '3.0.0.RELEASE')
-        compile(group: 'org.thymeleaf', name: 'thymeleaf-spring4', version: '3.0.0.RELEASE')
-        compile(group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-springsecurity4', version: '3.0.0.RELEASE')
 
         testCompile(clientModule.sourceSets.test.output)
     }
