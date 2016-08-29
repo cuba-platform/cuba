@@ -71,6 +71,13 @@ public interface WebAuthConfig extends Config {
     @Property("cuba.web.ldap.user")
     String getLdapUser();
 
+    /**
+     * @return Field of LDAP object for user login matching.
+     */
+    @Property("cuba.web.ldap.userLoginField")
+    @DefaultString("sAMAccountName")
+    String getLdapUserLoginField();
+
     @Property("cuba.web.ldap.password")
     String getLdapPassword();
 
@@ -81,7 +88,7 @@ public interface WebAuthConfig extends Config {
     String getIdpBaseURL();
 
     /**
-     * @return trusted password to access to IDP server.
+     * @return Trusted password to access to IDP server.
      */
     @Property("cuba.web.idp.trustedServicePassword")
     String getIdpTrustedServicePassword();
