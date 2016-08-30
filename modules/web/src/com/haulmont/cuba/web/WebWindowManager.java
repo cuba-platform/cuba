@@ -532,6 +532,7 @@ public class WebWindowManager extends WindowManager {
                 newTab.setDescription(null);
             }
 
+            newTab.setIcon(WebComponentsHelper.getIcon(window.getIcon()));
             newTab.setClosable(true);
             tabSheet.setTabCloseHandler(layout, (targetTabSheet, tabContent) -> {
                 //noinspection SuspiciousMethodCalls
@@ -646,6 +647,8 @@ public class WebWindowManager extends WindowManager {
             } else {
                 tab.setDescription(null);
             }
+
+            tab.setIcon(WebComponentsHelper.getIcon(window.getIcon()));
         } else {
             layout.markAsDirtyRecursive();
         }
@@ -761,6 +764,11 @@ public class WebWindowManager extends WindowManager {
 
     protected CubaWindow createDialogWindow(Window window) {
         CubaWindow dialogWindow = new CubaWindow(window.getCaption());
+
+        if (window.getIcon() != null) {
+            dialogWindow.setIcon(WebComponentsHelper.getIcon(window.getIcon()));
+        }
+
         dialogWindow.setErrorHandler(ui);
         dialogWindow.addContextActionHandler(new DialogWindowActionHandler(window));
         return dialogWindow;
@@ -1012,6 +1020,8 @@ public class WebWindowManager extends WindowManager {
                         } else {
                             tab.setDescription(null);
                         }
+
+                        tab.setIcon(WebComponentsHelper.getIcon(currentWindow.getIcon()));
                     }
                 }
                 fireListeners(window, !tabs.isEmpty());

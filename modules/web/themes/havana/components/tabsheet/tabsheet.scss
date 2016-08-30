@@ -422,6 +422,10 @@
     }
   }
 
+  .#{$primary-stylename}-tabitemcell .v-caption .v-icon + .v-captiontext {
+    margin-left: 2px;
+  }
+
   .v-window-contents {
     @include havana-tabsheet-second($primary-stylename);
   }

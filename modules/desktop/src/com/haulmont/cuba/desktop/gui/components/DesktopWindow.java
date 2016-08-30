@@ -125,6 +125,7 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     protected boolean scheduledRepaint = false;
     protected DialogOptions dialogOptions = new DesktopDialogOptions();
+    protected String icon;
 
     public DesktopWindow() {
         initLayout();
@@ -1327,6 +1328,16 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public ActionsPermissions getActionsPermissions() {
         return actionsPermissions;
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     protected class DesktopDialogOptions extends DialogOptions {

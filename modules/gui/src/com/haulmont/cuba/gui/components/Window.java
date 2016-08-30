@@ -35,7 +35,7 @@ import java.util.List;
  * Represents an independent screen opened inside the main application window.
  *
  */
-public interface Window extends Frame, Component.HasCaption {
+public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
 
     /**
      * Name that is used to register a client type specific screen implementation in
