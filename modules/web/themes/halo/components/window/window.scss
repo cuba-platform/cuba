@@ -51,6 +51,10 @@ $v-window-nonmodal-shadow: 0 0 20px rgba(0,0,0,0.5) !default;
     }
   }
 
+  .#{$primary-stylename}-outerheader .#{$primary-stylename}-header .v-icon {
+    margin-right: ceil($v-layout-margin-right/2);
+  }
+
   .#{$primary-stylename}-outerheader {
     .#{$primary-stylename}-closebox,
     .#{$primary-stylename}-maximizebox,

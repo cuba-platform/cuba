@@ -65,7 +65,7 @@ import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAl
 
 public class WebWindow implements Window, Component.Wrapper,
                                   Component.HasXmlDescriptor, WrappedWindow, Component.Disposable,
-                                  Component.SecuredActionsHolder {
+                                  Component.SecuredActionsHolder, Component.HasIcon {
 
     private static Logger log = LoggerFactory.getLogger(WebWindow.class);
 
@@ -109,6 +109,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
     protected boolean disposed = false;
     protected DialogOptions dialogOptions = new WebDialogOptions();
+    protected String icon;
 
     public WebWindow() {
         component = createLayout();
@@ -153,6 +154,22 @@ public class WebWindow implements Window, Component.Wrapper,
             while (parent != null) {
                 if (parent instanceof com.vaadin.ui.Window) {
                     return (com.vaadin.ui.Window) parent;
+                }
+
+                parent = parent.getParent();
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    protected TabSheet.Tab asTabWindow() {
+        if (component.isAttached()) {
+            com.vaadin.ui.Component parent = component;
+            while (parent != null) {
+                if (parent instanceof com.vaadin.ui.VerticalLayout
+                        && parent.getParent() instanceof TabSheet) {
+                    return ((TabSheet) parent.getParent()).getTab(parent);
                 }
 
                 parent = parent.getParent();
@@ -1207,6 +1224,28 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public ActionsPermissions getActionsPermissions() {
         return actionsPermissions;
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        this.icon = icon;
+
+        if (component.isAttached()) {
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                dialogWindow.setIcon(WebComponentsHelper.getIcon(icon));
+            }
+
+            TabSheet.Tab tabWindow = asTabWindow();
+            if (tabWindow != null) {
+                tabWindow.setIcon(WebComponentsHelper.getIcon(icon));
+            }
+        }
     }
 
     protected class WebDialogOptions extends DialogOptions {

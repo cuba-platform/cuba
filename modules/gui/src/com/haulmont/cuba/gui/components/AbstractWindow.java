@@ -297,4 +297,14 @@ public class AbstractWindow extends AbstractFrame
             throw new UnsupportedOperationException();
         }
     }
+
+    @Override
+    public String getIcon() {
+        return ((Window) frame).getIcon();
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        ((Window) frame).setIcon(icon);
+    }
 }

@@ -57,6 +57,7 @@ public class WindowLoader extends FrameLoader<Window> {
         assignXmlDescriptor(resultComponent, element);
         loadMessagesPack(resultComponent, element);
         loadCaption(resultComponent, element);
+        loadIcon(resultComponent, element);
         loadActions(resultComponent, element);
 
         Element layoutElement = element.element("layout");
