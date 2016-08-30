@@ -47,19 +47,15 @@ public class DeletePolicyProcessor {
 
     protected Entity entity;
     protected MetaClass metaClass;
+    protected String primaryKeyName;
 
-    protected Persistence persistence;
     protected EntityManager entityManager;
-    private String primaryKeyName;
+
+    @Inject
+    protected Persistence persistence;
 
     @Inject
     protected Metadata metadata;
-
-    @Inject
-    public void setPersistence(Persistence persistence) {
-        this.persistence = persistence;
-        this.entityManager = persistence.getEntityManager();
-    }
 
     public Entity getEntity() {
         return entity;
@@ -69,6 +65,9 @@ public class DeletePolicyProcessor {
         this.entity = entity;
         this.metaClass = metadata.getSession().getClass(entity.getClass());
         primaryKeyName = metadata.getTools().getPrimaryKeyName(metaClass);
+
+        String storeName = metadata.getTools().getStoreName(metaClass);
+        entityManager = persistence.getEntityManager(storeName == null ? Stores.MAIN : storeName);
     }
 
     public void process() {
