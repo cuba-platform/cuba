@@ -167,8 +167,7 @@ public class WebWindow implements Window, Component.Wrapper,
         if (component.isAttached()) {
             com.vaadin.ui.Component parent = component;
             while (parent != null) {
-                if (parent instanceof com.vaadin.ui.VerticalLayout
-                        && parent.getParent() instanceof TabSheet) {
+                if (parent.getParent() instanceof TabSheet) {
                     return ((TabSheet) parent.getParent()).getTab(parent);
                 }
 
