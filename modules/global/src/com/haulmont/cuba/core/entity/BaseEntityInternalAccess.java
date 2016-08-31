@@ -115,4 +115,18 @@ public final class BaseEntityInternalAccess {
             throw new RuntimeException("Unable to set value to " + entity.getClass().getSimpleName() + "." + attribute, e);
         }
     }
+
+    public static Object getValue(BaseGenericIdEntity entity, String attribute) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+        Field field = FieldUtils.getField(entity.getClass(), attribute, true);
+        if (field == null)
+            throw new RuntimeException("Cannot find field '" + attribute + "' in class " + entity.getClass().getName());
+        try {
+            return field.get(entity);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Unable to set value to " + entity.getClass().getSimpleName() + "." + attribute, e);
+        }
+    }
+
+
 }

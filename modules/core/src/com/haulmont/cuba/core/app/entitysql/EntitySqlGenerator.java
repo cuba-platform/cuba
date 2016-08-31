@@ -26,6 +26,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.Extends;
 import com.haulmont.cuba.core.global.Metadata;
@@ -143,18 +145,20 @@ public class EntitySqlGenerator {
             }
         }
 
-        where.add(tableAlias + "." + tableIdColumn + " = " + convertValue(ID, entity.getId()));
+        where.add(tableAlias + "." + tableIdColumn + " = " + convertValue(entity, ID, entity.getId()));
         return format(selectTemplate,
                 convertList(columns), convertList(tableNames), convertList(where).replaceAll(",", " and "));
     }
 
-    protected String convertValue(String fieldName, @Nullable Object value) {
+    protected String convertValue(Entity entity, String fieldName, @Nullable Object value) {
         try {
             String valueStr;
             if (value instanceof Entity) {
                 value = ((Entity) value).getId();
             } else if (value instanceof EnumClass) {
                 value = ((EnumClass) value).getId();
+            } else if (value instanceof Enum) {
+                value = BaseEntityInternalAccess.getValue((BaseGenericIdEntity) entity, fieldName);
             }
 
             value = persistence.getDbTypeConverter().getSqlObject(value);
@@ -240,7 +244,7 @@ public class EntitySqlGenerator {
             List<String> valuesStr = new ArrayList<>();
 
             if (discriminatorColumn != null) {
-                String discriminatorValueStr = convertValue(null, discriminatorValue());
+                String discriminatorValueStr = convertValue(null, null, discriminatorValue());
                 columnNames.add(discriminatorColumn);
                 valuesStr.add(discriminatorValueStr);
             }
@@ -249,7 +253,7 @@ public class EntitySqlGenerator {
                 String fieldName = entry.getKey();
                 String columnName = entry.getValue();
                 Object value = entity.getValueEx(fieldName);
-                valuesStr.add(convertValue(fieldName, value));
+                valuesStr.add(convertValue(entity, fieldName, value));
                 columnNames.add(columnName);
             }
 
@@ -263,11 +267,11 @@ public class EntitySqlGenerator {
                 String columnName = entry.getValue();
                 if (!fieldName.equalsIgnoreCase(ID)) {
                     Object value = entity.getValueEx(fieldName);
-                    valuesStr.add(format("%s=%s", columnName, convertValue(fieldName, value)));
+                    valuesStr.add(format("%s=%s", columnName, convertValue(entity, fieldName, value)));
                 }
             }
 
-            return format(updateTemplate, name, convertList(valuesStr), fieldToColumnMapping.get(ID), convertValue(ID, entity.getId()));
+            return format(updateTemplate, name, convertList(valuesStr), fieldToColumnMapping.get(ID), convertValue(entity, ID, entity.getId()));
         }
 
 
