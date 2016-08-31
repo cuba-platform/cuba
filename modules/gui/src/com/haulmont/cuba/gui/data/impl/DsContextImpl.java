@@ -353,7 +353,10 @@ public class DsContextImpl implements DsContextImplementation {
                     } else {
                         masterItem = masterDs.getItem();
                     }
-                    ((AbstractInstance) entity).setValue(inverseProp.getName(), masterItem, false);
+                    if (masterItem != null) {
+                        // CAUTION need to rework this mechanism in case of two or more nested collection datasources
+                        ((AbstractInstance) entity).setValue(inverseProp.getName(), masterItem, false);
+                    }
                 }
             }
         }
