@@ -215,7 +215,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         String nestedEntityPath = parser.getEntityPathIfSecondaryReturnedInsteadOfMain();
         if (nestedEntityName != null) {
             if (parser.isCollectionSecondaryEntitySelect()) {
-                throw new IllegalStateException(String.format("Collections does not support in select list: %s", nestedEntityPath));
+                throw new IllegalStateException(String.format("Collection attributes are not supported in select clause: %s", nestedEntityPath));
             }
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(result);
             transformer.replaceWithSelectEntityVariable("tempEntityAlias");
