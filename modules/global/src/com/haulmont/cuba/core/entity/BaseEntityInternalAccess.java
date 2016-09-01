@@ -108,11 +108,11 @@ public final class BaseEntityInternalAccess {
         Preconditions.checkNotNullArgument(entity, "entity is null");
         Field field = FieldUtils.getField(entity.getClass(), attribute, true);
         if (field == null)
-            throw new RuntimeException("Cannot find field '" + attribute + "' in class " + entity.getClass().getName());
+            throw new RuntimeException(String.format("Cannot find field '%s' in class %s", attribute, entity.getClass().getName()));
         try {
             field.set(entity, value);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Unable to set value to " + entity.getClass().getSimpleName() + "." + attribute, e);
+            throw new RuntimeException(String.format("Unable to set value to %s.%s", entity.getClass().getSimpleName(), attribute), e);
         }
     }
 
@@ -120,11 +120,11 @@ public final class BaseEntityInternalAccess {
         Preconditions.checkNotNullArgument(entity, "entity is null");
         Field field = FieldUtils.getField(entity.getClass(), attribute, true);
         if (field == null)
-            throw new RuntimeException("Cannot find field '" + attribute + "' in class " + entity.getClass().getName());
+            throw new RuntimeException(String.format("Cannot find field '%s' in class %s", attribute, entity.getClass().getName()));
         try {
             return field.get(entity);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Unable to set value to " + entity.getClass().getSimpleName() + "." + attribute, e);
+            throw new RuntimeException(String.format("Unable to set value to %s.%s", entity.getClass().getSimpleName(), attribute), e);
         }
     }
 
