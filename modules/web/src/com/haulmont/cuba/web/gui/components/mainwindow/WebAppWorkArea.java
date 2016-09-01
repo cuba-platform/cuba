@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.toolkit.ui.CubaSingleModeContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Component;
@@ -59,7 +60,7 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
 
     protected VBoxLayout initialLayout;
     protected CubaTabSheet tabbedContainer;
-    protected VerticalLayout singleContainer;
+    protected CubaSingleModeContainer singleContainer;
 
     // lazy initialized listeners list
     protected List<StateChangeListener> stateChangeListeners = null;
@@ -201,8 +202,8 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         return new MainTabSheetActionHandler(tabSheet);
     }
 
-    protected VerticalLayout createSingleModeContainer() {
-        VerticalLayout boxLayout = new VerticalLayout();
+    protected CubaSingleModeContainer createSingleModeContainer() {
+        CubaSingleModeContainer boxLayout = new CubaSingleModeContainer();
         boxLayout.setHeight("100%");
         boxLayout.setStyleName(SINGLE_CONTAINER_STYLENAME);
         return boxLayout;
@@ -212,7 +213,7 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         return tabbedContainer;
     }
 
-    public VerticalLayout getSingleWindowContainer() {
+    public CubaSingleModeContainer getSingleWindowContainer() {
         return singleContainer;
     }
 

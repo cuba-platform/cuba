@@ -1292,6 +1292,10 @@ public class WebWindowManager extends WindowManager {
         window.center();
     }
 
+    public WindowBreadCrumbs getBreadCrumbs(ComponentContainer container) {
+        return tabs.get(container);
+    }
+
     protected void assignDialogShortcuts(Map<Action, Button> buttonMap) {
         List<DialogAction> dialogActions = new ArrayList<>();
         for (Action action : buttonMap.keySet()) {

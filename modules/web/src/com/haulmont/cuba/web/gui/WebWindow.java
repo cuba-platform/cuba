@@ -35,11 +35,13 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
+import com.haulmont.cuba.web.toolkit.ui.CubaSingleModeContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.event.ItemClickEvent;
@@ -154,21 +156,6 @@ public class WebWindow implements Window, Component.Wrapper,
             while (parent != null) {
                 if (parent instanceof com.vaadin.ui.Window) {
                     return (com.vaadin.ui.Window) parent;
-                }
-
-                parent = parent.getParent();
-            }
-        }
-        return null;
-    }
-
-    @Nullable
-    protected TabSheet.Tab asTabWindow() {
-        if (component.isAttached()) {
-            com.vaadin.ui.Component parent = component;
-            while (parent != null) {
-                if (parent.getParent() instanceof TabSheet) {
-                    return ((TabSheet) parent.getParent()).getTab(parent);
                 }
 
                 parent = parent.getParent();
@@ -1155,6 +1142,36 @@ public class WebWindow implements Window, Component.Wrapper,
         return caption;
     }
 
+    @Nullable
+    protected TabSheet.Tab asTabWindow() {
+        if (component.isAttached()) {
+            com.vaadin.ui.Component parent = component;
+            while (parent != null) {
+                if (parent.getParent() instanceof TabSheet) {
+                    return ((TabSheet) parent.getParent()).getTab(parent);
+                }
+
+                parent = parent.getParent();
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    protected VerticalLayout asSingleWindow() {
+        if (component.isAttached()) {
+            com.vaadin.ui.Component parent = component;
+            while (parent != null) {
+                if (parent.getParent() instanceof CubaSingleModeContainer) {
+                    return (VerticalLayout) parent;
+                }
+
+                parent = parent.getParent();
+            }
+        }
+        return null;
+    }
+
     @Override
     public void setCaption(String caption) {
         this.caption = caption;
@@ -1163,7 +1180,19 @@ public class WebWindow implements Window, Component.Wrapper,
             com.vaadin.ui.Window dialogWindow = asDialogWindow();
             if (dialogWindow != null) {
                 dialogWindow.setCaption(caption);
+            } else {
+                TabSheet.Tab tabWindow = asTabWindow();
+                if (tabWindow != null) {
+                    setTabCaptionAndDescription(tabWindow);
+                    windowManager.getBreadCrumbs((ComponentContainer) tabWindow.getComponent()).update();
+                } else {
+                    VerticalLayout singleModeWindow = asSingleWindow();
+                    if (singleModeWindow != null) {
+                        windowManager.getBreadCrumbs(singleModeWindow).update();
+                    }
+                }
             }
+
         }
 
         if (getWrapper() instanceof TopLevelWindow) {
@@ -1183,8 +1212,46 @@ public class WebWindow implements Window, Component.Wrapper,
         if (component.isAttached()) {
             com.vaadin.ui.Window dialogWindow = asDialogWindow();
             if (dialogWindow != null) {
-                dialogWindow.setDescription(caption);
+                dialogWindow.setDescription(description);
+            } else {
+                TabSheet.Tab tabWindow = asTabWindow();
+                if (tabWindow != null) {
+                    setTabCaptionAndDescription(tabWindow);
+                    windowManager.getBreadCrumbs((ComponentContainer) tabWindow.getComponent()).update();
+                }
             }
+        }
+    }
+
+    protected void setTabCaptionAndDescription(TabSheet.Tab tabWindow) {
+        String formattedCaption = formatTabCaption(caption, description);
+        String formattedDescription = formatTabDescription(caption, description);
+
+        tabWindow.setCaption(formattedCaption);
+        if (!Objects.equals(formattedCaption, formattedDescription)) {
+            tabWindow.setDescription(formatTabDescription(caption, description));
+        } else {
+            tabWindow.setDescription(null);
+        }
+    }
+
+    protected String formatTabCaption(final String caption, final String description) {
+        WebConfig webConfig = configuration.getConfig(WebConfig.class);
+        String tabCaption = formatTabDescription(caption, description);
+
+        int maxLength = webConfig.getMainTabCaptionLength();
+        if (tabCaption.length() > maxLength) {
+            return tabCaption.substring(0, maxLength) + "...";
+        } else {
+            return tabCaption;
+        }
+    }
+
+    protected String formatTabDescription(final String caption, final String description) {
+        if (StringUtils.isNotEmpty(description)) {
+            return String.format("%s: %s", caption, description);
+        } else {
+            return caption;
         }
     }
 
