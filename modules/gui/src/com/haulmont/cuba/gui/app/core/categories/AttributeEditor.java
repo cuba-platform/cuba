@@ -33,6 +33,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
@@ -81,6 +82,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected LookupField screenField;
     protected LookupField entityTypeField;
     protected PickerField defaultEntityField;
+    protected PickerField.LookupAction entityLookupAction;
+    protected String fieldWidth;
 
     @Inject
     protected Datasource<CategoryAttribute> attributeDs;
@@ -112,13 +115,14 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     @Inject
     protected ComponentsFactory componentsFactory;
 
-    protected String fieldWidth;
+    @Inject
+    protected DynamicAttributesGuiTools dynamicAttributesGuiTools;
 
     @Inject
     protected Table targetScreensTable;
 
     @Inject
-    private CollectionDatasource<ScreenAndComponent, UUID> screensDs;
+    protected CollectionDatasource<ScreenAndComponent, UUID> screensDs;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -230,12 +234,15 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                     attribute.setDefaultEntityId(null);
                 }
             });
+            entityLookupAction = defaultEntityField.addLookupAction();
+            defaultEntityField.addClearAction();
 
             return defaultEntityField;
         });
 
         attributeDs.addItemPropertyChangeListener(e -> {
             String property = e.getProperty();
+            CategoryAttribute attribute = getItem();
             if ("dataType".equalsIgnoreCase(property)
                     || "lookup".equalsIgnoreCase(property)
                     || "defaultDateIsCurrent".equalsIgnoreCase(property)
@@ -244,6 +251,10 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             }
             if ("name".equalsIgnoreCase(property)) {
                 fillAttributeCode();
+            }
+            if ("screen".equalsIgnoreCase(property)) {
+                dynamicAttributesGuiTools.initEntityLookupAction(entityLookupAction,
+                        metadata.getClass(attribute.getJavaClassForEntity()), attribute.getScreen());
             }
         });
     }
@@ -266,9 +277,11 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             if (StringUtils.isNotBlank(attribute.getEntityClass())) {
                 defaultEntityField.setEditable(true);
                 Class entityClass = attribute.getJavaClassForEntity();
-                defaultEntityField.setMetaClass(metadata.getClass(entityClass));
+                MetaClass metaClass = metadata.getClass(entityClass);
+                defaultEntityField.setMetaClass(metaClass);
                 fillDefaultEntities(entityClass);
                 fillSelectEntityScreens(entityClass);
+                dynamicAttributesGuiTools.initEntityLookupAction(entityLookupAction, metaClass, attribute.getScreen());
             } else {
                 defaultEntityField.setEditable(false);
             }
