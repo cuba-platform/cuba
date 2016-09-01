@@ -313,11 +313,10 @@ public abstract class AbstractFieldFactory implements FieldFactory {
             PickerField pickerField;
             if (optionsDatasource == null) {
                 pickerField = componentsFactory.createComponent(PickerField.class);
+                PickerField.LookupAction lookupAction = pickerField.addLookupAction();
                 if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
                     DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
-                    dynamicAttributesGuiTools.addEntityLookupAction(pickerField, (DynamicAttributesMetaProperty) mpp.getMetaProperty());
-                } else {
-                    pickerField.addLookupAction();
+                    dynamicAttributesGuiTools.initEntityLookupAction(lookupAction, (DynamicAttributesMetaProperty) mpp.getMetaProperty());
                 }
                 pickerField.addClearAction();
             } else {
