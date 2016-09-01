@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.core.app.dynamicattributes;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.haulmont.chile.core.model.MetaClass;
@@ -205,12 +203,17 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         List<E> supportedEntities = entities.stream().filter(e -> e instanceof HasUuid).collect(Collectors.toList());
         if (supportedEntities.isEmpty())
             return;
+
+        String storeName = metadata.getTools().getStoreName(metadata.getClassNN(supportedEntities.get(0).getClass()));
+        if (storeName == null)
+            throw new IllegalStateException("Cannot determine data store name for entity " + supportedEntities.get(0));
+
         if (persistence.isInTransaction()) {
-            doFetchDynamicAttributes(supportedEntities);
+            doFetchDynamicAttributes(supportedEntities, storeName);
         } else {
-            Transaction tx = persistence.createTransaction();
+            Transaction tx = persistence.createTransaction(storeName);
             try {
-                doFetchDynamicAttributes(supportedEntities);
+                doFetchDynamicAttributes(supportedEntities, storeName);
                 tx.commit();
             } finally {
                 tx.end();
@@ -247,55 +250,49 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         }
     }
 
-    protected <E extends BaseGenericIdEntity> void doFetchDynamicAttributes(List<E> entities) {
-        if (CollectionUtils.isNotEmpty(entities)) {
-            Collection<UUID> ids = Collections2.transform(entities, new Function<Entity, UUID>() {
-                @Nullable
-                @Override
-                public UUID apply(@Nullable Entity input) {
-                    return input != null ? ((HasUuid) input).getUuid() : null;
-                }
-            });
+    protected <E extends BaseGenericIdEntity> void doFetchDynamicAttributes(List<E> entities, String storeName) {
+        List<UUID> ids = entities.stream()
+                .map(e -> ((HasUuid) e).getUuid())
+                .collect(Collectors.toList());
 
-            Multimap<UUID, CategoryAttributeValue> attributeValuesForEntity = HashMultimap.create();
+        Multimap<UUID, CategoryAttributeValue> attributeValuesForEntity = HashMultimap.create();
 
-            List<UUID> currentIds = new ArrayList<>();
-            for (UUID id : ids) {
-                currentIds.add(id);
-                if (currentIds.size() >= MAX_ENTITIES_FOR_ATTRIBUTE_VALUES_BATCH) {
-                    handleAttributeValuesForIds(currentIds, attributeValuesForEntity);
-                    currentIds = new ArrayList<>();
-                }
+        List<UUID> currentIds = new ArrayList<>();
+        for (UUID id : ids) {
+            currentIds.add(id);
+            if (currentIds.size() >= MAX_ENTITIES_FOR_ATTRIBUTE_VALUES_BATCH) {
+                handleAttributeValuesForIds(currentIds, attributeValuesForEntity, storeName);
+                currentIds = new ArrayList<>();
             }
-            handleAttributeValuesForIds(currentIds, attributeValuesForEntity);
+        }
+        handleAttributeValuesForIds(currentIds, attributeValuesForEntity, storeName);
 
-            for (BaseGenericIdEntity entity : entities) {
-                Collection<CategoryAttributeValue> theEntityAttributeValues = attributeValuesForEntity.get(((HasUuid) entity).getUuid());
-                Map<String, CategoryAttributeValue> map = new HashMap<>();
-                entity.setDynamicAttributes(map);
-                if (CollectionUtils.isNotEmpty(theEntityAttributeValues)) {
-                    for (CategoryAttributeValue categoryAttributeValue : theEntityAttributeValues) {
-                        CategoryAttribute attribute = categoryAttributeValue.getCategoryAttribute();
-                        if (attribute != null) {
-                            map.put(attribute.getCode(), categoryAttributeValue);
-                        }
+        for (BaseGenericIdEntity entity : entities) {
+            Collection<CategoryAttributeValue> theEntityAttributeValues = attributeValuesForEntity.get(((HasUuid) entity).getUuid());
+            Map<String, CategoryAttributeValue> map = new HashMap<>();
+            entity.setDynamicAttributes(map);
+            if (CollectionUtils.isNotEmpty(theEntityAttributeValues)) {
+                for (CategoryAttributeValue categoryAttributeValue : theEntityAttributeValues) {
+                    CategoryAttribute attribute = categoryAttributeValue.getCategoryAttribute();
+                    if (attribute != null) {
+                        map.put(attribute.getCode(), categoryAttributeValue);
                     }
                 }
             }
         }
     }
 
-    protected void handleAttributeValuesForIds(List<UUID> currentIds, Multimap<UUID, CategoryAttributeValue> attributeValuesForEntity) {
+    protected void handleAttributeValuesForIds(List<UUID> currentIds, Multimap<UUID, CategoryAttributeValue> attributeValuesForEntity, String storeName) {
         if (CollectionUtils.isNotEmpty(currentIds)) {
-            List<CategoryAttributeValue> allAttributeValues = loadAttributeValues(currentIds);
+            List<CategoryAttributeValue> allAttributeValues = loadAttributeValues(currentIds, storeName);
             for (CategoryAttributeValue categoryAttributeValue : allAttributeValues) {
                 attributeValuesForEntity.put(categoryAttributeValue.getEntityId(), categoryAttributeValue);
             }
         }
     }
 
-    protected List<CategoryAttributeValue> loadAttributeValues(List<UUID> entityIds) {
-        final EntityManager em = persistence.getEntityManager();
+    protected List<CategoryAttributeValue> loadAttributeValues(List<UUID> entityIds, String storeName) {
+        EntityManager em = persistence.getEntityManager(storeName);
         View baseAttributeValueView = viewRepository.getView(CategoryAttributeValue.class, View.LOCAL);
         View baseAttributeView = viewRepository.getView(CategoryAttribute.class, View.LOCAL);
 
