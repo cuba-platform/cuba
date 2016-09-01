@@ -209,7 +209,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 Map<String, Object> options = new TreeMap<>();
                 MetaClass entityType = null;
                 for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
-                    if (!metadataTools.isSystemLevel(metaClass)) {
+                    if (!metadataTools.isSystemLevel(metaClass) && BaseUuidEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
                         options.put(messageTools.getDetailedEntityCaption(metaClass), metaClass.getJavaClass().getName());
                         if (attribute != null
                                 && metaClass.getJavaClass().getName().equals(attribute.getEntityClass())) {
