@@ -2072,6 +2072,7 @@
             <xs:attribute name="datasource" type="xs:string"/>
             <xs:attribute name="dataSupplier" type="xs:string"/>
             <xs:attribute name="caption" type="resourceString"/>
+            <xs:attribute name="description" type="resourceString"/>
             <xs:attribute name="focusComponent" type="xs:string"/>
         </xs:complexType>
     </xs:element>
