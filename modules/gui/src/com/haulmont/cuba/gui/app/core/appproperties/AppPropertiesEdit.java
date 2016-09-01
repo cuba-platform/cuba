@@ -26,12 +26,17 @@ import com.haulmont.cuba.core.config.AppPropertyEntity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.security.global.UserSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +45,8 @@ import java.util.Map;
  * Controller of the {@code appproperties-edit.xml} screen
  */
 public class AppPropertiesEdit extends AbstractWindow {
+
+    private Logger log = LoggerFactory.getLogger(AppPropertiesEdit.class);
 
     @WindowParam
     private AppPropertyEntity item;
@@ -58,6 +65,9 @@ public class AppPropertiesEdit extends AbstractWindow {
 
     @Inject
     private ComponentsFactory componentsFactory;
+
+    @Inject
+    private UserSessionSource userSessionSource;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -79,7 +89,15 @@ public class AppPropertiesEdit extends AbstractWindow {
                 } else {
                     TextField textField = componentsFactory.createComponent(TextField.class);
                     textField.setValue(item.getCurrentValue());
-                    textField.setDatatype(datatype);
+
+                    try {
+                        datatype.parse(item.getCurrentValue(), userSessionSource.getLocale());
+                        textField.setDatatype(datatype);
+                    } catch (ParseException e) {
+                        // do not assign datatype then
+                        log.trace("Localized parsing by datatype cannot be used for value {}", item.getCurrentValue());
+                    }
+
                     textField.addValueChangeListener(e -> {
                         appPropertyDs.getItem().setCurrentValue(e.getValue() == null ? null : e.getValue().toString());
                     });
