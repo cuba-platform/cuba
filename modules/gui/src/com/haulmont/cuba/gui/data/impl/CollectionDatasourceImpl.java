@@ -16,8 +16,7 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
+import com.haulmont.bali.collections.ReadOnlyLinkedMapValuesView;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
@@ -36,9 +35,7 @@ import org.apache.log4j.Logger;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
-import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Most commonly used {@link CollectionDatasource} implementation.
@@ -217,9 +214,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         if (state == State.NOT_INITIALIZED) {
             return Collections.emptyList();
         } else {
-            return getItemIds().stream()
-                    .map(id -> id == null ? null : getItem(id))
-                    .collect(Collectors.toList());
+            //noinspection unchecked
+            return new ReadOnlyLinkedMapValuesView(data);
         }
     }
 

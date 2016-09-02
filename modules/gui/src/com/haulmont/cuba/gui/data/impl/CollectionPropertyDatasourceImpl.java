@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.bali.util.Preconditions;
@@ -36,7 +34,6 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.lang.ObjectUtils;
 
-import javax.annotation.Nullable;
 import javax.persistence.ManyToMany;
 import java.util.*;
 
@@ -165,7 +162,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public Collection<K> getItemIds() {
         backgroundWorker.checkUIAccess();
 
-        if (State.NOT_INITIALIZED.equals(masterDs.getState())) {
+        if (masterDs.getState() == State.NOT_INITIALIZED) {
             return Collections.emptyList();
         } else {
             Collection<T> items = __getCollection();
@@ -185,16 +182,17 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public Collection<T> getItems() {
         backgroundWorker.checkUIAccess();
 
-        if (State.NOT_INITIALIZED.equals(masterDs.getState())) {
+        if (masterDs.getState() == State.NOT_INITIALIZED) {
             return Collections.emptyList();
         } else {
-            return Collections2.transform(getItemIds(), new Function<K, T>() {
-                @Nullable
-                @Override
-                public T apply(@Nullable K id) {
-                    return id == null ? null : getItem(id);
-                }
-            });
+            Collection<T> items = __getCollection();
+            if (items == null) {
+                return Collections.emptyList();
+            }
+            if (items.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return Collections.unmodifiableCollection(items);
         }
     }
 
@@ -202,7 +200,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public T getItem() {
         backgroundWorker.checkUIAccess();
 
-        return State.VALID.equals(getState()) ? item : null;
+        return getState() == State.VALID ? item : null;
     }
 
     @Override
@@ -239,7 +237,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public int size() {
         backgroundWorker.checkUIAccess();
 
-        if (State.NOT_INITIALIZED.equals(masterDs.getState())) {
+        if (masterDs.getState() == State.NOT_INITIALIZED) {
             return 0;
         } else {
             final Collection<T> collection = __getCollection();
@@ -263,8 +261,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     private void checkState() {
-        if (!State.VALID.equals(getState()))
-            throw new IllegalStateException("Invalid datasource state: " + getState());
+        State state = getState();
+        if (state != State.VALID) {
+            throw new IllegalStateException("Invalid datasource state: " + state);
+        }
     }
 
     private void checkPermission() {
