@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -82,16 +83,17 @@ public class FileUploadController {
      * Method for simple file upload. File contents are placed in the request body. Optional file name parameter is
      * passed as a query param.
      */
-    @PostMapping
+    @PostMapping(consumes = "!multipart/form-data")
     public ResponseEntity<FileInfo> uploadFile(HttpServletRequest request,
-                               @RequestParam(required = false) String name) {
+                                               @RequestParam(required = false) String name) {
         try {
             String contentLength = request.getHeader("Content-Length");
 
             long size = 0;
             try {
                 size = Long.valueOf(contentLength);
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) {
+            }
 
             FileDescriptor fd = createFileDescriptor(name, size);
 
@@ -99,20 +101,49 @@ public class FileUploadController {
             uploadToMiddleware(is, fd);
             saveFileDescriptor(fd);
 
-            FileInfo fileInfo = new FileInfo(fd.getId(), fd.getName(), fd.getSize());
-
-            UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString())
-                    .path("/{id}")
-                    .buildAndExpand(fd.getId().toString());
-
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(uriComponents.toUri());
-            return new ResponseEntity<>(fileInfo, httpHeaders, HttpStatus.CREATED);
-
+            return createFileInfoResponseEntity(request, fd);
         } catch (Exception e) {
             log.error("File upload failed", e);
             throw new RestAPIException("File upload failed", "File upload failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * Method for multipart file upload. It expects the file contents to be passed in the part called 'file'
+     */
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<FileInfo> uploadFile(@RequestParam("file") MultipartFile file,
+                                               @RequestParam(required = false) String name,
+                                               HttpServletRequest request) {
+        try {
+            if (Strings.isNullOrEmpty(name)) {
+                name = file.getOriginalFilename();
+            }
+
+            long size = file.getSize();
+            FileDescriptor fd = createFileDescriptor(name, size);
+
+            InputStream is = file.getInputStream();
+            uploadToMiddleware(is, fd);
+            saveFileDescriptor(fd);
+
+            return createFileInfoResponseEntity(request, fd);
+        } catch (Exception e) {
+            log.error("File upload failed", e);
+            throw new RestAPIException("File upload failed", "File upload failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    protected ResponseEntity<FileInfo> createFileInfoResponseEntity(HttpServletRequest request, FileDescriptor fd) {
+        FileInfo fileInfo = new FileInfo(fd.getId(), fd.getName(), fd.getSize());
+
+        UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString())
+                .path("/{id}")
+                .buildAndExpand(fd.getId().toString());
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(uriComponents.toUri());
+        return new ResponseEntity<>(fileInfo, httpHeaders, HttpStatus.CREATED);
     }
 
     protected void saveFileDescriptor(FileDescriptor fd) {
