@@ -783,8 +783,12 @@ paths:
         - Files
       summary: Upload a file
       description: |
-        Uploads a file. File contents must be passed in the request body. The 'Content-Length' header will be used for
-        FileDescriptor 'size' field value.
+        Uploads a file. The method behavior may be different depending of the 'Content-Type' header value.
+
+        If the header value is 'multipart/form-data' then file contents must be put to the part called 'file'.
+
+        If the 'Cntent-Type' header has some other value then file contents must be passed in the request body.
+        The 'Content-Length' header will be used for FileDescriptor 'size' field value.
       parameters:
         - name: name
           in: query
