@@ -159,7 +159,7 @@ public interface GlobalConfig extends Config {
     String getFolderEditWindowClassName();
 
     /**
-     * @return Allows to aplly a filter to previously selected rows
+     * @return Allows to apply a filter to previously selected rows
      */
     @Property("cuba.allowQueryFromSelected")
     @Source(type = SourceType.DATABASE)
@@ -187,4 +187,12 @@ public interface GlobalConfig extends Config {
     @Property("cuba.anonymousSessionId")
     @Factory(factory = UuidTypeFactory.class)
     UUID getAnonymousSessionId();
+
+    /**
+     * @return anonymous access to REST API is allowed
+     */
+    @Property("cuba.rest.anonymousEnabled")
+    @DefaultBoolean(false)
+    boolean getRestAnonymousEnabled();
+
 }
