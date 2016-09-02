@@ -110,6 +110,7 @@
         <intercept-url pattern="/rest/v2/permissions" access="isAuthenticated()"/>
         <intercept-url pattern="/rest/v2/metadata/**" access="isAuthenticated()"/>
         <intercept-url pattern="/rest/v2/userInfo" access="isAuthenticated()"/>
+        <intercept-url pattern="/rest/v2/files/**" access="isAuthenticated()"/>
         <anonymous enabled="false"/>
         <csrf disabled="true"/>
         <cors configuration-source-ref="corsSource"/>
