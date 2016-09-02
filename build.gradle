@@ -96,7 +96,7 @@ def postgres = 'org.postgresql:postgresql:9.4-1201-jdbc41'
 def hsqldb = 'org.hsqldb:hsqldb:2.3.3'
 
 /* Shared web dependencies */
-def commonsUpload = [group: 'commons-fileupload', name: 'commons-fileupload', version: '1.3.1']
+def commonsUpload = [group: 'commons-fileupload', name: 'commons-fileupload', version: '1.3.2']
 
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
            webModule, desktopModule, portalModule, webAuthModule, restApiModule, idpModule]) {

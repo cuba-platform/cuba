@@ -333,6 +333,19 @@ definitions:
       _instanceName:
         type: string
 
+  fileInfo:
+    type: object
+    properties:
+      id:
+        type: string
+        example: c994111a-cdfa-9695-95fc-bbbb63a504a7
+      name:
+        type: string
+        example: sample-file.docx
+      size:
+        type: long
+        example: 105396
+
 ################################################################################
 #                                   Responses                                  #
 ################################################################################
@@ -355,6 +368,8 @@ tags:
     description: Predefined queries execution
   - name: Services
     description: Middleware services execution
+  - name: Files
+    description: Working with files
   - name: Permissions
     description: Current user permissions
   - name: Metadata
@@ -759,6 +774,64 @@ paths:
           description: Forbiddden. The user doesn't have permissions to invoke the service method.
           schema:
             $ref: '#/definitions/error'
+
+############################### Files ##########################################
+
+  /files:
+    post:
+      tags:
+        - Files
+      summary: Upload a file
+      description: |
+        Uploads a file. File contents must be passed in the request body. The 'Content-Length' header will be used for
+        FileDescriptor 'size' field value.
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+          required: false
+          description: |
+            The file name. If this parameter is missing then a FileDescriptor id will be used as a file name.
+      responses:
+        201:
+          description: |
+            File uploaded. FileDescriptor information is returned in the response body.
+          schema:
+            $ref: '#/definitions/fileInfo'
+          headers:
+            location:
+              type: string
+              description:
+                A URL the uploaded file can be downloaded with
+
+  /files/{id}:
+    get:
+      tags:
+        - Files
+      summary: Download the file
+      description: Downloads the file
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          description: |
+            FileDescriptor identifier
+        - name: attachment
+          in: query
+          schema:
+            type: boolean
+          required: false
+          description: |
+            If set to 'true' then the 'Content-Disposition' header of the response will be set to 'attachment'. 'inline' value
+            will be used otherwise.
+      responses:
+        200:
+          description: Successfully downloaded. The file contents is returned in the response body.
+        404:
+          description: File with the given ID not found
+
 
 ############################### Metadata #######################################
   /metadata/entities:
