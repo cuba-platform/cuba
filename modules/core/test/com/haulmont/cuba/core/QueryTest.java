@@ -423,6 +423,71 @@ public class QueryTest {
     }
 
     @Test
+    public void testNullCollectionParameter() throws Exception {
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            Query query = em.createQuery("select u from sec$User u where u.id in :ids");
+            query.setParameter("ids", null);
+            List list = query.getResultList();
+            assertTrue(list.isEmpty());
+
+            query = em.createQuery("select u from sec$User u where u.id in (:ids)");
+            query.setParameter("ids", null);
+            list = query.getResultList();
+            assertTrue(list.isEmpty());
+
+            query = em.createQuery("select u from sec$User u where u.id not in :ids");
+            query.setParameter("ids", null);
+            list = query.getResultList();
+            assertFalse(list.isEmpty());
+
+            query = em.createQuery("select u from sec$User u where u.id not in (:ids)");
+            query.setParameter("ids", null);
+            list = query.getResultList();
+            assertFalse(list.isEmpty());
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    @Test
+    public void testNotExistsCollectionParameter() throws Exception {
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            Query query = em.createQuery("select u from sec$User u where u.id in :ids");
+            List list = query.getResultList();
+            assertTrue(list.isEmpty());
+
+            query = em.createQuery("select u from sec$User u where u.id in (:ids)");
+            list = query.getResultList();
+            assertTrue(list.isEmpty());
+
+            query = em.createQuery("select u from sec$User u where u.id not in :ids");
+            list = query.getResultList();
+            assertFalse(list.isEmpty());
+
+            query = em.createQuery("select u from sec$User u where u.id not in (:ids)");
+            list = query.getResultList();
+            assertFalse(list.isEmpty());
+
+            query = em.createQuery("select u from sec$User u where u.id not in (:ids1) or u.id not in (:ids2)");
+            query.setParameter("ids1", null);
+            list = query.getResultList();
+            assertFalse(list.isEmpty());
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    @Test
     public void testSingleBooleanResult() {
         // works
         Object[] activeAndName = cont.persistence().callInTransaction((em) -> {

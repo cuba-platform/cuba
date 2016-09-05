@@ -248,16 +248,6 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         }
     }
 
-    public List<SimpleConditionNode> findConditionsForParameter(String paramName) {
-        CommonTree whereTree = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_CONDITION);
-        List<SimpleConditionNode> conditionNodes = getChildrenByClass(whereTree, SimpleConditionNode.class);
-        return conditionNodes.stream()
-                .filter((SimpleConditionNode n) -> {
-                    ParameterNode parameter = (ParameterNode) n.getFirstChildWithType(JPA2Lexer.T_PARAMETER);
-                    return parameter != null && parameter.getChild(0).getText().contains(paramName);
-                }).collect(Collectors.toList());
-    }
-
     protected AggregateExpressionNode createCountNode(EntityReference ref, boolean distinct) {
         AggregateExpressionNode result = new AggregateExpressionNode(JPA2Lexer.T_AGGREGATE_EXPR);
 

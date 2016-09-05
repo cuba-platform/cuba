@@ -148,4 +148,9 @@ public class QueryParserRegex implements QueryParser {
     public boolean isCollectionSecondaryEntitySelect() {
         return false;
     }
+
+    @Override
+    public boolean isParameterInCondition(String parameterName) {
+        return false;
+    }
 }

@@ -17,6 +17,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
@@ -29,7 +30,6 @@ import com.haulmont.cuba.core.sys.entitycache.QueryKey;
 import com.haulmont.cuba.core.sys.persistence.DbmsFeatures;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
-import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
@@ -64,6 +64,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
     private FetchGroupManager fetchGroupMgr;
     private EntityFetcher entityFetcher;
     private QueryCacheManager queryCacheMgr;
+    private QueryTransformerFactory queryTransformerFactory;
     private Set<Param> params = new HashSet<>();
     private LockModeType lockMode;
     private List<View> views = new ArrayList<>();
@@ -87,6 +88,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         this.entityFetcher = AppBeans.get(EntityFetcher.NAME);
         this.support = AppBeans.get(PersistenceImplSupport.NAME);
         this.queryCacheMgr = AppBeans.get(QueryCacheManager.NAME);
+        this.queryTransformerFactory = AppBeans.get(QueryTransformerFactory.NAME);
     }
 
     private JpaQuery<T> getQuery() {
@@ -184,32 +186,22 @@ public class QueryImpl<T> implements TypedQuery<T> {
         String result = expandMacros(queryString);
 
         boolean rebuildParser = false;
-        QueryParser parser = QueryTransformerFactory.createParser(result);
+        QueryParser parser = queryTransformerFactory.parser(result);
 
         String entityName = parser.getEntityName();
         Class effectiveClass = metadata.getExtendedEntities().getEffectiveClass(entityName);
-        String effectiveEntityName = metadata.getSession().getClassNN(effectiveClass).getName();
+        String effectiveEntityName = metadata.getClassNN(effectiveClass).getName();
         if (!effectiveEntityName.equals(entityName)) {
-            QueryTransformer transformer = QueryTransformerFactory.createTransformer(result);
+            QueryTransformer transformer = queryTransformerFactory.transformer(result);
             transformer.replaceEntityName(effectiveEntityName);
             result = transformer.getResult();
             rebuildParser = true;
         }
 
-        for (Iterator<Param> iterator = params.iterator(); iterator.hasNext(); ) {
-            Param param = iterator.next();
-            if (param.value instanceof String && ((String) param.value).startsWith("(?i)")) {
-                result = replaceCaseInsensitiveParam(result, param);
-            } else if ((param.value instanceof Collection && CollectionUtils.isEmpty((Collection) param.value))) {
-                QueryTransformer transformer = QueryTransformerFactory.createTransformer(result);
-                transformer.replaceInCondition((String) param.name);
-                result = transformer.getResult();
-                iterator.remove();
-            }
-        }
+        result = replaceParams(result, parser);
 
         if (rebuildParser) {
-            parser = QueryTransformerFactory.createParser(result);
+            parser = queryTransformerFactory.parser(result);
         }
         String nestedEntityName = parser.getEntityNameIfSecondaryReturnedInsteadOfMain();
         String nestedEntityPath = parser.getEntityPathIfSecondaryReturnedInsteadOfMain();
@@ -217,7 +209,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
             if (parser.isCollectionSecondaryEntitySelect()) {
                 throw new IllegalStateException(String.format("Collection attributes are not supported in select clause: %s", nestedEntityPath));
             }
-            QueryTransformer transformer = QueryTransformerFactory.createTransformer(result);
+            QueryTransformer transformer = queryTransformerFactory.transformer(result);
             transformer.replaceWithSelectEntityVariable("tempEntityAlias");
             transformer.addFirstSelectionSource(String.format("%s tempEntityAlias", nestedEntityName));
             transformer.addWhereAsIs(String.format("tempEntityAlias.id = %s.id", nestedEntityPath));
@@ -237,16 +229,52 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return result;
     }
 
-    private String replaceCaseInsensitiveParam(String queryStr, Param param) {
-        if (!(param.name instanceof String)) // case insensitive search is supported only for named parameters
-            return queryStr;
-
-        QueryTransformer transformer = QueryTransformerFactory.createTransformer(queryStr);
-        transformer.handleCaseInsensitiveParam((String) param.name);
-        String result = transformer.getResult();
-
-        param.value = ((String) param.value).substring(4).toLowerCase();
+    private String replaceParams(String query, QueryParser parser) {
+        String result = query;
+        Set<String> paramNames = Sets.newHashSet(parser.getParamNames());
+        for (Iterator<Param> iterator = params.iterator(); iterator.hasNext(); ) {
+            Param param = iterator.next();
+            if (param.isNamedParam()) {
+                String paramName = (String) param.name;
+                paramNames.remove(paramName);
+                if (param.value instanceof String) {
+                    String strValue = (String) param.value;
+                    if (strValue.startsWith("(?i)")) {
+                        result = replaceCaseInsensitiveParam(result, paramName);
+                        param.value = strValue.substring(4).toLowerCase();
+                    }
+                }
+                if (param.value instanceof Collection) {
+                    Collection collectionValue = (Collection) param.value;
+                    if (collectionValue.isEmpty()) {
+                        result = replaceInCollectionParam(result, paramName);
+                        iterator.remove();
+                    }
+                }
+                if (param.value == null) {
+                    if (parser.isParameterInCondition(paramName)) {
+                        result = replaceInCollectionParam(result, paramName);
+                        iterator.remove();
+                    }
+                }
+            }
+        }
+        for (String paramName : paramNames) {
+            result = replaceInCollectionParam(result, paramName);
+        }
         return result;
+    }
+
+    private String replaceCaseInsensitiveParam(String query, String paramName) {
+        QueryTransformer transformer = queryTransformerFactory.transformer(query);
+        transformer.handleCaseInsensitiveParam(paramName);
+        return transformer.getResult();
+    }
+
+    private String replaceInCollectionParam(String query, String paramName) {
+        QueryTransformer transformer = queryTransformerFactory.transformer(query);
+        transformer.replaceInCondition(paramName);
+        return transformer.getResult();
     }
 
     private void addMacroParams(javax.persistence.TypedQuery jpaQuery) {
@@ -603,6 +631,10 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 else
                     query.setParameter((String) name, value);
             }
+        }
+
+        public boolean isNamedParam() {
+            return name instanceof String;
         }
 
         @Override

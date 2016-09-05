@@ -18,17 +18,15 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.PerformanceLog;
 import com.haulmont.cuba.core.sys.jpql.*;
+import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
-import com.haulmont.cuba.core.sys.jpql.pointer.EntityPointer;
-import com.haulmont.cuba.core.sys.jpql.pointer.HasEntityPointer;
-import com.haulmont.cuba.core.sys.jpql.pointer.Pointer;
 import com.haulmont.cuba.core.sys.jpql.transform.ParameterCounter;
-import com.haulmont.cuba.core.sys.jpql.EntitiesFinder;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
 import com.haulmont.cuba.core.sys.jpql.tree.SimpleConditionNode;
 import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.tree.Tree;
 import org.antlr.runtime.tree.TreeVisitor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -37,7 +35,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -77,7 +74,7 @@ public class QueryParserAstBased implements QueryParser {
             try {
                 queryTreeAnalyzer.prepare(model, query);
             } catch (RecognitionException e) {
-                throw new RuntimeException("Internal error while init queryTreeAnalyzer",e);
+                throw new RuntimeException("Internal error while init queryTreeAnalyzer", e);
             }
             List<ErrorRec> errors = new ArrayList<>(queryTreeAnalyzer.getInvalidIdVarNodes());
             if (!errors.isEmpty()) {
@@ -168,6 +165,18 @@ public class QueryParserAstBased implements QueryParser {
     public String getEntityPathIfSecondaryReturnedInsteadOfMain() {
         EntityNameAndPath entityNameAndAlias = getEntityNameAndPathIfSecondaryReturnedInsteadOfMain();
         return entityNameAndAlias != null ? entityNameAndAlias.entityPath : null;
+    }
+
+    @Override
+    public boolean isParameterInCondition(String parameterName) {
+        List<SimpleConditionNode> conditions = getQueryAnalyzer().findConditionsForParameter(parameterName);
+        for (SimpleConditionNode condition : conditions) {
+            Tree inToken = condition.getFirstChildWithType(JPA2Lexer.IN);
+            if (inToken != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
