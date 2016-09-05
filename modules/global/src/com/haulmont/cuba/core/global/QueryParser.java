@@ -67,4 +67,6 @@ public interface QueryParser {
      * Example: select u.userRoles from sec$User u -> true
      */
     boolean isCollectionSecondaryEntitySelect();
+
+    boolean isParameterInCondition(String parameterName);
 }
