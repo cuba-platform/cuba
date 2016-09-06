@@ -255,6 +255,10 @@ class MappingFileCreator {
                 protected String getMappedBy(Field field) {
                     return null;
                 }
+                @Override
+                protected CascadeType[] getCascade(Field field) {
+                    return field.getAnnotation(ManyToOne.class).cascade();
+                }
             },
             ONE_TO_MANY(2, "one-to-many") {
                 @Override
@@ -264,6 +268,10 @@ class MappingFileCreator {
                 @Override
                 protected String getMappedBy(Field field) {
                     return field.getAnnotation(OneToMany.class).mappedBy();
+                }
+                @Override
+                protected CascadeType[] getCascade(Field field) {
+                    return field.getAnnotation(OneToMany.class).cascade();
                 }
             },
             ONE_TO_ONE(3, "one-to-one") {
@@ -275,6 +283,10 @@ class MappingFileCreator {
                 protected String getMappedBy(Field field) {
                     return field.getAnnotation(OneToOne.class).mappedBy();
                 }
+                @Override
+                protected CascadeType[] getCascade(Field field) {
+                    return field.getAnnotation(OneToOne.class).cascade();
+                }
             },
             MANY_TO_MANY(4, "many-to-many") {
                 @Override
@@ -284,6 +296,10 @@ class MappingFileCreator {
                 @Override
                 protected String getMappedBy(Field field) {
                     return field.getAnnotation(ManyToMany.class).mappedBy();
+                }
+                @Override
+                protected CascadeType[] getCascade(Field field) {
+                    return field.getAnnotation(ManyToMany.class).cascade();
                 }
             };
 
@@ -297,6 +313,7 @@ class MappingFileCreator {
 
             protected abstract String getFetch(Field field);
             protected abstract String getMappedBy(Field field);
+            protected abstract CascadeType[] getCascade(Field field);
         }
 
         private final Type type;
@@ -318,6 +335,13 @@ class MappingFileCreator {
             if (!StringUtils.isEmpty(mappedBy))
                 el.addAttribute("mapped-by", mappedBy);
 
+            CascadeType[] cascadeTypes = type.getCascade(field);
+            if (cascadeTypes != null && cascadeTypes.length > 0) {
+                Element cascadeTypeEl = el.addElement("cascade", XMLNS);
+                for (CascadeType cascadeType : cascadeTypes) {
+                    cascadeTypeEl.addElement("cascade-" + cascadeType.name().toLowerCase());
+                }
+            }
             // either
             new JoinColumnHandler(field.getAnnotation(JoinColumn.class)).toXml(el);
             // or

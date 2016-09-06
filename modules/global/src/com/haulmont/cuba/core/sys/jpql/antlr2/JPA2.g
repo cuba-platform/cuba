@@ -89,7 +89,7 @@ update_statement
     : up='UPDATE' update_clause (where_clause)?
     -> ^(T_QUERY<QueryNode>[$up] update_clause (where_clause)?);
 delete_statement
-    : dl='DELETE' 'FROM' delete_clause (where_clause)?
+    : dl='DELETE' delete_clause (where_clause)?
     -> ^(T_QUERY<QueryNode>[$dl] delete_clause (where_clause)?);
 
 from_clause
@@ -158,8 +158,8 @@ new_value
     | 'NULL';
 
 delete_clause
-    : identification_variable_declaration
-    -> ^(T_SOURCES<SelectionSourceNode> identification_variable_declaration);
+    : fr='FROM' identification_variable_declaration
+    -> ^(T_SOURCES<FromNode>[$fr] identification_variable_declaration);
 select_clause
     : ('DISTINCT')? select_item (',' select_item)*
     -> ^(T_SELECTED_ITEMS<SelectedItemsNode>[] ('DISTINCT')? ^(T_SELECTED_ITEM<SelectedItemNode>[] select_item)*);

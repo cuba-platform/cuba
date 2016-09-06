@@ -16,18 +16,67 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.vaadin.ui.RichTextArea;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.RichTextArea;
+import com.haulmont.cuba.web.toolkit.ui.CubaRichTextArea;
+import com.haulmont.cuba.web.toolkit.ui.client.richtextarea.CubaRichTextAreaState;
 
-public class WebRichTextArea extends WebAbstractField<RichTextArea>
-        implements com.haulmont.cuba.gui.components.RichTextArea {
+import java.util.*;
+
+public class WebRichTextArea extends WebAbstractField<CubaRichTextArea> implements RichTextArea {
 
     public WebRichTextArea() {
-        component = new RichTextArea();
+        component = new CubaRichTextArea();
         attachListener(component);
 
         component.setImmediate(true);
         component.setNullRepresentation("");
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
+        component.setLocaleMap(loadLabels());
+    }
+
+    protected Map<String, String> loadLabels() {
+        Map<String, String> labels = new HashMap<>();
+        Messages messages = AppBeans.get(Messages.NAME);
+
+        Collection<String> locales = new ArrayList<>(Arrays.asList(
+                CubaRichTextAreaState.RICH_TEXT_AREA_FOREGROUND_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_BACKGROUND_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_BLACK_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_WHITE_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_RED_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_GREEN_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_YELLOW_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_BLUE_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_FONT_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_NORMAL_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_SIZE_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_BOLD_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_ITALIC_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_UNDERLINE_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_SUBSCRIPT_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_SUPERSCRIPT_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_JUSTIFYCENTER_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_JUSTIFYRIGHT_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_JUSTIFYLEFT_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_STRIKETHROUGH_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_INDENT_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_OUTDENT_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_HR_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_OL_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_UL_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_INSERTIMAGE_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_CREATELINK_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_REMOVELINK_LABEL,
+                CubaRichTextAreaState.RICH_TEXT_AREA_REMOVEFORMAT_LABEL
+        ));
+
+        for (String locale : locales) {
+            labels.put(locale, messages.getMainMessage(locale));
+        }
+
+        return labels;
     }
 }

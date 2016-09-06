@@ -123,6 +123,10 @@ public class AppPropertiesLocator {
 
         Map<Method, Object> propertyMethods = new HashMap<>();
         for (Class configInterface : configInterfaces) {
+            if (configInterface.getClassLoader() != getClass().getClassLoader()) {
+                // happens when deployed to single WAR with separate classloaders for core and web
+                continue;
+            }
             Config config = configuration.getConfig(configInterface);
             boolean interfaceSourceIsDb = false;
             Source sourceAnn = (Source) configInterface.getAnnotation(Source.class);

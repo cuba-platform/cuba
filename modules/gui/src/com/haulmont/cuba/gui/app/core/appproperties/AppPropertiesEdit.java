@@ -20,8 +20,11 @@ package com.haulmont.cuba.gui.app.core.appproperties;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
+import com.haulmont.cuba.client.sys.ConfigurationClientImpl;
 import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.config.AppPropertyEntity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
@@ -43,9 +46,6 @@ public class AppPropertiesEdit extends AbstractWindow {
 
     @Inject
     private Datasource<AppPropertyEntity> appPropertyDs;
-
-    @Inject
-    private ConfigStorageService configStorageService;
 
     @Inject
     private Label cannotEditValueLabel;
@@ -103,7 +103,12 @@ public class AppPropertiesEdit extends AbstractWindow {
 
     public void ok() {
         AppPropertyEntity appPropertyEntity = appPropertyDs.getItem();
+
+        // Save property through the client-side cache to ensure it is updated in the cache immediately
+        Configuration configuration = AppBeans.get(Configuration.class);
+        ConfigStorageService configStorageService = ((ConfigurationClientImpl) configuration).getConfigStorageService();
         configStorageService.setDbProperty(appPropertyEntity.getName(), appPropertyEntity.getCurrentValue());
+
         close(COMMIT_ACTION_ID);
     }
 

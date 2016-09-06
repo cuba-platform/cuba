@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
@@ -731,6 +732,20 @@ public class QueryTransformerAstBasedTest {
         assertEquals(
                 "select h from sec$GroupHierarchy h join h.parent.constraints c1 join h.constraints c2 where (h.group = :par) and (c.createdBy = :par2)",
                 res);
+
+        transformer.reset();
+        transformer.addJoinAndWhere("join {E}.parent p join p.constraints cr", "c.createdBy = :par2");
+        res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h join h.parent p join p.constraints cr where (h.group = :par) and (c.createdBy = :par2)",
+                res);
+
+        transformer.reset();
+        transformer.addJoinAndWhere("join replaceEntity.parent p join p.constraints cr", "c.createdBy = :par2");
+        res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h join h.parent p join p.constraints cr where (h.group = :par) and (c.createdBy = :par2)",
+                res);
     }
 
     @Test
@@ -1146,5 +1161,12 @@ public class QueryTransformerAstBasedTest {
         } catch (JpqlSyntaxException e) {
             //expected
         }
+    }
+
+    @Test
+    public void testDeleteJpql() throws Exception {
+        DomainModel model = prepareDomainModel();
+        QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model, "delete from sec$GroupHierarchy g where g.createdBy = :createdBy");
+        assertEquals(transformerAstBased.getResult(), "delete from sec$GroupHierarchy g where g.createdBy = :createdBy");
     }
 }
