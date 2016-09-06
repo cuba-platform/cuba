@@ -30,6 +30,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.VerticalLayout;
 import fi.jasoft.dragdroplayouts.client.ui.LayoutDragMode;
 import fi.jasoft.dragdroplayouts.drophandlers.DefaultTabSheetDropHandler;
 
