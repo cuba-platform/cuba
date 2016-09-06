@@ -264,7 +264,8 @@ public class FoldersServiceBean implements FoldersService {
             Transaction tx = persistence.createTransaction();
             try {
                 EntityManager em = persistence.getEntityManager();
-
+                //fix only for 6.2, because deleted entity is merged incorrectly (with error)
+                em.setSoftDeletion(false);
                 Folder existingFolder = em.find(Folder.class, folder.getId());
                 if (existingFolder != null) {
                     folder.setVersion(existingFolder.getVersion());
