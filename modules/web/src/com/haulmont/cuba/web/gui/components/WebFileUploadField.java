@@ -16,13 +16,17 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.compatibility.FileUploadFieldListenerWrapper;
+import com.haulmont.cuba.gui.export.ExportDisplay;
+import com.haulmont.cuba.gui.export.FileDataProvider;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.toolkit.FileUploadTypesHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
@@ -30,36 +34,35 @@ import com.haulmont.cuba.web.toolkit.ui.CubaUpload;
 import com.haulmont.cuba.web.toolkit.ui.UploadComponent;
 import com.vaadin.server.Page;
 import com.vaadin.server.WebBrowser;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 
-public class WebFileUploadField extends WebAbstractUploadComponent<UploadComponent> implements FileUploadField {
+public class WebFileUploadField extends WebAbstractUploadField<WebCubaFileUploadWrapper> implements FileUploadField {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    protected Logger log = LoggerFactory.getLogger(WebFileUploadField.class);
 
     protected FileUploadingAPI fileUploading;
+    protected ExportDisplay exportDisplay;
     protected Messages messages;
 
+    protected UploadComponent uploadButton;
     protected String fileName;
+    protected FileStoragePutMode mode = FileStoragePutMode.MANUAL;
 
     protected String accept;
 
     protected UUID fileId;
-
     protected UUID tempFileId;
 
     protected List<FileUploadStartListener> fileUploadStartListeners;     // lazily initialized list
@@ -69,17 +72,68 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
 
     public WebFileUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
+        exportDisplay = AppBeans.get(ExportDisplay.NAME);
         messages = AppBeans.get(Messages.NAME);
 
         WebBrowser webBrowser = Page.getCurrent().getWebBrowser();
         if ((webBrowser.isIE() && !webBrowser.isEdge()) && webBrowser.getBrowserMajorVersion() < 10) {
-            initOldComponent();
+            initOldUploadButton();
         } else {
-            initComponent();
+            initUploadButton();
+        }
+
+        initComponent();
+    }
+
+    private void initComponent() {
+        component.addFileNameClickListener(e -> {
+            FileDescriptor value = getValue();
+            if (value == null)
+                return;
+
+            switch (mode) {
+                case MANUAL:
+                    String name = getFileName();
+                    String fileName = StringUtils.isEmpty(name) ? value.getName() : name;
+                    exportDisplay.show(this::getFileContent, fileName);
+                    break;
+                case IMMEDIATE:
+                    exportDisplay.show(value);
+            }
+        });
+        component.setClearButtonAction((Button.ClickListener) event -> setValue(null));
+    }
+
+    protected void saveFile(FileDescriptor fileDescriptor) {
+        switch (mode) {
+            case MANUAL:
+                setValue(fileDescriptor);
+                break;
+            case IMMEDIATE:
+                try {
+                    fileUploading.putFileIntoStorage(fileId, fileDescriptor);
+
+                    FileDescriptor commitedDescriptor = datasource.getDataSupplier().commit(fileDescriptor);
+
+                    setValue(commitedDescriptor);
+                } catch (FileStorageException e) {
+                    log.error("Error has occurred during file saving", e);
+                }
+                break;
         }
     }
 
-    protected void initOldComponent() {
+    @Override
+    public void setValue(Object value) {
+        super.setValue(value);
+
+        if (!PersistenceHelper.isNew(value)) {
+            fileId = null;
+            tempFileId = null;
+        }
+    }
+
+    protected void initOldUploadButton() {
         final CubaUpload impl = createOldComponent();
 
         impl.setButtonCaption(messages.getMainMessage("upload.submit"));
@@ -121,6 +175,9 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
             fileName = event.getFilename();
             fileId = tempFileId;
 
+            saveFile(getFileDescriptor());
+            component.setFileNameButtonCaption(fileName);
+
             fireFileUploadSucceed(event.getFilename(), event.getLength());
         });
 
@@ -140,10 +197,11 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
             fireFileUploadError(event.getFilename(), event.getLength(), event.getReason());
         });
 
-        this.component = impl;
+        uploadButton = impl;
+        component = new WebCubaFileUploadWrapper(impl);
     }
 
-    protected void initComponent() {
+    protected void initUploadButton() {
         CubaFileUpload impl = createComponent();
 
         impl.setProgressWindowCaption(messages.getMainMessage("upload.uploadingProgressTitle"));
@@ -176,6 +234,9 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
             fileName = event.getFileName();
             fileId = tempFileId;
 
+            saveFile(getFileDescriptor());
+            component.setFileNameButtonCaption(fileName);
+
             fireFileUploadSucceed(event.getFileName(), event.getContentLength());
         });
 
@@ -199,12 +260,13 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
             String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", e.getFileName(), getFileSizeLimitString());
             getFrame().showNotification(warningMsg, NotificationType.WARNING);
         });
-        impl.addFileExtensionNotAllowedListener(e ->{
+        impl.addFileExtensionNotAllowedListener(e -> {
             String warningMsg = messages.formatMainMessage("upload.fileIncorrectExtension.message", e.getFileName());
             getFrame().showNotification(warningMsg, NotificationType.WARNING);
         });
 
-        this.component = impl;
+        uploadButton = impl;
+        component = new WebCubaFileUploadWrapper(impl);
     }
 
     protected CubaFileUpload createComponent() {
@@ -321,15 +383,7 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
 
     @Override
     public void setIcon(String icon) {
-        this.icon = icon;
-
-        if (component instanceof CubaFileUpload) {
-            if (!StringUtils.isEmpty(icon)) {
-                component.setIcon(WebComponentsHelper.getIcon(icon));
-            } else {
-                component.setIcon(null);
-            }
-        }
+        // do nothing
     }
 
     @Override
@@ -341,7 +395,7 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
     public void setAccept(String accept) {
         if (!StringUtils.equals(accept, getAccept())) {
             this.accept = accept;
-            component.setAccept(FileUploadTypesHelper.convertToMIME(accept));
+            uploadButton.setAccept(FileUploadTypesHelper.convertToMIME(accept));
         }
     }
 
@@ -349,9 +403,9 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
     public void setDropZone(DropZone dropZone) {
         super.setDropZone(dropZone);
 
-        if (component instanceof CubaFileUpload) {
+        if (uploadButton instanceof CubaFileUpload) {
             if (dropZone == null) {
-                ((CubaFileUpload) component).setDropZone(null);
+                ((CubaFileUpload) uploadButton).setDropZone(null);
             } else {
                 com.haulmont.cuba.gui.components.Component target = dropZone.getTarget();
                 if (target instanceof Window.Wrapper) {
@@ -359,7 +413,7 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
                 }
 
                 Component vComponent = target.unwrapComposition(Component.class);
-                ((CubaFileUpload) this.component).setDropZone(vComponent);
+                ((CubaFileUpload) uploadButton).setDropZone(vComponent);
             }
         }
     }
@@ -368,8 +422,8 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
     public void setDropZonePrompt(String dropZonePrompt) {
         super.setDropZonePrompt(dropZonePrompt);
 
-        if (component instanceof CubaFileUpload) {
-            ((CubaFileUpload) component).setDropZonePrompt(dropZonePrompt);
+        if (uploadButton instanceof CubaFileUpload) {
+            ((CubaFileUpload) uploadButton).setDropZonePrompt(dropZonePrompt);
         }
     }
 
@@ -478,18 +532,160 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
     }
 
     @Override
+    public InputStream getFileContent() {
+        FileDescriptor fileDescriptor = getValue();
+        switch (mode) {
+            case MANUAL:
+                if (fileId == null) {
+                    return new FileDataProvider(fileDescriptor).provide();
+                }
+
+                File file = fileUploading.getFile(fileId);
+                if (file != null) {
+                    try {
+                        return new FileInputStream(file);
+                    } catch (FileNotFoundException e) {
+                        log.error("Unable to get content of " + file, e);
+                    }
+                    return null;
+                }
+
+                FileStorageService fileStorageService = AppBeans.get(FileStorageService.NAME);
+
+                if (fileStorageService.fileExists(fileDescriptor)) {
+                    return new FileDataProvider(fileDescriptor).provide();
+                }
+                break;
+            case IMMEDIATE:
+                if (fileDescriptor != null) {
+                    return new FileDataProvider(fileDescriptor).provide();
+                }
+        }
+        return null;
+    }
+
+    @Override
     public void setFileSizeLimit(long fileSizeLimit) {
         this.fileSizeLimit = fileSizeLimit;
-        if (this.component instanceof CubaFileUpload){
-            ((CubaFileUpload) this.component).setFileSizeLimit(fileSizeLimit);
+        if (uploadButton instanceof CubaFileUpload) {
+            ((CubaFileUpload) uploadButton).setFileSizeLimit(fileSizeLimit);
         }
     }
 
     @Override
-    public void setPermittedExtensions(Set<String> permittedExtensions) {
-        this.permittedExtensions = permittedExtensions;
-        if (this.component instanceof CubaFileUpload){
-            ((CubaFileUpload) this.component).setPermittedExtensions(permittedExtensions);
+    public void setEditable(boolean editable) {
+        super.setEditable(editable);
+        component.setEditable(editable);
+    }
+
+    @Override
+    public void setWidth(String width) {
+        super.setWidth(width);
+        component.setWidth(width);
+    }
+
+    @Override
+    public void setHeight(String height) {
+        super.setHeight(height);
+        component.setHeight(height);
+    }
+
+    @Override
+    public FileStoragePutMode getMode() {
+        return mode;
+    }
+
+    @Override
+    public void setMode(FileStoragePutMode mode) {
+        this.mode = mode;
+    }
+
+    public boolean isShowFileName() {
+        return component.isShowFileName();
+    }
+
+    public void setShowFileName(boolean showFileName) {
+        component.setShowFileName(showFileName);
+        if (showFileName && StringUtils.isNotEmpty(fileName)) {
+            component.setFileNameButtonCaption(fileName);
         }
+    }
+
+    /*
+    * Clear button
+    * */
+
+    @Override
+    public void setShowClearButton(boolean showClearButton) {
+        component.setShowClearButton(showClearButton);
+    }
+
+    @Override
+    public boolean isShowClearButton() {
+        return component.isShowClearButton();
+    }
+
+    @Override
+    public void setClearButtonCaption(String caption) {
+        component.setClearButtonCaption(caption);
+    }
+
+    @Override
+    public String getClearButtonCaption() {
+        return component.getClearButtonCaption();
+    }
+
+    @Override
+    public void setClearButtonIcon(String icon) {
+        component.setClearButtonIcon(icon);
+    }
+
+    @Override
+    public String getClearButtonIcon() {
+        return component.getClearButtonIcon();
+    }
+
+    @Override
+    public void setClearButtonDescription(String description) {
+        component.setClearButtonDescription(description);
+    }
+
+    @Override
+    public String getClearButtonDescription() {
+        return component.getClearButtonDescription();
+    }
+
+    /*
+    * Upload button
+    * */
+
+    @Override
+    public void setUploadButtonCaption(String caption) {
+        component.setUploadButtonCaption(caption);
+    }
+
+    @Override
+    public String getUploadButtonCaption() {
+        return component.getUploadButtonCaption();
+    }
+
+    @Override
+    public void setUploadButtonIcon(String icon) {
+        component.setUploadButtonIcon(icon);
+    }
+
+    @Override
+    public String getUploadButtonIcon() {
+        return component.getUploadButtonIcon();
+    }
+
+    @Override
+    public void setUploadButtonDescription(String description) {
+        component.setUploadButtonDescription(description);
+    }
+
+    @Override
+    public String getUploadButtonDescription() {
+        return component.getUploadButtonDescription();
     }
 }

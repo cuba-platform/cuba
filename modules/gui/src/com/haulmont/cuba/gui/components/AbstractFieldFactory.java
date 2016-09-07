@@ -23,10 +23,12 @@ import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.View;
@@ -62,8 +64,9 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         }
 
         if (mpp != null) {
-            if (mpp.getRange().isDatatype()) {
-                Datatype datatype = mpp.getRange().asDatatype();
+            Range mppRange = mpp.getRange();
+            if (mppRange.isDatatype()) {
+                Datatype datatype = mppRange.asDatatype();
                 String typeName = datatype.getName();
 
                 MetaProperty metaProperty = mpp.getMetaProperty();
@@ -103,9 +106,15 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                         return createNumberField(datasource, property);
                     }
                 }
-            } else if (mpp.getRange().isClass()) {
+            } else if (mppRange.isClass()) {
+                MetaProperty metaProperty = datasource.getMetaClass().getPropertyNN(property);
+                Class<?> javaType = metaProperty.getJavaType();
+                if (FileDescriptor.class.isAssignableFrom(javaType)) {
+                    return createFileUploadField(datasource, property);
+                }
+
                 return createEntityField(datasource, property, mpp, xmlDescriptor);
-            } else if (mpp.getRange().isEnum()) {
+            } else if (mppRange.isEnum()) {
                 return createEnumField(datasource, property);
             }
         }
@@ -117,6 +126,28 @@ public abstract class AbstractFieldFactory implements FieldFactory {
             exceptionMessage = String.format("Can't create field \"%s\" with given data type", property);
         }
         throw new UnsupportedOperationException(exceptionMessage);
+    }
+
+    protected Component createFileUploadField(Datasource datasource, String property) {
+        UploadField uploadField = (FileUploadField) componentsFactory.createComponent(FileUploadField.NAME);
+        FileUploadField fileUploadField = ((FileUploadField) uploadField);
+        fileUploadField.setMode(FileUploadField.FileStoragePutMode.IMMEDIATE);
+
+        Messages messages = AppBeans.get(Messages.NAME);
+
+        fileUploadField.setUploadButtonCaption(null);
+        fileUploadField.setUploadButtonDescription(messages.getMainMessage("upload.submit"));
+        fileUploadField.setUploadButtonIcon("icons/upload.png");
+
+        fileUploadField.setClearButtonCaption(null);
+        fileUploadField.setClearButtonIcon("icons/remove.png");
+        fileUploadField.setClearButtonDescription(messages.getMainMessage("upload.clear"));
+
+        fileUploadField.setShowFileName(true);
+        fileUploadField.setShowClearButton(true);
+
+        fileUploadField.setDatasource(datasource, property);
+        return uploadField;
     }
 
     protected Component createDatatypeLinkField(Datasource datasource, String property, Element xmlDescriptor) {

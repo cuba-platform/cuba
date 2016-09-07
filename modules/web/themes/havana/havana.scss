@@ -74,6 +74,7 @@
 @import "components/twincolumn/twincolumn";
 @import "components/richtextarea/richtextarea";
 @import "components/draganddrop/draganddrop";
+@import "components/fileuploadwrapper/fileuploadwrapper";
 
 // Application specific
 @import "app/app-window";
@@ -149,6 +150,7 @@
   @include havana-cuba-searchselect;
   @include havana-cuba-fieldgrouplayout;
   @include havana-cuba-resizabletextarea;
+  @include havana-cuba-fileupload-wrapper;
 
   @include cuba-login-window;
   @include cuba-application-window;
