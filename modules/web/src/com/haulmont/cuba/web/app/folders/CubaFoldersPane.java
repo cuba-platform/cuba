@@ -658,15 +658,18 @@ public class CubaFoldersPane extends VerticalLayout {
         @Override
         public Action[] getActions(Object target, Object sender) {
             if (target instanceof Folder) {
-                if (userSessionSource.getUserSession().isSpecificPermitted("cuba.gui.appFolder.global")) {
+                if (isGlobalAppFolderPermitted()) {
                     return new Action[] {openAction, createAction, copyAction,
                             editAction, removeAction, exportAction, importAction};
                 } else {
                     return new Action[] {openAction};
                 }
-
             } else {
-                return null;
+                if (isGlobalAppFolderPermitted()) {
+                    return new Action[] {importAction};
+                } else {
+                    return null;
+                }
             }
         }
 
@@ -676,6 +679,10 @@ public class CubaFoldersPane extends VerticalLayout {
                 ((FolderAction) action).perform((Folder) target);
             else
                 ((FolderAction) action).perform(null);
+        }
+
+        protected boolean isGlobalAppFolderPermitted() {
+            return userSessionSource.getUserSession().isSpecificPermitted("cuba.gui.appFolder.global");
         }
     }
 
@@ -739,7 +746,7 @@ public class CubaFoldersPane extends VerticalLayout {
         }
 
         protected boolean isGlobalSearchFolderPermitted() {
-            return (userSessionSource.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global"));
+            return userSessionSource.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global");
         }
 
         protected Action[] createAllActions() {

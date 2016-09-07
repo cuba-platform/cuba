@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.AppFolder;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -77,6 +78,9 @@ public class FoldersServiceBean implements FoldersService {
 
     @Inject
     protected Security security;
+
+    @Inject
+    protected TimeSource timeSource;
 
     @Override
     public List<AppFolder> loadAppFolders() {
@@ -254,7 +258,7 @@ public class FoldersServiceBean implements FoldersService {
         try {
             zipOutputStream.closeArchiveEntry();
         } catch (Exception ex) {
-            throw new RuntimeException("Exception occured while exporting folder\"" + folder.getName() + "\".", ex);
+            throw new RuntimeException(String.format("Exception occurred while exporting folder %s.",  folder.getName()));
         }
 
         zipOutputStream.close();
@@ -287,14 +291,16 @@ public class FoldersServiceBean implements FoldersService {
             Transaction tx = persistence.createTransaction();
             try {
                 EntityManager em = persistence.getEntityManager();
-
+                em.setSoftDeletion(false);
                 Folder existingFolder = em.find(Folder.class, folder.getId());
                 if (existingFolder != null) {
                     folder.setVersion(existingFolder.getVersion());
+                    folder.setCreateTs(existingFolder.getCreateTs());
+                    folder.setCreatedBy(existingFolder.getCreatedBy());
                 } else {
                     User user = userSessionSource.getUserSession().getUser();
                     folder.setCreatedBy(user.getLoginLowerCase());
-                    folder.setCreateTs(new Date());
+                    folder.setCreateTs(timeSource.currentTimestamp());
                     folder.setUpdatedBy(null);
                     folder.setUpdateTs(null);
                     folder.setVersion(0);
@@ -311,6 +317,11 @@ public class FoldersServiceBean implements FoldersService {
 
     private XStream createXStream() {
         XStream xStream = new XStream();
+        //createTs and createdBy removed from BaseGenericIdEntity,
+        //and import from old versions (platform 6.2) is performed with errors
+        //so omit field processing
+        xStream.omitField(BaseGenericIdEntity.class, "createTs");
+        xStream.omitField(BaseGenericIdEntity.class, "createdBy");
         xStream.getConverterRegistry().removeConverter(ExternalizableConverter.class);
         return xStream;
     }
