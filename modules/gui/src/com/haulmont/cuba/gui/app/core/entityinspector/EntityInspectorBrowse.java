@@ -241,7 +241,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 .buildCollectionDatasource();
 
         entitiesDs.setLoadDynamicAttributes(true);
-        entitiesDs.setSoftDeletion(removedRecords.isChecked());
+        entitiesDs.setSoftDeletion(!removedRecords.isChecked());
         entitiesDs.setQuery(String.format("select e from %s e", meta.getName()));
 
         entitiesTable.setDatasource(entitiesDs);
