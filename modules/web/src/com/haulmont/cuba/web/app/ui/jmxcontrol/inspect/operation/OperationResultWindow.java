@@ -29,10 +29,13 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.entity.AttributeHelper;
 import com.vaadin.shared.ui.label.ContentMode;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.inject.Inject;
+import javax.management.MBeanException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.text.SimpleDateFormat;
 import java.util.Map;
@@ -83,9 +86,19 @@ public class OperationResultWindow extends AbstractWindow {
             if (ex instanceof UndeclaredThrowableException)
                 ex = ex.getCause();
 
+            if (ex instanceof JmxControlException) {
+                ex = ex.getCause();
+
+                if (ex instanceof MBeanException) {
+                    ex = ex.getCause();
+                }
+            }
+
             String msg;
             if (ex != null) {
-                msg = ex.getClass().getName() + ": \n" + ex.getMessage();
+                msg = ex.getClass().getName() +
+                        ": \n" + ex.getMessage() +
+                        "\n" + ExceptionUtils.getFullStackTrace(ex);
             } else {
                 msg = "";
             }
