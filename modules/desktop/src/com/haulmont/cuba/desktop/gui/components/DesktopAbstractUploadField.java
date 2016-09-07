@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.gui.components;
+package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
@@ -23,17 +23,18 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.UploadField;
 
+import javax.swing.*;
 import java.util.Set;
 
-public abstract class WebAbstractUploadComponent<T extends com.vaadin.ui.Component>
-        extends WebAbstractComponent<T>
-        implements UploadField {
+public abstract class DesktopAbstractUploadField<T extends JComponent> extends DesktopAbstractField<T> implements UploadField {
 
     protected static final int BYTES_IN_MEGABYTE = 1048576;
 
     protected long fileSizeLimit = 0;
 
     protected Set<String> permittedExtensions;
+
+    // just stub
     protected DropZone dropZone;
     protected String dropZonePrompt;
 
@@ -82,13 +83,13 @@ public abstract class WebAbstractUploadComponent<T extends com.vaadin.ui.Compone
     }
 
     @Override
-    public DropZone getDropZone() {
-        return dropZone;
+    public void setDropZone(DropZone dropZone) {
+        this.dropZone = dropZone;
     }
 
     @Override
-    public void setDropZone(DropZone dropZone) {
-        this.dropZone = dropZone;
+    public DropZone getDropZone() {
+        return dropZone;
     }
 
     @Override

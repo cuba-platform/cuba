@@ -57,6 +57,13 @@
         </xs:union>
     </xs:simpleType>
 
+    <xs:simpleType name="fileStoragePutMode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="MANUAL"/>
+            <xs:enumeration value="IMMEDIATE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="dateFieldResolution">
         <xs:restriction base="xs:string">
             <xs:enumeration value="SEC"/>
@@ -972,13 +979,27 @@
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasAlign"/>
-        <xs:attributeGroup ref="hasIcon"/>
         <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasDatasource"/>
+        <xs:attributeGroup ref="hasEditState"/>
+        <xs:attributeGroup ref="hasRequirements"/>
 
         <xs:attributeGroup ref="isUploadComponent"/>
+
+        <xs:attribute name="showClearButton" type="xs:boolean"/>
+        <xs:attribute name="clearButtonCaption" type="resourceString"/>
+        <xs:attribute name="clearButtonIcon" type="resourceString"/>
+        <xs:attribute name="clearButtonDescription" type="resourceString"/>
+
+        <xs:attribute name="uploadButtonCaption" type="resourceString"/>
+        <xs:attribute name="uploadButtonIcon" type="resourceString"/>
+        <xs:attribute name="uploadButtonDescription" type="resourceString"/>
+
+        <xs:attribute name="showFileNameButton" type="xs:boolean"/>
+        <xs:attribute name="fileStoragePutMode" type="fileStoragePutMode"/>
     </xs:complexType>
 
     <!-- FileMultiUploadField -->

@@ -100,6 +100,7 @@ public interface UploadField extends Component, Component.HasCaption, Component.
 
     /**
      * Returns comma separated types of files.
+     *
      * @return comma separated types of files
      */
     String getAccept();
@@ -107,6 +108,7 @@ public interface UploadField extends Component, Component.HasCaption, Component.
     /**
      * Sets the mask for files to filter them in the file selection dialog.<br/>
      * Example: <pre>{@code fileUpload.setAccept(".png,.jpeg")}</pre>
+     *
      * @param accept comma separated types of files
      */
     void setAccept(String accept);
@@ -129,6 +131,7 @@ public interface UploadField extends Component, Component.HasCaption, Component.
      * @return current drop zone
      */
     DropZone getDropZone();
+
     /**
      * Set drop zone reference to this upload component. Files can be dropped to component of the drop zone
      * to be uploaded by this upload component.
@@ -141,6 +144,7 @@ public interface UploadField extends Component, Component.HasCaption, Component.
      * @return current drop zone prompt
      */
     String getDropZonePrompt();
+
     /**
      * Set drop zone prompt that will be shown on drag over window with file.
      *

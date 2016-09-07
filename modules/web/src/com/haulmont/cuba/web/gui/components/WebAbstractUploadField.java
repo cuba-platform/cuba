@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package com.haulmont.cuba.web.gui.components;
@@ -25,8 +26,8 @@ import com.haulmont.cuba.gui.components.UploadField;
 
 import java.util.Set;
 
-public abstract class WebAbstractUploadComponent<T extends com.vaadin.ui.Component>
-        extends WebAbstractComponent<T>
+public abstract class WebAbstractUploadField<T extends com.vaadin.ui.Field>
+        extends WebAbstractField<T>
         implements UploadField {
 
     protected static final int BYTES_IN_MEGABYTE = 1048576;
@@ -34,6 +35,7 @@ public abstract class WebAbstractUploadComponent<T extends com.vaadin.ui.Compone
     protected long fileSizeLimit = 0;
 
     protected Set<String> permittedExtensions;
+
     protected DropZone dropZone;
     protected String dropZonePrompt;
 
