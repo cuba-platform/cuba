@@ -29,6 +29,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.global.UserSession;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
 import groovy.lang.Binding;
@@ -287,6 +288,7 @@ public class FoldersServiceBean implements FoldersService {
         byteArrayInputStream.close();
 
         if (folder != null) {
+            checkImportPermissions(folder);
             folder.setParent(parentFolder);
             Transaction tx = persistence.createTransaction();
             try {
@@ -294,6 +296,7 @@ public class FoldersServiceBean implements FoldersService {
                 em.setSoftDeletion(false);
                 Folder existingFolder = em.find(Folder.class, folder.getId());
                 if (existingFolder != null) {
+                    checkImportPermissions(existingFolder);
                     folder.setVersion(existingFolder.getVersion());
                     folder.setCreateTs(existingFolder.getCreateTs());
                     folder.setCreatedBy(existingFolder.getCreatedBy());
@@ -315,7 +318,26 @@ public class FoldersServiceBean implements FoldersService {
         return folder;
     }
 
-    private XStream createXStream() {
+    protected void checkImportPermissions(Folder folder) {
+        UserSession userSession = userSessionSource.getUserSession();
+        if (folder instanceof SearchFolder) {
+            SearchFolder searchFolder = (SearchFolder) folder;
+            User currentUser = userSession.getCurrentOrSubstitutedUser();
+            if (searchFolder.getUser() != null && !currentUser.equals(searchFolder.getUser())) {
+                throw new AccessDeniedException(PermissionType.ENTITY_OP, Folder.class.getSimpleName());
+            }
+            if (searchFolder.getUser() == null && !userSession.isSpecificPermitted("cuba.gui.searchFolder.global")) {
+                throw new AccessDeniedException(PermissionType.ENTITY_OP, Folder.class.getSimpleName());
+            }
+        }
+        if (folder instanceof AppFolder) {
+            if (!userSession.isSpecificPermitted("cuba.gui.appFolder.global")) {
+                throw new AccessDeniedException(PermissionType.ENTITY_OP, Folder.class.getSimpleName());
+            }
+        }
+    }
+
+    protected XStream createXStream() {
         XStream xStream = new XStream();
         //createTs and createdBy removed from BaseGenericIdEntity,
         //and import from old versions (platform 6.2) is performed with errors

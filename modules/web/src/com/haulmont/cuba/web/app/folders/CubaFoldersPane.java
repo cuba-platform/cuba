@@ -729,7 +729,7 @@ public class CubaFoldersPane extends VerticalLayout {
                     }
                 }
             } else {
-                return createOnlyCreateAction();
+                return createImportCreateAction();
             }
         }
 
@@ -742,7 +742,7 @@ public class CubaFoldersPane extends VerticalLayout {
         }
 
         protected boolean isOwner(SearchFolder folder) {
-            return userSessionSource.getUserSession().getUser().equals(folder.getUser());
+            return userSessionSource.getUserSession().getCurrentOrSubstitutedUser().equals(folder.getUser());
         }
 
         protected boolean isGlobalSearchFolderPermitted() {
@@ -760,6 +760,10 @@ public class CubaFoldersPane extends VerticalLayout {
 
         protected Action[] createOnlyCreateAction() {
             return new Action[] {createAction};
+        }
+
+        protected Action[] createImportCreateAction() {
+            return new Action[] {createAction, importAction};
         }
 
         protected Action[] createOpenCreateAction() {
