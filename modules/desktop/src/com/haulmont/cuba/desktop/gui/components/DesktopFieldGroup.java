@@ -504,6 +504,20 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     @Override
+    public String getFieldCaption(String fieldId) {
+        FieldConfig field = getField(fieldId);
+        if (field == null) {
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
+
+        JLabel label = fieldLabels.get(field);
+        if (label == null) {
+            throw new IllegalStateException(String.format("Label for field '%s' not found", fieldId));
+        }
+        return label.getText();
+    }
+
+    @Override
     public void setFieldCaption(String fieldId, String caption) {
         FieldConfig field = getField(fieldId);
         if (field == null) {
