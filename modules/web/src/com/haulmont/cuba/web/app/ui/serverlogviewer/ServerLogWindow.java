@@ -415,8 +415,11 @@ public class ServerLogWindow extends AbstractWindow {
                 long size = jmxRemoteLoggingAPI.getLogFileSize(selectedConnection, fileName);
 
                 if (size <= LogArchiver.LOG_TAIL_FOR_PACKING_SIZE && availableContexts.size() == 1) {
+                    LogDataProvider dataProvider = new LogDataProvider(selectedConnection, fileName, availableContexts.get(0), false);
+                    dataProvider.obtainUrl();
+                    
                     ExportDisplay exportDisplay = AppConfig.createExportDisplay(this);
-                    exportDisplay.show(new LogDataProvider(selectedConnection, fileName), fileName + ".zip");
+                    exportDisplay.show(dataProvider, fileName + ".zip");
                 } else {
                     openWindow("serverLogDownloadOptionsDialog",
                                OpenType.DIALOG,
