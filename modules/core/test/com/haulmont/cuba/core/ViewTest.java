@@ -21,6 +21,8 @@ import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.testmodel.selfinherited.ChildEntity;
+import com.haulmont.cuba.testmodel.selfinherited.RootEntity;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.junit.After;
@@ -45,6 +47,8 @@ public class ViewTest {
     private TimeSource timeSource;
 
     private UUID userId;
+    private RootEntity rootEntity;
+    private ChildEntity childEntity;
 
     @Before
     public void setUp() throws Exception {
@@ -64,6 +68,16 @@ public class ViewTest {
             user.setGroup(group);
             em.persist(user);
 
+            childEntity = new ChildEntity();
+            childEntity.setName("childEntityName");
+            childEntity.setDescription("childEntityDescription");
+            em.persist(childEntity);
+
+            rootEntity = new RootEntity();
+            rootEntity.setDescription("rootEntityDescription");
+            rootEntity.setEntity(childEntity);
+            em.persist(rootEntity);
+
             tx.commit();
         } finally {
             tx.end();
@@ -73,6 +87,8 @@ public class ViewTest {
     @After
     public void tearDown() throws Exception {
         cont.deleteRecord("SEC_USER", userId);
+        cont.deleteRecord("TEST_CHILD_ENTITY");
+        cont.deleteRecord("TEST_ROOT_ENTITY");
     }
 
     @Test
@@ -381,5 +397,24 @@ public class ViewTest {
 
         assertTrue(u instanceof FetchGroupTracker);
         assertNull(((FetchGroupTracker) u)._persistence_getFetchGroup());
+    }
+
+    @Test
+    public void testSelfReferenceInView() {
+        ViewRepository viewRepository = cont.metadata().getViewRepository();
+        View view = viewRepository.getView(RootEntity.class, View.LOCAL);
+        view.addProperty("entity", new View(ChildEntity.class)
+                .addProperty("name").addProperty("description"), FetchMode.AUTO);
+        RootEntity e;
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            EntityManager em = cont.persistence().getEntityManager();
+            e = em.find(RootEntity.class, rootEntity.getId(), view);
+            tx.commit();
+        }
+        assertNotNull(e);
+        assertNotNull(e.getEntity());
+        assertEquals("rootEntityDescription", e.getDescription());
+        assertEquals("childEntityDescription", e.getEntity().getDescription());
+        assertEquals("childEntityName", e.getEntity().getName());
     }
 }

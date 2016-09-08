@@ -72,3 +72,28 @@ create table TEST_COMPOSITE_KEY (
     EMAIL varchar(100),
     primary key (TENANT, ENTITY_ID)
 )^
+
+------------------------------------------------------------------------------------------------------------
+create table TEST_ROOT_ENTITY (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    ENTITY_TYPE varchar(1),
+    NAME varchar(255),
+    DESCRIPTION varchar(255),
+    ENTITY_ID varchar(36),
+    constraint TEST_ROOT_ENTITY_ENTITY_ID foreign key (ENTITY_ID) references TEST_ROOT_ENTITY(ID),
+    primary key (ID)
+)^
+
+create table TEST_CHILD_ENTITY (
+    ENTITY_ID varchar(36) not null,
+    NAME varchar(255),
+    constraint TEST_CHILD_ENTITY_ENTITY_ID foreign key (ENTITY_ID) references TEST_ROOT_ENTITY(ID),
+    primary key (ENTITY_ID)
+)^
