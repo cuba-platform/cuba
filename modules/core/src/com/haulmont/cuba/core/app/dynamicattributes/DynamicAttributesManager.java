@@ -185,39 +185,23 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     public void storeDynamicAttributes(BaseGenericIdEntity entity) {
         if (!(entity instanceof HasUuid))
             return;
-        if (persistence.isInTransaction()) {
+        try (Transaction tx = persistence.getTransaction()) {
             doStoreDynamicAttributes(entity);
-        } else {
-            Transaction tx = persistence.createTransaction();
-            try {
-                doStoreDynamicAttributes(entity);
-                tx.commit();
-            } finally {
-                tx.end();
-            }
+            tx.commit();
         }
     }
 
     @Override
     public <E extends BaseGenericIdEntity> void fetchDynamicAttributes(List<E> entities) {
-        List<E> supportedEntities = entities.stream().filter(e -> e instanceof HasUuid).collect(Collectors.toList());
+        List<E> supportedEntities = entities.stream()
+                .filter(e -> e instanceof HasUuid)
+                .collect(Collectors.toList());
         if (supportedEntities.isEmpty())
             return;
 
-        String storeName = metadata.getTools().getStoreName(metadata.getClassNN(supportedEntities.get(0).getClass()));
-        if (storeName == null)
-            throw new IllegalStateException("Cannot determine data store name for entity " + supportedEntities.get(0));
-
-        if (persistence.isInTransaction()) {
-            doFetchDynamicAttributes(supportedEntities, storeName);
-        } else {
-            Transaction tx = persistence.createTransaction(storeName);
-            try {
-                doFetchDynamicAttributes(supportedEntities, storeName);
-                tx.commit();
-            } finally {
-                tx.end();
-            }
+        try (Transaction tx = persistence.getTransaction()) {
+            doFetchDynamicAttributes(supportedEntities);
+            tx.commit();
         }
     }
 
@@ -250,7 +234,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         }
     }
 
-    protected <E extends BaseGenericIdEntity> void doFetchDynamicAttributes(List<E> entities, String storeName) {
+    protected <E extends BaseGenericIdEntity> void doFetchDynamicAttributes(List<E> entities) {
         List<UUID> ids = entities.stream()
                 .map(e -> ((HasUuid) e).getUuid())
                 .collect(Collectors.toList());
@@ -261,11 +245,11 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         for (UUID id : ids) {
             currentIds.add(id);
             if (currentIds.size() >= MAX_ENTITIES_FOR_ATTRIBUTE_VALUES_BATCH) {
-                handleAttributeValuesForIds(currentIds, attributeValuesForEntity, storeName);
+                handleAttributeValuesForIds(currentIds, attributeValuesForEntity);
                 currentIds = new ArrayList<>();
             }
         }
-        handleAttributeValuesForIds(currentIds, attributeValuesForEntity, storeName);
+        handleAttributeValuesForIds(currentIds, attributeValuesForEntity);
 
         for (BaseGenericIdEntity entity : entities) {
             Collection<CategoryAttributeValue> theEntityAttributeValues = attributeValuesForEntity.get(((HasUuid) entity).getUuid());
@@ -282,26 +266,32 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         }
     }
 
-    protected void handleAttributeValuesForIds(List<UUID> currentIds, Multimap<UUID, CategoryAttributeValue> attributeValuesForEntity, String storeName) {
+    protected void handleAttributeValuesForIds(List<UUID> currentIds, Multimap<UUID, CategoryAttributeValue> attributeValuesForEntity) {
         if (CollectionUtils.isNotEmpty(currentIds)) {
-            List<CategoryAttributeValue> allAttributeValues = loadAttributeValues(currentIds, storeName);
+            List<CategoryAttributeValue> allAttributeValues = loadAttributeValues(currentIds);
             for (CategoryAttributeValue categoryAttributeValue : allAttributeValues) {
                 attributeValuesForEntity.put(categoryAttributeValue.getEntityId(), categoryAttributeValue);
             }
         }
     }
 
-    protected List<CategoryAttributeValue> loadAttributeValues(List<UUID> entityIds, String storeName) {
-        EntityManager em = persistence.getEntityManager(storeName);
-        View baseAttributeValueView = viewRepository.getView(CategoryAttributeValue.class, View.LOCAL);
-        View baseAttributeView = viewRepository.getView(CategoryAttribute.class, View.LOCAL);
+    protected List<CategoryAttributeValue> loadAttributeValues(List<UUID> entityIds) {
+        List<CategoryAttributeValue> resultList;
+        try (Transaction tx = persistence.getTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            View baseAttributeValueView = viewRepository.getView(CategoryAttributeValue.class, View.LOCAL);
+            View baseAttributeView = viewRepository.getView(CategoryAttribute.class, View.LOCAL);
 
-        View view = new View(baseAttributeValueView, null, false)
-                .addProperty("categoryAttribute", new View(baseAttributeView, null, false).addProperty("category"));
+            View view = new View(baseAttributeValueView, null, false)
+                    .addProperty("categoryAttribute", new View(baseAttributeView, null, false).addProperty("category"));
 
-        return em.createQuery("select cav from sys$CategoryAttributeValue cav where cav.entityId in :ids", CategoryAttributeValue.class)
-                .setParameter("ids", entityIds)
-                .setView(view)
-                .getResultList();
+            resultList = em.createQuery("select cav from sys$CategoryAttributeValue cav where cav.entityId in :ids", CategoryAttributeValue.class)
+                    .setParameter("ids", entityIds)
+                    .setView(view)
+                    .getResultList();
+
+            tx.commit();
+        }
+        return resultList;
     }
 }
