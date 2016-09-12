@@ -75,6 +75,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
@@ -135,6 +136,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     protected CollectionDatasource.CollectionChangeListener collectionChangeSelectionListener;
 
     protected CollectionDsActionsNotifier collectionDsActionsNotifier;
+
+    protected boolean ignoreUnfetchedAttributes = false;
+
+    public WebAbstractTable() {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+        ignoreUnfetchedAttributes = clientConfig.getIgnoreUnfetchedAttributesInTable();
+    }
 
     @Override
     public java.util.List<Table.Column> getColumns() {
@@ -1799,6 +1808,45 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 }
             }
             return super.getFormattedValue();
+        }
+
+        @Override
+        public Object getValue() {
+            Instance instance = getInstance();
+            if (instance == null) {
+                return null;
+            }
+
+            if (ignoreUnfetchedAttributes) {
+                return getValueExIgnoreUnfetched(instance, propertyPath.getPath());
+            }
+
+            return super.getValue();
+        }
+
+        protected Object getValueExIgnoreUnfetched(Instance instance, String[] properties) {
+            Object currentValue = null;
+            Instance currentInstance = instance;
+            for (String property : properties) {
+                if (currentInstance == null) {
+                    break;
+                }
+
+                if (!PersistenceHelper.isLoaded(currentInstance, property)) {
+                    LoggerFactory.getLogger(WebAbstractTable.class)
+                            .warn("Ignored unfetched attribute {} of instance {} in Table cell",
+                                    property, currentInstance);
+                    return null;
+                }
+
+                currentValue = currentInstance.getValue(property);
+                if (currentValue == null) {
+                    break;
+                }
+
+                currentInstance = currentValue instanceof Instance ? (Instance) currentValue : null;
+            }
+            return currentValue;
         }
     }
 
