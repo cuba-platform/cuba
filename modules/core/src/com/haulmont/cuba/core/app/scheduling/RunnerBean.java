@@ -40,12 +40,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Standard implementation of {@link Runner} interface used by {@link Scheduling} to run scheduled tasks.
@@ -93,10 +95,14 @@ public class RunnerBean implements Runner {
     @PostConstruct
     public void init() {
         int nThreads = configuration.getConfig(ServerConfig.class).getSchedulingThreadPoolSize();
-        executorService = Executors.newFixedThreadPool(nThreads, r -> {
-            Thread thread = new Thread(r, "ScheduledRunnerThread");
-            thread.setDaemon(true);
-            return thread;
+        executorService = Executors.newFixedThreadPool(nThreads, new ThreadFactory() {
+            private final AtomicInteger threadNumber = new AtomicInteger(1);
+            @Override
+            public Thread newThread(@Nonnull Runnable r) {
+                Thread thread = new Thread(r, "ScheduledRunnerThread-" + threadNumber.getAndIncrement());
+                thread.setDaemon(true);
+                return thread;
+            }
         });
     }
 
