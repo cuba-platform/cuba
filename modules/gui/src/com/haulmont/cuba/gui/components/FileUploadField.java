@@ -26,7 +26,7 @@ public interface FileUploadField extends UploadField, Field {
     String NAME = "upload";
 
     /**
-     * Defines when FileDescriptor will be commited.
+     * Defines when FileDescriptor will be committed.
      */
     enum FileStoragePutMode {
         /**
@@ -39,6 +39,11 @@ public interface FileUploadField extends UploadField, Field {
         IMMEDIATE
     }
 
+    /**
+     * @deprecated Use {@link UploadField.FileUploadStartListener},
+     *                 {@link UploadField.FileUploadFinishListener},
+     *                 {@link UploadField.FileUploadErrorListener}
+     */
     @Deprecated
     interface Listener {
         class Event {
@@ -70,6 +75,11 @@ public interface FileUploadField extends UploadField, Field {
         void uploadFailed(Event event);
     }
 
+    /**
+     * @deprecated Use {@link UploadField.FileUploadStartListener},
+     *                 {@link UploadField.FileUploadFinishListener},
+     *                 {@link UploadField.FileUploadErrorListener}
+     */
     @Deprecated
     class ListenerAdapter implements Listener {
         @Override

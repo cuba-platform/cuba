@@ -23,6 +23,12 @@ public interface FileMultiUploadField extends UploadField {
 
     String NAME = "multiUpload";
 
+    /**
+     * @deprecated Use {@link UploadField.FileUploadStartListener},
+     *                 {@link UploadField.FileUploadFinishListener},
+     *                 {@link UploadField.FileUploadErrorListener},
+     *                 {@link QueueUploadCompleteListener}
+     */
     @Deprecated
     abstract class UploadListener {
         /**
@@ -62,6 +68,12 @@ public interface FileMultiUploadField extends UploadField {
         }
     }
 
+    /**
+     * @deprecated Use {@link #addQueueUploadCompleteListener(QueueUploadCompleteListener)},
+     *                 {@link #addFileUploadErrorListener(FileUploadErrorListener)},
+     *                 {@link #addFileUploadFinishListener(FileUploadFinishListener)},
+     *                 {@link #addFileUploadStartListener(FileUploadStartListener)}
+     */
     @Deprecated
     void addListener(UploadListener listener);
 
