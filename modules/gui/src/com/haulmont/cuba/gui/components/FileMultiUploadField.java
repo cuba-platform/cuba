@@ -17,13 +17,18 @@
 package com.haulmont.cuba.gui.components;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 public interface FileMultiUploadField extends UploadComponentSupport {
 
     String NAME = "multiUpload";
 
+    /**
+     * @deprecated Use {@link UploadComponentSupport.FileUploadStartListener},
+     *                 {@link UploadComponentSupport.FileUploadFinishListener},
+     *                 {@link UploadComponentSupport.FileUploadErrorListener},
+     *                 {@link QueueUploadCompleteListener}
+     */
     @Deprecated
     abstract class UploadListener {
         /**
@@ -63,6 +68,12 @@ public interface FileMultiUploadField extends UploadComponentSupport {
         }
     }
 
+    /**
+     * @deprecated Use {@link #addQueueUploadCompleteListener(QueueUploadCompleteListener)},
+     *                 {@link #addFileUploadErrorListener(FileUploadErrorListener)},
+     *                 {@link #addFileUploadFinishListener(FileUploadFinishListener)},
+     *                 {@link #addFileUploadStartListener(FileUploadStartListener)}
+     */
     @Deprecated
     void addListener(UploadListener listener);
 

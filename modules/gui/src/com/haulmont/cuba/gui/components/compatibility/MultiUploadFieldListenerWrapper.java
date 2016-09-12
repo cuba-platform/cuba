@@ -34,22 +34,22 @@ public class MultiUploadFieldListenerWrapper implements UploadComponentSupport.F
 
     @Override
     public void fileUploadError(UploadComponentSupport.FileUploadErrorEvent e) {
-        //todo rewrite generated body
+        listener.uploadError(e.getFileName());
     }
 
     @Override
     public void fileUploadFinish(UploadComponentSupport.FileUploadFinishEvent e) {
-        //todo rewrite generated body
+        listener.fileUploaded(e.getFileName());
     }
 
     @Override
     public void fileUploadStart(UploadComponentSupport.FileUploadStartEvent e) {
-        //todo rewrite generated body
+        listener.fileUploadStart(e.getFileName());
     }
 
     @Override
     public void queueUploadComplete() {
-        //todo rewrite generated body
+        listener.queueUploadComplete();
     }
 
     @Override
