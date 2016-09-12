@@ -34,22 +34,22 @@ public class MultiUploadFieldListenerWrapper implements UploadField.FileUploadSt
 
     @Override
     public void fileUploadError(UploadField.FileUploadErrorEvent e) {
-        //todo rewrite generated body
+        listener.uploadError(e.getFileName());
     }
 
     @Override
     public void fileUploadFinish(UploadField.FileUploadFinishEvent e) {
-        //todo rewrite generated body
+        listener.fileUploaded(e.getFileName());
     }
 
     @Override
     public void fileUploadStart(UploadField.FileUploadStartEvent e) {
-        //todo rewrite generated body
+        listener.fileUploadStart(e.getFileName());
     }
 
     @Override
     public void queueUploadComplete() {
-        //todo rewrite generated body
+        listener.queueUploadComplete();
     }
 
     @Override
