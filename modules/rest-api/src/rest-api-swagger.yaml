@@ -7,7 +7,7 @@ info:
 
     ## General Overview
 
-    CUBA Platform REST API offers the following functionality:
+    CUBA Platform REST API provides the following functionality:
 
     * Entities CRUD operations
     * Execution of predefined JPQL queries
@@ -15,8 +15,13 @@ info:
     * Getting a metadata (entities, views, enumerations, datatypes)
     * Getting current user permissions (access to entities, attributes, specific permissions)
     * Getting current user information (name, language, time zone, etc.)
+    * Working with files
+
+    The REST API is available by the URL `/rest/v2` both in the web and in the portal module, e.g. `http://localhost:8080/app/rest/v2/entities/sales$Order`
 
     ## Authentication
+
+    ### Authentication using the OAuth2 protocol
 
     CUBA Platform REST API uses an OAuth2 resource owner password credentials grant to protect the endpoints (https://tools.ietf.org/html/rfc6749#page-37).
 
@@ -26,10 +31,74 @@ info:
     When the token is obtained it must be placed to the `Authorization` header with the `Bearer` type to all further requests, e.g.:
 
     ```
-    GET /api/entities/sales$Order
+    GET /rest/v2/entities/sales$Order
          Host: example.com
          Authorization: Bearer 2YotnFZFEjr1zCsicMWpAA
     ```
+
+    ### Anonymous access
+
+    If the request to protected resource doesn't contain the `Authentication` header then the user will be authenticated with the anonymous session.
+    By default, anonymous access is forbidden. To enable it set the `cuba.rest.anonymousEnabled` application property to `true`.
+    Read more about the anonymous sessions here: TODO ADD LINK
+
+    ## Predefined JPQL queries configuration
+
+    In the CUBA application, predefined JPQL queries must be specified in files defined by the `cuba.rest.queriesConfig` application property, e.g.
+
+    ```
+    cuba.rest.queriesConfig = +myapp-rest-queries.xml
+    ```
+
+    The content of the `myapp-rest-queries.xml` must be as following:
+
+    ```
+      <?xml version="1.0"?>
+      <queries xmlns="http://schemas.haulmont.com/cuba/rest-queries.xsd">
+        <query name="carByVin" entity="ref$Car" view="carEdit">
+            <jpql><![CDATA[select c from ref$Car c where c.vin = :vin]]></jpql>
+            <params>
+                <param name="vin" type="java.lang.String"/>
+            </params>
+        </query>
+        <query name="allColours" entity="ref$Colour" view="_local">
+            <jpql><![CDATA[select u from ref$Colour u order by u.name]]></jpql>
+        </query>
+      </queries>
+    ```
+
+    ## Services configuration
+
+    The list of services methods that are available with the REST API must be configured in the CUBA application in files
+    defined by the `cuba.rest.servicesConfig` application property, e.g.
+
+    ```
+    cuba.rest.queriesConfig = +myapp-rest-services.xml
+    ```
+
+    The content of the `myapp-rest-services.xml` must be as following:
+
+    ```
+    <?xml version="1.0" encoding="UTF-8"?>
+    <services xmlns="http://schemas.haulmont.com/cuba/rest-services-v2.xsd">
+      <service name="myapp_SomeService">
+        <method name="sum">
+            <param name="number1"/>
+            <param name="number2"/>
+        </method>
+        <method name="emptyMethod"/>
+        <method name="overloadedMethod">
+            <param name="intParam" type="int"/>
+        </method>
+        <method name="overloadedMethod">
+            <param name="stringParam" type="java.lang.String"/>
+        </method>
+      </service>
+    </services>
+    ```
+
+    Method parameter types can be omitted if the service doesn't contain an overloaded method with the same parameters number.
+    Otherwise, types must be defined.
 
   license:
     name: Apache 2.0
@@ -168,12 +237,15 @@ definitions:
         example: 4d8ef1d4-90b6-c075-8bfd-79181ff889ef
       _entityName:
         type: string
+        description: Entity name
         example: sec$User
       _instanceName:
         type: string
+        description: Entity instance name. This value must be used for displaying the entity in list.
         example: Smith [smith]
       otherEntityFields:
         type: string
+        description: There must be a set of entity fields instead of this one here.
         example: There must be a set of entity fields instead of this one here
     required: [id, _entityName]
 
@@ -183,25 +255,39 @@ definitions:
     properties:
       name:
         type: string
+        description: Query name
+        example: usersByLastName
       jpql:
         type: string
+        description: JPQL query
+        example: select u from sec$User u where u.lastName = :lastName
       entityName:
         type: string
+        description: Entity name
+        example: sec$User
       viewName:
         type: string
+        description: View name
+        example: user.edit
       params:
         type: object
+        description: Collection of query parameters
         properties:
           name:
             type: string
+            description: Parameter name
+            example: lastName
           type:
             type: string
+            description: Parameter type. The fully qualified java class name or primitive type name is returned here.
+            example: java.lang.String
 
   serviceInfo:
     type: object
     properties:
       name:
         type: string
+        example: app_MyService
       methods:
         type: array
         items:
@@ -210,9 +296,11 @@ definitions:
             name:
               type: string
               description: Method argument name.
+              example: doSomething
             type:
               type: string
               description: Method argument type. A fully qualified java class name is returned here.
+              example: java.lang.String
 
   permission:
     type: object
@@ -252,7 +340,7 @@ definitions:
               type: string
               example: string
               description: |
-                For a simple datatype the will be a datatype name here (string, int, decimal, boolean, date, dateTime, etc.)
+                For a simple datatype there will be a datatype name here (string, int, decimal, boolean, date, dateTime, etc.)
                 You can find all simple datatype names in the source code of the Datatypes class in the systemDatatypeNames property.
                 If the property is the link to the entity then an entity name will be placed to this field, e.g. ref$Colour
             cardinality:
@@ -302,7 +390,7 @@ definitions:
       otherFields:
         type: string
         example: all other fields that are defined in the `datatypes.xml` file, e.g. format, decimalSeparator, etc.
-        description: all other fields that are defined in the `datatypes.xml` file, e.g. format, decimalSeparator, etc.
+        description: All other fields that are defined in the `datatypes.xml` file, e.g. format, decimalSeparator, etc.
 
   userInfo:
     type: object
@@ -346,6 +434,25 @@ definitions:
         type: long
         example: 105396
 
+  viewInfo:
+    type: object
+    properties:
+      name:
+        type: string
+        example: user.edit
+      entity:
+        type: string
+        example: sec$User
+      properties:
+        type: array
+        items:
+          type: string
+        example: [firstName, lastName, login]
+        description: |
+          The array of properties may be of mixed type. If some of the properties is a reference to another entity then
+          a nested view object will be returned instead of the string with the proeprty name.
+
+
 ################################################################################
 #                                   Responses                                  #
 ################################################################################
@@ -376,6 +483,8 @@ tags:
     description: Entities metadata
   - name: UserInfo
     description: User information
+  - name: Documentation
+    description: Swagger documentation
 
 ################################################################################
 #                                  Security                                    #
@@ -410,8 +519,9 @@ paths:
 
         The endpoint is protected with the basic authentication. The request must contain an `Authorization`
         header for basic authentication with REST API client credentials. Please note, that client credentials
-        is not the user credentials. Te default client credentials are defined by the following application
-        properties: `cuba.rest.client.id` and `cuba.rest.client.secret`. The request format must be `application/x-www-form-urlencoded`.
+        is not the same as platform user credentials. By client we mean an application that uses the REST API.
+        The default client credentials are defined by the following application properties: `cuba.rest.client.id` and `cuba.rest.client.secret`.
+        User credentials must be passed in the request body. The request format must be `application/x-www-form-urlencoded`.
       consumes:
         - application/x-www-form-urlencoded
       parameters:
@@ -430,7 +540,7 @@ paths:
 
       responses:
         200:
-          description: OK
+          description: Successfully authenticated.
           schema:
             $ref: '#/definitions/token'
         401:
@@ -447,7 +557,8 @@ paths:
       summary: Revoke an authentication token
       description: |
         Revokes an authentication token. The endpoint is protected with the basic authentication. The request must
-        contain an `Authorization` header for basic authentication with REST API client credentials.
+        contain an `Authorization` header for basic authentication with REST API client credentials. See the `/oauth/token`
+        endpoint documentation for more details.
       consumes:
         - application/x-www-form-urlencoded
       parameters:
@@ -457,7 +568,7 @@ paths:
             $ref: '#/definitions/tokenRevokeRequest'
       responses:
         200:
-          description: OK
+          description: Success
 
 ############################### Entities ###################################
   /entities/{entityName}:
@@ -490,13 +601,13 @@ paths:
 
       responses:
         200:
-          description: Successful. The list of entities is returned in the response body.
+          description: Success. The list of entities is returned in the response body.
           schema:
             type: array
             items:
               "$ref": "#/definitions/entityFull"
         403:
-          description: Forbiddden. The user doesn't have permissions to read the entity
+          description: Forbidden. The user doesn't have permissions to read the entity
           schema:
             $ref: '#/definitions/error'
         404:
@@ -536,7 +647,7 @@ paths:
             $ref: '#/definitions/error'
 
         403:
-          description: Forbiddden. The user doesn't have permissions to create the entity
+          description: Forbidden. The user doesn't have permissions to create the entity
           schema:
             $ref: '#/definitions/error'
         404:
@@ -558,11 +669,11 @@ paths:
         - $ref: '#/parameters/returnNullsParam'
       responses:
         200:
-          description: Successful. The entities is returned in the response body.
+          description: Success. The entitiy is returned in the response body.
           schema:
             $ref: '#/definitions/entityFull'
         403:
-          description: Forbiddden. The user doesn't have permissions to read the entity
+          description: Forbidden. The user doesn't have permissions to read the entity
           schema:
             $ref: '#/definitions/error'
         404:
@@ -580,11 +691,11 @@ paths:
         - $ref: '#/parameters/entityJsonParam'
       responses:
         200:
-          description: Successful. The updated entity is returned in the response body.
+          description: Success. The updated entity is returned in the response body.
           schema:
             $ref: '#/definitions/entityFull'
         403:
-          description: Forbiddden. The user doesn't have permissions to update the entity
+          description: Forbidden. The user doesn't have permissions to update the entity
           schema:
             $ref: '#/definitions/error'
         404:
@@ -599,9 +710,9 @@ paths:
       description: Deletes the entity
       responses:
         200:
-          description: Successful. Entity was deleted.
+          description: Success. Entity was deleted.
         403:
-          description: Forbiddden. The user doesn't have permissions to delete the entity
+          description: Forbidden. The user doesn't have permissions to delete the entity
           schema:
             $ref: '#/definitions/error'
         404:
@@ -622,13 +733,13 @@ paths:
         Gets a list of predefined queries for the entity
       responses:
         200:
-          description: OK
+          description: Success
           schema:
             type: array
             items:
               $ref: '#/definitions/predefinedQuery'
         403:
-          description: Forbiddden. The user doesn't have permissions to read the entity.
+          description: Forbidden. The user doesn't have permissions to read the entity.
           schema:
             $ref: '#/definitions/error'
         404:
@@ -656,13 +767,13 @@ paths:
         Executes a predefined query. Query parameters values must be defined in the request parameters with the same name.
       responses:
         200:
-          description: Successful. A list of entitie is returned in the response body.
+          description: Success. A list of entitie is returned in the response body.
           schema:
             type: array
             items:
               $ref: '#/definitions/entityFull'
         403:
-          description: Forbiddden. The user doesn't have permissions to read the entity.
+          description: Forbidden. The user doesn't have permissions to read the entity.
           schema:
             $ref: '#/definitions/error'
         404:
@@ -680,16 +791,16 @@ paths:
         - Queries
       summary: Execute a query
       description: |
-        Returns the number of entities that matches the query. You can use the `all` keyword for the `queryNameParam`
+        Returns a number of entities that matches the query. You can use the `all` keyword for the `queryNameParam`
         to get the number of all available entities.
       responses:
         200:
-          description: Successful response
+          description: Success
           schema:
             title: Count
             type: integer
         403:
-          description: Forbiddden. The user doesn't have permissions to read the entity.
+          description: Forbidden. The user doesn't have permissions to read the entity.
           schema:
             $ref: '#/definitions/error'
         404:
@@ -710,13 +821,13 @@ paths:
         Returns a list of available service methods
       responses:
         200:
-          description: OK
+          description: Success
           schema:
             type: array
             items:
               $ref: '#/definitions/serviceInfo'
         403:
-          description: Forbiddden. The user doesn't have permissions to invoke the service method.
+          description: Forbidden. The user doesn't have permissions to invoke the service method.
           schema:
             $ref: '#/definitions/error'
 
@@ -743,7 +854,7 @@ paths:
             No content. This status is returned when the service method was executed successfully but returns null or
             is of void type.
         403:
-          description: Forbiddden. The user doesn't have permissions to invoke the service method.
+          description: Forbidden. The user doesn't have permissions to invoke the service method.
           schema:
             $ref: '#/definitions/error'
     post:
@@ -771,7 +882,7 @@ paths:
             No content. This status is returned when the service method was executed successfully but returns null or
             is of void type.
         403:
-          description: Forbiddden. The user doesn't have permissions to invoke the service method.
+          description: Forbidden. The user doesn't have permissions to invoke the service method.
           schema:
             $ref: '#/definitions/error'
 
@@ -792,8 +903,7 @@ paths:
       parameters:
         - name: name
           in: query
-          schema:
-            type: string
+          type: string
           required: false
           description: |
             The file name. If this parameter is missing then a FileDescriptor id will be used as a file name.
@@ -818,14 +928,12 @@ paths:
       parameters:
         - name: id
           in: path
-          schema:
-            type: string
+          type: string
           description: |
             FileDescriptor identifier
         - name: attachment
           in: query
-          schema:
-            type: boolean
+          type: boolean
           required: false
           description: |
             If set to 'true' then the 'Content-Disposition' header of the response will be set to 'attachment'. 'inline' value
@@ -846,7 +954,7 @@ paths:
       description: Gets all entities metadata
       responses:
         200:
-          description: OK
+          description: Success
           schema:
             type: array
             items:
@@ -866,7 +974,7 @@ paths:
           description: Entity name
       responses:
         200:
-          description: OK
+          description: Success
           schema:
             $ref: '#/definitions/entityMetadata'
         404:
@@ -889,11 +997,11 @@ paths:
           description: Entity name
       responses:
         200:
-          description: OK
+          description: Success
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/viewInfo'
         404:
           description: |
             MetaClass not found
@@ -904,8 +1012,8 @@ paths:
     get:
       tags:
         - Metadata
-      summary: Get view
-      description: Gets view
+      summary: Get the view
+      description: Gets the view
       parameters:
         - name: entityName
           in: path
@@ -919,9 +1027,9 @@ paths:
           description: View name
       responses:
         200:
-          description: OK
+          description: Success
           schema:
-            type: object
+            $ref: '#/definitions/viewInfo'
         404:
           description: |
             MetaClass not found or view with the given name not found
@@ -936,7 +1044,7 @@ paths:
       description: Gets all enums metadata
       responses:
         200:
-          description: OK
+          description: Success
           schema:
             type: array
             items:
@@ -956,7 +1064,7 @@ paths:
           description: Enum name
       responses:
         200:
-          description: OK
+          description: Success
           schema:
             $ref: '#/definitions/enumMetadata'
         404:
@@ -973,7 +1081,7 @@ paths:
       description: Gets datatypes information
       responses:
         200:
-          description: OK
+          description: Success
           schema:
             type: array
             items:
@@ -989,14 +1097,14 @@ paths:
         Gets a list of current user security permissions
       responses:
         200:
-          description: OK
+          description: Success
           schema:
             type: array
             items:
               $ref: '#/definitions/permission'
 
 
-############################### User infop #####################################
+############################### User info #####################################
   /userInfo:
     get:
       tags:
@@ -1005,6 +1113,22 @@ paths:
       description: Gets the current user information
       responses:
         200:
-          description: Successful
+          description: Success
           schema:
             $ref: '#/definitions/userInfo'
+
+############################### Documentation #################################
+  /docs/swagger.{format}:
+    get:
+      tags:
+        - Documentation
+      summary: Get the REST API swagger documentation
+      description: Gets the swagger documentation in the JSON or YAML formats
+      parameters:
+        - name: format
+          in: path
+          type: string
+          description: swagger format (json or yaml)
+      responses:
+        200:
+          description: Success
