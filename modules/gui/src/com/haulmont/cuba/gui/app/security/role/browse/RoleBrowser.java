@@ -189,6 +189,7 @@ public class RoleBrowser extends AbstractLookup {
             }
         });
         importRolesUpload.setCaption(null);
+        importRolesUpload.setUploadButtonCaption(null);
     }
 
     protected EntityImportView createRolesImportView() {

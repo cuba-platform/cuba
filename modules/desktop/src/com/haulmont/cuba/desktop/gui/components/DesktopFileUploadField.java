@@ -55,7 +55,7 @@ import java.util.UUID;
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 import static com.haulmont.cuba.gui.upload.FileUploadingAPI.FileInfo;
 
-public class DesktopFileUploadField extends DesktopAbstractUploadField<DesktopCubaFileUploadWrapper> implements FileUploadField {
+public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileUploadWrapper> implements FileUploadField {
 
     protected FileUploadingAPI fileUploading;
     protected Messages messages;
@@ -106,7 +106,7 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<DesktopCu
     }
 
     private void initImpl() {
-        impl = new DesktopCubaFileUploadWrapper(uploadButton);
+        impl = new CubaFileUploadWrapper(uploadButton);
         impl.setFileNameButtonClickAction(new AbstractAction("") {
             @Override
             public void actionPerform(Component component) {
