@@ -65,7 +65,7 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
 
     protected String fileName;
     protected Button uploadButton;
-    protected FileUploadField.FileStoragePutMode mode = FileStoragePutMode.IMMEDIATE;
+    protected FileStoragePutMode mode = FileStoragePutMode.MANUAL;
 
     protected Datasource datasource;
 
@@ -82,7 +82,7 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
     protected List<FileUploadFinishListener> fileUploadFinishListeners;   // lazily initialized list
     protected List<FileUploadSucceedListener> fileUploadSucceedListeners; // lazily initialized list
     protected List<FileUploadErrorListener> fileUploadErrorListeners;     // lazily initialized list
-    private FileDescriptor prevValue;
+    protected FileDescriptor prevValue;
 
     public DesktopFileUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
@@ -105,32 +105,26 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
         initImpl();
     }
 
-    private void initImpl() {
+    protected void initImpl() {
         impl = new CubaFileUploadWrapper(uploadButton);
-        impl.setFileNameButtonClickAction(new AbstractAction("") {
-            @Override
-            public void actionPerform(Component component) {
-                FileDescriptor value = getValue();
-                if (value == null)
-                    return;
+        impl.setFileNameButtonClickListener(() -> {
+            FileDescriptor value = getValue();
+            if (value == null)
+                return;
 
-                switch (mode) {
-                    case MANUAL:
-                        String name = getFileName();
-                        String fileName = StringUtils.isEmpty(name) ? value.getName() : name;
-                        exportDisplay.show(DesktopFileUploadField.this::getFileContent, fileName);
-                        break;
-                    case IMMEDIATE:
-                        exportDisplay.show(value);
-                }
+            switch (mode) {
+                case MANUAL:
+                    String name = getFileName();
+                    String fileName1 = StringUtils.isEmpty(name) ? value.getName() : name;
+                    exportDisplay.show(DesktopFileUploadField.this::getFileContent, fileName1);
+                    break;
+                case IMMEDIATE:
+                    exportDisplay.show(value);
             }
         });
-        impl.setClearButtonAction(new AbstractAction("") {
-            @Override
-            public void actionPerform(Component component) {
-                setValue(null);
-            }
-        });
+        impl.setClearButtonListener(() ->
+            setValue(null)
+        );
     }
 
     protected void uploadFile(File file) {
@@ -178,32 +172,34 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
         }
     }
 
-    private void saveFile(FileDescriptor fileDescriptor) {
+    protected void saveFile(FileDescriptor fileDescriptor) {
         switch (mode) {
             case MANUAL:
                 setValue(fileDescriptor);
                 break;
             case IMMEDIATE:
-                BackgroundTask<Long, FileDescriptor> uploadProgress = new BackgroundTask<Long, FileDescriptor>(2400, getFrame()) {
-                    @Override
-                    public Map<String, Object> getParams() {
-                        return ParamsMap.of("fileId", fileId, "fileName", getFileName());
-                    }
+                BackgroundTask<Long, FileDescriptor> uploadProgress =
+                        new BackgroundTask<Long, FileDescriptor>(2400, getFrame()) {
+                            @Override
+                            public Map<String, Object> getParams() {
+                                return ParamsMap.of("fileId", fileId, "fileName", getFileName());
+                            }
 
-                    @Override
-                    public FileDescriptor run(final TaskLifeCycle<Long> taskLifeCycle) throws Exception {
-                        return fileUploading.putFileIntoStorage(taskLifeCycle);
-                    }
+                            @Override
+                            public FileDescriptor run(final TaskLifeCycle<Long> taskLifeCycle) throws Exception {
+                                return fileUploading.putFileIntoStorage(taskLifeCycle);
+                            }
 
-                    @Override
-                    public void done(FileDescriptor result) {
-                        FileDescriptor descriptor = datasource.getDataSupplier().commit(result);
-                        setValue(descriptor);
-                    }
-                };
+                            @Override
+                            public void done(FileDescriptor result) {
+                                FileDescriptor descriptor = datasource.getDataSupplier().commit(result);
+                                setValue(descriptor);
+                            }
+                        };
 
                 long fileSize = fileUploading.getFile(fileId).length();
-                BackgroundWorkProgressWindow.show(uploadProgress, messages.getMainMessage("FileUploadField.uploadingFile"), null, fileSize, true, true);
+                BackgroundWorkProgressWindow.show(uploadProgress, messages.getMainMessage("FileUploadField.uploadingFile"),
+                        null, fileSize, true, true);
                 break;
         }
     }
@@ -292,7 +288,7 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
 
     @Override
     public <T> T getValue() {
-        return datasource.getItem().getValueEx(metaPropertyPath.toString());
+        return (T) prevValue;
     }
 
     @Override
@@ -590,11 +586,11 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
         }
     }
 
-    private void updateComponent(FileDescriptor fileDescriptor) {
+    protected void updateComponent(FileDescriptor fileDescriptor) {
         if (fileDescriptor != null) {
-            impl.setButtonCaption(fileDescriptor.getName());
+            impl.setFileName(fileDescriptor.getName());
         } else {
-            impl.setButtonCaption(null);
+            impl.setFileName(null);
         }
     }
 

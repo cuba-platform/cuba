@@ -19,9 +19,10 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.sys.vcl.FocusableComponent;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.LinkButton;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 
@@ -37,14 +38,17 @@ public class CubaFileUploadWrapper extends JComponent implements FocusableCompon
     protected Button clearButton;
 
     protected boolean showFileName = false;
-    protected boolean showClearButton = true;
+    protected boolean showClearButton = false;
     protected boolean editable = true;
     protected boolean required = false;
 
     protected String fileName;
 
-    private String caption;
-    private String description;
+    protected String caption;
+    protected String description;
+
+    protected Runnable clearButtonListener;
+    protected Runnable fileNameButtonClickListener;
 
     public CubaFileUploadWrapper(Button uploadButton) {
         setLayout(new BorderLayout());
@@ -54,7 +58,16 @@ public class CubaFileUploadWrapper extends JComponent implements FocusableCompon
         add(container.unwrap(JPanel.class));
 
         fileNameButton = (LinkButton) componentsFactory.createComponent(LinkButton.NAME);
-        setButtonCaption(null);
+        fileNameButton.setVisible(false);
+        fileNameButton.setAction(new AbstractAction("") {
+            @Override
+            public void actionPerform(Component component) {
+                if (fileNameButtonClickListener != null) {
+                    fileNameButtonClickListener.run();
+                }
+            }
+        });
+        setFileName(null);
         container.add(fileNameButton);
 
         this.uploadButton = uploadButton;
@@ -63,6 +76,16 @@ public class CubaFileUploadWrapper extends JComponent implements FocusableCompon
         container.add(uploadButton);
 
         clearButton = (Button) componentsFactory.createComponent(Button.NAME);
+        clearButton.setAction(new AbstractAction("") {
+            @Override
+            public void actionPerform(Component component) {
+                if (clearButtonListener != null) {
+                    clearButtonListener.run();
+                }
+            }
+        });
+        clearButton.setCaption(messages.getMainMessage("FileUploadField.clearButtonCaption"));
+        clearButton.setVisible(false);
         JButton jClearButton = clearButton.unwrap(JButton.class);
         jClearButton.setMargin(new Insets(0, 0, 0, 0));
         container.add(clearButton);
@@ -85,7 +108,7 @@ public class CubaFileUploadWrapper extends JComponent implements FocusableCompon
         }
     }
 
-    public void setButtonCaption(String fileName) {
+    public void setFileName(String fileName) {
         this.fileName = fileName;
 
         if (StringUtils.isNotEmpty(fileName)) {
@@ -93,11 +116,6 @@ public class CubaFileUploadWrapper extends JComponent implements FocusableCompon
         } else {
             fileNameButton.setCaption(messages.getMainMessage("FileUploadField.fileNotSelected"));
         }
-    }
-
-    public void setFileNameButtonClickAction(com.haulmont.cuba.gui.components.AbstractAction action) {
-        fileNameButton.setAction(action);
-        fileNameButton.setVisible(isShowFileName());
     }
 
     public void setEditable(boolean editable) {
@@ -134,10 +152,6 @@ public class CubaFileUploadWrapper extends JComponent implements FocusableCompon
 
     public String getClearButtonIcon() {
         return clearButton.getIcon();
-    }
-
-    public void setClearButtonAction(Action clearButtonAction) {
-        clearButton.setAction(clearButtonAction);
     }
 
     public void setClearButtonDescription(String description) {
@@ -195,5 +209,21 @@ public class CubaFileUploadWrapper extends JComponent implements FocusableCompon
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Runnable getClearButtonListener() {
+        return clearButtonListener;
+    }
+
+    public void setClearButtonListener(Runnable clearButtonListener) {
+        this.clearButtonListener = clearButtonListener;
+    }
+
+    public Runnable getFileNameButtonClickListener() {
+        return fileNameButtonClickListener;
+    }
+
+    public void setFileNameButtonClickListener(Runnable fileNameButtonClickListener) {
+        this.fileNameButtonClickListener = fileNameButtonClickListener;
     }
 }
