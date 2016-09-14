@@ -37,7 +37,7 @@ public interface EntitySerializationAPI {
      * If the {@code view} parameter is null then all loaded entity properties will be presented in JSON, otherwise only
      * loaded properties that are in the view will be in the JSON object.
      * <p>
-     * The {@code options} parameter specify come additional options for the serialization process. For example, a
+     * The {@code options} parameter specify some additional options for the serialization process. For example,
      * repeated entities may be replaced with the object with the only "id" property, making the result JSON more
      * compact. See {@link EntitySerializationOption} for details.
      * <p>
