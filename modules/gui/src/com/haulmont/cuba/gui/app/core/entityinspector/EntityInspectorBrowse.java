@@ -329,8 +329,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
         exportButton.setCaption(getMessage("export"));
 
         importUpload = componentsFactory.createComponent(FileUploadField.class);
-        importUpload.setIcon("icons/upload.png");
-        importUpload.setCaption(getMessage("import"));
+        importUpload.setUploadButtonIcon("icons/upload.png");
+        importUpload.setUploadButtonCaption(getMessage("import"));
         importUpload.addFileUploadSucceedListener(event -> {
             File file = fileUploadingAPI.getFile(importUpload.getFileId());
             if (file == null) {
