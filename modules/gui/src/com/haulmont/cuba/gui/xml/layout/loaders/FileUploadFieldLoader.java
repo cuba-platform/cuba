@@ -32,6 +32,7 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
         assignFrame(resultComponent);
 
         loadEnable(resultComponent, element);
+        loadEditable(resultComponent, element);
         loadVisible(resultComponent, element);
 
         loadStyleName(resultComponent, element);
@@ -50,10 +51,7 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
 
         loadDropZone(resultComponent, element);
 
-        String fileSizeLimit = element.attributeValue("fileSizeLimit");
-        if (StringUtils.isNotEmpty(fileSizeLimit)) {
-            resultComponent.setFileSizeLimit(Long.valueOf(fileSizeLimit));
-        }
+        loadFileSizeLimit();
 
         loadDatasource(resultComponent, element);
         loadMode(resultComponent, element);
@@ -63,9 +61,16 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
         loadUploadButton(resultComponent, element);
     }
 
-    private void loadUploadButton(FileUploadField resultComponent, Element element) {
+    protected void loadFileSizeLimit() {
+        String fileSizeLimit = element.attributeValue("fileSizeLimit");
+        if (StringUtils.isNotEmpty(fileSizeLimit)) {
+            resultComponent.setFileSizeLimit(Long.valueOf(fileSizeLimit));
+        }
+    }
+
+    protected void loadUploadButton(FileUploadField resultComponent, Element element) {
         String uploadButtonCaption = element.attributeValue("uploadButtonCaption");
-        if (StringUtils.isNotEmpty(uploadButtonCaption)) {
+        if (uploadButtonCaption != null) {
             resultComponent.setUploadButtonCaption(loadResourceString(uploadButtonCaption));
         }
 
@@ -75,19 +80,19 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
         }
 
         String uploadButtonDescription = element.attributeValue("uploadButtonDescription");
-        if (StringUtils.isNotEmpty(uploadButtonDescription)) {
+        if (uploadButtonDescription != null) {
             resultComponent.setUploadButtonDescription(uploadButtonDescription);
         }
     }
 
-    private void loadClearButton(FileUploadField resultComponent, Element element) {
+    protected void loadClearButton(FileUploadField resultComponent, Element element) {
         String showClearButton = element.attributeValue("showClearButton");
         if (StringUtils.isNotEmpty(showClearButton)) {
             resultComponent.setShowClearButton(Boolean.valueOf(showClearButton));
         }
 
         String clearButtonCaption = element.attributeValue("clearButtonCaption");
-        if (StringUtils.isNotEmpty(clearButtonCaption)) {
+        if (clearButtonCaption != null) {
             resultComponent.setClearButtonCaption(loadResourceString(clearButtonCaption));
         }
 
@@ -97,19 +102,19 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
         }
 
         String clearButtonDescription = element.attributeValue("clearButtonDescription");
-        if (StringUtils.isNotEmpty(clearButtonDescription)) {
+        if (clearButtonDescription != null) {
             resultComponent.setClearButtonDescription(clearButtonDescription);
         }
     }
 
-    private void loadShowFileName(FileUploadField resultComponent, Element element) {
+    protected void loadShowFileName(FileUploadField resultComponent, Element element) {
         String showFileName = element.attributeValue("showFileName");
         if (StringUtils.isNotEmpty(showFileName)) {
             resultComponent.setShowFileName(Boolean.valueOf(showFileName));
         }
     }
 
-    private void loadMode(FileUploadField resultComponent, Element element) {
+    protected void loadMode(FileUploadField resultComponent, Element element) {
         String fileStoragePutMode = element.attributeValue("fileStoragePutMode");
         if (StringUtils.isNotEmpty(fileStoragePutMode)) {
             resultComponent.setMode(FileUploadField.FileStoragePutMode.valueOf(fileStoragePutMode));

@@ -48,7 +48,7 @@ import java.util.UUID;
 
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 
-public class WebFileUploadField extends WebAbstractUploadField<WebCubaFileUploadWrapper> implements FileUploadField {
+public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWrapper> implements FileUploadField {
 
     protected Logger log = LoggerFactory.getLogger(WebFileUploadField.class);
 
@@ -198,7 +198,7 @@ public class WebFileUploadField extends WebAbstractUploadField<WebCubaFileUpload
         });
 
         uploadButton = impl;
-        component = new WebCubaFileUploadWrapper(impl);
+        component = new CubaFileUploadWrapper(impl);
     }
 
     protected void initUploadButton() {
@@ -266,7 +266,7 @@ public class WebFileUploadField extends WebAbstractUploadField<WebCubaFileUpload
         });
 
         uploadButton = impl;
-        component = new WebCubaFileUploadWrapper(impl);
+        component = new CubaFileUploadWrapper(impl);
     }
 
     protected CubaFileUpload createComponent() {
@@ -344,26 +344,6 @@ public class WebFileUploadField extends WebAbstractUploadField<WebCubaFileUpload
         return bytes;
     }
 
-    @Override
-    public String getCaption() {
-        return component.getCaption();
-    }
-
-    @Override
-    public void setCaption(String caption) {
-        component.setCaption(caption);
-    }
-
-    @Override
-    public String getDescription() {
-        return component.getDescription();
-    }
-
-    @Override
-    public void setDescription(String description) {
-        component.setDescription(description);
-    }
-
     /**
      * @return File id for uploaded file in {@link FileUploadingAPI}
      */
@@ -379,11 +359,6 @@ public class WebFileUploadField extends WebAbstractUploadField<WebCubaFileUpload
         } else {
             return null;
         }
-    }
-
-    @Override
-    public void setIcon(String icon) {
-        // do nothing
     }
 
     @Override
@@ -570,24 +545,6 @@ public class WebFileUploadField extends WebAbstractUploadField<WebCubaFileUpload
         if (uploadButton instanceof CubaFileUpload) {
             ((CubaFileUpload) uploadButton).setFileSizeLimit(fileSizeLimit);
         }
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        super.setEditable(editable);
-        component.setEditable(editable);
-    }
-
-    @Override
-    public void setWidth(String width) {
-        super.setWidth(width);
-        component.setWidth(width);
-    }
-
-    @Override
-    public void setHeight(String height) {
-        super.setHeight(height);
-        component.setHeight(height);
     }
 
     @Override

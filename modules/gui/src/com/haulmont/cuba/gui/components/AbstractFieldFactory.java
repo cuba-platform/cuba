@@ -107,7 +107,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                     }
                 }
             } else if (mppRange.isClass()) {
-                MetaProperty metaProperty = datasource.getMetaClass().getPropertyNN(property);
+                MetaProperty metaProperty = mpp.getMetaProperty();
                 Class<?> javaType = metaProperty.getJavaType();
                 if (FileDescriptor.class.isAssignableFrom(javaType)) {
                     return createFileUploadField(datasource, property);

@@ -26,7 +26,7 @@ import org.apache.commons.lang.StringUtils;
 
 import static com.vaadin.ui.themes.BaseTheme.BUTTON_LINK;
 
-public class WebCubaFileUploadWrapper extends CustomField {
+public class CubaFileUploadWrapper extends CustomField {
 
     protected static final String FILE_UPLOAD_WRAPPER = "cuba-fileupload-wrapper";
     protected static final String EMPTY_VALUE_STYLE = "cuba-fileupload-empty";
@@ -40,12 +40,11 @@ public class WebCubaFileUploadWrapper extends CustomField {
     protected UploadComponent uploadButton;
 
     protected boolean showFileName = false;
-    protected boolean showClearButton = true;
+    protected boolean showClearButton = false;
+
     protected String fileName;
 
-    protected boolean editable;
-
-    public WebCubaFileUploadWrapper(UploadComponent uploadButton) {
+    public CubaFileUploadWrapper(UploadComponent uploadButton) {
         setPrimaryStyleName(FILE_UPLOAD_WRAPPER);
         initLayout(uploadButton);
     }
@@ -70,6 +69,7 @@ public class WebCubaFileUploadWrapper extends CustomField {
         setShowClearButton(showClearButton);
 
         setShowFileName(false);
+        setWidthUndefined();
     }
 
     @Override
@@ -84,6 +84,7 @@ public class WebCubaFileUploadWrapper extends CustomField {
 
     @Override
     protected void setInternalValue(Object newValue) {
+        //noinspection unchecked
         super.setInternalValue(newValue);
 
         if (newValue != null) {
@@ -247,8 +248,9 @@ public class WebCubaFileUploadWrapper extends CustomField {
         setWidth("100%");
     }
 
-    public void setEditable(boolean editable) {
-        this.editable = editable;
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        super.setReadOnly(readOnly);
 
         updateButtonsVisibility();
     }
@@ -270,9 +272,9 @@ public class WebCubaFileUploadWrapper extends CustomField {
     }
 
     protected void updateButtonsVisibility() {
-        uploadButton.setVisible(editable);
+        uploadButton.setVisible(!isReadOnly());
 
-        if (editable && !isRequired() && showClearButton) {
+        if (!isReadOnly() && !isRequired() && showClearButton) {
             clearButton.setVisible(true);
         } else {
             clearButton.setVisible(false);

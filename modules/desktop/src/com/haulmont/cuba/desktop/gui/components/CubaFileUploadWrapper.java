@@ -28,7 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import javax.swing.*;
 import java.awt.*;
 
-public class DesktopCubaFileUploadWrapper extends JComponent implements FocusableComponent {
+public class CubaFileUploadWrapper extends JComponent implements FocusableComponent {
     protected Messages messages = AppBeans.get(Messages.NAME);
 
     protected DesktopHBox container;
@@ -38,13 +38,15 @@ public class DesktopCubaFileUploadWrapper extends JComponent implements Focusabl
 
     protected boolean showFileName = false;
     protected boolean showClearButton = true;
-    protected boolean editable;
+    protected boolean editable = true;
+    protected boolean required = false;
+
     protected String fileName;
-    private boolean required;
+
     private String caption;
     private String description;
 
-    public DesktopCubaFileUploadWrapper(Button uploadButton) {
+    public CubaFileUploadWrapper(Button uploadButton) {
         setLayout(new BorderLayout());
 
         ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
