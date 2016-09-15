@@ -259,7 +259,7 @@ public class DeletePolicyProcessor {
 
     protected boolean checkIfEntityBelongsToMaster(MetaProperty property, BaseEntity entityToRemove) {
         MetaProperty inverseProperty = property.getInverse();
-        if (inverseProperty != null) {
+        if (inverseProperty != null && !inverseProperty.getRange().getCardinality().isMany()) {
             Entity master = entityToRemove.getValue(inverseProperty.getName());
             return entity.equals(master);
         } else {
