@@ -999,7 +999,7 @@
         <xs:attribute name="uploadButtonIcon" type="resourceString"/>
         <xs:attribute name="uploadButtonDescription" type="resourceString"/>
 
-        <xs:attribute name="showFileNameButton" type="xs:boolean"/>
+        <xs:attribute name="showFileName" type="xs:boolean"/>
         <xs:attribute name="fileStoragePutMode" type="fileStoragePutMode"/>
     </xs:complexType>
 

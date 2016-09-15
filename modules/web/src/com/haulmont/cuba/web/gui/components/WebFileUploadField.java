@@ -127,7 +127,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     public void setValue(Object value) {
         super.setValue(value);
 
-        if (!PersistenceHelper.isNew(value)) {
+        if (value == null || !PersistenceHelper.isNew(value)) {
             fileId = null;
             tempFileId = null;
         }
