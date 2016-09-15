@@ -20,7 +20,6 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.web.toolkit.ui.UploadComponent;
-import com.vaadin.server.SizeWithUnit;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 
@@ -145,13 +144,10 @@ public class CubaFileUploadWrapper extends CustomField {
             container.setWidth(100, Unit.PERCENTAGE);
             if (isShowFileName()) {
                 fileNameButton.setWidth(100, Unit.PERCENTAGE);
-                container.setExpandRatio(fileNameButton, 1);
 
                 uploadButton.setWidthUndefined();
-                container.setExpandRatio(uploadButton, 0);
             } else {
                 uploadButton.setWidth(100, Unit.PERCENTAGE);
-                container.setExpandRatio(uploadButton, 1);
             }
         } else {
             container.setWidthUndefined();
@@ -165,13 +161,9 @@ public class CubaFileUploadWrapper extends CustomField {
             return;
 
         if (getHeight() >= 0) {
-            container.setHeight(getHeight(), getHeightUnits());
-
+            container.setHeight(100, Unit.PERCENTAGE);
             fileNameButton.setHeight(100, Unit.PERCENTAGE);
-            container.setExpandRatio(fileNameButton, 1);
-
             uploadButton.setHeight(100, Unit.PERCENTAGE);
-            container.setExpandRatio(uploadButton, 0);
         } else {
             container.setHeightUndefined();
             fileNameButton.setHeightUndefined();
@@ -187,42 +179,10 @@ public class CubaFileUploadWrapper extends CustomField {
     }
 
     @Override
-    public void setWidth(String width) {
-        super.setWidth(width);
-
-        SizeWithUnit size = SizeWithUnit.parseStringSize(width);
-        if (size != null) {
-            setWidth(size.getSize(), size.getUnit());
-        } else {
-            setWidthUndefined();
-        }
-    }
-
-    @Override
     public void setHeight(float height, Unit unit) {
         super.setHeight(height, unit);
 
         updateComponentHeight();
-    }
-
-    @Override
-    public void setHeight(String height) {
-        super.setHeight(height);
-
-        SizeWithUnit size = SizeWithUnit.parseStringSize(height);
-        if (size != null) {
-            setHeight(size.getSize(), size.getUnit());
-        } else {
-            setHeightUndefined();
-        }
-    }
-
-    @Override
-    public void setSizeFull() {
-        super.setSizeFull();
-
-        setHeight(100, Unit.PERCENTAGE);
-        setWidth(100, Unit.PERCENTAGE);
     }
 
     @Override
