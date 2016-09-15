@@ -26,6 +26,13 @@ info:
     CUBA Platform REST API uses an OAuth2 resource owner password credentials grant to protect the endpoints (https://tools.ietf.org/html/rfc6749#page-37).
 
     Before accessing a protected resource, the user must get an authentication token. The token can be obtained by the `/oauth/token` url.
+
+    The `/oauth/token` endpoint is protected with the basic authentication. The request must contain an `Authorization` header for basic
+    authentication with REST API client credentials. Please note, that client credentials is not the same as platform user credentials.
+    By client we mean an application that uses the REST API. The default client credentials are defined by the following
+    application properties: `cuba.rest.client.id` and `cuba.rest.client.secret`. User credentials must be passed in the request body.
+    The request format must be `application/x-www-form-urlencoded`.
+
     See the `/oauth/token` endpoint documentaion for more details.
 
     When the token is obtained it must be placed to the `Authorization` header with the `Bearer` type to all further requests, e.g.:
