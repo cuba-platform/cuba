@@ -39,66 +39,8 @@ info:
     ### Anonymous access
 
     If the request to protected resource doesn't contain the `Authentication` header then the user will be authenticated with the anonymous session.
-    By default, anonymous access is forbidden. To enable it set the `cuba.rest.anonymousEnabled` application property to `true`.
-    Read more about the anonymous sessions here: TODO ADD LINK
-
-    ## Predefined JPQL queries configuration
-
-    In the CUBA application, predefined JPQL queries must be specified in files defined by the `cuba.rest.queriesConfig` application property, e.g.
-
-    ```
-    cuba.rest.queriesConfig = +myapp-rest-queries.xml
-    ```
-
-    The content of the `myapp-rest-queries.xml` must be as following:
-
-    ```
-      <?xml version="1.0"?>
-      <queries xmlns="http://schemas.haulmont.com/cuba/rest-queries.xsd">
-        <query name="carByVin" entity="ref$Car" view="carEdit">
-            <jpql><![CDATA[select c from ref$Car c where c.vin = :vin]]></jpql>
-            <params>
-                <param name="vin" type="java.lang.String"/>
-            </params>
-        </query>
-        <query name="allColours" entity="ref$Colour" view="_local">
-            <jpql><![CDATA[select u from ref$Colour u order by u.name]]></jpql>
-        </query>
-      </queries>
-    ```
-
-    ## Services configuration
-
-    The list of services methods that are available with the REST API must be configured in the CUBA application in files
-    defined by the `cuba.rest.servicesConfig` application property, e.g.
-
-    ```
-    cuba.rest.queriesConfig = +myapp-rest-services.xml
-    ```
-
-    The content of the `myapp-rest-services.xml` must be as following:
-
-    ```
-    <?xml version="1.0" encoding="UTF-8"?>
-    <services xmlns="http://schemas.haulmont.com/cuba/rest-services-v2.xsd">
-      <service name="myapp_SomeService">
-        <method name="sum">
-            <param name="number1"/>
-            <param name="number2"/>
-        </method>
-        <method name="emptyMethod"/>
-        <method name="overloadedMethod">
-            <param name="intParam" type="int"/>
-        </method>
-        <method name="overloadedMethod">
-            <param name="stringParam" type="java.lang.String"/>
-        </method>
-      </service>
-    </services>
-    ```
-
-    Method parameter types can be omitted if the service doesn't contain an overloaded method with the same parameters number.
-    Otherwise, types must be defined.
+    By default, anonymous access is forbidden. To enable it, set the `cuba.rest.anonymousEnabled` application property to `true`.
+    Read more about the anonymous sessions in the CUBA Platform Manual.
 
   license:
     name: Apache 2.0
@@ -108,7 +50,7 @@ info:
 #                  Host, Base Path, Schemes and Content Types                  #
 ################################################################################
 
-basePath: /app/rest/v2
+basePath: /rest/v2
 produces:
   - application/json
 consumes:
@@ -308,12 +250,17 @@ definitions:
       type:
         type: string
         enum: [SCREEN, ENTITY_OP, ENTITY_ATTR, SPECIFIC, UI]
+        example: ENTITY_OP
       target:
         type: string
+        example: app$Order:create
       value:
         type: string
+        enum: [ALLOW, DENY, VIEW, MODIFY, HIDE, READ_ONLY, SHOW]
+        example: ALLOW
       intValue:
         type: integer
+        example: 1
 
   entityMetadata:
     type: object
@@ -898,7 +845,7 @@ paths:
 
         If the header value is 'multipart/form-data' then file contents must be put to the part called 'file'.
 
-        If the 'Cntent-Type' header has some other value then file contents must be passed in the request body.
+        If the 'Content-Type' header has some other value then file contents must be passed in the request body.
         The 'Content-Length' header will be used for FileDescriptor 'size' field value.
       parameters:
         - name: name
@@ -906,7 +853,9 @@ paths:
           type: string
           required: false
           description: |
-            The file name. If this parameter is missing then a FileDescriptor id will be used as a file name.
+            The file name. If this parameter is missing then a FileDescriptor id will be used as a file name. In case of
+            `multipart\form-data` request a file name may be taken from the `filename` attribute of the `Content-Disposition`
+            header.
       responses:
         201:
           description: |
