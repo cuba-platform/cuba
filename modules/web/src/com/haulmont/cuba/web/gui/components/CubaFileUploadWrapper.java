@@ -137,7 +137,10 @@ public class CubaFileUploadWrapper extends CustomField {
     }
 
     private void updateComponentWidth() {
-        if (container != null && getWidth() >= 0) {
+        if (container == null)
+            return;
+
+        if (getWidth() >= 0) {
             container.setWidth(getWidth(), getWidthUnits());
             if (isShowFileName()) {
                 fileNameButton.setWidth(100, Unit.PERCENTAGE);
@@ -150,12 +153,22 @@ public class CubaFileUploadWrapper extends CustomField {
                 container.setExpandRatio(uploadButton, 1);
             }
         } else {
-            setWidthUndefined();
+            if (container != null) {
+                container.setWidthUndefined();
+
+                if (fileNameButton != null) {
+                    fileNameButton.setWidth(-1, Unit.PIXELS);
+                }
+                uploadButton.setWidthUndefined();
+            }
         }
     }
 
     private void updateComponentHeight() {
-        if (container != null && getHeight() >= 0) {
+        if (container == null)
+            return;
+
+        if (getHeight() >= 0) {
             container.setHeight(getHeight(), getHeightUnits());
 
             if (isShowFileName()) {
@@ -169,7 +182,14 @@ public class CubaFileUploadWrapper extends CustomField {
                 container.setExpandRatio(uploadButton, 1);
             }
         } else {
-            setHeightUndefined();
+            if (container != null) {
+                container.setHeightUndefined();
+
+                if (fileNameButton != null) {
+                    fileNameButton.setHeightUndefined();
+                }
+                uploadButton.setHeightUndefined();
+            }
         }
     }
 
@@ -199,14 +219,7 @@ public class CubaFileUploadWrapper extends CustomField {
 
     @Override
     public void setWidthUndefined() {
-        if (container != null) {
-            container.setWidthUndefined();
-
-            if (fileNameButton != null) {
-                fileNameButton.setWidth(-1, Unit.PIXELS);
-            }
-            uploadButton.setWidthUndefined();
-        }
+        setWidth(-1, Unit.PIXELS);
     }
 
     @Override
@@ -218,14 +231,7 @@ public class CubaFileUploadWrapper extends CustomField {
 
     @Override
     public void setHeightUndefined() {
-        if (container != null) {
-            container.setHeightUndefined();
-
-            if (fileNameButton != null) {
-                fileNameButton.setHeightUndefined();
-            }
-            uploadButton.setHeightUndefined();
-        }
+        setHeight(-1, Unit.PIXELS);
     }
 
     @Override
