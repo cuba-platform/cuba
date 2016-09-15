@@ -66,30 +66,35 @@ parameters:
     type: string
     description: Entity name
     required: true
+    default: ""
   entityIdParam:
     name: entityId
     in: path
     type: string
     description: Entity identifier
     required: true
+    default: ""
   queryNameParam:
     name: queryName
     in: path
     type: string
     description: Query name
     required: true
+    default: ""
   serviceNameParam:
     name: serviceName
     in: path
     type: string
     description: Service name
     required: true
+    default: ""
   methodNameParam:
     name: methodName
     in: path
     type: string
     description: Method name
     required: true
+    default: ""
   entityJsonParam:
     name: entityJson
     description: JSON object with the entity
@@ -101,12 +106,12 @@ parameters:
     in: query
     description: Name of the view which is used for loading the entity
     type: string
+    default: ""
   returnNullsParam:
     name: returnNulls
     in: query
     description: Specifies whether null fields will be written to the result JSON
     type: boolean
-
 
 ################################################################################
 #                                   Definitions                                #
@@ -476,14 +481,17 @@ paths:
           in: formData
           type: string
           description: OAuth grant type. Should be set to "password"
+          default: password
         - name: username
           in: formData
           type: string
           description: CUBA Platform user login
+          default: admin
         - name: password
           in: formData
           type: string
           description: CUBA Platform user password
+          default: admin
 
       responses:
         200:
@@ -533,10 +541,12 @@ paths:
           in: query
           description: Number of extracted entities
           type: string
+          default: ""
         - name: offset
           in: query
           description: Position of the first result to retrieve
           type: string
+          default: ""
         - name: sort
           in: query
           description: |
@@ -544,6 +554,7 @@ paths:
             the sort order is ascending, if by the '-' character then descending. If there is no special
             character before the property name, then ascending sort will be used.
           type: string
+          default: ""
         - $ref: '#/parameters/returnNullsParam'
 
       responses:
@@ -702,10 +713,12 @@ paths:
         in: query
         description: Number of extracted entities
         type: string
+        default: ""
       - name: offset
         in: query
         description: Position of the first result to retrieve
         type: string
+        default: ""
     get:
       tags:
         - Queries
@@ -856,6 +869,7 @@ paths:
             The file name. If this parameter is missing then a FileDescriptor id will be used as a file name. In case of
             `multipart\form-data` request a file name may be taken from the `filename` attribute of the `Content-Disposition`
             header.
+          default: ""
       responses:
         201:
           description: |
@@ -880,6 +894,7 @@ paths:
           type: string
           description: |
             FileDescriptor identifier
+          default: ""
         - name: attachment
           in: query
           type: boolean
@@ -887,6 +902,7 @@ paths:
           description: |
             If set to 'true' then the 'Content-Disposition' header of the response will be set to 'attachment'. 'inline' value
             will be used otherwise.
+          default: ""
       responses:
         200:
           description: Successfully downloaded. The file contents is returned in the response body.
@@ -916,11 +932,7 @@ paths:
       summary: Get entity metadata
       description: Gets entity metadata
       parameters:
-        - name: entityName
-          in: path
-          type: string
-          required: true
-          description: Entity name
+        - $ref: '#/parameters/entityNameParam'
       responses:
         200:
           description: Success
@@ -939,11 +951,7 @@ paths:
       summary: Get all views for the entity
       description: Gets all views for the entity
       parameters:
-        - name: entityName
-          in: path
-          type: string
-          required: true
-          description: Entity name
+        - $ref: '#/parameters/entityNameParam'
       responses:
         200:
           description: Success
@@ -964,16 +972,13 @@ paths:
       summary: Get the view
       description: Gets the view
       parameters:
-        - name: entityName
-          in: path
-          type: string
-          required: true
-          description: Entity name
+        - $ref: '#/parameters/entityNameParam'
         - name: viewName
           in: path
           type: string
           required: true
           description: View name
+          default: ""
       responses:
         200:
           description: Success
@@ -1011,6 +1016,7 @@ paths:
           type: string
           required: true
           description: Enum name
+          default: ""
       responses:
         200:
           description: Success
@@ -1078,6 +1084,7 @@ paths:
           in: path
           type: string
           description: swagger format (json or yaml)
+          default: yaml
       responses:
         200:
           description: Success
