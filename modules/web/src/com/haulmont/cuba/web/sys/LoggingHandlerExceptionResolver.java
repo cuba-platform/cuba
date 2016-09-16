@@ -32,7 +32,9 @@ import java.util.List;
  */
 public class LoggingHandlerExceptionResolver implements HandlerExceptionResolver, Ordered {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    protected int EXCEPTION_RESOLVER_ORDER = 1000;
+
+    protected Logger log = LoggerFactory.getLogger(LoggingHandlerExceptionResolver.class);
 
     protected List<Class<? extends Exception>> excludedExceptions = new ArrayList<>();
 
@@ -45,7 +47,7 @@ public class LoggingHandlerExceptionResolver implements HandlerExceptionResolver
 
     @Override
     public int getOrder() {
-        return Integer.MIN_VALUE;
+        return EXCEPTION_RESOLVER_ORDER;
     }
 
     @Override

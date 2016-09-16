@@ -22,8 +22,10 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.app.FtsSender;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.global.FtsConfigHelper;
+import com.haulmont.cuba.core.sys.entitycache.QueryCacheManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
 import com.haulmont.cuba.security.app.EntityLogAPI;
@@ -55,6 +57,9 @@ public class PersistenceImplSupport {
 
     @Inject
     protected EntityListenerManager entityListenerManager;
+
+    @Inject
+    protected QueryCacheManager queryCacheManager;
 
     @Inject
     protected EntityLogAPI entityLog;
@@ -242,19 +247,26 @@ public class PersistenceImplSupport {
             traverseEntities(container, new OnCommitEntityVisitor(container.getStorageName()));
 
             Collection<Object> instances = container.getAllInstances();
+            Set<String> typeNames = new HashSet<>();
             for (Object instance : instances) {
                 if (instance instanceof Entity) {
+                    Entity entity = (Entity) instance;
                     // if cache is enabled, the entity can have EntityFetchGroup instead of CubaEntityFetchGroup
                     if (instance instanceof FetchGroupTracker) {
-                        FetchGroupTracker entity = (FetchGroupTracker) instance;
-                        FetchGroup fetchGroup = entity._persistence_getFetchGroup();
+                        FetchGroupTracker fetchGroupTracker = (FetchGroupTracker) entity;
+                        FetchGroup fetchGroup = fetchGroupTracker._persistence_getFetchGroup();
                         if (fetchGroup != null && !(fetchGroup instanceof CubaEntityFetchGroup))
-                            entity._persistence_setFetchGroup(new CubaEntityFetchGroup(fetchGroup));
+                            fetchGroupTracker._persistence_setFetchGroup(new CubaEntityFetchGroup(fetchGroup));
                     }
 
-                    entityListenerManager.fireListener((Entity) instance, EntityListenerType.BEFORE_DETACH, container.getStorageName());
+                    if (PersistenceHelper.isNew(entity)) {
+                        typeNames.add(entity.getMetaClass().getName());
+                    }
+
+                    entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_DETACH, container.getStorageName());
                 }
             }
+            queryCacheManager.invalidate(typeNames, true);
         }
 
         @Override

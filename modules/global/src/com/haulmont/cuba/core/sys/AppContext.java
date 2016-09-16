@@ -24,7 +24,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.OrderComparator;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * System-level class with static methods providing access to some central application structures:
@@ -35,11 +37,10 @@ import java.util.*;
  * </ul>
  * It also allows to register listeners which are triggered on the application start/stop, and provides the method
  * {@link #isStarted()} to check whether the app is fully initialized at the moment.
- *
  */
 public class AppContext {
 
-    private static Logger log = LoggerFactory.getLogger(AppContext.class);
+    private static final Logger log = LoggerFactory.getLogger(AppContext.class);
 
     /**
      * Application startup/shutdown listener.
@@ -76,7 +77,7 @@ public class AppContext {
 
     private static AppProperties appProperties;
 
-    private static List<Listener> listeners = new ArrayList<>();
+    private static final List<Listener> listeners = new ArrayList<>();
 
     private static volatile boolean started;
     private static volatile boolean listenersNotified;
@@ -154,10 +155,43 @@ public class AppContext {
      * @param securityContext security context to be set for the current thread
      */
     public static void setSecurityContext(@Nullable SecurityContext securityContext) {
-        if (log.isTraceEnabled())
-            log.trace("setSecurityContext " + securityContext + " for thread " + Thread.currentThread());
+        log.trace("setSecurityContext {} for thread {}", securityContext, Thread.currentThread());
+
         securityContextHolder.set(securityContext);
         LogMdc.setup(securityContext);
+    }
+
+    /**
+     * Sets current thread's {@link SecurityContext}, invokes runnable and sets previous security context back.
+     *
+     * @param securityContext security context to be set for the current thread
+     * @param runnable        runnable
+     */
+    public static void withSecurityContext(SecurityContext securityContext, Runnable runnable) {
+        SecurityContext previousSecurityContext = getSecurityContext();
+        setSecurityContext(securityContext);
+        try {
+            runnable.run();
+        } finally {
+            setSecurityContext(previousSecurityContext);
+        }
+    }
+
+    /**
+     * Sets current thread's {@link SecurityContext}, calls operation and sets previous security context back.
+     *
+     * @param securityContext security context to be set for the current thread
+     * @param operation       operation
+     * @return result of operation
+     */
+    public static <T> T withSecurityContext(SecurityContext securityContext, SecuredOperation<T> operation) {
+        SecurityContext previousSecurityContext = getSecurityContext();
+        setSecurityContext(securityContext);
+        try {
+            return operation.call();
+        } finally {
+            setSecurityContext(previousSecurityContext);
+        }
     }
 
     /**
@@ -261,5 +295,9 @@ public class AppContext {
         public static void stopContext() {
             AppContext.stopContext();
         }
+    }
+
+    public interface SecuredOperation<T> {
+        T call();
     }
 }

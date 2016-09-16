@@ -64,6 +64,8 @@ public class DsBuilder {
 
     private boolean softDeletion = true;
 
+    private boolean cacheable;
+
     private Datasource master;
 
     private String property;
@@ -172,6 +174,15 @@ public class DsBuilder {
 
     public DsBuilder setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
+        return this;
+    }
+
+    public boolean isCacheable() {
+        return cacheable;
+    }
+
+    public DsBuilder setCacheable(boolean cacheable) {
+        this.cacheable = cacheable;
         return this;
     }
 
@@ -322,6 +333,7 @@ public class DsBuilder {
             throw new RuntimeException(e);
         }
         datasource.setSoftDeletion(softDeletion);
+        datasource.setCacheable(cacheable);
         datasource.setAllowCommit(allowCommit);
         registerDatasource(datasource);
         return datasource;
@@ -368,6 +380,7 @@ public class DsBuilder {
             throw new RuntimeException(e);
         }
         datasource.setSoftDeletion(softDeletion);
+        datasource.setCacheable(cacheable);
         datasource.setAllowCommit(allowCommit);
         registerDatasource(datasource);
         return datasource;
@@ -414,6 +427,7 @@ public class DsBuilder {
             throw new RuntimeException(e);
         }
         datasource.setSoftDeletion(softDeletion);
+        datasource.setCacheable(cacheable);
         datasource.setAllowCommit(allowCommit);
         registerDatasource(datasource);
         return datasource;

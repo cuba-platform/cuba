@@ -17,68 +17,114 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
-import com.haulmont.cuba.gui.components.FileUploadField;
-import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.backgroundwork.BackgroundWorkProgressWindow;
+import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.compatibility.FileUploadFieldListenerWrapper;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
+import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
+import com.haulmont.cuba.gui.executors.BackgroundTask;
+import com.haulmont.cuba.gui.executors.TaskLifeCycle;
+import com.haulmont.cuba.gui.export.ExportDisplay;
+import com.haulmont.cuba.gui.export.FileDataProvider;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.UUID;
 
+import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 import static com.haulmont.cuba.gui.upload.FileUploadingAPI.FileInfo;
 
-public class DesktopFileUploadField extends DesktopAbstractUploadComponent<JButton> implements FileUploadField {
+public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileUploadWrapper> implements FileUploadField {
 
     protected FileUploadingAPI fileUploading;
     protected Messages messages;
-
-    protected String icon;
+    protected ExportDisplay exportDisplay;
 
     protected volatile boolean isUploadingState = false;
 
     protected String fileName;
+    protected Button uploadButton;
+    protected FileStoragePutMode mode = FileStoragePutMode.MANUAL;
 
-    protected String description;
+    protected Datasource datasource;
+
+    protected boolean updatingInstance;
+
+    protected Datasource.ItemChangeListener itemChangeListener;
+    protected Datasource.ItemChangeListener securityItemChangeListener;
+    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
     protected UUID fileId;
-
     protected UUID tempFileId;
 
     protected List<FileUploadStartListener> fileUploadStartListeners;     // lazily initialized list
     protected List<FileUploadFinishListener> fileUploadFinishListeners;   // lazily initialized list
     protected List<FileUploadSucceedListener> fileUploadSucceedListeners; // lazily initialized list
     protected List<FileUploadErrorListener> fileUploadErrorListeners;     // lazily initialized list
+    protected FileDescriptor prevValue;
 
     public DesktopFileUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         messages = AppBeans.get(Messages.NAME);
+        exportDisplay = AppBeans.get(ExportDisplay.NAME);
 
+        ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
+        uploadButton = (Button) componentsFactory.createComponent(Button.NAME);
         final JFileChooser fileChooser = new JFileChooser();
-        String caption = messages.getMessage(getClass(), "export.selectFile");
-        impl = new JButton();
-        impl.setAction(new AbstractAction(caption) {
+        uploadButton.setAction(new AbstractAction("") {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                if (fileChooser.showOpenDialog(impl) == JFileChooser.APPROVE_OPTION) {
+            public void actionPerform(Component component) {
+                if (fileChooser.showOpenDialog(uploadButton.unwrap(JButton.class)) == JFileChooser.APPROVE_OPTION) {
                     uploadFile(fileChooser.getSelectedFile());
                 }
             }
         });
+        uploadButton.setCaption(messages.getMessage(getClass(), "export.selectFile"));
+
+        initImpl();
+    }
+
+    protected void initImpl() {
+        impl = new CubaFileUploadWrapper(uploadButton);
+        impl.setFileNameButtonClickListener(() -> {
+            FileDescriptor value = getValue();
+            if (value == null)
+                return;
+
+            switch (mode) {
+                case MANUAL:
+                    String name = getFileName();
+                    String fileName1 = StringUtils.isEmpty(name) ? value.getName() : name;
+                    exportDisplay.show(DesktopFileUploadField.this::getFileContent, fileName1);
+                    break;
+                case IMMEDIATE:
+                    exportDisplay.show(value);
+            }
+        });
+        impl.setClearButtonListener(() ->
+            setValue(null)
+        );
     }
 
     protected void uploadFile(File file) {
@@ -93,7 +139,7 @@ public class DesktopFileUploadField extends DesktopAbstractUploadComponent<JButt
             try {
                 isUploadingState = true;
 
-                fileName = file.getAbsolutePath();
+                fileName = file.getName();
                 fireFileUploadStart(file.getName(), file.length());
 
                 FileInfo fileInfo = fileUploading.createFile();
@@ -103,6 +149,7 @@ public class DesktopFileUploadField extends DesktopAbstractUploadComponent<JButt
                 FileUtils.copyFile(file, tmpFile);
 
                 fileId = tempFileId;
+                saveFile(getFileDescriptor());
 
                 isUploadingState = false;
             } catch (Exception ex) {
@@ -125,6 +172,38 @@ public class DesktopFileUploadField extends DesktopAbstractUploadComponent<JButt
         }
     }
 
+    protected void saveFile(FileDescriptor fileDescriptor) {
+        switch (mode) {
+            case MANUAL:
+                setValue(fileDescriptor);
+                break;
+            case IMMEDIATE:
+                BackgroundTask<Long, FileDescriptor> uploadProgress =
+                        new BackgroundTask<Long, FileDescriptor>(2400, getFrame()) {
+                            @Override
+                            public Map<String, Object> getParams() {
+                                return ParamsMap.of("fileId", fileId, "fileName", getFileName());
+                            }
+
+                            @Override
+                            public FileDescriptor run(final TaskLifeCycle<Long> taskLifeCycle) throws Exception {
+                                return fileUploading.putFileIntoStorage(taskLifeCycle);
+                            }
+
+                            @Override
+                            public void done(FileDescriptor result) {
+                                FileDescriptor descriptor = datasource.getDataSupplier().commit(result);
+                                setValue(descriptor);
+                            }
+                        };
+
+                long fileSize = fileUploading.getFile(fileId).length();
+                BackgroundWorkProgressWindow.show(uploadProgress, messages.getMainMessage("FileUploadField.uploadingFile"),
+                        null, fileSize, true, true);
+                break;
+        }
+    }
+
     protected boolean hasInvalidExtension(String name) {
         if (getPermittedExtensions() != null && !getPermittedExtensions().isEmpty()) {
             if (name.lastIndexOf(".") > 0) {
@@ -139,6 +218,9 @@ public class DesktopFileUploadField extends DesktopAbstractUploadComponent<JButt
 
     @Override
     public String getFileName() {
+        if (StringUtils.isEmpty(fileName))
+            return null;
+
         String[] strings = fileName.split("[/\\\\]");
         return strings[strings.length - 1];
     }
@@ -184,7 +266,6 @@ public class DesktopFileUploadField extends DesktopAbstractUploadComponent<JButt
         addFileUploadFinishListener(wrapper);
         addFileUploadSucceedListener(wrapper);
     }
-
     @Override
     public void removeListener(Listener listener) {
         FileUploadFieldListenerWrapper wrapper = new FileUploadFieldListenerWrapper(listener);
@@ -197,38 +278,73 @@ public class DesktopFileUploadField extends DesktopAbstractUploadComponent<JButt
 
     @Override
     public String getCaption() {
-        return impl.getText();
+        return impl.getCaption();
     }
 
     @Override
     public void setCaption(String caption) {
-        impl.setText(caption);
+        impl.setCaption(caption);
     }
 
     @Override
-    public String getDescription() {
-        return impl.getToolTipText();
+    public <T> T getValue() {
+        return (T) prevValue;
+    }
+
+    @Override
+    public void setValue(Object value) {
+        DesktopBackgroundWorker.checkSwingUIAccess();
+
+        if (!ObjectUtils.equals(prevValue, value)) {
+            updateInstance(value);
+            updateComponent((FileDescriptor) value);
+            fireChangeListeners(value);
+        } else {
+            updateComponent(prevValue);
+        }
+
+        if (!PersistenceHelper.isNew(value)) {
+            fileId = null;
+            tempFileId = null;
+        }
+    }
+
+    @Override
+    public boolean isEditable() {
+        return impl.isEditable();
+    }
+
+    @Override
+    public void setEditable(boolean editable) {
+        impl.setEditable(editable);
+    }
+
+    @Override
+    public void setRequired(boolean required) {
+        super.setRequired(required);
+        impl.setRequired(required);
+    }
+
+    @Override
+    public boolean isRequired() {
+        return impl.isRequired();
+    }
+
+    @Override
+    public void requestFocus() {
+        super.requestFocus();
+        uploadButton.requestFocus();
     }
 
     @Override
     public void setDescription(String description) {
-        impl.setToolTipText(description);
-        DesktopToolTipManager.getInstance().registerTooltip(impl);
+        impl.setDescription(description);
+        DesktopToolTipManager.getInstance().registerTooltip(uploadButton.unwrap(JButton.class));
     }
 
     @Override
-    public String getIcon() {
-        return icon;
-    }
-
-    @Override
-    public void setIcon(String icon) {
-        this.icon = icon;
-        if (icon != null) {
-            impl.setIcon(App.getInstance().getResources().getIcon(icon));
-        } else {
-            impl.setIcon(null);
-        }
+    public String getDescription() {
+        return impl.getDescription();
     }
 
     protected void fireFileUploadStart(String fileName, long contentLength) {
@@ -276,7 +392,6 @@ public class DesktopFileUploadField extends DesktopAbstractUploadComponent<JButt
             fileUploadStartListeners.add(listener);
         }
     }
-
     @Override
     public void removeFileUploadStartListener(FileUploadStartListener listener) {
         if (fileUploadStartListeners != null) {
@@ -293,7 +408,6 @@ public class DesktopFileUploadField extends DesktopAbstractUploadComponent<JButt
             fileUploadFinishListeners.add(listener);
         }
     }
-
     @Override
     public void removeFileUploadFinishListener(FileUploadFinishListener listener) {
         if (fileUploadFinishListeners != null) {
@@ -310,7 +424,6 @@ public class DesktopFileUploadField extends DesktopAbstractUploadComponent<JButt
             fileUploadErrorListeners.add(listener);
         }
     }
-
     @Override
     public void removeFileUploadErrorListener(FileUploadErrorListener listener) {
         if (fileUploadErrorListeners != null) {
@@ -327,12 +440,57 @@ public class DesktopFileUploadField extends DesktopAbstractUploadComponent<JButt
             fileUploadSucceedListeners.add(listener);
         }
     }
-
     @Override
     public void removeFileUploadSucceedListener(FileUploadSucceedListener listener) {
         if (fileUploadSucceedListeners != null) {
             fileUploadSucceedListeners.remove(listener);
         }
+    }
+
+    protected void fireChangeListeners(Object newValue) {
+        Object oldValue = prevValue;
+        prevValue = (FileDescriptor) newValue;
+        if (!ObjectUtils.equals(oldValue, newValue)) {
+            fireValueChanged(oldValue, newValue);
+        }
+    }
+
+    @Override
+    public void setFileSizeLimit(long fileSizeLimit) {
+        this.fileSizeLimit = fileSizeLimit;
+    }
+
+    @Override
+    public InputStream getFileContent() {
+        FileDescriptor fileDescriptor = getValue();
+        switch (mode) {
+            case MANUAL:
+                if (fileId == null) {
+                    return new FileDataProvider(fileDescriptor).provide();
+                }
+
+                File file = fileUploading.getFile(fileId);
+                if (file != null) {
+                    try {
+                        return new FileInputStream(file);
+                    } catch (FileNotFoundException e) {
+                        log.error("Unable to get content of " + file, e);
+                    }
+                    return null;
+                }
+
+                FileStorageService fileStorageService = AppBeans.get(FileStorageService.NAME);
+
+                if (fileStorageService.fileExists(fileDescriptor)) {
+                    return new FileDataProvider(fileDescriptor).provide();
+                }
+                break;
+            case IMMEDIATE:
+                if (fileDescriptor != null) {
+                    return new FileDataProvider(fileDescriptor).provide();
+                }
+        }
+        return null;
     }
 
     @Override
@@ -347,7 +505,188 @@ public class DesktopFileUploadField extends DesktopAbstractUploadComponent<JButt
     }
 
     @Override
-    public void setFileSizeLimit(long fileSizeLimit) {
-        this.fileSizeLimit = fileSizeLimit;
+    public Datasource getDatasource() {
+        return datasource;
+    }
+
+    @Override
+    public MetaProperty getMetaProperty() {
+        return metaProperty;
+    }
+
+    @Override
+    public MetaPropertyPath getMetaPropertyPath() {
+        return metaPropertyPath;
+    }
+
+    @Override
+    public void setDatasource(Datasource datasource, String property) {
+        this.datasource = datasource;
+
+        if (datasource == null) {
+            setValue(null);
+            return;
+        }
+
+        MetaClass metaClass = datasource.getMetaClass();
+        resolveMetaPropertyPath(metaClass, property);
+
+        itemChangeListener = e -> {
+            if (updatingInstance)
+                return;
+            FileDescriptor descriptor = InstanceUtils.getValueEx(e.getItem(), metaPropertyPath.getPath());
+            updateComponent(descriptor);
+            fireChangeListeners(descriptor);
+        };
+        // noinspection unchecked
+        datasource.addItemChangeListener(new WeakItemChangeListener(datasource, itemChangeListener));
+
+        itemPropertyChangeListener = e -> {
+            if (updatingInstance)
+                return;
+            if (e.getProperty().equals(metaPropertyPath.toString())) {
+                updateComponent((FileDescriptor) e.getValue());
+                fireChangeListeners(e.getValue());
+            }
+        };
+        // noinspection unchecked
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
+
+        setRequired(metaProperty.isMandatory());
+        if (StringUtils.isEmpty(getRequiredMessage())) {
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
+        }
+
+        if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
+            Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
+            FileDescriptor fileDescriptor = (FileDescriptor) newValue;
+            updateComponent(fileDescriptor);
+            fireChangeListeners(newValue);
+        }
+
+        if (metaProperty.isReadOnly()) {
+            setEditable(false);
+        }
+
+        handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+        securityItemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
+        // noinspection unchecked
+        this.datasource.addItemChangeListener(new WeakItemChangeListener(this.datasource, securityItemChangeListener));
+    }
+
+    protected void updateInstance(Object value) {
+        updatingInstance = true;
+        try {
+            if (datasource != null && metaProperty != null && datasource.getItem() != null) {
+                datasource.getItem().setValueEx(metaPropertyPath.toString(), value);
+            }
+        } finally {
+            updatingInstance = false;
+        }
+    }
+
+    protected void updateComponent(FileDescriptor fileDescriptor) {
+        if (fileDescriptor != null) {
+            impl.setFileName(fileDescriptor.getName());
+        } else {
+            impl.setFileName(null);
+        }
+    }
+
+    @Override
+    public boolean isShowFileName() {
+        return impl.isShowFileName();
+    }
+
+    @Override
+    public void setShowFileName(boolean showFileName) {
+        impl.setShowFileName(showFileName);
+    }
+
+    @Override
+    public FileStoragePutMode getMode() {
+        return mode;
+    }
+
+    @Override
+    public void setMode(FileStoragePutMode mode) {
+        this.mode = mode;
+    }
+
+    /*
+    * Upload button
+    */
+    @Override
+    public String getUploadButtonCaption() {
+        return uploadButton.getCaption();
+    }
+
+    @Override
+    public void setUploadButtonCaption(String caption) {
+        uploadButton.setCaption(caption);
+    }
+
+    @Override
+    public void setUploadButtonIcon(String icon) {
+        uploadButton.setIcon(icon);
+    }
+
+    @Override
+    public String getUploadButtonIcon() {
+        return uploadButton.getIcon();
+    }
+
+    @Override
+    public void setUploadButtonDescription(String description) {
+        impl.setUploadButtonDescription(description);
+    }
+
+    @Override
+    public String getUploadButtonDescription() {
+        return impl.getUploadButtonDescription();
+    }
+
+    /*
+    * Clear button
+    */
+    @Override
+    public void setShowClearButton(boolean showClearButton) {
+        impl.setShowClearButton(showClearButton);
+    }
+
+    @Override
+    public boolean isShowClearButton() {
+        return impl.isShowClearButton();
+    }
+
+    @Override
+    public void setClearButtonCaption(String caption) {
+        impl.setClearButtonCaption(caption);
+    }
+
+    @Override
+    public String getClearButtonCaption() {
+        return impl.getClearButtonCaption();
+    }
+
+    @Override
+    public void setClearButtonIcon(String icon) {
+        impl.setClearButtonIcon(icon);
+    }
+
+    @Override
+    public String getClearButtonIcon() {
+        return impl.getClearButtonIcon();
+    }
+
+    @Override
+    public void setClearButtonDescription(String description) {
+        impl.setClearButtonDescription(description);
+    }
+
+    @Override
+    public String getClearButtonDescription() {
+        return impl.getClearButtonDescription();
     }
 }

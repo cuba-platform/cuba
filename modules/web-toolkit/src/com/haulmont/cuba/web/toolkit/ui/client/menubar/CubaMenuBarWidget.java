@@ -49,12 +49,12 @@ public class CubaMenuBarWidget extends VMenuBar implements BlurHandler {
             itemHTML.append("<span class=\"")
                     .append(getStylePrimaryName())
                     .append("-menuitem-caption\">");
-            if (item.hasAttribute("icon")) {
-                itemHTML.append("<img src=\"")
-                        .append(WidgetUtil.escapeAttribute(client.translateVaadinUri(item.getStringAttribute("icon"))))
-                        .append("\" class=\"")
-                        .append(Icon.CLASSNAME).append("\" alt=\"\" />");
+
+            Icon icon = client.getIcon(item.getStringAttribute("icon"));
+            if (icon != null) {
+                itemHTML.append(icon.getElement().getString());
             }
+
             String itemText = item.getStringAttribute("text");
             if (!htmlContentAllowed) {
                 itemText = WidgetUtil.escapeHTML(itemText);

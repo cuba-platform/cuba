@@ -106,4 +106,17 @@ public interface LoginWorker {
      * @see com.haulmont.cuba.security.app.LoginService#checkRememberMe(String, String)
      */
     boolean checkRememberMe(String login, String rememberMeToken);
+
+    /**
+     * Check credentials of user and return loaded user entity.
+     *
+     * @param login      login
+     * @param password   user's encrypted password
+     * @param locale     locale
+     * @param parameters additional parameters
+     * @return user
+     * @throws LoginException in case of unsuccessful authentication
+     */
+    User authenticate(String login, String password, Locale locale, Map<String, Object> parameters)
+            throws LoginException;
 }

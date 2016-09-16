@@ -119,6 +119,16 @@ public interface JmxControlAPI {
     Object invokeOperation(ManagedBeanOperation operation, Object[] parameterValues);
 
     /**
+     * Check if {@code ManagedBeanOperation} description contains @JmxLongOperation annotation
+     * (or @JmxLongOperation(long timeout), timeout - time in milliseconds)
+     *
+     * @param operation operation descriptor
+     * @return timeout of {@code BackgroundTask} in milliseconds if operation should be launched asynchronously
+     * or null otherwise
+     */
+    Long getAsyncOperationTimeout(ManagedBeanOperation operation);
+
+    /**
      * Loads list of managed bean domains
      *
      * @param instance JMX node descriptor

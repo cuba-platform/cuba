@@ -17,18 +17,20 @@
 
 package com.haulmont.cuba.desktop.gui.data;
 
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -51,6 +53,7 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
     protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+    protected boolean ignoreUnfetchedAttributes = false;
 
     public TableModelAdapter(CollectionDatasource datasource, List<Table.Column> columns, boolean autoRefresh) {
         this.datasource = datasource;
@@ -116,6 +119,10 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
         };
         //noinspection unchecked
         datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
+
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+        ignoreUnfetchedAttributes = clientConfig.getIgnoreUnfetchedAttributesInTable();
     }
 
     protected void fireBeforeChangeListeners(boolean structureChanged) {
@@ -162,7 +169,13 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
         Table.Column column = columns.get(columnIndex);
         if (column.getId() instanceof MetaPropertyPath) {
             String property = column.getId().toString();
-            Object value = item.getValueEx(property);
+
+            Object value;
+            if (ignoreUnfetchedAttributes) {
+                value = getValueExIgnoreUnfetched(item, InstanceUtils.parseValuePath(property));
+            } else {
+                value = item.getValueEx(property);
+            }
 
             if (column.getFormatter() != null) {
                 return column.getFormatter().format(value);
@@ -185,6 +198,31 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
         } else {
             return null;
         }
+    }
+
+    protected Object getValueExIgnoreUnfetched(Instance instance, String[] properties) {
+        Object currentValue = null;
+        Instance currentInstance = instance;
+        for (String property : properties) {
+            if (currentInstance == null) {
+                break;
+            }
+
+            if (!PersistenceHelper.isLoaded(currentInstance, property)) {
+                LoggerFactory.getLogger(TableModelAdapter.class)
+                        .warn("Ignored unfetched attribute {} of instance {} in Table cell",
+                                property, currentInstance);
+                return null;
+            }
+
+            currentValue = currentInstance.getValue(property);
+            if (currentValue == null) {
+                break;
+            }
+
+            currentInstance = currentValue instanceof Instance ? (Instance) currentValue : null;
+        }
+        return currentValue;
     }
 
     @Override

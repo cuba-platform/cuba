@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.web.auth;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.global.LoginException;
 import org.apache.commons.lang.StringUtils;
@@ -40,6 +38,9 @@ public class LdapAuthProvider implements CubaAuthProvider {
     @Inject
     protected Messages messages;
 
+    @Inject
+    protected WebAuthConfig webAuthConfig;
+
     protected LdapContextSource ldapContextSource;
 
     protected LdapTemplate ldapTemplate;
@@ -48,23 +49,21 @@ public class LdapAuthProvider implements CubaAuthProvider {
     public void authenticate(String login, String password, Locale messagesLocale) throws LoginException {
         if (!ldapTemplate.authenticate(LdapUtils.emptyLdapName(), buildPersonFilter(login), password)) {
             throw new LoginException(
-                    String.format(messages.getMessage(LdapAuthProvider.class, "LoginException.InvalidLoginOrPassword", messagesLocale), login)
+                    messages.formatMessage(LdapAuthProvider.class, "LoginException.InvalidLoginOrPassword", messagesLocale, login)
             );
         }
     }
 
     protected String buildPersonFilter(String login) {
         AndFilter filter = new AndFilter();
-        filter.and(new EqualsFilter("objectclass", "person")).and(new EqualsFilter("sAMAccountName", login));
+        filter.and(new EqualsFilter("objectclass", "person"))
+              .and(new EqualsFilter(webAuthConfig.getLdapUserLoginField(), login));
         return filter.encode();
     }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         ldapContextSource = new LdapContextSource();
-
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        WebAuthConfig webAuthConfig = configuration.getConfig(WebAuthConfig.class);
 
         checkRequiredConfigProperties(webAuthConfig);
 

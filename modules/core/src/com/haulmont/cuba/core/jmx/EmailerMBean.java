@@ -49,6 +49,7 @@ public interface EmailerMBean {
     @ManagedOperationParameters({@ManagedOperationParameter(name = "addresses", description = "")})
     String sendTestEmail(String addresses);
 
-    @ManagedOperation(description = "Migrate existing email history to use file storage")
+    @ManagedOperation(description = "Migrate existing email history to use file storage" +
+            "@JmxLongOperation")
     String migrateEmailsToFileStorage(String password);
 }

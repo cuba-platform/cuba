@@ -21,11 +21,13 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.restapi.exception.RestAPIException;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
 /**
  */
+@Component("cuba_RestControllerUtils")
 public class RestControllerUtils {
 
     @Inject

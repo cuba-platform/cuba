@@ -26,10 +26,7 @@ import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.impl.*;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.BaseIntegerIdEntity;
-import com.haulmont.cuba.core.entity.BaseLongIdEntity;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.annotation.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.MetadataBuildSupport.EntityClassInfo;
@@ -121,6 +118,7 @@ public class MetadataImpl implements Metadata {
         try {
             T obj = extClass.newInstance();
             assignIdentifier((Entity) obj);
+            assignUuid((Entity) obj);
             invokePostConstructMethods((Entity) obj);
             return obj;
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
@@ -150,6 +148,12 @@ public class MetadataImpl implements Metadata {
             } else if (entity instanceof BaseIntegerIdEntity) {
                 ((BaseGenericIdEntity<Integer>) entity).setId(numberIdSource.createIntegerId(metaClass.getName()));
             }
+        }
+    }
+
+    protected void assignUuid(Entity entity) {
+        if (entity instanceof HasUuid) {
+            ((HasUuid) entity).setUuid(UuidProvider.createUuid());
         }
     }
 

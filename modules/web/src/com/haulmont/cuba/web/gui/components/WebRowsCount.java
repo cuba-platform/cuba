@@ -55,7 +55,8 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         if (datasource != null) {
             //noinspection unchecked
             collectionChangeListener = e -> {
-                samePage = !Operation.REFRESH.equals(e.getOperation());
+                samePage = Operation.REFRESH != e.getOperation()
+                            && Operation.CLEAR != e.getOperation();
                 onCollectionChanged();
             };
             //noinspection unchecked
@@ -108,7 +109,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         ds.setFirstResult(ds.getFirstResult() + ds.getMaxResults());
         refreshDatasource(ds);
 
-        if (state.equals(State.LAST) && size == 0) {
+        if (state == State.LAST && size == 0) {
             ds.setFirstResult(firstResult);
             int maxResults = ds.getMaxResults();
             ds.setMaxResults(maxResults + 1);
@@ -187,7 +188,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         if (datasource instanceof CollectionDatasource.SupportsPaging) {
             CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
             if (samePage) {
-                state = lastState;
+                state = lastState == null ? State.FIRST_COMPLETE : lastState;
                 start = ds.getFirstResult();
                 samePage = false;
                 refreshSizeButton = State.LAST.equals(state);

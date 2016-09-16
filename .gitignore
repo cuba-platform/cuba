@@ -8,14 +8,15 @@ out
 *.iws
 *.ids
 
-modules/core/build/*
-modules/global/build/*
-modules/gui/build/*
-modules/web/build/*
-modules/client/build/*
-modules/desktop/build/*
-modules/portal/build/*
-modules/web-auth/build/*
-modules/web-toolkit/build/*
-modules/shared-lib/build/*
-modules/rest-api/build/*
+modules/core/build/
+modules/global/build/
+modules/gui/build/
+modules/web/build/
+modules/client/build/
+modules/desktop/build/
+modules/portal/build/
+modules/web-auth/build/
+modules/web-toolkit/build/
+modules/shared-lib/build/
+modules/rest-api/build/
+modules/idp/build/

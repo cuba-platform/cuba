@@ -170,6 +170,10 @@
                        value-ref="cuba_StatisticsCounterMBean"/>
                 <entry key="${cuba.webContextName}.cuba:type=BruteForceProtection"
                        value-ref="cuba_BruteForceProtectionMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=QueryCacheSupport"
+                       value-ref="cuba_QueryCacheSupportMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=IdpSessions"
+                       value-ref="cuba_IdpSessionsMBean"/>
             </map>
         </property>
     </bean>

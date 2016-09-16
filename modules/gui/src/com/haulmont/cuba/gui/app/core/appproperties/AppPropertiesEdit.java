@@ -20,15 +20,23 @@ package com.haulmont.cuba.gui.app.core.appproperties;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
+import com.haulmont.cuba.client.sys.ConfigurationClientImpl;
 import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.config.AppPropertyEntity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.security.global.UserSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -38,14 +46,13 @@ import java.util.Map;
  */
 public class AppPropertiesEdit extends AbstractWindow {
 
+    private Logger log = LoggerFactory.getLogger(AppPropertiesEdit.class);
+
     @WindowParam
     private AppPropertyEntity item;
 
     @Inject
     private Datasource<AppPropertyEntity> appPropertyDs;
-
-    @Inject
-    private ConfigStorageService configStorageService;
 
     @Inject
     private Label cannotEditValueLabel;
@@ -58,6 +65,9 @@ public class AppPropertiesEdit extends AbstractWindow {
 
     @Inject
     private ComponentsFactory componentsFactory;
+
+    @Inject
+    private UserSessionSource userSessionSource;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -79,7 +89,15 @@ public class AppPropertiesEdit extends AbstractWindow {
                 } else {
                     TextField textField = componentsFactory.createComponent(TextField.class);
                     textField.setValue(item.getCurrentValue());
-                    textField.setDatatype(datatype);
+
+                    try {
+                        datatype.parse(item.getCurrentValue(), userSessionSource.getLocale());
+                        textField.setDatatype(datatype);
+                    } catch (ParseException e) {
+                        // do not assign datatype then
+                        log.trace("Localized parsing by datatype cannot be used for value {}", item.getCurrentValue());
+                    }
+
                     textField.addValueChangeListener(e -> {
                         appPropertyDs.getItem().setCurrentValue(e.getValue() == null ? null : e.getValue().toString());
                     });
@@ -103,7 +121,12 @@ public class AppPropertiesEdit extends AbstractWindow {
 
     public void ok() {
         AppPropertyEntity appPropertyEntity = appPropertyDs.getItem();
+
+        // Save property through the client-side cache to ensure it is updated in the cache immediately
+        Configuration configuration = AppBeans.get(Configuration.class);
+        ConfigStorageService configStorageService = ((ConfigurationClientImpl) configuration).getConfigStorageService();
         configStorageService.setDbProperty(appPropertyEntity.getName(), appPropertyEntity.getCurrentValue());
+
         close(COMMIT_ACTION_ID);
     }
 

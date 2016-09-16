@@ -55,7 +55,7 @@ public class GroupBoxLayoutLoader extends ContainerLoader<GroupBoxLayout> {
         loadSpacing(resultComponent, element);
 
         loadSubComponentsAndExpand(resultComponent, element);
-        loadShownAsPanel(resultComponent, element);
+        loadShowAsPanel(resultComponent, element);
     }
 
     protected void loadOrientation(GroupBoxLayout component, Element element) {
@@ -74,10 +74,10 @@ public class GroupBoxLayoutLoader extends ContainerLoader<GroupBoxLayout> {
         }
     }
 
-    protected void loadShownAsPanel(GroupBoxLayout component, Element element) {
-        String shownAsPanel = element.attributeValue("shownAsPanel");
-        if (StringUtils.isNotEmpty(shownAsPanel)) {
-            component.setShownAsPanel(Boolean.parseBoolean(shownAsPanel));
+    protected void loadShowAsPanel(GroupBoxLayout component, Element element) {
+        String showAsPanel = element.attributeValue("showAsPanel");
+        if (StringUtils.isNotEmpty(showAsPanel)) {
+            component.setShowAsPanel(Boolean.parseBoolean(showAsPanel));
         }
     }
 }

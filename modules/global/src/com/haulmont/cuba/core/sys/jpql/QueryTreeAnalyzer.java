@@ -95,7 +95,7 @@ public class QueryTreeAnalyzer {
     }
 
     public JpqlEntityModel getSelectedEntity(PathNode path) {
-        Pointer pointer = path.walk(model, getRootQueryVariableContext());
+        Pointer pointer = path.resolvePointer(model, getRootQueryVariableContext());
         if (!(pointer instanceof EntityPointer)) {
             throw new IllegalStateException("A path resulting in an entity is assumed to be selected");
         }
@@ -180,6 +180,15 @@ public class QueryTreeAnalyzer {
         }
     }
 
+    public List<SimpleConditionNode> findConditionsForParameter(String paramName) {
+        CommonTree whereTree = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_CONDITION);
+        List<SimpleConditionNode> conditionNodes = getChildrenByClass(whereTree, SimpleConditionNode.class);
+        return conditionNodes.stream()
+                .filter((SimpleConditionNode n) -> {
+                    ParameterNode parameter = (ParameterNode) n.getFirstChildWithType(JPA2Lexer.T_PARAMETER);
+                    return parameter != null && parameter.getChild(0).getText().contains(paramName);
+                }).collect(Collectors.toList());
+    }
 
     public List<SimpleConditionNode> findAllConditions() {
         NodesFinder<SimpleConditionNode> nodesFinder = new NodesFinder<>(SimpleConditionNode.class);

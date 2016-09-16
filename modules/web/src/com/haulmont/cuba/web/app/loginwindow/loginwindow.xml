@@ -25,9 +25,11 @@
     </actions>
 
     <layout stylename="cuba-login-main-layout">
-        <vbox stylename="cuba-login-panel" width="AUTO"
+        <vbox id="loginMainBox"
+              stylename="cuba-login-panel" width="AUTO"
               margin="true" spacing="true" align="MIDDLE_CENTER">
-            <hbox stylename="cuba-login-title" spacing="true" align="MIDDLE_CENTER">
+            <hbox id="loginTitleBox" stylename="cuba-login-title"
+                  spacing="true" align="MIDDLE_CENTER">
                 <embedded id="logoImage"
                           width="AUTO"
                           height="AUTO"
@@ -41,8 +43,11 @@
                        value="mainMsg://loginWindow.welcomeLabel"/>
             </hbox>
 
-            <grid stylename="cuba-login-form" spacing="true">
-                <columns count="2"/>
+            <grid id="loginFormLayout" stylename="cuba-login-form" spacing="true">
+                <columns>
+                    <column id="loginFormCaptionColumn"/>
+                    <column id="loginFormFieldColumn"/>
+                </columns>
                 <rows>
                     <row>
                         <label id="loginFieldLabel" value="mainMsg://loginWindow.loginField" align="MIDDLE_RIGHT"

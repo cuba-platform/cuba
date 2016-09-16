@@ -19,6 +19,7 @@ package com.haulmont.restapi.service;
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.app.importexport.EntityImportException;
 import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.app.importexport.EntityImportViewBuilderAPI;
@@ -37,6 +38,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -46,6 +48,7 @@ import java.util.*;
  * Class that executes business logic required by the {@link com.haulmont.restapi.controllers.EntitiesController}. It
  * performs CRUD operations with entities
  */
+@Component("cuba_EntitiesControllerManager")
 public class EntitiesControllerManager {
 
     @Inject
@@ -148,9 +151,14 @@ public class EntitiesControllerManager {
         Entity entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
 
-        Collection<Entity> importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
+        Collection<Entity> importedEntities;
+        try {
+            importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
+        } catch (EntityImportException e) {
+            throw new RestAPIException("Entity creation failed", e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
 
-        //if multiple entities was created (because of @Composition references) we must find the main entity
+        //if many entities were created (because of @Composition references) we must find the main entity
         return getMainEntityInfo(importedEntities, metaClass);
     }
 
@@ -164,7 +172,12 @@ public class EntitiesControllerManager {
         checkEntityIsNotNull(entityName, entityId, existingEntity);
         Entity entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
-        Collection<Entity> importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
+        Collection<Entity> importedEntities;
+        try {
+            importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
+        } catch (EntityImportException e) {
+            throw new RestAPIException("Entity update failed", e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
         //there may be multiple entities in importedEntities (because of @Composition references), so we must find
         // the main entity that will be returned
         return getMainEntityInfo(importedEntities, metaClass);

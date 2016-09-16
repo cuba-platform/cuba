@@ -17,22 +17,32 @@
 
 package com.haulmont.cuba.core.sys.entitycache;
 
+import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.ClusterListenerAdapter;
 import com.haulmont.cuba.core.app.ClusterManager;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.coordination.broadcast.BroadcastRemoteConnection;
+import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
-import org.eclipse.persistence.sessions.serializers.Serializer;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
-public class EntityCacheRemoteConnection extends BroadcastRemoteConnection {
+public class EntityCacheConnection extends BroadcastRemoteConnection {
 
-    private ClusterManager clusterManager;
+    protected Metadata metadata;
+    protected QueryCacheManager queryCacheManager;
+    protected ClusterManager clusterManager;
 
-    public EntityCacheRemoteConnection(RemoteCommandManager rcm, ClusterManager clusterManager) {
+    public EntityCacheConnection(RemoteCommandManager rcm, ClusterManager clusterManager) {
         super(rcm);
+        this.metadata = AppBeans.get(Metadata.NAME);
+        this.queryCacheManager = AppBeans.get(QueryCacheManager.NAME);
         this.clusterManager = clusterManager;
         rcm.logDebug("creating_broadcast_connection", getInfo());
         try {
@@ -49,30 +59,33 @@ public class EntityCacheRemoteConnection extends BroadcastRemoteConnection {
             throw ex;
         }
     }
-    
-    public EntityCacheRemoteConnection(RemoteCommandManager rcm){
+
+    public EntityCacheConnection(RemoteCommandManager rcm) {
         super(rcm);
     }
 
     public boolean isLocal() {
         return true;
     }
-    
+
     @Override
     protected Object executeCommandInternal(Object command) throws Exception {
         Message message = new Message(command);
 
         Object[] debugInfo = null;
-        if(this.rcm.shouldLogDebugMessage()) {
+        if (this.rcm.shouldLogDebugMessage()) {
             debugInfo = logDebugBeforePublish(null);
         }
-            
+
+        if (queryCacheManager.isEnabled()) {
+            invalidateQueryCache(command);
+        }
         this.clusterManager.send(message);
 
         if (debugInfo != null) {
             logDebugAfterPublish(debugInfo, null);
         }
-        
+
         return null;
     }
 
@@ -80,21 +93,13 @@ public class EntityCacheRemoteConnection extends BroadcastRemoteConnection {
         if (rcm.shouldLogDebugMessage()) {
             logDebugOnReceiveMessage(null);
         }
-
-        Object object;
-        try {
-            Serializer serializer = this.rcm.getSerializer();
-            if (serializer != null) {
-                object = serializer.deserialize(message.getObject(), (AbstractSession)this.rcm.getCommandProcessor());
-            } else {
-                object = message.getObject();            
+        if (message.getObject() != null) {
+            Object command = message.getObject();
+            if (queryCacheManager.isEnabled()) {
+                invalidateQueryCache(command);
             }
-        } catch (Exception exception) {
-            failDeserializeMessage(null, exception);
-            return;
+            processReceivedObject(command, "");
         }
-        
-        processReceivedObject(object, "");
     }
 
     @Override
@@ -116,6 +121,24 @@ public class EntityCacheRemoteConnection extends BroadcastRemoteConnection {
         return false;
     }
 
+    protected void invalidateQueryCache(Object command) {
+        if (command instanceof MergeChangeSetCommand) {
+            MergeChangeSetCommand changeSetCommand = (MergeChangeSetCommand) command;
+            UnitOfWorkChangeSet changeSet = changeSetCommand.getChangeSet(null);
+            if (changeSet != null && changeSet.getAllChangeSets() != null) {
+                Set<String> typeNames = new HashSet<>();
+                changeSet.getAllChangeSets().values().stream().filter(obj -> obj.getClassName() != null).forEach(obj -> {
+                    MetaClass metaClass = metadata.getClass(ReflectionHelper.getClass(obj.getClassName()));
+                    if (metaClass != null) {
+                        metaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass);
+                        typeNames.add(metaClass.getName());
+                    }
+                });
+                queryCacheManager.invalidate(typeNames, false);
+            }
+        }
+    }
+
     public static class Message implements Serializable {
 
         private Object object;
@@ -130,9 +153,7 @@ public class EntityCacheRemoteConnection extends BroadcastRemoteConnection {
 
         @Override
         public String toString() {
-            return "Message{" +
-                    "object=" + object +
-                    '}';
+            return String.format("Message{object=%s}", object);
         }
     }
 }

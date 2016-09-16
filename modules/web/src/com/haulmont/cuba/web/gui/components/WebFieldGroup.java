@@ -868,6 +868,15 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup> implemen
     }
 
     @Override
+    public String getFieldCaption(String fieldId) {
+        com.vaadin.ui.Field f = component.getField(fieldId);
+        if (f == null) {
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
+        return f.getCaption();
+    }
+
+    @Override
     public void setFieldCaption(String fieldId, String caption) {
         FieldConfig field = getField(fieldId);
         if (field == null) {

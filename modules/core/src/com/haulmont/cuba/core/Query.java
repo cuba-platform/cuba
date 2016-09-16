@@ -224,6 +224,13 @@ public interface Query {
     Query addView(Class<? extends Entity> entityClass, String viewName);
 
     /**
+     * Set query results to be cached
+     * @param cacheable
+     * @return the same query instance
+     */
+    Query setCacheable(boolean cacheable);
+
+    /**
      * @return  underlying implementation provided by ORM
      */
     javax.persistence.Query getDelegate();

@@ -129,11 +129,13 @@ public class FetchGroupManager {
 
                 boolean selfRef = false;
                 for (MetaProperty mp : refField.metaPropertyPath.getMetaProperties()) {
-                    if (!mp.getRange().getCardinality().isMany()
-                            && metadataTools.isAssignableFrom(mp.getRange().asClass(), metaClass)) {
-                        batchFields.add(refField);
-                        selfRef = true;
-                        break;
+                    if (!mp.getRange().getCardinality().isMany()){
+                        MetaClass mpClass = mp.getRange().asClass();
+                        if (metadataTools.isAssignableFrom(mpClass, metaClass) || metadataTools.isAssignableFrom(metaClass, mpClass)) {
+                            batchFields.add(refField);
+                            selfRef = true;
+                            break;
+                        }
                     }
                 }
 

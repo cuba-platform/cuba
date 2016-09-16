@@ -252,7 +252,8 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                             ((LookupPickerField) pickerField).setOptionsDatasource(optionsDs);
                         } else {
                             pickerField = componentsFactory.createComponent(PickerField.class);
-                            dynamicAttributesGuiTools.addEntityLookupAction(pickerField, metaProperty);
+                            LookupAction lookupAction = pickerField.addLookupAction();
+                            dynamicAttributesGuiTools.initEntityLookupAction(lookupAction, metaProperty);
                         }
                         pickerField.setMetaClass(ds.getMetaClass());
                         pickerField.setFrame(RuntimePropertiesFrame.this);

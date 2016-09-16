@@ -31,6 +31,7 @@ import com.haulmont.restapi.exception.RestAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -43,6 +44,7 @@ import java.util.*;
  * Class that executes business logic required by the {@link com.haulmont.restapi.controllers.ServicesController}. It
  * performs middleware services invocations.
  */
+@Component("cuba_ServicesControllerManager")
 public class ServicesControllerManager {
 
     @Inject
@@ -95,7 +97,9 @@ public class ServicesControllerManager {
         for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
             String paramName = entry.getKey();
             JsonElement paramValue = entry.getValue();
-            if (paramValue.isJsonPrimitive()) {
+            if (paramValue.isJsonNull()) {
+                result.put(paramName, null);
+            } else if (paramValue.isJsonPrimitive()) {
                 result.put(paramName, paramValue.getAsString());
             } else {
                 result.put(paramName, paramValue.toString());

@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.app.ClusterListener;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
@@ -34,6 +35,7 @@ import javax.inject.Inject;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * User sessions distributed cache.
@@ -275,6 +277,21 @@ public class UserSessions implements UserSessionsAPI {
             usi.lastUsedTs = 0;
             clusterManager.send(usi);
         }
+    }
+
+    @Override
+    public List<UUID> findUserSessionsByAttribute(String attributeName, Object attributeValue) {
+        Preconditions.checkNotNullArgument(attributeName);
+
+        List<UserSessionInfo> sessionInfos = new ArrayList<>(cache.values());
+
+        //noinspection UnnecessaryLocalVariable
+        List<UUID> sessionIds = sessionInfos.stream()
+                .filter(usInfo -> Objects.equals(usInfo.session.getAttribute(attributeName), attributeValue))
+                .map(userSessionInfo -> userSessionInfo.session.getId())
+                .collect(Collectors.toList());
+
+        return sessionIds;
     }
 
     @Override

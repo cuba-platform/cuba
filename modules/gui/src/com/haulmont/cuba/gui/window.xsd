@@ -57,6 +57,13 @@
         </xs:union>
     </xs:simpleType>
 
+    <xs:simpleType name="fileStoragePutMode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="MANUAL"/>
+            <xs:enumeration value="IMMEDIATE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="dateFieldResolution">
         <xs:restriction base="xs:string">
             <xs:enumeration value="SEC"/>
@@ -490,6 +497,7 @@
         <xs:attribute name="maxValue" type="xs:string"/>
         <xs:attribute name="includeMaxValue" type="xs:boolean"/>
         <xs:attribute name="ignoreCase" type="xs:boolean"/>
+        <xs:attribute name="pattern" type="xs:string"/>
     </xs:complexType>
 
     <xs:complexType name="tableRowsType">
@@ -971,13 +979,28 @@
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasAlign"/>
-        <xs:attributeGroup ref="hasIcon"/>
         <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasIcon"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasDatasource"/>
+        <xs:attributeGroup ref="hasEditState"/>
+        <xs:attributeGroup ref="hasRequirements"/>
 
         <xs:attributeGroup ref="isUploadComponent"/>
+
+        <xs:attribute name="showClearButton" type="xs:boolean"/>
+        <xs:attribute name="clearButtonCaption" type="resourceString"/>
+        <xs:attribute name="clearButtonIcon" type="resourceString"/>
+        <xs:attribute name="clearButtonDescription" type="resourceString"/>
+
+        <xs:attribute name="uploadButtonCaption" type="resourceString"/>
+        <xs:attribute name="uploadButtonIcon" type="resourceString"/>
+        <xs:attribute name="uploadButtonDescription" type="resourceString"/>
+
+        <xs:attribute name="showFileName" type="xs:boolean"/>
+        <xs:attribute name="fileStoragePutMode" type="fileStoragePutMode"/>
     </xs:complexType>
 
     <!-- FileMultiUploadField -->
@@ -1429,6 +1452,8 @@
         <xs:attribute name="leftColumnCaption" type="xs:string"/>
         <xs:attribute name="rightColumnCaption" type="xs:string"/>
 
+        <xs:attribute name="multiselect" type="xs:boolean"/>
+
         <xs:attribute name="columns" type="xs:string"/>
         <xs:attribute name="rows" type="xs:string"/>
         <xs:attribute name="addAllBtnEnabled" type="xs:boolean"/>
@@ -1642,7 +1667,7 @@
         <xs:attribute name="collapsable" type="xs:boolean"/>
         <xs:attribute name="collapsed" type="xs:boolean"/>
         <xs:attribute name="orientation" type="orientation"/>
-        <xs:attribute name="shownAsPanel" type="xs:boolean"/>
+        <xs:attribute name="showAsPanel" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Frame -->
@@ -1765,6 +1790,7 @@
         <xs:attribute name="query" type="xs:string"/>
         <xs:attribute name="refreshMode" type="refreshMode"/>
         <xs:attribute name="softDeletion" type="xs:boolean"/>
+        <xs:attribute name="cacheable" type="xs:boolean"/>
         <xs:attribute name="loadDynamicAttributes" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
@@ -1787,6 +1813,7 @@
         <xs:attribute name="hierarchyProperty" type="xs:string"/>
         <xs:attribute name="refreshMode" type="refreshMode"/>
         <xs:attribute name="softDeletion" type="xs:boolean"/>
+        <xs:attribute name="cacheable" type="xs:boolean"/>
         <xs:attribute name="loadDynamicAttributes" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
@@ -1809,6 +1836,7 @@
         <xs:attribute name="query" type="xs:string"/>
         <xs:attribute name="refreshMode" type="refreshMode"/>
         <xs:attribute name="softDeletion" type="xs:boolean"/>
+        <xs:attribute name="cacheable" type="xs:boolean"/>
         <xs:attribute name="loadDynamicAttributes" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
@@ -2059,12 +2087,14 @@
 
             <xs:attribute name="extends" type="xs:string"/>
             <xs:attribute name="class" type="xs:string"/>
+            <xs:attribute name="icon" type="xs:string"/>
             <xs:attribute name="messagesPack" type="xs:string"/>
             <xs:attribute name="lookupComponent" type="xs:string"/>
 
             <xs:attribute name="datasource" type="xs:string"/>
             <xs:attribute name="dataSupplier" type="xs:string"/>
             <xs:attribute name="caption" type="resourceString"/>
+            <xs:attribute name="description" type="resourceString"/>
             <xs:attribute name="focusComponent" type="xs:string"/>
         </xs:complexType>
     </xs:element>

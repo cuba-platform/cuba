@@ -27,9 +27,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @ControllerAdvice("com.haulmont.restapi.controllers")
-public class ControllerExceptionHandler {
+public class RestControllerExceptionHandler {
 
-    private final Logger log = LoggerFactory.getLogger(ControllerExceptionHandler.class);
+    private final Logger log = LoggerFactory.getLogger(RestControllerExceptionHandler.class);
 
     @ExceptionHandler(RestAPIException.class)
     @ResponseBody
@@ -42,6 +42,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseEntity<ErrorInfo> handleException(Exception e) {
+        log.error("Exception in REST controller", e);
         ErrorInfo errorInfo = new ErrorInfo("Server error", "");
         return new ResponseEntity<>(errorInfo, HttpStatus.INTERNAL_SERVER_ERROR);
     }

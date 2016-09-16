@@ -103,7 +103,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
     protected DomainAliasesResolver domainAliasesResolver;
 
     @Inject
-    protected CubaAuthProvider cubaAuthProvider;
+    protected CubaAuthProvider authProvider;
 
     @Inject
     protected UserManagementService userManagementService;
@@ -419,7 +419,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
     protected boolean authenticateExternally(String login, String passwordValue, Locale locale) {
         try {
-            cubaAuthProvider.authenticate(login, passwordValue, locale);
+            authProvider.authenticate(login, passwordValue, locale);
         } catch (Exception e) {
             log.debug("External authentication failed", e);
             return false;

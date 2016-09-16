@@ -49,7 +49,7 @@
     </bean>
 
     <bean id="thymeleafTemplateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
-        <property name="prefix" value="/WEB-INF/templates/"/>
+        <property name="prefix" value="${cuba.portal.templateLoaderPath}"/>
         <property name="order" value="2" />
         <property name="suffix" value=".html"/>
         <property name="templateMode" value="HTML"/>

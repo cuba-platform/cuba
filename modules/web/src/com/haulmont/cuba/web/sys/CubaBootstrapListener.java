@@ -29,7 +29,6 @@ import org.springframework.stereotype.Component;
  * send to the client. The bootstrap HTML is first constructed as an in-memory
  * DOM representation which registered listeners can modify before the final
  * HTML is generated.
- *
  */
 @Component(CubaBootstrapListener.NAME)
 public class CubaBootstrapListener implements BootstrapListener {
@@ -44,7 +43,7 @@ public class CubaBootstrapListener implements BootstrapListener {
     public void modifyBootstrapPage(BootstrapPageResponse response) {
         Element head = response.getDocument().getElementsByTag("head").get(0);
 
-        includeScript("VAADIN/resources/jquery/jquery-1.12.3.min.js", response, head);
+        includeScript("VAADIN/resources/jquery/jquery-1.12.4.min.js", response, head);
     }
 
     protected void includeScript(String src, BootstrapPageResponse response, Element head) {

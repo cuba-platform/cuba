@@ -27,6 +27,7 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -46,6 +47,7 @@ import java.util.stream.Collectors;
  * config. If the query with this name is requested, the {@link QueryInfo} for the query that returns all entities will
  * be returned.
  */
+@Component("cuba_RestQueriesConfiguration")
 public class RestQueriesConfiguration {
 
     protected final String CUBA_REST_QUERIES_CONFIG_PROP_NAME = "cuba.rest.queriesConfig";

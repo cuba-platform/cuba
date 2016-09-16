@@ -65,7 +65,8 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     @Override
     public byte[] exportEntities(Collection<? extends Entity> entities) {
-        String json = entitySerialization.toJson(entities);
+        String json = entitySerialization.toJson(entities, null, EntitySerializationOption.COMPLEX_ID_FORMAT,
+                EntitySerializationOption.COMPACT_REPEATED_ENTITIES);
         byte[] jsonBytes = json.getBytes();
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

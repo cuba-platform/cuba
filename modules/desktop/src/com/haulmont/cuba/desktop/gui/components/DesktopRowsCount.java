@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RowsCount;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import net.miginfocom.layout.LC;
@@ -62,7 +63,8 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         this.datasource = datasource;
         if (datasource != null) {
             collectionChangeListener = e -> {
-                samePage = !CollectionDatasource.Operation.REFRESH.equals(e.getOperation());
+                samePage = Operation.REFRESH != e.getOperation()
+                            && Operation.CLEAR != e.getOperation();
                 onCollectionChanged();
             };
             //noinspection unchecked
@@ -103,7 +105,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         if (datasource instanceof CollectionDatasource.SupportsPaging) {
             CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
             if (samePage) {
-                state = lastState;
+                state = lastState == null ? State.FIRST_COMPLETE : lastState;
                 start = ds.getFirstResult();
                 samePage = false;
                 refreshSizeButton = State.LAST.equals(state);
@@ -225,7 +227,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         ds.setFirstResult(ds.getFirstResult() + ds.getMaxResults());
         refreshDatasource(ds);
 
-        if (state.equals(State.LAST) && size == 0) {
+        if (state == State.LAST && size == 0) {
             ds.setFirstResult(firstResult);
             int maxResults = ds.getMaxResults();
             ds.setMaxResults(maxResults + 1);

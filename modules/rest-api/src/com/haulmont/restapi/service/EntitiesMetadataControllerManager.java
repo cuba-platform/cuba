@@ -29,6 +29,7 @@ import com.haulmont.restapi.exception.RestAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
  * Class is used by the {@link com.haulmont.restapi.controllers.EntitiesMetadataController}. Class is sed for getting
  * entities metadata. User permissions for entities access aren't taken into account at the moment.
  */
+@Component("cuba_EntitiesMetadataControllerManager")
 public class EntitiesMetadataControllerManager {
 
     protected Logger log = LoggerFactory.getLogger(EntitiesMetadataControllerManager.class);

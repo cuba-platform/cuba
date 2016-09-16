@@ -146,6 +146,17 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     void setSoftDeletion(boolean softDeletion);
 
     /**
+     * @return true if this datasource results is cacheable.
+     */
+    boolean isCacheable();
+
+    /**
+     * Set datasourse results to be cached
+     * @param cacheable
+     */
+    void setCacheable(boolean cacheable);
+
+    /**
      * @return true if the underlying collection contains an item with the specified ID
      */
     boolean containsItem(K itemId);

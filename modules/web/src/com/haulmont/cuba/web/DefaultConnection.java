@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.LoginFailedException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.auth.CubaAuthProvider;
 import com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -47,6 +48,9 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
     @Inject
     protected WebAuthConfig webAuthConfig;
 
+    @Inject
+    protected CubaAuthProvider authProvider;
+
     @Override
     public void login(String login, String password, Locale locale) throws LoginException {
         if (locale == null) {
@@ -62,7 +66,7 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
 
         UserSession session = doLoginAnonymous(anonymousSessionId, locale);
         if (session == null) {
-            throw new LoginFailedException("Unable to obtain anonymous session with id {}", anonymousSessionId);
+            throw new LoginFailedException("Unable to obtain anonymous session with id " + anonymousSessionId);
         }
         session.setLocale(locale);
 
@@ -129,13 +133,21 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
         }
 
         String password = webAuthConfig.getTrustedClientPassword();
-        update(doLoginTrusted(login, password, locale, getLoginParams()), SessionMode.AUTHENTICATED);
+        UserSession userSession = doLoginTrusted(login, password, locale, getLoginParams());
+        update(userSession, SessionMode.AUTHENTICATED);
 
         UserSession session = getSession();
         if (session == null) {
             throw new IllegalStateException("Null session after login");
         }
         session.setAttribute(EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE, true);
+
+        authProvider.userSessionLoggedIn(session);
+    }
+
+    @Override
+    public String logoutExternalAuthentication() {
+        return authProvider.logout();
     }
 
     /**

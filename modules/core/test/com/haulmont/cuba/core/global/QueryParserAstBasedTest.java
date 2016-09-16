@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
+import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 import org.junit.Test;
@@ -53,6 +54,19 @@ public class QueryParserAstBasedTest {
         assertEquals("u", parser.getEntityAlias());
     }
 
+    @Test
+    public void testError() throws Exception {
+        DomainModel model = prepareDomainModel();
+        try {
+            QueryParserAstBased parser = new QueryParserAstBased(model,
+                    "select u from sec$Constraint"
+            );
+            parser.getEntityAlias();
+            fail();
+        } catch (JpqlSyntaxException e) {
+            //OK
+        }
+    }
 
     @Test
     public void testGetParamNames() throws Exception {
@@ -83,6 +97,84 @@ public class QueryParserAstBasedTest {
         paramNames = parser.getParamNames();
         assertEquals(1, paramNames.size());
         assertTrue(paramNames.contains("par"));
+    }
+
+
+    @Test
+    public void testUsedEntityNames() throws Exception {
+        QueryParserAstBased parser = new QueryParserAstBased(prepareDomainModel(),
+                "select u from sec$Constraint u"
+        );
+        Set<String> entityNames = parser.getAllEntityNames();
+        assertEquals(1, entityNames.size());
+        assertTrue(entityNames.contains("sec$Constraint"));
+
+        parser = new QueryParserAstBased(prepareDomainModel(),
+                "select u from sec$Constraint u where u.group = :param"
+        );
+        entityNames = parser.getAllEntityNames();
+        assertEquals(2, entityNames.size());
+        assertTrue(entityNames.contains("sec$Constraint"));
+        assertTrue(entityNames.contains("sec$GroupHierarchy"));
+
+        parser = new QueryParserAstBased(prepareDomainModel(),
+                "select u from sec$Constraint u, sec$GroupHierarchy h"
+        );
+        entityNames = parser.getAllEntityNames();
+        assertEquals(2, entityNames.size());
+        assertTrue(entityNames.contains("sec$Constraint"));
+        assertTrue(entityNames.contains("sec$GroupHierarchy"));
+
+        parser = new QueryParserAstBased(prepareDomainModel(),
+                "select u from sec$Constraint u, sec$GroupHierarchy h where u.group = h"
+        );
+        entityNames = parser.getAllEntityNames();
+        assertEquals(2, entityNames.size());
+        assertTrue(entityNames.contains("sec$Constraint"));
+        assertTrue(entityNames.contains("sec$GroupHierarchy"));
+
+        parser = new QueryParserAstBased(prepareDomainModel(),
+                "select u from sec$Constraint u, sec$GroupHierarchy h where h.group.id = :par and u.group = h"
+        );
+        entityNames = parser.getAllEntityNames();
+        assertEquals(3, entityNames.size());
+        assertTrue(entityNames.contains("sec$Constraint"));
+        assertTrue(entityNames.contains("sec$GroupHierarchy"));
+        assertTrue(entityNames.contains("sec$Group"));
+
+        parser = new QueryParserAstBased(prepareDomainModel(),
+                "select c from sec$Constraint c join c.group g"
+        );
+        entityNames = parser.getAllEntityNames();
+        assertEquals(2, entityNames.size());
+        assertTrue(entityNames.contains("sec$Constraint"));
+        assertTrue(entityNames.contains("sec$GroupHierarchy"));
+
+
+        parser = new QueryParserAstBased(prepareDomainModel(),
+                "select c from sec$Constraint c join sec$Group g on c.group.group = g"
+        );
+        entityNames = parser.getAllEntityNames();
+        assertEquals(3, entityNames.size());
+        assertTrue(entityNames.contains("sec$Constraint"));
+        assertTrue(entityNames.contains("sec$GroupHierarchy"));
+        assertTrue(entityNames.contains("sec$Group"));
+
+        parser = new QueryParserAstBased(prepareDomainModel(),
+                "select c from sec$Constraint c join sec$Group g on g.name = :par"
+        );
+        entityNames = parser.getAllEntityNames();
+        assertEquals(2, entityNames.size());
+        assertTrue(entityNames.contains("sec$Constraint"));
+        assertTrue(entityNames.contains("sec$Group"));
+
+        parser = new QueryParserAstBased(prepareDomainModel(),
+                "select c from sec$Constraint c join sec$Group g"
+        );
+        entityNames = parser.getAllEntityNames();
+        assertEquals(2, entityNames.size());
+        assertTrue(entityNames.contains("sec$Constraint"));
+        assertTrue(entityNames.contains("sec$Group"));
     }
 
     @Test

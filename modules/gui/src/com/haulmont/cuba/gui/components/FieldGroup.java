@@ -83,6 +83,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
      */
     void requestFocus(String fieldId);
 
+    String getFieldCaption(String fieldId);
     void setFieldCaption(String fieldId, String caption);
 
     void setCaptionAlignment(FieldCaptionAlignment captionAlignment);

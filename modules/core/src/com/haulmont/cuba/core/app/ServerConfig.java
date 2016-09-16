@@ -115,6 +115,14 @@ public interface ServerConfig extends Config {
     void setSchedulingInterval(long value);
 
     /**
+     * @return Maximum size of thread pool which is used to process scheduled tasks
+     */
+    @Property("cuba.schedulingThreadPoolSize")
+    @DefaultInt(10)
+    int getSchedulingThreadPoolSize();
+    void setSchedulingThreadPoolSize(int value);
+
+    /**
      * @return Tells DataService to ensure distinct results by processing them in memory, instead of issue
      * 'select distinct' to the database.
      */

@@ -46,6 +46,7 @@
         <xs:attribute type="xs:string" name="insertAfter" use="optional"/>
         <xs:attribute type="xs:string" name="description" use="optional"/>
         <xs:attribute type="xs:string" name="stylename" use="optional"/>
+        <xs:attribute type="xs:string" name="icon" use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="itemType">
@@ -59,6 +60,7 @@
         <xs:attribute type="xs:string" name="shortcut" use="optional"/>
         <xs:attribute type="xs:string" name="description" use="optional"/>
         <xs:attribute type="xs:string" name="stylename" use="optional"/>
+        <xs:attribute type="xs:string" name="icon" use="optional"/>
         <xs:attribute type="xs:string" name="insertBefore" use="optional"/>
         <xs:attribute type="xs:string" name="insertAfter" use="optional"/>
     </xs:complexType>

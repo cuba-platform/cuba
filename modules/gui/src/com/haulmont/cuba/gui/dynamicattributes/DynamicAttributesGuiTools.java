@@ -125,14 +125,16 @@ public class DynamicAttributesGuiTools {
         });
     }
 
-    public PickerField.LookupAction addEntityLookupAction(PickerField owner, DynamicAttributesMetaProperty metaProperty) {
-        String screen = metaProperty.getAttribute().getScreen();
-        PickerField.LookupAction lookupAction = owner.addLookupAction();
+    public void initEntityLookupAction(PickerField.LookupAction lookupAction, DynamicAttributesMetaProperty metaProperty) {
+        initEntityLookupAction(lookupAction, metaProperty.getRange().asClass(), metaProperty.getAttribute().getScreen());
+    }
+
+    public void initEntityLookupAction(PickerField.LookupAction lookupAction, MetaClass metaClass, String screen) {
         if (StringUtils.isBlank(screen)) {
-            MetaClass metaClass = metaProperty.getRange().asClass();
             screen = windowConfig.getBrowseScreenId(metaClass);
             if (windowConfig.findWindowInfo(screen) != null) {
                 lookupAction.setLookupScreen(screen);
+                lookupAction.setLookupScreenOpenType(WindowManager.OpenType.THIS_TAB);
             } else {
                 lookupAction.setLookupScreen(CommonLookupController.SCREEN_ID);
                 lookupAction.setLookupScreenParams(ParamsMap.of(CommonLookupController.CLASS_PARAMETER, metaClass));
@@ -141,7 +143,6 @@ public class DynamicAttributesGuiTools {
         } else {
             lookupAction.setLookupScreen(screen);
         }
-        return lookupAction;
     }
 
     protected boolean attributeShouldBeShownOnTheScreen(String screen, String component, CategoryAttribute attribute) {

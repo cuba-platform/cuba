@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.app.security.group.lookup;
 
+import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -34,6 +35,9 @@ public class GroupLookup extends AbstractLookup {
     @Inject
     protected HierarchicalDatasource<Group, UUID> groupsDs;
 
+    @WindowParam(name = "selectedGroup")
+    protected Group selectedGroup;
+
     @Override
     public void init(Map<String, Object> params) {
         groupsDs.refresh();
@@ -43,11 +47,15 @@ public class GroupLookup extends AbstractLookup {
             excludeItem((Group) params.get("exclude"));
         }
 
-        Collection<UUID> rootItemIds = groupsDs.getRootItemIds();
-        if ((rootItemIds != null) && (!rootItemIds.isEmpty())) {
-            UUID firstId = rootItemIds.iterator().next();
-            Group item = groupsDs.getItem(firstId);
-            groups.setSelected(item);
+        if (groupsDs.size() > 1 && selectedGroup != null) {
+            groups.setSelected(selectedGroup);
+        } else {
+            Collection<UUID> rootItemIds = groupsDs.getRootItemIds();
+            if ((rootItemIds != null) && (!rootItemIds.isEmpty())) {
+                UUID firstId = rootItemIds.iterator().next();
+                Group item = groupsDs.getItem(firstId);
+                groups.setSelected(item);
+            }
         }
     }
 

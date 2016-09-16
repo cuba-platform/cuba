@@ -67,4 +67,12 @@ public class CubaMenuBarConnector extends MenuBarConnector {
             currentItem.getElement().setAttribute("cuba-id", item.getStringAttribute("cid"));
         }
     }
+
+    @Override
+    protected void assignAdditionalMenuStyles(VMenuBar currentMenu, UIDL item) {
+        String icon = item.getStringAttribute("icon");
+        if (icon != null) {
+            currentMenu.addStyleDependentName("has-icons");
+        }
+    }
 }

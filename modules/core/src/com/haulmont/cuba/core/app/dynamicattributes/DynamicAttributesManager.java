@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.core.app.dynamicattributes;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.haulmont.chile.core.model.MetaClass;
@@ -187,34 +185,23 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     public void storeDynamicAttributes(BaseGenericIdEntity entity) {
         if (!(entity instanceof HasUuid))
             return;
-        if (persistence.isInTransaction()) {
+        try (Transaction tx = persistence.getTransaction()) {
             doStoreDynamicAttributes(entity);
-        } else {
-            Transaction tx = persistence.createTransaction();
-            try {
-                doStoreDynamicAttributes(entity);
-                tx.commit();
-            } finally {
-                tx.end();
-            }
+            tx.commit();
         }
     }
 
     @Override
     public <E extends BaseGenericIdEntity> void fetchDynamicAttributes(List<E> entities) {
-        List<E> supportedEntities = entities.stream().filter(e -> e instanceof HasUuid).collect(Collectors.toList());
+        List<E> supportedEntities = entities.stream()
+                .filter(e -> e instanceof HasUuid)
+                .collect(Collectors.toList());
         if (supportedEntities.isEmpty())
             return;
-        if (persistence.isInTransaction()) {
+
+        try (Transaction tx = persistence.getTransaction()) {
             doFetchDynamicAttributes(supportedEntities);
-        } else {
-            Transaction tx = persistence.createTransaction();
-            try {
-                doFetchDynamicAttributes(supportedEntities);
-                tx.commit();
-            } finally {
-                tx.end();
-            }
+            tx.commit();
         }
     }
 
@@ -248,37 +235,31 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     }
 
     protected <E extends BaseGenericIdEntity> void doFetchDynamicAttributes(List<E> entities) {
-        if (CollectionUtils.isNotEmpty(entities)) {
-            Collection<UUID> ids = Collections2.transform(entities, new Function<Entity, UUID>() {
-                @Nullable
-                @Override
-                public UUID apply(@Nullable Entity input) {
-                    return input != null ? ((HasUuid) input).getUuid() : null;
-                }
-            });
+        List<UUID> ids = entities.stream()
+                .map(e -> ((HasUuid) e).getUuid())
+                .collect(Collectors.toList());
 
-            Multimap<UUID, CategoryAttributeValue> attributeValuesForEntity = HashMultimap.create();
+        Multimap<UUID, CategoryAttributeValue> attributeValuesForEntity = HashMultimap.create();
 
-            List<UUID> currentIds = new ArrayList<>();
-            for (UUID id : ids) {
-                currentIds.add(id);
-                if (currentIds.size() >= MAX_ENTITIES_FOR_ATTRIBUTE_VALUES_BATCH) {
-                    handleAttributeValuesForIds(currentIds, attributeValuesForEntity);
-                    currentIds = new ArrayList<>();
-                }
+        List<UUID> currentIds = new ArrayList<>();
+        for (UUID id : ids) {
+            currentIds.add(id);
+            if (currentIds.size() >= MAX_ENTITIES_FOR_ATTRIBUTE_VALUES_BATCH) {
+                handleAttributeValuesForIds(currentIds, attributeValuesForEntity);
+                currentIds = new ArrayList<>();
             }
-            handleAttributeValuesForIds(currentIds, attributeValuesForEntity);
+        }
+        handleAttributeValuesForIds(currentIds, attributeValuesForEntity);
 
-            for (BaseGenericIdEntity entity : entities) {
-                Collection<CategoryAttributeValue> theEntityAttributeValues = attributeValuesForEntity.get(((HasUuid) entity).getUuid());
-                Map<String, CategoryAttributeValue> map = new HashMap<>();
-                entity.setDynamicAttributes(map);
-                if (CollectionUtils.isNotEmpty(theEntityAttributeValues)) {
-                    for (CategoryAttributeValue categoryAttributeValue : theEntityAttributeValues) {
-                        CategoryAttribute attribute = categoryAttributeValue.getCategoryAttribute();
-                        if (attribute != null) {
-                            map.put(attribute.getCode(), categoryAttributeValue);
-                        }
+        for (BaseGenericIdEntity entity : entities) {
+            Collection<CategoryAttributeValue> theEntityAttributeValues = attributeValuesForEntity.get(((HasUuid) entity).getUuid());
+            Map<String, CategoryAttributeValue> map = new HashMap<>();
+            entity.setDynamicAttributes(map);
+            if (CollectionUtils.isNotEmpty(theEntityAttributeValues)) {
+                for (CategoryAttributeValue categoryAttributeValue : theEntityAttributeValues) {
+                    CategoryAttribute attribute = categoryAttributeValue.getCategoryAttribute();
+                    if (attribute != null) {
+                        map.put(attribute.getCode(), categoryAttributeValue);
                     }
                 }
             }
@@ -295,16 +276,22 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     }
 
     protected List<CategoryAttributeValue> loadAttributeValues(List<UUID> entityIds) {
-        final EntityManager em = persistence.getEntityManager();
-        View baseAttributeValueView = viewRepository.getView(CategoryAttributeValue.class, View.LOCAL);
-        View baseAttributeView = viewRepository.getView(CategoryAttribute.class, View.LOCAL);
+        List<CategoryAttributeValue> resultList;
+        try (Transaction tx = persistence.getTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            View baseAttributeValueView = viewRepository.getView(CategoryAttributeValue.class, View.LOCAL);
+            View baseAttributeView = viewRepository.getView(CategoryAttribute.class, View.LOCAL);
 
-        View view = new View(baseAttributeValueView, null, false)
-                .addProperty("categoryAttribute", new View(baseAttributeView, null, false).addProperty("category"));
+            View view = new View(baseAttributeValueView, null, false)
+                    .addProperty("categoryAttribute", new View(baseAttributeView, null, false).addProperty("category"));
 
-        return em.createQuery("select cav from sys$CategoryAttributeValue cav where cav.entityId in :ids", CategoryAttributeValue.class)
-                .setParameter("ids", entityIds)
-                .setView(view)
-                .getResultList();
+            resultList = em.createQuery("select cav from sys$CategoryAttributeValue cav where cav.entityId in :ids", CategoryAttributeValue.class)
+                    .setParameter("ids", entityIds)
+                    .setView(view)
+                    .getResultList();
+
+            tx.commit();
+        }
+        return resultList;
     }
 }

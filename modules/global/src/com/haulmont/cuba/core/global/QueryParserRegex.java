@@ -130,6 +130,11 @@ public class QueryParserRegex implements QueryParser {
     }
 
     @Override
+    public Set<String> getAllEntityNames() {
+        return null;
+    }
+
+    @Override
     public String getEntityNameIfSecondaryReturnedInsteadOfMain() {
         return null;
     }
@@ -137,5 +142,15 @@ public class QueryParserRegex implements QueryParser {
     @Override
     public String getEntityPathIfSecondaryReturnedInsteadOfMain() {
         return null;
+    }
+
+    @Override
+    public boolean isCollectionSecondaryEntitySelect() {
+        return false;
+    }
+
+    @Override
+    public boolean isParameterInCondition(String parameterName) {
+        return false;
     }
 }

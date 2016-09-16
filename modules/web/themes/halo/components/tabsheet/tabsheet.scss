@@ -21,4 +21,8 @@
   .#{$primary-stylename}-tabitemcell[aria-hidden="true"] + td .v-caption {
     margin-left: round($v-unit-size/2);
   }
+
+  .#{$primary-stylename}-tabitemcell .v-caption .v-icon + .v-captiontext {
+    margin-left: ceil($v-unit-size/10);
+  }
 }

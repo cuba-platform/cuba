@@ -91,6 +91,8 @@ public class AppProperties {
             case "web":
                 configPropertyNames.addAll(Arrays.asList(
                         "cuba.dispatcherSpringContextConfig",
+                        "cuba.restSpringContextConfig",
+                        "cuba.idpSpringContextConfig",
                         "cuba.restServicesConfig",
                         "cuba.rest.queriesConfig",
                         "cuba.rest.servicesConfig",
@@ -104,6 +106,7 @@ public class AppProperties {
             case "portal":
                 configPropertyNames.addAll(Arrays.asList(
                         "cuba.dispatcherSpringContextConfig",
+                        "cuba.restSpringContextConfig",
                         "cuba.restServicesConfig",
                         "cuba.rest.servicesConfig",
                         "cuba.rest.queriesConfig"

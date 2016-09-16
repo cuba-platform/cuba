@@ -12,13 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.PerformanceLog;
 import com.haulmont.cuba.core.sys.jpql.*;
+import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.transform.ParameterCounter;
@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
 import com.haulmont.cuba.core.sys.jpql.tree.SimpleConditionNode;
 import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.tree.Tree;
 import org.antlr.runtime.tree.TreeVisitor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -49,10 +50,16 @@ public class QueryParserAstBased implements QueryParser {
 
         String entityName;
         String entityPath;
+        boolean collectionSelect;
 
-        public EntityNameAndPath(String entityName, String entityPath) {
+        public EntityNameAndPath(String entityName, String entityPath, boolean collectionSelect) {
             this.entityName = entityName;
             this.entityPath = entityPath;
+            this.collectionSelect = collectionSelect;
+        }
+
+        public EntityNameAndPath(String entityName, String entityPath) {
+            this(entityName, entityPath, false);
         }
     }
 
@@ -67,7 +74,7 @@ public class QueryParserAstBased implements QueryParser {
             try {
                 queryTreeAnalyzer.prepare(model, query);
             } catch (RecognitionException e) {
-                throw new RuntimeException("Internal error while init queryTreeAnalyzer",e);
+                throw new RuntimeException("Internal error while init queryTreeAnalyzer", e);
             }
             List<ErrorRec> errors = new ArrayList<>(queryTreeAnalyzer.getInvalidIdVarNodes());
             if (!errors.isEmpty()) {
@@ -83,6 +90,14 @@ public class QueryParserAstBased implements QueryParser {
         ParameterCounter parameterCounter = new ParameterCounter(true);
         visitor.visit(getQueryAnalyzer().getTree(), parameterCounter);
         return parameterCounter.getParameterNames();
+    }
+
+    @Override
+    public Set<String> getAllEntityNames() {
+        TreeVisitor visitor = new TreeVisitor();
+        EntitiesFinder finder = new EntitiesFinder();
+        visitor.visit(getQueryAnalyzer().getTree(), finder);
+        return finder.resolveEntityNames(model, getQueryAnalyzer().getRootQueryVariableContext());
     }
 
     @Override
@@ -152,6 +167,24 @@ public class QueryParserAstBased implements QueryParser {
         return entityNameAndAlias != null ? entityNameAndAlias.entityPath : null;
     }
 
+    @Override
+    public boolean isParameterInCondition(String parameterName) {
+        List<SimpleConditionNode> conditions = getQueryAnalyzer().findConditionsForParameter(parameterName);
+        for (SimpleConditionNode condition : conditions) {
+            Tree inToken = condition.getFirstChildWithType(JPA2Lexer.IN);
+            if (inToken != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isCollectionSecondaryEntitySelect() {
+        EntityNameAndPath entityNameAndAlias = getEntityNameAndPathIfSecondaryReturnedInsteadOfMain();
+        return entityNameAndAlias != null && entityNameAndAlias.collectionSelect;
+    }
+
     protected EntityNameAndPath getEntityNameAndPathIfSecondaryReturnedInsteadOfMain() {
         List<PathNode> returnedPathNodes = getQueryAnalyzer().getReturnedPathNodes();
         if (CollectionUtils.isEmpty(returnedPathNodes) || returnedPathNodes.size() > 1) {
@@ -181,15 +214,20 @@ public class QueryParserAstBased implements QueryParser {
         String entityName = getEntityName();
         JpqlEntityModel entity;
         String entityPath;
+        boolean collectionSelect = false;
         try {
             entity = model.getEntityByName(entityName);
             entityPath = pathNode.asPathString();
+
             for (int i = 0; i < pathNode.getChildCount(); i++) {
                 String fieldName = pathNode.getChild(i).toString();
                 Attribute entityAttribute = entity.getAttributeByName(fieldName);
                 if (entityAttribute != null && entityAttribute.isEntityReferenceAttribute()) {
                     entityName = entityAttribute.getReferencedEntityName();
                     entity = model.getEntityByName(entityName);
+                    if (!collectionSelect) {
+                        collectionSelect = entityAttribute.isCollection();
+                    }
                 } else {
                     return null;
                 }
@@ -198,6 +236,6 @@ public class QueryParserAstBased implements QueryParser {
             throw new RuntimeException("Could not find entity by name " + entityName, e);
         }
 
-        return entity != null && entity.getName() != null ? new EntityNameAndPath(entity.getName(), entityPath) : null;
+        return entity != null && entity.getName() != null ? new EntityNameAndPath(entity.getName(), entityPath, collectionSelect) : null;
     }
 }

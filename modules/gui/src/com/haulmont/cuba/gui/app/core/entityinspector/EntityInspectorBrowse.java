@@ -241,7 +241,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 .buildCollectionDatasource();
 
         entitiesDs.setLoadDynamicAttributes(true);
-        entitiesDs.setSoftDeletion(removedRecords.isChecked());
+        entitiesDs.setSoftDeletion(!removedRecords.isChecked());
         entitiesDs.setQuery(String.format("select e from %s e", meta.getName()));
 
         entitiesTable.setDatasource(entitiesDs);
@@ -329,8 +329,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
         exportButton.setCaption(getMessage("export"));
 
         importUpload = componentsFactory.createComponent(FileUploadField.class);
-        importUpload.setIcon("icons/upload.png");
-        importUpload.setCaption(getMessage("import"));
+        importUpload.setUploadButtonIcon("icons/upload.png");
+        importUpload.setUploadButtonCaption(getMessage("import"));
         importUpload.addFileUploadSucceedListener(event -> {
             File file = fileUploadingAPI.getFile(importUpload.getFileId());
             if (file == null) {

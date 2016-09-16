@@ -30,6 +30,6 @@ public class ErrorRec {
 
     @Override
     public String toString() {
-        return message + "[" + node.toString() + "]";
+        return message + " [" + node.toString() + "]";
     }
 }

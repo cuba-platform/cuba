@@ -19,6 +19,7 @@ package com.haulmont.restapi.service;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.restapi.data.UserInfo;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
@@ -26,6 +27,7 @@ import javax.inject.Inject;
  * Class that is used by the {@link com.haulmont.restapi.controllers.UserInfoController} for getting an information
  * about the current user
  */
+@Component("cuba_UserInfoControllerManager")
 public class UserInfoControllerManager {
 
     @Inject

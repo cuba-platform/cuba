@@ -339,4 +339,11 @@ public interface ClientConfig extends Config {
     @Property("cuba.backgroundWorker.timeoutCheckInterval")
     @DefaultInteger(5000)
     Integer getBackgroundTaskTimeoutCheckInterval();
+
+    /**
+     * @return true if Table will ignore unfetched attribute read errors
+     */
+    @Property("cuba.gui.ignoreUnfetchedAttributesInTable")
+    @DefaultBoolean(false)
+    boolean getIgnoreUnfetchedAttributesInTable();
 }

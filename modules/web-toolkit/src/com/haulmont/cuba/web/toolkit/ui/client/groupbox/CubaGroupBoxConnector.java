@@ -57,7 +57,7 @@ public class CubaGroupBoxConnector extends PanelConnector {
     public void onUnregister() {
         super.onUnregister();
 
-        if (!getState().shownAsPanel && widgetInitialized) {
+        if (!getState().showAsPanel && widgetInitialized) {
             LayoutManager layoutManager = getLayoutManager();
             CubaGroupBoxWidget widget = getWidget();
 
@@ -76,7 +76,7 @@ public class CubaGroupBoxConnector extends PanelConnector {
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         super.updateFromUIDL(uidl, client);
 
-        if (!getState().shownAsPanel) {
+        if (!getState().showAsPanel) {
             // replace VPanel class names
             CubaGroupBoxWidget widget = getWidget();
 
@@ -90,7 +90,7 @@ public class CubaGroupBoxConnector extends PanelConnector {
 
     @Override
     public void layout() {
-        if (!getState().shownAsPanel) {
+        if (!getState().showAsPanel) {
             layoutGroupBox();
         } else {
             super.layout();
@@ -164,11 +164,11 @@ public class CubaGroupBoxConnector extends PanelConnector {
 
         widget.setCollapsable(getState().collapsable);
         widget.setExpanded(getState().expanded);
-        widget.setShownAsPanel(getState().shownAsPanel);
+        widget.setShowAsPanel(getState().showAsPanel);
 
         if (!widgetInitialized) {
             widget.init();
-            if (!getState().shownAsPanel) {
+            if (!getState().showAsPanel) {
                 LayoutManager layoutManager = getLayoutManager();
                 layoutManager.registerDependency(this, widget.captionStartDeco);
                 layoutManager.registerDependency(this, widget.captionEndDeco);

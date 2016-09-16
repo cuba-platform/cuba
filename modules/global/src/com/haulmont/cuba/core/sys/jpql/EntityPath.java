@@ -20,17 +20,31 @@ package com.haulmont.cuba.core.sys.jpql;
 import com.haulmont.cuba.core.sys.jpql.pointer.EntityPointer;
 import com.haulmont.cuba.core.sys.jpql.pointer.Pointer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EntityPath {
     public String topEntityVariableName;
     public String[] traversedFields;
     public String lastEntityFieldPattern;
 
-    public Pointer walk(DomainModel model, QueryVariableContext queryVC) {
+    public Pointer resolvePointer(DomainModel model, QueryVariableContext queryVC) {
         Pointer pointer = EntityPointer.create(queryVC, topEntityVariableName);
         for (String traversedField : traversedFields) {
             pointer = pointer.next(model, traversedField);
         }
         return pointer;
+    }
+
+    public List<Pointer> resolveTransitionalPointers(DomainModel model, QueryVariableContext queryVC) {
+        List<Pointer> pointers = new ArrayList<>();
+        Pointer pointer = EntityPointer.create(queryVC, topEntityVariableName);
+        pointers.add(pointer);
+        for (String traversedField : traversedFields) {
+            pointer = pointer.next(model, traversedField);
+            pointers.add(pointer);
+        }
+        return pointers;
     }
 
     public static EntityPath parseEntityPath(String lastWord) {
