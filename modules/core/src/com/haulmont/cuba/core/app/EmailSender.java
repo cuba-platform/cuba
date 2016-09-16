@@ -80,15 +80,9 @@ public class EmailSender implements EmailSenderAPI {
         addHeaders(sendingMessage, msg);
 
         MimeMultipart content = new MimeMultipart("mixed");
-        MimeBodyPart textBodyPart = new MimeBodyPart();
         MimeMultipart textPart = new MimeMultipart("related");
-        MimeBodyPart contentBodyPart = new MimeBodyPart();
-        String bodyContentType = getContentBodyType(sendingMessage);
 
-        contentBodyPart.setContent(sendingMessage.getContentText(), bodyContentType);
-        textPart.addBodyPart(contentBodyPart);
-        textBodyPart.setContent(textPart);
-        content.addBodyPart(textBodyPart);
+        setMimeMessageContent(sendingMessage, content, textPart);
 
         for (SendingAttachment attachment : sendingMessage.getAttachments()) {
             MimeBodyPart attachmentPart = createAttachmentPart(attachment);
@@ -102,6 +96,18 @@ public class EmailSender implements EmailSenderAPI {
         msg.setContent(content);
         msg.saveChanges();
         return msg;
+    }
+
+    protected void setMimeMessageContent(SendingMessage sendingMessage, MimeMultipart content, MimeMultipart textPart)
+            throws MessagingException {
+        MimeBodyPart textBodyPart = new MimeBodyPart();
+        MimeBodyPart contentBodyPart = new MimeBodyPart();
+        String bodyContentType = getContentBodyType(sendingMessage);
+
+        contentBodyPart.setContent(sendingMessage.getContentText(), bodyContentType);
+        textPart.addBodyPart(contentBodyPart);
+        textBodyPart.setContent(textPart);
+        content.addBodyPart(textBodyPart);
     }
 
     protected void assignRecipient(SendingMessage sendingMessage, MimeMessage message) throws MessagingException {
