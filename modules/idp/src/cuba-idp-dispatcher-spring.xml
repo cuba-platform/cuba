@@ -46,6 +46,7 @@
 
     <task:scheduled-tasks scheduler="idpScheduler">
         <task:scheduled ref="cuba_IdpSessionsWatchDog" method="cleanupExpiredSessions"
+                        initial-delay="60000"
                         fixed-delay="${cuba.idp.sessionExpirationCheckIntervalMs?:30000}"/>
     </task:scheduled-tasks>
 
