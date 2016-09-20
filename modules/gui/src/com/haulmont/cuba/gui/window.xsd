@@ -1115,8 +1115,8 @@
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attribute name="minimizedValue" type="resourceString"/>
-        <xs:attribute name="captionAsHtml" type="xs:string"/>
-        <xs:attribute name="hideOnMouseOut" type="xs:string"/>
+        <xs:attribute name="captionAsHtml" type="xs:boolean"/>
+        <xs:attribute name="hideOnMouseOut" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- ButtonsPanel -->
