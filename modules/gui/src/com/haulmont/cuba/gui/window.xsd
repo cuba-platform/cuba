@@ -269,6 +269,27 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="defaultValidator">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="com.haulmont.cuba.gui.components.validators.DateValidator"/>
+                    <xs:enumeration value="com.haulmont.cuba.gui.components.validators.DoubleValidator"/>
+                    <xs:enumeration value="com.haulmont.cuba.gui.components.validators.EmailValidator"/>
+                    <xs:enumeration value="com.haulmont.cuba.gui.components.validators.IntegerValidator"/>
+                    <xs:enumeration value="com.haulmont.cuba.gui.components.validators.LongValidator"/>
+                    <xs:enumeration value="com.haulmont.cuba.gui.components.validators.PatternValidator"/>
+                    <xs:enumeration value="com.haulmont.cuba.gui.components.validators.RangeValidator"/>
+                    <xs:enumeration value="com.haulmont.cuba.gui.components.validators.ScriptValidator"/>
+                    <xs:enumeration value="com.haulmont.cuba.gui.components.validators.StringValidator"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
     <xs:simpleType name="linkTarget">
         <xs:union>
             <xs:simpleType>
@@ -487,7 +508,7 @@
     </xs:complexType>
 
     <xs:complexType name="validatorType" mixed="true">
-        <xs:attribute name="class" type="xs:string"/>
+        <xs:attribute name="class" type="defaultValidator"/>
         <xs:attribute name="message" type="xs:string"/>
         <xs:attribute name="script" type="xs:string"/>
         <xs:attribute name="onlyPositive" type="xs:boolean"/>
