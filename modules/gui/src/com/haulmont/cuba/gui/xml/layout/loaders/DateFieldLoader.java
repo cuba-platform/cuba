@@ -29,7 +29,7 @@ import java.util.Date;
 
 public class DateFieldLoader extends AbstractFieldLoader<DateField> {
     protected static final String DATE_PATTERN_DAY = "yyyy-MM-dd";
-    protected static final String DATE_PATTERN_MIN = "yyyy-MM-dd hh:mm";
+    protected static final String DATE_PATTERN_MIN = "yyyy-MM-dd HH:mm";
 
     @Override
     public void createComponent() {
