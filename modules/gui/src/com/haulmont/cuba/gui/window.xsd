@@ -799,14 +799,14 @@
 
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
-                <xs:attribute name="popupCaption" type="xs:string"/>
-                <xs:attribute name="confirmButtonCaption" type="xs:string"/>
-                <xs:attribute name="cancelButtonCaption" type="xs:string"/>
-                <xs:attribute name="swatchesTabCaption" type="xs:string"/>
-                <xs:attribute name="lookupAllCaption" type="xs:string"/>
-                <xs:attribute name="lookupRedCaption" type="xs:string"/>
-                <xs:attribute name="lookupGreenCaption" type="xs:string"/>
-                <xs:attribute name="lookupBlueCaption" type="xs:string"/>
+                <xs:attribute name="popupCaption" type="resourceString"/>
+                <xs:attribute name="confirmButtonCaption" type="resourceString"/>
+                <xs:attribute name="cancelButtonCaption" type="resourceString"/>
+                <xs:attribute name="swatchesTabCaption" type="resourceString"/>
+                <xs:attribute name="lookupAllCaption" type="resourceString"/>
+                <xs:attribute name="lookupRedCaption" type="resourceString"/>
+                <xs:attribute name="lookupGreenCaption" type="resourceString"/>
+                <xs:attribute name="lookupBlueCaption" type="resourceString"/>
 
                 <xs:attribute name="swatchesVisible" type="xs:boolean"/>
                 <xs:attribute name="rgbVisible" type="xs:boolean"/>
