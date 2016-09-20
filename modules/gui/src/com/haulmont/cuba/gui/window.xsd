@@ -1449,8 +1449,8 @@
         <xs:attributeGroup ref="hasCaptionSource"/>
         <xs:attributeGroup ref="hasRequirements"/>
 
-        <xs:attribute name="leftColumnCaption" type="xs:string"/>
-        <xs:attribute name="rightColumnCaption" type="xs:string"/>
+        <xs:attribute name="leftColumnCaption" type="resourceString"/>
+        <xs:attribute name="rightColumnCaption" type="resourceString"/>
 
         <xs:attribute name="multiselect" type="xs:boolean"/>
 
