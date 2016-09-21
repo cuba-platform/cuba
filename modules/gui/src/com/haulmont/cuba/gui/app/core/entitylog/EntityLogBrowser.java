@@ -427,7 +427,7 @@ public class EntityLogBrowser extends AbstractWindow {
         enableControls();
 
         entityNameField.setEditable(true);
-        cancelBtn.requestFocus();
+        entityNameField.requestFocus();
     }
 
     public void reloadConfiguration() {
