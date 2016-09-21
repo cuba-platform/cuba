@@ -65,8 +65,10 @@
                         <button action="groupsTree.edit"/>
                         <button id="removeButton" action="groupsTree.remove"/>
                         <button action="groupsTree.export" icon="icons/download.png" caption="" description="mainMsg://actions.Export"/>
-                        <upload id="importUpload" description="mainMsg://actions.Import"
-                                uploadButtonIcon="icons/upload.png" uploadButtonCaption=""/>
+                        <upload id="importUpload"
+                                uploadButtonIcon="icons/upload.png"
+                                uploadButtonCaption=""
+                                uploadButtonDescription="mainMsg://actions.Import"/>
                     </buttonsPanel>
                     <actions>
                         <action id="create"/>

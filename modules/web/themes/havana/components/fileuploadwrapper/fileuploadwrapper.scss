@@ -16,13 +16,6 @@
  */
 
 @mixin havana-cuba-fileupload-wrapper($primary-stylename: cuba-fileupload-wrapper) {
-  .#{$primary-stylename} {
-    .v-button .v-button-wrap .v-button-caption {
-      color: $cuba-havana-font-color;
-      text-decoration: none;
-    }
-  }
-
   .fileupload-wrapper-container {
     height: 25px;
     min-height: 25px;
@@ -32,8 +25,19 @@
     width: 5px;
   }
 
-  .v-button-cuba-fileupload-empty.error {
+  .v-button-cuba-fileupload-empty {
+    cursor: default;
+
     & .v-button-wrap .v-button-caption {
+      color: $cuba-havana-font-color;
+      text-decoration: none;
+    }
+  }
+
+  .v-button-cuba-fileupload-empty.error {
+    cursor: default;
+
+    & > .v-button-wrap > .v-button-caption {
       color: #ed473b;
     }
 

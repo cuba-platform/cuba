@@ -28,6 +28,7 @@
   .cuba-fileupload-empty {
     color: $v-font-color;
     text-decoration: none;
+    cursor: default;
 
     &:hover {
       color: $v-font-color;
