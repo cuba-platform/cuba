@@ -33,6 +33,7 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
 
         loadEnable(resultComponent, element);
         loadEditable(resultComponent, element);
+        loadRequired(resultComponent, element);
         loadVisible(resultComponent, element);
 
         loadStyleName(resultComponent, element);
@@ -81,7 +82,7 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
 
         String uploadButtonDescription = element.attributeValue("uploadButtonDescription");
         if (uploadButtonDescription != null) {
-            resultComponent.setUploadButtonDescription(uploadButtonDescription);
+            resultComponent.setUploadButtonDescription(loadResourceString(uploadButtonDescription));
         }
     }
 
@@ -103,7 +104,7 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
 
         String clearButtonDescription = element.attributeValue("clearButtonDescription");
         if (clearButtonDescription != null) {
-            resultComponent.setClearButtonDescription(clearButtonDescription);
+            resultComponent.setClearButtonDescription(loadResourceString(clearButtonDescription));
         }
     }
 

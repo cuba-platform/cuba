@@ -95,47 +95,6 @@ public class CubaFileUploadWrapper extends CustomField {
         }
     }
 
-    public boolean isShowFileName() {
-        return showFileName;
-    }
-
-    public void setShowFileName(boolean showFileName) {
-        this.showFileName = showFileName;
-        fileNameButton.setVisible(showFileName);
-
-        updateComponentWidth();
-    }
-
-    public void setFileNameButtonCaption(String title) {
-        fileName = title;
-
-        if (StringUtils.isNotEmpty(title)) {
-            fileNameButton.setCaption(title);
-            fileNameButton.removeStyleName(EMPTY_VALUE_STYLE);
-
-            if (isRequired()) {
-                fileNameButton.removeStyleName(ERROR_STYLE);
-            }
-        } else {
-            fileNameButton.setCaption(messages.getMainMessage("FileUploadField.fileNotSelected"));
-            fileNameButton.addStyleName(EMPTY_VALUE_STYLE);
-
-            if (isRequired()) {
-                fileNameButton.addStyleName(ERROR_STYLE);
-            } else {
-                fileNameButton.removeStyleName(ERROR_STYLE);
-            }
-        }
-    }
-
-    public void addFileNameClickListener(Button.ClickListener clickListener) {
-        fileNameButton.addClickListener(clickListener);
-    }
-
-    public void removeFileNameClickListener(Button.ClickListener clickListener) {
-        fileNameButton.removeClickListener(clickListener);
-    }
-
     private void updateComponentWidth() {
         if (container == null)
             return;
@@ -143,11 +102,17 @@ public class CubaFileUploadWrapper extends CustomField {
         if (getWidth() >= 0) {
             container.setWidth(100, Unit.PERCENTAGE);
             if (isShowFileName()) {
-                fileNameButton.setWidth(100, Unit.PERCENTAGE);
-
+                container.setExpandRatio(fileNameButton, 1);
                 uploadButton.setWidthUndefined();
+                clearButton.setWidthUndefined();
             } else {
-                uploadButton.setWidth(100, Unit.PERCENTAGE);
+                container.setExpandRatio(fileNameButton, 0);
+                if (isShowClearButton() && !isRequired()) {
+                    uploadButton.setWidth(100, Unit.PERCENTAGE);
+                    clearButton.setWidth(100, Unit.PERCENTAGE);
+                } else {
+                    uploadButton.setWidth(100, Unit.PERCENTAGE);
+                }
             }
         } else {
             container.setWidthUndefined();
@@ -219,6 +184,79 @@ public class CubaFileUploadWrapper extends CustomField {
     }
 
     /*
+    * File name button
+    * */
+
+    public boolean isShowFileName() {
+        return showFileName;
+    }
+
+    public void setShowFileName(boolean showFileName) {
+        this.showFileName = showFileName;
+        fileNameButton.setVisible(showFileName);
+
+        updateComponentWidth();
+    }
+
+    public void setFileNameButtonCaption(String title) {
+        fileName = title;
+
+        if (StringUtils.isNotEmpty(title)) {
+            fileNameButton.setCaption(title);
+            fileNameButton.removeStyleName(EMPTY_VALUE_STYLE);
+
+            if (isRequired()) {
+                fileNameButton.removeStyleName(ERROR_STYLE);
+            }
+        } else {
+            fileNameButton.setCaption(messages.getMainMessage("FileUploadField.fileNotSelected"));
+            fileNameButton.addStyleName(EMPTY_VALUE_STYLE);
+
+            if (isRequired()) {
+                fileNameButton.addStyleName(ERROR_STYLE);
+            } else {
+                fileNameButton.removeStyleName(ERROR_STYLE);
+            }
+        }
+    }
+
+    public void addFileNameClickListener(Button.ClickListener clickListener) {
+        fileNameButton.addClickListener(clickListener);
+    }
+
+    public void removeFileNameClickListener(Button.ClickListener clickListener) {
+        fileNameButton.removeClickListener(clickListener);
+    }
+
+    /*
+    * Upload button
+    * */
+
+    public void setUploadButtonDescription(String description) {
+        uploadButton.setDescription(description);
+    }
+
+    public String getUploadButtonDescription() {
+        return uploadButton.getDescription();
+    }
+
+    public void setUploadButtonCaption(String caption) {
+        uploadButton.setCaption(caption);
+    }
+
+    public String getUploadButtonCaption() {
+        return uploadButton.getCaption();
+    }
+
+    public void setUploadButtonIcon(String icon) {
+        uploadButton.setIcon(WebComponentsHelper.getIcon(icon));
+    }
+
+    public String getUploadButtonIcon() {
+        return uploadButton.getIcon().toString();
+    }
+
+    /*
     * Clear button
     * */
 
@@ -230,6 +268,7 @@ public class CubaFileUploadWrapper extends CustomField {
         this.showClearButton = showClearButton;
 
         updateButtonsVisibility();
+        updateComponentWidth();
     }
 
     public void setClearButtonCaption(String caption) {
@@ -262,33 +301,5 @@ public class CubaFileUploadWrapper extends CustomField {
 
     public String getClearButtonDescription() {
         return clearButton.getDescription();
-    }
-
-    /*
-    * Upload button
-    * */
-
-    public void setUploadButtonDescription(String description) {
-        uploadButton.setDescription(description);
-    }
-
-    public String getUploadButtonDescription() {
-        return uploadButton.getDescription();
-    }
-
-    public void setUploadButtonCaption(String caption) {
-        uploadButton.setCaption(caption);
-    }
-
-    public String getUploadButtonCaption() {
-        return uploadButton.getCaption();
-    }
-
-    public void setUploadButtonIcon(String icon) {
-        uploadButton.setIcon(WebComponentsHelper.getIcon(icon));
-    }
-
-    public String getUploadButtonIcon() {
-        return uploadButton.getIcon().toString();
     }
 }

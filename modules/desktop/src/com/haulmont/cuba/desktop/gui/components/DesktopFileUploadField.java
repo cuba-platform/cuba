@@ -47,10 +47,7 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 import static com.haulmont.cuba.gui.upload.FileUploadingAPI.FileInfo;
@@ -204,11 +201,24 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
         }
     }
 
+    @Override
+    public void setWidth(String width) {
+        super.setWidth(width);
+        impl.setWidth(width);
+    }
+
+    @Override
+    public void setHeight(String height) {
+        super.setHeight(height);
+        impl.setHeight(height);
+    }
+
     protected boolean hasInvalidExtension(String name) {
-        if (getPermittedExtensions() != null && !getPermittedExtensions().isEmpty()) {
+        Set<String> permittedExtensions = getPermittedExtensions();
+        if (permittedExtensions != null && !permittedExtensions.isEmpty()) {
             if (name.lastIndexOf(".") > 0) {
                 String fileExtension = name.substring(name.lastIndexOf("."), name.length());
-                return !getPermittedExtensions().contains(fileExtension.toLowerCase());
+                return !permittedExtensions.contains(fileExtension.toLowerCase());
             } else {
                 return true;
             }
@@ -303,7 +313,7 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
             updateComponent(prevValue);
         }
 
-        if (!PersistenceHelper.isNew(value)) {
+        if (value == null || !PersistenceHelper.isNew(value)) {
             fileId = null;
             tempFileId = null;
         }
@@ -619,22 +629,22 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
     */
     @Override
     public String getUploadButtonCaption() {
-        return uploadButton.getCaption();
+        return impl.getUploadButtonCaption();
     }
 
     @Override
     public void setUploadButtonCaption(String caption) {
-        uploadButton.setCaption(caption);
+        impl.setUploadButtonCaption(caption);
     }
 
     @Override
     public void setUploadButtonIcon(String icon) {
-        uploadButton.setIcon(icon);
+        impl.setUploadButtonIcon(icon);
     }
 
     @Override
     public String getUploadButtonIcon() {
-        return uploadButton.getIcon();
+        return impl.getUploadButtonIcon();
     }
 
     @Override

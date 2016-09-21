@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
@@ -565,6 +566,14 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
         component.setShowFileName(showFileName);
         if (showFileName && StringUtils.isNotEmpty(fileName)) {
             component.setFileNameButtonCaption(fileName);
+        }
+    }
+
+    @Override
+    public void setPermittedExtensions(Set<String> permittedExtensions) {
+        super.setPermittedExtensions(permittedExtensions);
+        if (uploadButton instanceof CubaFileUpload) {
+            ((CubaFileUpload) uploadButton).setPermittedExtensions(permittedExtensions);
         }
     }
 
