@@ -42,11 +42,10 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
-public class RelatedAction extends AbstractAction implements Action.HasBeforeActionPerformedHandler {
+public class RelatedAction extends BaseAction implements Action.HasBeforeActionPerformedHandler {
 
     public static final String ACTION_ID = "related";
 
-    protected final ListComponent target;
     protected final MetaProperty metaProperty;
     protected final MetaClass metaClass;
 
