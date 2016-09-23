@@ -25,6 +25,8 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.DesktopConfig;
+import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
@@ -491,6 +493,46 @@ public class DesktopWindow implements Window, Component.Disposable,
         return action;
     }
 
+    @Nullable
+    protected JPanel asTabWindow() {
+        java.awt.Component parent = getContainer();
+        while (parent != null) {
+            if (parent.getParent() instanceof JTabbedPaneExt) {
+                return (JPanel) parent;
+            }
+            parent = parent.getParent();
+        }
+
+        return null;
+    }
+
+    @Nullable
+    protected JPanel asDetachedWindow() {
+        java.awt.Component parent = getContainer();
+        while (parent != null) {
+            if (parent.getParent() != null && parent.getParent().getParent() != null) {
+                if (parent.getParent().getParent() instanceof JLayeredPane) {
+                    return (JPanel) parent;
+                }
+            }
+            parent = parent.getParent();
+        }
+
+        return null;
+    }
+
+    protected JTabbedPaneExt getJTabbedPaneExt() {
+        java.awt.Component parent = getContainer();
+        while (parent != null) {
+            if (parent instanceof JTabbedPaneExt) {
+                return (JTabbedPaneExt) parent;
+            }
+            parent = parent.getParent();
+        }
+
+        return null;
+    }
+
     @Override
     public String getCaption() {
         return caption;
@@ -503,6 +545,18 @@ public class DesktopWindow implements Window, Component.Disposable,
         DialogWindow dialogWindow = asDialogWindow();
         if (dialogWindow != null) {
             dialogWindow.setTitle(caption);
+        } else {
+            JPanel tabWindow = asTabWindow();
+            if (tabWindow != null) {
+                setTabCaptionAndDescription(tabWindow);
+            } else {
+                JPanel singleWindow = asDetachedWindow();
+                if (singleWindow != null) {
+                    ((TopLevelFrame) singleWindow.getParent().getParent().getParent().getParent())
+                            .setTitle(formatTabCaption(caption, description));
+                    windowManager.getBreadCrumbs(singleWindow).update();
+                }
+            }
         }
     }
 
@@ -514,6 +568,45 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public void setDescription(String description) {
         this.description = description;
+
+        JPanel tabWindow = asTabWindow();
+        if (tabWindow != null) {
+            setTabCaptionAndDescription(tabWindow);
+        } else {
+            JPanel singleWindow = asDetachedWindow();
+            if (singleWindow != null) {
+                ((TopLevelFrame) singleWindow.getParent().getParent().getParent().getParent())
+                        .setTitle(formatTabCaption(caption, description));
+            }
+        }
+    }
+
+    protected void setTabCaptionAndDescription(JComponent tabWindow) {
+        String formattedCaption = formatTabCaption(caption, description);
+
+        JTabbedPaneExt jTabbedPaneExt = getJTabbedPaneExt();
+        jTabbedPaneExt.setTitleAt(jTabbedPaneExt.getSelectedIndex(), formattedCaption);
+        windowManager.getBreadCrumbs(tabWindow).update();
+    }
+
+    protected String formatTabCaption(final String caption, final String description) {
+        DesktopConfig desktopConfig = configuration.getConfig(DesktopConfig.class);
+        String tabCaption = formatTabDescription(caption, description);
+
+        int maxLength = desktopConfig.getMainTabCaptionLength();
+        if (tabCaption.length() > maxLength) {
+            return tabCaption.substring(0, maxLength) + "...";
+        } else {
+            return tabCaption;
+        }
+    }
+
+    protected String formatTabDescription(final String caption, final String description) {
+        if (StringUtils.isNotEmpty(description)) {
+            return String.format("%s: %s", caption, description);
+        } else {
+            return caption;
+        }
     }
 
     @Override
