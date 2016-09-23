@@ -17,10 +17,16 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.OptionsGroup;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.toolkit.ui.CubaOptionGroup;
 import com.haulmont.cuba.web.toolkit.ui.client.optiongroup.OptionGroupOrientation;
+import com.haulmont.cuba.web.toolkit.ui.converters.SetToListConverter;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -48,7 +54,14 @@ public class WebOptionsGroup extends WebAbstractOptionsBase<CubaOptionGroup> imp
                     @Override
                     public Object getValue() {
                         final Object o = itemProperty.getValue();
-                        return getKeyFromValue(o);
+
+                        Object keyFromValue = getKeyFromValue(o);
+                        if (metaProperty != null && keyFromValue != null) {
+                            if (List.class.isAssignableFrom(metaProperty.getJavaType())) {
+                                return new ArrayList((Collection) keyFromValue);
+                            }
+                        }
+                        return keyFromValue;
                     }
 
                     @Override
@@ -79,6 +92,17 @@ public class WebOptionsGroup extends WebAbstractOptionsBase<CubaOptionGroup> imp
                 component.setOrientation(OptionGroupOrientation.VERTICAL);
             }
             this.orientation = orientation;
+        }
+    }
+
+    @Override
+    public void setDatasource(Datasource datasource, String property) {
+        super.setDatasource(datasource, property);
+
+        if (metaProperty != null) {
+            if (List.class.isAssignableFrom(metaProperty.getJavaType())) {
+                component.setConverter(new SetToListConverter());
+            }
         }
     }
 }
