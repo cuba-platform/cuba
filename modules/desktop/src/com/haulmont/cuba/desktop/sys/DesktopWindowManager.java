@@ -1324,6 +1324,10 @@ public class DesktopWindowManager extends WindowManager {
         return buttonsPanel;
     }
 
+    public WindowBreadCrumbs getBreadCrumbs(JComponent container) {
+        return tabs.get(container);
+    }
+
     protected void assignDialogShortcuts(final JDialog dialog, JPanel panel, final Action[] actions) {
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 
