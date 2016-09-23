@@ -115,22 +115,30 @@ public class SystemInfoWindow extends AbstractWindow {
         } else {
             scriptArea.setValue(sqlGenerationService.generateInsertScript(item));
         }
-
-        scriptArea.setVisible(true);
-        scriptArea.setEditable(false);
+        showScriptArea();
     }
 
     public void generateUpdate() {
         scriptArea.setEditable(true);
         scriptArea.setValue(sqlGenerationService.generateUpdateScript(item));
-        scriptArea.setVisible(true);
-        scriptArea.setEditable(false);
+        showScriptArea();
     }
 
     public void generateSelect() {
         scriptArea.setEditable(true);
         scriptArea.setValue(sqlGenerationService.generateSelectScript(item));
+        showScriptArea();
+    }
+
+    protected void showScriptArea() {
         scriptArea.setVisible(true);
         scriptArea.setEditable(false);
+        resetExpanded();
+        expand(scriptArea);
+        infoTable.setHeight("250px");
+
+        if (getDialogOptions().getHeight() < 510) {
+            getDialogOptions().setHeight(510);
+        }
     }
 }
