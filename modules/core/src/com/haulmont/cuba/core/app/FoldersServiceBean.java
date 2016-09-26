@@ -32,6 +32,9 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
+import com.thoughtworks.xstream.core.DefaultConverterLookup;
+import com.thoughtworks.xstream.core.util.ClassLoaderReference;
+import com.thoughtworks.xstream.io.xml.XppDriver;
 import groovy.lang.Binding;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -338,7 +341,9 @@ public class FoldersServiceBean implements FoldersService {
     }
 
     protected XStream createXStream() {
-        XStream xStream = new XStream();
+        XStream xStream = new XStream(null, new XppDriver(),
+                new ClassLoaderReference(Thread.currentThread().getContextClassLoader()),
+                null, new DefaultConverterLookup(), null);
         //createTs and createdBy removed from BaseGenericIdEntity,
         //and import from old versions (platform 6.2) is performed with errors
         //so omit field processing
