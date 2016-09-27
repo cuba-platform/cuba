@@ -30,11 +30,11 @@ public interface FtsSender {
 
     String NAME = "cuba_FtsSender";
 
-    void enqueue(Entity<UUID> entity, FtsChangeType changeType);
+    void enqueue(Entity entity, FtsChangeType changeType);
 
-    void enqueue(String entityName, UUID entityId, FtsChangeType changeType);
+    void enqueue(String entityName, Object entityId, FtsChangeType changeType);
 
-    void enqueueFake(String entityName, UUID entityId);
+    void enqueueFake(String entityName, Object entityId);
 
     void emptyQueue(String entityName);
 

@@ -43,11 +43,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Component(Persistence.NAME)
 public class PersistenceImpl implements Persistence {
 
     public static final String RUN_BEFORE_COMMIT_ATTR = "cuba.runBeforeCommit";
+    public static final String RUN_AFTER_COMPLETION_ATTR = "cuba.runAfterCompletion";
 
     private volatile boolean softDeletion = true;
 
@@ -288,6 +290,15 @@ public class PersistenceImpl implements Persistence {
 
         @Override
         public void afterCompletion(int status) {
+            EntityManagerContext context = contextHolder.get(store);
+            if (context != null) {
+                List<Consumer<Integer>> list = context.getAttribute(RUN_AFTER_COMPLETION_ATTR);
+                if (list != null && !list.isEmpty()) {
+                    for (Consumer<Integer> consumer : list) {
+                        consumer.accept(status);
+                    }
+                }
+            }
             contextHolder.remove(store);
             CubaUtil.setSoftDeletion(prevSoftDeletion);
         }

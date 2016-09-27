@@ -89,7 +89,7 @@ public class DesktopFilterHelper implements FilterHelper {
     }
 
     @Override
-    public void initTableFtsTooltips(Table table, Map<UUID, String> tooltips) {
+    public void initTableFtsTooltips(Table table, Map<Object, String> tooltips) {
     }
 
     @Override
