@@ -18,6 +18,9 @@
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.app.core.bulk.BulkEditorWindow"
         caption="msg://bulkEditor.caption">
+    <actions>
+        <action id="applyChanges" shortcut="CTRL-ENTER" invoke="applyChanges"/>
+    </actions>
     <layout expand="fieldsScrollBox" spacing="true">
         <groupBox id="infoBox">
             <label id="infoLabel" value="msg://bulkEditor.description" width="100%"/>
@@ -28,7 +31,7 @@
         </scrollBox>
 
         <hbox id="buttonsBox" spacing="true">
-            <button id="applyButton" caption="msg://actions.Apply" icon="icons/ok.png" invoke="applyChanges"/>
+            <button id="applyButton" caption="msg://actions.Apply" icon="icons/ok.png" action="applyChanges"/>
             <button caption="msg://actions.Close" icon="icons/cancel.png" invoke="cancelChanges"/>
         </hbox>
     </layout>
