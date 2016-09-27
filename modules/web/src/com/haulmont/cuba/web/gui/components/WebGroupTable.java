@@ -122,8 +122,10 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
 
         final Collection<?> groupProperties = component.getGroupProperties();
         for (Object groupProperty : groupProperties) {
-            final Element groupPropertyElement = groupPropertiesElement.addElement("property");
-            groupPropertyElement.addAttribute("id", groupProperty.toString());
+            if (getNotCollapsedColumns().contains(getColumn(groupProperty.toString()))) {
+                final Element groupPropertyElement = groupPropertiesElement.addElement("property");
+                groupPropertyElement.addAttribute("id", groupProperty.toString());
+            }
         }
 
         return true;
