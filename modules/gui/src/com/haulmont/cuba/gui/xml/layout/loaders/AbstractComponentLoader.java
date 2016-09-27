@@ -25,6 +25,9 @@ import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.config.Property;
+import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
@@ -45,9 +48,12 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class AbstractComponentLoader<T extends Component> implements ComponentLoader<T> {
 
+    protected static final String SHORTCUT_CONFIG_VALUE_REGEXP = "\\$\\{([a-zA-Z.]*)\\}";
     protected Locale locale;
     protected String messagesPack;
     protected Context context;
@@ -456,7 +462,12 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
 
         String trackSelection = element.attributeValue("trackSelection");
+
         String shortcut = StringUtils.trimToNull(element.attributeValue("shortcut"));
+        if (shortcutIsConfigValue(shortcut)) {
+            shortcut = getShortcutFromConfig(shortcut);
+        }
+
         if (Boolean.parseBoolean(trackSelection)) {
             return new DeclarativeTrackingAction(
                     id,
@@ -482,6 +493,33 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                     actionsHolder
             );
         }
+    }
+
+    protected boolean shortcutIsConfigValue(String shortcut) {
+        if (StringUtils.isNotEmpty(shortcut)) {
+            Pattern pattern = Pattern.compile(SHORTCUT_CONFIG_VALUE_REGEXP);
+            Matcher matcher = pattern.matcher(shortcut);
+            return matcher.matches();
+        }
+        return false;
+    }
+
+    protected String getShortcutFromConfig(String configString) {
+        if (StringUtils.isNotEmpty(configString)) {
+            Pattern pattern = Pattern.compile(SHORTCUT_CONFIG_VALUE_REGEXP);
+            Matcher matcher = pattern.matcher(configString);
+            if (matcher.matches()) {
+                String shortcutString = matcher.group(1);
+                for (java.lang.reflect.Method method : ClientConfig.class.getMethods()) {
+                    Property propertyAnnotation = method.getAnnotation(Property.class);
+                    if (propertyAnnotation != null && shortcutString.equals(propertyAnnotation.value())) {
+                        DefaultString defaultString = method.getAnnotation(DefaultString.class);
+                        return defaultString.value();
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     protected Action loadPickerDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {

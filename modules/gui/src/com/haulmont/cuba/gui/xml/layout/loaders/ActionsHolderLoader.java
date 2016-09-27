@@ -50,12 +50,22 @@ public abstract class ActionsHolderLoader<T extends Component.ActionsHolder> ext
 
                     loadConstraint(instance, element);
 
+                    loadShortcut(instance, element);
+
                     return instance;
                 }
             }
         }
 
         return super.loadDeclarativeAction(actionsHolder, element);
+    }
+
+    protected void loadShortcut(Action instance, Element element) {
+        String shortcut = StringUtils.trimToNull(element.attributeValue("shortcut"));
+        if (shortcutIsConfigValue(shortcut)) {
+            shortcut = getShortcutFromConfig(shortcut);
+        }
+        instance.setShortcut(shortcut);
     }
 
     protected void loadStandardActionProperties(Action instance, Element element) {
