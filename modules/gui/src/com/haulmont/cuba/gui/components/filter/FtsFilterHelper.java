@@ -62,7 +62,7 @@ public interface FtsFilterHelper {
      */
     class FtsSearchResult {
         private int queryKey;
-        private Map<UUID, String> hitInfos;
+        private Map<Object, String> hitInfos;
 
         public int getQueryKey() {
             return queryKey;
@@ -72,11 +72,11 @@ public interface FtsFilterHelper {
             this.queryKey = queryKey;
         }
 
-        public Map<UUID, String> getHitInfos() {
+        public Map<Object, String> getHitInfos() {
             return hitInfos;
         }
 
-        public void setHitInfos(Map<UUID, String> hitInfos) {
+        public void setHitInfos(Map<Object, String> hitInfos) {
             this.hitInfos = hitInfos;
         }
     }

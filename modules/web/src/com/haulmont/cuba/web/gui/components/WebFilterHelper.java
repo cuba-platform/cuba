@@ -252,17 +252,13 @@ public class WebFilterHelper implements FilterHelper {
     }
 
     @Override
-    public void initTableFtsTooltips(Table table, final Map<UUID, String> tooltips) {
+    public void initTableFtsTooltips(Table table, final Map<Object, String> tooltips) {
         com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
-        vTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
-            @SuppressWarnings("SuspiciousMethodCalls")
-            @Override
-            public String generateDescription(Component source, Object itemId, Object propertyId) {
-                if (tooltips.keySet().contains(itemId)) {
-                    return tooltips.get(itemId);
-                }
-                return null;
+        vTable.setItemDescriptionGenerator((AbstractSelect.ItemDescriptionGenerator) (source, itemId, propertyId) -> {
+            if (tooltips.keySet().contains(itemId)) {
+                return tooltips.get(itemId);
             }
+            return null;
         });
     }
 

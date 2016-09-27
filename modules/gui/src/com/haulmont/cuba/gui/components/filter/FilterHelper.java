@@ -78,7 +78,7 @@ public interface FilterHelper {
 
     boolean isTableActionsEnabled();
 
-    void initTableFtsTooltips(Table table, Map<UUID, String> tooltips);
+    void initTableFtsTooltips(Table table, Map<Object, String> tooltips);
 
     void removeTableFtsTooltips(Table table);
 

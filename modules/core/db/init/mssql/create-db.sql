@@ -576,6 +576,9 @@ create table SYS_FTS_QUEUE (
     CREATED_BY varchar(50),
     --
     ENTITY_ID uniqueidentifier,
+    STRING_ENTITY_ID varchar(255),
+    INT_ENTITY_ID integer,
+    LONG_ENTITY_ID bigint,
     ENTITY_NAME varchar(200),
     CHANGE_TYPE char(1),
     SOURCE_HOST varchar(255),
