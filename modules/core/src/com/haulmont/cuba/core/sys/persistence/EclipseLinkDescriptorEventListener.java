@@ -82,7 +82,7 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
         if (event.getObject() instanceof FetchGroupTracker) {
             FetchGroupTracker entity = (FetchGroupTracker) event.getObject();
             FetchGroup fetchGroup = entity._persistence_getFetchGroup();
-            if (fetchGroup != null)
+            if (fetchGroup != null && !(fetchGroup instanceof CubaEntityFetchGroup))
                 entity._persistence_setFetchGroup(new CubaEntityFetchGroup(fetchGroup));
         }
     }
@@ -124,7 +124,7 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
         if (event.getObject() instanceof FetchGroupTracker) {
             FetchGroupTracker entity = (FetchGroupTracker) event.getObject();
             FetchGroup fetchGroup = entity._persistence_getFetchGroup();
-            if (fetchGroup != null)
+            if (fetchGroup != null && !(fetchGroup instanceof CubaEntityFetchGroup))
                 entity._persistence_setFetchGroup(new CubaEntityFetchGroup(fetchGroup));
         }
     }
