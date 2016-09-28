@@ -545,14 +545,25 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         super.modified(item);
     }
 
+    @SuppressWarnings("unchecked")
     public void replaceItem(T item) {
         Collection<T> collection = __getCollection();
         if (collection != null) {
             for (T t : collection) {
                 if (t.equals(item)) {
                     detachListener(t);
-                    collection.remove(t);
-                    collection.add(item);
+                    if (collection instanceof List) {
+                        List list = (List) collection;
+                        int itemIdx = list.indexOf(t);
+                        collection.remove(t);
+                        list.add(itemIdx, item);
+                    } else if (collection instanceof LinkedHashSet) {
+                        LinkedHashSet set = (LinkedHashSet) collection;
+                        set.add(item);
+                    } else {
+                        collection.remove(t);
+                        collection.add(item);
+                    }
                     attachListener(item);
 
                     if (item.equals(this.item)) {
