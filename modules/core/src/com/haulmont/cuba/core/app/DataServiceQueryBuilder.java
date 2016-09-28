@@ -20,6 +20,7 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.bali.util.StringHelper;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.Query;
@@ -30,14 +31,13 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.util.*;
 
 /**
  * Builds {@link Query} instance to use in DataService.
- *
  */
 @Component(DataServiceQueryBuilder.NAME)
 @Scope("prototype")
@@ -68,7 +68,7 @@ public class DataServiceQueryBuilder {
             MetaClass metaClass = metadata.getClassNN(entityName);
             String pkName = metadata.getTools().getPrimaryKeyName(metaClass);
             if (pkName == null)
-                throw new IllegalStateException("Entity " + entityName + " has no primary key");
+                throw new IllegalStateException(String.format("Entity %s has no primary key", entityName));
             this.queryString = "select e from " + entityName + " e where e." + pkName + " = :entityId";
             this.queryParams = new HashMap<>();
             this.queryParams.put("entityId", id);
@@ -77,9 +77,28 @@ public class DataServiceQueryBuilder {
 
     public void restrictByPreviousResults(UUID sessionId, int queryKey) {
         QueryTransformer transformer = QueryTransformerFactory.createTransformer(queryString);
+        MetaClass metaClass = metadata.getClassNN(entityName);
+        MetaProperty primaryKey = metadata.getTools().getPrimaryKeyProperty(metaClass);
+        if (primaryKey == null)
+            throw new IllegalStateException(String.format("Entity %s has no primary key", entityName));
+        Class type = primaryKey.getJavaType();
+        String entityIdField;
+        if (UUID.class.equals(type)) {
+            entityIdField = "entityId";
+        } else if (Long.class.equals(type)) {
+            entityIdField = "longEntityId";
+        } else if (Integer.class.equals(type)) {
+            entityIdField = "intEntityId";
+        } else if (String.class.equals(type)) {
+            entityIdField = "stringEntityId";
+        } else {
+            throw new IllegalStateException(
+                    String.format("Unsupported primary key type: %s for %s", type.getSimpleName(), entityName));
+        }
         transformer.addJoinAndWhere(
                 ", sys$QueryResult _qr",
-                "_qr.entityId = {E}.id and _qr.sessionId = :_qr_sessionId and _qr.queryKey = " + queryKey
+                String.format("_qr.%s = {E}.%s and _qr.sessionId = :_qr_sessionId and _qr.queryKey = %s",
+                        entityIdField, primaryKey.getName(), queryKey)
         );
         queryString = transformer.getResult();
         this.queryParams.put("_qr_sessionId", sessionId);

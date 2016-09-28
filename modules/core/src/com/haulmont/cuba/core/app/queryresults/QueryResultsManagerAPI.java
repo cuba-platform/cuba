@@ -32,7 +32,7 @@ public interface QueryResultsManagerAPI {
 
     void savePreviousQueryResults(LoadContext loadContext);
 
-    void insert(int queryKey, List<UUID> idList);
+    void insert(int queryKey, List idList);
 
     void delete(int queryKey);
 

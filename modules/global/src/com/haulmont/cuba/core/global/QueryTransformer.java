@@ -52,6 +52,9 @@ public interface QueryTransformer {
     /** Replaces <code>select e from ...</code> clause with <code>select e.id from ...</code> */
     void replaceWithSelectId();
 
+    /** Replaces <code>select e from ...</code> clause with <code>select e.pkName from ...</code> */
+    void replaceWithSelectId(String pkName);
+
     /** Replaces <code>select e from ...</code> clause with <code>select 'selectEntityVariable' from ...</code> */
     void replaceWithSelectEntityVariable(String selectEntityVariable);
 
