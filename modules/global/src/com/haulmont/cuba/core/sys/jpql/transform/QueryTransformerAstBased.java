@@ -228,7 +228,12 @@ public class QueryTransformerAstBased implements QueryTransformer {
 
     @Override
     public void replaceWithSelectId() {
-        getQueryTransformer().replaceWithSelectId();
+        getQueryTransformer().replaceWithSelectId("id");
+    }
+
+    @Override
+    public void replaceWithSelectId(String pkName) {
+        getQueryTransformer().replaceWithSelectId(pkName);
     }
 
     @Override

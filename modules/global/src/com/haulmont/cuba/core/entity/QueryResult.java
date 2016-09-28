@@ -43,6 +43,15 @@ public class QueryResult implements CubaEnhanced { // Marker interface added her
     @Column(name = "ENTITY_ID")
     private UUID entityId;
 
+    @Column(name = "STRING_ENTITY_ID", length = 255)
+    protected String stringEntityId;
+
+    @Column(name = "INT_ENTITY_ID")
+    protected Integer intEntityId;
+
+    @Column(name = "LONG_ENTITY_ID")
+    protected Long longEntityId;
+
     public Long getId() {
         return id;
     }
@@ -73,5 +82,29 @@ public class QueryResult implements CubaEnhanced { // Marker interface added her
 
     public void setEntityId(UUID entityId) {
         this.entityId = entityId;
+    }
+
+    public String getStringEntityId() {
+        return stringEntityId;
+    }
+
+    public void setStringEntityId(String stringEntityId) {
+        this.stringEntityId = stringEntityId;
+    }
+
+    public Integer getIntEntityId() {
+        return intEntityId;
+    }
+
+    public void setIntEntityId(Integer intEntityId) {
+        this.intEntityId = intEntityId;
+    }
+
+    public Long getLongEntityId() {
+        return longEntityId;
+    }
+
+    public void setLongEntityId(Long longEntityId) {
+        this.longEntityId = longEntityId;
     }
 }

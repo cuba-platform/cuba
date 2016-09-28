@@ -231,10 +231,10 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         tree.freshenParentAndChildIndexes();
     }
 
-    public void replaceWithSelectId() {
+    public void replaceWithSelectId(String pkName) {
         PathNode returnedPathNode = getFirstReturnedPathNode();
         if (returnedPathNode != null) {
-            returnedPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.WORD, "id")));
+            returnedPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.WORD, pkName)));
         }
     }
 

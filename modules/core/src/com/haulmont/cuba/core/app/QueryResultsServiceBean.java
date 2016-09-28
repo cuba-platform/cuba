@@ -31,7 +31,7 @@ public class QueryResultsServiceBean implements QueryResultsService {
     protected QueryResultsManagerAPI queryResultsManagerAPI;
 
     @Override
-    public void insert(int queryKey, List<UUID> idList) {
+    public void insert(int queryKey, List idList) {
         queryResultsManagerAPI.insert(queryKey, idList);
     }
 
