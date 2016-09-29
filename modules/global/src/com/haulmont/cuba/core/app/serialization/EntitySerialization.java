@@ -373,6 +373,9 @@ public class EntitySerialization implements EntitySerializationAPI {
                         entity.setValue(propertyName, null);
                         continue;
                     }
+                    if (metaProperty.getAnnotatedElement().isAnnotationPresent(com.haulmont.chile.core.annotations.MetaProperty.class)) {
+                        continue;
+                    }
                     Class<?> propertyType = metaProperty.getJavaType();
                     Range propertyRange = metaProperty.getRange();
                     if (propertyRange.isDatatype()) {

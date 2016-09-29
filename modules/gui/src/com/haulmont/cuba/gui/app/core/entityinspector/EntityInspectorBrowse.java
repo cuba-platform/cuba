@@ -397,6 +397,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected EntityImportView createEntityImportView(MetaClass metaClass) {
         EntityImportView entityImportView = new EntityImportView(metaClass.getJavaClass());
         for (MetaProperty metaProperty : metaClass.getProperties()) {
+            if (!metadata.getTools().isPersistent(metaProperty)) continue;
             switch (metaProperty.getType()) {
                 case DATATYPE:
                 case ENUM:
