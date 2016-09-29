@@ -208,9 +208,9 @@ public class ViewTest {
                         new View(Group.class, false)
                                 .addProperty("name")
                 );
+        view.setLoadPartialEntities(true);
 
-        Transaction tx = cont.persistence().createTransaction();
-        try {
+        try (Transaction tx = cont.persistence().createTransaction()) {
             // First stage: change managed
 
             long ts = timeSource.currentTimeMillis();
@@ -218,6 +218,9 @@ public class ViewTest {
 
             EntityManager em = cont.persistence().getEntityManager();
             User user = em.find(User.class, userId, view);
+
+            assertFalse(PersistenceHelper.isLoaded(user, "updateTs"));
+
             user.setName(new Date().toString());
 
             tx.commitRetaining();
@@ -234,6 +237,32 @@ public class ViewTest {
 
             tx.commitRetaining();
 
+            assertFalse(PersistenceHelper.isLoaded(user, "updateTs"));
+
+            user.setName(new Date().toString());
+            em = cont.persistence().getEntityManager();
+            em.merge(user);
+
+            tx.commit();
+
+            assertTrue(getCurrentUpdateTs() > ts);
+        }
+
+        // test _minimal
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            long ts = timeSource.currentTimeMillis();
+            Thread.sleep(1000);
+
+            View minimalView = cont.metadata().getViewRepository().getView(User.class, View.MINIMAL);
+            minimalView.setLoadPartialEntities(true);
+
+            EntityManager em = cont.persistence().getEntityManager();
+            User user = em.find(User.class, userId, minimalView);
+
+            tx.commitRetaining();
+
+            assertFalse(PersistenceHelper.isLoaded(user, "updateTs"));
+
             user.setName(new Date().toString());
             em = cont.persistence().getEntityManager();
             em.merge(user);
@@ -242,9 +271,22 @@ public class ViewTest {
 
             assertTrue(getCurrentUpdateTs() > ts);
 
-        } finally {
-            tx.end();
+            tx.commit();
         }
+
+        // test DataManager
+        long ts = timeSource.currentTimeMillis();
+        Thread.sleep(1000);
+
+        DataManager dataManager = AppBeans.get(DataManager.class).secure();
+        User user = dataManager.load(LoadContext.create(User.class).setId(userId).setView(view));
+
+        assertFalse(PersistenceHelper.isLoaded(user, "updateTs"));
+
+        user.setName(new Date().toString());
+        dataManager.commit(user);
+
+        assertTrue(getCurrentUpdateTs() > ts);
     }
 
     /*
