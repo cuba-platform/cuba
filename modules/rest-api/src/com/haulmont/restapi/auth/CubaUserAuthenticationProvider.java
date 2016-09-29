@@ -67,6 +67,9 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider, S
 
             try {
                 UserSession session = loginService.login(login, passwordEncryption.getPlainHash((String) token.getCredentials()), request.getLocale());
+                if (!session.isSpecificPermitted("cuba.restApi.enabled")) {
+                    throw new BadCredentialsException("User is not allowed to use the REST API");
+                }
                 AppContext.setSecurityContext(new SecurityContext(session));
                 UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(),
                         authentication.getCredentials(), getRoleUserAuthorities());
