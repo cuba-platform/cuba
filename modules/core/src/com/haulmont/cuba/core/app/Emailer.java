@@ -502,6 +502,8 @@ public class Emailer implements EmailerAPI {
             msg.setStatus(SendingStatus.QUEUE);
 
             tx.commit();
+        } catch (Exception e) {
+            log.error("Error returning message to '{}' to the queue", sendingMessage.getAddress(), e);
         }
     }
 
@@ -515,6 +517,8 @@ public class Emailer implements EmailerAPI {
             msg.setDateSent(timeSource.currentTimestamp());
 
             tx.commit();
+        } catch (Exception e) {
+            log.error("Error marking message to '{}' as sent", sendingMessage.getAddress(), e);
         }
     }
 
@@ -527,6 +531,8 @@ public class Emailer implements EmailerAPI {
             msg.setAttemptsMade(msg.getAttemptsMade() + 1);
 
             tx.commit();
+        } catch (Exception e) {
+            log.error("Error marking message to '{}' as not sent", sendingMessage.getAddress(), e);
         }
     }
 
