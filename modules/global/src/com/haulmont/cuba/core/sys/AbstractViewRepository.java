@@ -284,8 +284,9 @@ public class AbstractViewRepository implements ViewRepository {
                     name, metaClass.getName()));
         }
 
-        View view = new View(javaClass, name, true); // standard views include system attributes since v6 to avoid problems with assigning them automatically on saving
+        View view;
         if (View.LOCAL.equals(name)) {
+            view = new View(javaClass, name, true); // _local view contains system properties
             for (MetaProperty property : metaClass.getProperties()) {
                 if (!property.getRange().isClass()
                         && !metadata.getTools().isSystem(property)
@@ -294,6 +295,7 @@ public class AbstractViewRepository implements ViewRepository {
                 }
             }
         } else if (View.MINIMAL.equals(name)) {
+            view = new View(javaClass, name, false); // _minimal view does not contain system properties
             Collection<MetaProperty> metaProperties = metadata.getTools().getNamePatternProperties(metaClass, true);
             for (MetaProperty metaProperty : metaProperties) {
                 if (!metadata.getTools().isTransient(metaProperty)) {
