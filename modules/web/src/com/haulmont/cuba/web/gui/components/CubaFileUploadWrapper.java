@@ -129,10 +129,12 @@ public class CubaFileUploadWrapper extends CustomField {
             container.setHeight(100, Unit.PERCENTAGE);
             fileNameButton.setHeight(100, Unit.PERCENTAGE);
             uploadButton.setHeight(100, Unit.PERCENTAGE);
+            clearButton.setHeight(100, Unit.PERCENTAGE);
         } else {
             container.setHeightUndefined();
             fileNameButton.setHeightUndefined();
             uploadButton.setHeightUndefined();
+            clearButton.setHeightUndefined();
         }
     }
 
@@ -155,6 +157,7 @@ public class CubaFileUploadWrapper extends CustomField {
         super.setReadOnly(readOnly);
 
         updateButtonsVisibility();
+        updateComponentWidth();
     }
 
     @Override
@@ -163,6 +166,7 @@ public class CubaFileUploadWrapper extends CustomField {
 
         setFileNameButtonCaption(fileName);
         updateButtonsVisibility();
+        updateComponentWidth();
     }
 
     @Override
