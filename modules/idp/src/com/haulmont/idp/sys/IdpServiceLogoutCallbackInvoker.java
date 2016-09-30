@@ -87,7 +87,7 @@ public class IdpServiceLogoutCallbackInvoker {
                 log.warn("Service provider logout url {} returns code {}", serviceProviderLogoutUrl, statusCode);
             }
         } catch (IOException e) {
-            log.warn("Service provider logout url {} error", serviceProviderLogoutUrl, e);
+            log.warn("Service provider logout url {} error {}", serviceProviderLogoutUrl, e.getMessage());
         }
     }
 
