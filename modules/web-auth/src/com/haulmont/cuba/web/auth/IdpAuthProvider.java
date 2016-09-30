@@ -43,10 +43,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -132,6 +129,18 @@ public class IdpAuthProvider implements CubaAuthProvider {
 
         IdpSession boundIdpSession;
         sessionLock.lock();
+
+        try {
+            session.getAttribute(IDP_SESSION_LOCK_ATTRIBUTE);
+        } catch (IllegalStateException e) {
+            // Someone might have invalidated the session between fetching the lock and acquiring it.
+            sessionLock.unlock();
+
+            log.debug("Invalidated session {}", session.getId());
+            httpResponse.sendRedirect(httpRequest.getRequestURL().toString());
+            return;
+        }
+
         try {
             if ("GET".equals(httpRequest.getMethod())
                     && httpRequest.getParameter(IDP_TICKET_REQUEST_PARAM) != null) {
