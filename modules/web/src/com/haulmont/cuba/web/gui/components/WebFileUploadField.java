@@ -102,7 +102,10 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
                     exportDisplay.show(value);
             }
         });
-        component.setClearButtonAction((Button.ClickListener) event -> setValue(null));
+        component.setClearButtonAction((Button.ClickListener) event -> {
+            setValue(null);
+            fileName = null;
+        });
     }
 
     protected void saveFile(FileDescriptor fileDescriptor) {

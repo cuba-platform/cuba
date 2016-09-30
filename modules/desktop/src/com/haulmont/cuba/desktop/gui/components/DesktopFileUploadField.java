@@ -119,9 +119,10 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
                     exportDisplay.show(value);
             }
         });
-        impl.setClearButtonListener(() ->
-            setValue(null)
-        );
+        impl.setClearButtonListener(() -> {
+            setValue(null);
+            fileName = null;
+        });
     }
 
     protected void uploadFile(File file) {
@@ -294,6 +295,7 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
     @Override
     public void setCaption(String caption) {
         impl.setCaption(caption);
+        requestContainerUpdate();
     }
 
     @Override
@@ -349,7 +351,9 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
     @Override
     public void setDescription(String description) {
         impl.setDescription(description);
-        DesktopToolTipManager.getInstance().registerTooltip(uploadButton.unwrap(JButton.class));
+        impl.setToolTipText(description);
+        DesktopToolTipManager.getInstance().registerTooltip(impl);
+        requestContainerUpdate();
     }
 
     @Override

@@ -132,6 +132,7 @@ public class CubaFileUploadWrapper extends JComponent implements FocusableCompon
             container.setWidth("-1");
             fileNameButton.setWidth("-1");
             uploadButton.setWidth("-1");
+            clearButton.setWidth("-1");
         }
     }
 
