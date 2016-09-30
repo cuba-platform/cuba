@@ -29,6 +29,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.Connection;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.vaadin.ui.Window;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,8 +68,7 @@ public class RowLevelSecurityExceptionHandler extends AbstractExceptionHandler {
             }
 
             Messages messages = AppBeans.get(Messages.NAME);
-            String userCaption = messages.getMessage("com.haulmont.cuba.gui",
-                    "rowLevelSecurity.caption");
+            String userCaption = null;
             String userMessage = null;
 
             if (throwable != null) {
@@ -82,19 +82,48 @@ public class RowLevelSecurityExceptionHandler extends AbstractExceptionHandler {
 
                 if (rowLevelSecurityException != null) {
                     String entity = rowLevelSecurityException.getEntity();
+                    String entityName = entity.split("\\$")[1];
                     MetaClass entityClass = AppBeans.get(Metadata.NAME, Metadata.class).getClassNN(entity);
                     String entityCaption = messages.getTools().getEntityCaption(entityClass, locale);
 
                     ConstraintOperationType operationType = rowLevelSecurityException.getOperationType();
                     if (operationType != null) {
-                        userMessage = messages.formatMessage("com.haulmont.cuba.gui",
-                                "rowLevelSecurity.entityAndOperationMessage", locale,
-                                messages.getMessage(operationType), entityCaption);
-                    } else if (entity != null) {
-                        userMessage = messages.formatMessage("com.haulmont.cuba.gui",
-                                "rowLevelSecurity.entityMessage", locale, entityCaption);
+                        String operationId = operationType.getId();
+                        String customCaptionKey = String.format("rowLevelSecurity.caption.%s.%s", entityName, operationId);
+                        String customCaption = messages.getMainMessage(customCaptionKey);
+                        if (!customCaptionKey.equals(customCaption)) {
+                            userCaption = customCaption;
+                        }
+
+                        String customMessageKey = String.format("rowLevelSecurity.entityAndOperationMessage.%s.%s",
+                                entityName, operationId);
+                        String customMessage = messages.getMainMessage(customMessageKey);
+                        if (!customMessageKey.equals(customMessage)) {
+                            userMessage = customMessage;
+                        } else {
+                            userMessage = messages.formatMainMessage("rowLevelSecurity.entityAndOperationMessage",
+                                    messages.getMessage(operationType), entityCaption);
+                        }
+                    } else {
+                        String customCaptionKey = String.format("rowLevelSecurity.caption.%s", entityName);
+                        String customCaption = messages.getMainMessage(customCaptionKey);
+                        if (!customCaptionKey.equals(customCaption)) {
+                            userCaption = customCaption;
+                        }
+
+                        String customMessageKey = String.format("rowLevelSecurity.entityMessage.%s", entityName);
+                        String customMessage = messages.getMainMessage(customMessageKey);
+                        if (!customMessageKey.equals(customMessage)) {
+                            userMessage = customMessage;
+                        } else {
+                            userMessage = messages.formatMainMessage("rowLevelSecurity.entityMessage", entityCaption);
+                        }
                     }
                 }
+            }
+
+            if (StringUtils.isEmpty(userCaption)) {
+                userCaption = messages.getMainMessage("rowLevelSecurity.caption");
             }
 
             WebWindowManager wm = app.getWindowManager();
