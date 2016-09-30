@@ -63,6 +63,8 @@ public class IdpServiceController {
             return null;
         }
 
+        log.debug("IDP ticket {} activated for session {}", serviceProviderTicket, idpSession);
+
         return idpSession;
     }
 
@@ -86,6 +88,8 @@ public class IdpServiceController {
             return null;
         }
 
+        log.debug("IDP session {} obtained", idpSession);
+
         return idpSession;
     }
 
@@ -107,5 +111,7 @@ public class IdpServiceController {
             log.debug("IDP Session not found for id {}", idpSessionId);
             response.setStatus(HttpStatus.GONE.value());
         }
+
+        log.debug("IDP session {} ping successful", idpSession);
     }
 }

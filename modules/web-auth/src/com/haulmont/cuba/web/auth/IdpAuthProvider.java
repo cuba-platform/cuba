@@ -147,6 +147,7 @@ public class IdpAuthProvider implements CubaAuthProvider {
                 }
 
                 if (idpSession == null) {
+                    log.warn("Used old IDP ticket {}, send redirect", idpTicket);
                     // used old ticket, send redirect
                     httpResponse.sendRedirect(getIdpRedirectUrl());
                     return;
@@ -157,6 +158,8 @@ public class IdpAuthProvider implements CubaAuthProvider {
                 session = httpRequest.getSession(true);
                 session.setAttribute(IDP_SESSION_LOCK_ATTRIBUTE, sessionLock);
                 session.setAttribute(IDP_SESSION_ATTRIBUTE, idpSession);
+
+                log.debug("IDP session {} obtained, redirect to application", idpSession);
 
                 // redirect to application without parameters
                 httpResponse.sendRedirect(httpRequest.getRequestURL().toString());

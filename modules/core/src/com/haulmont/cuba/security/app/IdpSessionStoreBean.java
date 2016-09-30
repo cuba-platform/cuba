@@ -381,7 +381,7 @@ public class IdpSessionStoreBean implements IdpSessionStore {
             for (Iterator<IdpSessionTicketRecord> it = sessionTickets.values().iterator(); it.hasNext(); ) {
                 IdpSessionTicketRecord sessionTicketRecord = it.next();
 
-                if (now > (sessionTicketRecord.getSince() + ticketExpirationTimeoutSec)) {
+                if (now > (sessionTicketRecord.getSince() + ticketExpirationTimeoutSec * 1000)) {
                     log.debug("Removing ticket due to timeout: {}", sessionTicketRecord);
 
                     it.remove();
@@ -505,6 +505,16 @@ public class IdpSessionStoreBean implements IdpSessionStore {
         public void setActive(boolean active) {
             this.active = active;
         }
+
+        @Override
+        public String toString() {
+            return "IdpSessionTicketRecord{" +
+                    "id='" + id + '\'' +
+                    ", sessionId='" + sessionId + '\'' +
+                    ", since=" + since +
+                    ", active=" + active +
+                    '}';
+        }
     }
 
     protected static class IdpSessionRecord implements Serializable {
@@ -569,6 +579,14 @@ public class IdpSessionStoreBean implements IdpSessionStore {
 
         public IdpSessionTicketRecord getTicket() {
             return ticket;
+        }
+
+        @Override
+        public String toString() {
+            return "NewSessionClusterMessage{" +
+                    "session=" + session +
+                    ", ticket=" + ticket +
+                    '}';
         }
     }
 }
