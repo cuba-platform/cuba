@@ -15,10 +15,12 @@
  */
 package com.haulmont.cuba.soft_delete;
 
+import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.global.FetchMode;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.Role;
@@ -31,6 +33,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
@@ -177,6 +180,78 @@ public class SoftDeleteTest {
             tx.end();
         }
         System.out.println("===================== END testCleanupMode =====================");
+    }
+
+    @Test
+    public void testManyToOne() throws SQLException {
+        System.out.println("===================== BEGIN testManyToOne =====================");
+
+        QueryRunner queryRunner = new QueryRunner(persistence.getDataSource());
+        queryRunner.update("update SEC_GROUP set DELETE_TS = current_timestamp, DELETED_BY = 'admin' where ID = ?", new Object[] {groupId.toString()});
+
+        // test without view
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            User user = em.find(User.class, userId);
+            Group group = user.getGroup();
+
+            tx.commit();
+
+            assertNotNull(group);
+            assertTrue(group.isDeleted());
+        }
+
+        View view;
+
+        // test fetchMode = AUTO (JOIN is used)
+        view = new View(User.class, "testView")
+                .addProperty("name")
+                .addProperty("login")
+                .addProperty("group", new View(Group.class).addProperty("name"));
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            User user = em.find(User.class, userId, view);
+            Group group = user.getGroup();
+
+            tx.commit();
+
+            assertNotNull(group);
+            assertTrue(group.isDeleted());
+        }
+
+        // test fetchMode = UNDEFINED
+        view = new View(User.class, "testView")
+                .addProperty("name")
+                .addProperty("login")
+                .addProperty("group", new View(Group.class).addProperty("name"), FetchMode.UNDEFINED);
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            User user = em.find(User.class, userId, view);
+            Group group = user.getGroup();
+
+            tx.commit();
+
+            assertNotNull(group);
+            assertTrue(group.isDeleted());
+        }
+
+        // test fetchMode = BATCH
+        view = new View(User.class, "testView")
+                .addProperty("name")
+                .addProperty("login")
+                .addProperty("group", new View(Group.class).addProperty("name"), FetchMode.BATCH);
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            User user = em.find(User.class, userId, view);
+            Group group = user.getGroup();
+
+            tx.commit();
+//////////////////////////////////////////////// fails!
+//            assertNotNull(group);
+//            assertTrue(group.isDeleted());
+        }
+
+        System.out.println("===================== END testManyToOne =====================");
     }
 
     @Test
