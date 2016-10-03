@@ -42,7 +42,7 @@
         <intercept-url pattern="/**" access="isAuthenticated()"/>
         <http-basic entry-point-ref="clientAuthenticationEntryPoint"/>
         <csrf disabled="true"/>
-        <cors configuration-source-ref="corsSource"/>
+        <cors configuration-source-ref="cuba_RestCorsSource"/>
     </security:http>
 
     <bean id="clientAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint"/>
@@ -96,7 +96,7 @@
           entry-point-ref="oauthAuthenticationEntryPoint"
           xmlns="http://www.springframework.org/schema/security">
         <csrf disabled="true"/>
-        <cors configuration-source-ref="corsSource"/>
+        <cors configuration-source-ref="cuba_RestCorsSource"/>
     </security:http>
 
     <!-- API controllers endpoints -->
@@ -113,7 +113,7 @@
         <intercept-url pattern="/rest/v2/files/**" access="isAuthenticated()"/>
         <anonymous enabled="false"/>
         <csrf disabled="true"/>
-        <cors configuration-source-ref="corsSource"/>
+        <cors configuration-source-ref="cuba_RestCorsSource"/>
         <custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER"/>
         <custom-filter ref="cuba_AnonymousAuthenticationFilter" after="PRE_AUTH_FILTER"/>
     </security:http>
@@ -125,22 +125,22 @@
     </bean>
 
     <!-- The configuration defines a filter that handles CORS request first -->
-    <bean id="corsSource" class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
+    <bean id="cuba_RestCorsSource" class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
         <property name="corsConfigurations">
             <map>
-                <entry key="/**" value-ref="corsConfig"/>
+                <entry key="/**" value-ref="cuba_RestCorsConfig"/>
             </map>
         </property>
     </bean>
 
-    <bean id="corsConfig" class="org.springframework.web.cors.CorsConfiguration">
+    <bean id="cuba_RestCorsConfig" class="org.springframework.web.cors.CorsConfiguration">
         <property name="allowedOrigins" value="${cuba.rest.allowedOrigins}"/>
         <property name="allowedHeaders" value="*"/>
         <property name="allowedMethods" value="*"/>
         <property name="allowCredentials" value="true"/>
     </bean>
 
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <bean id="cuba_RestMultipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="${cuba.rest.maxUploadSize}"/>
     </bean>
 </beans>
