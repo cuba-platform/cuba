@@ -18,10 +18,10 @@
 package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.security.entity.Group;
+import com.haulmont.cuba.security.entity.Role;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -40,6 +40,14 @@ public interface UserManagementService {
      * @return Cloned group
      */
     Group copyAccessGroup(UUID accessGroupId);
+
+    /**
+     * Copy user role with all its permissions.
+     *
+     * @param roleId Source access role Id
+     * @return Cloned role
+     */
+    Role copyRole(UUID roleId);
 
     /**
      * Move specified users to a new access group.

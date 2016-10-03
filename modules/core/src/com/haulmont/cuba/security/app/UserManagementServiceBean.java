@@ -46,6 +46,8 @@ public class UserManagementServiceBean implements UserManagementService {
 
     protected static final String GROUP_COPY_VIEW = "group.copy";
 
+    protected static final String ROLE_COPY_VIEW = "role.copy";
+
     protected static final String MOVE_USER_TO_GROUP_VIEW = "user.moveToGroup";
 
     protected static final String RESET_PASSWORD_VIEW = "user.resetPassword";
@@ -114,6 +116,36 @@ public class UserManagementServiceBean implements UserManagementService {
                 throw new IllegalStateException("Unable to find specified access group with id: " + accessGroupId);
 
             clone = cloneGroup(accessGroup, accessGroup.getParent(), groupNames, em);
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        return clone;
+    }
+
+    @Override
+    public Role copyRole(UUID roleId) {
+        checkNotNullArgument(roleId, "Null access role id");
+        checkUpdatePermission(Role.class);
+
+        Role clone = null;
+
+        Transaction tx = persistence.getTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+
+            Query roleNamesQuery = em.createQuery("select g.name from sec$Role g");
+            @SuppressWarnings("unchecked")
+            Set<String> roleNames = new HashSet<>(roleNamesQuery.getResultList());
+
+            Role role = em.find(Role.class, roleId, ROLE_COPY_VIEW);
+            if (role == null)
+                throw new IllegalStateException("Unable to find specified role with id: " + roleId);
+
+            clone = cloneRole(role, roleNames, em);
+            clone.setDefaultRole(false);
 
             tx.commit();
         } finally {
@@ -527,6 +559,28 @@ public class UserManagementServiceBean implements UserManagementService {
         return modifiedUsers;
     }
 
+    protected Role cloneRole(Role role, Set<String> roleNames, EntityManager em) {
+        Role roleClone = metadata.create(Role.class);
+
+        String newRoleName = generateName(role.getName(), roleNames);
+        roleClone.setName(newRoleName);
+        roleClone.setType(role.getType());
+        roleClone.setDefaultRole(role.getDefaultRole());
+        roleClone.setLocName(role.getLocName());
+        roleClone.setDescription(role.getDescription());
+
+        em.persist(roleClone);
+
+        if (role.getPermissions() != null) {
+            for (Permission permission : role.getPermissions()) {
+                Permission permissionClone = clonePermission(permission, roleClone);
+                em.persist(permissionClone);
+            }
+        }
+
+        return roleClone;
+    }
+
     protected Group cloneGroup(Group group, Group parent, Set<String> groupNames, EntityManager em) {
         Group groupClone = metadata.create(Group.class);
 
@@ -601,6 +655,16 @@ public class UserManagementServiceBean implements UserManagementService {
         resultConstraint.setIsActive(constraint.getIsActive());
         resultConstraint.setGroup(group);
         return resultConstraint;
+    }
+
+    protected Permission clonePermission(Permission permission, Role role) {
+        Permission resultPermission = metadata.create(Permission.class);
+        resultPermission.setValue(permission.getValue());
+        resultPermission.setType(permission.getType());
+        resultPermission.setTarget(permission.getTarget());
+        resultPermission.setRole(role);
+
+        return resultPermission;
     }
 
     /**
