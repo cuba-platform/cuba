@@ -438,7 +438,7 @@ public class RdbmsStore implements DataStore {
                         // reference to a new entity
                         Entity e = getEntityById(context.getCommitInstances(), refEntity.getId());
                         ((AbstractInstance) entity).setValue(property.getName(), e, false);
-                    } else {
+                    } else if (metadata.getTools().isPersistent(refEntity.getMetaClass())) {
                         // reference to an existing entity
                         refEntity = em.getReference(refEntity.getMetaClass().getJavaClass(), refEntity.getId());
                         ((AbstractInstance) entity).setValue(property.getName(), refEntity, false);
