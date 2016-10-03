@@ -265,6 +265,7 @@
         <property name="whereClause"/>
         <property name="groovyScript"/>
         <property name="filterXml"/>
+        <property name="group" view="_minimal"/>
     </view>
 
     <view class="com.haulmont.cuba.security.entity.LoggedEntity"
