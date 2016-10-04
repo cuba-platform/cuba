@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.google.common.base.Preconditions;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.jpa.JpaEntityManager;
@@ -42,6 +43,7 @@ public class CubaEclipseLinkJpaDialect extends EclipseLinkJpaDialect {
     @Override
     public Object beginTransaction(EntityManager entityManager, TransactionDefinition definition) throws PersistenceException, SQLException, TransactionException {
         Object result = super.beginTransaction(entityManager, definition);
+        Preconditions.checkState(result == null, "Transactional data should be null for EclipseLink dialect");
 
         // Read default timeout every time - may be somebody wants to change it on the fly
         int defaultTimeout = 0;
@@ -79,6 +81,23 @@ public class CubaEclipseLinkJpaDialect extends EclipseLinkJpaDialect {
             }
         }
 
-        return result;
+        return new CubaEclipseLinkTransactionData(entityManager);
+    }
+
+    @Override
+    public void cleanupTransaction(Object transactionData) {
+        ((CubaEclipseLinkTransactionData)transactionData).clearEntityManager();
+    }
+
+    protected static class CubaEclipseLinkTransactionData {
+        protected EntityManager entityManager;
+
+        public CubaEclipseLinkTransactionData(EntityManager entityManager) {
+            this.entityManager = entityManager;
+        }
+
+        public void clearEntityManager() {
+            entityManager.clear();
+        }
     }
 }
