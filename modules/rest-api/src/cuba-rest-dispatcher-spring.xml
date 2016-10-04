@@ -116,9 +116,12 @@
         <cors configuration-source-ref="cuba_RestCorsSource"/>
         <custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER"/>
         <custom-filter ref="cuba_AnonymousAuthenticationFilter" after="PRE_AUTH_FILTER"/>
+        <custom-filter ref="cuba_RestLoggingFilter" position="LAST"/>
     </security:http>
 
     <bean id="cuba_AnonymousAuthenticationFilter" class="com.haulmont.restapi.auth.CubaAnonymousAuthenticationFilter"/>
+
+    <bean id="cuba_RestLoggingFilter" class="com.haulmont.restapi.auth.CubaRestLoggingFilter"/>
 
     <bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
         <property name="realmName" value="rest-api" />
