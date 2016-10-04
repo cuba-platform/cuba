@@ -42,9 +42,15 @@
         <artifact name="cuba-client-tests" configuration="testCompile"/>
     </module>
 
+    <module name="idp" dependsOn="client" blocks="web,portal">
+        <artifact name="cuba-idp" appJar="true"/>
+
+        <property name="cuba.idpSpringContextConfig" value="cuba-idp-dispatcher-spring.xml"/>
+    </module>
+
     <module name="rest-api" dependsOn="client" blocks="web,portal">
         <artifact name="cuba-rest-api" appJar="true"/>
-        <property name="cuba.restSpringContextConfig" value="cuba-rest-security-spring.xml cuba-rest-dispatcher-spring.xml"/>
+        <property name="cuba.restSpringContextConfig" value="cuba-rest-dispatcher-spring.xml"/>
     </module>
 
     <module name="gui" dependsOn="client" blocks="web,desktop">
@@ -58,10 +64,11 @@
         <artifact name="cuba-web-auth" appJar="true"/>
     </module>
 
-    <module name="web" dependsOn="gui,rest-api,web-auth" blocks="web">
+    <module name="web" dependsOn="gui,rest-api,web-auth,idp" blocks="web">
         <artifact name="cuba-web" appJar="true"/>
         <artifact name="cuba-client-tests" configuration="testCompile"/>
         <artifact name="cuba-web" classifier="web" ext="zip" configuration="webcontent"/>
+        <artifact name="cuba-idp" classifier="web" ext="zip" configuration="webcontent"/>
         <artifact name="cuba-web-themes" configuration="themes"/>
         <artifact name="cuba-web-themes" configuration="provided"/>
         <artifact name="cuba-web-toolkit" classifier="web" ext="zip" configuration="webcontent"

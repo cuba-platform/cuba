@@ -25,12 +25,12 @@ import com.haulmont.cuba.gui.components.KeyCombination;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.dom4j.Element;
 import org.springframework.core.io.Resource;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
@@ -169,7 +169,7 @@ public class MenuConfig {
                 menuItem = new MenuItem(currentParentItem, id);
                 menuItem.setMenu(true);
                 menuItem.setDescriptor(element);
-
+                loadIcon(element, menuItem);
                 loadShortcut(menuItem, element);
                 loadStylename(element, menuItem);
                 loadDescription(element, menuItem);
@@ -184,6 +184,7 @@ public class MenuConfig {
                 if (!StringUtils.isBlank(id)) {
                     menuItem = new MenuItem(currentParentItem, id);
                     menuItem.setDescriptor(element);
+                    loadIcon(element, menuItem);
                     loadShortcut(menuItem, element);
                     loadStylename(element, menuItem);
                     loadDescription(element, menuItem);
@@ -220,6 +221,13 @@ public class MenuConfig {
         String stylename = element.attributeValue("stylename");
         if (StringUtils.isNotBlank(stylename)) {
             menuItem.setStylename(stylename);
+        }
+    }
+
+    protected void loadIcon(Element element, MenuItem menuItem) {
+        String icon = element.attributeValue("icon");
+        if (StringUtils.isNotEmpty(icon)) {
+            menuItem.setIcon(icon);
         }
     }
 

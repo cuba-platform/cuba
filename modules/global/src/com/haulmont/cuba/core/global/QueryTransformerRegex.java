@@ -240,13 +240,18 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
 
     @Override
     public void replaceWithSelectId() {
+        replaceWithSelectId("id");
+    }
+
+    @Override
+    public void replaceWithSelectId(String pkName) {
         Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         String alias = findAlias(entityMatcher);
 
         Matcher distinctMatcher = DISTINCT_PATTERN.matcher(buffer);
 
         buffer.replace(0, entityMatcher.start(),
-                "select " + (distinctMatcher.find() ? "distinct " : "") + alias + ".id ");
+                "select " + (distinctMatcher.find() ? "distinct " : "") + alias + "." + pkName);
 
         Matcher orderMatcher = ORDER_BY_PATTERN.matcher(buffer);
         if (orderMatcher.find()) {

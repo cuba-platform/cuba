@@ -109,6 +109,7 @@ public class LogDownloadOptionsWindow extends AbstractWindow {
         } else {
             logDataProvider = new LogDataProvider(connection, logFileName, false);
         }
+        logDataProvider.obtainUrl();
 
         exportFile(logDataProvider, logFileName);
 

@@ -27,6 +27,8 @@ import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingsTools;
+import com.haulmont.cuba.web.auth.CubaAuthProvider;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.sys.LinkHandler;
 import com.haulmont.cuba.web.toolkit.ui.*;
@@ -89,6 +91,12 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
 
     @Inject
     protected UserSessionSource userSessionSource;
+
+    @Inject
+    protected WebAuthConfig webAuthConfig;
+
+    @Inject
+    protected CubaAuthProvider authProvider;
 
     protected TestIdManager testIdManager = new TestIdManager();
 
@@ -277,6 +285,8 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
                 app.exceptionHandlers.handle(new com.vaadin.server.ErrorEvent(e));
             }
         }
+
+        app.pingExternalAuthentication();
     }
 
     @Override

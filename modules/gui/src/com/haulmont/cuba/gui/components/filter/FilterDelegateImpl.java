@@ -587,7 +587,8 @@ public class FilterDelegateImpl implements FilterDelegate {
                 !isAdHocFilter && filterEditable && userCanEditFilters;
         boolean makeDefaultActionEnabled = !isDefault && !isFolder && !isSet && !isAdHocFilter && (!isGlobal || userCanEditGlobalFilter);
         boolean pinAppliedActionEnabled = lastAppliedFilter != null
-                && !(lastAppliedFilter.getFilterEntity() == adHocFilter && lastAppliedFilter.getConditions().getRoots().size() == 0);
+                && !(lastAppliedFilter.getFilterEntity() == adHocFilter && lastAppliedFilter.getConditions().getRoots().size() == 0)
+                && (datasource == null || Stores.isMain(metadata.getTools().getStoreName(datasource.getMetaClass())));
         boolean saveAsSearchFolderActionEnabled = folderActionsEnabled && !isFolder && !hasCode;
         boolean saveAsAppFolderActionEnabled = folderActionsEnabled && !isFolder && !hasCode && userCanEditGlobalAppFolder;
 
@@ -1427,7 +1428,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 filterHelper.initTableFtsTooltips((Table) applyTo, ftsSearchResult.getHitInfos());
             }
         } else if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
-            filterHelper.initTableFtsTooltips((Table) applyTo, Collections.<UUID, String>emptyMap());
+            filterHelper.initTableFtsTooltips((Table) applyTo, Collections.<Object, String>emptyMap());
         }
 
         applyDatasourceFilter();

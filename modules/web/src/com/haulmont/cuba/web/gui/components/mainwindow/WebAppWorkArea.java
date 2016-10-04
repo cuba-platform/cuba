@@ -26,10 +26,11 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.toolkit.ui.CubaSingleModeContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.CssLayout;
 import fi.jasoft.dragdroplayouts.client.ui.LayoutDragMode;
 import fi.jasoft.dragdroplayouts.drophandlers.DefaultTabSheetDropHandler;
 
@@ -38,7 +39,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class WebAppWorkArea extends WebAbstractComponent<VerticalLayout> implements AppWorkArea {
+public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements AppWorkArea {
 
     public static final String WORKAREA_STYLENAME = "cuba-app-workarea";
 
@@ -58,13 +59,13 @@ public class WebAppWorkArea extends WebAbstractComponent<VerticalLayout> impleme
 
     protected VBoxLayout initialLayout;
     protected CubaTabSheet tabbedContainer;
-    protected VerticalLayout singleContainer;
+    protected CubaSingleModeContainer singleContainer;
 
     // lazy initialized listeners list
     protected List<StateChangeListener> stateChangeListeners = null;
 
     public WebAppWorkArea() {
-        component = new VerticalLayout();
+        component = new CssLayout();
         component.addStyleName(WORKAREA_STYLENAME);
         component.addStyleName(MODE_TABBED_STYLENAME);
         component.addStyleName(STATE_INITIAL_STYLENAME);
@@ -130,7 +131,6 @@ public class WebAppWorkArea extends WebAbstractComponent<VerticalLayout> impleme
         Component vInitialLayout = WebComponentsHelper.getComposition(initialLayout);
         vInitialLayout.addStyleName(INITIAL_LAYOUT_STYLENAME);
         component.addComponent(vInitialLayout);
-        component.setExpandRatio(vInitialLayout, 1);
     }
 
     @Override
@@ -201,8 +201,8 @@ public class WebAppWorkArea extends WebAbstractComponent<VerticalLayout> impleme
         return new MainTabSheetActionHandler(tabSheet);
     }
 
-    protected VerticalLayout createSingleModeContainer() {
-        VerticalLayout boxLayout = new VerticalLayout();
+    protected CubaSingleModeContainer createSingleModeContainer() {
+        CubaSingleModeContainer boxLayout = new CubaSingleModeContainer();
         boxLayout.setHeight("100%");
         boxLayout.setStyleName(SINGLE_CONTAINER_STYLENAME);
         return boxLayout;
@@ -212,7 +212,7 @@ public class WebAppWorkArea extends WebAbstractComponent<VerticalLayout> impleme
         return tabbedContainer;
     }
 
-    public VerticalLayout getSingleWindowContainer() {
+    public CubaSingleModeContainer getSingleWindowContainer() {
         return singleContainer;
     }
 

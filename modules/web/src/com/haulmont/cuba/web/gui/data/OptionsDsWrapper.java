@@ -188,14 +188,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
             }
         }
 
-        Collection itemIds = datasource.getItemIds();
-        ArrayList items = new ArrayList(itemIds.size());
-        for (Object id : itemIds) {
-            //noinspection unchecked
-            items.add(datasource.getItem(id));
-        }
-
-        return items;
+        return datasource.getItems();
     }
 
     @Override

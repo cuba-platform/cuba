@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.config;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
@@ -37,6 +38,7 @@ public class MenuItem {
 
     private String id;
     private String stylename;
+    private String icon;
     private String description;
     private Element descriptor;
     private boolean separator = false;
@@ -134,5 +136,13 @@ public class MenuItem {
 
     public void setSeparator(boolean separator) {
         this.separator = separator;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }

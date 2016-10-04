@@ -20,16 +20,15 @@ package com.haulmont.cuba.core.app.scheduling;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.app.ClusterManager;
 import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.app.ServerInfoAPI;
 import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
 import com.haulmont.cuba.core.entity.ScheduledExecution;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.entity.SchedulingType;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.Scripting;
-import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.LoginWorker;
@@ -41,11 +40,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Standard implementation of {@link Runner} interface used by {@link Scheduling} to run scheduled tasks.
@@ -53,8 +55,6 @@ import java.util.concurrent.*;
  */
 @Component(Runner.NAME)
 public class RunnerBean implements Runner {
-
-    protected static final int MAX_THREADS = 10;
 
     protected Logger log = LoggerFactory.getLogger(getClass());
 
@@ -87,13 +87,19 @@ public class RunnerBean implements Runner {
     @Inject
     protected Metadata metadata;
 
+    @Inject
+    protected Configuration configuration;
+
     protected Map<String, UUID> userSessionIds = new ConcurrentHashMap<>();
 
-    public RunnerBean() {
-        executorService = Executors.newFixedThreadPool(MAX_THREADS, new ThreadFactory() {
+    @PostConstruct
+    public void init() {
+        int nThreads = configuration.getConfig(ServerConfig.class).getSchedulingThreadPoolSize();
+        executorService = Executors.newFixedThreadPool(nThreads, new ThreadFactory() {
+            private final AtomicInteger threadNumber = new AtomicInteger(1);
             @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r, "ScheduledRunnerThread");
+            public Thread newThread(@Nonnull Runnable r) {
+                Thread thread = new Thread(r, "ScheduledRunnerThread-" + threadNumber.getAndIncrement());
                 thread.setDaemon(true);
                 return thread;
             }

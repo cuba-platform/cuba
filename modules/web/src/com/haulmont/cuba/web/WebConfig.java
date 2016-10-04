@@ -64,7 +64,7 @@ public interface WebConfig extends Config {
      *  @return Comma-separated list of URLs for CubaHttpFilter to bypass.
      */
     @Property("cuba.web.cubaHttpFilterBypassUrls")
-    @Default("/ws/")
+    @Default("/ws/,/dispatch/,/rest/")
     String getCubaHttpFilterBypassUrls();
 
     /**

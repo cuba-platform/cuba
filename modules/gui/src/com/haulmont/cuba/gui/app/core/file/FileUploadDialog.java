@@ -17,8 +17,11 @@
 
 package com.haulmont.cuba.gui.app.core.file;
 
+import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.FileUploadField;
+import com.haulmont.cuba.gui.components.HBoxLayout;
 import com.haulmont.cuba.gui.components.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +32,16 @@ import java.util.UUID;
 
 /**
  * Standard file upload dialog
- *
  */
 public class FileUploadDialog extends AbstractWindow {
+
     private final Logger log = LoggerFactory.getLogger(FileUploadDialog.class);
 
     @Inject
     protected FileUploadField fileUpload;
+
+    @Inject
+    protected HBoxLayout dropZone;
 
     protected UUID fileId;
 
@@ -65,5 +71,9 @@ public class FileUploadDialog extends AbstractWindow {
                 log.error("An error occurred while uploading", e.getCause());
             }
         });
+
+        if (AppConfig.getClientType() != ClientType.WEB) {
+            dropZone.setVisible(false);
+        }
     }
 }

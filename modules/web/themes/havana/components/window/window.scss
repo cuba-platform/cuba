@@ -133,6 +133,10 @@
     }
   }
 
+  .#{$primary-stylename}-outerheader .#{$primary-stylename}-header .v-icon {
+    margin-right: 5px;
+  }
+
   .#{$primary-stylename}-modalitycurtain {
     background-image: none;
   }

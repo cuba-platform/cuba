@@ -32,8 +32,10 @@
                               datasourceClass="com.haulmont.cuba.gui.app.core.showinfo.EntityParamsDatasource"/>
     </dsContext>
 
-    <layout width="100%" spacing="true">
-        <table id="infoTable" width="100%" height="250px"
+    <dialogMode resizable="true" forceDialog="true" height="350px"/>
+
+    <layout expand="infoTable" spacing="true">
+        <table id="infoTable" width="100%"
                columnControlVisible="false" sortable="false" reorderingAllowed="false">
             <columns>
                 <column id="key" caption="msg://showInfo.name"/>
@@ -41,12 +43,11 @@
             </columns>
             <rows datasource="paramsDs"/>
         </table>
-        <hbox id ="buttonsHbox" spacing="true">
+        <buttonsPanel id="buttonsHbox">
             <button id="insert" caption="msg://caption.generateInsert" invoke="generateInsert"/>
             <button id="update" caption="msg://caption.generateUpdate" invoke="generateUpdate"/>
             <button id="select" caption="msg://caption.generateSelect" invoke="generateSelect"/>
-        </hbox>
-
-        <textArea id="scriptArea" visible="false" width="100%" height="150"/>
+        </buttonsPanel>
+        <textArea id="scriptArea" visible="false" width="100%"/>
     </layout>
 </window>

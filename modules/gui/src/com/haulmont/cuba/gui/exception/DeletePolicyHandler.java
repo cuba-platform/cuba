@@ -24,8 +24,8 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.Ordered;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.regex.Matcher;
@@ -72,20 +72,61 @@ public class DeletePolicyHandler implements GenericExceptionHandler, Ordered {
     }
 
     protected void doHandle(String message, WindowManager windowManager) {
-        String msg = messages.getMessage(getClass(), "deletePolicy.message");
+        String caption = null;
+        String notificationMessage = null;
 
-        MetaClass metaClass = recognizeMetaClass(message);
-        if (metaClass != null) {
-            String localizedEntityName = messages.getTools().getEntityCaption(metaClass);
-            String references = messages.getMessage(getClass(), "deletePolicy.references.message");
-            msg += "\n" + references + " \"" + localizedEntityName + "\"";
+        MetaClass deletedEntityMetaClass = recognizeDeletedEntityMetaClass(message);
+        if (deletedEntityMetaClass != null) {
+            String entityName = deletedEntityMetaClass.getName().split("\\$")[1];
+
+            String customCaptionKey = String.format("deletePolicy.caption.%s", entityName);
+            String customCaption = messages.getMainMessage(customCaptionKey);
+            if (!customCaptionKey.equals(customCaption)) {
+                caption = customCaption;
+            }
+
+            String customMessageKey = String.format("deletePolicy.references.message.%s", entityName);
+            String customMessage = messages.getMainMessage(customMessageKey);
+            if (!customMessageKey.equals(customMessage)) {
+                notificationMessage = customMessage;
+            }
         }
 
-        windowManager.showNotification(msg, Frame.NotificationType.ERROR);
+        if (StringUtils.isEmpty(caption)) {
+            caption = messages.getMainMessage("deletePolicy.caption");
+        }
+
+        if (StringUtils.isEmpty(notificationMessage)) {
+            MetaClass metaClass = recognizeRelatedEntityMetaClass(message);
+            if (metaClass != null) {
+                String localizedEntityName = messages.getTools().getEntityCaption(metaClass);
+                String referencesMessage = messages.getMainMessage("deletePolicy.references.message");
+                notificationMessage = String.format(referencesMessage, localizedEntityName);
+            }
+        }
+
+        windowManager.showNotification(caption, notificationMessage, Frame.NotificationType.ERROR);
     }
 
     @Nullable
-    protected MetaClass recognizeMetaClass(String message) {
+    protected MetaClass recognizeDeletedEntityMetaClass(String message) {
+        Matcher matcher = getPattern().matcher(message);
+        if (matcher.find()) {
+            String entityName = matcher.group(1);
+            if (!StringUtils.isEmpty(entityName)) {
+                MetaClass metaClass = metadata.getClass(entityName);
+                if (metaClass != null) {
+                    MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+                    metaClass = originalMetaClass != null ? originalMetaClass : metaClass;
+                }
+                return metaClass;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    protected MetaClass recognizeRelatedEntityMetaClass(String message) {
         Matcher matcher = getPattern().matcher(message);
         if (matcher.find()) {
             String entityName = matcher.group(2);

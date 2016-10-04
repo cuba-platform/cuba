@@ -29,7 +29,7 @@ public interface QueryResultsService {
     /**
      * Stores {@code idList} collection as {@link com.haulmont.cuba.core.entity.QueryResult} records
      */
-    void insert(int queryKey, List<UUID> idList);
+    void insert(int queryKey, List idList);
 
     /**
      * Deletes {@code QueryResult} records with given {@code queryKey}

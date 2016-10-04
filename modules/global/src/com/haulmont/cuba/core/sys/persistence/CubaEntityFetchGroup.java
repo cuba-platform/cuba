@@ -36,14 +36,14 @@ import java.util.Set;
 
 public class CubaEntityFetchGroup extends EntityFetchGroup {
 
-    protected FetchGroup entityFetchGroup;
+    protected FetchGroup wrappedFetchGroup;
 
     public CubaEntityFetchGroup(FetchGroup fetchGroup) {
-        entityFetchGroup = fetchGroup;
+        wrappedFetchGroup = fetchGroup;
     }
 
     public CubaEntityFetchGroup(Collection<String> attributeNames) {
-        entityFetchGroup = new EntityFetchGroup(attributeNames);
+        wrappedFetchGroup = new EntityFetchGroup(attributeNames);
     }
 
     @Override
@@ -56,187 +56,192 @@ public class CubaEntityFetchGroup extends EntityFetchGroup {
             }
         }
 
-        return entityFetchGroup.onUnfetchedAttribute(entity, attributeName);
+        return wrappedFetchGroup.onUnfetchedAttribute(entity, attributeName);
     }
 
     @Override
     public void addAttribute(String attributeNameOrPath, CoreAttributeGroup group) {
-        entityFetchGroup.addAttribute(attributeNameOrPath, group);
+        wrappedFetchGroup.addAttribute(attributeNameOrPath, group);
     }
 
     @Override
     public void removeAttribute(String attributeNameOrPath) {
-        entityFetchGroup.removeAttribute(attributeNameOrPath);
+        wrappedFetchGroup.removeAttribute(attributeNameOrPath);
     }
 
     @Override
     public boolean isEntityFetchGroup() {
-        return entityFetchGroup.isEntityFetchGroup();
+        return wrappedFetchGroup.isEntityFetchGroup();
     }
 
     @Override
     public boolean isSupersetOf(CoreAttributeGroup anotherGroup) {
-        return entityFetchGroup.isSupersetOf(anotherGroup);
+        return wrappedFetchGroup.isSupersetOf(anotherGroup);
     }
 
     @Override
     public Set<String> getAttributes() {
-        return entityFetchGroup.getAttributes();
+        return wrappedFetchGroup.getAttributes();
     }
 
     @Override
     public FetchGroupTracker getRootEntity() {
-        return entityFetchGroup.getRootEntity();
+        return wrappedFetchGroup.getRootEntity();
     }
 
     @Override
     public void setRootEntity(FetchGroupTracker rootEntity) {
-        entityFetchGroup.setRootEntity(rootEntity);
+        wrappedFetchGroup.setRootEntity(rootEntity);
     }
 
     @Override
     public void setShouldLoad(boolean shouldLoad) {
-        entityFetchGroup.setShouldLoad(shouldLoad);
+        wrappedFetchGroup.setShouldLoad(shouldLoad);
     }
 
     @Override
     public void setShouldLoadAll(boolean shouldLoad) {
-        entityFetchGroup.setShouldLoadAll(shouldLoad);
+        wrappedFetchGroup.setShouldLoadAll(shouldLoad);
     }
 
     @Override
     public boolean shouldLoad() {
-        return entityFetchGroup.shouldLoad();
+        return wrappedFetchGroup.shouldLoad();
     }
 
     @Override
     public boolean isFetchGroup() {
-        return entityFetchGroup.isFetchGroup();
+        return wrappedFetchGroup.isFetchGroup();
     }
 
     @Override
     public LoadGroup toLoadGroupLoadOnly() {
-        return entityFetchGroup.toLoadGroupLoadOnly();
+        return wrappedFetchGroup.toLoadGroupLoadOnly();
     }
 
     @Override
     public FetchGroup clone() {
-        return new CubaEntityFetchGroup(entityFetchGroup.clone());
+        return new CubaEntityFetchGroup(wrappedFetchGroup.clone());
+    }
+
+    @Override
+    public CoreAttributeGroup cloneWithSameAttributes(Map<CoreAttributeGroup<AttributeItem, ClassDescriptor>, CoreAttributeGroup<AttributeItem, ClassDescriptor>> cloneMap) {
+        return new CubaEntityFetchGroup(wrappedFetchGroup.cloneWithSameAttributes());
     }
 
     @Override
     public LoadGroup toLoadGroup(Map<AttributeGroup, LoadGroup> cloneMap, boolean loadOnly) {
-        return entityFetchGroup.toLoadGroup(cloneMap, loadOnly);
+        return wrappedFetchGroup.toLoadGroup(cloneMap, loadOnly);
     }
 
     @Override
     public EntityFetchGroup getEntityFetchGroup(FetchGroupManager fetchGroupManager) {
-        return entityFetchGroup.getEntityFetchGroup(fetchGroupManager);
+        return wrappedFetchGroup.getEntityFetchGroup(fetchGroupManager);
     }
 
     @Override
     public FetchGroup getGroup(String attributeNameOrPath) {
-        return entityFetchGroup.getGroup(attributeNameOrPath);
+        return wrappedFetchGroup.getGroup(attributeNameOrPath);
     }
 
     @Override
     public void addAttribute(String attributeNameOrPath, Collection<? extends CoreAttributeGroup> groups) {
-        entityFetchGroup.addAttribute(attributeNameOrPath, groups);
+        wrappedFetchGroup.addAttribute(attributeNameOrPath, groups);
     }
 
     @Override
     public void addAttributeKey(String attributeNameOrPath, CoreAttributeGroup group) {
-        entityFetchGroup.addAttributeKey(attributeNameOrPath, group);
+        wrappedFetchGroup.addAttributeKey(attributeNameOrPath, group);
     }
 
     @Override
     public void addAttribute(String attributeNameOrPath, AttributeGroup group) {
-        entityFetchGroup.addAttribute(attributeNameOrPath, group);
+        wrappedFetchGroup.addAttribute(attributeNameOrPath, group);
     }
 
     @Override
     public boolean isSupersetOf(AttributeGroup anotherGroup) {
-        return entityFetchGroup.isSupersetOf(anotherGroup);
+        return wrappedFetchGroup.isSupersetOf(anotherGroup);
     }
 
     @Override
     public AttributeItem getItem(String attributeNameOrPath) {
-        return entityFetchGroup.getItem(attributeNameOrPath);
+        return wrappedFetchGroup.getItem(attributeNameOrPath);
     }
 
     @Override
     public AttributeGroup findGroup(ClassDescriptor type) {
-        return entityFetchGroup.findGroup(type);
+        return wrappedFetchGroup.findGroup(type);
     }
 
     @Override
     public FetchGroup toFetchGroup() {
-        return entityFetchGroup.toFetchGroup();
+        return wrappedFetchGroup.toFetchGroup();
     }
 
     @Override
     public FetchGroup toFetchGroup(Map<AttributeGroup, FetchGroup> cloneMap) {
-        return entityFetchGroup.toFetchGroup(cloneMap);
+        return wrappedFetchGroup.toFetchGroup(cloneMap);
     }
 
     @Override
     public boolean isCopyGroup() {
-        return entityFetchGroup.isCopyGroup();
+        return wrappedFetchGroup.isCopyGroup();
     }
 
     @Override
     public CopyGroup toCopyGroup() {
-        return entityFetchGroup.toCopyGroup();
+        return wrappedFetchGroup.toCopyGroup();
     }
 
     @Override
     public CopyGroup toCopyGroup(Map<AttributeGroup, CopyGroup> cloneMap, Map copies) {
-        return entityFetchGroup.toCopyGroup(cloneMap, copies);
+        return wrappedFetchGroup.toCopyGroup(cloneMap, copies);
     }
 
     @Override
     public boolean isLoadGroup() {
-        return entityFetchGroup.isLoadGroup();
+        return wrappedFetchGroup.isLoadGroup();
     }
 
     @Override
     public LoadGroup toLoadGroup() {
-        return entityFetchGroup.toLoadGroup();
+        return wrappedFetchGroup.toLoadGroup();
     }
 
     @Override
     public boolean isConcurrent() {
-        return entityFetchGroup.isConcurrent();
+        return wrappedFetchGroup.isConcurrent();
     }
 
     @Override
     public void addAttribute(String attributeNameOrPath) {
-        entityFetchGroup.addAttribute(attributeNameOrPath);
+        wrappedFetchGroup.addAttribute(attributeNameOrPath);
     }
 
     @Override
     public void addAttributes(Collection<String> attrOrPaths) {
-        entityFetchGroup.addAttributes(attrOrPaths);
+        wrappedFetchGroup.addAttributes(attrOrPaths);
     }
 
     @Override
     public CoreAttributeGroup clone(Map<CoreAttributeGroup<AttributeItem, ClassDescriptor>, CoreAttributeGroup<AttributeItem, ClassDescriptor>> cloneMap) {
-        return entityFetchGroup.clone(cloneMap);
+        return wrappedFetchGroup.clone(cloneMap);
     }
 
     @Override
     public boolean containsAttribute(String attributeNameOrPath) {
-        return entityFetchGroup.containsAttribute(attributeNameOrPath);
+        return wrappedFetchGroup.containsAttribute(attributeNameOrPath);
     }
 
     @Override
     public boolean containsAttributeInternal(String attributeName) {
-        return entityFetchGroup.containsAttributeInternal(attributeName);
+        return wrappedFetchGroup.containsAttributeInternal(attributeName);
     }
 
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
-        entityFetchGroup.convertClassNamesToClasses(classLoader);
+        wrappedFetchGroup.convertClassNamesToClasses(classLoader);
     }
 
     @Override
@@ -246,86 +251,86 @@ public class CubaEntityFetchGroup extends EntityFetchGroup {
 
         CubaEntityFetchGroup that = (CubaEntityFetchGroup) o;
 
-        return entityFetchGroup.equals(that.entityFetchGroup);
+        return wrappedFetchGroup.equals(that.wrappedFetchGroup);
     }
 
     @Override
     public int hashCode() {
-        return entityFetchGroup.hashCode();
+        return wrappedFetchGroup.hashCode();
     }
 
     @Override
     public Map<String, AttributeItem> getAllItems() {
-        return entityFetchGroup.getAllItems();
+        return wrappedFetchGroup.getAllItems();
     }
 
     @Override
     public Set<String> getAttributeNames() {
-        return entityFetchGroup.getAttributeNames();
+        return wrappedFetchGroup.getAttributeNames();
     }
 
     @Override
     public Map<String, AttributeItem> getItems() {
-        return entityFetchGroup.getItems();
+        return wrappedFetchGroup.getItems();
     }
 
     @Override
     public String getName() {
-        return entityFetchGroup.getName();
+        return wrappedFetchGroup.getName();
     }
 
     @Override
     public Map<Object, CoreAttributeGroup> getSubClassGroups() {
-        return entityFetchGroup.getSubClassGroups();
+        return wrappedFetchGroup.getSubClassGroups();
     }
 
     @Override
     public Class getType() {
-        return entityFetchGroup.getType();
+        return wrappedFetchGroup.getType();
     }
 
     @Override
     public String getTypeName() {
-        return entityFetchGroup.getTypeName();
+        return wrappedFetchGroup.getTypeName();
     }
 
     @Override
     public boolean hasInheritance() {
-        return entityFetchGroup.hasInheritance();
+        return wrappedFetchGroup.hasInheritance();
     }
 
     @Override
     public boolean hasItems() {
-        return entityFetchGroup.hasItems();
+        return wrappedFetchGroup.hasItems();
     }
 
     @Override
     public void insertSubClass(CoreAttributeGroup group) {
-        entityFetchGroup.insertSubClass(group);
+        wrappedFetchGroup.insertSubClass(group);
     }
 
     @Override
     public boolean isValidated() {
-        return entityFetchGroup.isValidated();
+        return wrappedFetchGroup.isValidated();
     }
 
     @Override
     public void setAllSubclasses(Map<Object, CoreAttributeGroup> subclasses) {
-        entityFetchGroup.setAllSubclasses(subclasses);
+        wrappedFetchGroup.setAllSubclasses(subclasses);
     }
 
     @Override
     public void setAttributeNames(Set attributeNames) {
-        entityFetchGroup.setAttributeNames(attributeNames);
+        wrappedFetchGroup.setAttributeNames(attributeNames);
     }
 
     @Override
     public void setName(String name) {
-        entityFetchGroup.setName(name);
+        wrappedFetchGroup.setName(name);
     }
 
     @Override
     public String toString() {
-        return entityFetchGroup.toString();
+        return wrappedFetchGroup.toString();
     }
 }

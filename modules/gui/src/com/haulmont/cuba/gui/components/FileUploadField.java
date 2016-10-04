@@ -18,11 +18,32 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 
+import javax.annotation.Nullable;
+import java.io.InputStream;
 import java.util.UUID;
 
-public interface FileUploadField extends UploadField {
+public interface FileUploadField extends UploadField, Field {
     String NAME = "upload";
 
+    /**
+     * Defines when FileDescriptor will be committed.
+     */
+    enum FileStoragePutMode {
+        /**
+         * User have to put FileDescriptor into FileStorage and commit it to database manually.
+         */
+        MANUAL,
+        /**
+         * FileDescriptor will be placed into FileStorage and commited to database right after upload.
+         */
+        IMMEDIATE
+    }
+
+    /**
+     * @deprecated Use {@link UploadField.FileUploadStartListener},
+     *                 {@link UploadField.FileUploadFinishListener},
+     *                 {@link UploadField.FileUploadErrorListener}
+     */
     @Deprecated
     interface Listener {
         class Event {
@@ -54,6 +75,11 @@ public interface FileUploadField extends UploadField {
         void uploadFailed(Event event);
     }
 
+    /**
+     * @deprecated Use {@link UploadField.FileUploadStartListener},
+     *                 {@link UploadField.FileUploadFinishListener},
+     *                 {@link UploadField.FileUploadErrorListener}
+     */
     @Deprecated
     class ListenerAdapter implements Listener {
         @Override
@@ -74,17 +100,17 @@ public interface FileUploadField extends UploadField {
     }
 
     /**
-     * Get id for uploaded file in {@link com.haulmont.cuba.gui.upload.FileUploading}
-     * @return File Id
+     * Get id for uploaded file in {@link com.haulmont.cuba.gui.upload.FileUploading}.
+     * @return File Id.
      */
     UUID getFileId();
     String getFileName();
     FileDescriptor getFileDescriptor();
 
     /**
-     * Get content bytes for uploaded file
-     * @return Bytes for uploaded file
-     * @deprecated Please use {@link FileUploadField#getFileId()} method and {@link com.haulmont.cuba.gui.upload.FileUploading}
+     * Get content bytes for uploaded file.
+     * @return Bytes for uploaded file.
+     * @deprecated Please use {@link FileUploadField#getFileId()} method and {@link com.haulmont.cuba.gui.upload.FileUploading}.
      */
     byte[] getBytes();
 
@@ -105,4 +131,98 @@ public interface FileUploadField extends UploadField {
 
     void addFileUploadSucceedListener(FileUploadSucceedListener listener);
     void removeFileUploadSucceedListener(FileUploadSucceedListener listener);
+
+    /**
+     * @return content of uploaded file.
+     */
+    @Nullable
+    InputStream getFileContent();
+
+    /**
+     * Enable or disable displaying name of uploaded file next to upload button.
+     */
+    void setShowFileName(boolean showFileName);
+
+    /**
+     * @return true if name of uploaded file is shown.
+     */
+    boolean isShowFileName();
+    /**
+     * Setup caption of upload button.
+     */
+    void setUploadButtonCaption(String caption);
+
+    /**
+    * @return upload button caption.
+    */
+    String getUploadButtonCaption();
+
+    /**
+     * Setup upload button icon.
+     */
+    void setUploadButtonIcon(String icon);
+
+    /**
+     * @return upload button icon.
+     */
+    String getUploadButtonIcon();
+
+    /**
+     * Setup upload button description.
+     */
+    void setUploadButtonDescription(String description);
+
+    /**
+     * @return upload button description.
+     */
+    String getUploadButtonDescription();
+
+    /**
+     * Enable or disable displaying name of clear button.
+     */
+    void setShowClearButton(boolean showClearButton);
+
+    /**
+     * @return true if clear button is shown.
+     */
+    boolean isShowClearButton();
+
+    /**
+     * Setup clear button caption.
+     */
+    void setClearButtonCaption(String caption);
+
+    /**
+     * @return clear button caption.
+     */
+    String getClearButtonCaption();
+
+    /**
+     * Setup clear button icon.
+     */
+    void setClearButtonIcon(String icon);
+
+    /**
+     * @return clear button icon.
+     */
+    String getClearButtonIcon();
+
+    /**
+     * Setup clear button description.
+     */
+    void setClearButtonDescription(String description);
+
+    /**
+     * @return clear button description.
+     */
+    String getClearButtonDescription();
+
+    /**
+     * Set mode which determines when {@link FileDescriptor} will be commited.
+     */
+    void setMode(FileStoragePutMode mode);
+    /**
+     * @return mode which determines when {@link FileDescriptor} will be commited.
+     */
+    FileStoragePutMode getMode();
 }

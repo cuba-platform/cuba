@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.jmx;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.LoadContext;
@@ -24,6 +25,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.NodeIdentifier;
 import com.haulmont.cuba.core.sys.jmx.JmxNodeIdentifierMBean;
 import com.haulmont.cuba.web.jmx.entity.*;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -36,6 +38,8 @@ import java.io.Serializable;
 import java.lang.reflect.Proxy;
 import java.rmi.UnmarshalException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.getObjectName;
@@ -43,6 +47,7 @@ import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.withConnection;
 
 @Component(JmxControlAPI.NAME)
 public class JmxControlBean implements JmxControlAPI {
+    private static final String JMX_LONG_OPERATION_REGEXP = ".*@JmxLongOperation(\\((\\d+)\\))?.*";
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -393,6 +398,28 @@ public class JmxControlBean implements JmxControlAPI {
         });
 
         return result;
+    }
+
+    @Override
+    public Long getAsyncOperationTimeout(ManagedBeanOperation operation) {
+        Preconditions.checkNotNullArgument(operation);
+
+        String description = operation.getDescription();
+        if (StringUtils.isEmpty(description))
+            return null;
+
+        Pattern pattern = Pattern.compile(JMX_LONG_OPERATION_REGEXP);
+        Matcher matcher = pattern.matcher(description);
+        if (matcher.matches()) {
+            int groupCount = matcher.groupCount();
+            if (matcher.group(groupCount) != null) {
+                String group = matcher.group(groupCount);
+                return Long.valueOf(group);
+            } else {
+                return 0L;
+            }
+        }
+        return null;
     }
 
     @Override

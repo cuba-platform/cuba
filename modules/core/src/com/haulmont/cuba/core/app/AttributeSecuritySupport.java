@@ -70,7 +70,9 @@ public class AttributeSecuritySupport {
         }
         Preconditions.checkNotNullArgument(view, "view is null");
 
-        View restrictedView = new View(view.getEntityClass(), StringUtils.isEmpty(view.getName()) ? "" : view.getName() + "_restricted");
+        View restrictedView = new View(view.getEntityClass(),
+                StringUtils.isEmpty(view.getName()) ? "" : view.getName() + "_restricted",
+                false); // do not include system properties in constructor because they will be copied later if exist
         copyViewConsideringPermissions(view, restrictedView);
         return restrictedView;
     }

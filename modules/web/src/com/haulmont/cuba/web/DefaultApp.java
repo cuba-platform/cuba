@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
@@ -26,10 +27,8 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.loginwindow.AppLoginWindow;
 import com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.server.WrappedHttpSession;
-import com.vaadin.server.WrappedSession;
+import com.vaadin.server.*;
+import com.vaadin.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -117,17 +116,43 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
 
             afterLoggedIn();
         } else {
-            initExceptionHandlers(false);
+            boolean redirectedToExternalAuth = false;
 
-            setLocale(resolveLocale(null));
+            if (webAuthConfig.getExternalAuthentication()) {
+                String loggedOutUrl = ((ExternallyAuthenticatedConnection) connection).logoutExternalAuthentication();
+                if (!Strings.isNullOrEmpty(loggedOutUrl)) {
+                    AppUI currentUi = AppUI.getCurrent();
 
-            getConnection().loginAnonymous(getLocale());
+                    currentUi.setContent(null);
+                    currentUi.getPage().setLocation(loggedOutUrl);
+
+                    VaadinSession vaadinSession = VaadinSession.getCurrent();
+                    for (UI ui : vaadinSession.getUIs()) {
+                        if (ui != currentUi) {
+                            ui.access(() -> {
+                                ui.setContent(null);
+                                ui.getPage().setLocation(loggedOutUrl);
+                            });
+                        }
+                    }
+
+                    redirectedToExternalAuth = true;
+                }
+            }
+
+            if (!redirectedToExternalAuth) {
+                initExceptionHandlers(false);
+
+                setLocale(resolveLocale(null));
+
+                getConnection().loginAnonymous(getLocale());
+            }
         }
     }
 
     @Override
     protected String routeTopLevelWindowId() {
-        if (connection.isConnected() && connection.isAuthenticated()) {
+        if (connection.isAuthenticated()) {
             return "mainWindow";
         } else {
             return "loginWindow";

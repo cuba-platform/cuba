@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
@@ -45,6 +46,8 @@ public class WindowLoader extends FrameLoader<Window> {
         resultComponent.setId(windowId);
 
         Element layoutElement = element.element("layout");
+        if (layoutElement == null)
+            throw new DevelopmentException("Missing required 'layout' element");
         createSubComponents(resultComponent, layoutElement);
     }
 
@@ -57,6 +60,8 @@ public class WindowLoader extends FrameLoader<Window> {
         assignXmlDescriptor(resultComponent, element);
         loadMessagesPack(resultComponent, element);
         loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
+        loadIcon(resultComponent, element);
         loadActions(resultComponent, element);
 
         Element layoutElement = element.element("layout");

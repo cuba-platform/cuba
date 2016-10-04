@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
+import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -49,6 +50,9 @@ public class RoleBrowser extends AbstractLookup {
 
     @Inject
     protected Table<Role> rolesTable;
+
+    @Inject
+    protected UserManagementService userManagementService;
 
     @Inject
     protected Security security;
@@ -80,6 +84,19 @@ public class RoleBrowser extends AbstractLookup {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
+
+        Action copyRoles = new ItemTrackingAction("copy") {
+            @Override
+            public void actionPerform(Component component) {
+                userManagementService.copyRole(rolesTable.getSingleSelected().getId());
+                rolesDs.refresh();
+            }
+        };
+
+        boolean hasPermissionsToCreateRole = security.isEntityOpPermitted(Role.class, EntityOp.CREATE);
+        copyRoles.setEnabled(hasPermissionsToCreateRole);
+
+        rolesTable.addAction(copyRoles);
 
         rolesTable.addAction(new ItemTrackingAction("assignToUsers") {
             @Override
@@ -189,6 +206,7 @@ public class RoleBrowser extends AbstractLookup {
             }
         });
         importRolesUpload.setCaption(null);
+        importRolesUpload.setUploadButtonCaption(null);
     }
 
     protected EntityImportView createRolesImportView() {

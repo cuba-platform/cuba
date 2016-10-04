@@ -155,11 +155,10 @@ public class EntitiesControllerManager {
         try {
             importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
         } catch (EntityImportException e) {
-            throw new RestAPIException("Invalid entity", e.getMessage(), HttpStatus.BAD_REQUEST);
+            throw new RestAPIException("Entity creation failed", e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
-
-        //if multiple entities was created (because of @Composition references) we must find the main entity
+        //if many entities were created (because of @Composition references) we must find the main entity
         return getMainEntityInfo(importedEntities, metaClass);
     }
 
@@ -177,7 +176,7 @@ public class EntitiesControllerManager {
         try {
             importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
         } catch (EntityImportException e) {
-            throw new RestAPIException("Invalid entity", e.getMessage(), HttpStatus.BAD_REQUEST);
+            throw new RestAPIException("Entity update failed", e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         //there may be multiple entities in importedEntities (because of @Composition references), so we must find
         // the main entity that will be returned

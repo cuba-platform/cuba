@@ -22,7 +22,6 @@ import java.util.Locale;
 
 /**
  * Interface to be implemented by middleware connection objects supporting external authentication.
- *
  */
 public interface ExternallyAuthenticatedConnection {
 
@@ -30,9 +29,17 @@ public interface ExternallyAuthenticatedConnection {
 
     /**
      * Log in to the system after external authentication.
+     *
      * @param login             user login name
      * @param locale            user locale
      * @throws LoginException   in case of unsuccessful login due to wrong credentials or other issues
      */
     void loginAfterExternalAuthentication(String login, Locale locale) throws LoginException;
+
+    /**
+     * Logout from external authentication.
+     *
+     * @return target url of external identity provider or null.
+     */
+    String logoutExternalAuthentication();
 }

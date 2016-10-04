@@ -72,9 +72,11 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.reflect.MethodUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
@@ -136,6 +138,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     protected CollectionDatasource.CollectionChangeListener collectionChangeSelectionListener;
 
     protected CollectionDsActionsNotifier collectionDsActionsNotifier;
+
+    protected boolean ignoreUnfetchedAttributes = false;
+
+    public WebAbstractTable() {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+        ignoreUnfetchedAttributes = clientConfig.getIgnoreUnfetchedAttributesInTable();
+    }
 
     @Override
     public java.util.List<Table.Column> getColumns() {
@@ -1813,6 +1823,45 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
             return super.getFormattedValue();
         }
+
+        @Override
+        public Object getValue() {
+            Instance instance = getInstance();
+            if (instance == null) {
+                return null;
+            }
+
+            if (ignoreUnfetchedAttributes) {
+                return getValueExIgnoreUnfetched(instance, propertyPath.getPath());
+            }
+
+            return super.getValue();
+        }
+
+        protected Object getValueExIgnoreUnfetched(Instance instance, String[] properties) {
+            Object currentValue = null;
+            Instance currentInstance = instance;
+            for (String property : properties) {
+                if (currentInstance == null) {
+                    break;
+                }
+
+                if (!PersistenceHelper.isLoaded(currentInstance, property)) {
+                    LoggerFactory.getLogger(WebAbstractTable.class)
+                            .warn("Ignored unfetched attribute {} of instance {} in Table cell",
+                                    property, currentInstance);
+                    return null;
+                }
+
+                currentValue = currentInstance.getValue(property);
+                if (currentValue == null) {
+                    break;
+                }
+
+                currentInstance = currentValue instanceof Instance ? (Instance) currentValue : null;
+            }
+            return currentValue;
+        }
     }
 
     protected interface SystemTableColumnGenerator extends com.vaadin.ui.Table.ColumnGenerator {
@@ -1945,25 +1994,48 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         protected void callControllerInvoke(Entity rowItem, String columnId, String invokeMethodName) {
             Object controller = ComponentsHelper.getFrameController(frame);
             Method method;
-            try {
-                method = controller.getClass().getMethod(invokeMethodName, Entity.class, String.class);
+            method = findLinkInvokeMethod(controller.getClass(), invokeMethodName);
+            if (method != null) {
                 try {
                     method.invoke(controller, rowItem, columnId);
                 } catch (Exception e) {
                     throw new RuntimeException("Unable to cal linkInvoke method for table column", e);
                 }
-            } catch (NoSuchMethodException e) {
+            } else {
                 try {
                     method = controller.getClass().getMethod(invokeMethodName);
                     try {
                         method.invoke(controller);
                     } catch (Exception e1) {
-                        throw new RuntimeException("Unable to cal linkInvoke method for table column", e1);
+                        throw new RuntimeException("Unable to call linkInvoke method for table column", e1);
                     }
                 } catch (NoSuchMethodException e1) {
                     throw new IllegalStateException("No suitable methods named " + invokeMethodName + " for invoke");
                 }
             }
+        }
+
+        protected Method findLinkInvokeMethod(Class cls, String methodName) {
+            Method exactMethod = MethodUtils.getAccessibleMethod(cls, methodName, new Class[]{Entity.class, String.class});
+            if (exactMethod != null) {
+                return exactMethod;
+            }
+
+            // search through all methods
+            Method[] methods = cls.getMethods();
+            for (Method availableMethod : methods) {
+                if (availableMethod.getName().equals(methodName)) {
+                    if (availableMethod.getParameterCount() == 2
+                            && Void.TYPE.equals(availableMethod.getReturnType())) {
+                        if (Entity.class.isAssignableFrom(availableMethod.getParameterTypes()[0]) &&
+                                String.class == availableMethod.getParameterTypes()[1]) {
+                            // get accessible version of method
+                            return MethodUtils.getAccessibleMethod(availableMethod);
+                        }
+                    }
+                }
+            }
+            return null;
         }
     }
 

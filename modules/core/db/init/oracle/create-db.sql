@@ -165,6 +165,9 @@ create table SYS_FTS_QUEUE (
     CREATE_TS timestamp,
     CREATED_BY varchar2(50),
     ENTITY_ID varchar2(32),
+    STRING_ENTITY_ID varchar2(255),
+    INT_ENTITY_ID integer,
+    LONG_ENTITY_ID number,
     ENTITY_NAME varchar2(200),
     CHANGE_TYPE char(1),
     SOURCE_HOST varchar2(255),
@@ -208,9 +211,15 @@ create table SYS_QUERY_RESULT (
     SESSION_ID varchar2(32) not null,
     QUERY_KEY integer not null,
     ENTITY_ID varchar2(32),
+    STRING_ENTITY_ID varchar2(255),
+    INT_ENTITY_ID integer,
+    LONG_ENTITY_ID number,
     primary key(ID)
 )^
 create index IDX_SYS_QUERY_RES_ENT_SES_KEY on SYS_QUERY_RESULT(ENTITY_ID, SESSION_ID, QUERY_KEY)^
+create index IDX_SYS_QUERY_RES_SEN_SES_KEY on SYS_QUERY_RESULT(STRING_ENTITY_ID, SESSION_ID, QUERY_KEY)^
+create index IDX_SYS_QUERY_RES_IEN_SES_KEY on SYS_QUERY_RESULT(INT_ENTITY_ID, SESSION_ID, QUERY_KEY)^
+create index IDX_SYS_QUERY_RES_LEN_SES_KEY on SYS_QUERY_RESULT(LONG_ENTITY_ID, SESSION_ID, QUERY_KEY)^
 create index IDX_SYS_QUERY_RESULT_SES_KEY on SYS_QUERY_RESULT(SESSION_ID, QUERY_KEY)^
 
 create or replace trigger SYS_QUERY_RESULT_ID_GEN
@@ -746,6 +755,9 @@ values ('a405db59e6744f638afe269dda788fe8', current_timestamp, 0, 'anonymous', '
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, ROLE_TYPE)
 values ('0c018061b26f4de2a5bedff348347f93', current_timestamp, 0, 'Administrators', 10)^
+
+insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
+values ('c838be0a96d04ef4a7c0dff348347f93', current_timestamp, 0, '608859871b61424794c7dff348347f93', '0c018061b26f4de2a5bedff348347f93')^
 
 insert into SEC_FILTER (ID,CREATE_TS,CREATED_BY,VERSION,COMPONENT,NAME,XML,USER_ID)
 values (newid(), current_timestamp, 'admin', 0, '[sec$User.browse].genericFilter', 'Search by role',

@@ -36,6 +36,7 @@ import java.util.*;
 public class WindowBreadCrumbs extends HorizontalLayout {
 
     protected boolean visibleExplicitly = true;
+    protected Label label;
 
     public interface Listener {
         void windowClick(Window window);
@@ -193,8 +194,14 @@ public class WindowBreadCrumbs extends HorizontalLayout {
                 captionLabel.setSizeUndefined();
                 linksLayout.addComponent(captionLabel);
                 linksLayout.setComponentAlignment(captionLabel, Alignment.MIDDLE_LEFT);
+
+                this.label = captionLabel;
             }
         }
+    }
+
+    public Label getLabel() {
+        return label;
     }
 
     public class BtnClickListener implements Button.ClickListener {

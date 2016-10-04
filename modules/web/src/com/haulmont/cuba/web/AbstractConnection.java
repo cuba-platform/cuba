@@ -110,6 +110,8 @@ public abstract class AbstractConnection implements Connection {
 
     @Override
     public void update(UserSession session, SessionMode sessionMode) throws LoginException {
+        LoginContextParameters lcp = getLoginContextParameters();
+
         ClientUserSession clientUserSession = new ClientUserSession(session);
         clientUserSession.setAuthenticated(sessionMode == SessionMode.AUTHENTICATED);
 
@@ -120,12 +122,28 @@ public abstract class AbstractConnection implements Connection {
         try {
             internalLogin(clientUserSession);
         } catch (LoginException | RuntimeException e) {
-            internalLogout();
+            internalLogout(false);
+
+            setLoginContextParameters(lcp);
+
             throw e;
         } catch (Exception e) {
-            internalLogout();
+            internalLogout(false);
+
+            setLoginContextParameters(lcp);
+
             throw new RuntimeException("Unable to login internal", e);
         }
+    }
+
+    protected LoginContextParameters getLoginContextParameters() {
+        return new LoginContextParameters(AppContext.getSecurityContext(), connected, (ClientUserSession) getSession());
+    }
+
+    protected void setLoginContextParameters(LoginContextParameters lcp) {
+        setSession(lcp.getUserSession());
+        AppContext.setSecurityContext(lcp.getSecurityContext());
+        this.connected = lcp.isConnected();
     }
 
     protected void internalLogin(UserSession session) throws LoginException {
@@ -207,15 +225,20 @@ public abstract class AbstractConnection implements Connection {
     }
 
     protected void internalLogout() {
+        internalLogout(true);
+    }
+
+    protected void internalLogout(boolean disconnect) {
         if (getSession() instanceof ClientUserSession
                 && ((ClientUserSession) getSession()).isAuthenticated()) {
             loginService.logout();
         }
-
         AppContext.setSecurityContext(null);
-        userSubstitutionListeners.clear();
         connected = false;
         setSession(null);
+        if (disconnect) {
+            userSubstitutionListeners.clear();
+        }
     }
 
     @Override
@@ -251,6 +274,30 @@ public abstract class AbstractConnection implements Connection {
     protected void fireSubstitutionListeners() {
         for (UserSubstitutionListener listener : new ArrayList<>(userSubstitutionListeners)) {
             listener.userSubstituted(this);
+        }
+    }
+
+    protected static class LoginContextParameters {
+        private final SecurityContext securityContext;
+        private final boolean connected;
+        private final ClientUserSession userSession;
+
+        public LoginContextParameters(SecurityContext securityContext, boolean connected, ClientUserSession userSession) {
+            this.securityContext = securityContext;
+            this.connected = connected;
+            this.userSession = userSession;
+        }
+
+        public SecurityContext getSecurityContext() {
+            return securityContext;
+        }
+
+        public boolean isConnected() {
+            return connected;
+        }
+
+        public ClientUserSession getUserSession() {
+            return userSession;
         }
     }
 }

@@ -22,14 +22,19 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.AppFolder;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.global.UserSession;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
+import com.thoughtworks.xstream.core.DefaultConverterLookup;
+import com.thoughtworks.xstream.core.util.ClassLoaderReference;
+import com.thoughtworks.xstream.io.xml.XppDriver;
 import groovy.lang.Binding;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -77,6 +82,9 @@ public class FoldersServiceBean implements FoldersService {
 
     @Inject
     protected Security security;
+
+    @Inject
+    protected TimeSource timeSource;
 
     @Override
     public List<AppFolder> loadAppFolders() {
@@ -254,7 +262,7 @@ public class FoldersServiceBean implements FoldersService {
         try {
             zipOutputStream.closeArchiveEntry();
         } catch (Exception ex) {
-            throw new RuntimeException("Exception occured while exporting folder\"" + folder.getName() + "\".", ex);
+            throw new RuntimeException(String.format("Exception occurred while exporting folder %s.",  folder.getName()));
         }
 
         zipOutputStream.close();
@@ -283,18 +291,22 @@ public class FoldersServiceBean implements FoldersService {
         byteArrayInputStream.close();
 
         if (folder != null) {
+            checkImportPermissions(folder);
             folder.setParent(parentFolder);
             Transaction tx = persistence.createTransaction();
             try {
                 EntityManager em = persistence.getEntityManager();
-
+                em.setSoftDeletion(false);
                 Folder existingFolder = em.find(Folder.class, folder.getId());
                 if (existingFolder != null) {
+                    checkImportPermissions(existingFolder);
                     folder.setVersion(existingFolder.getVersion());
+                    folder.setCreateTs(existingFolder.getCreateTs());
+                    folder.setCreatedBy(existingFolder.getCreatedBy());
                 } else {
                     User user = userSessionSource.getUserSession().getUser();
                     folder.setCreatedBy(user.getLoginLowerCase());
-                    folder.setCreateTs(new Date());
+                    folder.setCreateTs(timeSource.currentTimestamp());
                     folder.setUpdatedBy(null);
                     folder.setUpdateTs(null);
                     folder.setVersion(0);
@@ -309,8 +321,34 @@ public class FoldersServiceBean implements FoldersService {
         return folder;
     }
 
-    private XStream createXStream() {
-        XStream xStream = new XStream();
+    protected void checkImportPermissions(Folder folder) {
+        UserSession userSession = userSessionSource.getUserSession();
+        if (folder instanceof SearchFolder) {
+            SearchFolder searchFolder = (SearchFolder) folder;
+            User currentUser = userSession.getCurrentOrSubstitutedUser();
+            if (searchFolder.getUser() != null && !currentUser.equals(searchFolder.getUser())) {
+                throw new AccessDeniedException(PermissionType.ENTITY_OP, Folder.class.getSimpleName());
+            }
+            if (searchFolder.getUser() == null && !userSession.isSpecificPermitted("cuba.gui.searchFolder.global")) {
+                throw new AccessDeniedException(PermissionType.ENTITY_OP, Folder.class.getSimpleName());
+            }
+        }
+        if (folder instanceof AppFolder) {
+            if (!userSession.isSpecificPermitted("cuba.gui.appFolder.global")) {
+                throw new AccessDeniedException(PermissionType.ENTITY_OP, Folder.class.getSimpleName());
+            }
+        }
+    }
+
+    protected XStream createXStream() {
+        XStream xStream = new XStream(null, new XppDriver(),
+                new ClassLoaderReference(Thread.currentThread().getContextClassLoader()),
+                null, new DefaultConverterLookup(), null);
+        //createTs and createdBy removed from BaseGenericIdEntity,
+        //and import from old versions (platform 6.2) is performed with errors
+        //so omit field processing
+        xStream.omitField(BaseGenericIdEntity.class, "createTs");
+        xStream.omitField(BaseGenericIdEntity.class, "createdBy");
         xStream.getConverterRegistry().removeConverter(ExternalizableConverter.class);
         return xStream;
     }

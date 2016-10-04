@@ -17,10 +17,15 @@
 
 package com.haulmont.cuba.web.app.ui.jmxcontrol.inspect;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
+import com.haulmont.cuba.gui.backgroundwork.BackgroundWorkWindow;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.executors.BackgroundTask;
+import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.util.AttributeEditor;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
@@ -33,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class MbeanInspectWindow extends AbstractEditor {
 
@@ -55,6 +61,9 @@ public class MbeanInspectWindow extends AbstractEditor {
 
     @Inject
     protected ComponentsFactory componentsFactory;
+
+    @Inject
+    protected WebConfig webConfig;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -202,7 +211,6 @@ public class MbeanInspectWindow extends AbstractEditor {
     }
 
     protected void invokeOperation(ManagedBeanOperation op, List<AttributeEditor> attrProviders) {
-        Map<String, Object> params = new HashMap<>();
         Object[] paramValues = new Object[attrProviders.size()];
         try {
             for (int i = 0; i < attrProviders.size(); i++) {
@@ -214,19 +222,58 @@ public class MbeanInspectWindow extends AbstractEditor {
             return;
         }
 
+        Long timeout = jmxControlAPI.getAsyncOperationTimeout(op);
+        if (timeout != null && webConfig.getPushEnabled()) {
+            runAsynchronously(op, paramValues, timeout);
+        } else {
+            runSynchronously(op, paramValues);
+        }
+    }
+
+    protected void runSynchronously(ManagedBeanOperation operation, Object[] paramValues) {
+        Map<String, Object> resultMap = null;
         try {
-            Object res = jmxControlAPI.invokeOperation(op, paramValues);
+            Object res = jmxControlAPI.invokeOperation(operation, paramValues);
             if (res != null) {
-                params.put("result", res);
-                params.put("beanName", op.getMbean().getClassName());
-                params.put("methodName", op.getName());
+                resultMap = ParamsMap.of(
+                        "result", res,
+                        "beanName", operation.getMbean().getClassName(),
+                        "methodName", operation.getName());
             }
         } catch (Exception e) {
-            params.put("exception", e);
+            resultMap = ParamsMap.of("exception", e);
         }
 
-        Window w = openWindow("jmxConsoleOperationResult", OpenType.DIALOG, params);
+        Window w = openWindow("jmxConsoleOperationResult", OpenType.DIALOG, resultMap);
         w.addCloseListener(actionId -> reloadAttributes());
+    }
+
+    protected void runAsynchronously(final ManagedBeanOperation operation, final Object[] paramValues, Long timeout) {
+        BackgroundTask<Long, Object> task = new BackgroundTask<Long, Object>(timeout, TimeUnit.MILLISECONDS, this) {
+            @Override
+            public Object run(TaskLifeCycle<Long> taskLifeCycle) throws Exception {
+                return jmxControlAPI.invokeOperation(operation, paramValues);
+            }
+
+            @Override
+            public void done(Object result) {
+                Window w = openWindow("jmxConsoleOperationResult", OpenType.DIALOG, ParamsMap.of(
+                        "result", result,
+                        "beanName", operation.getMbean().getClassName(),
+                        "methodName", operation.getName()));
+                w.addCloseListener(actionId -> reloadAttributes());
+            }
+
+            @Override
+            public boolean handleException(Exception ex) {
+                log.error("Error occurs while performing JMX operation {}", operation.getName(), ex);
+                Window w = openWindow("jmxConsoleOperationResult", OpenType.DIALOG, ParamsMap.of("exception", ex));
+                w.addCloseListener(actionId -> reloadAttributes());
+                return true;
+            }
+        };
+
+        BackgroundWorkWindow.show(task, true);
     }
 
     public void close() {

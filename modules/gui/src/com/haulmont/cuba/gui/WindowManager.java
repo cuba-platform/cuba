@@ -336,6 +336,10 @@ public abstract class WindowManager {
      */
     public abstract void selectWindowTab(Window window);
 
+    /**
+     * @deprecated Please use {@link Window#setCaption(String)} ()} and {@link Window#setDescription(String)} ()} methods.
+     */
+    @Deprecated
     public abstract void setWindowCaption(Window window, String caption, String description);
 
     protected Integer getHash(WindowInfo windowInfo, Map<String, Object> params) {

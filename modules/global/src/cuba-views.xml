@@ -115,6 +115,14 @@
         <property name="value"/>
     </view>
 
+    <view class="com.haulmont.cuba.security.entity.Role" name="role.copy">
+        <property name="name"/>
+        <property name="type"/>
+        <property name="locName"/>
+        <property name="permissions" view="role.edit"/>
+        <property name="description"/>
+    </view>
+
     <view class="com.haulmont.cuba.security.entity.Group" name="group.lookup">
         <property name="name"/>
     </view>
@@ -257,6 +265,7 @@
         <property name="whereClause"/>
         <property name="groovyScript"/>
         <property name="filterXml"/>
+        <property name="group" view="_minimal"/>
     </view>
 
     <view class="com.haulmont.cuba.security.entity.LoggedEntity"

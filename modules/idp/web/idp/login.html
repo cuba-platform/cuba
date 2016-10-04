@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="shortcut icon" href="favicon.ico"/>
+    <title data-l10n-id="idp_title"></title>
+
+    <link rel="stylesheet" href="css/bootstrap-3.3.7.min.css"/>
+    <link rel="stylesheet" href="css/login.css"/>
+    <link rel="resource" href="l10n/locales.ini" type="application/l10n"/>
+    <script type="text/javascript" src="js/webl10n.min.js"></script>
+    <script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <form class="form-signin">
+        <!-- Notifications -->
+        <div class="alert alert-success idp_loggedin" style="display: none">
+            <strong data-l10n-id="idp_loggedin_title"></strong> <span data-l10n-id="idp_loggedin_message"></span>
+        </div>
+        <div class="alert alert-danger idp_failed" style="display: none">
+            <strong data-l10n-id="idp_failed_title"></strong> <span data-l10n-id="idp_failed_message"></span>
+        </div>
+        <div class="alert alert-danger idp_error" style="display: none">
+            <strong data-l10n-id="idp_error_title"></strong> <span data-l10n-id="idp_error_message"></span>
+        </div>
+
+        <!-- Form -->
+        <h2 class="form-signin-heading" data-l10n-id="idp_signin"></h2>
+
+        <label for="inputUserName" class="sr-only" data-l10n-id="idp_username"></label>
+        <input type="text" id="inputUserName" class="form-control form-username" placeholder="" required autofocus
+               name="username" autocomplete="on"
+               data-l10n-id="idp_username">
+
+        <label for="inputPassword" class="sr-only" data-l10n-id="idp_password"></label>
+        <input type="password" id="inputPassword" class="form-control form-password" placeholder="" required
+               name="password" autocomplete="on"
+               data-l10n-id="idp_password">
+
+        <label for="inputLocale" class="sr-only locale-control" data-l10n-id="idp_locale" style="display: none;"></label>
+        <select id="inputLocale" class="form-control form-locale locale-control" style="display: none;"></select>
+
+        <button type="submit" class="btn btn-lg btn-primary btn-block auth-submit">
+            <span data-l10n-id="idp_submit"></span>
+        </button>
+    </form>
+    <script type="text/javascript" src="js/login.js"></script>
+</div>
+</body>
+</html>

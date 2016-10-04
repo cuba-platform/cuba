@@ -70,9 +70,10 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
 
     public interface AfterWindowClosedHandler {
         /**
-         * @param window    the editor window
+         * @param window        the editor window
+         * @param closeActionId ID of action caused the screen closing
          */
-        void handle(Window window);
+        void handle(Window window, String closeActionId);
     }
 
     /**
@@ -252,7 +253,7 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
 
                 afterWindowClosed(window);
                 if (afterWindowClosedHandler != null) {
-                    afterWindowClosedHandler.handle(window);
+                    afterWindowClosedHandler.handle(window, actionId);
                 }
             });
         } else {

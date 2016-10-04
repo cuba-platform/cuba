@@ -20,10 +20,8 @@ package com.haulmont.cuba.core.sys;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.XmlWebApplicationContext;
 
-public class CubaXmlWebApplicationContext extends XmlWebApplicationContext {
-
+public class CubaXmlWebApplicationContext extends CubaDefaultXmlWebApplicationContext {
     @Override
     protected DefaultListableBeanFactory createBeanFactory() {
         BeanFactory parent = getParentBeanFactory();

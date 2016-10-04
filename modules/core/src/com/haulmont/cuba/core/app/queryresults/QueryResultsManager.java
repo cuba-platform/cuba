@@ -46,19 +46,22 @@ import java.util.*;
 public class QueryResultsManager implements QueryResultsManagerAPI {
 
     @Inject
-    private Persistence persistence;
+    protected Persistence persistence;
 
     @Inject
-    private UserSessionSource userSessionSource;
+    protected UserSessionSource userSessionSource;
 
     @Inject
-    private UserSessionsAPI userSessions;
+    protected UserSessionsAPI userSessions;
 
     @Inject
-    private ClusterManagerAPI clusterManager;
+    protected ClusterManagerAPI clusterManager;
 
     @Inject
-    private Configuration configuration;
+    protected Configuration configuration;
+
+    @Inject
+    protected Metadata metadata;
 
     private static final int BATCH_SIZE = 100;
 
@@ -82,14 +85,14 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
         if (resultsAlreadySaved(queryKey, contextQuery))
             return;
 
-        List<UUID> idList;
+        List idList;
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
             em.setSoftDeletion(loadContext.isSoftDeletion());
 
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(contextQuery.getQueryString());
-            transformer.replaceWithSelectId();
+            transformer.replaceWithSelectId(metadata.getTools().getPrimaryKeyName(metadata.getClassNN(entityName)));
             transformer.removeOrderBy();
             String queryString = transformer.getResult();
 
@@ -141,7 +144,7 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
     }
 
     @Override
-    public void insert(int queryKey, List<UUID> idList) {
+    public void insert(int queryKey, List idList) {
         if (idList.isEmpty())
             return;
 
@@ -154,14 +157,23 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
         try {
             EntityManager em = persistence.getEntityManager();
             DbTypeConverter converter = persistence.getDbTypeConverter();
-
+            Object idFromList = idList.get(0);
+            String columnName = null;
+            if (idFromList instanceof String) {
+                columnName = "STRING_ENTITY_ID";
+            } else if (idFromList instanceof Long) {
+                columnName = "LONG_ENTITY_ID";
+            } else if (idFromList instanceof Integer) {
+                columnName = "INT_ENTITY_ID";
+            } else {
+                columnName = "ENTITY_ID";
+            }
             QueryRunner runner = new QueryRunner();
             try {
                 String userSessionIdStr = converter.getSqlObject(userSessionId).toString(); // assuming that UUID can be passed to query as string in all databases
-                String sql = "insert into SYS_QUERY_RESULT (SESSION_ID, QUERY_KEY, ENTITY_ID) values ('"
-                        + userSessionIdStr + "', " + queryKey + ", ?)";
-
-                int[] paramTypes = new int[] { converter.getSqlType(idList.get(0).getClass()) };
+                String sql = String.format("insert into SYS_QUERY_RESULT (SESSION_ID, QUERY_KEY, %s) values ('%s', %s, ?)",
+                        columnName, userSessionIdStr, queryKey);
+                int[] paramTypes = new int[] { converter.getSqlType(idFromList.getClass()) };
                 for (int i = 0; i < idList.size(); i += BATCH_SIZE) {
                     List<UUID> sublist = idList.subList(i, Math.min(i + BATCH_SIZE, idList.size()));
                     Object[][] params = new Object[sublist.size()][1];

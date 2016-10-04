@@ -404,22 +404,11 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
         component.setInputPrompt(inputPrompt);
     }
 
-    @Override
-    public void setDescriptionProperty(String descriptionProperty) {
-        super.setDescriptionProperty(descriptionProperty);
-//        vaadin7
-//        component.setShowOptionsDescriptions(descriptionProperty != null);
-//        if (optionsDatasource != null) {
-//            component.setItemDescriptionPropertyId(optionsDatasource.getMetaClass().getProperty(descriptionProperty));
-//        }
-    }
-
     protected interface LookupFieldDsWrapper {
         void forceItemSetNotification();
     }
 
     protected class LookupOptionsDsWrapper extends OptionsDsWrapper implements LookupFieldDsWrapper {
-
         public LookupOptionsDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
             super(datasource, autoRefresh);
         }
@@ -437,44 +426,46 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
         @Override
         public boolean containsId(Object itemId) {
-            boolean containsFlag = super.containsId(itemId);
-            if (!containsFlag)
+            boolean optionsContainItem = super.containsId(itemId);
+            if (!optionsContainItem) {
                 missingValue = itemId;
+            }
             return true;
         }
 
         @Override
         public Collection getItemIds() {
-            //noinspection unchecked
-            Collection<Object> itemIds = super.getItemIds();
-            Collection<Object> additionalItemIds = null;
+            Collection items = super.getItemIds();
+            List<Object> optionsWithNullOrMissing = null;
 
             if (nullOption != null) {
-                additionalItemIds = new LinkedHashSet<>();
-                additionalItemIds.add(nullEntity);
+                optionsWithNullOrMissing = new ArrayList<>(items.size() + 2);
+
+                optionsWithNullOrMissing.add(nullEntity);
             }
 
-            if (missingValue != null && !itemIds.contains(missingValue)) {
-                if (additionalItemIds == null) {
-                    additionalItemIds = new LinkedHashSet<>();
+            if (missingValue != null && !items.contains(missingValue)) {
+                if (optionsWithNullOrMissing == null) {
+                    optionsWithNullOrMissing = new ArrayList<>(items.size() + 1);
                 }
-                additionalItemIds.add(missingValue);
+                optionsWithNullOrMissing.add(missingValue);
             }
 
-            if (additionalItemIds != null) {
-                additionalItemIds.addAll(itemIds);
-                return additionalItemIds;
+            if (optionsWithNullOrMissing == null) {
+                return items;
             }
 
-            return itemIds;
+            optionsWithNullOrMissing.addAll(items);
+
+            return optionsWithNullOrMissing;
         }
 
         @Override
         public Item getItem(Object itemId) {
-            if (ObjectUtils.equals(missingValue, itemId)) {
+            if (Objects.equals(missingValue, itemId)) {
                 return getItemWrapper(missingValue);
             }
-            if (ObjectUtils.equals(nullEntity, itemId)) {
+            if (Objects.equals(nullEntity, itemId)) {
                 return getItemWrapper(nullEntity);
             }
 
@@ -484,10 +475,12 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
         @Override
         public int size() {
             int size = super.size();
-            if (missingValue != null)
+            if (missingValue != null) {
                 size++;
-            if (nullOption != null)
+            }
+            if (nullOption != null) {
                 size++;
+            }
             return size;
         }
 
@@ -496,33 +489,62 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
             if (nullEntity != null) {
                 return nullEntity;
             }
+            if (missingValue != null) {
+                return missingValue;
+            }
 
             return super.firstItemId();
         }
 
         @Override
         public Object lastItemId() {
-            if (size() == 0)
-                return nullEntity;
+            int size = size();
+
+            if (size == 1) {
+                if (nullEntity != null) {
+                    return nullEntity;
+                }
+                if (missingValue != null) {
+                    return missingValue;
+                }
+            } else if (size == 2) {
+                if (missingValue != null && nullEntity != null) {
+                    return missingValue;
+                }
+            }
 
             return super.lastItemId();
         }
 
         @Override
         public Object nextItemId(Object itemId) {
-            if (ObjectUtils.equals(nullEntity, itemId))
+            if (Objects.equals(nullEntity, itemId)) {
+                if (missingValue != null) {
+                    return missingValue;
+                }
+
                 return super.firstItemId();
+            }
+
+            if (Objects.equals(missingValue, itemId)) {
+                return super.firstItemId();
+            }
 
             return super.nextItemId(itemId);
         }
 
         @Override
         public Object prevItemId(Object itemId) {
-            if (ObjectUtils.equals(nullEntity, super.firstItemId())) {
-                return nullEntity;
+            if (Objects.equals(nullEntity, itemId)) {
+                return null;
             }
-            if (ObjectUtils.equals(missingValue, super.firstItemId())) {
-                return missingValue;
+
+            if (Objects.equals(missingValue, itemId)) {
+                if (nullEntity != null) {
+                    return nullEntity;
+                }
+
+                return null;
             }
 
             return super.prevItemId(itemId);
@@ -533,8 +555,10 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
             if (ObjectUtils.equals(nullEntity, itemId)) {
                 return true;
             }
-            if (ObjectUtils.equals(missingValue, itemId)) {
-                return true;
+            if (nullEntity == null) {
+                if (ObjectUtils.equals(missingValue, itemId)) {
+                    return true;
+                }
             }
 
             return super.isFirstId(itemId);
@@ -542,8 +566,20 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
         @Override
         public boolean isLastId(Object itemId) {
-            if (size() == 0 && ObjectUtils.equals(nullEntity, itemId))
-                return true;
+            int size = size();
+            if (size == 1) {
+                if (ObjectUtils.equals(nullEntity, itemId)) {
+                    return true;
+                }
+                if (ObjectUtils.equals(missingValue, itemId)) {
+                    return true;
+                }
+            } else if (size == 2) {
+                if (missingValue != null && nullEntity != null
+                        && Objects.equals(missingValue, itemId)) {
+                    return true;
+                }
+            }
 
             return super.isLastId(itemId);
         }

@@ -19,16 +19,128 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="
-           http://www.springframework.org/schema/beans
-           http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
-           http://www.springframework.org/schema/context
-           http://www.springframework.org/schema/context/spring-context-4.3.xsd
-           http://www.springframework.org/schema/mvc
-           http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+       xmlns:oauth2="http://www.springframework.org/schema/security/oauth2"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+           http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+           http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2.xsd
+	       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.1.xsd">
+
+    <bean class="com.haulmont.cuba.core.sys.CubaPropertyPlaceholderConfigurer"/>
 
     <context:annotation-config/>
     <context:component-scan base-package="com.haulmont.restapi"/>
 
     <mvc:annotation-driven/>
+
+    <!-- According to the spec the token endpoint should be secured by the basic authentication -->
+    <security:http pattern="/rest/v2/oauth/**"
+          create-session="stateless"
+          authentication-manager-ref="clientAuthenticationManager"
+          xmlns="http://www.springframework.org/schema/security">
+        <intercept-url pattern="/**" access="isAuthenticated()"/>
+        <http-basic entry-point-ref="clientAuthenticationEntryPoint"/>
+        <csrf disabled="true"/>
+        <cors configuration-source-ref="cuba_RestCorsSource"/>
+    </security:http>
+
+    <bean id="clientAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint"/>
+
+    <!-- Authentication manager that is used by token endpoint. Checks client credentials in http header -->
+    <security:authentication-manager id="clientAuthenticationManager">
+        <security:authentication-provider user-service-ref="clientDetailsUserDetailsService"/>
+    </security:authentication-manager>
+
+    <bean id="clientDetailsUserDetailsService" class="org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService">
+        <constructor-arg ref="clientDetailsService" />
+    </bean>
+
+    <!-- The predefined list of API clients. External apps must provide this credentials in Authentication header when
+    accessing the auth token -->
+    <oauth2:client-details-service id="clientDetailsService">
+        <oauth2:client
+                client-id="${cuba.rest.client.id}"
+                secret="${cuba.rest.client.secret}"
+                access-token-validity="${cuba.rest.client.tokenExpirationTimeSec}"
+                authorized-grant-types="password"
+                scope="rest-api"/>
+    </oauth2:client-details-service>
+
+    <!-- Specifies token endpoint.-->
+    <oauth2:authorization-server
+            token-endpoint-url="/v2/oauth/token"
+            client-details-service-ref="clientDetailsService"
+            token-services-ref="tokenServices" >
+        <oauth2:password authentication-manager-ref="userAuthenticationManager"/>
+    </oauth2:authorization-server>
+
+    <security:authentication-manager id="userAuthenticationManager">
+        <security:authentication-provider ref="userAuthenticationProvider"/>
+    </security:authentication-manager>
+
+    <bean id="userAuthenticationProvider" class="com.haulmont.restapi.auth.CubaUserAuthenticationProvider"/>
+
+    <bean id="tokenServices" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
+        <property name="tokenStore" ref="tokenStore"/>
+        <property name="clientDetailsService" ref="clientDetailsService"/>
+    </bean>
+
+    <bean id="tokenStore" class="com.haulmont.restapi.auth.ClientProxyTokenStore"/>
+
+    <oauth2:resource-server id="resourceFilter" token-services-ref="tokenServices" />
+
+    <!-- Documentation endpoint should be allowed for anyone and support cross-domain requests -->
+    <security:http pattern="/rest/v2/docs/**"
+          create-session="stateless"
+          entry-point-ref="oauthAuthenticationEntryPoint"
+          xmlns="http://www.springframework.org/schema/security">
+        <csrf disabled="true"/>
+        <cors configuration-source-ref="cuba_RestCorsSource"/>
+    </security:http>
+
+    <!-- API controllers endpoints -->
+    <security:http pattern="/rest/v2/**"
+          create-session="stateless"
+          entry-point-ref="oauthAuthenticationEntryPoint"
+          xmlns="http://www.springframework.org/schema/security">
+        <intercept-url pattern="/rest/v2/entities/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/rest/v2/queries/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/rest/v2/services/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/rest/v2/permissions" access="isAuthenticated()"/>
+        <intercept-url pattern="/rest/v2/metadata/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/rest/v2/userInfo" access="isAuthenticated()"/>
+        <intercept-url pattern="/rest/v2/files/**" access="isAuthenticated()"/>
+        <anonymous enabled="false"/>
+        <csrf disabled="true"/>
+        <cors configuration-source-ref="cuba_RestCorsSource"/>
+        <custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER"/>
+        <custom-filter ref="cuba_AnonymousAuthenticationFilter" after="PRE_AUTH_FILTER"/>
+    </security:http>
+
+    <bean id="cuba_AnonymousAuthenticationFilter" class="com.haulmont.restapi.auth.CubaAnonymousAuthenticationFilter"/>
+
+    <bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
+        <property name="realmName" value="rest-api" />
+    </bean>
+
+    <!-- The configuration defines a filter that handles CORS request first -->
+    <bean id="cuba_RestCorsSource" class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
+        <property name="corsConfigurations">
+            <map>
+                <entry key="/**" value-ref="cuba_RestCorsConfig"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="cuba_RestCorsConfig" class="org.springframework.web.cors.CorsConfiguration">
+        <property name="allowedOrigins" value="${cuba.rest.allowedOrigins}"/>
+        <property name="allowedHeaders" value="*"/>
+        <property name="allowedMethods" value="*"/>
+        <property name="allowCredentials" value="true"/>
+    </bean>
+
+    <bean id="cuba_RestMultipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="${cuba.rest.maxUploadSize}"/>
+    </bean>
 </beans>

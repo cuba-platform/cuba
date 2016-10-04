@@ -21,6 +21,8 @@ import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.testmodel.selfinherited.ChildEntity;
+import com.haulmont.cuba.testmodel.selfinherited.RootEntity;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.junit.After;
@@ -45,6 +47,8 @@ public class ViewTest {
     private TimeSource timeSource;
 
     private UUID userId;
+    private RootEntity rootEntity;
+    private ChildEntity childEntity;
 
     @Before
     public void setUp() throws Exception {
@@ -64,6 +68,16 @@ public class ViewTest {
             user.setGroup(group);
             em.persist(user);
 
+            childEntity = new ChildEntity();
+            childEntity.setName("childEntityName");
+            childEntity.setDescription("childEntityDescription");
+            em.persist(childEntity);
+
+            rootEntity = new RootEntity();
+            rootEntity.setDescription("rootEntityDescription");
+            rootEntity.setEntity(childEntity);
+            em.persist(rootEntity);
+
             tx.commit();
         } finally {
             tx.end();
@@ -73,6 +87,8 @@ public class ViewTest {
     @After
     public void tearDown() throws Exception {
         cont.deleteRecord("SEC_USER", userId);
+        cont.deleteRecord("TEST_CHILD_ENTITY");
+        cont.deleteRecord("TEST_ROOT_ENTITY");
     }
 
     @Test
@@ -192,9 +208,9 @@ public class ViewTest {
                         new View(Group.class, false)
                                 .addProperty("name")
                 );
+        view.setLoadPartialEntities(true);
 
-        Transaction tx = cont.persistence().createTransaction();
-        try {
+        try (Transaction tx = cont.persistence().createTransaction()) {
             // First stage: change managed
 
             long ts = timeSource.currentTimeMillis();
@@ -202,6 +218,9 @@ public class ViewTest {
 
             EntityManager em = cont.persistence().getEntityManager();
             User user = em.find(User.class, userId, view);
+
+            assertFalse(PersistenceHelper.isLoaded(user, "updateTs"));
+
             user.setName(new Date().toString());
 
             tx.commitRetaining();
@@ -218,6 +237,32 @@ public class ViewTest {
 
             tx.commitRetaining();
 
+            assertFalse(PersistenceHelper.isLoaded(user, "updateTs"));
+
+            user.setName(new Date().toString());
+            em = cont.persistence().getEntityManager();
+            em.merge(user);
+
+            tx.commit();
+
+            assertTrue(getCurrentUpdateTs() > ts);
+        }
+
+        // test _minimal
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            long ts = timeSource.currentTimeMillis();
+            Thread.sleep(1000);
+
+            View minimalView = cont.metadata().getViewRepository().getView(User.class, View.MINIMAL);
+            minimalView.setLoadPartialEntities(true);
+
+            EntityManager em = cont.persistence().getEntityManager();
+            User user = em.find(User.class, userId, minimalView);
+
+            tx.commitRetaining();
+
+            assertFalse(PersistenceHelper.isLoaded(user, "updateTs"));
+
             user.setName(new Date().toString());
             em = cont.persistence().getEntityManager();
             em.merge(user);
@@ -226,9 +271,22 @@ public class ViewTest {
 
             assertTrue(getCurrentUpdateTs() > ts);
 
-        } finally {
-            tx.end();
+            tx.commit();
         }
+
+        // test DataManager
+        long ts = timeSource.currentTimeMillis();
+        Thread.sleep(1000);
+
+        DataManager dataManager = AppBeans.get(DataManager.class).secure();
+        User user = dataManager.load(LoadContext.create(User.class).setId(userId).setView(view));
+
+        assertFalse(PersistenceHelper.isLoaded(user, "updateTs"));
+
+        user.setName(new Date().toString());
+        dataManager.commit(user);
+
+        assertTrue(getCurrentUpdateTs() > ts);
     }
 
     /*
@@ -381,5 +439,24 @@ public class ViewTest {
 
         assertTrue(u instanceof FetchGroupTracker);
         assertNull(((FetchGroupTracker) u)._persistence_getFetchGroup());
+    }
+
+    @Test
+    public void testSelfReferenceInView() {
+        ViewRepository viewRepository = cont.metadata().getViewRepository();
+        View view = viewRepository.getView(RootEntity.class, View.LOCAL);
+        view.addProperty("entity", new View(ChildEntity.class)
+                .addProperty("name").addProperty("description"), FetchMode.AUTO);
+        RootEntity e;
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            EntityManager em = cont.persistence().getEntityManager();
+            e = em.find(RootEntity.class, rootEntity.getId(), view);
+            tx.commit();
+        }
+        assertNotNull(e);
+        assertNotNull(e.getEntity());
+        assertEquals("rootEntityDescription", e.getDescription());
+        assertEquals("childEntityDescription", e.getEntity().getDescription());
+        assertEquals("childEntityName", e.getEntity().getName());
     }
 }

@@ -65,6 +65,7 @@
 @import "components/sourcecodeeditor/sourcecodeeditor";
 @import "components/resizabletextarea/resizabletextarea";
 @import "components/draganddrop/draganddrop";
+@import "components/fileuploadwrapper/fileuploadwrapper";
 
 // Application specific
 @import "app/log-control";
@@ -135,6 +136,7 @@
   @include halo-cuba-entitylinkfield;
   @include halo-cuba-fieldgrouplayout;
   @include halo-cuba-resizabletextarea;
+  @include halo-cuba-fileupload-wrapper;
 
   @include cuba-log-control;
   @include cuba-login-window;

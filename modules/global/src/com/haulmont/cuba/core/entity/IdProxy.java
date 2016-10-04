@@ -50,6 +50,8 @@ public class IdProxy extends Number implements Serializable {
         this.entity = entity;
         if (entity instanceof HasUuid) {
             this.uuid = ((HasUuid) entity).getUuid();
+            if (this.uuid == null)
+                throw new IllegalStateException("Entity " + entity.getClass() + " implements HasUuid but its instance has no UUID assigned");
             this.hashCode = this.uuid.hashCode();
         } else {
             this.uuid = UuidProvider.createUuid();
