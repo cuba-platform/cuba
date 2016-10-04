@@ -43,6 +43,9 @@ info:
          Authorization: Bearer 2YotnFZFEjr1zCsicMWpAA
     ```
 
+    Access token can also placed to the request URL using the *access_token* parameter. This may be useful when you, for example, need to build
+    a link for downloading a file, like this: `http://localhost:8080/app/rest/v2/files/cedd218e-aaed-bafa-fc78-7c6ea5e32a61?access_token=acefdad0-d728-4279-aae3-6b42620f7ef9`.
+
     ### Anonymous access
 
     If the request to protected resource doesn't contain the `Authentication` header then the user will be authenticated with the anonymous session.
