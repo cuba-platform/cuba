@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
@@ -29,16 +30,17 @@ import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.mappings.AggregateObjectMapping;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 
+import javax.persistence.OneToOne;
+import java.lang.reflect.AnnotatedElement;
 import java.sql.Types;
 import java.util.List;
 import java.util.Map;
@@ -95,6 +97,34 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
                             metaProperty.getAnnotatedElement().getAnnotation(EmbeddedParameters.class);
                     if (embeddedParameters != null && !embeddedParameters.nullAllowed())
                         ((AggregateObjectMapping) mapping).setIsNullAllowed(false);
+                }
+
+                if (mapping.isOneToManyMapping()) {
+                    OneToManyMapping oneToManyMapping = (OneToManyMapping) mapping;
+                    if (SoftDelete.class.isAssignableFrom(oneToManyMapping.getReferenceClass())) {
+                        oneToManyMapping.setAdditionalJoinCriteria(new ExpressionBuilder().get("deleteTs").isNull());
+                    }
+                }
+
+                if (mapping.isOneToOneMapping()) {
+                    OneToOneMapping oneToOneMapping = (OneToOneMapping) mapping;
+                    if (SoftDelete.class.isAssignableFrom(oneToOneMapping.getReferenceClass())) {
+                        if (mapping.isManyToOneMapping()) {
+                            oneToOneMapping.setSoftDeletionForBatch(false);
+                            oneToOneMapping.setSoftDeletionForValueHolder(false);
+                        } else {
+                            OneToOne oneToOne = metaProperty.getAnnotatedElement().getAnnotation(OneToOne.class);
+                            if (oneToOne != null) {
+                                if (Strings.isNullOrEmpty(oneToOne.mappedBy())) {
+                                    oneToOneMapping.setSoftDeletionForBatch(false);
+                                    oneToOneMapping.setSoftDeletionForValueHolder(false);
+                                } else {
+                                    oneToOneMapping.setAdditionalJoinCriteria(
+                                            new ExpressionBuilder().get("deleteTs").isNull());
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
