@@ -82,6 +82,7 @@
         <property name="userSessions" ref="cuba_UserSessions"/>
         <property name="persistence" ref="cuba_Persistence"/>
         <property name="statisticsAccumulator" ref="cuba_MiddlewareStatisticsAccumulator"/>
+        <property name="configuration" ref="cuba_Configuration"/>
     </bean>
 
     <bean id="authenticationInterceptor" class="com.haulmont.cuba.security.sys.AuthenticationInterceptor">

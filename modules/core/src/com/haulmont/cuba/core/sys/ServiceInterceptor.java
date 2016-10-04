@@ -18,6 +18,8 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
+import com.haulmont.cuba.core.app.ServerConfig;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Logging;
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
@@ -40,6 +42,8 @@ public class ServiceInterceptor {
 
     private MiddlewareStatisticsAccumulator statisticsAccumulator;
 
+    boolean logInternalServiceInvocation;
+
     private Logger log = LoggerFactory.getLogger(ServiceInterceptor.class);
 
     public void setUserSessions(UserSessionsAPI userSessions) {
@@ -54,45 +58,44 @@ public class ServiceInterceptor {
         this.statisticsAccumulator = statisticsAccumulator;
     }
 
-    private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {
-        statisticsAccumulator.incMiddlewareRequestsCount();
-
-        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        for (int i = 2; i < stackTrace.length; i++) {
-            StackTraceElement element = stackTrace[i];
-            if (element.getClassName().equals(ServiceInterceptor.class.getName())) {
-                log.error("Invoking {} from another service", ctx.getSignature());
-                break;
-            }
-        }
-
-        try {
-            UserSession userSession = getUserSession(ctx);
-            if (log.isTraceEnabled())
-                log.trace("Invoking: {}, session={}", ctx.getSignature(), userSession);
-
-            Object res = ctx.proceed();
-
-            if (persistence.isInTransaction())
-                log.warn("Open transaction left in {}", ctx.getSignature().toShortString());
-
-            return res;
-        } catch (Throwable e) {
-            logException(e, ctx);
-            // Propagate the special exception to avoid serialization errors on remote clients
-            throw new RemoteException(e);
-        }
+    public void setConfiguration(Configuration configuration) {
+        logInternalServiceInvocation = configuration.getConfig(ServerConfig.class).getLogInternalServiceInvocation();
     }
 
-    private UserSession getUserSession(ProceedingJoinPoint ctx) {
+    private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {
         SecurityContext securityContext = AppContext.getSecurityContextNN();
+        boolean internalInvocation = securityContext.incServiceInvocation() > 0;
+        try {
+            if (internalInvocation) {
+                if (logInternalServiceInvocation) {
+                    log.warn("Invoking '{}' from another service", ctx.getSignature());
+                }
+                return ctx.proceed();
+            } else {
+                statisticsAccumulator.incMiddlewareRequestsCount();
+                try {
+                    // Using UserSessionsAPI directly to make sure the session's "last used" timestamp is propagated to the cluster
+                    UserSession userSession = userSessions.get(securityContext.getSessionId(), true);
+                    if (userSession == null)
+                        throw new NoUserSessionException(securityContext.getSessionId());
+                    if (log.isTraceEnabled())
+                        log.trace("Invoking: {}, session={}", ctx.getSignature(), userSession);
 
-        // Using UserSessionsAPI directly to make sure the session's "last used" timestamp is propagated to the cluster
-        UserSession userSession = userSessions.get(securityContext.getSessionId(), true);
-        if (userSession == null)
-            throw new NoUserSessionException(securityContext.getSessionId());
+                    Object res = ctx.proceed();
 
-        return userSession;
+                    if (persistence.isInTransaction())
+                        log.warn("Open transaction left in {}", ctx.getSignature().toShortString());
+
+                    return res;
+                } catch (Throwable e) {
+                    logException(e, ctx);
+                    // Propagate the special exception to avoid serialization errors on remote clients
+                    throw new RemoteException(e);
+                }
+            }
+        } finally {
+            securityContext.decServiceInvocation();
+        }
     }
 
     private void logException(Throwable e, ProceedingJoinPoint ctx) {

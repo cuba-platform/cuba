@@ -43,6 +43,7 @@ public class SecurityContext {
     private final UUID sessionId;
     private UserSession session;
     private String user;
+    private int serviceInvocationCount;
 
     private boolean authorizationRequired;
 
@@ -111,6 +112,20 @@ public class SecurityContext {
      */
     public void setAuthorizationRequired(boolean authorizationRequired) {
         this.authorizationRequired = authorizationRequired;
+    }
+
+    /**
+     * INTERNAL. Increment service invocation counter.
+     */
+    int incServiceInvocation() {
+        return serviceInvocationCount++;
+    }
+
+    /**
+     * INTERNAL. Decrement service invocation counter.
+     */
+    int decServiceInvocation() {
+        return serviceInvocationCount--;
     }
 
     @Override
