@@ -97,3 +97,35 @@ create table TEST_CHILD_ENTITY (
     constraint TEST_CHILD_ENTITY_ENTITY_ID foreign key (ENTITY_ID) references TEST_ROOT_ENTITY(ID),
     primary key (ENTITY_ID)
 )^
+
+------------------------------------------------------------------------------------------------------------
+
+create table TEST_SOFT_DELETE_OTO_B (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    ENTITY_TYPE varchar(1),
+    NAME varchar(255),
+    primary key (ID)
+)^
+
+create table TEST_SOFT_DELETE_OTO_A (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    ENTITY_TYPE varchar(1),
+    NAME varchar(255),
+    B_ID varchar(36),
+    constraint TEST_SOFT_DELETE_OTO_A_B_ID foreign key (B_ID) references TEST_SOFT_DELETE_OTO_B(ID),
+    primary key (ID)
+)^
