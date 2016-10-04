@@ -756,7 +756,7 @@ create table SYS_QUERY_RESULT (
     ID identity not null,
     SESSION_ID varchar(36) not null,
     QUERY_KEY integer not null,
-    ENTITY_ID varchar(36) not null,
+    ENTITY_ID varchar(36),
     STRING_ENTITY_ID varchar(255),
     INT_ENTITY_ID integer,
     LONG_ENTITY_ID bigint,
