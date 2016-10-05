@@ -628,6 +628,8 @@ public class MetadataTools {
      * or empty list
      */
     public List<String> getRelatedProperties(Class<?> entityClass, String property) {
+        Preconditions.checkNotNullArgument(entityClass, "entityClass is null");
+
         MetaClass metaClass = metadata.getClassNN(entityClass);
         return getRelatedProperties(metaClass.getPropertyNN(property));
     }
@@ -637,6 +639,8 @@ public class MetadataTools {
      * or empty list
      */
     public List<String> getRelatedProperties(MetaProperty metaProperty) {
+        Preconditions.checkNotNullArgument(metaProperty, "metaProperty is null");
+
         List<String> result = new ArrayList<>();
         String relatedProperties = (String) metaProperty.getAnnotations().get("relatedProperties");
         if (relatedProperties != null) {
@@ -654,6 +658,8 @@ public class MetadataTools {
      */
     @Nullable
     public MetaPropertyPath resolveMetaPropertyPath(MetaClass metaClass, String propertyPath) {
+        Preconditions.checkNotNullArgument(metaClass, "metaClass is null");
+
         MetaPropertyPath metaPropertyPath = metaClass.getPropertyPath(propertyPath);
         if (metaPropertyPath == null && DynamicAttributesUtils.isDynamicAttribute(propertyPath)) {
             metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, propertyPath);
