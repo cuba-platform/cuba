@@ -160,19 +160,15 @@ public class FetchGroupManager {
             }
 
             for (FetchGroupField joinField : new ArrayList<>(joinFields)) {
+                // adjust fetch mode according to parent attributes
                 if (joinField.fetchMode == FetchMode.AUTO) {
                     Optional<FetchMode> parentMode = refFields.stream()
-                            .filter(f -> joinField.metaPropertyPath.startsWith(f.metaPropertyPath) && joinField.fetchMode != FetchMode.AUTO)
+                            .filter(f -> joinField.metaPropertyPath.startsWith(f.metaPropertyPath) && joinField.fetchMode != FetchMode.JOIN)
                             .sorted((f1, f2) -> f1.metaPropertyPath.getPath().length - f2.metaPropertyPath.getPath().length)
                             .findFirst()
                             .map(f -> f.fetchMode);
-                    if (parentMode.isPresent()) {
-                        if (parentMode.get() == FetchMode.UNDEFINED) {
-                            joinFields.remove(joinField);
-                        } else if (parentMode.get() == FetchMode.BATCH) {
-                            joinFields.remove(joinField);
-                            batchFields.add(joinField);
-                        }
+                    if (parentMode.isPresent() && parentMode.get() == FetchMode.UNDEFINED) {
+                        joinFields.remove(joinField);
                     } else {
                         for (FetchGroupField batchField : new ArrayList<>(batchFields)) {
                             if (joinField.metaPropertyPath.startsWith(batchField.metaPropertyPath)) {
