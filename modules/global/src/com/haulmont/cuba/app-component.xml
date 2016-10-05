@@ -85,8 +85,12 @@
         <property name="cuba.web.componentsConfig" value=""/>
     </module>
 
-    <module name="web-toolkit" dependsOn="web" blocks="web">
+    <module name="web-toolkit" dependsOn="web">
         <artifact name="cuba-web-toolkit"/>
+    </module>
+
+    <module name="web-themes">
+        <artifact name="cuba-web-themes"/>
     </module>
 
     <module name="portal" dependsOn="rest-api" blocks="portal">

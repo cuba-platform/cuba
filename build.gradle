@@ -589,6 +589,8 @@ configure(webModuleThemesModule) {
     apply(plugin: 'maven')
     apply(plugin: 'cuba')
 
+    appModuleType = 'web-themes'
+
     buildDir = file('../build/scss-themes')
 
     sourceSets {
