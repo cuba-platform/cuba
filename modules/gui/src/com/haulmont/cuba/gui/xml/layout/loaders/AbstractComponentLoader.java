@@ -25,10 +25,8 @@ import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.config.Property;
-import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -498,8 +496,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     protected boolean shortcutIsConfigValue(String shortcut) {
         if (StringUtils.isNotEmpty(shortcut)) {
             Pattern pattern = Pattern.compile(SHORTCUT_CONFIG_VALUE_REGEXP);
-            Matcher matcher = pattern.matcher(shortcut);
-            return matcher.matches();
+            return pattern.matcher(shortcut).matches();
         }
         return false;
     }
@@ -509,13 +506,14 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             Pattern pattern = Pattern.compile(SHORTCUT_CONFIG_VALUE_REGEXP);
             Matcher matcher = pattern.matcher(configString);
             if (matcher.matches()) {
-                String shortcutString = matcher.group(1);
-                for (java.lang.reflect.Method method : ClientConfig.class.getMethods()) {
-                    Property propertyAnnotation = method.getAnnotation(Property.class);
-                    if (propertyAnnotation != null && shortcutString.equals(propertyAnnotation.value())) {
-                        DefaultString defaultString = method.getAnnotation(DefaultString.class);
-                        return defaultString.value();
-                    }
+                String shortcutPropertyKey = matcher.group(1);
+
+                String shortcut = AppContext.getProperty(shortcutPropertyKey);
+                if (StringUtils.isNotEmpty(shortcut)) {
+                    return shortcut;
+                } else {
+                    String message = String.format("Action shortcut property \"%s\" doesn't exist", shortcutPropertyKey);
+                    throw new GuiDevelopmentException(message, context.getFullFrameId());
                 }
             }
         }
