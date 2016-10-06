@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class QueryTreeTransformer extends QueryTreeAnalyzer {
 
@@ -173,22 +172,23 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
             orderBy.addChild(orderByField);
 
             PathNode pathNode = orderingFieldRef.getPathNode();
-            if (pathNode.getChildCount() > 1 && needJoinForOrderBy(orderingFieldRef)) {
-                //todo eude what if we need more than 1 join for complex path?
-                CommonTree lastNode = (CommonTree) pathNode.deleteChild(pathNode.getChildCount() - 1);
-                String variableName = pathNode.asPathString('_');
+            if (pathNode.getChildCount() > 1) {
+                List<PathNode> pathNodes = getPathNodesForOrderBy(orderingFieldRef);
+                if (pathNodes.size() > 1) {
+                    orderByField.addChild(pathNodes.remove(pathNodes.size() - 1));
+                    for (PathNode joinPathNode : pathNodes) {
+                        String joinPathNodeVariableName = joinPathNode.asPathString('_');
+                        if (!addedJoinVariables.contains(joinPathNodeVariableName)) {
+                            JoinVariableNode joinNode = new JoinVariableNode(JPA2Lexer.T_JOIN_VAR, "left join", joinPathNodeVariableName);
+                            joinNode.addChild(joinPathNode);
 
-                PathNode orderingNode = new PathNode(JPA2Lexer.T_SELECTED_FIELD, variableName);
-                orderingNode.addDefaultChild(lastNode.getText());
-                orderByField.addChild(orderingNode);
-
-                if (!addedJoinVariables.contains(variableName)) {
-                    JoinVariableNode joinNode = new JoinVariableNode(JPA2Lexer.T_JOIN_VAR, "left join", variableName);
-                    joinNode.addChild(pathNode);
-
-                    CommonTree from = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
-                    from.getChild(0).addChild(joinNode); // assumption
-                    addedJoinVariables.add(variableName);
+                            CommonTree from = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
+                            from.getChild(0).addChild(joinNode); // assumption
+                            addedJoinVariables.add(joinPathNodeVariableName);
+                        }
+                    }
+                } else {
+                    orderByField.addChild(orderingFieldRef.createNode());
                 }
             } else {
                 orderByField.addChild(orderingFieldRef.createNode());
@@ -282,9 +282,40 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
                 }
             }
         } catch (UnknownEntityNameException e) {
-            throw new RuntimeException("Could not find entity by name " + entityName, e);
+            throw new RuntimeException(String.format("Could not find entity by name %s", entityName), e);
         }
 
         return false;
+    }
+
+    protected List<PathNode> getPathNodesForOrderBy(PathEntityReference pathEntityReference) {
+        List<PathNode> pathNodes = new ArrayList<>();
+        String entityName = pathEntityReference.getPathStartingEntityName();
+        PathNode pathNode = pathEntityReference.getPathNode();
+        try {
+            JpqlEntityModel entity = model.getEntityByName(entityName);
+            String currentVariableName = pathNode.getEntityVariableName();
+            PathNode currentPathNode = new PathNode(pathNode.getToken(), currentVariableName);
+            for (int i = 0; i < pathNode.getChildCount(); i++) {
+                String fieldName = pathNode.getChild(i).toString();
+                Attribute entityAttribute = entity.getAttributeByName(fieldName);
+                if (entityAttribute.isEntityReferenceAttribute() && !entityAttribute.isEmbedded()) {
+                    currentPathNode.addDefaultChild(fieldName);
+                    pathNodes.add(currentPathNode);
+                    currentVariableName = currentPathNode.asPathString('_');
+                    currentPathNode = new PathNode(pathNode.getToken(), currentVariableName);
+                } else {
+                    currentPathNode.addDefaultChild(fieldName);
+                }
+                if (entityAttribute.isEntityReferenceAttribute()) {
+                    entityName = entityAttribute.getReferencedEntityName();
+                    entity = model.getEntityByName(entityName);
+                }
+            }
+            pathNodes.add(currentPathNode);
+        } catch (UnknownEntityNameException e) {
+            throw new RuntimeException(String.format("Could not find entity by name %s", entityName), e);
+        }
+        return pathNodes;
     }
 }
