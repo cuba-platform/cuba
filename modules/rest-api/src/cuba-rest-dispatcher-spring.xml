@@ -143,7 +143,7 @@
         <property name="allowCredentials" value="true"/>
     </bean>
 
-    <bean id="cuba_RestMultipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="${cuba.rest.maxUploadSize}"/>
     </bean>
 </beans>
