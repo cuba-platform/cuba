@@ -261,33 +261,6 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         return result;
     }
 
-    //if at least one reference attribute in path is not embedded we decide that order by need join
-    protected boolean needJoinForOrderBy(PathEntityReference orderingFieldRef) {
-        PathNode pathNode = orderingFieldRef.getPathNode();
-        String entityName = orderingFieldRef.getPathStartingEntityName();
-
-        try {
-            JpqlEntityModel entity = model.getEntityByName(entityName);
-
-            for (int i = 0; i < pathNode.getChildCount(); i++) {
-                String fieldName = pathNode.getChild(i).toString();
-                Attribute entityAttribute = entity.getAttributeByName(fieldName);
-                if (entityAttribute.isEntityReferenceAttribute() && !entityAttribute.isEmbedded()) {
-                    return true;
-                }
-
-                if (entityAttribute.isEntityReferenceAttribute()) {
-                    entityName = entityAttribute.getReferencedEntityName();
-                    entity = model.getEntityByName(entityName);
-                }
-            }
-        } catch (UnknownEntityNameException e) {
-            throw new RuntimeException(String.format("Could not find entity by name %s", entityName), e);
-        }
-
-        return false;
-    }
-
     protected List<PathNode> getPathNodesForOrderBy(PathEntityReference pathEntityReference) {
         List<PathNode> pathNodes = new ArrayList<>();
         String entityName = pathEntityReference.getPathStartingEntityName();
