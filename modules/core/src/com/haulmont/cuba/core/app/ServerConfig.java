@@ -201,8 +201,18 @@ public interface ServerConfig extends Config {
     @DefaultInt(60)
     int getBruteForceBlockIntervalSec();
 
+    /**
+     * Login name of the anonymous user.
+     */
     @Property("cuba.anonymousLogin")
     @Source(type = SourceType.DATABASE)
     @Default("anonymous")
     String getAnonymousLogin();
+
+    /**
+     * Warning in the log when a service is invoked from inside middleware.
+     */
+    @Property("cuba.logInternalServiceInvocation")
+    @DefaultBoolean(false)
+    boolean getLogInternalServiceInvocation();
 }

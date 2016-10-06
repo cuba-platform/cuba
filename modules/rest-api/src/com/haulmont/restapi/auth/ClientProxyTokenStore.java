@@ -25,6 +25,8 @@ import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.restapi.config.RestApiConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
@@ -59,6 +61,8 @@ public class ClientProxyTokenStore implements TokenStore {
 
     protected AuthenticationKeyGenerator authenticationKeyGenerator = new DefaultAuthenticationKeyGenerator();
 
+    private Logger log = LoggerFactory.getLogger(ClientProxyTokenStore.class);
+
     @Override
     public OAuth2Authentication readAuthentication(OAuth2AccessToken token) {
         return  readAuthentication(token.getValue());
@@ -82,6 +86,7 @@ public class ClientProxyTokenStore implements TokenStore {
                 authenticationKey,
                 serializeAuthentication(authentication));
         processSession(authentication, token.getValue());
+        log.info("REST API access token stored: [{}] {}", authentication.getPrincipal(), token.getValue()) ;
     }
 
     @Override

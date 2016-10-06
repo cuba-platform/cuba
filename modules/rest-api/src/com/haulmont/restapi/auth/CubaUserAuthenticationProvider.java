@@ -78,6 +78,7 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider, S
                 result.setDetails(details);
                 return result;
             } catch (LoginException e) {
+                log.error("REST API authentication failed: {} {}", login, ipAddress);
                 throw new BadCredentialsException("Bad credentials");
             }
         }

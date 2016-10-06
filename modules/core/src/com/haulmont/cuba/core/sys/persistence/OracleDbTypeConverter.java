@@ -60,6 +60,12 @@ public class OracleDbTypeConverter implements DbTypeConverter {
             return Types.VARCHAR;
         else if (javaClass == Boolean.class)
             return Types.CHAR;
+        else if (javaClass == String.class)
+            return Types.VARCHAR;
+        else if (javaClass == Integer.class)
+            return Types.INTEGER;
+        else if (javaClass == Long.class)
+            return Types.BIGINT;
         return Types.OTHER;
     }
 }
