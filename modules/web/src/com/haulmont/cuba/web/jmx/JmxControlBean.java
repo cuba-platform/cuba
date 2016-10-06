@@ -254,6 +254,7 @@ public class JmxControlBean implements JmxControlAPI {
         ManagedBeanAttribute mba = new ManagedBeanAttribute();
         mba.setMbean(mbinfo);
         mba.setName(attribute.getName());
+        mba.setDescription(attribute.getDescription());
         mba.setType(cleanType(attribute.getType()));
         mba.setReadable(attribute.isReadable());
         mba.setWriteable(attribute.isWritable());

@@ -31,6 +31,9 @@ public class ManagedBeanAttribute extends AbstractNotPersistentEntity {
     private String name;
 
     @MetaProperty
+    private String description;
+
+    @MetaProperty
     private String type;
 
     @MetaProperty
@@ -97,6 +100,14 @@ public class ManagedBeanAttribute extends AbstractNotPersistentEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getType() {
