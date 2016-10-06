@@ -62,10 +62,12 @@ public abstract class ActionsHolderLoader<T extends Component.ActionsHolder> ext
 
     protected void loadShortcut(Action instance, Element element) {
         String shortcut = StringUtils.trimToNull(element.attributeValue("shortcut"));
-        if (shortcutIsConfigValue(shortcut)) {
-            shortcut = getShortcutFromConfig(shortcut);
+        if (StringUtils.isNotEmpty(shortcut)) {
+            if (shortcutIsConfigValue(shortcut)) {
+                shortcut = getShortcutFromConfig(shortcut);
+            }
+            instance.setShortcut(shortcut);
         }
-        instance.setShortcut(shortcut);
     }
 
     protected void loadStandardActionProperties(Action instance, Element element) {
