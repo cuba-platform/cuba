@@ -16,35 +16,34 @@
 
 package com.haulmont.cuba.core.jmx;
 
-import org.springframework.jmx.export.annotation.ManagedOperation;
-import org.springframework.jmx.export.annotation.ManagedOperationParameter;
-import org.springframework.jmx.export.annotation.ManagedOperationParameters;
-import org.springframework.jmx.export.annotation.ManagedResource;
+import org.springframework.jmx.export.annotation.*;
 
 @ManagedResource(description = "Manages query cache")
 public interface QueryCacheSupportMBean {
 
+    @ManagedAttribute(description = "Maximum number of cached queries")
     long getMaxSize();
 
+    @ManagedAttribute(description = "Current number of cached queries")
     long getSize();
 
-    @ManagedOperation(description = "Discards all queries results in the cache")
-    String invalidateAll();
+    @ManagedOperation(description = "Discard all query results in the cache")
+    String evictAll();
 
-    @ManagedOperation(description = "Discards cached query results for entity")
+    @ManagedOperation(description = "Discard cached query results for entity")
     @ManagedOperationParameters({
             @ManagedOperationParameter(name = "metaClass", description = "Entity name, e.g. sec$User")
     })
-    String invalidate(String typeName);
+    String evict(String typeName);
 
-    @ManagedOperation(description = "Discards cached query results for query")
+    @ManagedOperation(description = "Discard cached query results for query")
     @ManagedOperationParameters({
             @ManagedOperationParameter(name = "id", description = "query identifier")
     })
-    String invalidateById(String id);
+    String evictById(String id);
 
-    @ManagedOperation(description = "Print statistics for all cached queries (query string and count of objects for query)")
-    String printQueryResultsStat();
+    @ManagedOperation(description = "Print all cached queries (query id, string and count of returned objects)")
+    String printCacheContent();
 
     @ManagedOperation(description = "Print cached results for query")
     @ManagedOperationParameters({
