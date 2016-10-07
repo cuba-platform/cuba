@@ -29,6 +29,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.exception.RestAPIException;
 import com.haulmont.restapi.config.RestQueriesConfiguration;
+import org.apache.commons.lang.BooleanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
@@ -67,8 +68,9 @@ public class QueriesControllerManager {
                                String queryName,
                                @Nullable Integer limit,
                                @Nullable Integer offset,
-                               Map<String, String> params) throws ClassNotFoundException, ParseException {
+                               Map<String, String> params, boolean dynamicAttributes) throws ClassNotFoundException, ParseException {
         LoadContext<Entity> ctx = createQueryLoadContext(entityName, queryName, limit, offset, params);
+        ctx.setLoadDynamicAttributes(BooleanUtils.isTrue(dynamicAttributes));
         List<Entity> entities = dataManager.loadList(ctx);
         return entitySerializationAPI.toJson(entities);
     }

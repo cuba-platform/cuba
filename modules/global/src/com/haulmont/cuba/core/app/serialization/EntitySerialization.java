@@ -23,7 +23,12 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
+import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.ArrayUtils;
@@ -39,6 +44,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component(EntitySerializationAPI.NAME)
 public class EntitySerialization implements EntitySerializationAPI {
@@ -53,6 +59,9 @@ public class EntitySerialization implements EntitySerializationAPI {
 
     @Inject
     protected Metadata metadata;
+
+    @Inject
+    protected DynamicAttributes dynamicAttributes;
 
     protected ThreadLocal<EntitySerializationContext> context = new ThreadLocal<EntitySerializationContext>() {
         @Override
@@ -215,21 +224,31 @@ public class EntitySerialization implements EntitySerializationAPI {
         }
 
         protected boolean propertyWritingAllowed(MetaProperty metaProperty, Entity entity) {
-            return !"id".equals(metaProperty.getName()) && PersistenceHelper.isLoaded(entity, metaProperty.getName());
+            return !"id".equals(metaProperty.getName()) &&
+                    (DynamicAttributesUtils.isDynamicAttribute(metaProperty) || PersistenceHelper.isLoaded(entity, metaProperty.getName()));
         }
 
         protected void writeFields(Entity entity, JsonObject jsonObject, @Nullable View view, Set<Entity> cyclicReferences) {
-            for (MetaProperty metaProperty : entity.getMetaClass().getProperties()) {
+            Collection<MetaProperty> properties = new ArrayList<>(entity.getMetaClass().getProperties());
+            if (entity instanceof BaseGenericIdEntity && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null) {
+                List<MetaProperty> dynamicProperties = dynamicAttributes.getAttributesForMetaClass(entity.getMetaClass()).stream()
+                        .map(categoryAttribute -> DynamicAttributesUtils.getMetaPropertyPath(entity.getMetaClass(), categoryAttribute).getMetaProperty())
+                        .collect(Collectors.toList());
+                properties.addAll(dynamicProperties);
+            }
+            for (MetaProperty metaProperty : properties) {
                 if (propertyWritingAllowed(metaProperty, entity)) {
                     ViewProperty viewProperty = null;
-                    if (view != null) {
-                        viewProperty = view.getProperty(metaProperty.getName());
-                        if (viewProperty == null) continue;
-                    }
+                    if (!DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+                        if (view != null) {
+                            viewProperty = view.getProperty(metaProperty.getName());
+                            if (viewProperty == null) continue;
+                        }
 
-                    if (!PersistenceHelper.isNew(entity)
-                            && !PersistenceHelper.isLoaded(entity, metaProperty.getName())) {
-                        continue;
+                        if (!PersistenceHelper.isNew(entity)
+                                && !PersistenceHelper.isLoaded(entity, metaProperty.getName())) {
+                            continue;
+                        }
                     }
 
                     Object fieldValue = entity.getValue(metaProperty.getName());
@@ -367,12 +386,20 @@ public class EntitySerialization implements EntitySerializationAPI {
                 String propertyName = entry.getKey();
                 if (!propertyReadRequired(propertyName)) continue;
                 JsonElement propertyValue = entry.getValue();
-                MetaProperty metaProperty = entity.getMetaClass().getProperty(propertyName);
+                MetaPropertyPath metaPropertyPath = metadataTools.resolveMetaPropertyPath(entity.getMetaClass(), propertyName);
+                MetaProperty metaProperty = metaPropertyPath != null ? metaPropertyPath.getMetaProperty() : null;
                 if (metaProperty != null) {
                     if (propertyValue.isJsonNull()) {
                         entity.setValue(propertyName, null);
                         continue;
                     }
+
+                    if (entity instanceof BaseGenericIdEntity
+                            && DynamicAttributesUtils.isDynamicAttribute(propertyName)
+                            && ((BaseGenericIdEntity) entity).getDynamicAttributes() == null) {
+                        fetchDynamicAttributes(entity);
+                    }
+
                     if (metaProperty.getAnnotatedElement().isAnnotationPresent(com.haulmont.chile.core.annotations.MetaProperty.class)) {
                         continue;
                     }
@@ -462,6 +489,21 @@ public class EntitySerialization implements EntitySerializationAPI {
                 }
             }
         }
+
+        protected void fetchDynamicAttributes(Entity entity){
+            if (entity instanceof BaseGenericIdEntity) {
+                LoadContext<BaseGenericIdEntity> loadContext = new LoadContext<>(entity.getMetaClass());
+                loadContext.setId(entity.getId()).setLoadDynamicAttributes(true);
+                DataService dataService = AppBeans.get(DataService.NAME, DataService.class);
+                BaseGenericIdEntity reloaded = dataService.load(loadContext);
+                if (reloaded != null) {
+                    ((BaseGenericIdEntity) entity).setDynamicAttributes(reloaded.getDynamicAttributes());
+                } else {
+                    ((BaseGenericIdEntity) entity).setDynamicAttributes(new HashMap<>());
+                }
+            }
+        }
+
     }
 
 }

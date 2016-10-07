@@ -23,8 +23,10 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.Metadata;
@@ -57,6 +59,9 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     @Inject
     protected Metadata metadata;
+
+    @Inject
+    protected DynamicAttributesManagerAPI dynamicAttributesManagerAPI;
 
     @Override
     public byte[] exportEntities(Collection<? extends Entity> entities, View view) {
@@ -177,6 +182,10 @@ public class EntityImportExport implements EntityImportExportAPI {
                     Entity merged = em.merge(entity);
                     result.add(merged);
                 }
+
+                if (entityHasDynamicAttributes(entity)) {
+                    dynamicAttributesManagerAPI.storeDynamicAttributes((BaseGenericIdEntity) entity);
+                }
             }
 
             entitiesToRemove.forEach(em::remove);
@@ -221,7 +230,15 @@ public class EntityImportExport implements EntityImportExportAPI {
             }
         }
 
+        if (entityHasDynamicAttributes(srcEntity)) {
+            ((BaseGenericIdEntity) dstEntity).setDynamicAttributes(((BaseGenericIdEntity) srcEntity).getDynamicAttributes());
+        }
+
         return dstEntity;
+    }
+
+    private boolean entityHasDynamicAttributes(Entity entity) {
+        return entity instanceof BaseGenericIdEntity && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null;
     }
 
     protected Entity importEmbeddedAttribute(Entity srcEntity,
