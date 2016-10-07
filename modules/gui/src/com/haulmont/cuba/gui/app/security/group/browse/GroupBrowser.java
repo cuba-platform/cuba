@@ -170,7 +170,7 @@ public class GroupBrowser extends AbstractWindow {
             public void actionPerform(Component component) {
                 final Set<User> selected = usersTable.getSelected();
                 if (!selected.isEmpty()) {
-                    Window lookupWindow = openLookup(Group.class, items -> {
+                    Lookup lookupWindow = openLookup(Group.class, items -> {
                         if (items.size() == 1) {
                             Group group = (Group) items.iterator().next();
                             List<UUID> usersForModify = new ArrayList<>();
@@ -178,6 +178,15 @@ public class GroupBrowser extends AbstractWindow {
                                 usersForModify.add(user.getId());
                             }
                             userManagementService.moveUsersToGroup(usersForModify, group.getId());
+
+                            if (selected.size() == 1) {
+                                showNotification(String.format(getMessage("userMovedToGroup"),
+                                        usersTable.getSingleSelected().getLogin(), group.getName()),
+                                        NotificationType.HUMANIZED);
+                            } else {
+                                showNotification(String.format(getMessage("usersMovedToGroup"), group.getName()),
+                                        NotificationType.HUMANIZED);
+                            }
 
                             usersTable.getDatasource().refresh();
                         }
