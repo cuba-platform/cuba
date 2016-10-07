@@ -999,10 +999,10 @@ public class QueryTransformerAstBasedTest {
 
         transformer = new QueryTransformerAstBased(model,
                 "select h from sec$GroupHierarchy h");
-        transformer.replaceOrderBy(false, "parent.group", "parent.name");
+        transformer.replaceOrderBy(false, "parent.group", "parent.createdBy");
         res = transformer.getResult();
         assertEquals(
-                "select h from sec$GroupHierarchy h left join h.parent h_parent order by h_parent.group, h_parent.name",
+                "select h from sec$GroupHierarchy h left join h.parent h_parent order by h_parent.group, h_parent.createdBy",
                 res);
 
     }
