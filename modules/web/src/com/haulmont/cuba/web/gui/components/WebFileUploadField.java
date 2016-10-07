@@ -57,6 +57,8 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     protected ExportDisplay exportDisplay;
     protected Messages messages;
 
+    protected FileContentProvider contentProvider;
+
     protected UploadComponent uploadButton;
     protected String fileName;
     protected FileStoragePutMode mode = FileStoragePutMode.MANUAL;
@@ -512,6 +514,10 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
 
     @Override
     public InputStream getFileContent() {
+        if (contentProvider != null) {
+            return contentProvider.provide();
+        }
+
         FileDescriptor fileDescriptor = getValue();
         switch (mode) {
             case MANUAL:
@@ -541,6 +547,16 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
                 }
         }
         return null;
+    }
+
+    @Override
+    public void setContentProvider(FileContentProvider contentProvider) {
+        this.contentProvider = contentProvider;
+    }
+
+    @Override
+    public FileContentProvider getContentProvider() {
+        return contentProvider;
     }
 
     @Override

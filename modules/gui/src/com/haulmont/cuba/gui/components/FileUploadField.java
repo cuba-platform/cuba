@@ -225,4 +225,22 @@ public interface FileUploadField extends UploadField, Field {
      * @return mode which determines when {@link FileDescriptor} will be commited.
      */
     FileStoragePutMode getMode();
+
+    /**
+     * Set content provider which contains file data.
+     * <p>Passed content provider will be used for downloading by clicking the link with file name
+     * or as source for {@link FileUploadField#getFileContent()} method.</p>
+     *
+     * @param contentProvider
+     */
+    void setContentProvider(FileContentProvider contentProvider);
+
+    /**
+     * @return FileContentProvider which can be used to read data from field
+     */
+    FileContentProvider getContentProvider();
+
+    interface FileContentProvider {
+        InputStream provide();
+    }
 }
