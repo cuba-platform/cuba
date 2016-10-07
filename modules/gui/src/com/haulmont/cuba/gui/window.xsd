@@ -724,6 +724,29 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- Calendar -->
+    <xs:complexType name="calendarComponent">
+        <xs:attributeGroup ref="hasId"/>
+
+        <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+
+        <xs:attributeGroup ref="hasDatasource"/>
+
+        <xs:attribute name="startDate" type="xs:string"/>
+        <xs:attribute name="endDate" type="xs:string"/>
+
+        <xs:attribute name="startDateProperty" type="xs:string"/>
+        <xs:attribute name="endDateProperty" type="xs:string"/>
+        <xs:attribute name="captionProperty" type="xs:string"/>
+        <xs:attribute name="descriptionProperty" type="xs:string"/>
+        <xs:attribute name="stylenameProperty" type="xs:string"/>
+        <xs:attribute name="isAllDayProperty" type="xs:string"/>
+    </xs:complexType>
+
     <!-- TextField -->
     <xs:complexType name="textFieldComponent">
         <xs:complexContent>
@@ -1982,6 +2005,7 @@
                 <xs:element name="treeTable" type="tableComponent"/>
                 <xs:element name="groupTable" type="groupTableComponent"/>
                 <xs:element name="buttonsPanel" type="buttonsPanelComponent"/>
+                <xs:element name="calendar" type="calendarComponent"/>
 
                 <xs:element name="filter" type="filterComponent"/>
 
