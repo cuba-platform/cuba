@@ -993,7 +993,7 @@ public class QueryTransformerAstBasedTest {
         transformer.replaceOrderBy(true, "parent.other.group");
         res = transformer.getResult();
         assertEquals(
-                "select h from sec$GroupHierarchy h left join h.parent.other h_parent_other order by h_parent_other.group desc",
+                "select h from sec$GroupHierarchy h left join h.parent h_parent left join h_parent.other h_parent_other order by h_parent_other.group desc",
                 res);
         transformer.reset();
 
