@@ -151,8 +151,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     boolean isCacheable();
 
     /**
-     * Set datasourse results to be cached
-     * @param cacheable
+     * Indicates that the datasource query results should be cached in the middleware query cache.
      */
     void setCacheable(boolean cacheable);
 

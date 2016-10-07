@@ -382,8 +382,7 @@ public class LoadContext<E extends Entity> implements Serializable {
         }
 
         /**
-         * Set query results cacheable
-         * @param cacheable
+         * Indicates that the query results should be cached.
          * @return the same query instance
          */
         public Query setCacheable(boolean cacheable) {

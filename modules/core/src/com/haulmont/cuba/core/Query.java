@@ -224,8 +224,7 @@ public interface Query {
     Query addView(Class<? extends Entity> entityClass, String viewName);
 
     /**
-     * Set query results to be cached
-     * @param cacheable
+     * Indicates that the query results should be cached.
      * @return the same query instance
      */
     Query setCacheable(boolean cacheable);

@@ -707,7 +707,7 @@ public class QueryCacheTestClass {
                 fail();
             }
         });
-        System.out.println(mBean.printQueryResultsStat());
+        System.out.println(mBean.printCacheContent());
     }
 
     @Test
