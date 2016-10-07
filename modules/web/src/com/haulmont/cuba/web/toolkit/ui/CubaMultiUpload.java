@@ -27,6 +27,7 @@ import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.LegacyComponent;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -314,25 +315,32 @@ public class CubaMultiUpload extends AbstractComponent
     }
 
     public void setPermittedExtensions(Set<String> permittedExtensions) {
-        if (!permittedExtensions.isEmpty()) {
-            this.permittedExtensions.clear();
+        if (CollectionUtils.isNotEmpty(permittedExtensions)) {
+            if (this.permittedExtensions == null) {
+                this.permittedExtensions = new HashSet<>();
+            } else {
+                this.permittedExtensions.clear();
+            }
+
             for (String type : permittedExtensions) {
                 this.permittedExtensions.add("*" + type);
             }
-
-            setResultExtensions();
+        } else {
+            this.permittedExtensions = null;
         }
+
+        setResultExtensions();
     }
 
     protected void setResultExtensions() {
-        if (this.permittedExtensions.isEmpty() && StringUtils.isEmpty(this.accept)) {
+        if (CollectionUtils.isEmpty(permittedExtensions) && StringUtils.isEmpty(accept)) {
             setFileTypesMask("*.*");
-        } else if (this.permittedExtensions.isEmpty()) {
-            setFileTypesMask(this.accept);
-        } else if (StringUtils.isEmpty(this.accept)) {
-            setFileTypesMask(StringUtils.join(this.permittedExtensions, ";"));
+        } else if (CollectionUtils.isEmpty(permittedExtensions)) {
+            setFileTypesMask(accept);
+        } else if (StringUtils.isEmpty(accept)) {
+            setFileTypesMask(StringUtils.join(permittedExtensions, ";"));
         } else {
-            Set<String> acceptSet = new HashSet<>(Arrays.asList(this.accept.split("\\s*;\\s*")));
+            Set<String> acceptSet = new HashSet<>(Arrays.asList(accept.split("\\s*;\\s*")));
             List<String> fileTypeMask = new ArrayList<>();
             for (String extension : permittedExtensions) {
                 if (acceptSet.contains(extension)) {
