@@ -58,6 +58,8 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
     protected Messages messages;
     protected ExportDisplay exportDisplay;
 
+    protected FileContentProvider contentProvider;
+
     protected volatile boolean isUploadingState = false;
 
     protected String fileName;
@@ -476,6 +478,10 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
 
     @Override
     public InputStream getFileContent() {
+        if (contentProvider != null) {
+            return contentProvider.provide();
+        }
+
         FileDescriptor fileDescriptor = getValue();
         switch (mode) {
             case MANUAL:
@@ -505,6 +511,16 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
                 }
         }
         return null;
+    }
+
+    @Override
+    public void setContentProvider(FileContentProvider contentProvider) {
+        this.contentProvider = contentProvider;
+    }
+
+    @Override
+    public FileContentProvider getContentProvider() {
+        return contentProvider;
     }
 
     @Override
