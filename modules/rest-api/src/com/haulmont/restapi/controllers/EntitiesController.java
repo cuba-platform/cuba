@@ -18,8 +18,6 @@ package com.haulmont.restapi.controllers;
 
 import com.haulmont.restapi.data.CreatedEntityInfo;
 import com.haulmont.restapi.service.EntitiesControllerManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,8 +42,9 @@ public class EntitiesController {
     public String loadEntity(@PathVariable String entityName,
                              @PathVariable String entityId,
                              @RequestParam(required = false) String view,
-                             @RequestParam(required = false) Boolean returnNulls) {
-        return entitiesControllerManager.loadEntity(entityName, entityId, view, returnNulls);
+                             @RequestParam(required = false) Boolean returnNulls,
+                             @RequestParam(required = false) Boolean dynamicAttributes) {
+        return entitiesControllerManager.loadEntity(entityName, entityId, view, returnNulls, dynamicAttributes);
     }
 
     @GetMapping("/{entityName}")
@@ -54,8 +53,9 @@ public class EntitiesController {
                                    @RequestParam(required = false) Integer limit,
                                    @RequestParam(required = false) Integer offset,
                                    @RequestParam(required = false) String sort,
-                                   @RequestParam(required = false) Boolean returnNulls) {
-        return entitiesControllerManager.loadEntitiesList(entityName, view, limit, offset, sort, returnNulls);
+                                   @RequestParam(required = false) Boolean returnNulls,
+                                   @RequestParam(required = false) Boolean dynamicAttributes) {
+        return entitiesControllerManager.loadEntitiesList(entityName, view, limit, offset, sort, returnNulls, dynamicAttributes);
     }
 
     @PostMapping("/{entityName}")

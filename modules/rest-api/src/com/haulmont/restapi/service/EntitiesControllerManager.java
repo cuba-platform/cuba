@@ -77,7 +77,8 @@ public class EntitiesControllerManager {
     public String loadEntity(String entityName,
                              String entityId,
                              @Nullable String view,
-                             @Nullable Boolean returnNulls) {
+                             @Nullable Boolean returnNulls,
+                             @Nullable Boolean dynamicAttributes) {
         MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
 
         checkCanReadEntity(metaClass);
@@ -89,6 +90,8 @@ public class EntitiesControllerManager {
         if (!Strings.isNullOrEmpty(view)) {
             ctx.setView(view);
         }
+
+        ctx.setLoadDynamicAttributes(BooleanUtils.isTrue(dynamicAttributes));
 
         Entity entity = dataManager.load(ctx);
         checkEntityIsNotNull(entityName, entityId, entity);
@@ -106,7 +109,8 @@ public class EntitiesControllerManager {
                                    @Nullable Integer limit,
                                    @Nullable Integer offset,
                                    @Nullable String sort,
-                                   @Nullable Boolean returnNulls) {
+                                   @Nullable Boolean returnNulls,
+                                   @Nullable Boolean dynamicAttributes) {
         MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanReadEntity(metaClass);
 
@@ -134,6 +138,8 @@ public class EntitiesControllerManager {
         if (!Strings.isNullOrEmpty(view)) {
             ctx.setView(view);
         }
+
+        ctx.setLoadDynamicAttributes(BooleanUtils.isTrue(dynamicAttributes));
 
         List<Entity> entities = dataManager.loadList(ctx);
 
