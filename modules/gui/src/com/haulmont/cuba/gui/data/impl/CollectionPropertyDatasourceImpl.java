@@ -555,11 +555,16 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                     if (collection instanceof List) {
                         List list = (List) collection;
                         int itemIdx = list.indexOf(t);
-                        collection.remove(t);
-                        list.add(itemIdx, item);
+                        list.set(itemIdx, item);
                     } else if (collection instanceof LinkedHashSet) {
                         LinkedHashSet set = (LinkedHashSet) collection;
-                        set.add(item);
+
+                        List list = new ArrayList(set);
+                        int itemIdx = list.indexOf(t);
+                        list.set(itemIdx, item);
+
+                        set.clear();
+                        set.addAll(list);
                     } else {
                         collection.remove(t);
                         collection.add(item);
