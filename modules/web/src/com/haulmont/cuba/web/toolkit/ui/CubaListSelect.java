@@ -23,10 +23,11 @@ import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.ListSelect;
 
 public class CubaListSelect extends ListSelect {
-
     public CubaListSelect() {
         setValidationVisible(false);
         setShowBufferedSourceException(false);
+
+        this.resetValueToNullOnContainerChange = false;
     }
 
     @Override
