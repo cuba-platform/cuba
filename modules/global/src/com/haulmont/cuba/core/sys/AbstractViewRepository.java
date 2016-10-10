@@ -324,7 +324,7 @@ public class AbstractViewRepository implements ViewRepository {
         if (metaProperty.getRange().isClass()
                 && !metaProperty.getRange().getCardinality().isMany()) {
 
-            Map<String, View> views = storage.get(metaClass);
+            Map<String, View> views = storage.get(metaProperty.getRange().asClass());
             View refMinimalView = (views == null ? null : views.get(View.MINIMAL));
 
             if (refMinimalView != null) {
