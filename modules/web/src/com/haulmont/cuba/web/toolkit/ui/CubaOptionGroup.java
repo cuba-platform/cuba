@@ -22,10 +22,11 @@ import com.haulmont.cuba.web.toolkit.ui.client.optiongroup.OptionGroupOrientatio
 import com.vaadin.ui.OptionGroup;
 
 public class CubaOptionGroup extends OptionGroup {
-
     public CubaOptionGroup() {
         setValidationVisible(false);
         setShowBufferedSourceException(false);
+
+        this.resetValueToNullOnContainerChange = false;
     }
 
     @Override
