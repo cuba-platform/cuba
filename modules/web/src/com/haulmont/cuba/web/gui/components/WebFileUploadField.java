@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 
@@ -456,9 +457,13 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
 
     @Override
     public void setPermittedExtensions(Set<String> permittedExtensions) {
-        this.permittedExtensions = permittedExtensions;
-        if (this.component instanceof CubaFileUpload){
-            ((CubaFileUpload) this.component).setPermittedExtensions(permittedExtensions);
+        if (permittedExtensions != null) {
+            this.permittedExtensions = permittedExtensions.stream().map(String::toLowerCase).collect(Collectors.toSet());
+        } else {
+            this.permittedExtensions = null;
+        }
+        if (component instanceof CubaFileUpload) {
+            ((CubaFileUpload) component).setPermittedExtensions(this.permittedExtensions);
         }
     }
 }

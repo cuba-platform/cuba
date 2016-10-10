@@ -45,6 +45,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WebFileMultiUploadField extends WebAbstractUploadComponent<UploadComponent> implements FileMultiUploadField {
 
@@ -545,11 +546,16 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<UploadCo
 
     @Override
     public void setPermittedExtensions(Set<String> permittedExtensions) {
-        this.permittedExtensions = permittedExtensions;
+        if (permittedExtensions != null) {
+            this.permittedExtensions = permittedExtensions.stream().map(String::toLowerCase).collect(Collectors.toSet());
+        } else {
+            this.permittedExtensions = null;
+        }
+
         if (this.component instanceof CubaFileUpload){
-            ((CubaFileUpload) this.component).setPermittedExtensions(permittedExtensions);
+            ((CubaFileUpload) this.component).setPermittedExtensions(this.permittedExtensions);
         } else if (this.component instanceof CubaMultiUpload) {
-            ((CubaMultiUpload) this.component).setPermittedExtensions(permittedExtensions);
+            ((CubaMultiUpload) this.component).setPermittedExtensions(this.permittedExtensions);
             ((CubaMultiUpload) this.component).setFileTypesDescription("");
         }
     }

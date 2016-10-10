@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.components.UploadComponentSupport;
 
 import javax.swing.*;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class DesktopAbstractUploadComponent<T extends JComponent>
         extends DesktopAbstractComponent<T>
@@ -61,7 +62,11 @@ public abstract class DesktopAbstractUploadComponent<T extends JComponent>
 
     @Override
     public void setPermittedExtensions(Set<String> permittedExtensions) {
-        this.permittedExtensions = permittedExtensions;
+        if (permittedExtensions != null) {
+            this.permittedExtensions = permittedExtensions.stream().map(String::toLowerCase).collect(Collectors.toSet());
+        } else {
+            this.permittedExtensions = null;
+        }
     }
 
     protected String getFileSizeLimitString() {
