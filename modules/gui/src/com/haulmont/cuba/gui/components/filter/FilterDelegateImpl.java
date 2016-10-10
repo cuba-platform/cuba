@@ -315,6 +315,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         String layoutDescription = clientConfig.getGenericFilterControlsLayout();
         ControlsLayoutBuilder controlsLayoutBuilder = createControlsLayoutBuilder(layoutDescription);
         controlsLayoutBuilder.build();
+        if (isMaxResultsLayoutVisible()) {
+            initMaxResults();
+        }
 
         maxResultsLayout.setVisible(isMaxResultsLayoutVisible());
         filterHelper.setInternalDebugId(maxResultsLayout, "maxResultsLayout");
@@ -459,7 +462,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             setFilterEntity(adHocFilter);
         }
 
-        if (defaultFilter != adHocFilter) {
+        if (defaultFilter != adHocFilter && (filterMode == FilterMode.GENERIC_MODE)) {
             Window window = ComponentsHelper.getWindow(filter);
             if (!WindowParams.DISABLE_AUTO_REFRESH.getBool(window.getContext())) {
                 if (getResultingManualApplyRequired()) {
@@ -483,6 +486,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     public void setFilterEntity(FilterEntity filterEntity) {
         this.filterEntity = filterEntity;
         conditions = filterParser.getConditions(filter, filterEntity.getXml());
+        prevConditions = conditions;
         initialConditions = conditions.toConditionsList();
         for (AbstractCondition condition : conditions.toConditionsList()) {
             condition.addListener(new AbstractCondition.Listener() {
@@ -509,7 +513,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
         }
 
-            saveInitialFilterState();
+        saveInitialFilterState();
 
         if (filtersLookupDisplayed) {
             filtersLookupListenerEnabled = false;
