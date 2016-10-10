@@ -28,6 +28,7 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -211,6 +212,14 @@ public class EntitySerialization implements EntitySerializationAPI {
             } else {
                 writeFields(entity, jsonObject, view, cyclicReferences);
             }
+
+            if (entity instanceof BaseGenericIdEntity) {
+                byte[] securityToken = BaseEntityInternalAccess.getSecurityToken((BaseGenericIdEntity) entity);
+                if (securityToken != null) {
+                    jsonObject.addProperty("__securityToken", Base64.getEncoder().encodeToString(securityToken));
+                }
+            }
+
             return jsonObject;
         }
 
@@ -373,12 +382,20 @@ public class EntitySerialization implements EntitySerializationAPI {
                 }
             }
 
+            if (entity instanceof BaseGenericIdEntity) {
+                JsonPrimitive securityTokenJonPrimitive = jsonObject.getAsJsonPrimitive("__securityToken");
+                if (securityTokenJonPrimitive != null) {
+                    byte[] securityToken = Base64.getDecoder().decode(securityTokenJonPrimitive.getAsString());
+                    BaseEntityInternalAccess.setSecurityToken((BaseGenericIdEntity) entity, securityToken);
+                }
+            }
+
             readFields(jsonObject, entity);
             return entity;
         }
 
         protected boolean propertyReadRequired(String propertyName) {
-            return !"id".equals(propertyName) && !ENTITY_NAME_PROP.equals(propertyName);
+            return !"id".equals(propertyName) && !ENTITY_NAME_PROP.equals(propertyName) && !"__securityToken".equals(propertyName);
         }
 
         protected void readFields(JsonObject jsonObject, Entity entity) {
