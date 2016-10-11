@@ -45,13 +45,13 @@ import com.haulmont.cuba.web.toolkit.ui.CubaSingleModeContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TabSheet;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -671,7 +671,21 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void addTimer(Timer timer) {
-        AppUI.getCurrent().addTimer(((WebTimer) timer).getTimerImpl());
+        if (component.isAttached()) {
+            attachTimerToUi((WebTimer) timer);
+        } else {
+            ClientConnector.AttachListener attachListener = new ClientConnector.AttachListener() {
+                @Override
+                public void attach(ClientConnector.AttachEvent event) {
+                    if (timers.contains(timer)) {
+                        attachTimerToUi((WebTimer) timer);
+                    }
+                    // execute attach listener only once
+                    component.removeAttachListener(this);
+                }
+            };
+            component.addAttachListener(attachListener);
+        }
 
         if (timers == null) {
             timers = new LinkedList<>();
@@ -679,13 +693,21 @@ public class WebWindow implements Window, Component.Wrapper,
         timers.add(timer);
     }
 
+    protected void attachTimerToUi(WebTimer timer) {
+        AppUI appUI = (AppUI) component.getUI();
+        appUI.addTimer(timer.getTimerImpl());
+    }
+
     @Override
-    public Timer getTimer(final String id) {
+    public Timer getTimer(String id) {
         if (timers == null) {
             return null;
         }
 
-        return (Timer) CollectionUtils.find(timers, object -> StringUtils.equals(id, ((Timer) object).getId()));
+        return timers.stream()
+                .filter(timer -> Objects.equals(timer.getId(), id))
+                .findFirst()
+                .orElse(null);
     }
 
     public void stopTimers() {
