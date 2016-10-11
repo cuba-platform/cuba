@@ -35,6 +35,18 @@
     border-right: first-number($v-border) solid $border-color;
   }
 
+  .#{$primary-stylename}-header-cell.#{$primary-stylename}-header-sortable {
+    overflow: hidden;
+  }
+
+  .#{$primary-stylename}-header-cell .#{$primary-stylename}-caption-container {
+      overflow: visible;
+  }
+
+  .#{$primary-stylename}-header-cell:hover .#{$primary-stylename}-caption-container {
+      overflow: hidden;
+  }
+
   .#{$primary-stylename}-arow-row {
     @include box-defaults;
 
@@ -189,6 +201,7 @@
   .#{$primary-stylename}-header-cell .#{$primary-stylename}-sort-indicator:before {
     font-family: FontAwesome;
     content: "\f0dc";
+    margin-left: $v-unit-size/3*2;
   }
 
   .#{$primary-stylename}-header-cell-asc .#{$primary-stylename}-sort-indicator,
@@ -209,23 +222,14 @@
     margin-left: -$v-table-sort-indicator-width;
     opacity: 0;
     cursor: pointer;
-    @if $v-animations-enabled {
-      @include transition(opacity 200ms 1s);
-    }
   }
 
   .#{$primary-stylename}-header-sortable:hover .#{$primary-stylename}-sort-indicator {
     opacity: 1;
-    @if $v-animations-enabled {
-      @include transition(opacity 200ms 100ms);
-    }
   }
 
   .#{$primary-stylename}-header-sortable:not(:hover) .#{$primary-stylename}-resizer {
     margin-left: -$v-table-resizer-width !important;
-    @if $v-animations-enabled {
-      @include transition(margin-left 200ms 1s);
-    }
   }
 
   .cuba-table-contextmenu {
