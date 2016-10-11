@@ -390,7 +390,14 @@ public class EntitySerialization implements EntitySerializationAPI {
                 }
             }
 
-            readFields(jsonObject, entity);
+            Map<Object, Entity> processedEntities = context.get().getProcessedEntities();
+            Entity processedEntity = processedEntities.get(entity.getId());
+            if (processedEntity != null) {
+                entity = processedEntity;
+            } else {
+                processedEntities.put(entity.getId(), entity);
+                readFields(jsonObject, entity);
+            }
             return entity;
         }
 
