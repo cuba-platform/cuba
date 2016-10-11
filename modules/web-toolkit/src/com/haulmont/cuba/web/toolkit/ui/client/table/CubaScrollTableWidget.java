@@ -472,15 +472,6 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                 rowRequestHandler.run(); // run immediately
             }
         }
-
-        @Override
-        public void resizeCaptionContainer(int rightSpacing) {
-            if (!td.getClassName().contains("-asc") && !td.getClassName().contains("-desc")) {
-                ComputedStyle computedStyle = new ComputedStyle(sortIndicator);
-                rightSpacing += (int) Math.ceil(computedStyle.getWidth());
-            }
-            super.resizeCaptionContainer(rightSpacing);
-        }
     }
 
     protected class CubaScrollTableBody extends VScrollTableBody {
