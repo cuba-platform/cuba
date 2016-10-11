@@ -48,7 +48,7 @@ public interface EntityImportExportService {
      * EntitySerializationAPI#toJson(Collection)} method documentation</p>
      *
      * @param entities a collection of entities to export
-     * @param view     before serialization to JSON entities will be reloaded with tis view
+     * @param view     before serialization to JSON entities will be reloaded with this view
      * @return a byte array of zipped JSON file
      */
     byte[] exportEntities(Collection<? extends Entity> entities, View view);
