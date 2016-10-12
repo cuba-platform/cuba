@@ -20,6 +20,7 @@ import com.haulmont.restapi.data.CreatedEntityInfo;
 import com.haulmont.restapi.service.EntitiesControllerManager;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
@@ -32,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
  * Controller that performs CRUD entity operations
  */
 @RestController
-@RequestMapping(value = "/v2/entities", produces = "application/json; charset=UTF-8")
+@RequestMapping(value = "/v2/entities", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class EntitiesController {
 
     @Inject
