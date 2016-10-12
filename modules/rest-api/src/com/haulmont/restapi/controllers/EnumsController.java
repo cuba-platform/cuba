@@ -18,6 +18,7 @@ package com.haulmont.restapi.controllers;
 
 import com.haulmont.restapi.data.EnumInfo;
 import com.haulmont.restapi.service.EnumsControllerManager;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +31,7 @@ import java.util.List;
  * REST controller that is used for getting an information about enums
  */
 @RestController
-@RequestMapping(path = "/v2/metadata/enums", produces = "application/json; charset=UTF-8")
+@RequestMapping(path = "/v2/metadata/enums", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class EnumsController {
     @Inject
     protected EnumsControllerManager enumsControllerManager;

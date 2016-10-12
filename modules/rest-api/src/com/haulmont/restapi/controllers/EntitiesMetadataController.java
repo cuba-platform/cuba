@@ -18,6 +18,7 @@ package com.haulmont.restapi.controllers;
 
 import com.haulmont.restapi.data.MetaClassInfo;
 import com.haulmont.restapi.service.EntitiesMetadataControllerManager;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +32,7 @@ import java.util.Collection;
  * at the moment.
  */
 @RestController
-@RequestMapping(value = "/v2/metadata", produces = "application/json; charset=UTF-8")
+@RequestMapping(value = "/v2/metadata", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class EntitiesMetadataController {
     @Inject
     protected EntitiesMetadataControllerManager controllerManager;

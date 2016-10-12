@@ -17,6 +17,7 @@
 package com.haulmont.restapi.controllers;
 
 import com.haulmont.restapi.service.DatatypesControllerManager;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +28,7 @@ import javax.inject.Inject;
  * Controller that is used for getting datatypes information.
  */
 @RestController
-@RequestMapping(value = "/v2/metadata/datatypes", produces = "application/json; charset=UTF-8")
+@RequestMapping(value = "/v2/metadata/datatypes", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class DatatypesController {
     @Inject
     protected DatatypesControllerManager datatypesControllerManager;

@@ -18,6 +18,7 @@ package com.haulmont.restapi.controllers;
 
 import com.haulmont.restapi.data.UserInfo;
 import com.haulmont.restapi.service.UserInfoControllerManager;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +29,7 @@ import javax.inject.Inject;
  * REST controller that is used for getting an information about the current user
  */
 @RestController
-@RequestMapping(value = "/v2/userInfo", produces = "application/json; charset=UTF-8")
+@RequestMapping(value = "/v2/userInfo", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class UserInfoController {
 
     @Inject

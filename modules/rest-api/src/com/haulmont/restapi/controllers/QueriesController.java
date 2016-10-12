@@ -18,6 +18,7 @@ package com.haulmont.restapi.controllers;
 
 import com.haulmont.restapi.config.RestQueriesConfiguration;
 import com.haulmont.restapi.service.QueriesControllerManager;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -29,7 +30,7 @@ import java.util.Map;
  * Controller that is used for operations with predefined JPQL queries
  */
 @RestController
-@RequestMapping("/v2/queries")
+@RequestMapping(value = "/v2/queries", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class QueriesController {
 
     @Inject
@@ -45,7 +46,7 @@ public class QueriesController {
         return queriesControllerManager.executeQuery(entityName, queryName, limit, offset, params, dynamicAttributes);
     }
 
-    @GetMapping("/{entityName}/{queryName}/count")
+    @GetMapping(value = "/{entityName}/{queryName}/count", produces = "text/plain;charset=UTF-8")
     public String getCount(@PathVariable String entityName,
                            @PathVariable String queryName,
                            @RequestParam Map<String, String> params) throws ClassNotFoundException, ParseException {
