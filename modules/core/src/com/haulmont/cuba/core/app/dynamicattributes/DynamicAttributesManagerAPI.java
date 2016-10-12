@@ -22,10 +22,12 @@ import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface DynamicAttributesManagerAPI {
     String NAME = "cuba_DynamicAttributesManager";
@@ -57,7 +59,7 @@ public interface DynamicAttributesManagerAPI {
     /**
      *  Fetch dynamic attributes from database for each entity
      */
-    <E extends BaseGenericIdEntity> void fetchDynamicAttributes(List<E> entities);
+    <E extends BaseGenericIdEntity> void fetchDynamicAttributes(List<E> entities, @Nonnull Set<Class> dependentClasses);
 
     /**
      * Store dynamic attributes from the entity to database

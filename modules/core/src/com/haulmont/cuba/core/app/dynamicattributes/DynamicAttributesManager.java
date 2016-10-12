@@ -20,6 +20,7 @@ package com.haulmont.cuba.core.app.dynamicattributes;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
@@ -27,15 +28,13 @@ import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.app.ClusterListenerAdapter;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.entity.*;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.core.global.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -192,15 +191,31 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     }
 
     @Override
-    public <E extends BaseGenericIdEntity> void fetchDynamicAttributes(List<E> entities) {
-        List<E> supportedEntities = entities.stream()
-                .filter(e -> e instanceof HasUuid)
-                .collect(Collectors.toList());
-        if (supportedEntities.isEmpty())
+    public <E extends BaseGenericIdEntity> void fetchDynamicAttributes(List<E> entities, @Nonnull Set<Class> dependentClasses) {
+        Set<BaseGenericIdEntity> toProcess = new HashSet<>();
+        entities.stream().filter(entity -> entity instanceof HasUuid).forEach(entity -> {
+            toProcess.add(entity);
+            if (!dependentClasses.isEmpty()) {
+                metadata.getTools().traverseAttributes(entity, new EntityAttributeVisitor() {
+                    @Override
+                    public void visit(Entity dependentEntity, MetaProperty property) {
+                        if (dependentEntity instanceof HasUuid) {
+                            toProcess.add((BaseGenericIdEntity)dependentEntity);
+                        }
+                    }
+
+                    @Override
+                    public boolean skip(MetaProperty property) {
+                        return metadata.getTools().isPersistent(property) && property.getRange().isClass() && dependentClasses.contains(property.getJavaType());
+                    }
+                });
+            }
+        });
+        if (toProcess.isEmpty())
             return;
 
         try (Transaction tx = persistence.getTransaction()) {
-            doFetchDynamicAttributes(supportedEntities);
+            doFetchDynamicAttributes(toProcess);
             tx.commit();
         }
     }
@@ -234,7 +249,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         }
     }
 
-    protected <E extends BaseGenericIdEntity> void doFetchDynamicAttributes(List<E> entities) {
+    protected void doFetchDynamicAttributes(Set<BaseGenericIdEntity> entities) {
         List<UUID> ids = entities.stream()
                 .map(e -> ((HasUuid) e).getUuid())
                 .collect(Collectors.toList());

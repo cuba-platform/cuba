@@ -23,10 +23,7 @@ import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI;
 import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.CategoryAttributeValue;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
@@ -134,7 +131,8 @@ public class RdbmsStore implements DataStore {
             }
 
             if (result instanceof BaseGenericIdEntity && context.isLoadDynamicAttributes()) {
-                dynamicAttributesManagerAPI.fetchDynamicAttributes(Collections.singletonList((BaseGenericIdEntity) result));
+                dynamicAttributesManagerAPI.fetchDynamicAttributes(Collections.singletonList((BaseGenericIdEntity) result),
+                        collectEntityClassesWithDynamicAttributes(context.getView()));
             }
 
             tx.commit();
@@ -191,7 +189,8 @@ public class RdbmsStore implements DataStore {
 
             // Fetch dynamic attributes
             if (!resultList.isEmpty() && resultList.get(0) instanceof BaseGenericIdEntity && context.isLoadDynamicAttributes()) {
-                dynamicAttributesManagerAPI.fetchDynamicAttributes((List<BaseGenericIdEntity>) resultList);
+                dynamicAttributesManagerAPI.fetchDynamicAttributes((List<BaseGenericIdEntity>) resultList,
+                        collectEntityClassesWithDynamicAttributes(context.getView()));
             }
 
             tx.commit();
@@ -764,6 +763,22 @@ public class RdbmsStore implements DataStore {
             }
         }
         return false;
+    }
+
+    protected Set<Class> collectEntityClassesWithDynamicAttributes(View view) {
+        if (view == null) {
+            return Collections.emptySet();
+        }
+        Set<Class> classes = new HashSet<>();
+        for (Class aClass : collectEntityClasses(view, new HashSet<>())) {
+            if (BaseGenericIdEntity.class.isAssignableFrom(aClass)) {
+                Collection<CategoryAttribute> attributes = dynamicAttributesManagerAPI.getAttributesForMetaClass(metadata.getClassNN(aClass));
+                if (attributes != null && !attributes.isEmpty()) {
+                    classes.add(aClass);
+                }
+            }
+        }
+        return classes;
     }
 
     protected Set<Class> collectEntityClasses(View view, Set<View> visited) {
