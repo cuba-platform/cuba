@@ -20,6 +20,8 @@ import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
+
 /**
  * Factory to get {@link QueryParser} and {@link QueryTransformer} instances.
  */
@@ -32,6 +34,7 @@ public class QueryTransformerFactory {
 
     protected volatile DomainModel domainModel;
 
+    @Inject
     public void setConfiguration(Configuration configuration) {
         useAst = configuration.getConfig(GlobalConfig.class).getUseAstBasedJpqlTransformer();
     }
