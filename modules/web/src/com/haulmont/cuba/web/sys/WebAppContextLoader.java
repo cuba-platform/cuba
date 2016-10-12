@@ -16,6 +16,8 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.sys.AbstractWebAppContextLoader;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -37,5 +39,12 @@ public class WebAppContextLoader extends AbstractWebAppContextLoader {
         super.beforeInitAppContext();
 
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
+    }
+
+    @Override
+    protected void afterInitAppContext() {
+        super.afterInitAppContext();
+        ClientCacheManager clientCacheManager = AppBeans.get(ClientCacheManager.class);
+        clientCacheManager.initialize();
     }
 }
