@@ -220,12 +220,19 @@ public class DataManagerTest {
 
         LoadContext<Server> loadContext = LoadContext.create(Server.class).setId(id).setLoadDynamicAttributes(true);
         server = dataManager.load(loadContext);
+        assertNotNull(server.getDynamicAttributes());
         server = dataManager.reload(server, View.LOCAL);
         assertNotNull(server.getDynamicAttributes());
 
         loadContext = LoadContext.create(Server.class).setId(id).setLoadDynamicAttributes(false);
         server = dataManager.load(loadContext);
         assertNull(server.getDynamicAttributes());
+
+        loadContext = LoadContext.create(Server.class).setLoadDynamicAttributes(true);
+        loadContext.setQueryString("select s from sys$Server s where s.id = :id")
+                .setParameter("id", id);
+        List<Server> resultList = dataManager.loadList(loadContext);
+        assertNotNull(resultList.get(0).getDynamicAttributes());
     }
 
     @Test

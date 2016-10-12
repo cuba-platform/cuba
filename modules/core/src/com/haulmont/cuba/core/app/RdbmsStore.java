@@ -190,9 +190,7 @@ public class RdbmsStore implements DataStore {
             resultList = getResultList(context, query, ensureDistinct);
 
             // Fetch dynamic attributes
-            if (context.getView() != null
-                    && BaseGenericIdEntity.class.isAssignableFrom(context.getView().getEntityClass())
-                    && context.isLoadDynamicAttributes()) {
+            if (!resultList.isEmpty() && resultList.get(0) instanceof BaseGenericIdEntity && context.isLoadDynamicAttributes()) {
                 dynamicAttributesManagerAPI.fetchDynamicAttributes((List<BaseGenericIdEntity>) resultList);
             }
 
