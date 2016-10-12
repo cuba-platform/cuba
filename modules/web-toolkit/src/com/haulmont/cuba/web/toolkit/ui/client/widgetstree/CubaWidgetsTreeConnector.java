@@ -28,10 +28,10 @@ import com.vaadin.shared.ui.Connect;
 import java.util.Collections;
 import java.util.List;
 
-@Connect(CubaWidgetsTree.class)
+@Connect(value = CubaWidgetsTree.class, loadStyle = Connect.LoadStyle.LAZY)
 public class CubaWidgetsTreeConnector extends CubaTreeConnector implements HasComponentsConnector {
 
-    List<ComponentConnector> nodeWidgets;
+    protected List<ComponentConnector> nodeWidgets;
 
     @Override
     public List<ComponentConnector> getChildComponents() {

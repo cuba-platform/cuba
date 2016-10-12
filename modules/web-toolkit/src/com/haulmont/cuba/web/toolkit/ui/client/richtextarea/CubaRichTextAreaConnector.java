@@ -21,7 +21,7 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.richtextarea.RichTextAreaConnector;
 import com.vaadin.shared.ui.Connect;
 
-@Connect(CubaRichTextArea.class)
+@Connect(value = CubaRichTextArea.class, loadStyle = Connect.LoadStyle.LAZY)
 public class CubaRichTextAreaConnector extends RichTextAreaConnector {
     @Override
     public CubaRichTextAreaWidget getWidget() {
