@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-@mixin havana-cuba-resizabletextarea($primary-stylename: cuba-resizabletextarea) {
-  .cuba-resizabletextarea-wrapper {
+@mixin havana-cuba-resizabletextarea($primary-stylename: c-resizabletextarea) {
+  .c-resizabletextarea-wrapper {
     position: relative;
     overflow: hidden;
 

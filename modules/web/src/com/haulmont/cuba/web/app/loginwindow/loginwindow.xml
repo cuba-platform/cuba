@@ -24,26 +24,26 @@
                 icon="app/images/login-button.png"/>
     </actions>
 
-    <layout stylename="cuba-login-main-layout">
+    <layout stylename="c-login-main-layout">
         <vbox id="loginMainBox"
-              stylename="cuba-login-panel" width="AUTO"
+              stylename="c-login-panel" width="AUTO"
               margin="true" spacing="true" align="MIDDLE_CENTER">
-            <hbox id="loginTitleBox" stylename="cuba-login-title"
+            <hbox id="loginTitleBox" stylename="c-login-title"
                   spacing="true" align="MIDDLE_CENTER">
                 <embedded id="logoImage"
                           width="AUTO"
                           height="AUTO"
                           type="IMAGE"
                           align="MIDDLE_LEFT"
-                          stylename="cuba-login-icon"/>
+                          stylename="c-login-icon"/>
 
                 <label id="welcomeLabel"
                        align="MIDDLE_LEFT"
-                       stylename="cuba-login-caption"
+                       stylename="c-login-caption"
                        value="mainMsg://loginWindow.welcomeLabel"/>
             </hbox>
 
-            <grid id="loginFormLayout" stylename="cuba-login-form" spacing="true">
+            <grid id="loginFormLayout" stylename="c-login-form" spacing="true">
                 <columns>
                     <column id="loginFormCaptionColumn"/>
                     <column id="loginFormFieldColumn"/>
@@ -53,14 +53,14 @@
                         <label id="loginFieldLabel" value="mainMsg://loginWindow.loginField" align="MIDDLE_RIGHT"
                                stylename="login-form-label"/>
 
-                        <textField id="loginField" stylename="cuba-login-username"
+                        <textField id="loginField" stylename="c-login-username"
                                    width="theme://cuba.web.LoginWindow.field.width"/>
                     </row>
                     <row>
                         <label id="passwordFieldLabel" value="mainMsg://loginWindow.passwordField" align="MIDDLE_RIGHT"
                                stylename="login-form-label"/>
 
-                        <passwordField id="passwordField" stylename="cuba-login-password" autocomplete="true"
+                        <passwordField id="passwordField" stylename="c-login-password" autocomplete="true"
                                        width="theme://cuba.web.LoginWindow.field.width"/>
                     </row>
                     <row>

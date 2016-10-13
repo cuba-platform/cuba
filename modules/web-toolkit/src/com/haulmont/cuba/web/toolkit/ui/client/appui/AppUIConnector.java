@@ -102,7 +102,7 @@ public class AppUIConnector extends UIConnector {
 
     protected class CubaNotificationDelegate implements NotificationDelegate {
 
-        public static final String CUBA_NOTIFICATION_MODALITY_CURTAIN = "cuba-notification-modalitycurtain";
+        public static final String CUBA_NOTIFICATION_MODALITY_CURTAIN = "c-notification-modalitycurtain";
 
         private Element modalityCurtain;
 

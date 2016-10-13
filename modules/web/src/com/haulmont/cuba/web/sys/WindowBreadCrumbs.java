@@ -57,7 +57,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
     public WindowBreadCrumbs(WebAppWorkArea workArea) {
         setWidth(100, Unit.PERCENTAGE);
         setHeight(-1, Unit.PIXELS);
-        setStyleName("cuba-headline-container");
+        setStyleName("c-headline-container");
 
         tabbedMode = workArea.getMode() == AppWorkArea.Mode.TABBED;
 
@@ -65,24 +65,21 @@ public class WindowBreadCrumbs extends HorizontalLayout {
             super.setVisible(false);
 
         logoLayout = new HorizontalLayout();
-        logoLayout.setStyleName("cuba-breadcrumbs-logo");
+        logoLayout.setStyleName("c-breadcrumbs-logo");
         logoLayout.setMargin(true);
         logoLayout.setSpacing(true);
 
         linksLayout = new HorizontalLayout();
-        linksLayout.setStyleName("cuba-breadcrumbs");
+        linksLayout.setStyleName("c-breadcrumbs");
         linksLayout.setSizeUndefined();
 
         if (!tabbedMode) {
-            closeBtn = new CubaButton("", new Button.ClickListener() {
-                @Override
-                public void buttonClick(Button.ClickEvent event) {
-                    final Window window = getCurrentWindow();
-                    window.close(Window.CLOSE_ACTION_ID);
-                }
+            closeBtn = new CubaButton("", (Button.ClickListener) event -> {
+                Window window = getCurrentWindow();
+                window.close(Window.CLOSE_ACTION_ID);
             });
             closeBtn.setIcon(WebComponentsHelper.getIcon("icons/close.png"));
-            closeBtn.setStyleName("cuba-closetab-button");
+            closeBtn.setStyleName("c-closetab-button");
         }
 
         AppUI ui = AppUI.getCurrent();
@@ -98,7 +95,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         }
 
         HorizontalLayout enclosingLayout = new HorizontalLayout();
-        enclosingLayout.setStyleName("cuba-breadcrumbs-container");
+        enclosingLayout.setStyleName("c-breadcrumbs-container");
         enclosingLayout.addComponent(linksLayout);
         enclosingLayout.setComponentAlignment(linksLayout, Alignment.MIDDLE_LEFT);
 

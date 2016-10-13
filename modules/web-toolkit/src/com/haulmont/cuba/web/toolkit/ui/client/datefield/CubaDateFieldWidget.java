@@ -27,9 +27,9 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
 
     protected ShortcutActionHandler shortcutHandler;
 
-    protected static final String CLASSNAME = "cuba-datefield";
+    protected static final String CLASSNAME = "c-datefield";
 
-    protected static final String EMPTY_FIELD_CLASS = "cuba-datefield-empty";
+    protected static final String EMPTY_FIELD_CLASS = "c-datefield-empty";
 
     public CubaDateFieldWidget() {
         setStylePrimaryName(CLASSNAME);

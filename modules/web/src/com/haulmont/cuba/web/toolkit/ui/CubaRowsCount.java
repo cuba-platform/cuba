@@ -35,7 +35,7 @@ public class CubaRowsCount extends CustomComponent {
 
     public CubaRowsCount() {
         HorizontalLayout layout = new HorizontalLayout();
-        layout.setStyleName("cuba-paging");
+        layout.setStyleName("c-paging");
         layout.setSpacing(false);
         layout.setMargin(new MarginInfo(false, false, false, true));
 
@@ -63,8 +63,8 @@ public class CubaRowsCount extends CustomComponent {
         firstButton = new CubaButton();
         firstButton.setIcon(WebComponentsHelper.getIcon("icons/rows-count-first.png"));
         firstButton.setWidth(buttonWidth);
-        firstButton.setStyleName("cuba-paging-change-page");
-        firstButton.addStyleName("cuba-paging-first");
+        firstButton.setStyleName("c-paging-change-page");
+        firstButton.addStyleName("c-paging-first");
         contentLayout.addComponent(firstButton);
 
         contentLayout.setComponentAlignment(firstButton, Alignment.MIDDLE_CENTER);
@@ -72,20 +72,20 @@ public class CubaRowsCount extends CustomComponent {
         prevButton = new CubaButton();
         prevButton.setIcon(WebComponentsHelper.getIcon("icons/rows-count-prev.png"));
         prevButton.setWidth(buttonWidth);
-        prevButton.setStyleName("cuba-paging-change-page");
-        prevButton.addStyleName("cuba-paging-prev");
+        prevButton.setStyleName("c-paging-change-page");
+        prevButton.addStyleName("c-paging-prev");
         contentLayout.addComponent(prevButton);
         contentLayout.setComponentAlignment(prevButton, Alignment.MIDDLE_CENTER);
 
         label = new Label();
         label.setWidth("-1px");
-        label.setStyleName("cuba-paging-status");
+        label.setStyleName("c-paging-status");
         contentLayout.addComponent(label);
 
         countButton = new CubaButton("[?]");
         countButton.setWidth("-1px");
         countButton.setStyleName(BaseTheme.BUTTON_LINK);
-        countButton.addStyleName("cuba-paging-count");
+        countButton.addStyleName("c-paging-count");
         countButton.setTabIndex(-1);
         contentLayout.addComponent(countButton);
         contentLayout.setComponentAlignment(countButton, Alignment.MIDDLE_CENTER);
@@ -93,16 +93,16 @@ public class CubaRowsCount extends CustomComponent {
         nextButton = new CubaButton();
         nextButton.setIcon(WebComponentsHelper.getIcon("icons/rows-count-next.png"));
         nextButton.setWidth(buttonWidth);
-        nextButton.setStyleName("cuba-paging-change-page");
-        nextButton.addStyleName("cuba-paging-next");
+        nextButton.setStyleName("c-paging-change-page");
+        nextButton.addStyleName("c-paging-next");
         contentLayout.addComponent(nextButton);
         contentLayout.setComponentAlignment(nextButton, Alignment.MIDDLE_CENTER);
 
         lastButton = new CubaButton();
         lastButton.setIcon(WebComponentsHelper.getIcon("icons/rows-count-last.png"));
         lastButton.setWidth(buttonWidth);
-        lastButton.setStyleName("cuba-paging-change-page");
-        lastButton.addStyleName("cuba-paging-last");
+        lastButton.setStyleName("c-paging-change-page");
+        lastButton.addStyleName("c-paging-last");
         contentLayout.addComponent(lastButton);
         contentLayout.setComponentAlignment(lastButton, Alignment.MIDDLE_CENTER);
 

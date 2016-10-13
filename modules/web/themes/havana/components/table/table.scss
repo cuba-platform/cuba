@@ -354,19 +354,19 @@
     border-color: $cuba-field-focused-border-color;
   }
 
-  .cuba-table-cell-link .cuba-table-clickable-cell {
+  .c-table-cell-link .c-table-clickable-cell {
     color: $cuba-field-selection-color;
     cursor: pointer;
     text-decoration: underline;
   }
 
-  .cuba-table-cell-textcut .cuba-table-clickable-cell {
+  .c-table-cell-textcut .c-table-clickable-cell {
     cursor: pointer;
     color: $cuba-field-selection-color;
     border-bottom: 1px dashed $cuba-field-selection-color;
   }
 
-  .cuba-table-view-textcut {
+  .c-table-view-textcut {
     background: $cuba-contextmenu-background-color;
     overflow: auto;
     padding: 3px;
@@ -377,24 +377,24 @@
     opacity: 1;
   }
 
-  .cuba-table-contextmenu {
+  .c-table-contextmenu {
     background-color: white;
     padding: 3px 3px;
     border: 1px solid #4d7ab2;
   }
 
-  .cuba-table-contextmenu .cuba-table-contextmenu-item {
+  .c-table-contextmenu .c-table-contextmenu-item {
     padding: 3px 7px;
     font-size: 12px;
     font-family: $cuba-havana-fonts;
   }
 
-  .cuba-table-contextmenu .cuba-table-contextmenu-item:hover {
+  .c-table-contextmenu .c-table-contextmenu-item:hover {
     background: $cuba-field-selection-color;
     color: #ecf2f8;
   }
 
-  .#{$primary-stylename} .cuba-sort-indicator-visible {
+  .#{$primary-stylename} .c-sort-indicator-visible {
     opacity: 1 !important;
   }
 }

@@ -21,7 +21,7 @@ import com.vaadin.shared.AbstractFieldState;
 
 public class CubaResizableTextAreaWrapperState extends AbstractFieldState {
     {
-        primaryStyleName = "cuba-resizabletextarea-wrapper";
+        primaryStyleName = "c-resizabletextarea-wrapper";
     }
 
     public boolean resizable = false;

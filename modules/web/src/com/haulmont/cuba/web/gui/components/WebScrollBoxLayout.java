@@ -36,7 +36,7 @@ import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAl
 
 public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements ScrollBoxLayout {
 
-    public static final String CUBA_SCROLLBOX_CONTENT_STYLE = "cuba-scrollbox-content";
+    public static final String CUBA_SCROLLBOX_CONTENT_STYLE = "c-scrollbox-content";
 
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected Map<String, Component> componentByIds = new HashMap<>();
@@ -48,7 +48,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
 
     public WebScrollBoxLayout() {
         component = new Panel();
-        component.setStyleName("cuba-scrollbox");
+        component.setStyleName("c-scrollbox");
 
         CubaVerticalActionsLayout content = new CubaVerticalActionsLayout();
         content.setWidth("100%");

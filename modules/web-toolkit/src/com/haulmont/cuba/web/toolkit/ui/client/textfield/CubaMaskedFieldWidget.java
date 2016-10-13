@@ -31,9 +31,9 @@ import java.util.Map;
 
 public class CubaMaskedFieldWidget extends VTextField {
 
-    public static final String CLASSNAME = "cuba-maskedfield";
+    public static final String CLASSNAME = "c-maskedfield";
 
-    protected static final String EMPTY_FIELD_CLASS = "cuba-maskedfield-empty";
+    protected static final String EMPTY_FIELD_CLASS = "c-maskedfield-empty";
 
     protected static final char PLACE_HOLDER = '_';
 
@@ -86,7 +86,7 @@ public class CubaMaskedFieldWidget extends VTextField {
 
             if (!isReadOnly() && isEnabled()) {
                 if (mask != null && nullRepresentation != null && nullRepresentation.equals(super.getText())) {
-                    addStyleName("cuba-focus-move");
+                    addStyleName("c-focus-move");
 
                     Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                         @Override
@@ -95,7 +95,7 @@ public class CubaMaskedFieldWidget extends VTextField {
                                 setSelectionRange(getPreviousPos(0), 0);
                             }
 
-                            removeStyleName("cuba-focus-move");
+                            removeStyleName("c-focus-move");
                         }
                     });
                 }

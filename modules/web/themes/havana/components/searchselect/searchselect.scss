@@ -15,10 +15,7 @@
  *
  */
 
-@mixin havana-cuba-searchselect($primary-stylename: cuba-searchselect) {
-
-  @include havana-filterselect($primary-stylename);
-
+@mixin havana-cuba-searchselect($primary-stylename: c-searchselect) {
   .#{$primary-stylename} {
     padding-right: 0px;
 

@@ -16,18 +16,18 @@
  */
 
 @mixin cuba-login-window {
-  .cuba-login-panel {
+  .c-login-panel {
     background: $v-panel-background-color;
     border: valo-border();
     border-radius: $v-border-radius;
     padding: $v-layout-margin-top $v-layout-margin-right*4 $v-layout-margin-bottom $v-layout-margin-left*4;
   }
 
-  .cuba-login-main-layout {
+  .c-login-main-layout {
     background-color: $v-app-background-color;
   }
 
-  .cuba-login-icon > img {
+  .c-login-icon > img {
     height: 32px;
   }
 }

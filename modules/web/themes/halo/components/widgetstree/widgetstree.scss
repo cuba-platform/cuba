@@ -15,7 +15,7 @@
  *
  */
 
-@mixin halo-cuba-widgetstree($primary-stylename: cuba-widgetstree){
+@mixin halo-cuba-widgetstree($primary-stylename: c-widgetstree){
   .#{$primary-stylename} {
     .v-tree-node .v-tree-node-content {
       margin-left: $v-unit-size;

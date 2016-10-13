@@ -26,7 +26,7 @@ import java.util.Set;
 public class CubaFileUploadState extends TabIndexState {
 
     {
-        primaryStyleName = "cuba-fileupload";
+        primaryStyleName = "c-fileupload";
     }
 
     @NoLayout

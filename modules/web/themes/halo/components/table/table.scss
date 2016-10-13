@@ -148,12 +148,12 @@
     }
   }
 
-  .cuba-table-cell-link .cuba-table-clickable-cell {
+  .c-table-cell-link .c-table-clickable-cell {
     @include valo-link-style;
   }
 
   .#{$primary-stylename} {
-    .cuba-table-cell-link .cuba-table-clickable-cell,
+    .c-table-cell-link .c-table-clickable-cell,
     .v-button-link,
     .v-link {
       -webkit-transition: none;
@@ -166,7 +166,7 @@
     @include opacity($v-disabled-opacity);
   }
 
-  .cuba-table-cell-textcut .cuba-table-clickable-cell {
+  .c-table-cell-textcut .c-table-clickable-cell {
     cursor: $v-link-cursor;
     color: $v-link-font-color;
     border-bottom: 1px dashed $v-link-font-color;
@@ -175,20 +175,20 @@
   .#{$primary-stylename} [class*="-row"].v-selected {
     $font-color: valo-font-color($v-selection-color, 0.9);
 
-    .cuba-table-cell-link .cuba-table-clickable-cell,
-    .cuba-table-cell-textcut .cuba-table-clickable-cell,
+    .c-table-cell-link .c-table-clickable-cell,
+    .c-table-cell-textcut .c-table-clickable-cell,
     .v-popupview,
     .v-button-link,
     .v-link {
       color: $font-color;
     }
 
-    .cuba-table-cell-textcut .cuba-table-clickable-cell {
+    .c-table-cell-textcut .c-table-clickable-cell {
       border-bottom-color: $font-color;
     }
   }
 
-  .cuba-table-view-textcut {
+  .c-table-view-textcut {
     @include valo-selection-overlay-style;
   }
 
@@ -232,20 +232,20 @@
     margin-left: -$v-table-resizer-width !important;
   }
 
-  .cuba-table-contextmenu {
+  .c-table-contextmenu {
     @include valo-selection-overlay-style;
   }
 
-  .cuba-table-contextmenu .cuba-table-contextmenu-item {
+  .c-table-contextmenu .c-table-contextmenu-item {
     @include valo-selection-item-style;
     display: block; // Firefox 24 needs this to make position: relative; work
   }
 
-  .cuba-table-contextmenu .cuba-table-contextmenu-item:hover {
+  .c-table-contextmenu .c-table-contextmenu-item:hover {
     @include valo-selection-item-selected-style;
   }
 
-  .#{$primary-stylename} .cuba-sort-indicator-visible {
+  .#{$primary-stylename} .c-sort-indicator-visible {
     opacity: 1;
   }
 }

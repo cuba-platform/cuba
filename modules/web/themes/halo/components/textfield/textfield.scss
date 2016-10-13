@@ -16,7 +16,7 @@
  */
 
 @mixin halo-cuba-textfield($primary-stylename: v-textfield) {
-  .#{$primary-stylename}.cuba-disabled-or-readonly.cuba-empty-value {
+  .#{$primary-stylename}.c-disabled-or-readonly.c-empty-value {
     color: transparent;
   }
 }

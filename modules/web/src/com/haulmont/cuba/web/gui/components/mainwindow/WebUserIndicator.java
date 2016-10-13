@@ -67,7 +67,7 @@ public class WebUserIndicator extends WebAbstractComponent<HorizontalLayout> imp
             userComboBox = null;
 
             userNameLabel = new Label(getSubstitutedUserCaption(user));
-            userNameLabel.setStyleName("cuba-user-select-label");
+            userNameLabel.setStyleName("c-user-select-label");
             userNameLabel.setSizeUndefined();
 
             if (ui.isTestMode()) {
@@ -88,7 +88,7 @@ public class WebUserIndicator extends WebAbstractComponent<HorizontalLayout> imp
                 userComboBox.setId(ui.getTestIdManager().getTestId("substitutedUserSelect"));
             }
 
-            userComboBox.setStyleName("cuba-user-select-combobox");
+            userComboBox.setStyleName("c-user-select-combobox");
             userComboBox.addItem(user);
             userComboBox.setItemCaption(user, getSubstitutedUserCaption(user));
 

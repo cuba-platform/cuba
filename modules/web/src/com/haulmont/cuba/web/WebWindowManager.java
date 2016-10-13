@@ -479,7 +479,7 @@ public class WebWindowManager extends WindowManager {
     protected Layout createNewTabLayout(final Window window, final boolean multipleOpen, WindowBreadCrumbs breadCrumbs,
                                         Component... additionalComponents) {
         final VerticalLayout layout = new VerticalLayout();
-        layout.setStyleName("cuba-app-tabbed-window");
+        layout.setStyleName("c-app-tabbed-window");
         layout.setSizeFull();
 
         layout.addComponent(breadCrumbs);
@@ -546,7 +546,7 @@ public class WebWindowManager extends WindowManager {
             tabSheet.setSelectedTab(layout);
         } else {
             tabs.put(layout, breadCrumbs);
-            layout.addStyleName("cuba-app-single-window");
+            layout.addStyleName("c-app-single-window");
             layout.setMargin(true);
 
             VerticalLayout mainLayout = workArea.getSingleWindowContainer();
@@ -671,7 +671,7 @@ public class WebWindowManager extends WindowManager {
 
     protected Component showWindowDialog(final Window window, OpenType openType, boolean forciblyDialog) {
         final CubaWindow vWindow = createDialogWindow(window);
-        vWindow.setStyleName("cuba-app-dialog-window");
+        vWindow.setStyleName("c-app-dialog-window");
         if (ui.isTestMode()) {
             vWindow.setCubaId("dialog_" + window.getId());
             vWindow.setId(ui.getTestIdManager().getTestId("dialog_" + window.getId()));
@@ -1119,7 +1119,7 @@ public class WebWindowManager extends WindowManager {
         });
 
         VerticalLayout layout = new VerticalLayout();
-        layout.setStyleName("cuba-app-message-dialog");
+        layout.setStyleName("c-app-message-dialog");
         if (messageType.getWidth() != null && messageType.getWidth() == AUTO_SIZE_PX) {
             layout.setWidthUndefined();
         }
@@ -1230,7 +1230,7 @@ public class WebWindowManager extends WindowManager {
         window.setModal(true);
 
         VerticalLayout layout = new VerticalLayout();
-        layout.setStyleName("cuba-app-option-dialog");
+        layout.setStyleName("c-app-option-dialog");
         layout.setSpacing(true);
         if (messageType.getWidth() != null && messageType.getWidth() == AUTO_SIZE_PX) {
             layout.setWidthUndefined();
@@ -1259,7 +1259,7 @@ public class WebWindowManager extends WindowManager {
             }
 
             if (action instanceof AbstractAction && ((AbstractAction) action).isPrimary()) {
-                button.addStyleName("cuba-primary-action");
+                button.addStyleName("c-primary-action");
                 button.focus();
 
                 hasPrimaryAction = true;

@@ -54,7 +54,7 @@ public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
         setShowBufferedSourceException(false);
         setShowErrorForDisabledState(false);
 
-        setPrimaryStyleName("cuba-datefield-composition");
+        setPrimaryStyleName("c-datefield-composition");
     }
 
     @Override

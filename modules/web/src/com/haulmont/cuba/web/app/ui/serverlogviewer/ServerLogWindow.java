@@ -178,7 +178,7 @@ public class ServerLogWindow extends AbstractWindow {
 
         vlogTailLabel.setSizeUndefined();
         vlogTailLabel.setContentMode(ContentMode.HTML);
-        vlogTailLabel.setStyleName("cuba-log-content");
+        vlogTailLabel.setStyleName("c-log-content");
 
         loggerLevelField.setOptionsList(LoggingHelper.getLevels());
         appenderLevelField.setOptionsList(LoggingHelper.getLevels());
@@ -486,7 +486,7 @@ public class ServerLogWindow extends AbstractWindow {
     protected String highlightLevel(String line, String level) {
         // use css classes for highlight different log levels
         return line.replaceFirst(level,
-                "<span class='cuba-log-level cuba-log-level-" + level + "'>" + level + "</span>");
+                "<span class='c-log-level c-log-level-" + level + "'>" + level + "</span>");
     }
 
     protected JmxInstance getSelectedConnection() {

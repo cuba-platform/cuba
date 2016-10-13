@@ -15,7 +15,7 @@
  *
  */
 
-@mixin halo-cuba-pickerfield($primary-stylename: cuba-pickerfield) {
+@mixin halo-cuba-pickerfield($primary-stylename: c-pickerfield) {
   .#{$primary-stylename} {
     .v-textfield.v-textfield-readonly {
       @if $v-textfield-background-color {
@@ -36,7 +36,7 @@
       border-bottom-right-radius: 0;
     }
 
-    .cuba-searchselect,
+    .c-searchselect,
     .v-filterselect {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
@@ -120,7 +120,7 @@
       border-bottom-right-radius: $v-textfield-border-radius;
     }
 
-    .v-slot:last-child .cuba-searchselect,
+    .v-slot:last-child .c-searchselect,
     .v-slot:last-child .v-filterselect {
       &:focus {
         border-right-color: $v-focus-color;
@@ -132,25 +132,15 @@
   }
 
   .#{$primary-stylename}-error {
+    .v-filterselect .v-filterselect-input,
+    .c-searchselect .c-searchselect-input,
     .v-textfield.v-textfield-readonly {
       @include valo-textfield-error-style;
     }
 
-    .v-filterselect {
-      .v-filterselect-input {
-        @include valo-textfield-error-style;
-      }
-
-      .v-filterselect-button {
-        color: $v-error-indicator-color;
-        border-color: $v-error-indicator-color;
-      }
-    }
-
-    .cuba-searchselect {
-      .cuba-searchselect-input {
-        @include valo-textfield-error-style;
-      }
+    .v-filterselect .v-filterselect-button {
+      color: $v-error-indicator-color;
+      border-color: $v-error-indicator-color;
     }
   }
 

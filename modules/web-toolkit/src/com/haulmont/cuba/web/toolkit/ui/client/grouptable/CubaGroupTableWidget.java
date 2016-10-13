@@ -35,13 +35,13 @@ import java.util.Set;
 
 public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
-    public static final String CLASSNAME = "cuba-grouptable";
+    public static final String CLASSNAME = "c-grouptable";
     public static final String GROUP_DIVIDER_COLUMN_KEY = "-1";
 
     protected Set<String> groupColumns;
 
     public CubaGroupTableWidget() {
-        addStyleName("cuba-grouptable");
+        addStyleName("c-grouptable");
     }
 
     public void updateGroupColumns(Set<String> groupColumns) {

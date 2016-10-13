@@ -94,7 +94,7 @@ public class LogWindow extends CubaWindow {
         label.setContentMode(ContentMode.HTML);
         label.setValue(writeLog());
         label.setSizeUndefined();
-        label.setStyleName("cuba-log-content");
+        label.setStyleName("c-log-content");
 
         ((Layout)scrollablePanel.getContent()).addComponent(label);
 
@@ -104,12 +104,7 @@ public class LogWindow extends CubaWindow {
 
         Messages messages = AppBeans.get(Messages.NAME);
         Button refreshBtn = new CubaButton(messages.getMessage(getClass(), "logWindow.refreshBtn"),
-                new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(Button.ClickEvent event) {
-                        label.setValue(writeLog());
-                    }
-                }
+                (Button.ClickListener) event -> label.setValue(writeLog())
         );
 
         topLayout.addComponent(refreshBtn);

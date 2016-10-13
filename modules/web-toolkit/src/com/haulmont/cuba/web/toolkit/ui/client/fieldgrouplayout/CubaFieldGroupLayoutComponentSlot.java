@@ -50,7 +50,7 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
         super(baseClassName, child, layout);
 
         // set line-height 25px for all captions exclude captions for CheckBox and Label
-        getWrapperElement().addClassName("cuba-full-height-widget");
+        getWrapperElement().addClassName("c-full-height-widget");
     }
 
     protected boolean isCaptionInline() {

@@ -16,20 +16,20 @@
  */
 
 @mixin cuba-table-paging {
-  .v-button.cuba-paging-change-page {
+  .v-button.c-paging-change-page {
     height: round($v-unit-size/1.5);
     padding: 0 round($v-unit-size/6);
   }
 
-  .cuba-paging-status {
+  .c-paging-status {
     line-height: round($v-unit-size/1.5);
   }
 
-  .cuba-paging-count {
+  .c-paging-count {
     height: round($v-unit-size/1.5);
   }
 
-  .v-button.v-button-link.cuba-paging-count-number {
+  .v-button.v-button-link.c-paging-count-number {
     text-decoration: none;
     opacity: inherit;
 

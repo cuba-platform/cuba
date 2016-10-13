@@ -52,11 +52,11 @@ public class CubaTabSheetWidget extends VDDTabSheet {
 
         Tab tab = tabBar.getTab(index);
         if (tab.isHiddenOnServer()) {
-            tab.removeStyleName("cuba-tab-visible");
-            tab.addStyleName("cuba-tab-hidden");
+            tab.removeStyleName("c-tab-visible");
+            tab.addStyleName("c-tab-hidden");
         } else {
-            tab.removeStyleName("cuba-tab-hidden");
-            tab.addStyleName("cuba-tab-visible");
+            tab.removeStyleName("c-tab-hidden");
+            tab.addStyleName("c-tab-visible");
         }
     }
 
@@ -70,12 +70,12 @@ public class CubaTabSheetWidget extends VDDTabSheet {
             boolean firstVisibleAfterSelection = false;
             for (Widget widget : tabBar) {
                 Tab t = (Tab) widget;
-                t.removeStyleName("cuba-tab-sibling-visible");
+                t.removeStyleName("c-tab-sibling-visible");
 
                 if (!firstVisibleAfterSelection
                         && i > navIndex
                         && !t.isHiddenOnServer()) {
-                    t.addStyleName("cuba-tab-sibling-visible");
+                    t.addStyleName("c-tab-sibling-visible");
                     firstVisibleAfterSelection = true;
                 }
 

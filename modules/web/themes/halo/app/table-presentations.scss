@@ -17,7 +17,7 @@
 
 @mixin cuba-table-presentations {
 
-  .cuba-table-presentations-icon {
+  .c-table-prefs-icon {
     @include valo-button-style;
 
     position: absolute;
@@ -56,35 +56,35 @@
     }
   }
 
-  .v-table-header-wrap:hover .cuba-table-presentations-icon {
+  .v-table-header-wrap:hover .c-table-prefs-icon {
     @include opacity(1);
     @include transition-delay(100ms);
   }
 
-  .v-ios.v-touch & .cuba-table-presentations-icon,
-  .v-android.v-touch & .cuba-table-presentations-icon {
+  .v-ios.v-touch & .c-table-prefs-icon,
+  .v-android.v-touch & .c-table-prefs-icon {
     @include opacity(1);
     @include transition(none);
   }
 
-  .collapsing-allowed .cuba-table-presentations-icon {
+  .collapsing-allowed .c-table-prefs-icon {
     right: 2 * round($v-unit-size/2);
   }
 
-  .cuba-table-presentations-editor {
+  .c-table-prefs-editor {
     @include valo-selection-overlay-style;
 
     z-index: 19000 !important;  // do not hide parts of popup menu
     padding: 0 round($v-unit-size/3) round($v-unit-size/3);
   }
 
-  .cuba-table-presentations-title {
+  .c-table-prefs-title {
     border-bottom: valo-border();
     border-bottom-style: dotted;
     line-height: $v-unit-size;
   }
 
-  .cuba-table-presentations-list.v-menubar {
+  .c-table-prefs-list.v-menubar {
     border: 0;
     height: auto;
     background: transparent;
@@ -94,24 +94,24 @@
 
   $menuitem-padding: 4px;
 
-  .cuba-table-presentations-list.v-menubar .v-menubar-menuitem {
+  .c-table-prefs-list.v-menubar .v-menubar-menuitem {
     display: block;
     border-right: transparent;
     text-align: left;
     padding-left: $v-font-size + 2 * $menuitem-padding;
   }
 
-  .cuba-table-presentations-list.v-menubar .cuba-table-presentations-menuitem-current {
+  .c-table-prefs-list.v-menubar .c-table-prefs-menuitem-current {
     font-weight: bold;
   }
 
-  .cuba-table-presentations-list.v-menubar .cuba-table-presentations-menuitem-default:before {
+  .c-table-prefs-list.v-menubar .c-table-prefs-menuitem-default:before {
     font-family: "FontAwesome";
     content: "\f006";
     padding-left: $menuitem-padding;
   }
 
-  .cuba-table-presentations-list.v-menubar .cuba-table-presentations-menuitem-current:before {
+  .c-table-prefs-list.v-menubar .c-table-prefs-menuitem-current:before {
     font-family: "FontAwesome";
     content: "\f00c";
     padding-left: $menuitem-padding;

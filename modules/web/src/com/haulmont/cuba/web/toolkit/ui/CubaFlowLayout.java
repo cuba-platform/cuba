@@ -24,6 +24,10 @@ import com.vaadin.ui.Layout;
 
 public class CubaFlowLayout extends CssLayout implements Layout.MarginHandler, Layout.SpacingHandler {
 
+    public CubaFlowLayout() {
+        setStyleName("c-flowlayout");
+    }
+
     @Override
     protected CubaFlowLayoutState getState() {
         return (CubaFlowLayoutState) super.getState();

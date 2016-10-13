@@ -15,7 +15,7 @@
  *
  */
 
-@mixin havana-cuba-widgetstree($primary-stylename: cuba-widgetstree){
+@mixin havana-cuba-widgetstree($primary-stylename: c-widgetstree){
   .#{$primary-stylename} {
     .v-tree-node .v-tree-node-content {
       margin-left: 16px;

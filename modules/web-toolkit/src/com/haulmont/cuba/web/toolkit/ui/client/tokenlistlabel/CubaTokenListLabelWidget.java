@@ -27,7 +27,7 @@ import com.vaadin.client.ui.VPanel;
 
 public class CubaTokenListLabelWidget extends VPanel {
 
-    public static final String CLASSNAME = "cuba-tokenlist-label";
+    public static final String CLASSNAME = "c-tokenlist-label";
 
     private Label label = new Label();
     private Element closeDiv = DOM.createDiv();

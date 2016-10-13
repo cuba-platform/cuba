@@ -48,8 +48,8 @@ import static com.haulmont.cuba.web.toolkit.ui.client.Tools.isAnyModifierKeyPres
 
 public class CubaScrollTableWidget extends VScrollTable implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled, EnhancedCubaTableWidget {
 
-    public static final String CUBA_TABLE_CLICKABLE_CELL_STYLE = "cuba-table-clickable-cell";
-    public static final String CUBA_TABLE_CLICKABLE_TEXT_STYLE = "cuba-table-clickable-text";
+    public static final String CUBA_TABLE_CLICKABLE_CELL_STYLE = "c-table-clickable-cell";
+    public static final String CUBA_TABLE_CLICKABLE_TEXT_STYLE = "c-table-clickable-text";
 
     protected static final String WIDGET_CELL_CLASSNAME = "widget-container";
 
@@ -386,7 +386,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
         public CubaScrollTableHead() {
             Element iconElement = presentationsEditIcon.getElement();
-            iconElement.setClassName("cuba-table-presentations-icon");
+            iconElement.setClassName("c-table-prefs-icon");
             iconElement.getStyle().setDisplay(Style.Display.NONE);
 
             Element columnSelector = (Element) getElement().getLastChild();
@@ -414,7 +414,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
             if (event.getEventTarget().cast() == presentationsEditIcon.getElement() && isEnabled()) {
                 presentationsEditorPopup = new VOverlay();
-                presentationsEditorPopup.setStyleName("cuba-table-presentations-editor");
+                presentationsEditorPopup.setStyleName("c-table-prefs-editor");
                 presentationsEditorPopup.setOwner(CubaScrollTableWidget.this);
                 presentationsEditorPopup.setWidget(presentationsMenu);
 
@@ -697,7 +697,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
                     if ("span".equalsIgnoreCase(eventTarget.getTagName())
                             && eventTarget.hasClassName(CUBA_TABLE_CLICKABLE_CELL_STYLE)) {
-                        // found <span class="cuba-table-clickable-cell">
+                        // found <span class="c-table-clickable-cell">
                         return true;
                     }
                 }

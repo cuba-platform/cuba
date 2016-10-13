@@ -378,7 +378,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
         public CubaTreeTableTableHead() {
             Element iconElement = presentationsEditIcon.getElement();
-            iconElement.setClassName("cuba-table-presentations-icon");
+            iconElement.setClassName("c-table-prefs-icon");
             iconElement.getStyle().setDisplay(Style.Display.NONE);
 
             Element columnSelector = (Element) getElement().getLastChild();
@@ -406,7 +406,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
             if (event.getEventTarget().cast() == presentationsEditIcon.getElement() && isEnabled()) {
                 presentationsEditorPopup = new VOverlay();
-                presentationsEditorPopup.setStyleName("cuba-table-presentations-editor");
+                presentationsEditorPopup.setStyleName("c-table-prefs-editor");
                 presentationsEditorPopup.setOwner(CubaTreeTableWidget.this);
                 presentationsEditorPopup.setWidget(presentationsMenu);
 
@@ -636,7 +636,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
                         if ("span".equalsIgnoreCase(eventTarget.getTagName())
                                 && eventTarget.hasClassName(CUBA_TABLE_CLICKABLE_CELL_STYLE)) {
-                            // found <span class="cuba-table-clickable-cell">
+                            // found <span class="c-table-clickable-cell">
 
                             int childIndex = DOM.getChildIndex(getElement(), elementTdOrTr);
                             String columnKey = tHead.getHeaderCell(childIndex).getColKey();

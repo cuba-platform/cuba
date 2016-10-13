@@ -41,9 +41,9 @@ public class CubaMenuBarConnector extends MenuBarConnector {
         super.layout();
 
         if (getState().vertical) {
-            getWidget().addStyleName("cuba-menubar-vertical");
+            getWidget().addStyleName("c-menubar-vertical");
         } else {
-            getWidget().removeStyleName("cuba-menubar-vertical");
+            getWidget().removeStyleName("c-menubar-vertical");
         }
     }
 

@@ -16,7 +16,6 @@
  */
 
 @mixin halo-popupbutton($primary-stylename: v-popupbutton) {
-
   @include halo-cuba-contextmenu($primary-stylename + "-popup");
 
   .#{$primary-stylename}-popup {

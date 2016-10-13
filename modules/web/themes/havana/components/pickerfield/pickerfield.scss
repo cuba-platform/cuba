@@ -15,7 +15,7 @@
  *
  */
 
-@mixin havana-cuba-pickerfield($primary-stylename: cuba-pickerfield) {
+@mixin havana-cuba-pickerfield($primary-stylename: c-pickerfield) {
   .#{$primary-stylename} {
     .v-textfield {
       height: 25px;

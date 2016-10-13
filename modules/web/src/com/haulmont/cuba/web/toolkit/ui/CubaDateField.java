@@ -45,6 +45,10 @@ public class CubaDateField extends com.vaadin.ui.DateField implements Action.Con
 
     protected Date prevValue;
 
+    public CubaDateField() {
+        setStyleName("c-datefield");
+    }
+
     @Override
     protected CubaDateFieldState getState() {
         return (CubaDateFieldState) super.getState();

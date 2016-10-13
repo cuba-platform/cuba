@@ -19,7 +19,6 @@ $cuba-scrollbar-background-primary-color: $v-background-color !default;
 $cuba-scrollbar-border-color: first-color(valo-border()) !default;
 
 @mixin cuba-scrollbar {
-
   .v-win & {
     @include cuba-scrollbar-body;
   }
@@ -29,7 +28,6 @@ $cuba-scrollbar-border-color: first-color(valo-border()) !default;
 }
 
 @mixin cuba-scrollbar-body {
-
   ::-webkit-scrollbar {
     width: 12px;
     height: 12px;

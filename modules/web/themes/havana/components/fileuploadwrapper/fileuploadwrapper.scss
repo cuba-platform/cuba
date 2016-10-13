@@ -15,7 +15,7 @@
  *
  */
 
-@mixin havana-cuba-fileupload-wrapper($primary-stylename: cuba-fileupload-wrapper) {
+@mixin havana-cuba-fileupload-wrapper($primary-stylename: c-fileupload-wrapper) {
   .fileupload-wrapper-container {
     height: 25px;
     min-height: 25px;

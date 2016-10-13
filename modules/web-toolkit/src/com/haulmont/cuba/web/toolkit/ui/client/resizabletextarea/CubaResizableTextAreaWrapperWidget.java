@@ -26,7 +26,7 @@ import com.vaadin.client.ui.VCustomComponent;
 
 public class CubaResizableTextAreaWrapperWidget extends VCustomComponent {
 
-    public static final String RESIZE_ELEMENT = "cuba-resizabletextarea-resize-corner";
+    public static final String RESIZE_ELEMENT = "c-resizabletextarea-resize-corner";
 
     protected boolean dragDrop = false;
     protected boolean enabled = true;

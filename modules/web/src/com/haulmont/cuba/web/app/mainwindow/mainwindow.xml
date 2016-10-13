@@ -21,11 +21,11 @@
         caption="mainMsg://application.caption">
 
     <layout expand="foldersSplit">
-        <hbox id="titleBar" stylename="cuba-app-menubar"
+        <hbox id="titleBar" stylename="c-app-menubar"
               expand="mainMenu" width="100%" height="theme://cuba.web.mainWindow.header.height"
               spacing="true" margin="false;false;false;true">
 
-            <embedded id="logoImage" align="MIDDLE_LEFT" type="IMAGE" stylename="cuba-app-icon"/>
+            <embedded id="logoImage" align="MIDDLE_LEFT" type="IMAGE" stylename="c-app-icon"/>
 
             <main:menu id="mainMenu" align="MIDDLE_LEFT"/>
 
@@ -35,7 +35,7 @@
 
             <main:timeZoneIndicator id="timeZoneIndicator" align="MIDDLE_LEFT"/>
 
-            <hbox id="mainButtonsBox" stylename="cuba-main-buttons" align="MIDDLE_LEFT">
+            <hbox id="mainButtonsBox" stylename="c-main-buttons" align="MIDDLE_LEFT">
                 <main:newWindowButton id="newWindowButton"
                                       icon="app/images/new-window.png"
                                       description="msg://newWindowBtnDescription"/>

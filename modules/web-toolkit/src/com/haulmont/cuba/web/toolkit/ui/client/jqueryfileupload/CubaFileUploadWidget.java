@@ -37,8 +37,8 @@ import java.util.Set;
 
 public class CubaFileUploadWidget extends FlowPanel implements Focusable {
 
-    public static final String DEFAULT_CLASSNAME = "cuba-fileupload";
-    public static final String CUBA_FILEUPLOAD_DROPZONE_CLASS = "cuba-fileupload-dropzone";
+    public static final String DEFAULT_CLASSNAME = "c-fileupload";
+    public static final String CUBA_FILEUPLOAD_DROPZONE_CLASS = "c-fileupload-dropzone";
 
     protected VButton submitButton;
 

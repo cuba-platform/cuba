@@ -15,7 +15,7 @@
  *
  */
 
-@mixin halo-cuba-fileupload-wrapper($primary-stylename: cuba-fileupload-wrapper) {
+@mixin halo-cuba-fileupload-wrapper($primary-stylename: c-fileupload-wrapper) {
   .fileupload-wrapper-container {
     height: $v-unit-size;
     min-height: $v-unit-size;
@@ -25,7 +25,7 @@
     width: $v-layout-spacing-horizontal/2;
   }
 
-  .cuba-fileupload-empty {
+  .c-fileupload-empty {
     color: $v-font-color;
     text-decoration: none;
     cursor: default;

@@ -23,7 +23,7 @@ import com.vaadin.client.ui.layout.ComponentConnectorLayoutSlot;
 
 public class CubaFieldGroupLayoutWidget extends CubaGridLayoutWidget {
 
-    public static final String CLASSNAME = "cuba-fieldgrouplayout";
+    public static final String CLASSNAME = "c-fglayout";
 
     protected boolean useInlineCaption = true;
 

@@ -15,7 +15,7 @@
  *
  */
 
-@mixin havana-cuba-fileupload($primary-stylename: cuba-fileupload) {
+@mixin havana-cuba-fileupload($primary-stylename: c-fileupload) {
   .#{$primary-stylename} {
     position: relative;
     overflow: hidden;

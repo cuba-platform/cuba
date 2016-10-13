@@ -16,11 +16,11 @@
  */
 
 @mixin cuba-breadcrumbs {
-  .cuba-breadcrumbs-logo {
+  .c-breadcrumbs-logo {
     padding: 0;
   }
 
-  .v-button.cuba-closetab-button {
+  .v-button.c-closetab-button {
     border: none;
     background: transparent none;
     box-shadow: none;
@@ -31,14 +31,14 @@
     }
   }
 
-  .v-button.cuba-closetab-button:hover {
+  .v-button.c-closetab-button:hover {
     .v-button-wrap {
       background: transparent none;
       padding: 0;
     }
   }
 
-  .cuba-headline-container {
+  .c-headline-container {
     margin-bottom: $v-layout-margin-bottom/2;
   }
 }

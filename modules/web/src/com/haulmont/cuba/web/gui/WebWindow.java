@@ -140,7 +140,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
     protected ComponentContainer createLayout() {
         CubaVerticalActionsLayout layout = new CubaVerticalActionsLayout();
-        layout.setStyleName("cuba-window-layout");
+        layout.setStyleName("c-window-layout");
         layout.setSizeFull();
         return layout;
     }
@@ -203,7 +203,7 @@ public class WebWindow implements Window, Component.Wrapper,
     public void setStyleName(String name) {
         getContainer().setStyleName(name);
 
-        getContainer().addStyleName("cuba-window-layout");
+        getContainer().addStyleName("c-window-layout");
     }
 
     @Override
@@ -1678,16 +1678,16 @@ public class WebWindow implements Window, Component.Wrapper,
         @Override
         protected ComponentContainer createLayout() {
             final CubaVerticalActionsLayout form = new CubaVerticalActionsLayout();
-            form.setStyleName("cuba-lookup-window-wrapper");
+            form.setStyleName("c-lookup-window-wrapper");
 
             container = new VerticalLayout();
-            container.setStyleName("cuba-window-layout");
+            container.setStyleName("c-window-layout");
 
             boolean isTestMode = AppUI.getCurrent().isTestMode();
 
             HorizontalLayout okbar = new HorizontalLayout();
             okbar.setHeight(-1, Unit.PIXELS);
-            okbar.setStyleName("cuba-window-actions-pane");
+            okbar.setStyleName("c-window-actions-pane");
             okbar.setMargin(new MarginInfo(true, false, false, false));
             okbar.setSpacing(true);
 
@@ -1696,7 +1696,7 @@ public class WebWindow implements Window, Component.Wrapper,
             selectButton.setCaption(messages.getMainMessage("actions.Select"));
             selectButton.setIcon(WebComponentsHelper.getIcon("icons/ok.png"));
             selectButton.addClickListener(selectAction);
-            selectButton.setStyleName("cuba-window-action-button");
+            selectButton.setStyleName("c-window-action-button");
             if (isTestMode) {
                 selectButton.setCubaId("selectButton");
             }
@@ -1709,7 +1709,7 @@ public class WebWindow implements Window, Component.Wrapper,
                     close("cancel");
                 }
             });
-            cancelButton.setStyleName("cuba-window-action-button");
+            cancelButton.setStyleName("c-window-action-button");
             cancelButton.setIcon(WebComponentsHelper.getIcon("icons/cancel.png"));
             if (isTestMode) {
                 cancelButton.setCubaId("cancelButton");

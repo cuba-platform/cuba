@@ -585,7 +585,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
             composition.addComponent(scrollContainer);
             composition.setExpandRatio(scrollContainer, 1);
-            setPrimaryStyleName("cuba-tokenlist");
+            setPrimaryStyleName("c-tokenlist");
         }
 
         @Override

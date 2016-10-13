@@ -21,7 +21,7 @@ import com.vaadin.shared.annotations.NoLayout;
 
 public class CubaMaskedTextFieldState extends CubaTextFieldState {
     {
-        primaryStyleName = "cuba-maskedfield";
+        primaryStyleName = "c-maskedfield";
     }
 
     @NoLayout

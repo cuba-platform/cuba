@@ -62,7 +62,7 @@ public class ShowLinkAction extends BaseAction {
         StringBuilder sb = new StringBuilder();
 
         sb.append(messages.getMainMessage("table.showLinkAction.link")).append("<br/>");
-        sb.append("<textarea class=\"cuba-table-showlink-textarea\" autofocus=\"true\" readonly=\"true\">").
+        sb.append("<textarea class=\"c-table-showlink-textarea\" autofocus=\"true\" readonly=\"true\">").
                 append(handler.makeLink(ds.getItem()).replace("&", "&amp")).append("</textarea>");
 
         return sb.toString();

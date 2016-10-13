@@ -30,6 +30,8 @@ public class CubaSearchSelect extends CubaComboBox {
 
     public CubaSearchSelect() {
         super.setFilteringMode(FilteringMode.OFF);
+
+        setStyleName("c-searchselect");
     }
 
     @Override

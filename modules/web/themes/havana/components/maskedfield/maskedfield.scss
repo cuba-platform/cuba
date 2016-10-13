@@ -15,7 +15,7 @@
  *
  */
 
-@mixin havana-cuba-maskedfield($primary-stylename: cuba-maskedfield) {
+@mixin havana-cuba-maskedfield($primary-stylename: c-maskedfield) {
   @include havana-textfield($primary-stylename);
 
   .v-ui,
@@ -33,11 +33,11 @@
     }
   }
 
-  .cuba-focus-move::selection {
+  .c-focus-move::selection {
     background: transparent;
   }
 
-  .cuba-focus-move::-moz-selection {
+  .c-focus-move::-moz-selection {
     background: transparent;
   }
 }

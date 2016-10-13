@@ -15,7 +15,7 @@
  *
  */
 
-@mixin halo-cuba-fieldgroup($primary-stylename: cuba-fieldgroup) {
+@mixin halo-cuba-fieldgroup($primary-stylename: c-fieldgroup) {
   @include halo-cuba-groupbox($primary-stylename);
 
   /*

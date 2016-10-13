@@ -99,7 +99,7 @@ public class AppMainWindow extends AbstractMainWindow {
         }
 
         if (webConfig.getUseInverseHeader()) {
-            titleBar.setStyleName("cuba-app-menubar cuba-inverse-header");
+            titleBar.setStyleName("c-app-menubar c-inverse-header");
         }
 
         if (!FtsConfigHelper.getEnabled()) {

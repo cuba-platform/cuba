@@ -21,7 +21,7 @@ import com.vaadin.shared.ui.gridlayout.GridLayoutState;
 
 public class CubaFieldGroupLayoutState extends GridLayoutState {
     {
-        primaryStyleName = "cuba-fieldgrouplayout";
+        primaryStyleName = "c-fglayout";
     }
 
     public boolean useInlineCaption = true;

@@ -28,7 +28,7 @@ import com.vaadin.ui.Button;
 
 public class WebLogoutButton extends WebAbstractComponent<CubaButton> implements LogoutButton {
 
-    public static final String LOGOUT_BUTTON_STYLENAME = "cuba-logout-button";
+    public static final String LOGOUT_BUTTON_STYLENAME = "c-logout-button";
 
     public WebLogoutButton() {
         component = new CubaButton();

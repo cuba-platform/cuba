@@ -16,7 +16,7 @@
  */
 
 @mixin cuba-menubar {
-  .cuba-main-menu.v-menubar {
+  .c-main-menu.v-menubar {
     border: 0;
     background: transparent;
     box-shadow: none;
@@ -31,7 +31,7 @@
     }
   }
 
-  .cuba-app-menubar .cuba-main-menu {
+  .c-app-menubar .c-main-menu {
     .v-menubar-menuitem-shortcut {
       padding-left: round($v-unit-size/5);
     }
@@ -42,7 +42,7 @@
 
   $border-width: first-number($v-border);
   $br: max(0, $v-border-radius - $border-width);
-  .cuba-main-menu.v-menubar > .v-menubar-menuitem {
+  .c-main-menu.v-menubar > .v-menubar-menuitem {
     border-right: 0;
 
     @if $v-border-radius > 0 {
@@ -59,35 +59,35 @@
       display: table-row;
       position: relative;
 
-      .v-menubar-menuitem-caption {
-        border-top-left-radius: $v-border-radius;
-        border-bottom-left-radius: $v-border-radius;
-        display: table-cell;
-        padding-left: round(2*$v-unit-size/3);
-
-        .v-ie11 & {
-          border-right: 1px solid transparent;
-        }
-      }
-
-      .v-menubar-menuitem-shortcut {
-        display: table-cell;
-        padding-left: round($v-unit-size/3);
-        padding-right: round(2*$v-unit-size/3);
-        border-top-right-radius: $v-border-radius;
-        border-bottom-right-radius: $v-border-radius;
-
-        .v-ie11 & {
-          border-left: 1px solid transparent;
-        }
-      }
-
       &:active:before {
         content: none;
       }
 
       &:active {
         @include valo-button-active-style;
+      }
+    }
+
+    .v-menubar-menuitem-caption {
+      border-top-left-radius: $v-border-radius;
+      border-bottom-left-radius: $v-border-radius;
+      display: table-cell;
+      padding-left: round(2*$v-unit-size/3);
+
+      .v-ie11 & {
+        border-right: 1px solid transparent;
+      }
+    }
+
+    .v-menubar-menuitem-shortcut {
+      display: table-cell;
+      padding-left: round($v-unit-size/3);
+      padding-right: round(2*$v-unit-size/3);
+      border-top-right-radius: $v-border-radius;
+      border-bottom-right-radius: $v-border-radius;
+
+      .v-ie11 & {
+        border-left: 1px solid transparent;
       }
     }
 
@@ -152,13 +152,13 @@
   }
 
   @if ($v-support-inverse-menu) {
-    .cuba-inverse-header.cuba-app-menubar {
+    .c-inverse-header.c-app-menubar {
       background: #1c1e20;
       border: 1px solid #1c1e20;
 
       @include box-shadow(none);
 
-      .cuba-main-menu {
+      .c-main-menu {
         .v-menubar-menuitem-more-item,
         .v-menubar-menuitem-caption,
         .v-menubar-menuitem-shortcut {
@@ -175,26 +175,26 @@
         }
       }
 
-      .cuba-user-select-label {
+      .c-user-select-label {
         color: #adaeb0;
       }
 
-      .cuba-user-timezone-label {
+      .c-user-timezone-label {
         color: #adaeb0;
       }
 
-      .cuba-fts-button,
-      .cuba-logout-button,
-      .cuba-newwindow-button {
+      .c-fts-button,
+      .c-logout-button,
+      .c-newwindow-button {
         color: #adaeb0;
       }
 
-      .cuba-fts-button:hover,
-      .cuba-fts-button:focus,
-      .cuba-logout-button:hover,
-      .cuba-newwindow-button:hover,
-      .cuba-logout-button:focus,
-      .cuba-newwindow-button:focus {
+      .c-fts-button:hover,
+      .c-fts-button:focus,
+      .c-logout-button:hover,
+      .c-newwindow-button:hover,
+      .c-logout-button:focus,
+      .c-newwindow-button:focus {
         color: #e8e8e8;
       }
     }

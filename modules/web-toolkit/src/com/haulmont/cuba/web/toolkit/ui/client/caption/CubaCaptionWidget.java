@@ -30,8 +30,8 @@ import com.vaadin.shared.ui.ComponentStateUtil;
 
 public class CubaCaptionWidget extends VCaption {
 
-    public static final String CUBA_CLASSNAME = "cuba-caption";
-    public static final String TOOLTIP_CLASSNAME = "cuba-tooltip-button";
+    public static final String CUBA_CLASSNAME = "c-caption";
+    public static final String TOOLTIP_CLASSNAME = "c-tooltip-button";
 
     protected Element toolTipIndicator;
 

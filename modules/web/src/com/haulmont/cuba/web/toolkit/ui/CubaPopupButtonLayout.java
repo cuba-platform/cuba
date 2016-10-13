@@ -22,7 +22,7 @@ import com.vaadin.ui.VerticalLayout;
 public class CubaPopupButtonLayout extends VerticalLayout {
 
     public CubaPopupButtonLayout() {
-        addStyleName("cuba-context-menu-container");
+        addStyleName("c-cm-container");
         setMargin(false);
         setWidthUndefined();
     }

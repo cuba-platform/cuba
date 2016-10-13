@@ -38,16 +38,13 @@ import com.haulmont.cuba.web.toolkit.ui.converters.StringToEnumConverter;
 import com.vaadin.shared.ui.label.ContentMode;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implements Label {
 
-    public static final String CAPTION_STYLE = "cuba-label-caption-on-left";
+    public static final String CAPTION_STYLE = "c-label-caption-on-left";
 
-    protected List<ValueChangeListener> listeners = new ArrayList<>(); // todo lazy initialization
+    protected List<ValueChangeListener> listeners = null;
 
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
@@ -199,6 +196,10 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
 
     @Override
     public void addValueChangeListener(ValueChangeListener listener) {
+        if (listeners == null) {
+            listeners = new LinkedList<>();
+        }
+
         if (!listeners.contains(listener)) {
             listeners.add(listener);
         }
@@ -206,7 +207,9 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
 
     @Override
     public void removeValueChangeListener(ValueChangeListener listener) {
-        listeners.remove(listener);
+        if (listeners != null) {
+            listeners.remove(listener);
+        }
     }
 
     @Override
@@ -220,8 +223,10 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
     }
 
     protected void fireValueChanged(Object prevValue, Object value) {
-        for (ValueChangeListener listener : new ArrayList<>(listeners)) {
-            listener.valueChanged(new ValueChangeEvent(this, prevValue, value));
+        if (listeners != null) {
+            for (ValueChangeListener listener : new ArrayList<>(listeners)) {
+                listener.valueChanged(new ValueChangeEvent(this, prevValue, value));
+            }
         }
     }
 

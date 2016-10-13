@@ -109,7 +109,7 @@
                     </row>
                 </rows>
             </grid>
-            <hbox id="windowActions" spacing="true" stylename="cuba-edit-window-actions">
+            <hbox id="windowActions" spacing="true" stylename="c-edit-window-actions">
                 <button id="windowCommit" action="windowCommit" icon="icons/ok.png"/>
                 <button id="windowClose" action="windowClose" icon="icons/cancel.png"/>
                 <button invoke="testConstraint" id="testConstraint" caption="msg://testConstraint"/>

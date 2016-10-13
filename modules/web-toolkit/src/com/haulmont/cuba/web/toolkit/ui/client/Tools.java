@@ -40,8 +40,8 @@ import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
 
 public class Tools {
 
-    public static final String SELECTED_ITEM_STYLE = "cuba-context-menu-button-selected";
-    public static final String CUBA_CONTEXT_MENU_CONTAINER = "cuba-context-menu-container";
+    public static final String SELECTED_ITEM_STYLE = "c-cm-button-selected";
+    public static final String CUBA_CONTEXT_MENU_CONTAINER = "c-cm-container";
 
     private static ToolsImpl impl;
 
@@ -79,7 +79,7 @@ public class Tools {
     public static VOverlay createCubaTablePopup(boolean autoClose) {
         final VOverlay tableCustomPopup = autoClose ? createContextMenu() : new VOverlay();
 
-        tableCustomPopup.setStyleName("cuba-table-popup");
+        tableCustomPopup.setStyleName("c-table-popup");
 
         return tableCustomPopup;
     }
@@ -87,7 +87,7 @@ public class Tools {
     public static VOverlay createCubaTableContextMenu() {
         final VOverlay tableContextMenu = createContextMenu();
 
-        tableContextMenu.setStyleName("cuba-context-menu");
+        tableContextMenu.setStyleName("c-context-menu");
 
         return tableContextMenu;
     }

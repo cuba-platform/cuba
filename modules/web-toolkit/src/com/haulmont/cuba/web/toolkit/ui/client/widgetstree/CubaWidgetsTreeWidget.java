@@ -79,7 +79,7 @@ public class CubaWidgetsTreeWidget extends CubaTreeWidget {
 
     @Override
     public void setStyleName(String style) {
-        super.setStyleName(style + " cuba-widgetstree");
+        super.setStyleName(style + " c-widgetstree");
     }
 
     @Override

@@ -15,9 +15,7 @@
  *
  */
 
-@mixin havana-cuba-flowlayout($primary-stylename : cuba-flowlayout) {
-  @include base-csslayout($primary-stylename);
-
+@mixin havana-cuba-flowlayout($primary-stylename: c-flowlayout) {
   .#{$primary-stylename} {
     overflow-y: auto;
   }
@@ -26,23 +24,23 @@
     float: left;
   }
 
-  .#{$primary-stylename}-spacing > * {
+  .#{$primary-stylename}.v-csslayout-spacing > * {
     margin-right: 5px;
     margin-bottom: 5px;
   }
 
   $marginWidth: 5px;
 
-  .#{$primary-stylename}-margin-top {
+  .#{$primary-stylename}.v-csslayout-margin-top {
     padding-top: $marginWidth;
   }
-  .#{$primary-stylename}-margin-bottom {
+  .#{$primary-stylename}.v-csslayout-margin-bottom {
     padding-bottom: $marginWidth;
   }
-  .#{$primary-stylename}-margin-left {
+  .#{$primary-stylename}.v-csslayout-margin-left {
     padding-left: $marginWidth;
   }
-  .#{$primary-stylename}-margin-right {
+  .#{$primary-stylename}.v-csslayout-margin-right {
     padding-right: $marginWidth;
   }
 }

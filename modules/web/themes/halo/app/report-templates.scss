@@ -15,19 +15,19 @@
  */
 
 @mixin cuba-report-templates {
-  .v-slot-cuba-upload-dropzone-description {
+  .v-slot-c-upload-dropzone-description {
     border: 2px dashed $v-font-color;
   }
 
-  .cuba-static-drop-zone.cuba-fileupload-dropzone .v-cuba-upload-dropzone-description {
+  .c-static-drop-zone.c-fileupload-dropzone .c-upload-dropzone-description {
     border: none;
   }
 
-  .cuba-static-drop-zone.cuba-fileupload-dropzone .v-label {
+  .c-static-drop-zone.c-fileupload-dropzone .v-label {
     display: none;
   }
 
-  .cuba-report-upload-invisible {
+  .c-report-upload-invisible {
     display: none;
   }
 }

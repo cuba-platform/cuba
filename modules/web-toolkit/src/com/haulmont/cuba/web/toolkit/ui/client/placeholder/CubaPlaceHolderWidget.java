@@ -20,8 +20,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.placeholder;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 public class CubaPlaceHolderWidget extends SimplePanel {
-
-    public static final String CLASSNAME = "cuba-placeholder";
+    public static final String CLASSNAME = "c-placeholder";
 
     public CubaPlaceHolderWidget() {
         setStyleName(CLASSNAME);

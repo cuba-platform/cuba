@@ -15,7 +15,7 @@
  *
  */
 
-@mixin havana-cuba-grouptable($primary-stylename : cuba-grouptable) {
+@mixin havana-cuba-grouptable($primary-stylename: c-grouptable) {
   .#{$primary-stylename} {
     .#{$primary-stylename}-group-cell-expander {
       width: 12px;

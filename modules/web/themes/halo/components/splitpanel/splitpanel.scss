@@ -36,7 +36,7 @@ $cuba-splitpanel-dock-button-width: round($v-unit-size / 3) !default;
   $border-radius: $v-border-radius;
   $button-color: valo-font-color($v-app-background-color, .5);
 
-  .cuba-splitpanel-dock-button {
+  .c-splitpanel-dock-button {
     cursor: pointer;
     width: $cuba-splitpanel-dock-button-width;
     background: $v-panel-background-color;
@@ -50,23 +50,23 @@ $cuba-splitpanel-dock-button-width: round($v-unit-size / 3) !default;
     display: inline-block;
   }
 
-  .cuba-splitpanel-dock-button-left {
+  .c-splitpanel-dock-button-left {
     border-right-color: $v-panel-background-color;
     margin-left: -($cuba-splitpanel-splitter-width - $border-width);
     border-radius: $border-radius 0 0 $border-radius;
   }
 
-  .cuba-splitpanel-dock-button-right {
+  .c-splitpanel-dock-button-right {
     border-left-color: $v-panel-background-color;
     margin-left: $cuba-splitpanel-splitter-width - $border-width;
     border-radius: 0 $border-radius $border-radius 0;
   }
 
-  .cuba-splitpanel-dock-button-left:after {
+  .c-splitpanel-dock-button-left:after {
     content: "\f053";
   }
 
-  .cuba-splitpanel-dock-button-right:after {
+  .c-splitpanel-dock-button-right:after {
     content: "\f054";
   }
 }

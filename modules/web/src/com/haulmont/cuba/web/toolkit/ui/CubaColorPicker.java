@@ -28,7 +28,7 @@ public class CubaColorPicker extends CustomField {
     public CubaColorPicker() {
         initColorPicker();
         initLayout();
-        setPrimaryStyleName("cuba-color-picker");
+        setPrimaryStyleName("c-color-picker");
     }
 
     protected void initColorPicker() {

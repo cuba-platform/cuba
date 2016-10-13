@@ -15,10 +15,10 @@
  *
  */
 
-@mixin halo-cuba-resizabletextarea($primary-stylename: cuba-resizabletextarea) {
+@mixin halo-cuba-resizabletextarea($primary-stylename: c-resizabletextarea) {
   $textarea-corner-color: valo-border-color($color: $v-overlay-background-color, $strength: 1.0);
 
-  .cuba-resizabletextarea-wrapper {
+  .#{$primary-stylename}-wrapper {
     position: relative;
     overflow: hidden;
 

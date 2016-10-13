@@ -16,25 +16,12 @@
  */
 
 @mixin cuba-folders-pane {
-  .cuba-folders-pane {
+  .c-folders-pane {
     background: $v-panel-background-color;
 
     .v-tree {
       border-color: transparent;
       overflow: auto;
-
-      .v-tree-node-cuba-clickable-folder .v-tree-node-caption span {
-        cursor: pointer;
-      }
-
-      .v-tree-node-cuba-clickable-folder .v-tree-node-caption span:hover {
-        text-decoration: underline;
-        background: transparent none;
-      }
-
-      .v-tree-node-cuba-nonclickable-folder .v-tree-node-caption span:hover {
-        background: transparent none;
-      }
     }
 
     .v-tree-node-focused:after {
@@ -42,13 +29,26 @@
     }
   }
 
-  .cuba-folders-pane-caption {
+  .v-tree-node-c-clickable-folder .v-tree-node-caption span {
+    cursor: pointer;
+  }
+
+  .v-tree-node-c-clickable-folder .v-tree-node-caption span:hover {
+    text-decoration: underline;
+    background: transparent none;
+  }
+
+  .v-tree-node-c-nonclickable-folder .v-tree-node-caption span:hover {
+    background: transparent none;
+  }
+
+  .c-folders-pane-caption {
     line-height: $v-unit-size;
     font-size: $v-font-size--h3;
   }
 
-  .cuba-main-menu.v-menubar > .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon,
-  .cuba-main-menu.v-menubar > .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active {
+  .c-main-menu.v-menubar > .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon,
+  .c-main-menu.v-menubar > .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active {
     &:before {
       color: $v-font-color;
       font-size: $v-font-size;
@@ -57,8 +57,8 @@
     }
   }
 
-  .cuba-main-menu.v-menubar > .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active,
-  .cuba-main-menu.v-menubar > .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active:hover {
+  .c-main-menu.v-menubar > .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active,
+  .c-main-menu.v-menubar > .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active:hover {
     @include valo-button-active-style();
   }
 }

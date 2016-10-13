@@ -2093,7 +2093,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             VerticalLayout layout = new VerticalLayout();
             layout.setWidthUndefined();
-            layout.setStyleName("cuba-table-view-textcut");
+            layout.setStyleName("c-table-view-textcut");
 
             CubaTextArea textArea = new CubaTextArea();
             textArea.setValue(value);
@@ -2482,11 +2482,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     public void showCustomPopupActions(List<Action> actions) {
         VerticalLayout customContextMenu = new VerticalLayout();
         customContextMenu.setWidthUndefined();
-        customContextMenu.setStyleName("cuba-context-menu-container");
+        customContextMenu.setStyleName("c-cm-container");
 
         for (Action action : actions) {
             ContextMenuButton contextMenuButton = createContextMenuButton();
-            contextMenuButton.setStyleName("cuba-context-menu-button");
+            contextMenuButton.setStyleName("c-cm-button");
             contextMenuButton.setAction(action);
 
             Component vButton = WebComponentsHelper.unwrap(contextMenuButton);
@@ -2553,11 +2553,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
                         if (propertyPath.getRange().isClass()) {
                             if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
-                                style = "cuba-table-cell-link";
+                                style = "c-table-cell-link";
                             }
                         } else if (propertyPath.getRange().isDatatype()) {
                             if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
-                                style = "cuba-table-cell-link";
+                                style = "c-table-cell-link";
                             } else if (column.getMaxTextLength() != null) {
                                 Entity item = getDatasource().getItemNN(itemId);
                                 String value = item.getValueEx(propertyId.toString());
@@ -2565,10 +2565,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                                     boolean isMultiLineCell = StringUtils.contains(value, "\n");
                                     if ((value != null && value.length() > column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP)
                                             || isMultiLineCell) {
-                                        style = "cuba-table-cell-textcut";
+                                        style = "c-table-cell-textcut";
                                     } else {
                                         // use special marker stylename
-                                        style = "cuba-table-clickable-text";
+                                        style = "c-table-clickable-text";
                                     }
                                 }
                             }

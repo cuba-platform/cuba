@@ -20,10 +20,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.flowlayout;
 import com.vaadin.shared.ui.csslayout.CssLayoutState;
 
 public class CubaFlowLayoutState extends CssLayoutState {
-    {
-        primaryStyleName = "cuba-flowlayout";
-    }
-
     public int marginsBitmask = 0;
 
     public boolean spacing = false;

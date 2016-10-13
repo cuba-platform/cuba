@@ -24,11 +24,10 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class CubaButtonField extends CustomField {
-
     protected Converter captionFormatter;
 
     public CubaButtonField() {
-        setPrimaryStyleName("cuba-buttonfield");
+        setPrimaryStyleName("c-buttonfield");
     }
 
     @Override

@@ -20,8 +20,8 @@
 // Application Window styles
 @mixin cuba-application-window {
 
-  .v-button.cuba-logout-button,
-  .v-button.cuba-newwindow-button {
+  .v-button.c-logout-button,
+  .v-button.c-newwindow-button {
     background: none;
     border: 2px solid transparent;
 
@@ -42,13 +42,13 @@
     }
   }
 
-  .v-button.cuba-logout-button:focus,
-  .v-button.cuba-newwindow-button:focus {
+  .v-button.c-logout-button:focus,
+  .v-button.c-newwindow-button:focus {
     border-color: $cuba-app-menu-highlight-color;
   }
 
-  .v-button.cuba-logout-button:hover,
-  .v-button.cuba-newwindow-button:hover {
+  .v-button.c-logout-button:hover,
+  .v-button.c-newwindow-button:hover {
     background: none;
     border-color: $cuba-app-menu-highlight-color;
 
@@ -57,14 +57,14 @@
     }
   }
 
-  .cuba-app-titlebar {
+  .c-app-titlebar {
     background: #373738;
 
     .v-button:hover {
       background: transparent;
     }
 
-    .v-label.cuba-user-select-label {
+    .v-label.c-user-select-label {
       color: #fff;
       font-size: 12px;
       font-weight: normal;
@@ -72,7 +72,7 @@
       text-shadow: black 1px 1px;
     }
 
-    .v-label.cuba-user-timezone-label {
+    .v-label.c-user-timezone-label {
       color: #fff;
       font-size: 12px;
       font-weight: normal;
@@ -82,7 +82,7 @@
       margin-right: 5px;
     }
 
-    .cuba-app-appname-label {
+    .c-app-appname-label {
       color: #fff;
       font-size: 14px;
       font-weight: bold;
@@ -90,13 +90,13 @@
     }
   }
 
-  .cuba-app-menubar {
+  .c-app-menubar {
     border-bottom: 1px solid #fff;
     background: $cuba-app-header-background-color;
     padding-bottom: 0;
     padding-top: 0;
 
-    .v-label.cuba-user-select-label {
+    .v-label.c-user-select-label {
       color: #fff;
       font-size: 12px;
       font-weight: normal;
@@ -104,7 +104,7 @@
       text-shadow: black 1px 1px;
     }
 
-    .v-label.cuba-user-timezone-label {
+    .v-label.c-user-timezone-label {
       color: #fff;
       font-size: 12px;
       font-weight: normal;
@@ -114,7 +114,7 @@
       margin-right: 5px;
     }
 
-    .cuba-app-icon {
+    .c-app-icon {
       margin-left: 5px;
     }
 
@@ -131,24 +131,24 @@
     }
   }
 
-  .cuba-app-workarea-initial {
+  .c-app-workarea-initial {
     background: $cuba-app-work-area-color;
   }
 
-  .cuba-main-singlewindow {
+  .c-main-singlewindow {
     background: #fff;
 
     @include havana-tabsheet-second(v-tabsheet);
   }
 
-  .cuba-app-icon {
+  .c-app-icon {
     img {
       @include box-defaults;
       height: 100%;
     }
   }
 
-  .cuba-fts-button.v-button {
+  .c-fts-button.v-button {
     display: inline-block;
     border: 1px solid $cuba-field-border-color;
     border-left: 0;
@@ -182,8 +182,8 @@
 
   // Padding for main tabsheet content
 
-  .cuba-splitpanel-dockable-right > div > div.v-splitpanel-second-container .cuba-app-tabbed-window.v-margin-left,
-  .cuba-splitpanel-dockable-left > div > div.v-splitpanel-second-container .cuba-app-tabbed-window.v-margin-left {
+  .c-splitpanel-dockable-right > div > div.v-splitpanel-second-container .c-app-tabbed-window.v-margin-left,
+  .c-splitpanel-dockable-left > div > div.v-splitpanel-second-container .c-app-tabbed-window.v-margin-left {
     padding-left: 9px;
   }
 }

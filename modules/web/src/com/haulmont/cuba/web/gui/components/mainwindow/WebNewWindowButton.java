@@ -30,7 +30,7 @@ import java.net.URL;
 
 public class WebNewWindowButton extends WebAbstractComponent<CubaButton> implements NewWindowButton {
 
-    public static final String NEWWINDOW_BUTTON_STYLENAME = "cuba-newwindow-button";
+    public static final String NEWWINDOW_BUTTON_STYLENAME = "c-newwindow-button";
 
     public WebNewWindowButton() {
         component = new CubaButton();

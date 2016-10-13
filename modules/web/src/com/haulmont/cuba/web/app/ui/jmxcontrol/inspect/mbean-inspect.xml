@@ -30,7 +30,7 @@
     </dsContext>
 
     <layout expand="contentScrollbox" spacing="true">
-        <grid spacing="true" stylename="cuba-mbeans-information-panel" width="100%">
+        <grid spacing="true" stylename="c-mbeans-information-panel" width="100%">
             <columns>
                 <column flex="0"/>
                 <column flex="1"/>

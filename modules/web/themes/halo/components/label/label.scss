@@ -16,7 +16,7 @@
  */
 
 @mixin halo-label($primary-stylename: v-label) {
-  .v-caption-cuba-label-caption-on-left,
+  .v-caption-c-label-caption-on-left,
   .#{$primary-stylename} {
     font-size: $v-font-size;
   }
@@ -92,14 +92,15 @@
     font-family: $v-font-family;
   }
 
-  .v-caption-cuba-label-caption-on-left {
+  .v-caption-c-label-caption-on-left {
     display: inline-block;
+
     + div:empty {
       margin-left: 0;
     }
   }
 
-  .#{$primary-stylename}-cuba-label-caption-on-left {
+  .#{$primary-stylename}-c-label-caption-on-left {
     margin-left: ceil($v-font-size/2.4);
   }
 }

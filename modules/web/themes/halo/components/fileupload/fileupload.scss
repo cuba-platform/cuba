@@ -15,7 +15,7 @@
  *
  */
 
-@mixin halo-cuba-fileupload($primary-stylename: cuba-fileupload) {
+@mixin halo-cuba-fileupload($primary-stylename: c-fileupload) {
   .#{$primary-stylename} {
     position: relative;
 

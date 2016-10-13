@@ -34,7 +34,7 @@ public class WebTimeZoneIndicator extends WebAbstractComponent<Label> implements
     public WebTimeZoneIndicator() {
         component = new Label();
         component.setSizeUndefined();
-        component.setStyleName("cuba-user-timezone-label");
+        component.setStyleName("c-user-timezone-label");
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
         TimeZone timeZone = uss.getUserSession().getTimeZone();

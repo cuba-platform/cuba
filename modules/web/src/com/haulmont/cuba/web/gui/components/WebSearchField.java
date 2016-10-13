@@ -38,6 +38,8 @@ public class WebSearchField extends WebLookupField implements SearchField {
     protected Mode mode = Mode.CASE_SENSITIVE;
     protected boolean escapeValueForLike = false;
 
+    protected String styleName;
+
     protected Frame.NotificationType defaultNotificationType = Frame.NotificationType.TRAY;
 
     protected SearchNotifications searchNotifications = new SearchNotifications() {
@@ -131,6 +133,19 @@ public class WebSearchField extends WebLookupField implements SearchField {
 
     protected CubaSearchSelect getSearchComponent() {
         return (CubaSearchSelect) component;
+    }
+
+    @Override
+    public void setStyleName(String styleName) {
+        if (StringUtils.isNotEmpty(this.styleName)) {
+            getComposition().removeStyleName(this.styleName);
+        }
+
+        this.styleName = styleName;
+
+        if (StringUtils.isNotEmpty(styleName)) {
+            getComposition().addStyleName(styleName);
+        }
     }
 
     @Override

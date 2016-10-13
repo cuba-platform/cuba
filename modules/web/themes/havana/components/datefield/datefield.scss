@@ -15,9 +15,7 @@
  *
  */
 
-@mixin havana-datefield($primary-stylename : cuba-datefield) {
-  @include base-datefield($primary-stylename);
-
+@mixin havana-datefield($primary-stylename: c-datefield) {
   .#{$primary-stylename} {
     white-space: nowrap;
 
