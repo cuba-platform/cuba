@@ -28,8 +28,19 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import java.text.NumberFormat;
 
+/**
+ * Helper class for displaying uploaded files.
+ */
 public class FileDownloadHelper {
 
+    /**
+     * Creates HTML link for downloading a file.
+     *
+     * @param fd            file descriptor
+     * @param newWindow     adds target="_blank"
+     * @param attachment    sets Content-Disposition: attachment
+     * @return  HTML string
+     */
     public static String makeLink(FileDescriptor fd, boolean newWindow, boolean attachment) {
         StringBuilder sb = new StringBuilder();
         sb.append("<a href=\"");
@@ -43,6 +54,13 @@ public class FileDownloadHelper {
         return sb.toString();
     }
 
+    /**
+     * Creates URL for downloading a file.
+     *
+     * @param fd            file descriptor
+     * @param attachment    sets Content-Disposition: attachment
+     * @return URL string
+     */
     public static String makeUrl(FileDescriptor fd, boolean attachment) {
         StringBuilder sb = new StringBuilder();
         UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
@@ -54,6 +72,11 @@ public class FileDownloadHelper {
         return sb.toString();
     }
 
+    /**
+     * Initializes a column for downloading files in a table displaying {@link FileDescriptor}s.
+     *
+     * @param table table that displays instances of the {@link FileDescriptor} entity
+     */
     public static void initGeneratedColumn(final Table table) {
         final ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
         final ExportDisplay exportDisplay = AppBeans.get(ExportDisplay.NAME);
@@ -89,6 +112,12 @@ public class FileDownloadHelper {
         });
     }
 
+    /**
+     * Initializes a table column for downloading files.
+     *
+     * @param table         table displaying some entity
+     * @param fileProperty  property of the entity which is a reference to {@link FileDescriptor}
+     */
     public static void initGeneratedColumn(final Table table, final String fileProperty) {
         final ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
         final ExportDisplay exportDisplay = AppBeans.get(ExportDisplay.NAME);
@@ -125,6 +154,13 @@ public class FileDownloadHelper {
         });
     }
 
+    /**
+     * Format file size for displaying in bytes, KB, MB.
+     *
+     * @param longSize      size in bytes
+     * @param decimalPos    maximum fraction digits
+     * @return  formatted value
+     */
     public static String formatFileSize(long longSize, int decimalPos) {
         Messages messages = AppBeans.get(Messages.NAME);
 
@@ -144,6 +180,12 @@ public class FileDownloadHelper {
         return fmt.format(size).concat(" " + messages.getMessage(FileDownloadHelper.class, "fmtB"));
     }
 
+    /**
+     * Format file size for displaying in bytes, KB, MB.
+     *
+     * @param fileSize      size in bytes
+     * @return  formatted value
+     */
     public static String formatFileSize(long fileSize) {
         return formatFileSize(fileSize, 0);
     }
