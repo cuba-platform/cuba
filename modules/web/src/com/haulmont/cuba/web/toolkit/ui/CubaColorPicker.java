@@ -121,6 +121,7 @@ public class CubaColorPicker extends CustomField {
             window.setHueSliderCaption(hueSliderCaption);
             window.setSaturationSliderCaption(saturationSliderCaption);
             window.setValueSliderCaption(valueSliderCaption);
+            window.setModal(true);
         }
 
         @Override
