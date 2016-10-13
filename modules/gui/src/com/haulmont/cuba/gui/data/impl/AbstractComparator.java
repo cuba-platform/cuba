@@ -17,32 +17,56 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 
+import java.util.Collection;
 import java.util.Comparator;
 
 public abstract class AbstractComparator<T> implements Comparator<T> {
 
     protected boolean asc;
 
-    protected int nullsLast =
-            AppBeans.get(PersistenceManagerClient.NAME, PersistenceManagerClient.class).isNullsLastSorting() ?
-                    1 : -1;
+    protected int nullsLast;
+
+    protected Metadata metadata;
 
     protected AbstractComparator(boolean asc) {
         this.asc = asc;
+        nullsLast = AppBeans.get(PersistenceManagerClient.NAME, PersistenceManagerClient.class).isNullsLastSorting() ?
+                1 : -1;
+        metadata = AppBeans.get(Metadata.NAME);
     }
 
     protected int __compare(Object o1, Object o2) {
-        int c;
+        int c = compareAsc(o1, o2);
+        return asc ? c : -c;
+    }
 
+    protected int compareAsc(Object o1, Object o2) {
+        int c;
         if (o1 instanceof String && o2 instanceof String) {
             c = ((String) o1).compareToIgnoreCase((String) o2);
         } else if (o1 instanceof Comparable && o2 instanceof Comparable) {
             c = ((Comparable) o1).compareTo(o2);
         } else if (o1 instanceof Instance && o2 instanceof Instance) {
-            c = ((Instance) o1).getInstanceName().compareToIgnoreCase(((Instance) o2).getInstanceName());
+            MetaClass metaClass = metadata.getClassNN(o1.getClass());
+            Collection<MetaProperty> namePatternProperties = metadata.getTools().getNamePatternProperties(metaClass, true);
+            if (namePatternProperties.isEmpty()) {
+                c = ((Instance) o1).getInstanceName().compareToIgnoreCase(((Instance) o2).getInstanceName());
+            } else {
+                c = 0;
+                for (MetaProperty property : namePatternProperties) {
+                    Object v1 = ((Instance) o1).getValue(property.getName());
+                    Object v2 = ((Instance) o2).getValue(property.getName());
+                    c = compareAsc(v1, v2);
+                    if (c != 0)
+                        break;
+                }
+            }
         } else if (o1 == null) {
             if (o2 != null) {
                 c = nullsLast;
@@ -52,7 +76,6 @@ public abstract class AbstractComparator<T> implements Comparator<T> {
         } else {
             c = -nullsLast;
         }
-
-        return asc ? c : -c;
+        return c;
     }
 }
