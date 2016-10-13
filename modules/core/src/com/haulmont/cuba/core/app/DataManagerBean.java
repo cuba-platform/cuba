@@ -56,7 +56,7 @@ public class DataManagerBean implements DataManager {
         MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
         String storeName = metadata.getTools().getStoreName(metaClass);
         if (storeName == null) {
-            log.debug("Storage for {} is not defined, returning null", metaClass);
+            log.debug("Data store for {} is not defined, returning null", metaClass);
             return null;
         }
         DataStore storage = storeFactory.get(storeName);
@@ -69,8 +69,8 @@ public class DataManagerBean implements DataManager {
         MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
         String storeName = metadata.getTools().getStoreName(metaClass);
         if (storeName == null) {
-            log.debug("Storage for {} is not defined, returning empty list", metaClass);
-            return null;
+            log.debug("Data store for {} is not defined, returning empty list", metaClass);
+            return Collections.emptyList();
         }
         DataStore storage = storeFactory.get(storeName);
         return storage.loadList(context);
@@ -81,7 +81,7 @@ public class DataManagerBean implements DataManager {
         MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
         String storeName = metadata.getTools().getStoreName(metaClass);
         if (storeName == null) {
-            log.debug("Storage for {} is not defined, returning 0", metaClass);
+            log.debug("Data store for {} is not defined, returning 0", metaClass);
             return 0;
         }
         DataStore storage = storeFactory.get(storeName);
