@@ -67,6 +67,7 @@ import com.vaadin.server.Resource;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -89,6 +90,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         extends WebAbstractList<T, E>
         implements Table<E> {
 
+    private static final String HAS_TOP_PANEL_STYLENAME = "has-top-panel";
+
     protected Map<Object, Column> columns = new HashMap<>();
     protected List<Table.Column> columnsOrder = new ArrayList<>();
 
@@ -107,7 +110,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     protected Map<Entity, Datasource> fieldDatasources; // lazily initialized WeakHashMap;
 
-    protected VerticalLayout componentComposition;
+    protected CssLayout componentComposition;
 
     protected HorizontalLayout topPanel;
 
@@ -429,7 +432,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         this.rowsCount = rowsCount;
         if (rowsCount != null) {
             if (topPanel == null) {
-                topPanel = new HorizontalLayout();
+                topPanel = createTopPanel();
                 topPanel.setWidth("100%");
                 componentComposition.addComponentAsFirst(topPanel);
             }
@@ -437,6 +440,33 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             topPanel.addComponent(rc);
             topPanel.setExpandRatio(rc, 1);
             topPanel.setComponentAlignment(rc, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
+
+            if (rowsCount instanceof VisibilityChangeNotifier) {
+                ((VisibilityChangeNotifier) rowsCount).addVisibilityChangeListener(event ->
+                        updateCompositionStylesTopPanelVisible()
+                );
+            }
+        }
+
+        updateCompositionStylesTopPanelVisible();
+    }
+
+    // if buttons panel becomes hidden we need to set top panel height to 0
+    protected void updateCompositionStylesTopPanelVisible() {
+        if (topPanel != null) {
+            boolean topPanelVisible = topPanel.getComponentCount() > 0;
+            for (Component childComponent : topPanel) {
+                if (!childComponent.isVisible()) {
+                    topPanelVisible = false;
+                    break;
+                }
+            }
+
+            if (!topPanelVisible) {
+                componentComposition.removeStyleName(HAS_TOP_PANEL_STYLENAME);
+            } else {
+                componentComposition.addStyleName(HAS_TOP_PANEL_STYLENAME);
+            }
         }
     }
 
@@ -588,17 +618,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         setEditable(false);
 
-        componentComposition = new VerticalLayout();
+        componentComposition = new CssLayout();
+        componentComposition.setStyleName("c-table-composition");
         componentComposition.addComponent(component);
-
-        componentComposition.setSpacing(true);
-        componentComposition.setMargin(false);
-        componentComposition.setWidth("-1px");
+        componentComposition.setWidthUndefined();
 
         // todo artamonov adjust component size relative to composition size
 
         component.setSizeFull();
-        componentComposition.setExpandRatio(component, 1);
 
         component.setCellStyleGenerator(createStyleGenerator());
     }
@@ -1413,13 +1440,26 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
 
             if (topPanel == null) {
-                topPanel = new HorizontalLayout();
+                topPanel = createTopPanel();
                 topPanel.setWidth("100%");
                 componentComposition.addComponentAsFirst(topPanel);
             }
             topPanel.addComponent(WebComponentsHelper.unwrap(panel));
+            if (panel instanceof VisibilityChangeNotifier) {
+                ((VisibilityChangeNotifier) panel).addVisibilityChangeListener(event ->
+                        updateCompositionStylesTopPanelVisible()
+                );
+            }
             panel.setParent(this);
         }
+
+        updateCompositionStylesTopPanelVisible();
+    }
+
+    protected HorizontalLayout createTopPanel() {
+        HorizontalLayout topPanel = new HorizontalLayout();
+        topPanel.setStyleName("c-table-top");
+        return topPanel;
     }
 
     @Override

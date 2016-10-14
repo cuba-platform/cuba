@@ -248,4 +248,12 @@
   .#{$primary-stylename} .c-sort-indicator-visible {
     opacity: 1;
   }
+
+  .c-table-composition.has-top-panel {
+    padding-top: $v-unit-size + ceil($v-layout-spacing-vertical/2);
+
+    .c-table-top {
+      margin-top: -1 * ($v-unit-size + ceil($v-layout-spacing-vertical/2));
+    }
+  }
 }

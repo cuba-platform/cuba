@@ -17,6 +17,12 @@
 
 // Application Window styles
 @mixin cuba-application-window {
+  .v-tabsheet.c-main-tabsheet {
+    & > .v-tabsheet-tabcontainer {
+      padding-top: round($v-unit-size/6);
+    }
+  }
+
   .v-tabsheet.c-main-tabsheet > .v-tabsheet-tabcontainer .v-tabsheet-caption-close {
     top: round($v-unit-size/2 - $v-font-size/2) - first-number($v-border);
   }
@@ -85,13 +91,13 @@
     padding-left: 0;
     padding-right: 0;
 
-    .v-spacing {
-      width: $v-layout-spacing-horizontal/2;
+    & > .v-spacing {
+      width: ceil($v-layout-spacing-horizontal/2);
     }
   }
 
   .c-app-full-header .c-app-menubar {
-    padding-left: $v-layout-spacing-horizontal/2;
+    padding-left: ceil($v-layout-spacing-horizontal/2);
   }
 
   .c-app-work-area-single {
@@ -111,5 +117,18 @@
   .c-splitpanel-dockable-right > div > div.v-splitpanel-second-container .c-app-tabbed-window.v-margin-left,
   .c-splitpanel-dockable-left > div > div.v-splitpanel-second-container .c-app-tabbed-window.v-margin-left {
     padding-left: $cuba-splitpanel-dock-button-width + $cuba-splitpanel-splitter-width - first-number($v-border);
+  }
+
+  .c-app-window-wrap {
+    @include box-defaults;
+    padding: ceil($v-layout-spacing-vertical/2) $v-layout-spacing-horizontal;
+  }
+
+  .c-app-window-wrap.c-breadcrumbs-visible {
+    padding-top: $v-unit-size;
+
+    .c-headline-container {
+      margin-top: -1 * $v-unit-size;
+    }
   }
 }

@@ -397,4 +397,12 @@
   .#{$primary-stylename} .c-sort-indicator-visible {
     opacity: 1 !important;
   }
+
+  .c-table-composition.has-top-panel {
+    padding-top: 28px;
+
+    .c-table-top {
+      margin-top: -28px;
+    }
+  }
 }

@@ -88,6 +88,10 @@
       font-weight: bold;
       font-family: $cuba-havana-fonts;
     }
+
+    & > .v-spacing {
+      width: 2px;
+    }
   }
 
   .c-app-menubar {
@@ -185,5 +189,19 @@
   .c-splitpanel-dockable-right > div > div.v-splitpanel-second-container .c-app-tabbed-window.v-margin-left,
   .c-splitpanel-dockable-left > div > div.v-splitpanel-second-container .c-app-tabbed-window.v-margin-left {
     padding-left: 9px;
+  }
+
+  .c-app-window-wrap {
+    @include box-defaults;
+    padding: 3px 5px;
+  }
+
+  .c-app-window-wrap.c-breadcrumbs-visible {
+    padding-top: 25px;
+
+    .c-headline-container {
+      margin-top: -25px;
+      padding-top: 3px;
+    }
   }
 }
