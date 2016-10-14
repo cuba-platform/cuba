@@ -83,7 +83,7 @@ public class AttributeSecuritySupport {
             if (security.isEntityAttrReadPermitted(metaClass, property.getName())) {
                 View viewCopy = null;
                 if (property.getView() != null) {
-                    viewCopy = new View(property.getView().getEntityClass(), property.getView().getName() + "(restricted)");
+                    viewCopy = new View(property.getView().getEntityClass(), property.getView().getName() + "(restricted)", false);
                     copyViewConsideringPermissions(property.getView(), viewCopy);
                 }
                 dstView.addProperty(property.getName(), viewCopy, property.getFetchMode());

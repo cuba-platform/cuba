@@ -25,7 +25,6 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.dom4j.Document;
@@ -286,7 +285,7 @@ public class AbstractViewRepository implements ViewRepository {
 
         View view;
         if (View.LOCAL.equals(name)) {
-            view = new View(javaClass, name, true); // _local view contains system properties
+            view = new View(javaClass, name, false);
             for (MetaProperty property : metaClass.getProperties()) {
                 if (!property.getRange().isClass()
                         && !metadata.getTools().isSystem(property)
@@ -295,7 +294,7 @@ public class AbstractViewRepository implements ViewRepository {
                 }
             }
         } else if (View.MINIMAL.equals(name)) {
-            view = new View(javaClass, name, false); // _minimal view does not contain system properties
+            view = new View(javaClass, name, false);
             Collection<MetaProperty> metaProperties = metadata.getTools().getNamePatternProperties(metaClass, true);
             for (MetaProperty metaProperty : metaProperties) {
                 if (!metadata.getTools().isTransient(metaProperty)) {
@@ -437,20 +436,18 @@ public class AbstractViewRepository implements ViewRepository {
             return v;
         }
 
-        String systemProperties = viewElem.attributeValue("systemProperties");
+        boolean systemProperties = Boolean.valueOf(viewElem.attributeValue("systemProperties"));
 
         View.ViewParams viewParam = new View.ViewParams().entityClass(metaClass.getJavaClass()).name(viewName);
         if (ancestor != null) {
             View ancestorView = getAncestorView(metaClass, ancestor, visited);
             viewParam.src(ancestorView);
-        } else {
-            // system properties are included by default since v.6
-            viewParam.includeSystemProperties(systemProperties == null || Boolean.valueOf(systemProperties));
         }
+        viewParam.includeSystemProperties(systemProperties);
         View view = new View(viewParam);
 
         visited.add(info);
-        loadView(rootElem, viewElem, view, visited);
+        loadView(rootElem, viewElem, view, systemProperties, visited);
         visited.remove(info);
 
         storeView(metaClass, view);
@@ -529,7 +526,7 @@ public class AbstractViewRepository implements ViewRepository {
         return ancestorView;
     }
 
-    protected void loadView(Element rootElem, Element viewElem, View view, Set<ViewInfo> visited) {
+    protected void loadView(Element rootElem, Element viewElem, View view, boolean systemProperties, Set<ViewInfo> visited) {
         final MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
         final String viewName = view.getName();
 
@@ -600,16 +597,16 @@ public class AbstractViewRepository implements ViewRepository {
                 Class rangeClass = range.asClass().getJavaClass();
 
                 if (refView != null) {
-                    refView = new View(refView, rangeClass, "", true);
+                    refView = new View(refView, rangeClass, "", false); // system properties are already in the source view
                 } else {
                     ViewProperty existingProperty = view.getProperty(propertyName);
                     if (existingProperty != null && existingProperty.getView() != null) {
-                        refView = new View(existingProperty.getView(), rangeClass, "", true);
+                        refView = new View(existingProperty.getView(), rangeClass, "", systemProperties);
                     } else {
-                        refView = new View(rangeClass);
+                        refView = new View(rangeClass, systemProperties);
                     }
                 }
-                loadView(rootElem, propElem, refView, visited);
+                loadView(rootElem, propElem, refView, systemProperties, visited);
             }
 
             FetchMode fetchMode = FetchMode.AUTO;
