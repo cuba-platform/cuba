@@ -784,6 +784,9 @@ public class DataManagerBean implements DataManager {
                     if (value != null) {
                         if (value.getId().equals(refEntity.getId())) {
                             if (entity instanceof AbstractInstance) {
+                                if (property.isReadOnly() && metadata.getTools().isTransient(property)) {
+                                    continue;
+                                }
                                 ((AbstractInstance) entity).setValue(property.getName(), refEntity, false);
                             }
                         } else {
