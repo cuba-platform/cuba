@@ -38,6 +38,7 @@ import javax.inject.Inject;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -115,7 +116,7 @@ public class ServicesControllerManager {
         Method serviceMethod = restServicesConfiguration.getServiceMethod(serviceName, methodName, paramNames);
         if (serviceMethod == null) {
             throw new RestAPIException("Service method not found",
-                    "Service method not found",
+                    serviceName + "." + methodName + "(" + paramNames.stream().collect(Collectors.joining(",")) + ")",
                     HttpStatus.NOT_FOUND);
         }
         List<Object> paramValues = new ArrayList<>();
