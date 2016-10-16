@@ -298,12 +298,8 @@ public class EntitySerialization implements EntitySerializationAPI {
             } else if (fieldValue instanceof Boolean) {
                 jsonObject.addProperty(propertyName, (Boolean) fieldValue);
             } else {
-                Datatype datatype = Datatypes.get(property.getJavaType());
-                if (datatype != null) {
-                    jsonObject.addProperty(propertyName, datatype.format(fieldValue));
-                } else {
-                    jsonObject.addProperty(propertyName, String.valueOf(fieldValue));
-                }
+                Datatype datatype = property.getRange().asDatatype();
+                jsonObject.addProperty(propertyName, datatype.format(fieldValue));
             }
         }
 
@@ -430,7 +426,7 @@ public class EntitySerialization implements EntitySerializationAPI {
                     Class<?> propertyType = metaProperty.getJavaType();
                     Range propertyRange = metaProperty.getRange();
                     if (propertyRange.isDatatype()) {
-                        Object value = readSimpleProperty(propertyValue, propertyType);
+                        Object value = readSimpleProperty(propertyValue, propertyRange.asDatatype());
                         entity.setValue(propertyName, value);
                     } else if (propertyRange.isEnum()) {
                         String stringValue = propertyValue.getAsString();
@@ -459,15 +455,10 @@ public class EntitySerialization implements EntitySerializationAPI {
 
         }
 
-        protected Object readSimpleProperty(JsonElement valueElement, Class<?> propertyType) {
+        protected Object readSimpleProperty(JsonElement valueElement, Datatype propertyType) {
             String value = valueElement.getAsString();
-            Object parsedValue = null;
             try {
-                Datatype<?> datatype = Datatypes.get(propertyType);
-                if (datatype != null) {
-                    parsedValue = datatype.parse(value);
-                }
-                return parsedValue;
+                return propertyType.parse(value);
             } catch (ParseException e) {
                 throw new EntitySerializationException(String.format("An error occurred while parsing property. Class [%s]. Value [%s].", propertyType, value), e);
             }
