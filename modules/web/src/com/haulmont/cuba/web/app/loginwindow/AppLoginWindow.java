@@ -141,6 +141,8 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
         loginField.requestFocus();
 
+        initPoweredByLink();
+
         initLogoImage();
 
         initDefaultCredentials();
@@ -148,6 +150,13 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
         initLocales();
 
         initRememberMe();
+    }
+
+    protected void initPoweredByLink() {
+        Component poweredByLink = getComponent("poweredByLink");
+        if (poweredByLink != null) {
+            poweredByLink.setVisible(webConfig.getLoginDialogPoweredByLinkVisible());
+        }
     }
 
     protected void initLocales() {
