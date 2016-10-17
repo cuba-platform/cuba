@@ -736,6 +736,13 @@ paths:
         description: Position of the first result to retrieve
         type: string
         default: ""
+      - name: view
+        in: query
+        description: |
+          Name of the view which is used for loading the entity. Specify this parameter if you want to extract entities with the view
+          other than it is defined in the REST queries configuration file.
+        type: string
+      - $ref: '#/parameters/returnNullsParam'
       - $ref: '#/parameters/dynamicAttributesParam'
     get:
       tags:
