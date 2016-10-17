@@ -196,25 +196,25 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         entities.stream()
                 .filter(entity -> entity instanceof HasUuid)
                 .forEach(entity -> {
-            toProcess.add(entity);
-            if (!dependentClasses.isEmpty()) {
-                metadata.getTools().traverseAttributes(entity, new EntityAttributeVisitor() {
-                    @Override
-                    public void visit(Entity dependentEntity, MetaProperty property) {
-                        if (dependentEntity instanceof HasUuid) {
-                            toProcess.add((BaseGenericIdEntity)dependentEntity);
-                        }
-                    }
+                    toProcess.add(entity);
+                    if (!dependentClasses.isEmpty()) {
+                        metadata.getTools().traverseAttributes(entity, new EntityAttributeVisitor() {
+                            @Override
+                            public void visit(Entity dependentEntity, MetaProperty property) {
+                                if (dependentEntity instanceof HasUuid) {
+                                    toProcess.add((BaseGenericIdEntity) dependentEntity);
+                                }
+                            }
 
-                    @Override
-                    public boolean skip(MetaProperty property) {
-                        return metadata.getTools().isPersistent(property)
-                                && property.getRange().isClass()
-                                && dependentClasses.contains(property.getJavaType());
+                            @Override
+                            public boolean skip(MetaProperty property) {
+                                return metadata.getTools().isPersistent(property)
+                                        && property.getRange().isClass()
+                                        && dependentClasses.contains(property.getJavaType());
+                            }
+                        });
                     }
                 });
-            }
-        });
         if (toProcess.isEmpty())
             return;
 
