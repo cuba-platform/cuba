@@ -919,7 +919,8 @@ public class EntityInspectorEditor extends AbstractWindow {
                 case COMPOSITION:
                     String viewName = metaProperty.getRange().getCardinality().isMany() ? View.LOCAL : View.MINIMAL;
                     View propView = viewRepository.getView(metaProperty.getRange().asClass(), viewName);
-                    view.addProperty(metaProperty.getName(), propView);
+                    view.addProperty(metaProperty.getName(),
+                            new View(propView, metaProperty.getRange().asClass().getName() + ".entity-inspector-view", true));
                     break;
                 default:
                     throw new IllegalStateException("unknown property type");
