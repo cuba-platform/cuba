@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -49,7 +50,7 @@ public class TemplateHelper {
             if (StringUtils.isEmpty(rootPath)) rootPath = AppContext.getProperty("cuba.confDir");
             templateLoader = new FileTemplateLoader(new File(rootPath), true);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to process template from file", e);
         }
         return __processTemplate(templateLoader, templatePath, parameterValues);
     }
@@ -72,9 +73,12 @@ public class TemplateHelper {
         }
     }
 
-    private static Map<String, Object> prepareParams(Map<String, ?> parameterValues) {
+    protected static Map<String, Object> prepareParams(Map<String, ?> parameterValues) {
+        Map<String, Object> parameterValuesWithStats = new HashMap<>(parameterValues);
+        parameterValuesWithStats.put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
+
         @SuppressWarnings("unchecked")
-        Map<String, Object> params = LazyMap.decorate(parameterValues, name -> {
+        Map<String, Object> params = LazyMap.decorate(parameterValuesWithStats, name -> {
             String propertyName = (String) name;
 
             for (String appProperty : AppContext.getPropertyNames()) {
@@ -84,7 +88,6 @@ public class TemplateHelper {
             }
             return null;
         });
-        params.put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
 
         return params;
     }
