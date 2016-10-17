@@ -50,6 +50,9 @@ public class CubaTreeTableState extends TreeTableState {
 
     @NoLayout
     public Map<String, String> columnDescriptions;
+
+    @NoLayout
+    public Map<String, String> aggregationDescriptions;
     
     @NoLayout
     public String tableSortResetLabel;

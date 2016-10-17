@@ -68,6 +68,8 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
 
     protected Map<Object, String> columnDescriptions; // lazily initialized map
 
+    protected Map<Object, String> aggregationTooltips; // lazily initialized map
+
     protected Table.AggregationStyle aggregationStyle = Table.AggregationStyle.TOP;
     protected Object focusColumn;
     protected Object focusItem;
@@ -636,6 +638,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
 
         updateClickableColumnKeys();
         updateColumnDescriptions();
+        updateAggregatableTooltips();
 
         if (isAggregatable()) {
             if (Table.AggregationStyle.BOTTOM.equals(getAggregationStyle())) {
@@ -731,6 +734,29 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         return null;
     }
 
+    public void setAggregationDescription(Object columnId, String tooltip) {
+        if (tooltip != null) {
+            if (aggregationTooltips == null) {
+                aggregationTooltips = new HashMap<>();
+            }
+            if (!Objects.equals(aggregationTooltips.get(columnId), tooltip)) {
+                markAsDirty();
+            }
+            aggregationTooltips.put(columnId, tooltip);
+        } else if (aggregationTooltips != null) {
+            if (aggregationTooltips.remove(columnId) != null) {
+                markAsDirty();
+            }
+        }
+    }
+
+    public String getAggregationDescription(Object columnId) {
+        if (aggregationTooltips != null) {
+            return aggregationTooltips.get(columnId);
+        }
+        return null;
+    }
+
     protected void updateColumnDescriptions() {
         if (columnDescriptions != null) {
             Map<String, String> columnDescriptionsByKey = new HashMap<>();
@@ -738,6 +764,16 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
                 columnDescriptionsByKey.put(columnIdMap.key(columnEntry.getKey()), columnEntry.getValue());
             }
             getState().columnDescriptions = columnDescriptionsByKey;
+        }
+    }
+
+    protected void updateAggregatableTooltips() {
+        if (aggregationTooltips != null) {
+            Map<String, String> aggregationTooltipsByKey = new HashMap<>();
+            for (Map.Entry<Object, String> columnEntry : aggregationTooltips.entrySet()) {
+                aggregationTooltipsByKey.put(columnIdMap.key(columnEntry.getKey()), columnEntry.getValue());
+            }
+            getState().aggregationDescriptions = aggregationTooltipsByKey;
         }
     }
 

@@ -86,6 +86,9 @@ public interface CubaEnhancedTable extends AggregationContainer {
     String getColumnDescription(Object columnId);
     void setColumnDescription(Object columnId, String description);
 
+    String getAggregationDescription(Object columnId);
+    void setAggregationDescription(Object columnId, String description);
+
     boolean getColumnSortable(Object columnId);
     void setColumnSortable(Object columnId, boolean sortable);
 

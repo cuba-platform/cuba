@@ -404,6 +404,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 aggregation.setType(AggregationInfo.Type.valueOf(aggregationType));
             }
 
+            String valueDescription = aggregationElement.attributeValue("valueDescription");
+            if (StringUtils.isNotEmpty(valueDescription)) {
+                column.setValueDescription(loadResourceString(valueDescription));
+            }
+
             Formatter formatter = loadFormatter(aggregationElement);
             aggregation.setFormatter(formatter == null ? column.getFormatter() : formatter);
             column.setAggregation(aggregation);

@@ -167,6 +167,23 @@ public class CubaTreeTableConnector extends TreeTableConnector {
             }
         }
 
+        if (getState().aggregationDescriptions != null) {
+            Element targetAggregatedElement = findCurrentOrParentTd(element);
+            if (targetAggregatedElement != null
+                    && (targetAggregatedElement.hasClassName("v-table-aggregation-cell")
+                        || targetAggregatedElement.hasClassName("v-table-footer-container"))) {
+                int childIndex = DOM.getChildIndex(targetAggregatedElement.getParentElement(), targetAggregatedElement);
+
+                String columnKey = getWidget().tHead.getHeaderCell(childIndex).getColKey();
+                if (columnKey != null) {
+                    String columnTooltip = getState().aggregationDescriptions.get(columnKey);
+                    if (columnTooltip != null && !columnTooltip.isEmpty()) {
+                        return new TooltipInfo(columnTooltip);
+                    }
+                }
+            }
+        }
+
         if (element != getWidget().getElement()) {
             Object node = WidgetUtil.findWidget(
                     element,
@@ -245,7 +262,8 @@ public class CubaTreeTableConnector extends TreeTableConnector {
                 Element element = Element.as(event.getNativeEvent().getEventTarget());
                 if ("div".equalsIgnoreCase(element.getTagName())) {
                     String className = element.getClassName();
-                    if (className != null && className.contains("v-table-caption-container")) {
+                    if (className != null && (className.contains("v-table-caption-container")
+                            || className.contains("v-table-footer-container"))) {
                         DomEvent.fireNativeEvent(event.getNativeEvent(), getWidget());
                     }
                 }

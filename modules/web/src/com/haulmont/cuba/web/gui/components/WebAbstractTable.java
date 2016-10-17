@@ -173,6 +173,38 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             component.setColumnDescription(column.getId(), column.getDescription());
         }
 
+        if (StringUtils.isNotBlank(column.getValueDescription())) {
+            component.setAggregationDescription(column.getId(), column.getValueDescription());
+        } else if (column.getAggregation()!= null
+                && column.getAggregation().getType() != AggregationInfo.Type.CUSTOM) {
+            Messages messages = AppBeans.get(Messages.NAME);
+            String aggregationTypeLabel;
+
+            switch (column.getAggregation().getType()) {
+                case AVG:
+                    aggregationTypeLabel = "aggreagtion.avg";
+                    break;
+                case COUNT:
+                    aggregationTypeLabel = "aggreagtion.count";
+                    break;
+                case SUM:
+                    aggregationTypeLabel = "aggreagtion.sum";
+                    break;
+                case MIN:
+                    aggregationTypeLabel = "aggreagtion.min";
+                    break;
+                case MAX:
+                    aggregationTypeLabel = "aggreagtion.max";
+                    break;
+                default:
+                    throw new IllegalArgumentException(
+                            String.format("AggregationType %s is not supported",
+                                    column.getAggregation().getType().toString()));
+            }
+
+            component.setAggregationDescription(column.getId(), messages.getMainMessage(aggregationTypeLabel));
+        }
+
         if (!column.isSortable()) {
             component.setColumnSortable(column.getId(), column.isSortable());
         }

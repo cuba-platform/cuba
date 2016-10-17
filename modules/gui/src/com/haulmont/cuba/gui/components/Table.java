@@ -443,6 +443,7 @@ public interface Table<E extends Entity>
         protected Object id;
         protected String caption;
         protected String description;
+        protected String valueDescription;
         protected boolean editable;
         protected Formatter formatter;
         protected Integer width;
@@ -496,6 +497,14 @@ public interface Table<E extends Entity>
             if (owner != null) {
                 owner.setColumnDescription(this, description);
             }
+        }
+
+        public String getValueDescription() {
+            return valueDescription;
+        }
+
+        public void setValueDescription(String valueDescription) {
+            this.valueDescription = valueDescription;
         }
 
         public Boolean isEditable() {
