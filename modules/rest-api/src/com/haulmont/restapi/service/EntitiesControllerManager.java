@@ -25,11 +25,9 @@ import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.app.importexport.EntityImportViewBuilderAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.data.CreatedEntityInfo;
@@ -105,7 +103,7 @@ public class EntitiesControllerManager {
     }
 
     public String loadEntitiesList(String entityName,
-                                   @Nullable String view,
+                                   @Nullable String viewName,
                                    @Nullable Integer limit,
                                    @Nullable Integer offset,
                                    @Nullable String sort,
@@ -135,7 +133,10 @@ public class EntitiesControllerManager {
         }
         ctx.setQuery(query);
 
-        if (!Strings.isNullOrEmpty(view)) {
+
+        View view = null;
+        if (!Strings.isNullOrEmpty(viewName)) {
+            view = metadata.getViewRepository().getView(metaClass, viewName);
             ctx.setView(view);
         }
 
@@ -147,7 +148,7 @@ public class EntitiesControllerManager {
         serializationOptions.add(EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
         if (BooleanUtils.isTrue(returnNulls)) serializationOptions.add(EntitySerializationOption.SERIALIZE_NULLS);
 
-        return entitySerializationAPI.toJson(entities, null, serializationOptions.toArray(new EntitySerializationOption[0]));
+        return entitySerializationAPI.toJson(entities, view, serializationOptions.toArray(new EntitySerializationOption[0]));
     }
 
     public CreatedEntityInfo createEntity(String entityJson, String entityName) {
@@ -177,6 +178,9 @@ public class EntitiesControllerManager {
         Entity existingEntity = dataManager.load(new LoadContext(metaClass).setId(id));
         checkEntityIsNotNull(entityName, entityId, existingEntity);
         Entity entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
+        if (entity instanceof BaseGenericIdEntity) {
+            ((BaseGenericIdEntity) entity).setId(id);
+        }
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
         Collection<Entity> importedEntities;
         try {

@@ -460,7 +460,7 @@ public class EntitySerialization implements EntitySerializationAPI {
             try {
                 return propertyType.parse(value);
             } catch (ParseException e) {
-                throw new EntitySerializationException(String.format("An error occurred while parsing property. Class [%s]. Value [%s].", propertyType, value), e);
+                throw new EntitySerializationException(String.format("An error occurred while parsing property. Type [%s]. Value [%s].", propertyType.getName(), value), e);
             }
         }
 

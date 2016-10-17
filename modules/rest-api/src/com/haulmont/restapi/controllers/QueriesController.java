@@ -41,9 +41,11 @@ public class QueriesController {
                                @PathVariable String queryName,
                                @RequestParam(required = false) Integer limit,
                                @RequestParam(required = false) Integer offset,
-                               @RequestParam Map<String, String> params,
-                               @RequestParam(required = false) boolean dynamicAttributes) throws ClassNotFoundException, ParseException {
-        return queriesControllerManager.executeQuery(entityName, queryName, limit, offset, params, dynamicAttributes);
+                               @RequestParam(required = false) String view,
+                               @RequestParam(required = false) Boolean returnNulls,
+                               @RequestParam(required = false) Boolean dynamicAttributes,
+                               @RequestParam Map<String, String> params) throws ClassNotFoundException, ParseException {
+        return queriesControllerManager.executeQuery(entityName, queryName, limit, offset, view, returnNulls, dynamicAttributes, params);
     }
 
     @GetMapping(value = "/{entityName}/{queryName}/count", produces = "text/plain;charset=UTF-8")
