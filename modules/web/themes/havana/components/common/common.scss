@@ -81,6 +81,10 @@
     display: none;
   }
 
+  .v-caption-text {
+    font-size: 12px;
+  }
+
   .v-ios.v-touch &,
   .v-android.v-touch & {
     .v-tooltip {
