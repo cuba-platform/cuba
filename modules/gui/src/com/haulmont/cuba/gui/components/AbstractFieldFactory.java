@@ -180,6 +180,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         MaskedField maskedField = componentsFactory.createComponent(MaskedField.class);
         maskedField.setDatasource(datasource, property);
         maskedField.setMask("hhhhhhhh-hhhh-hhhh-hhhh-hhhhhhhhhhhh");
+        maskedField.setSendNullRepresentation(false);
         return maskedField;
     }
 

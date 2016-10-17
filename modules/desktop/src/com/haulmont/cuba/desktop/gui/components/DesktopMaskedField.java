@@ -54,10 +54,4 @@ public class DesktopMaskedField extends DesktopTextField implements MaskedField 
     public void setSendNullRepresentation(boolean sendNullRepresentation) {
         this.sendNullRepresentation = sendNullRepresentation;
     }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public String getValue() {
-        return super.getValue();
-    }
 }
