@@ -39,6 +39,7 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -765,20 +766,14 @@ public class RdbmsStore implements DataStore {
         return false;
     }
 
-    protected Set<Class> collectEntityClassesWithDynamicAttributes(View view) {
+    protected Set<Class> collectEntityClassesWithDynamicAttributes(@Nullable View view) {
         if (view == null) {
             return Collections.emptySet();
         }
-        Set<Class> classes = new HashSet<>();
-        for (Class aClass : collectEntityClasses(view, new HashSet<>())) {
-            if (BaseGenericIdEntity.class.isAssignableFrom(aClass)) {
-                Collection<CategoryAttribute> attributes = dynamicAttributesManagerAPI.getAttributesForMetaClass(metadata.getClassNN(aClass));
-                if (attributes != null && !attributes.isEmpty()) {
-                    classes.add(aClass);
-                }
-            }
-        }
-        return classes;
+        return collectEntityClasses(view, new HashSet<>()).stream()
+                .filter(BaseGenericIdEntity.class::isAssignableFrom)
+                .filter(aClass -> !dynamicAttributesManagerAPI.getAttributesForMetaClass(metadata.getClassNN(aClass)).isEmpty())
+                .collect(Collectors.toSet());
     }
 
     protected Set<Class> collectEntityClasses(View view, Set<View> visited) {

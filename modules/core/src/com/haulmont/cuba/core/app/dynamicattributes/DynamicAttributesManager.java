@@ -193,7 +193,9 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     @Override
     public <E extends BaseGenericIdEntity> void fetchDynamicAttributes(List<E> entities, @Nonnull Set<Class> dependentClasses) {
         Set<BaseGenericIdEntity> toProcess = new HashSet<>();
-        entities.stream().filter(entity -> entity instanceof HasUuid).forEach(entity -> {
+        entities.stream()
+                .filter(entity -> entity instanceof HasUuid)
+                .forEach(entity -> {
             toProcess.add(entity);
             if (!dependentClasses.isEmpty()) {
                 metadata.getTools().traverseAttributes(entity, new EntityAttributeVisitor() {
@@ -206,7 +208,9 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
                     @Override
                     public boolean skip(MetaProperty property) {
-                        return metadata.getTools().isPersistent(property) && property.getRange().isClass() && dependentClasses.contains(property.getJavaType());
+                        return metadata.getTools().isPersistent(property)
+                                && property.getRange().isClass()
+                                && dependentClasses.contains(property.getJavaType());
                     }
                 });
             }
