@@ -71,6 +71,10 @@
     width: 100%;
   }
 
+  .#{$primary-stylename} .v-panel {
+    border: none;
+  }
+
   .#{$primary-stylename} .cuba-tokenlist-label.noedit {
     background-image: none;
     padding-right: $v-layout-margin-right;
