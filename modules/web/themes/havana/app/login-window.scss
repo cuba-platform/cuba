@@ -39,7 +39,28 @@
   }
 
   .cuba-powered-by {
-    font-weight: bold;
-    padding-bottom: 25px;
+    font-size: 12px;
+    padding-bottom: 60px;
+
+    a {
+      margin-left: 5px;
+      display: inline-block;
+      text-decoration: none;
+      font-weight: bold;
+      color: #3D85BA;
+
+      background: url(images/cuba-icon-login.png);
+      background-repeat: no-repeat;
+      background-position: left center;
+      background-size: contain;
+      background-clip: border-box;
+      padding-left: 30px;
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+
+    .cuba-cuba-word {
+      color: #5b5857;
+    }
   }
 }
