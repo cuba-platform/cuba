@@ -42,6 +42,7 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -134,7 +135,8 @@ public class RdbmsStore implements DataStore {
             }
 
             if (result instanceof BaseGenericIdEntity && context.isLoadDynamicAttributes()) {
-                dynamicAttributesManagerAPI.fetchDynamicAttributes(Collections.singletonList((BaseGenericIdEntity) result));
+                dynamicAttributesManagerAPI.fetchDynamicAttributes(Collections.singletonList((BaseGenericIdEntity) result),
+                        collectEntityClassesWithDynamicAttributes(context.getView()));
             }
 
             tx.commit();
@@ -193,7 +195,8 @@ public class RdbmsStore implements DataStore {
             if (context.getView() != null
                     && BaseGenericIdEntity.class.isAssignableFrom(context.getView().getEntityClass())
                     && context.isLoadDynamicAttributes()) {
-                dynamicAttributesManagerAPI.fetchDynamicAttributes((List<BaseGenericIdEntity>) resultList);
+                dynamicAttributesManagerAPI.fetchDynamicAttributes((List<BaseGenericIdEntity>) resultList,
+                        collectEntityClassesWithDynamicAttributes(context.getView()));
             }
 
             tx.commit();
@@ -766,6 +769,16 @@ public class RdbmsStore implements DataStore {
             }
         }
         return false;
+    }
+
+    protected Set<Class> collectEntityClassesWithDynamicAttributes(@Nullable View view) {
+        if (view == null) {
+            return Collections.emptySet();
+        }
+        return collectEntityClasses(view, new HashSet<>()).stream()
+                .filter(BaseGenericIdEntity.class::isAssignableFrom)
+                .filter(aClass -> !dynamicAttributesManagerAPI.getAttributesForMetaClass(metadata.getClassNN(aClass)).isEmpty())
+                .collect(Collectors.toSet());
     }
 
     protected Set<Class> collectEntityClasses(View view, Set<View> visited) {
