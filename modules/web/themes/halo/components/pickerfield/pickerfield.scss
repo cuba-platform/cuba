@@ -58,9 +58,11 @@
   .v-button.#{$primary-stylename}-button {
     display: table-cell !important;
     text-align: center !important;
+    vertical-align: middle;
     padding: 0;
     width: $v-unit-size;
     min-width: $v-unit-size;
+    height: 100%;
 
     border: valo-border($v-textfield-border,
                 darkest-color($v-textfield-background-color, $v-app-background-color));
@@ -99,6 +101,8 @@
       left: 0;
       bottom: 0;
       right: 0;
+
+      height: $v-unit-size;
     }
 
     &:before {
@@ -114,10 +118,6 @@
       @if type-of($v-textfield-background-color) == color {
         @include valo-button-active-style($v-textfield-background-color);
       }
-    }
-
-    .v-button-wrap {
-      vertical-align: middle;
     }
 
     .v-button-caption {
