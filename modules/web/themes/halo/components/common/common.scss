@@ -26,9 +26,16 @@
       display: none;
     }
   } @else {
+    .c-tooltip-button {
+      display: inline-block;
+      font-size: 0;
+      width: $v-font-size;
+    }
+
     .c-tooltip-button::before {
       font-family: FontAwesome;
       content: "\f059";
+      font-size: $v-font-size;
     }
   }
 
