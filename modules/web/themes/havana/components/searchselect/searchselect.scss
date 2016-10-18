@@ -17,7 +17,7 @@
 
 @mixin havana-cuba-searchselect($primary-stylename: c-searchselect) {
   .#{$primary-stylename},
-  .#{$primary-stylename} .v-filterselect-button-input {
+  .#{$primary-stylename} .v-filterselect-input {
     padding-right: 0;
   }
 

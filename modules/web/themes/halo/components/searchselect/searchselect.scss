@@ -19,7 +19,7 @@ $cuba-searchselect-edit-color: scale-color(lighten($v-focus-color, 35%), $satura
 
 @mixin halo-cuba-searchselect($primary-stylename: c-searchselect) {
   .#{$primary-stylename},
-  .#{$primary-stylename} .v-filterselect-button-input {
+  .#{$primary-stylename} .v-filterselect-input {
     padding-right: 0;
   }
 
