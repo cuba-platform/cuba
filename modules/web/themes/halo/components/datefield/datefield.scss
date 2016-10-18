@@ -16,6 +16,23 @@
  */
 
 @mixin halo-datefield($primary-stylename : c-datefield) {
+  .#{$primary-stylename}-composition {
+    display: inline-table;
+  }
+
+  .#{$primary-stylename}-layout {
+    display: table-row;
+
+    .c-maskedfield {
+      margin-left: $v-layout-spacing-horizontal/2;
+      display: table-cell;
+    }
+
+    .#{$primary-stylename} {
+      display: table-cell;
+    }
+  }
+
   .#{$primary-stylename} {
     $border-width: first-number($v-textfield-border) or 0;
     $padding-width: ceil($v-unit-size/6) + ceil($v-textfield-border-radius/3);
@@ -23,6 +40,7 @@
     [class*="textfield"] {
       padding-left: $padding-width;
       padding-right: $v-unit-size * 1.2;
+      height: $v-unit-size;
     }
 
     [class*="button"] {
@@ -35,17 +53,17 @@
 
   .#{$primary-stylename}-composition-error {
     .c-maskedfield,
-    .#{$primary-stylename}-textfield {
+    .v-datefield-textfield {
       @include valo-textfield-error-style;
     }
 
-    .#{$primary-stylename}-button {
+    .v-datefield-button {
       color: $v-error-indicator-color;
       border-color: $v-error-indicator-color;
     }
   }
 
-  .#{$primary-stylename}-calendarpanel-day.#{$primary-stylename}-calendarpanel-day-focused {
+  .#{$primary-stylename} .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-focused {
     border-color: $v-focus-color;
   }
 }
