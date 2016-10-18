@@ -17,118 +17,128 @@
 
 @mixin halo-cuba-pickerfield($primary-stylename: c-pickerfield) {
   .#{$primary-stylename} {
-    .v-textfield.v-textfield-readonly {
-      @if $v-textfield-background-color {
-        background: $v-textfield-background-color;
-      }
+    display: inline-table;
+  }
 
-      color: valo-font-color($v-textfield-background-color);
-      @include box-shadow(valo-bevel-and-shadow(
-              $bevel: $v-textfield-bevel,
-              $shadow: $v-textfield-shadow,
-              $background-color:
-              $v-textfield-background-color, $gradient: none));
-      &:focus {
-        @include valo-textfield-focus-style;
-      }
+  .#{$primary-stylename}-layout {
+    display: table-row;
+  }
 
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-    }
+  .#{$primary-stylename}-layout > .v-filterselect,
+  .v-textfield.#{$primary-stylename}-text {
+    display: table-cell;
+  }
 
-    .c-searchselect,
-    .v-filterselect {
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-    }
+  .#{$primary-stylename}-layout > .v-filterselect > input {
+    height: $v-unit-size;
+  }
 
-    .v-button {
-      display: block !important;
-      text-align: center !important;
-      padding: 0;
-      min-width: $v-unit-size;
-      height: $v-unit-size;
-
-      border: valo-border($v-textfield-border,
-                          darkest-color($v-textfield-background-color, $v-app-background-color));
-
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
-      border-left: 0;
-
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-
-      color: mix($v-textfield-background-color, valo-font-color($v-textfield-background-color));
+  .v-textfield.#{$primary-stylename}-text {
+    @if $v-textfield-background-color {
       background: $v-textfield-background-color;
-      @include box-shadow(valo-bevel-and-shadow(
-              $bevel: $v-textfield-bevel,
-              $shadow: $v-textfield-shadow,
-              $background-color:
-              $v-textfield-background-color, $gradient: none));
+    }
 
-      .v-ie8 & {
-        background-color: $v-textfield-background-color;
-      }
+    color: valo-font-color($v-textfield-background-color);
 
-      @if $v-hover-styles-enabled and type-of($v-textfield-background-color) == color {
-        &:hover {
-          color: valo-font-color($v-textfield-background-color);
-        }
-      }
+    @include box-shadow(valo-bevel-and-shadow(
+            $bevel: $v-textfield-bevel,
+            $shadow: $v-textfield-shadow,
+            $background-color: $v-textfield-background-color, $gradient: none));
+    &:focus {
+      @include valo-textfield-focus-style;
+    }
+  }
 
-      &:after,
-      &:hover:after {
-        background: transparent;
-      }
+  .#{$primary-stylename}-layout > .v-filterselect > input,
+  .v-textfield.#{$primary-stylename}-text {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
 
-      &:focus:after {
-        border-color: transparent;
+  .v-button.#{$primary-stylename}-button {
+    display: table-cell !important;
+    text-align: center !important;
+    padding: 0;
+    width: $v-unit-size;
+    min-width: $v-unit-size;
 
-        @include box-shadow(none);
-      }
+    border: valo-border($v-textfield-border,
+                darkest-color($v-textfield-background-color, $v-app-background-color));
 
-      &:active:after {
-        @if type-of($v-textfield-background-color) == color {
-          @include valo-button-active-style($v-textfield-background-color);
-        }
-      }
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: 0;
 
-      .v-button-wrap {
-        .v-button-caption {
-          display: none;
-        }
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+
+    color: mix($v-textfield-background-color, valo-font-color($v-textfield-background-color));
+    background: $v-textfield-background-color;
+    @include box-shadow(valo-bevel-and-shadow(
+                $bevel: $v-textfield-bevel,
+                $shadow: $v-textfield-shadow,
+                $background-color: $v-textfield-background-color,
+                $gradient: none));
+
+    .v-ie8 & {
+      background-color: $v-textfield-background-color;
+    }
+
+    @if $v-hover-styles-enabled and type-of($v-textfield-background-color) == color {
+      &:hover {
+        color: valo-font-color($v-textfield-background-color);
       }
     }
 
-    .v-slot:last-child .v-button {
+    &:after,
+    &:hover:after {
+      background: transparent;
+
+      border: 0;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+    }
+
+    &:before {
+      height: 100% !important;
+    }
+
+    &:focus:after {
+      border-color: transparent;
+      @include box-shadow(none);
+    }
+
+    &:active:after {
+      @if type-of($v-textfield-background-color) == color {
+        @include valo-button-active-style($v-textfield-background-color);
+      }
+    }
+
+    .v-button-wrap {
+      vertical-align: middle;
+    }
+
+    .v-button-caption {
+      display: none;
+    }
+  }
+
+  .#{$primary-stylename}-layout > .v-button:last-child {
+    border-top-right-radius: $v-border-radius;
+    border-bottom-right-radius: $v-border-radius;
+
+    &:focus {
       border-top-right-radius: $v-border-radius;
       border-bottom-right-radius: $v-border-radius;
-
-      &:focus {
-        border-top-right-radius: $v-border-radius;
-        border-bottom-right-radius: $v-border-radius;
-      }
     }
+  }
 
-    .v-slot:last-child .v-textfield {
-      &:focus {
-        border-right-color: $v-focus-color;
-      }
-
-      border-top-right-radius: $v-textfield-border-radius;
-      border-bottom-right-radius: $v-textfield-border-radius;
-    }
-
-    .v-slot:last-child .c-searchselect,
-    .v-slot:last-child .v-filterselect {
-      &:focus {
-        border-right-color: $v-focus-color;
-      }
-
-      border-top-right-radius: $v-textfield-border-radius;
-      border-bottom-right-radius: $v-textfield-border-radius;
-    }
+  .#{$primary-stylename}-layout > .v-textfield.#{$primary-stylename}-text:last-child,
+  .#{$primary-stylename}-layout > .v-filterselect:last-child > input {
+    border-top-right-radius: $v-textfield-border-radius;
+    border-bottom-right-radius: $v-textfield-border-radius;
   }
 
   .#{$primary-stylename}-error {

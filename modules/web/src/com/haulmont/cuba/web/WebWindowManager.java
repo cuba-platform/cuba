@@ -1540,10 +1540,10 @@ public class WebWindowManager extends WindowManager {
                     return;
                 }
 
-                if (AppWorkArea.Mode.TABBED == workArea.getMode()) {
-                    final CubaTabSheet tabSheet = workArea.getTabbedWindowContainer();
+                if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
+                    CubaTabSheet tabSheet = workArea.getTabbedWindowContainer();
                     if (tabSheet != null) {
-                        VerticalLayout layout = (VerticalLayout) tabSheet.getSelectedTab();
+                        Layout layout = (Layout) tabSheet.getSelectedTab();
                         if (layout != null) {
                             tabSheet.focus();
 

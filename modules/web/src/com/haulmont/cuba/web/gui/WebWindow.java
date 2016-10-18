@@ -1180,12 +1180,12 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Nullable
-    protected VerticalLayout asSingleWindow() {
+    protected Layout asSingleWindow() {
         if (component.isAttached()) {
             com.vaadin.ui.Component parent = component;
             while (parent != null) {
                 if (parent.getParent() instanceof CubaSingleModeContainer) {
-                    return (VerticalLayout) parent;
+                    return (Layout) parent;
                 }
 
                 parent = parent.getParent();
@@ -1208,7 +1208,7 @@ public class WebWindow implements Window, Component.Wrapper,
                     setTabCaptionAndDescription(tabWindow);
                     windowManager.getBreadCrumbs((ComponentContainer) tabWindow.getComponent()).update();
                 } else {
-                    VerticalLayout singleModeWindow = asSingleWindow();
+                    Layout singleModeWindow = asSingleWindow();
                     if (singleModeWindow != null) {
                         windowManager.getBreadCrumbs(singleModeWindow).update();
                     }

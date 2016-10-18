@@ -423,10 +423,13 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         return actionsPermissions;
     }
 
-    protected static class PickerButton extends WebButton {
+    protected class PickerButton extends WebButton {
+        public PickerButton() {
+        }
 
-        protected PickerButton() {
-            component.setTabIndex(-1);
+        @Override
+        protected void beforeActionPerformed() {
+            WebPickerField.this.requestFocus();
         }
 
         @Override
@@ -440,8 +443,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
     }
 
     public static class Picker extends CubaPickerField {
-
-        private PickerField owner;
+        protected PickerField owner;
 
         public Picker(PickerField owner) {
             this.owner = owner;
