@@ -32,8 +32,8 @@
   }
 
   .cuba-powered-by {
-    font-size: 12px;
-    padding-bottom: $v-unit-size * 2;
+    font-size: 11px;
+    padding-bottom: $v-unit-size;
 
     a {
       margin-left: 5px;
@@ -47,9 +47,9 @@
       background-position: left center;
       background-size: contain;
       background-clip: border-box;
-      padding-left: 30px;
-      padding-top: 5px;
-      padding-bottom: 5px;
+      padding-left: 24px;
+      padding-top: 3px;
+      padding-bottom: 3px;
     }
 
     .cuba-cuba-word {
