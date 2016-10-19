@@ -161,10 +161,16 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container {
         }
     }
 
-    public void closeTab(Component tab) {
+    @Override
+    public void removeTab(Tab tab) {
+        super.removeTab(tab);
+
+        //noinspection StatementWithEmptyBody
         while (openedComponents.removeElement(tab)) {
-            openedComponents.removeElement(tab);
         }
+    }
+
+    public void closeTab(Component tab) {
         if (closeHandler != null) {
             closeHandler.onTabClose(this, tab);
         }
