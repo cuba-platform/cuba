@@ -66,7 +66,7 @@ public class CalendarEventWrapper implements com.vaadin.ui.components.calendar.e
 
     @Override
     public String getStyleName() {
-        return calendarEvent.getDescription();
+        return calendarEvent.getStyleName();
     }
 
     @Override
