@@ -33,6 +33,9 @@ import org.eclipse.persistence.internal.helper.CubaUtil;
 import org.junit.*;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,10 +47,12 @@ public class SoftDeleteTest {
     public static TestContainer cont = TestContainer.Common.INSTANCE;
     
     private UUID groupId;
-    private UUID userId;
+    private UUID userId, user1Id;
     private UUID role2Id;
+    private UUID role3Id;
     private UUID userRole1Id;
     private UUID userRole2Id;
+    private UUID userRole3Id;
     private UUID oneToOneA1Id, oneToOneA2Id, oneToOneA3Id;
     private UUID oneToOneB1Id, oneToOneB2Id;
     private Persistence persistence;
@@ -72,6 +77,13 @@ public class SoftDeleteTest {
             user.setGroup(group);
             em.persist(user);
 
+            User user1 = new User();
+            user1Id = user1.getId();
+            user1.setName("testUser1");
+            user1.setLogin("testLogin1");
+            user1.setGroup(group);
+            em.persist(user1);
+
             Role role1 = em.find(Role.class, UUID.fromString("0c018061-b26f-4de2-a5be-dff348347f93"));
 
             UserRole userRole1 = new UserRole();
@@ -85,11 +97,22 @@ public class SoftDeleteTest {
             role2.setName("roleToBeDeleted");
             em.persist(role2);
 
+            Role role3 = new Role();
+            role3Id = role3.getId();
+            role3.setName("roleToBeDeleted3");
+            em.persist(role3);
+
             UserRole userRole2 = new UserRole();
             userRole2Id = userRole2.getId();
             userRole2.setUser(user);
             userRole2.setRole(role2);
             em.persist(userRole2);
+
+            UserRole userRole3 = new UserRole();
+            userRole3Id = userRole3.getId();
+            userRole3.setUser(user1);
+            userRole3.setRole(role3);
+            em.persist(userRole3);
 
             SoftDeleteOneToOneB oneToOneB1 = cont.metadata().create(SoftDeleteOneToOneB.class);
             oneToOneB1.setName("oneToOneB1");
@@ -129,6 +152,10 @@ public class SoftDeleteTest {
             SoftDeleteOneToOneB oneToOneB = em.find(SoftDeleteOneToOneB.class, oneToOneB2Id);
             em.remove(oneToOneB);
 
+            //remove from db to prevent cascade delete user role
+            QueryRunner queryRunner = new QueryRunner();
+            queryRunner.update(em.getConnection(), "update SEC_ROLE set DELETE_TS = CREATE_TS, DELETED_BY = CREATED_BY where name = 'roleToBeDeleted3'");
+
             tx.commit();
         } finally {
             tx.end();
@@ -137,9 +164,9 @@ public class SoftDeleteTest {
 
     @After
     public void tearDown() throws Exception {
-        cont.deleteRecord("SEC_USER_ROLE", userRole1Id, userRole2Id);
-        cont.deleteRecord("SEC_ROLE", role2Id);
-        cont.deleteRecord("SEC_USER", userId);
+        cont.deleteRecord("SEC_USER_ROLE", userRole1Id, userRole2Id, userRole3Id);
+        cont.deleteRecord("SEC_ROLE", role2Id, role3Id);
+        cont.deleteRecord("SEC_USER", userId, user1Id);
         cont.deleteRecord("SEC_GROUP", groupId);
         cont.deleteRecord("TEST_SOFT_DELETE_OTO_A", oneToOneA1Id, oneToOneA2Id);
         if (oneToOneA3Id != null) {
@@ -903,5 +930,24 @@ public class SoftDeleteTest {
             assertNull(u);
             tx.commit();
         }
+    }
+
+
+    @Test
+    public void testReferenceToDeletedEntityThroughOneToMany() throws Exception {
+        View userRoleView = new View(UserRole.class).addProperty("role", new View(Role.class).addProperty("deleteTs"));
+        View userView = new View(User.class).addProperty("userRoles", userRoleView);
+
+        Role deleted = cont.persistence().callInTransaction((em) -> em.find(Role.class, role3Id));
+        assertNull(deleted);
+
+        UserRole userRole = cont.persistence().callInTransaction((em) -> em.find(UserRole.class, userRole3Id, userRoleView));
+        assertNotNull(userRole.getRole());
+        assertEquals(role3Id, userRole.getRole().getId());
+        assertTrue(userRole.getRole().isDeleted());
+
+        User user = cont.persistence().callInTransaction((em) -> em.find(User.class, user1Id, userView));
+        assertEquals(role3Id, user.getUserRoles().iterator().next().getRole().getId());
+        Assert.assertTrue(user.getUserRoles().iterator().next().getRole().isDeleted());
     }
 }
