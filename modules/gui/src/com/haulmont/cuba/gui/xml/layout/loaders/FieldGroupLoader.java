@@ -407,6 +407,9 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
     public void createComponent() {
         resultComponent = (FieldGroup) factory.createComponent(FieldGroup.NAME);
         loadId(resultComponent, element);
+
+        // required for border visible
+        loadBorder(resultComponent, element);
     }
 
     @Override
@@ -492,8 +495,6 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         loadHeight(resultComponent, element);
 
         loadAlign(resultComponent, element);
-
-        loadBorder(resultComponent, element);
 
         loadCaptionAlignment(resultComponent, element);
 
