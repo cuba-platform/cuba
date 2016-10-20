@@ -109,7 +109,7 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
                 }
             }
 
-            if (linkHandler != null) {
+            if (linkHandler != null && linkHandler.canHandleLink()) {
                 linkHandler.handle();
                 linkHandler = null;
             }

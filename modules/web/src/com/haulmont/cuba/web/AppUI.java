@@ -368,7 +368,7 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
 
             try {
                 LinkHandler linkHandler = AppBeans.getPrototype(LinkHandler.NAME, app, action, params);
-                if (app.connection.isConnected()) {
+                if (app.connection.isConnected() && linkHandler.canHandleLink()) {
                     linkHandler.handle();
                 } else {
                     app.linkHandler = linkHandler;
