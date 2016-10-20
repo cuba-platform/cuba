@@ -42,11 +42,10 @@ import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
 import org.apache.commons.lang.ClassUtils;
 import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.indirection.IndirectContainer;
-import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.indirection.UnitOfWorkQueryValueHolder;
 import org.eclipse.persistence.internal.indirection.jdk8.IndirectList;
 import org.eclipse.persistence.internal.indirection.jdk8.IndirectMap;
 import org.eclipse.persistence.internal.indirection.jdk8.IndirectSet;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.objenesis.instantiator.ObjectInstantiator;
 import org.objenesis.strategy.InstantiatorStrategy;
 import org.objenesis.strategy.StdInstantiatorStrategy;
@@ -57,10 +56,8 @@ import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.GregorianCalendar;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The serialization implementation using Kryo serialization
@@ -68,6 +65,10 @@ import java.util.GregorianCalendar;
 public class KryoSerialization implements Serialization {
 
     protected static final Logger log = LoggerFactory.getLogger(KryoSerialization.class);
+
+    protected static final List<String> INCLUDED_VALUE_HOLDER_FIELDS =
+            Arrays.asList("value", "isInstantiated", "mapping", "sourceAttributeName", "relationshipSourceObject");
+
 
     protected boolean onlySerializable = true;
     protected final ThreadLocal<Kryo> kryos = new ThreadLocal<Kryo>() {
@@ -125,6 +126,7 @@ public class KryoSerialization implements Serialization {
         kryo.register(ArrayListMultimap.class, new CubaJavaSerializer());
         kryo.register(MetaClassImpl.class, new CubaJavaSerializer());
         kryo.register(MetaPropertyImpl.class, new CubaJavaSerializer());
+        kryo.register(UnitOfWorkQueryValueHolder.class, new UnitOfWorkQueryValueHolderSerializer(kryo));
 
         return kryo;
     }
@@ -182,32 +184,7 @@ public class KryoSerialization implements Serialization {
                 return super.read(kryo, input, type);
             } else {
                 IndirectCollection indirectCollection = (IndirectCollection) kryo.newInstance((Class) type);
-                indirectCollection.setValueHolder(new ValueHolderInterface() {
-                    @Override
-                    public Object clone() {
-                        return throwException();
-                    }
-
-                    @Override
-                    public Object getValue() {
-                        return throwException();
-                    }
-
-                    @Override
-                    public boolean isInstantiated() {
-                        return false;
-                    }
-
-                    @Override
-                    public void setValue(Object value) {
-                        throwException();
-                    }
-
-                    protected Object throwException() {
-                        throw new IllegalStateException(
-                                ExceptionLocalization.buildMessage("cannot_get_unfetched_attribute", new Object[]{"", ""}));
-                    }
-                });
+                indirectCollection.setValueHolder(new UnfetchedValueHolder());
                 return (Collection) indirectCollection;
             }
         }
@@ -231,6 +208,44 @@ public class KryoSerialization implements Serialization {
                 return objectStream.readObject();
             } catch (Exception ex) {
                 throw new KryoException("Error during Java deserialization.", ex);
+            }
+        }
+    }
+
+    public class UnitOfWorkQueryValueHolderSerializer extends KryoSerialization.CubaFieldSerializer {
+
+        public UnitOfWorkQueryValueHolderSerializer(Kryo kryo) {
+            super(kryo, UnitOfWorkQueryValueHolder.class);
+        }
+
+        @Override
+        protected void rebuildCachedFields(boolean minorRebuild) {
+            super.rebuildCachedFields(minorRebuild);
+            List<CachedField> excludedFields = Arrays.stream(getFields())
+                    .filter(cachedField -> !INCLUDED_VALUE_HOLDER_FIELDS.contains(cachedField.getField().getName()))
+                    .collect(Collectors.toList());
+            excludedFields.forEach(this::removeField);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public void write(Kryo kryo, Output output, Object object) {
+            boolean isNotInstantiated = object instanceof UnitOfWorkQueryValueHolder
+                    && !((UnitOfWorkQueryValueHolder) object).isInstantiated();
+            output.writeBoolean(isNotInstantiated);
+            if (!isNotInstantiated) {
+                super.write(kryo, output, object);
+            }
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Object read(Kryo kryo, Input input, Class type) {
+            boolean isNotInstantiated = input.readBoolean();
+            if (!isNotInstantiated) {
+                return super.read(kryo, input, type);
+            } else {
+                return new UnfetchedWeavedAttributeValueHolder();
             }
         }
     }
