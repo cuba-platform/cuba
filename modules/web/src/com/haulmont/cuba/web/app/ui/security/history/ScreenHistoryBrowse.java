@@ -52,21 +52,13 @@ public class ScreenHistoryBrowse extends AbstractWindow {
                 .setWidth(themeConstants.getInt("cuba.web.ScreenHistoryBrowse.width"))
                 .setResizable(false);
 
-        LinkColumnHelper.initColumn(historyTable, "caption",
-                new LinkColumnHelper.Handler() {
-                    @Override
-                    public void onClick(Entity entity) {
-                        close("windowClose");
-                        openUrl(entity);
-                    }
-                }
+        LinkColumnHelper.initColumn(historyTable, "caption", entity -> {
+            close("windowClose");
+            openUrl(entity);
+        });
+        historyTable.addAction(new ShowLinkAction(historyTable.getDatasource(), entity ->
+                entity != null ? ((ScreenHistoryEntity) entity).getUrl() : "")
         );
-        historyTable.addAction(new ShowLinkAction(historyTable.getDatasource(), new ShowLinkAction.Handler() {
-            @Override
-            public String makeLink(Entity entity) {
-                return entity != null ? ((ScreenHistoryEntity) entity).getUrl() : "";
-            }
-        }));
     }
 
     protected void openUrl(Entity entity) {
@@ -87,6 +79,8 @@ public class ScreenHistoryBrowse extends AbstractWindow {
                 App.getInstance(),
                 actions.isEmpty() ? "open" : actions.get(0),
                 paramsScreen);
-        linkHandler.handle();
+        if (linkHandler.canHandleLink()) {
+            linkHandler.handle();
+        }
     }
 }

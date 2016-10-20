@@ -22,10 +22,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DialogAction;
-import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.exception.AccessDeniedHandler;
@@ -56,7 +53,6 @@ import java.util.UUID;
  * Handles links from outside of the application.
  * <p/> This bean is used particularly when a request URL contains one of
  * {@link com.haulmont.cuba.web.WebConfig#getLinkHandlerActions()} actions.
- *
  */
 @org.springframework.stereotype.Component(LinkHandler.NAME)
 @Scope("prototype")
@@ -64,7 +60,7 @@ public class LinkHandler {
 
     public static final String NAME = "cuba_LinkHandler";
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private Logger log = LoggerFactory.getLogger(LinkHandler.class);
 
     @Inject
     protected Messages messages;
@@ -99,6 +95,15 @@ public class LinkHandler {
     }
 
     /**
+     * Check state of LinkHandler and application.
+     *
+     * @return true if application and LinkHandler in an appropriate state.
+     */
+    public boolean canHandleLink() {
+        return app.getTopLevelWindow() instanceof Window.HasWorkArea;
+    }
+
+    /**
      * Called to handle the link.
      */
     public void handle() {
@@ -109,11 +114,10 @@ public class LinkHandler {
                 if (folder != null) {
                     folders.openFolder(folder);
                 } else {
-                    log.warn("Folder not found: " + folderId);
+                    log.warn("Folder not found: {}", folderId);
                 }
                 return;
             }
-
 
             String screenName = requestParams.get("screen");
             if (screenName == null) {
@@ -124,7 +128,7 @@ public class LinkHandler {
             WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
             final WindowInfo windowInfo = windowConfig.getWindowInfo(screenName);
             if (windowInfo == null) {
-                log.warn("WindowInfo not found for screen: " + screenName);
+                log.warn("WindowInfo not found for screen: {}", screenName);
                 return;
             }
 
@@ -158,7 +162,7 @@ public class LinkHandler {
             final Map<String, String> currentRequestParams = new HashMap<>(requestParams);
 
             app.getWindowManager().showOptionDialog(
-                    messages.getMessage(getClass(), "toSubstitutedUser.title"),
+                    messages.getMainMessage("toSubstitutedUser.title"),
                     getDialogMessage(substitutedUser),
                     Frame.MessageType.CONFIRMATION_HTML,
                     new Action[]{
@@ -179,7 +183,7 @@ public class LinkHandler {
 
                                 @Override
                                 public String getCaption() {
-                                    return messages.getMessage(getClass(), "action.switch");
+                                    return messages.getMainMessage("action.switch");
                                 }
                             },
                             new DoNotChangeSubstUserAction() {
@@ -193,14 +197,14 @@ public class LinkHandler {
 
                                 @Override
                                 public String getCaption() {
-                                    return messages.getMessage(getClass(), "action.cancel");
+                                    return messages.getMainMessage("action.cancel");
                                 }
                             }
                     });
         } else {
             User user = loadUser(userId);
             app.getWindowManager().showOptionDialog(
-                    messages.getMessage(getClass(), "warning.title"),
+                    messages.getMainMessage("warning.title"),
                     getWarningMessage(user),
                     Frame.MessageType.WARNING_HTML,
                     new Action[]{
@@ -230,9 +234,8 @@ public class LinkHandler {
 
     protected String getWarningMessage(User user) {
         if (user == null)
-            return messages.getMessage(getClass(), "warning.userNotFound");
-        return messages.formatMessage(
-                getClass(),
+            return messages.getMainMessage("warning.userNotFound");
+        return messages.formatMainMessage(
                 "warning.msg",
                 StringUtils.isBlank(user.getName()) ? user.getLogin() : user.getName()
         );
@@ -254,7 +257,7 @@ public class LinkHandler {
     }
     
     protected User loadUser(UUID userId) {
-        LoadContext loadContext = new LoadContext(User.class);
+        LoadContext<User> loadContext = new LoadContext<>(User.class);
         LoadContext.Query query = new LoadContext.Query("select u from sec$User u where u.id = :userId");
         query.setParameter("userId", userId);
         loadContext.setQuery(query);
@@ -263,8 +266,7 @@ public class LinkHandler {
     }
 
     protected String getDialogMessage(User user) {
-        return messages.formatMessage(
-                getClass(),
+        return messages.formatMainMessage(
                 "toSubstitutedUser.msg",
                 StringUtils.isBlank(user.getName()) ? user.getLogin() : user.getName()
         );
@@ -279,7 +281,7 @@ public class LinkHandler {
             try {
                 openType = OpenType.valueOf(openTypeParam);
             } catch (IllegalArgumentException e) {
-                log.warn("Unknown open type (" + openTypeParam + ") in request parameters");
+                log.warn("Unknown open type ({}) in request parameters", openTypeParam);
             }
         }
 
@@ -288,7 +290,7 @@ public class LinkHandler {
         } else {
             EntityLoadInfo info = EntityLoadInfo.parse(itemStr);
             if (info == null) {
-                log.warn("Invalid item definition: " + itemStr);
+                log.warn("Invalid item definition: {}", itemStr);
             } else {
                 Entity entity = loadEntityInstance(info);
                 if (entity != null)
@@ -309,7 +311,7 @@ public class LinkHandler {
         for (String entry : entries) {
             String[] parts = entry.split(":");
             if (parts.length != 2) {
-                log.warn("Invalid parameter: " + entry);
+                log.warn("Invalid parameter: {}", entry);
                 return params;       
             }
             String name = parts[0];
@@ -340,7 +342,7 @@ public class LinkHandler {
         try {
             entity = dataService.load(ctx);
         } catch (Exception e) {
-            log.warn("Unable to load item: " + info, e);
+            log.warn("Unable to load item: {}", info, e);
             return null;
         }
         return entity;
