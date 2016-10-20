@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.core.sys.remoting.RemoteClientInfo;
 import com.haulmont.cuba.security.entity.RememberMeToken;
 import com.haulmont.cuba.security.entity.User;
@@ -248,8 +249,17 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
                     messages.getTools().getDefaultLocale()));
         }
 
-        UserSession userSession = authentication.begin();
-        authentication.end();
+        SecurityContext currentSecContext = AppContext.getSecurityContext();
+        UserSession userSession;
+        try {
+            // we need to reset security context to prevent reusing current session
+            AppContext.setSecurityContext(null);
+
+            userSession = authentication.begin();
+            authentication.end();
+        } finally {
+            AppContext.setSecurityContext(currentSecContext);
+        }
 
         return userSession;
     }
