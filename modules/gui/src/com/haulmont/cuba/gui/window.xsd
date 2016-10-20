@@ -269,6 +269,17 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="calendarTimeFormat">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="12H"/>
+                    <xs:enumeration value="24H"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
     <xs:simpleType name="defaultValidator">
         <xs:union>
             <xs:simpleType>
@@ -738,6 +749,7 @@
 
         <xs:attribute name="startDate" type="xs:string"/>
         <xs:attribute name="endDate" type="xs:string"/>
+        <xs:attribute name="timeFormat" type="calendarTimeFormat"/>
 
         <xs:attribute name="startDateProperty" type="xs:string"/>
         <xs:attribute name="endDateProperty" type="xs:string"/>
