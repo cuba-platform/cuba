@@ -745,7 +745,7 @@
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
 
-        <xs:attributeGroup ref="hasDatasource"/>
+        <xs:attribute name="datasource" type="xs:string"/>
 
         <xs:attribute name="startDate" type="xs:string"/>
         <xs:attribute name="endDate" type="xs:string"/>
