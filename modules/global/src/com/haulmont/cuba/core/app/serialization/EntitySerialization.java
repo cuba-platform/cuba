@@ -234,7 +234,8 @@ public class EntitySerialization implements EntitySerializationAPI {
 
         protected boolean propertyWritingAllowed(MetaProperty metaProperty, Entity entity) {
             return !"id".equals(metaProperty.getName()) &&
-                    (DynamicAttributesUtils.isDynamicAttribute(metaProperty) || PersistenceHelper.isLoaded(entity, metaProperty.getName()));
+                    (DynamicAttributesUtils.isDynamicAttribute(metaProperty) ||
+                            (metadataTools.isPersistent(metaProperty) && PersistenceHelper.isLoaded(entity, metaProperty.getName())));
         }
 
         protected void writeFields(Entity entity, JsonObject jsonObject, @Nullable View view, Set<Entity> cyclicReferences) {
@@ -420,7 +421,7 @@ public class EntitySerialization implements EntitySerializationAPI {
                         fetchDynamicAttributes(entity);
                     }
 
-                    if (metaProperty.getAnnotatedElement().isAnnotationPresent(com.haulmont.chile.core.annotations.MetaProperty.class)) {
+                    if (!metadataTools.isPersistent(metaProperty)) {
                         continue;
                     }
                     Class<?> propertyType = metaProperty.getJavaType();
