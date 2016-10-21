@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
+import java.util.Locale;
 
 /**
  * Default {@link App} implementation that shows {@link AppLoginWindow} on start.
@@ -143,7 +144,8 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
             if (!redirectedToExternalAuth) {
                 initExceptionHandlers(false);
 
-                setLocale(resolveLocale(null));
+                Locale requestLocale = VaadinService.getCurrentRequest().getLocale();
+                setLocale(resolveLocale(requestLocale));
 
                 getConnection().loginAnonymous(getLocale());
             }
