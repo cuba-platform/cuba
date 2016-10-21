@@ -244,6 +244,12 @@ public class QueryParserAstBasedTest {
         assertEquals("h.group", parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
 
         parser = new QueryParserAstBased(model,
+                "select g.group from sec$GroupHierarchy h join h.group g"
+        );
+        assertNull(parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
+        assertNull(parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
+
+        parser = new QueryParserAstBased(model,
                 "select h.parent.other from sec$GroupHierarchy h where h.userGroup = :par"
         );
         assertEquals("sec$GroupHierarchy", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
@@ -314,7 +320,7 @@ public class QueryParserAstBasedTest {
         JpqlEntityModel constraintEntity = builder.produce();
 
 
-        JpqlEntityModel groupEntity = builder.produceImmediately("sec$Group", "name");
+        JpqlEntityModel groupEntity = builder.produceImmediately("sec$Group", "name", "group");
 
         builder = new EntityBuilder();
         builder.startNewEntity("sec$User");
