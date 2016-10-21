@@ -34,6 +34,13 @@
 
     <mvc:annotation-driven/>
 
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/v2/**"/>
+            <bean class="com.haulmont.restapi.sys.RestCleanupInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
     <!-- According to the spec the token endpoint should be secured by the basic authentication -->
     <security:http pattern="/rest/v2/oauth/**"
           create-session="stateless"
