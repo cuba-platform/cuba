@@ -36,7 +36,7 @@
 
     <mvc:interceptors>
         <mvc:interceptor>
-            <mvc:mapping path="/v2/**"/>
+            <mvc:mapping path="/**"/>
             <bean class="com.haulmont.restapi.sys.RestCleanupInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
