@@ -928,8 +928,6 @@ public class WebWindowManager extends WindowManager {
         List<Map.Entry<Window, WindowOpenInfo>> entries = new ArrayList<>(windowOpenMode.entrySet());
         for (int i = entries.size() - 1; i >= 0; i--) {
             WebWindow window = (WebWindow) entries.get(i).getKey();
-            window.stopTimers();
-
             if (window instanceof WebWindow.Editor) {
                 ((WebWindow.Editor) window).releaseLock();
             }
