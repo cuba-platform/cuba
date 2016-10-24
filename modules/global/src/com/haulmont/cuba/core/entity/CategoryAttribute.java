@@ -106,6 +106,9 @@ public class CategoryAttribute extends StandardEntity {
     @Column(name = "ROWS_COUNT")
     private Integer rowsCount;
 
+    @Column(name = "IS_COLLECTION")
+    private Boolean isCollection = false;
+
     public void setCategory(Category entityType) {
         this.category = entityType;
     }
@@ -191,7 +194,6 @@ public class CategoryAttribute extends StandardEntity {
     public void setDefaultDate(Date defaultDate) {
         this.defaultDate = defaultDate;
     }
-
 
     public Object getDefaultValue() {
         if (dataType != null) {
@@ -288,6 +290,14 @@ public class CategoryAttribute extends StandardEntity {
 
     public void setRowsCount(Integer rowsCount) {
         this.rowsCount = rowsCount;
+    }
+
+    public Boolean getIsCollection() {
+        return isCollection;
+    }
+
+    public void setIsCollection(Boolean isCollection) {
+        this.isCollection = isCollection;
     }
 
     public Set<String> targetScreensSet() {

@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core;
 
+import com.google.common.collect.Lists;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
@@ -32,6 +33,7 @@ import org.junit.*;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class DynamicAttributesTest {
 
@@ -43,8 +45,8 @@ public class DynamicAttributesTest {
     protected DynamicAttributesManagerAPI dynamicAttributesManagerAPI;
 
     protected Category userCategory, userRoleCategory;
-    protected CategoryAttribute userAttribute, userRoleAttribute, userGroupAttribute;
-    protected Group group;
+    protected CategoryAttribute userAttribute, userRoleAttribute, userGroupAttribute, userGroupCollectionAttribute, userIntCollectionAttribute;
+    protected Group group, group2;
 
     protected User user, user2;
     protected UserRole userRole;
@@ -88,6 +90,10 @@ public class DynamicAttributesTest {
             group.setName("group");
             em.persist(group);
 
+            group2 = metadata.create(Group.class);
+            group2.setName("group2");
+            em.persist(group2);
+
             userGroupAttribute = metadata.create(CategoryAttribute.class);
             userGroupAttribute.setName("userGroupAttribute");
             userGroupAttribute.setCode("userGroupAttribute");
@@ -96,6 +102,25 @@ public class DynamicAttributesTest {
             userGroupAttribute.setDataType(PropertyType.ENTITY);
             userGroupAttribute.setEntityClass("com.haulmont.cuba.security.entity.Group");
             em.persist(userGroupAttribute);
+
+            userGroupCollectionAttribute = metadata.create(CategoryAttribute.class);
+            userGroupCollectionAttribute.setName("userGroupCollectionAttribute");
+            userGroupCollectionAttribute.setCode("userGroupCollectionAttribute");
+            userGroupCollectionAttribute.setCategory(userCategory);
+            userGroupCollectionAttribute.setCategoryEntityType("sec$User");
+            userGroupCollectionAttribute.setDataType(PropertyType.ENTITY);
+            userGroupCollectionAttribute.setEntityClass("com.haulmont.cuba.security.entity.Group");
+            userGroupCollectionAttribute.setIsCollection(true);
+            em.persist(userGroupCollectionAttribute);
+
+            userIntCollectionAttribute = metadata.create(CategoryAttribute.class);
+            userIntCollectionAttribute.setName("userIntCollectionAttribute");
+            userIntCollectionAttribute.setCode("userIntCollectionAttribute");
+            userIntCollectionAttribute.setCategory(userCategory);
+            userIntCollectionAttribute.setCategoryEntityType("sec$User");
+            userIntCollectionAttribute.setDataType(PropertyType.INTEGER);
+            userIntCollectionAttribute.setIsCollection(true);
+            em.persist(userIntCollectionAttribute);
 
             user = metadata.create(User.class);
             user.setName("user");
@@ -126,6 +151,8 @@ public class DynamicAttributesTest {
         user = dataManager.load(LoadContext.create(User.class).setId(user.getId()).setLoadDynamicAttributes(true));
         user.setValue("+userAttribute", "userName");
         user.setValue("+userGroupAttribute", group);
+        user.setValue("+userGroupCollectionAttribute", Lists.newArrayList(group, group2));
+        user.setValue("+userIntCollectionAttribute", Lists.newArrayList(1, 2));
         dataManager.commit(user);
 
         user2 = dataManager.load(LoadContext.create(User.class).setId(user2.getId()).setLoadDynamicAttributes(true));
@@ -142,8 +169,8 @@ public class DynamicAttributesTest {
     public void tearDown() throws Exception {
         QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         runner.update("delete from SYS_ATTR_VALUE");
-        cont.deleteRecord(userRole, role, user, user2, group);
-        cont.deleteRecord(userAttribute, userRoleAttribute, userGroupAttribute);
+        cont.deleteRecord(userRole, role, user, user2, group, group2);
+        cont.deleteRecord(userAttribute, userRoleAttribute, userGroupAttribute, userGroupCollectionAttribute, userIntCollectionAttribute);
         cont.deleteRecord(userCategory, userRoleCategory);
     }
 
@@ -180,5 +207,49 @@ public class DynamicAttributesTest {
         User user2 = users.get(1);
         assertEquals(group, user.getValue("+userGroupAttribute"));
         assertEquals(group, user2.getValue("+userGroupAttribute"));
+    }
+
+    @Test
+    public void testCollectionOfEntitiesAttribute() {
+        LoadContext<User> loadContext = LoadContext.create(User.class).setId(user.getId()).setLoadDynamicAttributes(true);
+        User loadedUser = dataManager.load(loadContext);
+        List<Group> groupsCollection = loadedUser.getValue("+userGroupCollectionAttribute");
+        assertEquals(2, groupsCollection.size());
+
+        loadedUser.setValue("+userGroupCollectionAttribute", Lists.newArrayList(group));
+        dataManager.commit(loadedUser);
+
+        loadedUser = dataManager.load(loadContext);
+        groupsCollection = loadedUser.getValue("+userGroupCollectionAttribute");
+        assertEquals(1, groupsCollection.size());
+        assertEquals(group, groupsCollection.get(0));
+
+        loadedUser.setValue("+userGroupCollectionAttribute", Lists.newArrayList(group, group2));
+        dataManager.commit(loadedUser);
+        groupsCollection = loadedUser.getValue("+userGroupCollectionAttribute");
+        assertEquals(2, groupsCollection.size());
+    }
+
+    @Test
+    public void testCollectionOfIntAttribute() {
+        LoadContext<User> loadContext = LoadContext.create(User.class).setId(user.getId()).setLoadDynamicAttributes(true);
+        User loadedUser = dataManager.load(loadContext);
+        List<Integer> intCollection = loadedUser.getValue("+userIntCollectionAttribute");
+        assertEquals(2, intCollection.size());
+
+        loadedUser.setValue("+userIntCollectionAttribute", Lists.newArrayList(1));
+        dataManager.commit(loadedUser);
+
+        loadedUser = dataManager.load(loadContext);
+        intCollection = loadedUser.getValue("+userIntCollectionAttribute");
+        assertEquals(1, intCollection.size());
+        assertEquals(1, (int)intCollection.get(0));
+
+        loadedUser.setValue("+userIntCollectionAttribute", Lists.newArrayList(1, 3));
+        dataManager.commit(loadedUser);
+        intCollection = loadedUser.getValue("+userIntCollectionAttribute");
+        assertEquals(2, intCollection.size());
+        assertTrue(intCollection.contains(1));
+        assertTrue(intCollection.contains(3));
     }
 }

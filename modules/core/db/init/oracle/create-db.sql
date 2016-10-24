@@ -26,6 +26,7 @@ create table SYS_ATTR_VALUE (
     BOOLEAN_VALUE char(1),
     ENTITY_VALUE varchar2(32),
     CODE varchar2(100),
+    PARENT_ID varchar2(32),
     primary key(ID)
 )^
 create index IDX_SYS_ATTR_VALUE_ENTITY on SYS_ATTR_VALUE(ENTITY_ID)^
@@ -79,6 +80,7 @@ create table SYS_CATEGORY_ATTR (
     TARGET_SCREENS varchar2(4000),
     WIDTH varchar2(20),
     ROWS_COUNT integer,
+    IS_COLLECTION char(1),
     primary key(ID)
 )^
 create index IDX_SYS_CATEGORY_ATTR_CATEGORY on SYS_CATEGORY_ATTR(CATEGORY_ID)^
@@ -642,6 +644,8 @@ create index IDX_SEC_REMEMBER_ME_TOKEN on SEC_REMEMBER_ME(TOKEN)^
 alter table SYS_APP_FOLDER add constraint FK_SYS_APP_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID)^
 
 alter table SYS_ATTR_VALUE add constraint SYS_ATTR_VALUE_CATEGORY_ATT_ID foreign key (CATEGORY_ATTR_ID) references SYS_CATEGORY_ATTR(ID)^
+
+alter table SYS_ATTR_VALUE add constraint SYS_ATTR_VALUE_ATTR_VALUE_PARENT_ID foreign key (PARENT_ID) references SYS_ATTR_VALUE(ID)^
 
 alter table SYS_CATEGORY_ATTR add constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)^
 

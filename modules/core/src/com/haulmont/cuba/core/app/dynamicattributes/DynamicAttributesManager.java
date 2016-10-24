@@ -244,8 +244,24 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
                     CategoryAttributeValue mergedCategoryAttributeValue = em.merge(categoryAttributeValue);
                     mergedCategoryAttributeValue.setCategoryAttribute(categoryAttributeValue.getCategoryAttribute());
 
-                    //copy transient fields
+                    //copy transient fields (for nested CAVs as well)
                     mergedCategoryAttributeValue.setTransientEntityValue(categoryAttributeValue.getTransientEntityValue());
+                    mergedCategoryAttributeValue.setTransientCollectionValue(categoryAttributeValue.getTransientCollectionValue());
+                    if (categoryAttributeValue.getCategoryAttribute().getIsCollection() && categoryAttributeValue.getChildValues() != null) {
+                        for (CategoryAttributeValue childCAV : categoryAttributeValue.getChildValues()) {
+                            for (CategoryAttributeValue mergedChildCAV : mergedCategoryAttributeValue.getChildValues()) {
+                                if (mergedChildCAV.getId().equals(childCAV.getId())) {
+                                    mergedChildCAV.setTransientEntityValue(childCAV.getTransientEntityValue());
+                                    break;
+                                }
+                            }
+
+                        }
+                    }
+
+                    if (mergedCategoryAttributeValue.getCategoryAttribute().getIsCollection()) {
+                        storeCategoryAttributeValueWithCollectionType(mergedCategoryAttributeValue);
+                    }
 
                     mergedDynamicAttributes.put(entry.getKey(), mergedCategoryAttributeValue);
                 } else {
@@ -255,6 +271,38 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
             entity.setDynamicAttributes(mergedDynamicAttributes);
         }
+    }
+
+    /**
+     * Removes nested {@code CategoryAttributeValue} entities for items that were removed from the collection value
+     * and creates new child {@code CategoryAttributeValue} instances for just added collection value items.
+     * @param categoryAttributeValue
+     */
+    protected void storeCategoryAttributeValueWithCollectionType(CategoryAttributeValue categoryAttributeValue) {
+        EntityManager em = persistence.getEntityManager();
+
+        List<Object> collectionValue = categoryAttributeValue.getTransientCollectionValue();
+        List<Object> newCollectionValue = new ArrayList<>(collectionValue);
+
+        //remove existing child CategoryAttributeValues that are not in the CategoryAttributeValue.collectionValue property
+        if (categoryAttributeValue.getChildValues() != null) {
+            for (CategoryAttributeValue existingChildCategoryAttributeValue : categoryAttributeValue.getChildValues()) {
+                Object value = existingChildCategoryAttributeValue.getValue();
+                if (!collectionValue.contains(value)) {
+                    em.remove(existingChildCategoryAttributeValue);
+                }
+                newCollectionValue.remove(value);
+            }
+        }
+
+        //newCollectionValue now contains only the values that were added but not persisted yet
+        newCollectionValue.forEach(value -> {
+            CategoryAttributeValue childCAV = metadata.create(CategoryAttributeValue.class);
+            childCAV.setParent(categoryAttributeValue);
+            childCAV.setValue(value);
+            childCAV.setCategoryAttribute(categoryAttributeValue.getCategoryAttribute());
+            em.persist(childCAV);
+        });
     }
 
     protected void doFetchDynamicAttributes(Set<BaseGenericIdEntity> entities) {
@@ -299,7 +347,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     }
 
     protected List<CategoryAttributeValue> loadAttributeValues(List<UUID> entityIds) {
-        List<CategoryAttributeValue> resultList;
+        List<CategoryAttributeValue> resultList = new ArrayList<>();
         try (Transaction tx = persistence.getTransaction()) {
             EntityManager em = persistence.getEntityManager();
             View baseAttributeValueView = viewRepository.getView(CategoryAttributeValue.class, View.LOCAL);
@@ -308,12 +356,48 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             View view = new View(baseAttributeValueView, null, false)
                     .addProperty("categoryAttribute", new View(baseAttributeView, null, false).addProperty("category"));
 
-            resultList = em.createQuery("select cav from sys$CategoryAttributeValue cav where cav.entityId in :ids", CategoryAttributeValue.class)
+            List<CategoryAttributeValue> _resultList = em.createQuery("select cav from sys$CategoryAttributeValue cav where cav.entityId in :ids", CategoryAttributeValue.class)
                     .setParameter("ids", entityIds)
                     .setView(view)
                     .getResultList();
 
-            loadEntityValues(resultList);
+            List<CategoryAttributeValue> cavsOfEntityType = _resultList.stream()
+                    .filter(cav -> cav.getEntityValue() != null)
+                    .collect(Collectors.toList());
+
+            List<CategoryAttributeValue> cavsOfCollectionType = _resultList.stream()
+                    .filter(cav -> cav.getCategoryAttribute().getIsCollection())
+                    .collect(Collectors.toList());
+
+            if (cavsOfCollectionType.isEmpty()) {
+                loadEntityValues(cavsOfEntityType);
+                resultList.addAll(_resultList);
+            } else {
+                List<CategoryAttributeValue> cavsOfCollectionTypeWithChildren = reloadCategoryAttributeValuesWithChildren(cavsOfCollectionType);
+
+                //add nested collection values to the cavsOfEntityType collection, because this collection will later be
+                //used for loading entity values
+                cavsOfCollectionTypeWithChildren.stream()
+                        .filter(cav -> cav.getCategoryAttribute().getDataType() == PropertyType.ENTITY && cav.getChildValues() != null)
+                        .forEach(cav -> cavsOfEntityType.addAll(cav.getChildValues()));
+
+                loadEntityValues(cavsOfEntityType);
+
+                cavsOfCollectionTypeWithChildren.stream()
+                        .filter(cav -> cav.getChildValues() != null)
+                        .forEach(cav -> {
+                            List<Object> value = cav.getChildValues().stream()
+                                    .map(CategoryAttributeValue::getValue)
+                                    .collect(Collectors.toList());
+                            cav.setTransientCollectionValue(value);
+                        });
+
+                resultList.addAll(_resultList.stream()
+                        .filter(cav -> !cavsOfCollectionTypeWithChildren.contains(cav))
+                        .collect(Collectors.toList()));
+
+                resultList.addAll(cavsOfCollectionTypeWithChildren);
+            }
 
             tx.commit();
         }
@@ -321,14 +405,10 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     }
 
     /**
-     * Method loads entity values for CategoryAttributeValues of entity type
+     * Method loads entity values for CategoryAttributeValues of entity type and sets entity values to the corresponding
+     * property of the {@code CategoryAttributeValue} entity.
      */
-    protected void loadEntityValues(List<CategoryAttributeValue> resultList) {
-
-        List<CategoryAttributeValue> cavsOfEntityType = resultList.stream()
-                .filter(cav -> cav.getEntityValue() != null)
-                .collect(Collectors.toList());
-
+    protected void loadEntityValues(List<CategoryAttributeValue> cavsOfEntityType) {
         HashMultimap<MetaClass, UUID> entitiesIdsToBeLoaded = HashMultimap.create();
 
         cavsOfEntityType.forEach(cav -> {
@@ -364,5 +444,25 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         for (CategoryAttributeValue cav : cavsOfEntityType) {
             cav.setTransientEntityValue(idToEntityMap.get(cav.getEntityValue()));
         }
+    }
+
+    protected List<CategoryAttributeValue> reloadCategoryAttributeValuesWithChildren(List<CategoryAttributeValue> categoryAttributeValues) {
+        EntityManager em = persistence.getEntityManager();
+
+        View categoryAttributeValueLocalView = viewRepository.getView(CategoryAttributeValue.class, View.LOCAL);
+        View categoryAttributeLocalView = viewRepository.getView(CategoryAttribute.class, View.LOCAL);
+
+        View view = new View(categoryAttributeValueLocalView, null, false)
+                .addProperty("categoryAttribute", new View(categoryAttributeLocalView, null, false).addProperty("category"))
+                .addProperty("childValues", categoryAttributeValueLocalView);
+
+        List<UUID> ids = categoryAttributeValues.stream()
+                .map(BaseUuidEntity::getId)
+                .collect(Collectors.toList());
+
+        return em.createQuery("select cav from sys$CategoryAttributeValue cav where cav.id in :ids", CategoryAttributeValue.class)
+                .setParameter("ids", ids)
+                .setView(view)
+                .getResultList();
     }
 }

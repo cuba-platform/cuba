@@ -17,14 +17,13 @@
 
 package com.haulmont.cuba.core.entity;
 
-import com.google.common.base.Preconditions;
-import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.*;
-import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @javax.persistence.Entity(name = "sys$CategoryAttributeValue")
@@ -64,6 +63,17 @@ public class CategoryAttributeValue extends StandardEntity {
 
     @Transient
     private BaseUuidEntity transientEntityValue;
+
+    @OneToMany(mappedBy = "parent")
+    @OnDelete(DeletePolicy.CASCADE)
+    private List<CategoryAttributeValue> childValues;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PARENT_ID")
+    private CategoryAttributeValue parent;
+
+    @Transient
+    private List<Object> transientCollectionValue;
 
     public void setCategoryAttribute(CategoryAttribute categoryAttribute) {
         this.categoryAttribute = categoryAttribute;
@@ -145,6 +155,30 @@ public class CategoryAttributeValue extends StandardEntity {
         this.transientEntityValue = transientEntityValue;
     }
 
+    public List<CategoryAttributeValue> getChildValues() {
+        return childValues;
+    }
+
+    public void setChildValues(List<CategoryAttributeValue> childValues) {
+        this.childValues = childValues;
+    }
+
+    public CategoryAttributeValue getParent() {
+        return parent;
+    }
+
+    public void setParent(CategoryAttributeValue parent) {
+        this.parent = parent;
+    }
+
+    public List<Object> getTransientCollectionValue() {
+        return transientCollectionValue;
+    }
+
+    public void setTransientCollectionValue(List<Object> transientCollectionValue) {
+        this.transientCollectionValue = transientCollectionValue;
+    }
+
     //todo eude support enumerations
     public void setValue(Object value) {
         if (value == null) {
@@ -169,6 +203,8 @@ public class CategoryAttributeValue extends StandardEntity {
             setTransientEntityValue((BaseUuidEntity) value);
         } else if (value instanceof String) {
             setStringValue((String) value);
+        } else if (value instanceof List) {
+            setTransientCollectionValue((List<Object>) value);
         } else {
             throw new IllegalArgumentException("Unsupported value type " + value.getClass());
         }
@@ -187,6 +223,8 @@ public class CategoryAttributeValue extends StandardEntity {
             return booleanValue;
         } else if (transientEntityValue != null) {
             return transientEntityValue;
+        } if (transientCollectionValue != null) {
+            return transientCollectionValue;
         }
 
         return null;

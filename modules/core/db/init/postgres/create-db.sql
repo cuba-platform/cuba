@@ -729,9 +729,11 @@ create table SYS_CATEGORY_ATTR (
     TARGET_SCREENS varchar(4000),
     WIDTH varchar(20),
     ROWS_COUNT integer,
+    IS_COLLECTION uuid,
     --
     primary key (ID),
-    constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)
+    constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID),
+    constraint SYS_ATTR_VALUE_ATTR_VALUE_PARENT_ID foreign key (PARENT_ID) references SYS_ATTR_VALUE(ID)
 )^
 
 create index IDX_SYS_CATEGORY_ATTR_CATEGORY on SYS_CATEGORY_ATTR (CATEGORY_ID)^
