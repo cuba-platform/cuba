@@ -24,6 +24,10 @@ public interface DateField extends Field {
     String NAME = "dateField";
 
     enum Resolution {
+        /**
+         * @deprecated Will be removed in 6.4
+         */
+        @Deprecated
         MSEC,
         SEC,
         MIN,
