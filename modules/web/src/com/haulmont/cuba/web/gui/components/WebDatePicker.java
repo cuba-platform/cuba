@@ -17,22 +17,15 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.DatePicker;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
-import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaDatePicker;
 import com.vaadin.ui.InlineDateField;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
 import java.util.Date;
@@ -40,9 +33,6 @@ import java.util.Date;
 public class WebDatePicker extends WebAbstractField<InlineDateField> implements DatePicker {
 
     protected Resolution resolution = Resolution.DAY;
-
-    protected Datasource.ItemChangeListener itemChangeListener;
-    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
     public WebDatePicker() {
         this.component = new CubaDatePicker();
@@ -62,50 +52,6 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
                 return new PropertyWrapper(item, propertyPath);
             }
         };
-    }
-
-    protected Date getEntityValue(Entity item) {
-        return InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-    }
-
-    @Override
-    public void setDatasource(Datasource datasource, String property) {
-        this.datasource = datasource;
-
-        MetaClass metaClass = datasource.getMetaClass();
-        resolveMetaPropertyPath(metaClass, property);
-
-        itemChangeListener = e -> {
-            Date value = getEntityValue(e.getItem());
-            this.setValue(value);
-        };
-        //noinspection unchecked
-        datasource.addItemChangeListener(new WeakItemChangeListener(datasource, itemChangeListener));
-
-        itemPropertyChangeListener = e -> {
-            if (e.getProperty().equals(metaPropertyPath.toString())) {
-                this.setValue(e.getValue());
-            }
-        };
-        //noinspection unchecked
-        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
-
-        if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
-            if (property.equals(metaPropertyPath.toString())) {
-                Date value = getEntityValue(datasource.getItem());
-                this.setValue(value);
-            }
-        }
-
-        setRequired(metaProperty.isMandatory());
-        if (StringUtils.isEmpty(getRequiredMessage())) {
-            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
-        }
-
-        if (metaProperty.isReadOnly()) {
-            setEditable(false);
-        }
     }
 
     @Override
