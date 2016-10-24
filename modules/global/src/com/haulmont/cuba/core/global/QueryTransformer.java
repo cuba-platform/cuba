@@ -67,6 +67,9 @@ public interface QueryTransformer {
     /** Adds or replaces 'order by' clause */
     void replaceOrderBy(boolean desc, String... properties);
 
+    /** Adds @param entityAlias to 'group by' clause */
+    void addEntityInGroupBy(String entityAlias);
+
     /** Removes 'order by' clause */
     void removeOrderBy();
 

@@ -547,4 +547,17 @@ public class QueryTest {
             }
         }
     }
+
+    @Test
+    public void testNestedEntityGroupBy() {
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+            em.createQuery("select ur.role, count(ur.id) from sec$UserRole ur group by ur.role")
+                    .getResultList();
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
 }
