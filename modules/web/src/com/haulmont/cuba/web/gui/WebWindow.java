@@ -710,6 +710,9 @@ public class WebWindow implements Window, Component.Wrapper,
                 .orElse(null);
     }
 
+    /**
+     * Completely stop and remove timers of the window.
+     */
     public void stopTimers() {
         AppUI appUI = AppUI.getCurrent();
         if (timers != null) {
@@ -718,6 +721,7 @@ public class WebWindow implements Window, Component.Wrapper,
                 WebTimer webTimer = (WebTimer) timer;
                 appUI.removeTimer(webTimer.getTimerImpl());
             }
+            timers.clear();
         }
     }
 
