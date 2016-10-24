@@ -243,6 +243,10 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
                 if (categoryAttributeValue.getDeleteTs() == null && categoryAttributeValue.getValue() != null) {
                     CategoryAttributeValue mergedCategoryAttributeValue = em.merge(categoryAttributeValue);
                     mergedCategoryAttributeValue.setCategoryAttribute(categoryAttributeValue.getCategoryAttribute());
+
+                    //copy transient fields
+                    mergedCategoryAttributeValue.setTransientEntityValue(categoryAttributeValue.getTransientEntityValue());
+
                     mergedDynamicAttributes.put(entry.getKey(), mergedCategoryAttributeValue);
                 } else {
                     em.remove(categoryAttributeValue);
@@ -309,8 +313,56 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
                     .setView(view)
                     .getResultList();
 
+            loadEntityValues(resultList);
+
             tx.commit();
         }
         return resultList;
+    }
+
+    /**
+     * Method loads entity values for CategoryAttributeValues of entity type
+     */
+    protected void loadEntityValues(List<CategoryAttributeValue> resultList) {
+
+        List<CategoryAttributeValue> cavsOfEntityType = resultList.stream()
+                .filter(cav -> cav.getEntityValue() != null)
+                .collect(Collectors.toList());
+
+        HashMultimap<MetaClass, UUID> entitiesIdsToBeLoaded = HashMultimap.create();
+
+        cavsOfEntityType.forEach(cav -> {
+                    String className = cav.getCategoryAttribute().getEntityClass();
+                    try {
+                        Class<?> aClass = Class.forName(className);
+                        MetaClass metaClass = metadata.getClass(aClass);
+                        entitiesIdsToBeLoaded.put(metaClass, cav.getEntityValue());
+                    } catch (ClassNotFoundException e) {
+                        log.error("Class {} not found", className);
+                    }
+                });
+
+        EntityManager em = persistence.getEntityManager();
+        Map<Object, BaseUuidEntity> idToEntityMap = new HashMap<>();
+
+        for (Map.Entry<MetaClass, Collection<UUID>> entry : entitiesIdsToBeLoaded.asMap().entrySet()) {
+            MetaClass metaClass = entry.getKey();
+            Collection<UUID> ids = entry.getValue();
+
+            if (!ids.isEmpty()) {
+                List<BaseUuidEntity> entitiesValues = em.createQuery("select e from " + metaClass.getName() + " e where e.id in :ids")
+                        .setParameter("ids", ids)
+                        .setView(metaClass.getJavaClass(), View.MINIMAL)
+                        .getResultList();
+
+                for (BaseUuidEntity entity : entitiesValues) {
+                    idToEntityMap.put(entity.getId(), entity);
+                }
+            }
+        }
+
+        for (CategoryAttributeValue cav : cavsOfEntityType) {
+            cav.setTransientEntityValue(idToEntityMap.get(cav.getEntityValue()));
+        }
     }
 }

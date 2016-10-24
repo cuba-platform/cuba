@@ -62,6 +62,9 @@ public class CategoryAttributeValue extends StandardEntity {
     @Column(name = "ENTITY_VALUE")
     private UUID entityValue;
 
+    @Transient
+    private BaseUuidEntity transientEntityValue;
+
     public void setCategoryAttribute(CategoryAttribute categoryAttribute) {
         this.categoryAttribute = categoryAttribute;
     }
@@ -134,6 +137,14 @@ public class CategoryAttributeValue extends StandardEntity {
         this.code = code;
     }
 
+    public BaseUuidEntity getTransientEntityValue() {
+        return transientEntityValue;
+    }
+
+    public void setTransientEntityValue(BaseUuidEntity transientEntityValue) {
+        this.transientEntityValue = transientEntityValue;
+    }
+
     //todo eude support enumerations
     public void setValue(Object value) {
         if (value == null) {
@@ -155,6 +166,7 @@ public class CategoryAttributeValue extends StandardEntity {
             setEntityValue((UUID) value);
         } else if (value instanceof HasUuid) {
             setEntityValue(((HasUuid) value).getUuid());
+            setTransientEntityValue((BaseUuidEntity) value);
         } else if (value instanceof String) {
             setStringValue((String) value);
         } else {
@@ -173,26 +185,8 @@ public class CategoryAttributeValue extends StandardEntity {
             return dateValue;
         } else if (booleanValue != null) {
             return booleanValue;
-        } else if (entityValue != null) {
-            Preconditions.checkState(categoryAttribute != null, "Could not resolve entity value, " +
-                    "because categoryAttribute is not loaded for attribute value " + id);
-            Preconditions.checkState(StringUtils.isNotBlank(categoryAttribute.getEntityClass()),
-                    "Could not resolve class by empty dataType. Attribute value " + id);
-            Class javaClass = categoryAttribute.getJavaClassForEntity();
-            Preconditions.checkState(javaClass != null,
-                    "Could not resolve java class. Attribute value " + id);
-            LoadContext loadContext =  LoadContext.create(javaClass)
-                    .setView(View.MINIMAL)
-                    .setSoftDeletion(false);
-            if (BaseUuidEntity.class.isAssignableFrom(javaClass)) {
-                loadContext.setId(entityValue);
-            } else {
-                Metadata metadata = AppBeans.get(Metadata.class);
-                MetaClass metaClass = metadata.getClassNN(javaClass);
-                loadContext.setQueryString(String.format("select e from %s e where e.uuid = :entityId", metaClass.getName()))
-                        .setParameter("entityId", entityValue);
-            }
-            return AppBeans.get(DataManager.class).load(loadContext);
+        } else if (transientEntityValue != null) {
+            return transientEntityValue;
         }
 
         return null;

@@ -29,6 +29,10 @@ import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.*;
 
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+
 public class DynamicAttributesTest {
 
     @ClassRule
@@ -39,10 +43,10 @@ public class DynamicAttributesTest {
     protected DynamicAttributesManagerAPI dynamicAttributesManagerAPI;
 
     protected Category userCategory, userRoleCategory;
-    protected CategoryAttribute userAttribute, userRoleAttribute;
+    protected CategoryAttribute userAttribute, userRoleAttribute, userGroupAttribute;
     protected Group group;
 
-    protected User user;
+    protected User user, user2;
     protected UserRole userRole;
     protected Role role;
 
@@ -84,11 +88,26 @@ public class DynamicAttributesTest {
             group.setName("group");
             em.persist(group);
 
+            userGroupAttribute = metadata.create(CategoryAttribute.class);
+            userGroupAttribute.setName("userGroupAttribute");
+            userGroupAttribute.setCode("userGroupAttribute");
+            userGroupAttribute.setCategory(userCategory);
+            userGroupAttribute.setCategoryEntityType("sec$User");
+            userGroupAttribute.setDataType(PropertyType.ENTITY);
+            userGroupAttribute.setEntityClass("com.haulmont.cuba.security.entity.Group");
+            em.persist(userGroupAttribute);
+
             user = metadata.create(User.class);
             user.setName("user");
             user.setLogin("user");
             user.setGroup(group);
             em.persist(user);
+
+            user2 = metadata.create(User.class);
+            user2.setName("user2");
+            user2.setLogin("user2");
+            user2.setGroup(group);
+            em.persist(user2);
 
             role = metadata.create(Role.class);
             role.setName("role");
@@ -104,11 +123,15 @@ public class DynamicAttributesTest {
 
         dynamicAttributesManagerAPI.loadCache();
 
-        group = metadata.create(Group.class);
-
         user = dataManager.load(LoadContext.create(User.class).setId(user.getId()).setLoadDynamicAttributes(true));
         user.setValue("+userAttribute", "userName");
+        user.setValue("+userGroupAttribute", group);
         dataManager.commit(user);
+
+        user2 = dataManager.load(LoadContext.create(User.class).setId(user2.getId()).setLoadDynamicAttributes(true));
+        user2.setValue("+userAttribute", "userName");
+        user2.setValue("+userGroupAttribute", group);
+        dataManager.commit(user2);
 
         userRole = dataManager.load(LoadContext.create(UserRole.class).setId(userRole.getId()).setLoadDynamicAttributes(true));
         userRole.setValue("+userRoleAttribute", "userRole");
@@ -119,21 +142,21 @@ public class DynamicAttributesTest {
     public void tearDown() throws Exception {
         QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         runner.update("delete from SYS_ATTR_VALUE");
-        cont.deleteRecord(userRole, role, user, group);
-        cont.deleteRecord(userAttribute, userRoleAttribute);
+        cont.deleteRecord(userRole, role, user, user2, group);
+        cont.deleteRecord(userAttribute, userRoleAttribute, userGroupAttribute);
         cont.deleteRecord(userCategory, userRoleCategory);
     }
 
     @Test
     public void testDynamicAttributes() {
         User loadedUser = dataManager.load(LoadContext.create(User.class).setId(user.getId()).setLoadDynamicAttributes(true));
-        Assert.assertEquals("userName", loadedUser.getValue("+userAttribute"));
+        assertEquals("userName", loadedUser.getValue("+userAttribute"));
     }
 
     @Test
     public void testDynamicAttributesWithLocalView() {
         User loadedUser = dataManager.load(LoadContext.create(User.class).setId(user.getId()).setLoadDynamicAttributes(true).setView(View.LOCAL));
-        Assert.assertEquals("userName", loadedUser.getValue("+userAttribute"));
+        assertEquals("userName", loadedUser.getValue("+userAttribute"));
     }
 
     @Test
@@ -144,7 +167,18 @@ public class DynamicAttributesTest {
                         new View(UserRole.class, "testView"));
 
         User loadedUser = dataManager.load(LoadContext.create(User.class).setId(user.getId()).setLoadDynamicAttributes(true).setView(view));
-        Assert.assertEquals("userName", loadedUser.getValue("+userAttribute"));
-        Assert.assertEquals("userRole", loadedUser.getUserRoles().get(0).getValue("+userRoleAttribute"));
+        assertEquals("userName", loadedUser.getValue("+userAttribute"));
+        assertEquals("userRole", loadedUser.getUserRoles().get(0).getValue("+userRoleAttribute"));
+    }
+
+    @Test
+    public void testLoadEntityAttribute() {
+        LoadContext<User> ctx = LoadContext.create(User.class).setLoadDynamicAttributes(true);
+        ctx.setQueryString("select u from sec$User u where u.login like 'user%' order by u.login");
+        List<User> users = dataManager.loadList(ctx);
+        User user = users.get(0);
+        User user2 = users.get(1);
+        assertEquals(group, user.getValue("+userGroupAttribute"));
+        assertEquals(group, user2.getValue("+userGroupAttribute"));
     }
 }
