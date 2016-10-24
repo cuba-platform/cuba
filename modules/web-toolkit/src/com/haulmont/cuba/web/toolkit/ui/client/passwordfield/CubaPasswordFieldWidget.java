@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.passwordfield;
 
+import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ui.VPasswordField;
 
 public class CubaPasswordFieldWidget extends VPasswordField {
@@ -25,7 +26,15 @@ public class CubaPasswordFieldWidget extends VPasswordField {
         if (autocomplete) {
             getElement().removeAttribute("autocomplete");
         } else {
-            getElement().setAttribute("autocomplete", "off");
+            BrowserInfo browser = BrowserInfo.get();
+
+            if (browser.isIE()
+                    || (browser.isGecko() && browser.getGeckoVersion() < 47)
+                    || (browser.isChrome() && browser.getBrowserMajorVersion() < 49)) {
+                getElement().setAttribute("autocomplete", "off");
+            } else {
+                getElement().setAttribute("autocomplete", "new-password");
+            }
         }
     }
 }
