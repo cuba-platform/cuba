@@ -256,6 +256,11 @@ public class QueryTransformerAstBased implements QueryTransformer {
     }
 
     @Override
+    public void addEntityInGroupBy(String entityAlias) {
+        getQueryTransformer().addEntityInGroupBy(entityAlias);
+    }
+
+    @Override
     public void removeOrderBy() {
         getQueryTransformer().removeOrderBy();
     }

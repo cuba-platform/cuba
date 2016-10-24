@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
+import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import org.junit.Test;
 
 import java.util.Set;
@@ -302,6 +303,19 @@ public class QueryParserAstBasedTest {
         );
         assertNull(parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
         assertNull(parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
+    }
+
+    @Test
+    public void testNestedEntityGroupBy() throws Exception {
+        DomainModel model = prepareDomainModel();
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
+                "select c.group, count(c.id) from sec$Constraint c group by c.group"
+        );
+        transformer.replaceWithSelectEntityVariable("tempEntityAlias");
+        transformer.addFirstSelectionSource(String.format("%s tempEntityAlias", "sec$Group"));
+        transformer.addWhereAsIs(String.format("tempEntityAlias.id = %s.id", "c.group"));
+        transformer.addEntityInGroupBy("tempEntityAlias");
+        System.out.println(transformer.getResult());
     }
 
     private DomainModel prepareDomainModel() {

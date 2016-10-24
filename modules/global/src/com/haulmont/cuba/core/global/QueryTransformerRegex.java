@@ -308,6 +308,10 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     @Override
+    public void addEntityInGroupBy(String entityAlias) {
+    }
+
+    @Override
     public void removeOrderBy() {
         Matcher matcher = ORDER_BY_PATTERN.matcher(buffer);
         if (matcher.find()) {
