@@ -20,11 +20,9 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public interface DateField extends Field {
-
     String NAME = "dateField";
 
     enum Resolution {
-        MSEC,
         SEC,
         MIN,
         HOUR,
