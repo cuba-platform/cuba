@@ -20,12 +20,25 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PopupView;
 import com.vaadin.ui.Label;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> implements PopupView {
     protected Component popupContent;
     protected String minimizedValue;
 
+    protected List<PopupVisibilityListener> popupVisibilityListeners;
+
     public WebPopupView() {
         component = new com.vaadin.ui.PopupView("", new Label(""));
+
+        component.addPopupVisibilityListener(e -> {
+            if (popupVisibilityListeners != null) {
+                for (PopupVisibilityListener popupVisibilityListener : new ArrayList<>(popupVisibilityListeners)) {
+                    popupVisibilityListener.popupVisibilityChange(new PopupVisibilityEvent(WebPopupView.this));
+                }
+            }
+        });
     }
 
     @Override
@@ -105,6 +118,23 @@ public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> 
     @Override
     public boolean isCaptionAsHtml() {
         return component.isCaptionAsHtml();
+    }
+
+    @Override
+    public void addPopupVisibilityListener(PopupVisibilityListener listener) {
+        if (popupVisibilityListeners == null) {
+            popupVisibilityListeners = new ArrayList<>();
+        }
+        if (!popupVisibilityListeners.contains(listener)) {
+            popupVisibilityListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removePopupVisibilityListener(PopupVisibilityListener listener) {
+        if (popupVisibilityListeners != null) {
+            popupVisibilityListeners.remove(listener);
+        }
     }
 
     protected static class EmptyContent implements com.vaadin.ui.PopupView.Content {
