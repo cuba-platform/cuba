@@ -206,8 +206,8 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         if (groupBy != null) {
             groupBy.addChild(new CommonTree(new CommonToken(JPA2Lexer.STRING_LITERAL, ",")));
             groupBy.addChild(new PathNode(JPA2Lexer.T_SELECTED_ENTITY, entityAlias));
+            groupBy.freshenParentAndChildIndexes();
         }
-        groupBy.freshenParentAndChildIndexes();
     }
 
     public void handleCaseInsensitiveParam(String paramName) {
