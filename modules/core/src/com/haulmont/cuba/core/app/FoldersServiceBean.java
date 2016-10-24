@@ -43,10 +43,10 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -55,9 +55,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.zip.CRC32;
 
 @Service(FoldersService.NAME)
@@ -229,6 +227,7 @@ public class FoldersServiceBean implements FoldersService {
             TypedQuery<SearchFolder> q = em.createQuery("select f from "+ effectiveMetaClass.getName() +" f " +
                     "left join fetch f.user u on u.id = ?1 " +
                     "left join fetch f.presentation " +
+                    "where (u.id = ?1 or u is null) " +
                     "order by f.sortOrder, f.name",
                     SearchFolder.class);
             q.setParameter(1, userSessionSource.currentOrSubstitutedUserId());
