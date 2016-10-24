@@ -125,6 +125,12 @@ public class CubaColorPicker extends CustomField {
         }
 
         @Override
+        protected void showPopup(boolean open) {
+            super.showPopup(open);
+            window.center();
+        }
+
+        @Override
         public void setColor(Color color) {
             if (color == null) {
                 color = new Color(0,0,0);
