@@ -48,7 +48,7 @@ import java.util.*;
  */
 public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected static final Multimap<PropertyType, String> FIELDS_VISIBLE_FOR_DATATYPES = ArrayListMultimap.create();
-    protected static final Set<String> ALWAYS_VISIBLE_FIELDS = new HashSet<>(Arrays.asList("name", "code", "required", "dataType"));
+    protected static final Set<String> ALWAYS_VISIBLE_FIELDS = new HashSet<>(Arrays.asList("name", "code", "required", "dataType", "isCollection"));
 
     static {
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.BOOLEAN, "defaultBoolean");

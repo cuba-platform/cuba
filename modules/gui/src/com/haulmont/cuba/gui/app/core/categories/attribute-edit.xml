@@ -39,6 +39,7 @@
                         <field id="name" required="true" width="100%"/>
                         <field id="code" required="true" width="100%"/>
                         <field id="required"/>
+                        <field id="isCollection"/>
                         <field id="dataType" custom="true" required="true" width="100%"/>
 
                         <field id="entityClass" custom="true" required="true" width="100%"/>
