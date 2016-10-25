@@ -863,10 +863,13 @@
                 <xs:attribute name="lookupRedCaption" type="resourceString"/>
                 <xs:attribute name="lookupGreenCaption" type="resourceString"/>
                 <xs:attribute name="lookupBlueCaption" type="resourceString"/>
+                <xs:attribute name="buttonCaption" type="resourceString"/>
 
                 <xs:attribute name="swatchesVisible" type="xs:boolean"/>
                 <xs:attribute name="rgbVisible" type="xs:boolean"/>
                 <xs:attribute name="hsvVisible" type="xs:boolean"/>
+                <xs:attribute name="historyVisible" type="xs:boolean"/>
+                <xs:attribute name="defaultCaptionEnabled" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

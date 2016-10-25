@@ -30,6 +30,10 @@ public class WebColorPicker extends WebAbstractField<CubaColorPicker> implements
         component.setConverter(new ColorStringConverter());
         attachListener(component);
         setCaptions();
+
+        setHSVVisible(false);
+        setSwatchesVisible(false);
+        setHistoryVisible(false);
     }
 
     protected void setCaptions() {
@@ -85,6 +89,26 @@ public class WebColorPicker extends WebAbstractField<CubaColorPicker> implements
     @Override
     public boolean isHSVVisible() {
         return component.isHSVVisible();
+    }
+
+    @Override
+    public void setDefaultCaptionEnabled(boolean defaultCaptionEnabled) {
+        component.setDefaultCaptionEnabled(defaultCaptionEnabled);
+    }
+
+    @Override
+    public boolean isDefaultCaptionEnabled() {
+        return component.isDefaultCaptionEnabled();
+    }
+
+    @Override
+    public void setButtonCaption(String value) {
+        component.setButtonCaption(value);
+    }
+
+    @Override
+    public String getButtonCaption() {
+        return component.getButtonCaption();
     }
 
     @SuppressWarnings("unchecked")
@@ -231,5 +255,15 @@ public class WebColorPicker extends WebAbstractField<CubaColorPicker> implements
     @Override
     public String getValueSliderCaption() {
         return component.getValueSliderCaption();
+    }
+
+    @Override
+    public void setHistoryVisible(boolean historyVisible) {
+        component.setHistoryVisible(historyVisible);
+    }
+
+    @Override
+    public boolean isHistoryVisible() {
+        return component.isHistoryVisible();
     }
 }
