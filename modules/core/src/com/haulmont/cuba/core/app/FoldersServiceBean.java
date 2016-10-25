@@ -177,6 +177,7 @@ public class FoldersServiceBean implements FoldersService {
             if (!StringUtils.isBlank(folder.getQuantityScript())) {
                 binding.setVariable("persistence", persistence);
                 binding.setVariable("metadata", metadata);
+                binding.setVariable("userSession", userSessionSource.getUserSession());
                 String variable = "style";
                 binding.setVariable("folder", folder);
                 binding.setVariable(variable, null);
