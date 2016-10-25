@@ -16,12 +16,13 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PopupView;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+
+import java.util.List;
 
 public class PopupViewLoader extends AbstractComponentLoader<PopupView> {
     private ComponentLoader popupComponentLoader;
@@ -86,10 +87,13 @@ public class PopupViewLoader extends AbstractComponentLoader<PopupView> {
             loader.setLocale(getLocale());
             loader.setMessagesPack(getMessagesPack());
 
-            Element innerElement = (Element) element.elements().get(0);
-            if (innerElement != null) {
-                popupComponentLoader = loader.createComponent(innerElement);
-                resultComponent.setPopupContent(popupComponentLoader.getResultComponent());
+            List<Element> elements = element.elements();
+            if (elements.size() != 0) {
+                Element innerElement = elements.get(0);
+                if (innerElement != null) {
+                    popupComponentLoader = loader.createComponent(innerElement);
+                    resultComponent.setPopupContent(popupComponentLoader.getResultComponent());
+                }
             }
         }
     }

@@ -30,7 +30,7 @@ public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> 
     protected List<PopupVisibilityListener> popupVisibilityListeners;
 
     public WebPopupView() {
-        component = new com.vaadin.ui.PopupView("", new Label(""));
+        component = new com.vaadin.ui.PopupView(new EmptyContent());
 
         component.addPopupVisibilityListener(e -> {
             if (popupVisibilityListeners != null) {
@@ -137,12 +137,12 @@ public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> 
         }
     }
 
-    protected static class EmptyContent implements com.vaadin.ui.PopupView.Content {
+    protected class EmptyContent implements com.vaadin.ui.PopupView.Content {
         private Label label = new Label("");
 
         @Override
         public String getMinimizedValueAsHTML() {
-            return "";
+            return minimizedValue;
         }
 
         @Override
