@@ -203,6 +203,17 @@ public interface ColorPicker extends Field  {
     String getValueSliderCaption();
 
     /**
+     *  Set visibility for history pane
+     *
+     *  @param historyVisible pane visibility.
+     */
+    void setHistoryVisible(boolean historyVisible);
+    /**
+     * @return true if history pane is visibile.
+     */
+    boolean isHistoryVisible();
+
+    /**
      *  Set visibility for swatches tab
      *
      *  @param swatchesVisible tab visibility.
@@ -234,6 +245,30 @@ public interface ColorPicker extends Field  {
      * @return true if HSV tab is visible.
      */
     boolean isHSVVisible();
+
+    /**
+     * Set HEX value as button caption.
+     *
+     * @param defaultCaptionEnabled true if HEX color is shown as button caption.
+     */
+    void setDefaultCaptionEnabled(boolean defaultCaptionEnabled);
+    /**
+     * @return true if caption is shown as HTML.
+     */
+    boolean isDefaultCaptionEnabled();
+
+    /**
+     * Set caption for color picker button.
+     *
+     * @param buttonCaption caption text.
+     */
+    void setButtonCaption(String buttonCaption);
+    /**
+     * Return caption of color picker button.
+     *
+     * @return caption text.
+     */
+    String getButtonCaption();
 
     @Override
     String getValue();

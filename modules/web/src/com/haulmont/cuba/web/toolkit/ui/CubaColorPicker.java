@@ -27,7 +27,6 @@ public class CubaColorPicker extends CustomField {
 
     public CubaColorPicker() {
         initColorPicker();
-        initLayout();
         setPrimaryStyleName("c-color-picker");
     }
 
@@ -36,6 +35,7 @@ public class CubaColorPicker extends CustomField {
         field.addColorChangeListener(e ->
                 setValue(e.getColor())
         );
+        field.setCaption(null);
     }
 
     @Override
@@ -79,13 +79,6 @@ public class CubaColorPicker extends CustomField {
                 field.setHeight("100%");
             }
         }
-    }
-
-    protected void initLayout() {
-        field = new ColorPicker();
-        field.addColorChangeListener(e ->
-                setValue(e.getColor())
-        );
     }
 
     public class ColorPicker extends com.vaadin.ui.ColorPicker {
@@ -259,6 +252,30 @@ public class CubaColorPicker extends CustomField {
     @Override
     public Class getType() {
         return Color.class;
+    }
+
+    public void setDefaultCaptionEnabled(boolean value) {
+        field.setDefaultCaptionEnabled(value);
+    }
+
+    public boolean isDefaultCaptionEnabled() {
+        return field.isDefaultCaptionEnabled();
+    }
+
+    public void setButtonCaption(String value) {
+        field.setCaption(value);
+    }
+
+    public String getButtonCaption() {
+        return field.getCaption();
+    }
+
+    public void setHistoryVisible(boolean value) {
+        field.setHistoryVisibility(value);
+    }
+
+    public boolean isHistoryVisible() {
+        return field.getHistoryVisibility();
     }
 
     public void setSwatchesVisible(boolean value) {

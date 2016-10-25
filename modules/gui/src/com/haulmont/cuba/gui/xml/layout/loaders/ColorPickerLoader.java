@@ -36,6 +36,8 @@ public class ColorPickerLoader extends AbstractFieldLoader<ColorPicker>{
         loadHSVVisibility(resultComponent, element);
         loadRGBVisibility(resultComponent, element);
         loadSwatchesVisibility(resultComponent, element);
+        loadHistoryVisibility(resultComponent, element);
+        loadDefaultCaptionEnabled(resultComponent, element);
 
         loadCancelButtonCaption(resultComponent, element);
         loadConfirmButtonCaption(resultComponent, element);
@@ -44,6 +46,7 @@ public class ColorPickerLoader extends AbstractFieldLoader<ColorPicker>{
         loadLookupBlueCaption(resultComponent, element);
         loadLookupGreenCaption(resultComponent, element);
         loadLookupRedCaption(resultComponent, element);
+        loadButtonCaption(resultComponent, element);
 
         loadPopupCaption(resultComponent, element);
         loadSwatchesTabCaption(resultComponent, element);
@@ -123,6 +126,27 @@ public class ColorPickerLoader extends AbstractFieldLoader<ColorPicker>{
         String hsvVisible = element.attributeValue("hsvVisible");
         if (StringUtils.isNotEmpty(hsvVisible)) {
             component.setHSVVisible(BooleanUtils.toBoolean(hsvVisible));
+        }
+    }
+
+    protected void loadHistoryVisibility(ColorPicker component, Element element) {
+        String historyVisible = element.attributeValue("historyVisible");
+        if (StringUtils.isNotEmpty(historyVisible)) {
+            component.setHistoryVisible(BooleanUtils.toBoolean(historyVisible));
+        }
+    }
+
+    protected void loadDefaultCaptionEnabled(ColorPicker component, Element element) {
+        String defaultCaptionEnabled = element.attributeValue("defaultCaptionEnabled");
+        if (StringUtils.isNotEmpty(defaultCaptionEnabled)) {
+            component.setDefaultCaptionEnabled(BooleanUtils.toBoolean(defaultCaptionEnabled));
+        }
+    }
+
+    protected void loadButtonCaption(ColorPicker component, Element element) {
+        String buttonCaption = element.attributeValue("buttonCaption");
+        if (StringUtils.isNotEmpty(buttonCaption)) {
+            component.setButtonCaption(loadResourceString(buttonCaption));
         }
     }
 }
