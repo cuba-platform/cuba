@@ -250,10 +250,10 @@
   }
 
   .c-table-composition.has-top-panel {
-    padding-top: $v-unit-size + ceil($v-layout-spacing-vertical/2);
+    padding-top: $v-unit-size + ceil($v-layout-spacing-vertical);
 
     .c-table-top {
-      margin-top: -1 * ($v-unit-size + ceil($v-layout-spacing-vertical/2));
+      margin-top: -1 * ($v-unit-size + ceil($v-layout-spacing-vertical));
     }
   }
 }

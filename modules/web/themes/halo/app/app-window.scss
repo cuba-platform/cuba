@@ -121,7 +121,7 @@
 
   .c-app-window-wrap {
     @include box-defaults;
-    padding: ceil($v-layout-spacing-vertical/2) $v-layout-spacing-horizontal;
+    padding: $v-layout-spacing-vertical $v-layout-spacing-horizontal;
   }
 
   .c-app-window-wrap.c-breadcrumbs-visible {

@@ -193,15 +193,15 @@
 
   .c-app-window-wrap {
     @include box-defaults;
-    padding: 3px 5px;
+    padding: 5px 5px;
   }
 
   .c-app-window-wrap.c-breadcrumbs-visible {
-    padding-top: 25px;
+    padding-top: 30px;
 
     .c-headline-container {
-      margin-top: -25px;
-      padding-top: 3px;
+      margin-top: -30px;
+      padding-top: 5px;
     }
   }
 }
