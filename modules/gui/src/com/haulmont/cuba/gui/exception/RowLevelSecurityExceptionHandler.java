@@ -12,70 +12,41 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.haulmont.cuba.web.exception;
+package com.haulmont.cuba.gui.exception;
 
-import com.google.common.collect.Iterables;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.RowLevelSecurityException;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.Connection;
-import com.haulmont.cuba.web.WebWindowManager;
-import com.vaadin.ui.Window;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Locale;
+@Component("cuba_RowLevelSecurityExceptionHandler")
+public class RowLevelSecurityExceptionHandler implements GenericExceptionHandler {
 
-/**
- * Handles {@link com.haulmont.cuba.core.global.RowLevelSecurityException}.
- *
- */
-public class RowLevelSecurityExceptionHandler extends AbstractExceptionHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(RowLevelSecurityExceptionHandler.class);
-
-    protected Window dialog;
-    protected Locale locale;
-
-
-    public RowLevelSecurityExceptionHandler() {
-        super(RowLevelSecurityException.class.getName());
-
-        Connection connection = App.getInstance().getConnection();
-        //noinspection ConstantConditions
-        locale = connection.getSession().getLocale();
-    }
+    private final Logger log = LoggerFactory.getLogger(RowLevelSecurityExceptionHandler.class);
 
     @Override
-    protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
+    public boolean handle(Throwable exception, WindowManager windowManager) {
         try {
-            // we may show two or more dialogs if user pressed F5 and we have no valid user session
-            // just remove previous dialog and show new
-            if (dialog != null) {
-                app.getAppUI().removeWindow(dialog);
-            }
-
             Messages messages = AppBeans.get(Messages.NAME);
             String userCaption = null;
             String userMessage = null;
 
-            if (throwable != null) {
-                Throwable rootCause = ExceptionUtils.getRootCause(throwable);
+            if (exception != null) {
+                Throwable rootCause = ExceptionUtils.getRootCause(exception);
                 RowLevelSecurityException rowLevelSecurityException = null;
-                if (throwable instanceof RowLevelSecurityException) {
-                    rowLevelSecurityException = (RowLevelSecurityException) throwable;
+                if (exception instanceof RowLevelSecurityException) {
+                    rowLevelSecurityException = (RowLevelSecurityException) exception;
                 } else if (rootCause instanceof RowLevelSecurityException) {
                     rowLevelSecurityException = (RowLevelSecurityException) rootCause;
                 }
@@ -84,7 +55,7 @@ public class RowLevelSecurityExceptionHandler extends AbstractExceptionHandler {
                     String entity = rowLevelSecurityException.getEntity();
                     String entityName = entity.split("\\$")[1];
                     MetaClass entityClass = AppBeans.get(Metadata.NAME, Metadata.class).getClassNN(entity);
-                    String entityCaption = messages.getTools().getEntityCaption(entityClass, locale);
+                    String entityCaption = messages.getTools().getEntityCaption(entityClass);
 
                     ConstraintOperationType operationType = rowLevelSecurityException.getOperationType();
                     if (operationType != null) {
@@ -125,17 +96,13 @@ public class RowLevelSecurityExceptionHandler extends AbstractExceptionHandler {
             if (StringUtils.isEmpty(userCaption)) {
                 userCaption = messages.getMainMessage("rowLevelSecurity.caption");
             }
+            windowManager.showNotification(userCaption, userMessage, Frame.NotificationType.ERROR);
 
-            WebWindowManager wm = app.getWindowManager();
-            wm.showNotification(userCaption, userMessage, Frame.NotificationType.ERROR);
-
-            Collection<Window> windows = app.getAppUI().getWindows();
-            if (!windows.isEmpty()) {
-                dialog = Iterables.getLast(windows);
-            }
+            return true;
         } catch (Throwable th) {
-            log.error("Unable to handle RowLevelSecurityException", throwable);
+            log.error("Unable to handle RowLevelSecurityException", exception);
             log.error("Exception in RowLevelSecurityExceptionHandler", th);
+            return false;
         }
     }
 }
