@@ -119,6 +119,14 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
                 impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
                 break;
 
+            case CSS:
+                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSS);
+                break;
+
+            case SCSS:
+                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSS);
+                break;
+
             case Text:
                 impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
                 break;

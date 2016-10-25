@@ -32,6 +32,8 @@ public interface SourceCodeEditor extends Field {
         SQL,
         JavaScript,
         Properties,
+        CSS,
+        SCSS,
         Text;
 
         public static Mode parse(String name) {
