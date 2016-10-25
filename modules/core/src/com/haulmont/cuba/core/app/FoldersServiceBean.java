@@ -132,8 +132,8 @@ public class FoldersServiceBean implements FoldersService {
                             }
                         }
                     } catch (Exception e) {
-                        log.warn(String.format("Unable to evaluate AppFolder visibility script for folder: id: %s ," +
-                                " name: %s", folder.getId(), folder.getName()), e);
+                        log.warn("Unable to evaluate AppFolder visibility script for folder: id: {}  name: {}",
+                                folder.getId(), folder.getName(), e);
                         // because EclipseLink Query marks transaction as rollback-only on JPQL syntax errors
                         evaluatedVisibilityScript = false;
                     }
@@ -152,20 +152,19 @@ public class FoldersServiceBean implements FoldersService {
         return result;
     }
 
-    protected  <T> T runScript(String script, Binding binding) {
-        Object result;
+    protected <T> T runScript(String script, Binding binding) {
         script = StringUtils.trim(script);
         if (script.endsWith(".groovy")) {
             script = resources.getResourceAsString(script);
         }
-        result = scripting.evaluateGroovy(script, binding);
-
+        Object result = scripting.evaluateGroovy(script, binding);
+        //noinspection unchecked
         return (T) result;
     }
 
     @Override
     public List<AppFolder> reloadAppFolders(List<AppFolder> folders) {
-        log.debug("Reloading AppFolders " + folders);
+        log.debug("Reloading AppFolders {}", folders);
 
         StopWatch stopWatch = new Log4JStopWatch("AppFolders");
         stopWatch.start();
@@ -173,6 +172,10 @@ public class FoldersServiceBean implements FoldersService {
         try {
             if (!folders.isEmpty()) {
                 Binding binding = new Binding();
+                binding.setVariable("persistence", persistence);
+                binding.setVariable("metadata", metadata);
+                binding.setProperty("userSession", userSessionSource.getUserSession());
+
                 for (AppFolder folder : folders) {
                     Transaction tx = persistence.createTransaction();
                     try {
@@ -193,19 +196,18 @@ public class FoldersServiceBean implements FoldersService {
 
     protected boolean loadFolderQuantity(Binding binding, AppFolder folder) {
         if (!StringUtils.isBlank(folder.getQuantityScript())) {
-            binding.setVariable("persistence", persistence);
-            binding.setVariable("metadata", metadata);
-            String variable = "style";
             binding.setVariable("folder", folder);
-            binding.setVariable(variable, null);
+
+            String styleVariable = "style";
+            binding.setVariable(styleVariable, null);
 
             try {
                 Number qty = runScript(folder.getQuantityScript(), binding);
-                folder.setItemStyle((String) binding.getVariable(variable));
+                folder.setItemStyle((String) binding.getVariable(styleVariable));
                 folder.setQuantity(qty == null ? null : qty.intValue());
             } catch (Exception e) {
-                log.warn(String.format("Unable to evaluate AppFolder quantity script for folder: id: %s ," +
-                        " name: %s", folder.getId(), folder.getName()), e);
+                log.warn("Unable to evaluate AppFolder quantity script for folder: id: {} , name: {}",
+                        folder.getId(), folder.getName(), e);
                 return false;
             }
         }
@@ -352,7 +354,7 @@ public class FoldersServiceBean implements FoldersService {
         return xStream;
     }
 
-    private ArchiveEntry newStoredEntry(String name, byte[] data) {
+    protected ArchiveEntry newStoredEntry(String name, byte[] data) {
         ZipArchiveEntry zipEntry = new ZipArchiveEntry(name);
         zipEntry.setSize(data.length);
         zipEntry.setCompressedSize(zipEntry.getSize());
