@@ -26,6 +26,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Focusable;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.StyleConstants;
 import com.vaadin.client.WidgetUtil;
@@ -35,7 +36,7 @@ import com.vaadin.shared.Position;
 
 import java.util.Set;
 
-public class CubaFileUploadWidget extends FlowPanel implements Focusable {
+public class CubaFileUploadWidget extends FlowPanel implements Focusable, HasEnabled {
 
     public static final String DEFAULT_CLASSNAME = "c-fileupload";
     public static final String CUBA_FILEUPLOAD_DROPZONE_CLASS = "c-fileupload-dropzone";
@@ -324,6 +325,22 @@ public class CubaFileUploadWidget extends FlowPanel implements Focusable {
     @Override
     public void setTabIndex(int index) {
         getFileInputElement().setTabIndex(index);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+
+        if (enabled) {
+            enableUpload();
+        } else {
+            disableUpload();
+        }
     }
 
     public interface FilePermissionsHandler {

@@ -118,6 +118,7 @@ public class CubaFileUploadWrapper extends CustomField {
             container.setWidthUndefined();
             fileNameButton.setWidthUndefined();
             uploadButton.setWidthUndefined();
+            clearButton.setWidthUndefined();
         }
     }
 
