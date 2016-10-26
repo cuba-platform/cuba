@@ -718,24 +718,6 @@ configure(desktopModule) {
         testCompile(guiModule.sourceSets.test.output)
         testRuntime(servletApi)
     }
-
-    installApp {
-        into("$buildDir/app/" + applicationName)
-    }
-
-    task desktopInstall(dependsOn: assemble) << {
-        jar.execute()
-        startScripts.execute()
-        installApp.execute()
-    }
-
-    task desktopDist(dependsOn: assemble) << {
-        distZip.execute()
-    }
-
-    task desktopStart(dependsOn: desktopInstall) << {
-        run.execute()
-    }
 }
 
 configure(restApiModule) {
