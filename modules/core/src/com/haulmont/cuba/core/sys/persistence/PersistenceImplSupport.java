@@ -22,9 +22,9 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.app.FtsSender;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.FtsConfigHelper;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.Stores;
-import com.haulmont.cuba.core.global.FtsConfigHelper;
 import com.haulmont.cuba.core.sys.entitycache.QueryCacheManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
@@ -47,6 +47,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component(PersistenceImplSupport.NAME)
 public class PersistenceImplSupport {
@@ -155,8 +156,9 @@ public class PersistenceImplSupport {
     }
 
     protected void beforeStore(ContainerResourceHolder container, EntityVisitor visitor,
-                             Collection<Object> instances, Set<Object> processed) {
+                               Collection<Object> instances, Set<Object> processed) {
         boolean possiblyChanged = false;
+        Set<Object> withoutPossibleChanges = new HashSet<>();
         for (Object instance : instances) {
             processed.add(instance);
 
@@ -164,7 +166,11 @@ public class PersistenceImplSupport {
                 continue;
 
             BaseGenericIdEntity entity = (BaseGenericIdEntity) instance;
-            possiblyChanged = visitor.visit(entity) || possiblyChanged;
+            boolean result = visitor.visit(entity);
+            if (!result) {
+                withoutPossibleChanges.add(instance);
+            }
+            possiblyChanged = result || possiblyChanged;
         }
         if (!possiblyChanged)
             return;
@@ -173,6 +179,21 @@ public class PersistenceImplSupport {
         if (afterProcessing.size() > processed.size()) {
             afterProcessing.removeAll(processed);
             beforeStore(container, visitor, afterProcessing, processed);
+        }
+
+        if (!withoutPossibleChanges.isEmpty()) {
+            afterProcessing = withoutPossibleChanges.stream()
+                    .filter(instance -> {
+                        ChangeTracker changeTracker = (ChangeTracker) instance;
+                        AttributeChangeListener changeListener =
+                                (AttributeChangeListener) changeTracker._persistence_getPropertyChangeListener();
+                        return changeListener != null
+                                && changeListener.hasChanges();
+                    })
+                    .collect(Collectors.toList());
+            if (!afterProcessing.isEmpty()) {
+                beforeStore(container, visitor, afterProcessing, processed);
+            }
         }
     }
 

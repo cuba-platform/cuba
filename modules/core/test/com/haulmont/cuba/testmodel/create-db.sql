@@ -129,3 +129,23 @@ create table TEST_SOFT_DELETE_OTO_A (
     constraint TEST_SOFT_DELETE_OTO_A_B_ID foreign key (B_ID) references TEST_SOFT_DELETE_OTO_B(ID),
     primary key (ID)
 )^
+
+--------------------------------------------------------------------------------------------------------------
+
+create table TEST_CASCADE_ENTITY (
+    ID varchar(36),
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    FATHER_ID varchar(36),
+    --
+    primary key (ID)
+)^
+
+alter table TEST_CASCADE_ENTITY add constraint FK_TEST_CASCADE_ENTITY_FATHER foreign key (FATHER_ID) references TEST_CASCADE_ENTITY(ID)^
