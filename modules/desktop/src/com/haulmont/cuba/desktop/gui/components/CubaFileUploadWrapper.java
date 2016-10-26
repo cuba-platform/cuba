@@ -150,6 +150,15 @@ public class CubaFileUploadWrapper extends JComponent implements FocusableCompon
         }
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        fileNameButton.setEnabled(enabled);
+        uploadButton.setEnabled(enabled);
+        clearButton.setEnabled(enabled);
+    }
+
     public void setEditable(boolean editable) {
         this.editable = editable;
 
