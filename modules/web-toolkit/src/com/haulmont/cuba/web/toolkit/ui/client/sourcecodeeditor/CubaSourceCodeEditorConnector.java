@@ -54,5 +54,8 @@ public class CubaSourceCodeEditorConnector extends AceEditorConnector {
         if (stateChangeEvent.hasPropertyChanged("handleTabKey")) {
             getWidget().setHandleTabKey(getState().handleTabKey);
         }
+        if (stateChangeEvent.hasPropertyChanged("printMarginColumn")) {
+            getWidget().setPrintMarginColumn(getState().printMarginColumn);
+        }
     }
 }

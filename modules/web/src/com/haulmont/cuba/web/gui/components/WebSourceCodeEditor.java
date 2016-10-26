@@ -148,6 +148,16 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
     }
 
     @Override
+    public void setPrintMarginColumn(int printMarginColumn) {
+        component.setPrintMarginColumn(printMarginColumn);
+    }
+
+    @Override
+    public int getPrinMarginColumn() {
+        return component.getPrintMarginColumn();
+    }
+
+    @Override
     public void setHighlightActiveLine(boolean highlightActiveLine) {
         component.setHighlightActiveLine(highlightActiveLine);
     }
@@ -175,7 +185,6 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
     }
 
     protected class SourceCodeEditorSuggester implements org.vaadin.aceeditor.Suggester {
-
         @Override
         public List<Suggestion> getSuggestions(String text, int cursor) {
             if (suggester == null) {
