@@ -800,6 +800,7 @@
             <xs:extension base="baseFieldComponent">
                 <xs:attribute name="mode" type="sourceCodeEditorMode"/>
                 <xs:attribute name="printMargin" type="xs:boolean"/>
+                <xs:attribute name="printMarginColumn" type="xs:integer"/>
                 <xs:attribute name="showGutter" type="xs:boolean"/>
                 <xs:attribute name="highlightActiveLine" type="xs:boolean"/>
                 <xs:attribute name="handleTabKey" type="xs:boolean"/>

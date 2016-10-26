@@ -81,4 +81,14 @@ public class CubaSourceCodeEditor extends AceEditor implements AutoCompleteSuppo
     public boolean isHandleTabKey() {
         return getState(false).handleTabKey;
     }
+
+    public int getPrintMarginColumn() {
+        return getState(false).printMarginColumn;
+    }
+
+    public void setPrintMarginColumn(int printMarginColumn) {
+        if (getPrintMarginColumn() != printMarginColumn) {
+            getState().printMarginColumn = printMarginColumn;
+        }
+    }
 }

@@ -44,6 +44,11 @@ public class SourceCodeEditorLoader extends AbstractFieldLoader<SourceCodeEditor
             resultComponent.setShowPrintMargin(Boolean.parseBoolean(printMargin));
         }
 
+        String printMarginColumn = element.attributeValue("printMarginColumn");
+        if (StringUtils.isNotEmpty(printMarginColumn)) {
+            resultComponent.setPrintMarginColumn(Integer.parseInt(printMarginColumn));
+        }
+
         String highlightActiveLine = element.attributeValue("highlightActiveLine");
         if (StringUtils.isNotEmpty(highlightActiveLine)) {
             resultComponent.setHighlightActiveLine(Boolean.parseBoolean(highlightActiveLine));

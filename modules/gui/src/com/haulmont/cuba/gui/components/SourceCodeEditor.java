@@ -65,6 +65,17 @@ public interface SourceCodeEditor extends Field {
     void setShowPrintMargin(boolean showPrintMargin);
     boolean isShowPrintMargin();
 
+    /**
+     * Set print margin position in symbols
+     *
+     * @param printMarginColumn print margin position in symbols
+     */
+    void setPrintMarginColumn(int printMarginColumn);
+    /**
+     * @return print margin position in symbols
+     */
+    int getPrinMarginColumn();
+
     void setHighlightActiveLine(boolean highlightActiveLine);
     boolean isHighlightActiveLine();
 
@@ -73,7 +84,6 @@ public interface SourceCodeEditor extends Field {
      * If handleTabKey is false then Tab/Shift-Tab key press will change focus to next/previous field.
      */
     void setHandleTabKey(boolean handleTabKey);
-
     /**
      * @return if Tab key handling is enabled
      */
