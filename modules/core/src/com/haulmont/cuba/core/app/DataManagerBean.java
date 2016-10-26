@@ -213,13 +213,15 @@ public class DataManagerBean implements DataManager {
     }
 
     protected CommitContext createCommitContext(CommitContext context) {
+        CommitContext newCtx;
         if (context instanceof NotDetachedCommitContext) {
-            NotDetachedCommitContext newCtx = new NotDetachedCommitContext();
-            newCtx.setNewInstanceIds(((NotDetachedCommitContext) context).getNewInstanceIds());
-            return newCtx;
+            newCtx = new NotDetachedCommitContext();
+            ((NotDetachedCommitContext) newCtx).setNewInstanceIds(((NotDetachedCommitContext) context).getNewInstanceIds());
         } else {
-            return new CommitContext();
+            newCtx = new CommitContext();
         }
+        newCtx.setSoftDeletion(context.isSoftDeletion());
+        return newCtx;
     }
 
     @Override
