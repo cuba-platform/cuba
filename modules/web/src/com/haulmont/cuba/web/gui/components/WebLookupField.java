@@ -251,6 +251,9 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
         tryToAssignCaptionProperty();
     }
 
+    protected void setupDsAutoRefresh(OptionsDsWrapper ds) {
+    }
+
     @Override
     public void setOptionsDatasource(CollectionDatasource datasource) {
         if (this.datasource == datasource)
@@ -268,7 +271,11 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
         this.optionsDatasource = datasource;
 
         if (datasource != null) {
-            component.setContainerDataSource(new LookupOptionsDsWrapper(datasource, true));
+            LookupOptionsDsWrapper optionsDsWrapper = new LookupOptionsDsWrapper(datasource, true);
+
+            setupDsAutoRefresh(optionsDsWrapper);
+
+            component.setContainerDataSource(optionsDsWrapper);
 
             tryToAssignCaptionProperty();
 
