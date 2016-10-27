@@ -729,7 +729,7 @@ create table SYS_CATEGORY_ATTR (
     TARGET_SCREENS varchar(4000),
     WIDTH varchar(20),
     ROWS_COUNT integer,
-    IS_COLLECTION uuid,
+    IS_COLLECTION boolean,
     --
     primary key (ID),
     constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)
