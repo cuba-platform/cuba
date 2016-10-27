@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
+import com.haulmont.cuba.gui.components.Frame.MessageType;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -85,40 +86,36 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
             if (!beforeActionPerformedHandler.beforeActionPerformed())
                 return;
         }
-        if (table.getSelected().size() > 0) {
-            if (table.getSelected().size() > 1) {
-                String title = messages.getMainMessage("actions.exportSelectedTitle");
-                String caption = messages.getMainMessage("actions.exportSelectedCaption");
-                Action[] actions = new Action[]{
-                        new AbstractAction("actions.export.SELECTED_ROWS", Status.PRIMARY) {
-                            {
-                                setCaption(messages.getMainMessage(getId()));
-                            }
 
-                            @Override
-                            public void actionPerform(Component component) {
-                                export(ExportMode.SELECTED_ROWS);
-                            }
-                        },
-                        new AbstractAction("actions.export.ALL_ROWS") {
-                            {
-                                setCaption(messages.getMainMessage(getId()));
-                            }
-
-                            @Override
-                            public void actionPerform(Component component) {
-                                export(ExportMode.ALL_ROWS);
-                            }
-                        },
-                        new DialogAction(Type.CANCEL)
-                };
-                Frame frame = table.getFrame();
-                frame.showOptionDialog(title, caption, Frame.MessageType.CONFIRMATION, actions);
-            } else {
-                export(ExportMode.SELECTED_ROWS);
-            }
-        } else {
+        if (table.getSelected().isEmpty() || table.getDatasource().size() <= 1) {
             export(ExportMode.ALL_ROWS);
+        } else {
+            String title = messages.getMainMessage("actions.exportSelectedTitle");
+            String caption = messages.getMainMessage("actions.exportSelectedCaption");
+
+            AbstractAction exportSelectedAction = new AbstractAction("actions.export.SELECTED_ROWS", Status.PRIMARY) {
+                @Override
+                public void actionPerform(Component component) {
+                    export(ExportMode.SELECTED_ROWS);
+                }
+            };
+            exportSelectedAction.setCaption(messages.getMainMessage(exportSelectedAction.getId()));
+
+            AbstractAction exportAllAction = new AbstractAction("actions.export.ALL_ROWS") {
+                @Override
+                public void actionPerform(Component component) {
+                    export(ExportMode.ALL_ROWS);
+                }
+            };
+            exportAllAction.setCaption(messages.getMainMessage(exportAllAction.getId()));
+
+            Action[] actions = new Action[]{
+                    exportSelectedAction,
+                    exportAllAction,
+                    new DialogAction(Type.CANCEL)
+            };
+            Frame frame = table.getFrame();
+            frame.showOptionDialog(title, caption, MessageType.CONFIRMATION, actions);
         }
     }
 
