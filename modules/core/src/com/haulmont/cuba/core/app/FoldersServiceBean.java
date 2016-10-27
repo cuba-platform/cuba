@@ -36,6 +36,7 @@ import com.thoughtworks.xstream.core.DefaultConverterLookup;
 import com.thoughtworks.xstream.core.util.ClassLoaderReference;
 import com.thoughtworks.xstream.io.xml.XppDriver;
 import groovy.lang.Binding;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -54,7 +55,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.zip.CRC32;
 
@@ -91,43 +92,38 @@ public class FoldersServiceBean implements FoldersService {
         StopWatch stopWatch = new Log4JStopWatch("AppFolders");
         stopWatch.start();
 
-        List<AppFolder> result = new ArrayList<>();
-        List<AppFolder> list = new ArrayList<>();
+        List<AppFolder> resultList;
+        try (Transaction tx = persistence.createTransaction()) {
+            String metaClassName = metadata.getExtendedEntities().getEffectiveMetaClass(AppFolder.class).getName();
+            TypedQuery<AppFolder> q = persistence.getEntityManager().createQuery(
+                    "select f from " + metaClassName + " f order by f.sortOrder, f.name", AppFolder.class);
 
-        Transaction tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-            MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(AppFolder.class);
-            TypedQuery<AppFolder> q = em.createQuery(
-                    "select f from " + effectiveMetaClass.getName() + " f order by f.sortOrder, f.name",
-                    AppFolder.class);
-            list = q.getResultList();
+            resultList = q.getResultList();
+            // fetch parent folder
+            resultList.forEach(Folder::getParent);
 
-            for (AppFolder folder : list) {
-                folder.getParent(); // fetch parent
-                result.add(folder);
-            }
             tx.commit();
         } finally {
-            tx.end();
             stopWatch.stop();
         }
 
-        if (!list.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(resultList)) {
             Binding binding = new Binding();
             binding.setVariable("persistence", persistence);
             binding.setVariable("metadata", metadata);
             binding.setVariable("userSession", userSessionSource.getUserSession());
 
-            for (AppFolder folder : list) {
-                Transaction folderTx = persistence.createTransaction();
-                try {
+            Iterator<AppFolder> iterator = resultList.iterator();
+            while (iterator.hasNext()) {
+                AppFolder folder = iterator.next();
+                try (Transaction tx = persistence.createTransaction()) {
                     boolean evaluatedVisibilityScript = true;
                     try {
                         if (!StringUtils.isBlank(folder.getVisibilityScript())) {
                             binding.setVariable("folder", folder);
                             Boolean visible = runScript(folder.getVisibilityScript(), binding);
                             if (BooleanUtils.isFalse(visible)) {
+                                iterator.remove();
                                 continue;
                             }
                         }
@@ -141,15 +137,13 @@ public class FoldersServiceBean implements FoldersService {
                     boolean evaluatedQuantityScript = loadFolderQuantity(binding, folder);
 
                     if (evaluatedVisibilityScript && evaluatedQuantityScript) {
-                        folderTx.commit();
+                        tx.commit();
                     }
-                } finally{
-                    folderTx.end();
                 }
             }
         }
 
-        return result;
+        return resultList;
     }
 
     protected <T> T runScript(String script, Binding binding) {
