@@ -22,7 +22,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.*;
+import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
+import com.haulmont.cuba.gui.data.impl.WeakDsListenerAdapter;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -218,7 +219,9 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
 
     @Override
     public boolean containsId(Object itemId) {
-        CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
+        if (executeAutoRefreshInvalid) {
+            CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
+        }
         //noinspection unchecked
         return itemId != null && datasource.containsItem(((Entity) itemId).getId());
     }
