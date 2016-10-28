@@ -19,28 +19,27 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.app.serialization.ViewSerializationAPI;
 import com.haulmont.cuba.core.app.serialization.ViewSerializationOption;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
-import com.haulmont.cuba.core.entity.EntitySnapshot;
-import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.entity.diff.EntityDiff;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
+import com.thoughtworks.xstream.mapper.MapperWrapper;
 import org.dom4j.*;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -302,8 +301,38 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     }
 
     private Object fromXML(String xml) {
-        XStream xStream = new XStream();
+        final List exclUpdateFields = Arrays.asList("updateTs", "updatedBy");
+        XStream xStream = new XStream() {
+            @Override
+            protected MapperWrapper wrapMapper(MapperWrapper next) {
+                return new MapperWrapper(next) {
+                    @Override
+                    public boolean shouldSerializeMember(Class definedIn, String fieldName) {
+                        boolean result = super.shouldSerializeMember(definedIn, fieldName);
+                        if (!result) {
+                            return false;
+                        }
+                        if (fieldName != null) {
+                            if (exclUpdateFields.contains(fieldName)
+                                    && Updatable.class.isAssignableFrom(definedIn)) {
+                                return false;
+                            }
+                            if ("uuid".equals(fieldName)) {
+                                if (!HasUuid.class.isAssignableFrom(definedIn)
+                                        && BaseGenericIdEntity.class.isAssignableFrom(definedIn)) {
+                                    return false;
+                                }
+                            }
+                        }
+                        return true;
+                    }
+                };
+            }
+        };
         xStream.getConverterRegistry().removeConverter(ExternalizableConverter.class);
+        xStream.omitField(BaseGenericIdEntity.class, "createTs");
+        xStream.omitField(BaseGenericIdEntity.class, "createdBy");
+
         return xStream.fromXML(xml);
     }
 
