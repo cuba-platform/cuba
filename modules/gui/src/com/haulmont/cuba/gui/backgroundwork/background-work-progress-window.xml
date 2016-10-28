@@ -20,9 +20,11 @@
         class="com.haulmont.cuba.gui.backgroundwork.BackgroundWorkProgressWindow"
         messagesPack="com.haulmont.cuba.gui.backgroundwork">
 
-    <layout margin="true" spacing="true">
+    <dialogMode width="theme://cuba.gui.BackgroundWorkProgressWindow.width"/>
+
+    <layout spacing="true">
         <label id="text" value="msg://backgroundWorkProgress.defaultText" width="100%"/>
-        <progressBar id="taskProgress" width="100%"/>
+        <progressBar id="taskProgressBar" width="100%"/>
         <label id="progressText"/>
         <hbox align="MIDDLE_RIGHT">
             <button id="cancelButton" invoke="cancel" icon="icons/cancel.png" caption="msg://actions.Cancel"/>

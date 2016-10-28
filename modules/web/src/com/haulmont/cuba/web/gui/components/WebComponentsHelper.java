@@ -326,10 +326,10 @@ public class WebComponentsHelper {
      * Add actions to vaadin action container.
      *
      * @param container any {@link Action.Container}
-     * @param actions map of actions
+     * @param actions   map of actions
      */
-    public static void setActions(final Action.Container container,
-                                  final Map<Action, Runnable> actions) {
+    public static void setActions(Action.Container container,
+                                  Map<Action, Runnable> actions) {
         container.addActionHandler(new Action.Handler() {
             @Override
             public Action[] getActions(Object target, Object sender) {

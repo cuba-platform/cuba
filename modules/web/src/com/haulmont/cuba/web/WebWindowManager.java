@@ -681,6 +681,7 @@ public class WebWindowManager extends WindowManager {
         vWindow.addPreCloseListener(event -> {
             event.setPreventClose(true);
 
+            // user has clicked on X
             window.close(Window.CLOSE_ACTION_ID);
         });
 
@@ -693,8 +694,11 @@ public class WebWindowManager extends WindowManager {
                 KeyCombination.Modifier.codes(closeCombination.getModifiers())
         );
 
-        Map<com.vaadin.event.Action, Runnable> actions = new HashMap<>();
-        actions.put(exitAction, () -> window.close(Window.CLOSE_ACTION_ID));
+        Map<com.vaadin.event.Action, Runnable> actions = Collections.singletonMap(exitAction, () -> {
+            if (openType.getOpenMode() != OpenMode.DIALOG || BooleanUtils.isNotFalse(window.getDialogOptions().getCloseable())) {
+                window.close(Window.CLOSE_ACTION_ID);
+            }
+        });
 
         WebComponentsHelper.setActions(vWindow, actions);
 
