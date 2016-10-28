@@ -29,7 +29,7 @@ import java.util.Date;
 
 @javax.persistence.Entity(name = "sys$FileDescriptor")
 @Table(name = "SYS_FILE")
-@NamePattern("%s (%s)|name,createDate")
+@NamePattern("%s (%s)|name,createDate,extension")
 @SystemLevel
 public class FileDescriptor extends StandardEntity {
 
