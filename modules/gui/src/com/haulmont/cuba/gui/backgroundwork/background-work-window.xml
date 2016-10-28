@@ -20,7 +20,9 @@
         class="com.haulmont.cuba.gui.backgroundwork.BackgroundWorkWindow"
         messagesPack="com.haulmont.cuba.gui.backgroundwork">
 
-    <layout margin="true" spacing="true">
+    <dialogMode width="theme://cuba.gui.BackgroundWorkWindow.width"/>
+
+    <layout spacing="true">
         <label id="text" value="msg://backgroundWork.defaultText" width="100%"/>
         <progressBar id="taskProgress" width="100%" indeterminate="true"/>
         <hbox align="MIDDLE_RIGHT">
