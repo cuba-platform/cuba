@@ -205,6 +205,8 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="Java"/>
             <xs:enumeration value="HTML"/>
+            <xs:enumeration value="CSS"/>
+            <xs:enumeration value="SCSS"/>
             <xs:enumeration value="XML"/>
             <xs:enumeration value="Groovy"/>
             <xs:enumeration value="SQL"/>
