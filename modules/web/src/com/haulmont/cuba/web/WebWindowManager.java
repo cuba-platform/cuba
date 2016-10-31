@@ -167,6 +167,7 @@ public class WebWindowManager extends WindowManager {
         if (openInfo != null) {
             OpenMode openMode = openInfo.getOpenMode();
             if (openMode == OpenMode.NEW_TAB
+                    || openMode == OpenMode.NEW_WINDOW
                     || openMode == OpenMode.THIS_TAB) {
                 // show in tabsheet
                 Layout layout = (Layout) openInfo.getData();
@@ -957,6 +958,8 @@ public class WebWindowManager extends WindowManager {
                 fireListeners(window, tabs.size() != 0);
                 break;
             }
+
+            case NEW_WINDOW:
             case NEW_TAB: {
                 final Layout layout = (Layout) openInfo.getData();
                 layout.removeComponent(WebComponentsHelper.getComposition(window));
