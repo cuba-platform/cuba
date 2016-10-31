@@ -89,6 +89,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         extends WebAbstractList<T, E>
         implements Table<E> {
 
+    private static final String CUSTOM_STYLE_NAME_PREFIX = "cs ";
+
     protected Map<Object, Column> columns = new HashMap<>();
     protected List<Table.Column> columnsOrder = new ArrayList<>();
 
@@ -510,6 +512,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.setImmediate(true);
         component.setValidationVisible(false);
         component.setShowBufferedSourceException(false);
+
+        component.setBeforePaintListener(() -> {
+            com.vaadin.ui.Table.CellStyleGenerator generator = component.getCellStyleGenerator();
+            if (generator instanceof WebAbstractTable.StyleGeneratorAdapter) {
+                //noinspection unchecked
+                ((StyleGeneratorAdapter) generator).resetExceptionHandledFlag();
+            }
+        });
 
         Messages messages = AppBeans.get(Messages.NAME);
         component.setSortAscendingLabel(messages.getMainMessage("tableSort.ascending"));
@@ -2525,84 +2535,108 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         return component.isSelectable();
     }
 
-    protected class StyleGeneratorAdapter implements com.vaadin.ui.Table.CellStyleGenerator {
+    protected String generateCellStyle(Object itemId, Object propertyId) {
+        String style = null;
+        if (propertyId != null && itemId != null
+                && !component.isColumnEditable(propertyId)
+                && (component.getColumnGenerator(propertyId) == null
+                || component.getColumnGenerator(propertyId) instanceof WebAbstractTable.AbbreviatedColumnGenerator)) {
 
-        public static final String CUSTOM_STYLE_NAME_PREFIX = "cs ";
+            MetaPropertyPath propertyPath;
+            if (propertyId instanceof MetaPropertyPath) {
+                propertyPath = (MetaPropertyPath) propertyId;
+            } else {
+                propertyPath = datasource.getMetaClass().getPropertyPath(propertyId.toString());
+            }
+
+            if (propertyPath != null) {
+                style = generateDefaultCellStyle(itemId, propertyId, propertyPath);
+            }
+        }
+
+        if (styleProviders != null) {
+            String generatedStyle = getGeneratedCellStyle(itemId, propertyId);
+            // we use style names without v-table-cell-content prefix, so we add cs prefix
+            // all cells with custom styles will have v-table-cell-content-cs style name in class
+            if (style != null) {
+                if (generatedStyle != null) {
+                    style = CUSTOM_STYLE_NAME_PREFIX + generatedStyle + " " + style;
+                }
+            } else if (generatedStyle != null) {
+                style = CUSTOM_STYLE_NAME_PREFIX + generatedStyle;
+            }
+        }
+
+        return style == null ? null : (CUSTOM_STYLE_NAME_PREFIX + style);
+    }
+
+    protected String generateDefaultCellStyle(Object itemId, Object propertyId, MetaPropertyPath propertyPath) {
+        String style = null;
+
+        Column column = getColumn(propertyId.toString());
+        if (column != null) {
+            final String isLink = column.getXmlDescriptor() == null ?
+                    null : column.getXmlDescriptor().attributeValue("link");
+
+            if (propertyPath.getRange().isClass()) {
+                if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
+                    style = "cuba-table-cell-link";
+                }
+            } else if (propertyPath.getRange().isDatatype()) {
+                if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
+                    style = "cuba-table-cell-link";
+                } else if (column.getMaxTextLength() != null) {
+                    Entity item = getDatasource().getItemNN(itemId);
+                    String value = item.getValueEx(propertyId.toString());
+                    if (column.getMaxTextLength() != null) {
+                        boolean isMultiLineCell = StringUtils.contains(value, "\n");
+                        if ((value != null && value.length() > column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP)
+                                || isMultiLineCell) {
+                            style = "cuba-table-cell-textcut";
+                        } else {
+                            // use special marker stylename
+                            style = "cuba-table-clickable-text";
+                        }
+                    }
+                }
+            }
+        }
+
+        if (propertyPath.getRangeJavaClass() == Boolean.class) {
+            Entity item = datasource.getItem(itemId);
+            if (item != null) {
+                Boolean value = item.getValueEx(propertyId.toString());
+                if (BooleanUtils.isTrue(value)) {
+                    style = "boolean-cell boolean-cell-true";
+                } else {
+                    style = "boolean-cell boolean-cell-false";
+                }
+            }
+        }
+        return style;
+    }
+
+    protected class StyleGeneratorAdapter implements com.vaadin.ui.Table.CellStyleGenerator {
+        protected boolean exceptionHandled = false;
 
         @SuppressWarnings({"unchecked"})
         @Override
         public String getStyle(com.vaadin.ui.Table source, Object itemId, Object propertyId) {
-            String style = null;
-            if (propertyId != null && itemId != null
-                    && !component.isColumnEditable(propertyId)
-                    && (component.getColumnGenerator(propertyId) == null
-                    || component.getColumnGenerator(propertyId) instanceof AbbreviatedColumnGenerator)) {
-
-                MetaPropertyPath propertyPath;
-                if (propertyId instanceof MetaPropertyPath) {
-                    propertyPath = (MetaPropertyPath) propertyId;
-                } else {
-                    propertyPath = datasource.getMetaClass().getPropertyPath(propertyId.toString());
-                }
-
-                if (propertyPath != null) {
-                    Column column = getColumn(propertyId.toString());
-                    if (column != null) {
-                        final String isLink = column.getXmlDescriptor() == null ?
-                                null : column.getXmlDescriptor().attributeValue("link");
-
-                        if (propertyPath.getRange().isClass()) {
-                            if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
-                                style = "cuba-table-cell-link";
-                            }
-                        } else if (propertyPath.getRange().isDatatype()) {
-                            if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
-                                style = "cuba-table-cell-link";
-                            } else if (column.getMaxTextLength() != null) {
-                                Entity item = getDatasource().getItemNN(itemId);
-                                String value = item.getValueEx(propertyId.toString());
-                                if (column.getMaxTextLength() != null) {
-                                    boolean isMultiLineCell = StringUtils.contains(value, "\n");
-                                    if ((value != null && value.length() > column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP)
-                                            || isMultiLineCell) {
-                                        style = "cuba-table-cell-textcut";
-                                    } else {
-                                        // use special marker stylename
-                                        style = "cuba-table-clickable-text";
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if (propertyPath.getRangeJavaClass() == Boolean.class) {
-                        Entity item = datasource.getItem(itemId);
-                        if (item != null) {
-                            Boolean value = item.getValueEx(propertyId.toString());
-                            if (BooleanUtils.isTrue(value)) {
-                                style = "boolean-cell boolean-cell-true";
-                            } else {
-                                style = "boolean-cell boolean-cell-false";
-                            }
-                        }
-                    }
-                }
+            if (exceptionHandled) {
+                return null;
             }
 
-            if (styleProviders != null) {
-                String generatedStyle = getGeneratedCellStyle(itemId, propertyId);
-                // we use style names without v-table-cell-content prefix, so we add cs prefix
-                // all cells with custom styles will have v-table-cell-content-cs style name in class
-                if (style != null) {
-                    if (generatedStyle != null) {
-                        style = CUSTOM_STYLE_NAME_PREFIX + generatedStyle + " " + style;
-                    }
-                } else if (generatedStyle != null) {
-                    style = CUSTOM_STYLE_NAME_PREFIX + generatedStyle;
-                }
+            try {
+                return generateCellStyle(itemId, propertyId);
+            } catch (Exception e) {
+                LoggerFactory.getLogger(WebAbstractTable.class).error("Uncautch exception in Table StyleProvider", e);
+                this.exceptionHandled = true;
+                return null;
             }
+        }
 
-            return style == null ? null : (CUSTOM_STYLE_NAME_PREFIX + style);
+        public void resetExceptionHandledFlag() {
+            this.exceptionHandled = false;
         }
     }
 
