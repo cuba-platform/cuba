@@ -30,34 +30,46 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
+
 @Component("cuba_RowLevelSecurityExceptionHandler")
-public class RowLevelSecurityExceptionHandler implements GenericExceptionHandler {
+public class RowLevelSecurityExceptionHandler extends AbstractGenericExceptionHandler {
 
     private final Logger log = LoggerFactory.getLogger(RowLevelSecurityExceptionHandler.class);
 
+    protected RowLevelSecurityExceptionHandler() {
+        super("com.haulmont.cuba.core.global.RowLevelSecurityException");
+    }
+
     @Override
-    public boolean handle(Throwable exception, WindowManager windowManager) {
+    protected boolean canHandle(String className, String message, @Nullable Throwable throwable) {
+        return className.equals("com.haulmont.cuba.core.global.RowLevelSecurityException");
+    }
+
+    @Override
+    protected void doHandle(String className, String message, @Nullable Throwable throwable, WindowManager windowManager) {
         try {
             Messages messages = AppBeans.get(Messages.NAME);
             String userCaption = null;
             String userMessage = null;
 
-            if (exception != null) {
-                Throwable rootCause = ExceptionUtils.getRootCause(exception);
-                RowLevelSecurityException rowLevelSecurityException = null;
-                if (exception instanceof RowLevelSecurityException) {
-                    rowLevelSecurityException = (RowLevelSecurityException) exception;
+            if (throwable != null) {
+                //noinspection ThrowableResultOfMethodCallIgnored
+                Throwable rootCause = ExceptionUtils.getRootCause(throwable);
+                RowLevelSecurityException exception = null;
+                if (throwable instanceof RowLevelSecurityException) {
+                    exception = (RowLevelSecurityException) throwable;
                 } else if (rootCause instanceof RowLevelSecurityException) {
-                    rowLevelSecurityException = (RowLevelSecurityException) rootCause;
+                    exception = (RowLevelSecurityException) rootCause;
                 }
 
-                if (rowLevelSecurityException != null) {
-                    String entity = rowLevelSecurityException.getEntity();
+                if (exception != null) {
+                    String entity = exception.getEntity();
                     String entityName = entity.split("\\$")[1];
                     MetaClass entityClass = AppBeans.get(Metadata.NAME, Metadata.class).getClassNN(entity);
                     String entityCaption = messages.getTools().getEntityCaption(entityClass);
 
-                    ConstraintOperationType operationType = rowLevelSecurityException.getOperationType();
+                    ConstraintOperationType operationType = exception.getOperationType();
                     if (operationType != null) {
                         String operationId = operationType.getId();
                         String customCaptionKey = String.format("rowLevelSecurity.caption.%s.%s", entityName, operationId);
@@ -97,12 +109,9 @@ public class RowLevelSecurityExceptionHandler implements GenericExceptionHandler
                 userCaption = messages.getMainMessage("rowLevelSecurity.caption");
             }
             windowManager.showNotification(userCaption, userMessage, Frame.NotificationType.ERROR);
-
-            return true;
         } catch (Throwable th) {
-            log.error("Unable to handle RowLevelSecurityException", exception);
+            log.error("Unable to handle RowLevelSecurityException", throwable);
             log.error("Exception in RowLevelSecurityExceptionHandler", th);
-            return false;
         }
     }
 }
