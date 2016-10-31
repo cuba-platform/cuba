@@ -224,7 +224,9 @@ public interface Table<E extends Entity>
      */
     interface StyleProvider<E extends Entity> {
         /**
-         * Called by {@link Table} to get a style for row or cell.
+         * Called by {@link Table} to get a style for row or cell. <br/>
+         * All unhandled exceptions from StyleProvider in Web components by default are logged with ERROR level
+         * and not shown to users.
          *
          * @param entity   an entity instance represented by the current row
          * @param property column identifier if getting a style for a cell, or null if getting the style for a row
