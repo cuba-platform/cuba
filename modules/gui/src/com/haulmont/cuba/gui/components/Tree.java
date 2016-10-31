@@ -65,7 +65,6 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
     void removeStyleProvider(StyleProvider<? super E> styleProvider);
 
     interface StyleProvider<E extends Entity> {
-        @Nullable
         String getStyleName(E entity);
     }
 
