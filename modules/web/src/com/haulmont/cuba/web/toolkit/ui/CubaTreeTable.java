@@ -77,6 +77,7 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     protected Table.AggregationStyle aggregationStyle = Table.AggregationStyle.TOP;
     protected Object focusColumn;
     protected Object focusItem;
+    protected Runnable beforePaintListener;
 
     public CubaTreeTable() {
         registerRpc(new CubaTableServerRpc() {
@@ -880,5 +881,19 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
         ContainerOrderedWrapper wrapper = new ContainerOrderedWrapper(newDataSource);
         wrapper.setResetOnItemSetChange(true);
         return wrapper;
+    }
+
+    @Override
+    public void setBeforePaintListener(Runnable beforePaintListener) {
+        this.beforePaintListener = beforePaintListener;
+    }
+
+    @Override
+    public void paintContent(PaintTarget target) throws PaintException {
+        if (beforePaintListener != null) {
+            beforePaintListener.run();
+        }
+
+        super.paintContent(target);
     }
 }

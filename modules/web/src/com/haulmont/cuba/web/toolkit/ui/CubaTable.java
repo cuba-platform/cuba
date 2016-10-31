@@ -73,6 +73,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     protected Table.AggregationStyle aggregationStyle = Table.AggregationStyle.TOP;
     protected Object focusColumn;
     protected Object focusItem;
+    protected Runnable beforePaintListener;
 
     public CubaTable() {
         registerRpc(new CubaTableServerRpc() {
@@ -734,6 +735,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         return null;
     }
 
+    @Override
     public void setAggregationDescription(Object columnId, String tooltip) {
         if (tooltip != null) {
             if (aggregationTooltips == null) {
@@ -750,6 +752,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         }
     }
 
+    @Override
     public String getAggregationDescription(Object columnId) {
         if (aggregationTooltips != null) {
             return aggregationTooltips.get(columnId);
@@ -796,5 +799,19 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         ContainerOrderedWrapper wrapper = new ContainerOrderedWrapper(newDataSource);
         wrapper.setResetOnItemSetChange(true);
         return wrapper;
+    }
+
+    @Override
+    public void setBeforePaintListener(Runnable beforePaintListener) {
+        this.beforePaintListener = beforePaintListener;
+    }
+
+    @Override
+    public void paintContent(PaintTarget target) throws PaintException {
+        if (beforePaintListener != null) {
+            beforePaintListener.run();
+        }
+
+        super.paintContent(target);
     }
 }
