@@ -18,11 +18,14 @@ package com.haulmont.cuba.client.sys.cache;
 
 import com.haulmont.cuba.security.global.UserSession;
 
+import javax.annotation.Nullable;
+
 /**
  * Provides user session for background cache update.
  */
 public interface CacheUserSessionProvider {
     String NAME = "cuba_CacheUserSessionProvider";
 
+    @Nullable
     UserSession getUserSession();
 }

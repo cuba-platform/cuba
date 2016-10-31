@@ -44,7 +44,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class DynamicAttributesCacheStrategy implements CachingStrategy {
     public static final String NAME = "cuba_DynamicAttributesCacheStrategy";
 
-    protected Logger log = LoggerFactory.getLogger(DynamicAttributesCacheStrategy.class);
+    private final Logger log = LoggerFactory.getLogger(DynamicAttributesCacheStrategy.class);
 
     @Inject
     protected ClientCacheManager clientCacheManager;
@@ -66,6 +66,11 @@ public class DynamicAttributesCacheStrategy implements CachingStrategy {
         clientCacheManager.getExecutorService().scheduleWithFixedDelay(() -> {
             if (needToValidateCache) {
                 UserSession userSession = cacheUserSessionProvider.getUserSession();
+                if (userSession == null) {
+                    // cache user session unavailable
+                    return;
+                }
+
                 try {
                     AppContext.setSecurityContext(new SecurityContext(userSession));
 

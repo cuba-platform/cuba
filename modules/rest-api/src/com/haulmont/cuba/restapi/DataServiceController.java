@@ -463,7 +463,6 @@ public class DataServiceController {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
-        clientCacheManager.initialize();
 
         return true;
     }

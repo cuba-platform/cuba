@@ -260,8 +260,6 @@ public abstract class App {
         Locale targetLocale = resolveLocale(requestLocale);
         setLocale(targetLocale);
 
-        clientCacheManager.initialize();
-
         if (webAuthConfig.getExternalAuthentication()) {
             principal = RequestContext.get().getRequest().getUserPrincipal();
         }
