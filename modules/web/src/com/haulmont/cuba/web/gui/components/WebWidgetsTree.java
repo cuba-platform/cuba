@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.components.WidgetsTree;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaWidgetsTree;
+import com.vaadin.ui.Tree;
 
 public class WebWidgetsTree<E extends Entity> extends WebAbstractTree<CubaWidgetsTree, E> implements WidgetsTree<E> {
 
@@ -33,6 +34,13 @@ public class WebWidgetsTree<E extends Entity> extends WebAbstractTree<CubaWidget
         component = new CubaWidgetsTree();
         component.setSelectable(false);
         component.setImmediate(true);
+        component.setBeforePaintListener(() -> {
+            Tree.ItemStyleGenerator generator = component.getItemStyleGenerator();
+            if (generator instanceof WebAbstractTree.StyleGeneratorAdapter) {
+                //noinspection unchecked
+                ((StyleGeneratorAdapter) generator).resetExceptionHandledFlag();
+            }
+        });
 
         initComponent(component);
     }
@@ -84,16 +92,9 @@ public class WebWidgetsTree<E extends Entity> extends WebAbstractTree<CubaWidget
     @Override
     public void setWidgetBuilder(final WidgetBuilder widgetBuilder) {
         if (widgetBuilder != null) {
-            component.setWidgetBuilder(new CubaWidgetsTree.WidgetBuilder() {
-                @Override
-                public com.vaadin.ui.Component buildWidget(
-                        CubaWidgetsTree source,
-                        Object itemId,
-                        boolean leaf
-                ) {
-                    Component widget = widgetBuilder.build((HierarchicalDatasource) datasource, itemId, leaf);
-                    return WebComponentsHelper.getComposition(widget);
-                }
+            component.setWidgetBuilder((CubaWidgetsTree.WidgetBuilder) (source, itemId, leaf) -> {
+                Component widget = widgetBuilder.build((HierarchicalDatasource) datasource, itemId, leaf);
+                return WebComponentsHelper.getComposition(widget);
             });
         } else {
             component.setWidgetBuilder(null);

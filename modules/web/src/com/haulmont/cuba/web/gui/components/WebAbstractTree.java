@@ -25,6 +25,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -220,21 +221,32 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     }
 
     protected class StyleGeneratorAdapter implements com.vaadin.ui.Tree.ItemStyleGenerator {
+        protected boolean exceptionHandled = false;
 
         public static final String CUSTOM_STYLE_NAME_PREFIX = "cs ";
 
         @Override
         public String getStyle(com.vaadin.ui.Tree source, Object itemId) {
-            String style = null;
+            try {
+                String style = null;
 
-            if (styleProviders != null) {
-                String generatedStyle = getGeneratedStyle(itemId);
-                if (generatedStyle != null) {
-                    style = CUSTOM_STYLE_NAME_PREFIX + generatedStyle;
+                if (styleProviders != null) {
+                    String generatedStyle = getGeneratedStyle(itemId);
+                    if (generatedStyle != null) {
+                        style = CUSTOM_STYLE_NAME_PREFIX + generatedStyle;
+                    }
                 }
-            }
 
-            return style == null ? null : (CUSTOM_STYLE_NAME_PREFIX + style);
+                return style == null ? null : (CUSTOM_STYLE_NAME_PREFIX + style);
+            } catch (Exception e) {
+                LoggerFactory.getLogger(WebAbstractTree.class).error("Uncautch exception in Tree StyleProvider", e);
+                this.exceptionHandled = true;
+                return null;
+            }
+        }
+
+        public void resetExceptionHandledFlag() {
+            this.exceptionHandled = false;
         }
     }
 
