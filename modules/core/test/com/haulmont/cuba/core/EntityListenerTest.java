@@ -20,11 +20,16 @@ import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.listener.TestDetachAttachListener;
 import com.haulmont.cuba.core.listener.TestListener;
 import com.haulmont.cuba.core.listener.TestListenerBean;
+import com.haulmont.cuba.core.listener.TestUserEntityListener;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
+import com.haulmont.cuba.security.entity.Group;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
+import com.haulmont.cuba.testsupport.TestSupport;
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -42,6 +47,9 @@ public class EntityListenerTest {
     @ClassRule
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
+    private Metadata metadata;
+    private Persistence persistence;
+
     private TestListenerBean listenerBean;
     private TestDetachAttachListener detachAttachListener;
 
@@ -49,6 +57,9 @@ public class EntityListenerTest {
 
     @Before
     public void setUp() throws Exception {
+        persistence = cont.persistence();
+        metadata = cont.metadata();
+
         QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         runner.update("delete from SYS_SERVER");
 
@@ -59,8 +70,10 @@ public class EntityListenerTest {
         detachAttachListener.events.clear();
 
         TestListener.events.clear();
+        TestUserEntityListener.events.clear();
 
         entityListenerManager = AppBeans.get(EntityListenerManager.class);
+        entityListenerManager.addListener(User.class, TestUserEntityListener.class);
         entityListenerManager.addListener(Server.class, TestListener.class);
         entityListenerManager.addListener(Server.class, "cuba_TestListenerBean");
         entityListenerManager.addListener(Server.class, "cuba_TestDetachAttachListener");
@@ -73,6 +86,7 @@ public class EntityListenerTest {
         entityListenerManager.removeListener(Server.class, "cuba_TestDetachAttachListener");
         entityListenerManager.removeListener(Server.class, "cuba_TestListenerBean");
         entityListenerManager.removeListener(Server.class, TestListener.class);
+        entityListenerManager.removeListener(User.class, TestUserEntityListener.class);
     }
 
     @Test
@@ -230,5 +244,41 @@ public class EntityListenerTest {
             tx.end();
         }
 
+    }
+
+    @Test
+    public void testSequenceForSoftDeletedEntity() throws Exception {
+        User user;
+        try (Transaction tx = persistence.createTransaction()) {
+            user = metadata.create(User.class);
+            user.setGroup(persistence.getEntityManager().find(Group.class, TestSupport.COMPANY_GROUP_ID));
+            user.setLogin("user-" + user.getId());
+            persistence.getEntityManager().persist(user);
+            tx.commit();
+        }
+        assertEquals(2, TestUserEntityListener.events.size());
+        assertTrue(TestUserEntityListener.events.get(0).contains("onBeforeInsert"));
+        assertTrue(TestUserEntityListener.events.get(1).contains("onAfterInsert"));
+        TestUserEntityListener.events.clear();
+
+        try (Transaction tx = persistence.createTransaction()) {
+            User u = persistence.getEntityManager().find(User.class, user.getId());
+            assertNotNull(u);
+            u.setName(u.getLogin());
+            tx.commit();
+        }
+        assertEquals(2, TestUserEntityListener.events.size());
+        assertTrue(TestUserEntityListener.events.get(0).contains("onBeforeUpdate"));
+        assertTrue(TestUserEntityListener.events.get(1).contains("onAfterUpdate"));
+        TestUserEntityListener.events.clear();
+
+        try (Transaction tx = persistence.createTransaction()) {
+            User u = persistence.getEntityManager().find(User.class, user.getId());
+            persistence.getEntityManager().remove(u);
+            tx.commit();
+        }
+        assertEquals(2, TestUserEntityListener.events.size());
+        assertTrue(TestUserEntityListener.events.get(0).contains("onBeforeDelete"));
+        assertTrue(TestUserEntityListener.events.get(1).contains("onAfterDelete"));
     }
 }
