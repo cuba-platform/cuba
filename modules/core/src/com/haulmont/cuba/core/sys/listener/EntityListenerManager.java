@@ -77,6 +77,34 @@ public class EntityListenerManager {
         }
     }
 
+    protected static class ListenerExecution {
+        private final Entity entity;
+        private final EntityListenerType type;
+
+        public ListenerExecution(Entity entity, EntityListenerType type) {
+            this.entity = entity;
+            this.type = type;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ListenerExecution that = (ListenerExecution) o;
+            return entity == that.entity && type == that.type;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(entity, type);
+        }
+
+        @Override
+        public String toString() {
+            return type + ": " + entity;
+        }
+    }
+
     private Logger log = LoggerFactory.getLogger(EntityListenerManager.class);
 
     @Inject
@@ -89,6 +117,8 @@ public class EntityListenerManager {
     protected ReadWriteLock lock = new ReentrantReadWriteLock();
 
     protected volatile boolean enabled = true;
+
+    protected ThreadLocal<List<ListenerExecution>> threadLocalExecutions = new ThreadLocal<>();
 
     /**
      * Register an entity listener by its class. The listener instance will be instatiated as a plain object.
@@ -180,57 +210,78 @@ public class EntityListenerManager {
             return;
 
         List listeners = getListener(entity.getClass(), type);
+        if (listeners.isEmpty())
+            return;
 
-        boolean saved = false;
-        SecurityContext securityContext = AppContext.getSecurityContext();
-        if (securityContext != null) { // can be null before login when detaching entities
-            saved = securityContext.isAuthorizationRequired();
-            securityContext.setAuthorizationRequired(false);
+        // check if a listener for this instance is already executed
+        List<ListenerExecution> executions = threadLocalExecutions.get();
+        if (executions == null) {
+            executions = new ArrayList<>();
+            threadLocalExecutions.set(executions);
         }
+        ListenerExecution execution = new ListenerExecution(entity, type);
+        if (executions.contains(execution)) {
+            return;
+        } else {
+            executions.add(execution);
+        }
+
         try {
-            for (Object listener : listeners) {
-                switch (type) {
-                    case BEFORE_DETACH:
-                        logExecution(type, entity);
-                        ((BeforeDetachEntityListener) listener).onBeforeDetach(entity, persistence.getEntityManager(storeName));
-                        break;
-                    case BEFORE_ATTACH:
-                        logExecution(type, entity);
-                        ((BeforeAttachEntityListener) listener).onBeforeAttach(entity);
-                        break;
-                    case BEFORE_INSERT:
-                        logExecution(type, entity);
-                        ((BeforeInsertEntityListener) listener).onBeforeInsert(entity, persistence.getEntityManager(storeName));
-                        break;
-                    case AFTER_INSERT:
-                        logExecution(type, entity);
-                        ((AfterInsertEntityListener) listener).onAfterInsert(entity, persistence.getEntityManager(storeName).getConnection());
-                        break;
-                    case BEFORE_UPDATE:
-                        logExecution(type, entity);
-                        ((BeforeUpdateEntityListener) listener).onBeforeUpdate(entity, persistence.getEntityManager(storeName));
-                        break;
-                    case AFTER_UPDATE:
-                        logExecution(type, entity);
-                        ((AfterUpdateEntityListener) listener).onAfterUpdate(entity, persistence.getEntityManager(storeName).getConnection());
-                        break;
-                    case BEFORE_DELETE:
-                        logExecution(type, entity);
-                        ((BeforeDeleteEntityListener) listener).onBeforeDelete(entity, persistence.getEntityManager(storeName));
-                        break;
-                    case AFTER_DELETE:
-                        logExecution(type, entity);
-                        ((AfterDeleteEntityListener) listener).onAfterDelete(entity, persistence.getEntityManager(storeName).getConnection());
-                        break;
-                    default:
-                        throw new UnsupportedOperationException("Unsupported EntityListenerType: " + type);
+            boolean saved = false;
+            SecurityContext securityContext = AppContext.getSecurityContext();
+            if (securityContext != null) { // can be null before login when detaching entities
+                saved = securityContext.isAuthorizationRequired();
+                securityContext.setAuthorizationRequired(false);
+            }
+            try {
+                for (Object listener : listeners) {
+                    switch (type) {
+                        case BEFORE_DETACH:
+                            logExecution(type, entity);
+                            ((BeforeDetachEntityListener) listener).onBeforeDetach(entity, persistence.getEntityManager(storeName));
+                            break;
+                        case BEFORE_ATTACH:
+                            logExecution(type, entity);
+                            ((BeforeAttachEntityListener) listener).onBeforeAttach(entity);
+                            break;
+                        case BEFORE_INSERT:
+                            logExecution(type, entity);
+                            ((BeforeInsertEntityListener) listener).onBeforeInsert(entity, persistence.getEntityManager(storeName));
+                            break;
+                        case AFTER_INSERT:
+                            logExecution(type, entity);
+                            ((AfterInsertEntityListener) listener).onAfterInsert(entity, persistence.getEntityManager(storeName).getConnection());
+                            break;
+                        case BEFORE_UPDATE:
+                            logExecution(type, entity);
+                            ((BeforeUpdateEntityListener) listener).onBeforeUpdate(entity, persistence.getEntityManager(storeName));
+                            break;
+                        case AFTER_UPDATE:
+                            logExecution(type, entity);
+                            ((AfterUpdateEntityListener) listener).onAfterUpdate(entity, persistence.getEntityManager(storeName).getConnection());
+                            break;
+                        case BEFORE_DELETE:
+                            logExecution(type, entity);
+                            ((BeforeDeleteEntityListener) listener).onBeforeDelete(entity, persistence.getEntityManager(storeName));
+                            break;
+                        case AFTER_DELETE:
+                            logExecution(type, entity);
+                            ((AfterDeleteEntityListener) listener).onAfterDelete(entity, persistence.getEntityManager(storeName).getConnection());
+                            break;
+                        default:
+                            throw new UnsupportedOperationException("Unsupported EntityListenerType: " + type);
+                    }
+                }
+            } finally {
+                SecurityContext sc = AppContext.getSecurityContext();
+                if (sc != null) {
+                    sc.setAuthorizationRequired(saved);
                 }
             }
         } finally {
-            SecurityContext sc = AppContext.getSecurityContext();
-            if (sc != null) {
-                sc.setAuthorizationRequired(saved);
-            }
+            executions.remove(execution);
+            if (executions.isEmpty())
+                threadLocalExecutions.remove();
         }
     }
 
