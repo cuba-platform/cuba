@@ -96,6 +96,9 @@ public class UiPermissionsFrame extends AbstractFrame {
     @Inject
     protected Companion companion;
 
+    @Inject
+    private GroupBoxLayout editPane;
+
     protected boolean itemChanging = false;
 
     @Override
@@ -144,8 +147,9 @@ public class UiPermissionsFrame extends AbstractFrame {
 
         boolean isCreatePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.CREATE);
         boolean isDeletePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.DELETE);
+        boolean isRoleEditPermitted = security.isEntityOpPermitted(metadata.getClass(Role.class), EntityOp.UPDATE);
 
-        final boolean hasPermissionsToModifyPermission = isCreatePermitted && isDeletePermitted;
+        final boolean hasPermissionsToModifyPermission = isCreatePermitted && isDeletePermitted && isRoleEditPermitted;
 
         RemoveAction removeAction = new RemoveAction(uiPermissionsTable, false) {
             @Override
@@ -161,6 +165,8 @@ public class UiPermissionsFrame extends AbstractFrame {
 
         removePermissionBtn.setAction(removeAction);
         uiPermissionsTable.addAction(removeAction);
+
+        editPane.setEnabled(security.isEntityOpPermitted(Role.class, EntityOp.UPDATE));
 
         applyPermissions(hasPermissionsToModifyPermission);
     }

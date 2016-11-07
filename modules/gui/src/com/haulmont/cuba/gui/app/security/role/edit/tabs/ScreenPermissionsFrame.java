@@ -73,6 +73,9 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     @Inject
     protected Companion companion;
 
+    @Inject
+    private GroupBoxLayout screensEditPane;
+
     protected boolean itemChanging = false;
 
     @Override
@@ -146,12 +149,15 @@ public class ScreenPermissionsFrame extends AbstractFrame {
 
         allowCheckBox.setEditable(hasPermissionsToModifyPermission);
         disallowCheckBox.setEditable(hasPermissionsToModifyPermission);
+
+        screensEditPane.setEnabled(security.isEntityOpPermitted(metadata.getClass(Role.class), EntityOp.UPDATE));
     }
 
     protected void updateCheckBoxes(BasicPermissionTarget item) {
         itemChanging = true;
         if (item != null) {
             boolean visible = !item.getId().startsWith("root:");
+
             allowCheckBox.setVisible(visible);
             disallowCheckBox.setVisible(visible);
 
