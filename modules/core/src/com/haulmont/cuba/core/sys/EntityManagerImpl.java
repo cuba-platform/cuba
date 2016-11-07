@@ -77,6 +77,7 @@ public class EntityManagerImpl implements EntityManager {
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
         CubaUtil.setSoftDeletion(softDeletion);
+        CubaUtil.setOriginalSoftDeletion(softDeletion);
     }
 
     @Override
@@ -376,6 +377,7 @@ public class EntityManagerImpl implements EntityManager {
     protected <T extends Entity> T internalMerge(T entity) {
         try {
             CubaUtil.setSoftDeletion(false);
+            CubaUtil.setOriginalSoftDeletion(false);
 
             UUID uuid = null;
             if (entity.getId() instanceof IdProxy) {
@@ -392,6 +394,7 @@ public class EntityManagerImpl implements EntityManager {
             return merged;
         } finally {
             CubaUtil.setSoftDeletion(softDeletion);
+            CubaUtil.setOriginalSoftDeletion(softDeletion);
         }
     }
 

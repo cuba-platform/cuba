@@ -22,10 +22,7 @@ import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.FetchMode;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.security.entity.Group;
-import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.testmodel.softdelete_one_to_one.SoftDeleteOneToOneA;
 import com.haulmont.cuba.testmodel.softdelete_one_to_one.SoftDeleteOneToOneB;
 import com.haulmont.cuba.testsupport.TestContainer;
@@ -55,6 +52,7 @@ public class SoftDeleteTest {
     private UUID userRole3Id;
     private UUID oneToOneA1Id, oneToOneA2Id, oneToOneA3Id;
     private UUID oneToOneB1Id, oneToOneB2Id;
+    private UUID group1Id, groupHierarchyId, constraint1Id, constraint2Id;
     private Persistence persistence;
 
     @Before
@@ -136,6 +134,32 @@ public class SoftDeleteTest {
             em.persist(oneToOneA2);
             oneToOneA2Id = oneToOneA2.getId();
 
+            Group group1 = new Group();
+            group1Id = group1.getId();
+            group1.setName("testGroup1");
+            em.persist(group1);
+
+            GroupHierarchy groupHierarchy = new GroupHierarchy();
+            groupHierarchyId = groupHierarchy.getId();
+            groupHierarchy.setGroup(group1);
+            groupHierarchy.setParent(group1);
+            groupHierarchy.setLevel(1);
+            em.persist(groupHierarchy);
+
+            Constraint constraint1 = new Constraint();
+            constraint1Id = constraint1.getId();
+            constraint1.setCode("constraint1");
+            constraint1.setEntityName("sec$Constraint");
+            constraint1.setGroup(group1);
+            em.persist(constraint1);
+
+            Constraint constraint2 = new Constraint();
+            constraint2Id = constraint2.getId();
+            constraint2.setCode("constraint2");
+            constraint2.setEntityName("sec$Constraint");
+            constraint2.setGroup(group1);
+            em.persist(constraint2);
+
             tx.commitRetaining();
 
             em = cont.persistence().getEntityManager();
@@ -152,6 +176,9 @@ public class SoftDeleteTest {
             SoftDeleteOneToOneB oneToOneB = em.find(SoftDeleteOneToOneB.class, oneToOneB2Id);
             em.remove(oneToOneB);
 
+            Constraint constraint = em.find(Constraint.class, constraint2Id);
+            em.remove(constraint);
+
             //remove from db to prevent cascade delete user role
             QueryRunner queryRunner = new QueryRunner();
             queryRunner.update(em.getConnection(), "update SEC_ROLE set DELETE_TS = CREATE_TS, DELETED_BY = CREATED_BY where name = 'roleToBeDeleted3'");
@@ -165,6 +192,8 @@ public class SoftDeleteTest {
     @After
     public void tearDown() throws Exception {
         cont.deleteRecord("SEC_USER_ROLE", userRole1Id, userRole2Id, userRole3Id);
+        cont.deleteRecord("SEC_GROUP_HIERARCHY", groupHierarchyId);
+        cont.deleteRecord("SEC_CONSTRAINT", constraint1Id, constraint2Id);
         cont.deleteRecord("SEC_ROLE", role2Id, role3Id);
         cont.deleteRecord("SEC_USER", userId, user1Id);
         cont.deleteRecord("SEC_GROUP", groupId);
@@ -948,5 +977,20 @@ public class SoftDeleteTest {
         User user = cont.persistence().callInTransaction((em) -> em.find(User.class, user1Id, userView));
         assertEquals(role3Id, user.getUserRoles().iterator().next().getRole().getId());
         Assert.assertTrue(user.getUserRoles().iterator().next().getRole().isDeleted());
+    }
+
+    @Test
+    public void testReferenceToDeletedEntityOneToManyThroughManyToOne() {
+        View constraintView = new View(Constraint.class)
+                .addProperty("code");
+        View groupView = new View(Group.class)
+                .addProperty("name")
+                .addProperty("constraints", constraintView, FetchMode.BATCH);
+        View groupHierarchyView = new View(GroupHierarchy.class).addProperty("group", groupView, FetchMode.BATCH);
+
+        GroupHierarchy groupHierarchy = cont.persistence().callInTransaction((em) -> em.find(GroupHierarchy.class, groupHierarchyId, groupHierarchyView));
+        assertNotNull(groupHierarchy);
+        assertNotNull(groupHierarchy.getGroup());
+        assertEquals(1, groupHierarchy.getGroup().getConstraints().size());
     }
 }
