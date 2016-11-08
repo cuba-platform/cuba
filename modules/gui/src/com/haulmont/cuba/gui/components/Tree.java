@@ -87,4 +87,13 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
      * Repaint UI representation of the tree including style providers and icon providers without refreshing the tree data.
      */
     void repaint();
+
+    /**
+     * Set action to be executed on Enter key press.
+     */
+    void setEnterPressAction(Action action);
+    /**
+     * @return Enter key press action.
+     */
+    Action getEnterPressAction();
 }

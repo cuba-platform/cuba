@@ -22,8 +22,10 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -40,9 +42,12 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
+import java.util.List;
 
 public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderComponent<JTree> implements Tree<E> {
 
@@ -60,6 +65,7 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
 
     protected Action doubleClickAction;
     protected MouseAdapter itemClickListener;
+    protected Action enterPressAction;
     protected boolean editable = true;
 
     protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
@@ -110,6 +116,55 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
                     }
                 }
         );
+
+        impl.addKeyListener(new KeyAdapter() {
+            protected static final int ENTER_CODE = 10;
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (ENTER_CODE == e.getKeyCode() &&
+                        e.getComponent() == DesktopTree.this.getComponent()) {
+                    if (enterPressAction != null) {
+                        enterPressAction.actionPerform(DesktopTree.this);
+                    } else {
+                        handleClickAction();
+                    }
+                }
+            }
+        });
+    }
+
+    protected void handleClickAction() {
+        Action action = getItemClickAction();
+        if (action == null) {
+            action = getEnterPressAction();
+            if (action == null) {
+                action = getAction("edit");
+                if (action == null) {
+                    action = getAction("view");
+                }
+            }
+        }
+
+        if (action != null && action.isEnabled()) {
+            Window window = ComponentsHelper.getWindowImplementation(DesktopTree.this);
+            if (window instanceof Window.Wrapper) {
+                window = ((Window.Wrapper) window).getWrappedWindow();
+            }
+
+            if (!(window instanceof Window.Lookup)) {
+                action.actionPerform(DesktopTree.this);
+            } else {
+                Window.Lookup lookup = (Window.Lookup) window;
+
+                com.haulmont.cuba.gui.components.Component lookupComponent = lookup.getLookupComponent();
+                if (lookupComponent != this)
+                    action.actionPerform(DesktopTree.this);
+                else if (action.getId().equals(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID)) {
+                    action.actionPerform(DesktopTree.this);
+                }
+            }
+        }
     }
 
     @Override
@@ -567,5 +622,15 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
     @Override
     public void repaint() {
         // do nothing
+    }
+
+    @Override
+    public void setEnterPressAction(Action action) {
+        enterPressAction = action;
+    }
+
+    @Override
+    public Action getEnterPressAction() {
+        return enterPressAction;
     }
 }
