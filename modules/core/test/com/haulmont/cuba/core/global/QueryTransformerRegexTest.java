@@ -134,6 +134,58 @@ public class QueryTransformerRegexTest extends TestCase {
                 "select count(h) from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by c.level having c.level > 0",
                 res);
+
+        transformer = new QueryTransformerRegex(
+                "select h.group from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0 order by c.level");
+        transformer.replaceWithCount();
+        res = transformer.getResult();
+        assertEquals(
+                "select count(h.group) from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0",
+                res);
+
+        transformer = new QueryTransformerRegex(
+                "select distinct h.group from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0 order by c.level");
+        transformer.replaceWithCount();
+        res = transformer.getResult();
+        assertEquals(
+                "select count(distinct h.group) from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0",
+                res);
+    }
+
+    public void testReplaceWithSelectId() {
+        QueryTransformerRegex transformer = new QueryTransformerRegex(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0 order by c.level");
+        transformer.replaceWithSelectId();
+        String res = transformer.getResult();
+        assertEquals(
+                "select h.id from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0",
+                res);
+
+        transformer = new QueryTransformerRegex(
+                "select h.group from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0 order by c.level");
+        transformer.replaceWithSelectId();
+        res = transformer.getResult();
+        assertEquals(
+                "select h.group.id from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0",
+                res);
+
+        transformer = new QueryTransformerRegex(
+                "select distinct h.group from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0 order by c.level");
+        transformer.replaceWithSelectId();
+        res = transformer.getResult();
+        assertEquals(
+                "select distinct h.group.id from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0",
+                res);
     }
 
     public void testOrderBy() {
@@ -152,8 +204,6 @@ public class QueryTransformerRegexTest extends TestCase {
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by c.level having c.level > 0 order by h.group desc",
                 res);
-
-
     }
 
     public void testOrderByAscDesc() {
