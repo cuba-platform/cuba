@@ -226,11 +226,22 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     public void replaceWithCount() {
         Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         String alias = findAlias(entityMatcher);
+        String entityPath = alias;
+
+        Matcher entityPathMatcher = Pattern.compile(String.format(ENTITY_PATH_PATTERN_REGEX, alias))
+                .matcher(buffer);
+
+        if (entityPathMatcher.find()) {
+            String group = entityPathMatcher.group(ENTITY_PATH_ALIAS);
+            if (group != null && group.startsWith(alias)) {
+                entityPath = group;
+            }
+        }
 
         Matcher distinctMatcher = DISTINCT_PATTERN.matcher(buffer);
 
         buffer.replace(0, entityMatcher.start(),
-                "select count(" + (distinctMatcher.find() ? "distinct " : "") + alias + ") ");
+                "select count(" + (distinctMatcher.find() ? "distinct " : "") + entityPath + ") ");
 
         Matcher orderMatcher = ORDER_BY_PATTERN.matcher(buffer);
         if (orderMatcher.find()) {
@@ -247,11 +258,22 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     public void replaceWithSelectId(String pkName) {
         Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         String alias = findAlias(entityMatcher);
+        String entityPath = alias;
+
+        Matcher entityPathMatcher = Pattern.compile(String.format(ENTITY_PATH_PATTERN_REGEX, alias))
+                .matcher(buffer);
+
+        if (entityPathMatcher.find()) {
+            String group = entityPathMatcher.group(ENTITY_PATH_ALIAS);
+            if (group != null && group.startsWith(alias)) {
+                entityPath = group;
+            }
+        }
 
         Matcher distinctMatcher = DISTINCT_PATTERN.matcher(buffer);
 
         buffer.replace(0, entityMatcher.start(),
-                "select " + (distinctMatcher.find() ? "distinct " : "") + alias + "." + pkName);
+                "select " + (distinctMatcher.find() ? "distinct " : "") + entityPath + "." + pkName + " ");
 
         Matcher orderMatcher = ORDER_BY_PATTERN.matcher(buffer);
         if (orderMatcher.find()) {
