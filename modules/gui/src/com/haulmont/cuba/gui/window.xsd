@@ -746,6 +746,8 @@
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasAlign"/>
 
         <xs:attribute name="datasource" type="xs:string"/>
 
