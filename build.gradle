@@ -84,71 +84,17 @@ def webModuleThemesModule = project(':cuba-web-themes')
 def coreTestsModule = project(':cuba-core-tests')
 def clientTestsModule = project(':cuba-client-tests')
 
-apply from: "$rootProject.projectDir/lib.gradle"
-
-def springVersion = '4.3.1.RELEASE'
-def springSecurityVersion = '4.1.1.RELEASE'
-
-def servletApi = 'org.apache.tomcat:tomcat-servlet-api:8.0.26'
-def groovyArtifact = 'org.codehaus.groovy:groovy-all:2.4.4'
-def poi = 'com.haulmont.thirdparty:poi:3.12.cuba.1'
-def postgres = 'org.postgresql:postgresql:9.4-1201-jdbc41'
-def hsqldb = 'org.hsqldb:hsqldb:2.3.3'
-
-/* Shared web dependencies */
-def commonsUpload = [group: 'commons-fileupload', name: 'commons-fileupload', version: '1.3.2']
-
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
            webModule, desktopModule, portalModule, webAuthModule, restApiModule, idpModule]) {
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
     apply(plugin: 'checkstyle')
-    apply(plugin: 'findbugs')
     apply(plugin: 'cuba')
 
     dependencies {
-        compile('commons-logging:commons-logging:1.2')
-        compile(group: 'commons-lang', name: 'commons-lang', version: '2.6')
-        compile(group: 'commons-collections', name: 'commons-collections', version: '3.2.1')
-        compile('commons-io:commons-io:2.4')
-        compile('commons-codec:commons-codec:1.10')
-        compile('commons-cli:commons-cli:1.3.1')
-        compile('org.apache.commons:commons-pool2:2.4.2')
-        compile('org.apache.commons:commons-compress:1.9')
-        compile(group: 'dom4j', name: 'dom4j', version: '1.6.1')
-        compile('com.sun.mail:javax.mail:1.5.4')
-        compile('ch.qos.logback:logback-classic:1.1.3')
-        compile('org.slf4j:log4j-over-slf4j:1.7.12')
-        compile(group: 'org.perf4j', name: 'perf4j', version: '0.9.16')
-        compile('com.google.code.findbugs:jsr305:3.0.0')
-        compile('javax:javaee-api:7.0')
-        compile(groovyArtifact)
-        compile(group: 'antlr', name: 'antlr', version: '2.7.7')
-        compile(group: 'org.antlr', name: 'antlr-runtime', version: '3.5.2')
-        compile('com.google.guava:guava:18.0')
-
-        compile 'org.eclipse.persistence:javax.persistence:2.1.0'
-        compile 'org.eclipse.persistence:commonj.sdo:2.1.1'
-        compile 'org.glassfish:javax.json:1.0.4'
-        compile (eclipselink)
-
-        compile('org.freemarker:freemarker:2.3.23')
-        compile(group: 'aopalliance', name: 'aopalliance', version: '1.0')
-        compile(group: 'org.springframework', name: 'spring-core', version: springVersion)
-        compile(group: 'org.springframework', name: 'spring-beans', version: springVersion)
-        compile(group: 'org.springframework', name: 'spring-context', version: springVersion)
-        compile(group: 'org.springframework', name: 'spring-web', version: springVersion)
-
-        compile(group: 'com.esotericsoftware', name: 'kryo-shaded', version: '4.0.0')
-        compile(group: 'de.javakaffee', name: 'kryo-serializers', version: '0.38') {
-            exclude(group: 'com.esotericsoftware', module: 'kryo')
-        }
-
-        testCompile('org.jmockit:jmockit:1.15')
-        testCompile('junit:junit:4.12')
-
-        findbugs 'com.google.code.findbugs:findbugs:3.0.1'
+        testCompile(bom['org.jmockit:jmockit'])
+        testCompile(bom['junit:junit'])
     }
 
     task sourceJar(type: Jar) {
@@ -176,22 +122,6 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
                 style: "$checkstyleConfigDir/checkstyle.xsl")
     }
 
-    findbugs {
-        toolVersion = "2.0.3"
-        ignoreFailures = true
-        omitVisitors = ['FindDoubleCheck']
-    }
-
-    findbugsMain {
-        reports {
-            xml.enabled = false
-            html {
-                enabled = true
-                destination "${project.buildDir}/findbugs/$project.name-findbugs.html"
-            }
-        }
-    }
-
     jar {
         manifest {
             attributes("Implementation-Version": cubaVersion)
@@ -199,7 +129,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     }
 }
 
-// configure web toolkit modules
+// configure web toolkit module
 configure(webToolkitModule) {
     apply(plugin: 'java')
     apply(plugin: 'idea')
@@ -218,16 +148,61 @@ configure(webToolkitModule) {
 
 configure(sharedLibModule) {
     dependencies {
-        jdbc(postgres)
-        jdbc(hsqldb)
+        compile(bom['ch.qos.logback:logback-classic'])
+        compile(bom['org.slf4j:log4j-over-slf4j'])
+
+        jdbc(bom['org.postgresql:postgresql'])
+        jdbc(bom['org.hsqldb:hsqldb'])
     }
 }
 
 configure(globalModule) {
     dependencies {
-        compile(group: 'org.json', name: 'json', version: '20140107')
-        compile('com.google.code.gson:gson:2.5')
-        provided(servletApi)
+        compile(bom['commons-logging:commons-logging'])
+        compile(bom['org.codehaus.groovy:groovy-all'])
+
+        compile(bom['commons-lang:commons-lang'])
+        compile(bom['commons-collections:commons-collections'])
+        compile(bom['commons-io:commons-io'])
+        compile(bom['commons-codec:commons-codec'])
+        compile(bom['commons-cli:commons-cli'])
+
+        compile(bom['org.apache.httpcomponents:httpclient']) // simplify version management for selenium
+        compile(bom['org.apache.commons:commons-pool2'])
+        compile(bom['org.apache.commons:commons-compress'])
+
+        compile(bom['dom4j:dom4j'])
+        compile(bom['com.sun.mail:javax.mail'])
+        compile(bom['ch.qos.logback:logback-classic'])
+        compile(bom['org.slf4j:log4j-over-slf4j'])
+        compile(bom['org.perf4j:perf4j'])
+        compile(bom['com.google.code.findbugs:jsr305'])
+        compile(bom['javax:javaee-api'])
+        compile(bom['antlr:antlr'])
+        compile(bom['org.antlr:antlr-runtime'])
+        compile(bom['com.google.guava:guava'])
+
+        compile(bom['org.eclipse.persistence:javax.persistence'])
+        compile(bom['org.eclipse.persistence:commonj.sdo'])
+        compile(bom['org.glassfish:javax.json'])
+        compile(bom['com.haulmont.thirdparty:eclipselink'])
+
+        compile(bom['org.freemarker:freemarker'])
+        compile(bom['aopalliance:aopalliance'])
+        compile(bom['org.springframework:spring-core'])
+        compile(bom['org.springframework:spring-beans'])
+        compile(bom['org.springframework:spring-context'])
+        compile(bom['org.springframework:spring-web'])
+
+        compile(bom['com.esotericsoftware:kryo-shaded'])
+        compile(bom['de.javakaffee:kryo-serializers']) {
+            exclude(group: 'com.esotericsoftware', module: 'kryo')
+        }
+
+        compile(bom['org.json:json'])
+        compile(bom['com.google.code.gson:gson'])
+
+        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
     }
 
     task generateReleaseTimestamp(type: CubaReleaseTimeStamp) {
@@ -285,34 +260,36 @@ configure(coreModule) {
     dependencies {
         compile(globalModule)
         compile(sharedLibModule)
-        compile 'javax.validation:validation-api:1.1.0.Final'
-        compile(group: 'com.haulmont.thirdparty', name: 'xstream', version: '1.4.2.20120702')
-        runtime(group: 'xpp3', name: 'xpp3_min', version: '1.1.4c')
-        runtime(group: 'xmlpull', name: 'xmlpull', version: '1.1.3.1')
-		compile(group: 'org.ocpsoft.prettytime', name: 'prettytime-nlp', version: '3.2.5.Final')
-        compile('org.jgroups:jgroups:3.6.7.Final')
-        compile('org.aspectj:aspectjrt:1.8.6')
-        compile('org.aspectj:aspectjweaver:1.8.6')
-        compile('org.mybatis:mybatis:3.2.7')
-        compile('org.mybatis:mybatis-spring:1.2.3')
-        compile(group: 'org.springframework', name: 'spring-context-support', version: springVersion)
-        compile(group: 'org.springframework', name: 'spring-orm', version: springVersion)
-        compile(group: 'org.springframework', name: 'spring-tx', version: springVersion)
-        compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
-        compile(poi) // POI is actually not required by core, but remains here to simplify dependencies for reports project
 
-        compile('org.jsoup:jsoup:1.8.3') // simplify version management for fts
-        compile('org.apache.httpcomponents:httpclient:4.5.2') // simplify version management for selenium
+        compile(bom['javax.validation:validation-api'])
+        compile(bom['com.haulmont.thirdparty:xstream'])
+        runtime(bom['xpp3:xpp3_min'])
+        runtime(bom['xmlpull:xmlpull'])
+		compile(bom['org.ocpsoft.prettytime:prettytime-nlp'])
+        compile(bom['org.jgroups:jgroups'])
+        compile(bom['org.aspectj:aspectjrt'])
+        compile(bom['org.aspectj:aspectjweaver'])
+        compile(bom['org.mybatis:mybatis'])
+        compile(bom['org.mybatis:mybatis-spring'])
 
-        provided(servletApi)
+        compile(bom['org.springframework:spring-context-support'])
+        compile(bom['org.springframework:spring-orm'])
+        compile(bom['org.springframework:spring-tx'])
+        compile(bom['org.springframework:spring-webmvc'])
 
-        jdbc(postgres)
-        jdbc(hsqldb)
+        compile(bom['com.haulmont.thirdparty:poi']) // POI is actually not required by core, but remains here to simplify dependencies for reports project
 
-        testCompile('org.apache.commons:commons-dbcp2:2.1.1')
-        testRuntime(servletApi)
-        testRuntime(hsqldb)
-    	testRuntime(postgres)
+        compile(bom['org.jsoup:jsoup']) // simplify version management for fts
+
+        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
+
+        jdbc(bom['org.postgresql:postgresql'])
+        jdbc(bom['org.hsqldb:hsqldb'])
+
+        testCompile(bom['org.apache.commons:commons-dbcp2'])
+        testRuntime(bom['org.apache.tomcat:tomcat-servlet-api'])
+        testRuntime(bom['org.hsqldb:hsqldb'])
+    	testRuntime(bom['org.postgresql:postgresql'])
     }
 
     task enhanceTestModel(type: CubaTestEnhancing) {
@@ -397,9 +374,10 @@ configure(coreTestsModule) {
 
     dependencies {
         compile(coreModule)
-        compile('org.apache.commons:commons-dbcp2:2.1.1')
-        compile('org.jmockit:jmockit:1.15')
-        compile('junit:junit:4.12')
+
+        compile(bom['org.apache.commons:commons-dbcp2'])
+        compile(bom['org.jmockit:jmockit'])
+        compile(bom['junit:junit'])
     }
 
     task sourceJar(type: Jar) {
@@ -419,8 +397,8 @@ configure(coreTestsModule) {
 configure(clientModule) {
     dependencies {
         compile(globalModule)
-        compile('org.apache.httpcomponents:httpclient:4.5.2') // simplify version management for selenium
-        compile('org.jsoup:jsoup:1.8.3') // simplify version management for fts
+
+        compile(bom['org.jsoup:jsoup']) // simplify version management for fts
     }
 }
 
@@ -444,8 +422,9 @@ configure(clientTestsModule) {
 
     dependencies {
         compile(clientModule)
-        compile('org.jmockit:jmockit:1.15')
-        compile('junit:junit:4.12')
+
+        compile(bom['org.jmockit:jmockit'])
+        compile(bom['junit:junit'])
     }
 
     task sourceJar(type: Jar) {
@@ -461,8 +440,8 @@ configure(clientTestsModule) {
 configure(guiModule) {
     dependencies {
         compile(clientModule)
-        compile(poi)
-        compile(groovyArtifact)
+
+        compile(bom['com.haulmont.thirdparty:poi'])
 
         testCompile(clientModule.sourceSets.test.output)
     }
@@ -490,33 +469,33 @@ configure(webModule) {
         compile(restApiModule)
         compile(idpModule)
 
-        compile(commonsUpload)
-        compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
+        compile(bom['commons-fileupload:commons-fileupload'])
+        compile(bom['org.springframework:spring-webmvc'])
 
-        compile(vaadinPush) {
+        compile(bom['com.vaadin:vaadin-push']) {
             exclude(group: 'com.vaadin.external.google', module: 'guava')
         }
-        compile(vaadinShared) {
+        compile(bom['com.vaadin:vaadin-shared']) {
             exclude(group: 'com.vaadin.external.google', module: 'guava')
         }
-        compile(group: 'com.vaadin.external.google', name: 'guava-vaadin-shaded', version: '16.0.1.vaadin1')
-        compile(vaadinServer) {
+        compile(bom['com.vaadin.external.google:guava-vaadin-shaded'])
+        compile(bom['com.vaadin:vaadin-server']) {
             exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
         }
 
         /* Vaadin addons */
-        compile(group: 'com.haulmont.thirdparty', name: 'popupbutton', version: '2.5.2.cuba.3')
-        compile(group: 'org.vaadin.addons', name: 'aceeditor', version: '0.8.14')
-        compile(group: 'org.vaadin.addons', name: 'contextmenu', version: '4.5')
-        compile(group: 'org.vaadin.addons', name: 'dragdroplayouts', version: '1.2.2.cuba.4')
+        compile(bom['com.haulmont.thirdparty:popupbutton'])
+        compile(bom['org.vaadin.addons:aceeditor'])
+        compile(bom['org.vaadin.addons:contextmenu'])
+        compile(bom['org.vaadin.addons:dragdroplayouts'])
 
-        provided(servletApi)
+        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
 
-        themes(vaadinThemes)
+        themes(bom['com.vaadin:vaadin-themes'])
 
         testCompile(clientModule.sourceSets.test.output)
         testCompile(guiModule.sourceSets.test.output)
-        testRuntime(servletApi)
+        testRuntime(bom['org.apache.tomcat:tomcat-servlet-api'])
     }
 
     task enhance(type: CubaEnhancing)
@@ -605,7 +584,7 @@ configure(webModuleThemesModule) {
     }
 
     dependencies {
-        compile(vaadinThemes)
+        compile(bom['com.vaadin:vaadin-themes'])
     }
 }
 
@@ -613,24 +592,22 @@ configure(webAuthModule) {
     dependencies {
         compile(globalModule)
 
-        compile('org.apache.httpcomponents:httpclient:4.5.2') // simplify version management for selenium
-
-        compile(group: 'org.springframework', name: 'spring-tx', version: springVersion)
-        compile(group: 'org.springframework.ldap', name: 'spring-ldap-core', version: '2.0.2.RELEASE') {
+        compile(bom['org.springframework:spring-tx'])
+        compile(bom['org.springframework.ldap:spring-ldap-core']) {
             exclude(group: 'org.slf4j', module: 'jcl-over-slf4j') // removed because it defines its own Log4j LogFactory via JDK services mechanism
         }
 
-        provided(servletApi)
+        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
     }
 }
 
 configure(webToolkitModule) {
     dependencies {
-        compile(webModule) 
-        compile(vaadinClient)
-        compile(vaadinCompiler)
+        compile(webModule)
+        compile(bom['com.vaadin:vaadin-client'])
+        compile(bom['com.vaadin:vaadin-client-compiler'])
 
-        runtime(servletApi)
+        runtime(bom['org.apache.tomcat:tomcat-servlet-api'])
     }
 
     task buildWidgetSet(type: CubaWidgetSetBuilding) {
@@ -703,20 +680,19 @@ configure(webToolkitModule) {
 
 configure(desktopModule) {
     apply(plugin: 'application')
+
     mainClassName = 'com.haulmont.cuba.desktop.App'
 
     dependencies {
         compile(guiModule)
-        compile(group: 'com.miglayout', name: 'miglayout-swing', version: '4.2')
-        compile(group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '2.5.6')
-        compile(group: 'com.haulmont.thirdparty', name: 'glazedlists', version: '1.9.20110801')
-        compile(group: 'com.haulmont.thirdparty', name: 'swingx-core', version: '1.6.5-1.cuba.0')
-
-        assemble.dependsOn = [classes]
+        compile(bom['com.miglayout:miglayout-swing'])
+        compile(bom['com.fifesoft:rsyntaxtextarea'])
+        compile(bom['com.haulmont.thirdparty:glazedlists'])
+        compile(bom['com.haulmont.thirdparty:swingx-core'])
 
         testCompile(clientModule.sourceSets.test.output)
         testCompile(guiModule.sourceSets.test.output)
-        testRuntime(servletApi)
+        testRuntime(bom['org.apache.tomcat:tomcat-servlet-api'])
     }
 }
 
@@ -725,22 +701,24 @@ configure(restApiModule) {
         compile(globalModule)
         compile(clientModule)
         compile(sharedLibModule)
-        provided(servletApi)
-        compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
-        compile(group: 'org.springframework', name: 'spring-context-support', version: springVersion)
-        compile(group: 'org.json', name: 'json', version: '20140107')
-        compile(group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: '2.8.0')
-        compile(group: 'com.fasterxml.jackson.dataformat', name:'jackson-dataformat-yaml', version: '2.8.0')
-        compile(group: 'commons-fileupload', name: 'commons-fileupload', version: '1.3.2')
 
-        compile(groovyArtifact)
+        compile(bom['org.springframework:spring-webmvc'])
+        compile(bom['org.springframework:spring-context-support'])
 
-        compile(group: 'org.springframework.security', name: 'spring-security-core', version: springSecurityVersion)
-        compile(group: 'org.springframework.security', name: 'spring-security-web', version: springSecurityVersion)
-        compile(group: 'org.springframework.security', name: 'spring-security-config', version: springSecurityVersion)
-        compile(group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.0.10.RELEASE') {
-            exclude(group: "org.springframework.security")
+        compile(bom['org.json:json'])
+
+        compile(bom['com.fasterxml.jackson.core:jackson-databind'])
+        compile(bom['com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'])
+        compile(bom['commons-fileupload:commons-fileupload'])
+
+        compile(bom['org.springframework.security:spring-security-core'])
+        compile(bom['org.springframework.security:spring-security-web'])
+        compile(bom['org.springframework.security:spring-security-config'])
+        compile(bom['org.springframework.security.oauth:spring-security-oauth2']) {
+            exclude(group: 'org.springframework.security')
         }
+
+        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
 
         testCompile(clientModule.sourceSets.test.output)
     }
@@ -752,22 +730,24 @@ configure(portalModule) {
         compile(clientModule)
         compile(sharedLibModule)
         compile(restApiModule)
-        provided(servletApi)
-        compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
-        compile(group: 'org.springframework.security', name: 'spring-security-core', version: springSecurityVersion)
-        compile(group: 'org.springframework.security', name: 'spring-security-web', version: springSecurityVersion)
-        compile(group: 'org.springframework.security', name: 'spring-security-config', version: springSecurityVersion)
-        compile(group: 'org.springframework.security', name: 'spring-security-taglibs', version: springSecurityVersion)
-        compile(group: 'org.springframework', name: 'spring-context-support', version: springVersion)
-        compile(group: 'org.json', name: 'json', version: '20140107')
-        compile(groovyArtifact)
 
-        compile(group: 'org.springframework', name: 'spring-tx', version: springVersion)
-        compile(group: 'org.springframework', name: 'spring-jdbc', version: springVersion)
+        compile(bom['org.springframework:spring-webmvc'])
+        compile(bom['org.springframework:spring-context-support'])
+        compile(bom['org.springframework:spring-tx'])
+        compile(bom['org.springframework:spring-jdbc'])
 
-        compile(group: 'org.thymeleaf', name: 'thymeleaf', version: '3.0.0.RELEASE')
-        compile(group: 'org.thymeleaf', name: 'thymeleaf-spring4', version: '3.0.0.RELEASE')
-        compile(group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-springsecurity4', version: '3.0.0.RELEASE')
+        compile(bom['org.springframework.security:spring-security-core'])
+        compile(bom['org.springframework.security:spring-security-web'])
+        compile(bom['org.springframework.security:spring-security-config'])
+        compile(bom['org.springframework.security:spring-security-taglibs'])
+
+        compile(bom['org.json:json'])
+
+        compile(bom['org.thymeleaf:thymeleaf'])
+        compile(bom['org.thymeleaf:thymeleaf-spring4'])
+        compile(bom['org.thymeleaf.extras:thymeleaf-extras-springsecurity4'])
+
+        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
 
         testCompile(clientModule.sourceSets.test.output)
     }
@@ -788,16 +768,17 @@ configure(idpModule) {
         compile(globalModule)
         compile(clientModule)
         compile(sharedLibModule)
-        provided(servletApi)
 
-        compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
-        compile(group: 'org.springframework', name: 'spring-context-support', version: springVersion)
+        compile(bom['org.springframework:spring-webmvc'])
+        compile(bom['org.springframework:spring-context-support'])
 
-        compile(group: 'org.springframework.security', name: 'spring-security-core', version: springSecurityVersion)
-        compile(group: 'org.springframework.security', name: 'spring-security-web', version: springSecurityVersion)
-        compile(group: 'org.springframework.security', name: 'spring-security-config', version: springSecurityVersion)
+        compile(bom['org.springframework.security:spring-security-core'])
+        compile(bom['org.springframework.security:spring-security-config'])
+        compile(bom['org.springframework.security:spring-security-web'])
 
         testCompile(clientModule.sourceSets.test.output)
+
+        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
     }
 
     task webArchive(type: Zip) {
