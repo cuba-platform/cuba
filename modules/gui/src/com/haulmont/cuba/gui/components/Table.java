@@ -64,6 +64,16 @@ public interface Table<E extends Entity>
     void setColumnCaption(Table.Column column, String caption);
 
     /**
+     * Enable or disable text selection in Table cells.
+     * Set true to enable.
+     */
+    void setTextSelectionEnabled(boolean value);
+    /**
+     * @return true if text selection is enabled.
+     */
+    boolean isTextSelectionEnabled();
+
+    /**
      * Assign description for column in runtime.
      */
     void setColumnDescription(String columnId, String description);

@@ -112,6 +112,8 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
 
     protected boolean columnHeaderVisible = true;
 
+    protected boolean textSelectionEnabled = false;
+
     protected boolean showSelection = true;
 
     // Indicates that model is being changed.
@@ -1542,6 +1544,16 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
             column.setDescription(description);
         }
         // not supported for desktop
+    }
+
+    @Override
+    public void setTextSelectionEnabled(boolean value) {
+        textSelectionEnabled = value;
+    }
+
+    @Override
+    public boolean isTextSelectionEnabled() {
+        return textSelectionEnabled;
     }
 
     @Override

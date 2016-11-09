@@ -1660,6 +1660,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
+    public void setTextSelectionEnabled(boolean value) {
+        component.setTextSelectionEnabled(value);
+    }
+
+    @Override
+    public boolean isTextSelectionEnabled() {
+        return component.isTextSelectionEnabled();
+    }
+
+    @Override
     public void setColumnSortable(String columnId, boolean sortable) {
         Column column = getColumn(columnId);
         setColumnSortable(column, sortable);

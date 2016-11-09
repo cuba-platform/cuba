@@ -85,6 +85,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
         loadColumnHeaderVisible(resultComponent, element);
         loadShowSelection(resultComponent, element);
+        loadTextSelectionEnabled(resultComponent, element);
 
         Element columnsElement = element.element("columns");
         Element rowsElement = element.element("rows");
@@ -158,6 +159,13 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         String multiselect = element.attributeValue("multiselect");
         if (StringUtils.isNotEmpty(multiselect)) {
             resultComponent.setMultiSelect(Boolean.parseBoolean(multiselect));
+        }
+    }
+
+    protected void loadTextSelectionEnabled(Table table, Element element) {
+        String textSelectionEnabled = element.attributeValue("textSelectionEnabled");
+        if (StringUtils.isNotEmpty(textSelectionEnabled)) {
+            table.setTextSelectionEnabled(Boolean.parseBoolean(textSelectionEnabled));
         }
     }
 
