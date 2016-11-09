@@ -125,18 +125,38 @@ public class UserEditor extends AbstractEditor<User> {
         AddRoleAction addRoleAction = new AddRoleAction();
         addRoleAction.setEnabled(security.isEntityOpPermitted(metadata.getClass(UserRole.class), EntityOp.CREATE));
         rolesTable.addAction(addRoleAction);
-        rolesTable.addAction(new EditRoleAction());
+        EditRoleAction editRoleAction = new EditRoleAction();
+        rolesTable.addAction(editRoleAction);
 
         RemoveRoleAction removeRoleAction = new RemoveRoleAction(rolesTable, false);
-        removeRoleAction.setEnabled(security.isEntityOpPermitted(metadata.getClass(UserRole.class), EntityOp.DELETE));
+        boolean isUserRoleDeletePermitted = security.isEntityOpPermitted(metadata.getClass(UserRole.class), EntityOp.DELETE);
+        boolean isUserUpdatePermitted = security.isEntityOpPermitted(metadata.getClass(User.class), EntityOp.UPDATE);
+        removeRoleAction.setEnabled(isUserRoleDeletePermitted && isUserUpdatePermitted);
         rolesTable.addAction(removeRoleAction);
 
         AddSubstitutedAction addSubstitutedAction = new AddSubstitutedAction();
         addSubstitutedAction.setEnabled(security.isEntityOpPermitted(metadata.getClass(UserSubstitution.class), EntityOp.CREATE));
 
         substTable.addAction(addSubstitutedAction);
-        substTable.addAction(new EditSubstitutedAction());
-        substTable.addAction(new RemoveAction(substTable, false));
+        EditSubstitutedAction editSubstitutedAction = new EditSubstitutedAction();
+        substTable.addAction(editSubstitutedAction);
+        RemoveAction removeSubstitutedAction = new RemoveAction(substTable, false);
+        substTable.addAction(removeSubstitutedAction);
+
+        boolean isUserRoleCreatePermitted = security.isEntityOpPermitted(metadata.getClass(UserRole.class), EntityOp.CREATE);
+        addRoleAction.setEnabled(isUserRoleCreatePermitted && isUserUpdatePermitted);
+
+        boolean isSubstitutedUserCreatePermitted = security.isEntityOpPermitted(metadata.getClass(UserSubstitution.class), EntityOp.CREATE);
+        addSubstitutedAction.setEnabled(isSubstitutedUserCreatePermitted && isUserUpdatePermitted);
+
+        boolean isSubstitutedUserDeletePermitted = security.isEntityOpPermitted(metadata.getClass(UserSubstitution.class), EntityOp.DELETE);
+        removeSubstitutedAction.setEnabled(isSubstitutedUserDeletePermitted && isUserUpdatePermitted);
+
+        boolean isRoleUpdatePermitted = security.isEntityOpPermitted(metadata.getClass(Role.class), EntityOp.UPDATE);
+        editRoleAction.setEnabled(isRoleUpdatePermitted);
+
+        boolean isSubstitutedUserUpdatePermitted = security.isEntityOpPermitted(metadata.getClass(UserSubstitution.class), EntityOp.UPDATE);
+        editSubstitutedAction.setEnabled(isSubstitutedUserUpdatePermitted);
 
         initCustomFields(PersistenceHelper.isNew(WindowParams.ITEM.getEntity(params)));
 
