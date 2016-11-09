@@ -142,8 +142,11 @@ public class IdProxy extends Number implements Serializable {
 
         IdProxy that = (IdProxy) other;
 
-        if (value != null)
+        if (value != null) {
+            if (that.value == null && that.entity.getDbGeneratedId() != null)
+                return value.equals(that.entity.getDbGeneratedId());
             return value.equals(that.value);
+        }
 
         if (entity.getDbGeneratedId() == null || that.entity.getDbGeneratedId() == null)
             return Objects.equals(uuid, that.uuid);
