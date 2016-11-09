@@ -38,6 +38,7 @@ public abstract class BaseDbGeneratedIdEntity extends BaseGenericIdEntity<IdProx
 
     @Override
     public void setId(IdProxy idProxy) {
+        this.idProxy = idProxy;
         setDbGeneratedId(idProxy.get());
     }
 
