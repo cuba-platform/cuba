@@ -413,7 +413,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         checkState();
 
         if (value instanceof IdProxy) {
-            value = ((IdProxy) value).getNN();
+            value = ((IdProxy) value).get();
         } else if (implicitConversions) {
             value = handleImplicitConversions(value);
         }
@@ -460,7 +460,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 throw new RuntimeException("Error setting parameter value", e);
             }
         } else if (value instanceof IdProxy) {
-            value = ((IdProxy) value).getNN();
+            value = ((IdProxy) value).get();
         } else if (implicitConversions) {
             value = handleImplicitConversions(value);
         }

@@ -33,7 +33,8 @@ public abstract class BaseDbGeneratedIdEntity extends BaseGenericIdEntity<IdProx
         if (idProxy == null) {
             idProxy = new IdProxy(this);
         }
-        return idProxy;
+        // return a copy cleaned from the reference to the entity
+        return idProxy.copy();
     }
 
     @Override
