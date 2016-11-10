@@ -81,6 +81,10 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
     protected List<FileUploadFinishListener> fileUploadFinishListeners;   // lazily initialized list
     protected List<FileUploadSucceedListener> fileUploadSucceedListeners; // lazily initialized list
     protected List<FileUploadErrorListener> fileUploadErrorListeners;     // lazily initialized list
+
+    protected List<BeforeValueClearListener> beforeValueClearListeners; // lazily initialized list
+    protected List<AfterValueClearListener> afterValueClearListeners; // lazily initialized list
+
     protected FileDescriptor prevValue;
 
     public DesktopFileUploadField() {
@@ -121,10 +125,30 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
                     exportDisplay.show(value);
             }
         });
-        impl.setClearButtonListener(() -> {
+        impl.setClearButtonListener(this::clearButtonClicked);
+    }
+
+    protected void clearButtonClicked() {
+        boolean preventClearAction = false;
+        if (beforeValueClearListeners != null) {
+            BeforeValueClearEvent beforeValueClearEvent = new BeforeValueClearEvent(this);
+            for (BeforeValueClearListener listener : new ArrayList<>(beforeValueClearListeners)) {
+                listener.beforeValueClearPerformed(beforeValueClearEvent);
+            }
+            preventClearAction = beforeValueClearEvent.isClearPrevented();
+        }
+
+        if (!preventClearAction) {
             setValue(null);
             fileName = null;
-        });
+        }
+
+        if (afterValueClearListeners != null) {
+            AfterValueClearEvent afterValueClearEvent = new AfterValueClearEvent(this, !preventClearAction);
+            for (AfterValueClearListener listener : new ArrayList<>(afterValueClearListeners)) {
+                listener.afterValueClearPerformed(afterValueClearEvent);
+            }
+        }
     }
 
     protected void uploadFile(File file) {
@@ -718,5 +742,39 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
     @Override
     public String getClearButtonDescription() {
         return impl.getClearButtonDescription();
+    }
+
+    @Override
+    public void addBeforeValueClearListener(BeforeValueClearListener listener) {
+        if (beforeValueClearListeners == null) {
+            beforeValueClearListeners = new ArrayList<>();
+        }
+        if (!beforeValueClearListeners.contains(listener)) {
+            beforeValueClearListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeBeforeValueClearListener(BeforeValueClearListener listener) {
+        if (beforeValueClearListeners != null) {
+            beforeValueClearListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void addAfterValueClearListener(AfterValueClearListener listener) {
+        if (afterValueClearListeners == null) {
+            afterValueClearListeners = new ArrayList<>();
+        }
+        if (!afterValueClearListeners.contains(listener)) {
+            afterValueClearListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeAfterValueClearListener(AfterValueClearListener listener) {
+        if (afterValueClearListeners != null) {
+            afterValueClearListeners.remove(listener);
+        }
     }
 }
