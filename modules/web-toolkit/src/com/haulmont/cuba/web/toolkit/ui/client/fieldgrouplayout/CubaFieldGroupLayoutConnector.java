@@ -20,15 +20,12 @@ package com.haulmont.cuba.web.toolkit.ui.client.fieldgrouplayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.gridlayout.CubaGridLayoutConnector;
-import com.vaadin.client.ApplicationConnection;
-import com.vaadin.client.ComponentConnector;
-import com.vaadin.client.ConnectorHierarchyChangeEvent;
-import com.vaadin.client.UIDL;
+import com.vaadin.client.*;
 import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaFieldGroupLayout.class)
-public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
+public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector implements Paintable {
 
     protected boolean needUpdateCaptionSizes = false;
 
@@ -44,8 +41,6 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
 
     @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        super.updateFromUIDL(uidl, client);
-
         // try layout now to smooth layout process
         if (needUpdateCaptionSizes) {
             updateCaptionSizes();

@@ -472,13 +472,8 @@ configure(webModule) {
         compile(bom['commons-fileupload:commons-fileupload'])
         compile(bom['org.springframework:spring-webmvc'])
 
-        compile(bom['com.vaadin:vaadin-push']) {
-            exclude(group: 'com.vaadin.external.google', module: 'guava')
-        }
-        compile(bom['com.vaadin:vaadin-shared']) {
-            exclude(group: 'com.vaadin.external.google', module: 'guava')
-        }
-        compile(bom['com.vaadin.external.google:guava-vaadin-shaded'])
+        compile(bom['com.vaadin:vaadin-push'])
+        compile(bom['com.vaadin:vaadin-shared'])
         compile(bom['com.vaadin:vaadin-server']) {
             exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
         }
@@ -604,8 +599,15 @@ configure(webAuthModule) {
 configure(webToolkitModule) {
     dependencies {
         compile(webModule)
-        compile(bom['com.vaadin:vaadin-client'])
-        compile(bom['com.vaadin:vaadin-client-compiler'])
+        compile(bom['com.vaadin:vaadin-client']) {
+            exclude(group: 'com.vaadin.external.gwt', module: 'gwt-elemental')
+        }
+        compile(bom['com.vaadin:vaadin-client-compiler']) {
+            exclude(group: 'com.vaadin.external.gwt', module: 'gwt-elemental')
+            exclude(group: 'com.vaadin.external.gwt', module: 'gwt-dev')
+        }
+        compile(bom["com.google.gwt:gwt-elemental"])
+        compile(bom["com.google.gwt:gwt-dev"])
 
         runtime(bom['org.apache.tomcat:tomcat-servlet-api'])
     }
