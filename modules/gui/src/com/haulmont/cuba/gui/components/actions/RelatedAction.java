@@ -197,26 +197,24 @@ public class RelatedAction extends BaseAction implements Action.HasBeforeActionP
 
         if (cardinality == Cardinality.MANY_TO_ONE) {
             return getManyToOneCondition(parentIds, datasource, filterComponentName, primaryKey);
-        } else if (cardinality == Cardinality.ONE_TO_MANY) {
+        } else if (cardinality == Cardinality.ONE_TO_MANY || cardinality == Cardinality.ONE_TO_ONE) {
             return getOneToManyCondition(parentIds, datasource, filterComponentName, primaryKey);
         } else if (cardinality == Cardinality.MANY_TO_MANY) {
             return getManyToManyCondition(parentIds, datasource, filterComponentName, primaryKey);
-        } else if (cardinality == Cardinality.ONE_TO_ONE) {
-            return getOneToOneCondition(parentIds, datasource, filterComponentName, primaryKey);
         }
 
         return null;
     }
 
     @Nullable
-    protected AbstractCondition getOneToOneCondition(List<Object> parentIds, CollectionDatasource datasource, String filterComponentName, String primaryKey) {
+    protected AbstractCondition getOneToManyCondition(List<Object> parentIds, CollectionDatasource datasource, String filterComponentName, String primaryKey) {
         MetaProperty inverseField = metaProperty.getInverse();
         if (inverseField == null) {
             return null;
         }
-        CustomCondition customCondition = getCustomCondition(parentIds, datasource, filterComponentName, primaryKey, false);
+        CustomCondition customCondition = getCustomCondition(parentIds, datasource, filterComponentName, primaryKey, true);
 
-        String whereString = String.format("{E}.%s.id = :%s", inverseField.getName(), paramName);
+        String whereString = String.format("{E}.%s.id in :%s", inverseField.getName(), paramName);
         customCondition.setWhere(whereString);
 
         return customCondition;
@@ -240,21 +238,6 @@ public class RelatedAction extends BaseAction implements Action.HasBeforeActionP
         customCondition.setWhere(whereString);
 
         return customCondition;
-    }
-
-    @Nullable
-    protected AbstractCondition getOneToManyCondition(List<Object> parentIds, CollectionDatasource datasource, String filterComponentName, String primaryKey) {
-        MetaProperty inverseField = metaProperty.getInverse();
-        if (inverseField == null) {
-            return null;
-        }
-
-        CustomCondition condition = getCustomCondition(parentIds, datasource, filterComponentName, primaryKey, true);
-
-        String whereString = String.format("{E}.%s.id in :%s", inverseField.getName(), paramName);
-        condition.setWhere(whereString);
-
-        return condition;
     }
 
     @Nullable
