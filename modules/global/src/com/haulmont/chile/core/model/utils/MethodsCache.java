@@ -53,7 +53,7 @@ public class MethodsCache {
         final Method method = setters.get(property);
         if (method == null) {
             throw new IllegalArgumentException(
-                    String.format("Can't find setter for property '%s' at class %s", property, object.getClass()));
+                    String.format("Can't find setter for property '%s' at %s", property, object.getClass()));
         }
         try {
             method.invoke(object, value);
@@ -66,7 +66,7 @@ public class MethodsCache {
         final Method method = getters.get(property);
         if (method == null) {
             throw new IllegalArgumentException(
-                    String.format("Can't find getter for property '%s' at class %s", property, object.getClass()));
+                    String.format("Can't find getter for property '%s' at %s", property, object.getClass()));
         }
         try {
             return method.invoke(object);
