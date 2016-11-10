@@ -64,6 +64,9 @@ public class IdProxy extends Number implements Serializable {
         this.value = value;
     }
 
+    private IdProxy() {
+    }
+
     /**
      * Create proxy for the specified ID value. You might need it for providing ID to the {@code EntityManager.find()}
      * method.
@@ -74,11 +77,31 @@ public class IdProxy extends Number implements Serializable {
     }
 
     /**
+     * @return a copy of this IdProxy cleaned from a reference to entity
+     */
+    public IdProxy copy() {
+        IdProxy copy = new IdProxy();
+        if (value != null)
+            copy.value = value;
+        else if (entity != null && entity.getDbGeneratedId() != null)
+            copy.value = entity.getDbGeneratedId();
+        copy.uuid = uuid;
+        copy.hashCode = hashCode;
+        return copy;
+    }
+
+    /**
      * @return  real ID value or null if it is not assigned yet
      */
     @Nullable
     public Long get() {
-        return value != null ? value : entity.getDbGeneratedId();
+        if (value != null)
+            return value;
+
+        if (entity == null)
+            return null;
+
+        return entity.getDbGeneratedId();
     }
 
     /**
@@ -89,8 +112,12 @@ public class IdProxy extends Number implements Serializable {
         if (value != null)
             return value;
 
+        if (entity == null)
+            throw new IllegalStateException("Entity is null");
+
         if (entity.getDbGeneratedId() == null)
-            throw new IllegalStateException("ID is not assigned for entity " + entity);
+            throw new IllegalStateException("ID is null in entity " + entity);
+
         return entity.getDbGeneratedId();
     }
 
@@ -143,15 +170,22 @@ public class IdProxy extends Number implements Serializable {
         IdProxy that = (IdProxy) other;
 
         if (value != null) {
-            if (that.value == null && that.entity.getDbGeneratedId() != null)
+            if (that.value != null)
+                return value.equals(that.value);
+
+            if (that.entity != null && that.entity.getDbGeneratedId() != null)
                 return value.equals(that.entity.getDbGeneratedId());
-            return value.equals(that.value);
         }
 
-        if (entity.getDbGeneratedId() == null || that.entity.getDbGeneratedId() == null)
-            return Objects.equals(uuid, that.uuid);
+        if (entity != null && entity.getDbGeneratedId() != null) {
+            if (that.entity != null && that.entity.getDbGeneratedId() != null)
+                return entity.getDbGeneratedId().equals(that.entity.getDbGeneratedId());
 
-        return Objects.equals(entity.getDbGeneratedId(), that.entity.getDbGeneratedId());
+            if (that.value != null)
+                return entity.getDbGeneratedId().equals(that.value);
+        }
+
+        return Objects.equals(uuid, that.uuid);
     }
 
     @Override
@@ -164,7 +198,7 @@ public class IdProxy extends Number implements Serializable {
         if (value != null)
             return value.toString();
 
-        if (entity.getDbGeneratedId() != null)
+        if (entity != null && entity.getDbGeneratedId() != null)
             return entity.getDbGeneratedId().toString();
         else
             return "?(" + uuid + ")";
