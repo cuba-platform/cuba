@@ -142,16 +142,15 @@ public interface FileUploadField extends UploadField, Field {
      * Enable or disable displaying name of uploaded file next to upload button.
      */
     void setShowFileName(boolean showFileName);
-
     /**
      * @return true if name of uploaded file is shown.
      */
     boolean isShowFileName();
+
     /**
      * Setup caption of upload button.
      */
     void setUploadButtonCaption(String caption);
-
     /**
     * @return upload button caption.
     */
@@ -161,7 +160,6 @@ public interface FileUploadField extends UploadField, Field {
      * Setup upload button icon.
      */
     void setUploadButtonIcon(String icon);
-
     /**
      * @return upload button icon.
      */
@@ -171,7 +169,6 @@ public interface FileUploadField extends UploadField, Field {
      * Setup upload button description.
      */
     void setUploadButtonDescription(String description);
-
     /**
      * @return upload button description.
      */
@@ -181,7 +178,6 @@ public interface FileUploadField extends UploadField, Field {
      * Enable or disable displaying name of clear button.
      */
     void setShowClearButton(boolean showClearButton);
-
     /**
      * @return true if clear button is shown.
      */
@@ -191,7 +187,6 @@ public interface FileUploadField extends UploadField, Field {
      * Setup clear button caption.
      */
     void setClearButtonCaption(String caption);
-
     /**
      * @return clear button caption.
      */
@@ -201,7 +196,6 @@ public interface FileUploadField extends UploadField, Field {
      * Setup clear button icon.
      */
     void setClearButtonIcon(String icon);
-
     /**
      * @return clear button icon.
      */
@@ -211,14 +205,77 @@ public interface FileUploadField extends UploadField, Field {
      * Setup clear button description.
      */
     void setClearButtonDescription(String description);
-
     /**
      * @return clear button description.
      */
     String getClearButtonDescription();
 
+    class BeforeValueClearEvent {
+        private FileUploadField target;
+        private boolean clearPrevented = false;
+
+        public BeforeValueClearEvent(FileUploadField target) {
+            this.target = target;
+        }
+
+        public boolean isClearPrevented() {
+            return clearPrevented;
+        }
+
+        public void preventClearAction() {
+            this.clearPrevented = true;
+        }
+
+        public FileUploadField getTarget() {
+            return target;
+        }
+    }
+
     /**
-     * Set mode which determines when {@link FileDescriptor} will be commited.
+     * Callback interface which is invoked by the {@link FileUploadField} before value clearing when user use clear button. <br/>
+     * Listener can prevent value clearing using {@link BeforeValueClearEvent#preventClearAction()}.
+     *
+     * @see #setShowClearButton(boolean)
+     */
+    interface BeforeValueClearListener {
+        void beforeValueClearPerformed(BeforeValueClearEvent event);
+    }
+
+    void addBeforeValueClearListener(BeforeValueClearListener listener);
+    void removeBeforeValueClearListener(BeforeValueClearListener listener);
+
+    class AfterValueClearEvent {
+        private FileUploadField target;
+        private boolean valueCleared;
+
+        public AfterValueClearEvent(FileUploadField target, boolean valueCleared) {
+            this.target = target;
+            this.valueCleared = valueCleared;
+        }
+
+        public FileUploadField getTarget() {
+            return target;
+        }
+
+        public boolean isValueCleared() {
+            return valueCleared;
+        }
+    }
+
+    /**
+     * Callback interface which is invoked by the {@link FileUploadField} after value has been cleared using clear button.
+     *
+     * @see #setShowClearButton(boolean)
+     */
+    interface AfterValueClearListener {
+        void afterValueClearPerformed(AfterValueClearEvent event);
+    }
+
+    void addAfterValueClearListener(AfterValueClearListener listener);
+    void removeAfterValueClearListener(AfterValueClearListener listener);
+
+    /**
+     * Set mode which determines when {@link FileDescriptor} will be committed.
      */
     void setMode(FileStoragePutMode mode);
     /**
@@ -231,10 +288,9 @@ public interface FileUploadField extends UploadField, Field {
      * <p>Passed content provider will be used for downloading by clicking the link with file name
      * or as source for {@link FileUploadField#getFileContent()} method.</p>
      *
-     * @param contentProvider
+     * @param contentProvider content provider
      */
     void setContentProvider(FileContentProvider contentProvider);
-
     /**
      * @return FileContentProvider which can be used to read data from field
      */

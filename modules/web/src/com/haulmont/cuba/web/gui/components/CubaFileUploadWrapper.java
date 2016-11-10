@@ -292,7 +292,7 @@ public class CubaFileUploadWrapper extends CustomField {
         return clearButton.getIcon().toString();
     }
 
-    public void setClearButtonAction(Button.ClickListener listener) {
+    public void setClearButtonListener(Button.ClickListener listener) {
         clearButton.addClickListener(listener);
     }
 

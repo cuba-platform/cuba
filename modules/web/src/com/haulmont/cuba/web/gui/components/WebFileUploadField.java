@@ -74,6 +74,9 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     protected List<FileUploadErrorListener> fileUploadErrorListeners;     // lazily initialized list
     protected List<FileUploadSucceedListener> fileUploadSucceedListeners; // lazily initialized list
 
+    protected List<BeforeValueClearListener> beforeValueClearListeners; // lazily initialized list
+    protected List<AfterValueClearListener> afterValueClearListeners; // lazily initialized list
+
     public WebFileUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         exportDisplay = AppBeans.get(ExportDisplay.NAME);
@@ -105,10 +108,30 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
                     exportDisplay.show(value);
             }
         });
-        component.setClearButtonAction((Button.ClickListener) event -> {
+        component.setClearButtonListener((Button.ClickListener) this::clearButtonClicked);
+    }
+
+    protected void clearButtonClicked(Button.ClickEvent clickEvent) {
+        boolean preventClearAction = false;
+        if (beforeValueClearListeners != null) {
+            BeforeValueClearEvent beforeValueClearEvent = new BeforeValueClearEvent(this);
+            for (BeforeValueClearListener listener : new ArrayList<>(beforeValueClearListeners)) {
+                listener.beforeValueClearPerformed(beforeValueClearEvent);
+            }
+            preventClearAction = beforeValueClearEvent.isClearPrevented();
+        }
+
+        if (!preventClearAction) {
             setValue(null);
             fileName = null;
-        });
+        }
+
+        if (afterValueClearListeners != null) {
+            AfterValueClearEvent afterValueClearEvent = new AfterValueClearEvent(this, !preventClearAction);
+            for (AfterValueClearListener listener : new ArrayList<>(afterValueClearListeners)) {
+                listener.afterValueClearPerformed(afterValueClearEvent);
+            }
+        }
     }
 
     protected void saveFile(FileDescriptor fileDescriptor) {
@@ -578,10 +601,12 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
         this.mode = mode;
     }
 
+    @Override
     public boolean isShowFileName() {
         return component.isShowFileName();
     }
 
+    @Override
     public void setShowFileName(boolean showFileName) {
         component.setShowFileName(showFileName);
         if (showFileName && StringUtils.isNotEmpty(fileName)) {
@@ -643,6 +668,40 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     @Override
     public String getClearButtonDescription() {
         return component.getClearButtonDescription();
+    }
+
+    @Override
+    public void addBeforeValueClearListener(BeforeValueClearListener listener) {
+        if (beforeValueClearListeners == null) {
+            beforeValueClearListeners = new ArrayList<>();
+        }
+        if (!beforeValueClearListeners.contains(listener)) {
+            beforeValueClearListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeBeforeValueClearListener(BeforeValueClearListener listener) {
+        if (beforeValueClearListeners != null) {
+            beforeValueClearListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void addAfterValueClearListener(AfterValueClearListener listener) {
+        if (afterValueClearListeners == null) {
+            afterValueClearListeners = new ArrayList<>();
+        }
+        if (!afterValueClearListeners.contains(listener)) {
+            afterValueClearListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeAfterValueClearListener(AfterValueClearListener listener) {
+        if (afterValueClearListeners != null) {
+            afterValueClearListeners.remove(listener);
+        }
     }
 
     /*
