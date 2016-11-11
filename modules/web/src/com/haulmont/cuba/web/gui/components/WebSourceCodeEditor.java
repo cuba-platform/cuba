@@ -37,6 +37,8 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
     protected Suggester suggester;
     protected SuggestionExtension suggestionExtension;
 
+    protected AutoCompleteSupport autoCompleteSupport;
+
     public WebSourceCodeEditor() {
         component = createCubaSourceCodeEditor();
 
@@ -45,6 +47,18 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
         component.setInvalidCommitted(true);
         component.setInvalidAllowed(false);
         component.setBuffered(false);
+
+        autoCompleteSupport = new AutoCompleteSupport() {
+            @Override
+            public int getCursorPosition() {
+                return component.getCursorPosition();
+            }
+
+            @Override
+            public Object getValue() {
+                return component.getValue();
+            }
+        };
 
         attachListener(component);
     }
@@ -124,7 +138,7 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
 
     @Override
     public AutoCompleteSupport getAutoCompleteSupport() {
-        return component;
+        return autoCompleteSupport;
     }
 
     @Override
