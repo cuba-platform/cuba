@@ -115,6 +115,19 @@ public class SchedulingServiceBean implements SchedulingService {
         }
     }
 
+    @Override
+    public void setActive(Set<ScheduledTask> tasks, boolean active) {
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+
+            for (ScheduledTask task : tasks) {
+                ScheduledTask t = em.find(ScheduledTask.class, task.getId());
+                t.setActive(active);
+            }
+            tx.commit();
+        }
+    }
+
     public static class SetSchedulingActiveMsg implements Serializable {
         private static final long serialVersionUID = 6934530919733469448L;
 

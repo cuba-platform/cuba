@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.entity.ScheduledTask;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Service interface to control {@link com.haulmont.cuba.core.entity.ScheduledTask}s configuration and execution.
@@ -60,4 +61,12 @@ public interface SchedulingService {
      * @param active    true to activate
      */
     void setActive(ScheduledTask task, boolean active);
+
+    /**
+     * Activate or deactivate set of scheduled tasks.
+     *
+     * @param tasks  task instances
+     * @param active true to activate
+     */
+    void setActive(Set<ScheduledTask> tasks, boolean active);
 }

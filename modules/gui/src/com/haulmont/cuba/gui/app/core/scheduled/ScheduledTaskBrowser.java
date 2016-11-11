@@ -23,14 +23,13 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.EditAction;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class ScheduledTaskBrowser extends AbstractWindow {
 
@@ -59,13 +58,12 @@ public class ScheduledTaskBrowser extends AbstractWindow {
         activateBtn.setAction(new AbstractAction("activate") {
             @Override
             public void actionPerform(Component component) {
-                ScheduledTask task = tasksTable.getSingleSelected();
-                if (task != null) {
-                    service.setActive(task, !BooleanUtils.isTrue(task.getActive()));
-                    tasksDs.refresh();
-                }
+                Set<ScheduledTask> tasks = tasksTable.getSelected();
+                service.setActive(tasks, !BooleanUtils.isTrue(tasks.iterator().next().getActive()));
+                tasksDs.refresh();
             }
         });
+
         activateBtn.setEnabled(false);
 
         final ShowExecutionsAction showExecutionsAction = new ShowExecutionsAction();
@@ -73,25 +71,55 @@ public class ScheduledTaskBrowser extends AbstractWindow {
         tasksTable.addAction(showExecutionsAction);
 
         tasksDs.addItemChangeListener(e -> {
-            ScheduledTask selected = tasksTable.getSingleSelected();
+            ScheduledTask singleSelected = tasksTable.getSingleSelected();
+            Set<ScheduledTask> selected = tasksTable.getSelected();
+            boolean isSingleSelected = selected.size() == 1;
+            boolean enableEdit = isSingleSelected && !BooleanUtils.isTrue(singleSelected.getActive());
 
-            boolean enableEdit = selected != null && !BooleanUtils.isTrue(selected.getActive());
             editAction.setEnabled(enableEdit);
-            removeAction.setEnabled(enableEdit);
+            removeAction.setEnabled(checkAllTasksIsNotActive(selected));
+            activateBtn.setEnabled(checkAllTasksHaveSameStatus(selected));
 
-            activateBtn.setEnabled(selected != null);
-            if (selected == null) {
+            if (singleSelected == null) {
                 activateBtn.setCaption(getMessage("activate"));
             } else {
-                activateBtn.setCaption(BooleanUtils.isTrue(selected.getActive()) ?
+                activateBtn.setCaption(BooleanUtils.isTrue(singleSelected.getActive()) ?
                         getMessage("deactivate") : getMessage("activate"));
             }
 
-            showExecutionsAction.setEnabled(selected != null);
+            showExecutionsAction.setEnabled(isSingleSelected);
         });
     }
 
-    protected class ShowExecutionsAction extends AbstractAction {
+    protected boolean checkAllTasksHaveSameStatus(Set<ScheduledTask> tasks) {
+        if (!tasks.isEmpty()) {
+            boolean firstItemState = BooleanUtils.isTrue(tasks.iterator().next().getActive());
+
+            for (ScheduledTask task : tasks) {
+                if (BooleanUtils.isTrue(task.getActive()) != firstItemState) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected boolean checkAllTasksIsNotActive(Set<ScheduledTask> tasks) {
+        if (!tasks.isEmpty()) {
+            for (ScheduledTask task : tasks) {
+                if (BooleanUtils.isTrue(task.getActive())) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected class ShowExecutionsAction extends ItemTrackingAction {
         public ShowExecutionsAction() {
             super("executions");
         }
@@ -107,8 +135,8 @@ public class ScheduledTaskBrowser extends AbstractWindow {
         }
 
         @Override
-        public boolean isEnabled() {
-            return tasksTable.getSingleSelected() != null;
+        public boolean isApplicable() {
+            return tasksTable.getSelected().size() == 1;
         }
     }
 }
