@@ -59,6 +59,7 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
         loadCaption(resultComponent, element);
         loadWidth(resultComponent, element, "100%");
         loadCollapsible(resultComponent, element, true);
+        loadSettingsEnabled(resultComponent, element);
 
         String useMaxResults = element.attributeValue("useMaxResults");
         resultComponent.setUseMaxResults(useMaxResults == null || Boolean.parseBoolean(useMaxResults));

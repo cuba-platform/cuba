@@ -285,6 +285,13 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         loadWidth(component, element, null);
     }
 
+    protected void loadSettingsEnabled(Component.HasSettings component, Element element) {
+        String settingsEnabled = element.attributeValue("settingsEnabled");
+        if (StringUtils.isNotEmpty(settingsEnabled)) {
+            component.setSettingsEnabled(Boolean.parseBoolean(settingsEnabled));
+        }
+    }
+
     protected void loadWidth(Component component, Element element, @Nullable String defaultValue) {
         final String width = element.attributeValue("width");
         if ("auto".equalsIgnoreCase(width)) {

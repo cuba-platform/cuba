@@ -64,6 +64,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         loadVisible(resultComponent, element);
         loadEditable(resultComponent, element);
         loadValidators(resultComponent, element);
+        loadSettingsEnabled(resultComponent, element);
 
         loadAlign(resultComponent, element);
         loadStyleName(resultComponent, element);

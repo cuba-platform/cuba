@@ -378,6 +378,10 @@
         <xs:attribute name="stylename" type="xs:string"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="hasSettings">
+        <xs:attribute name="settingsEnabled" type="xs:boolean"/>
+    </xs:attributeGroup>
+
     <xs:attributeGroup name="hasResponsive">
         <xs:attribute name="responsive" type="xs:boolean"/>
     </xs:attributeGroup>
@@ -459,6 +463,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEditState"/>
         <xs:attributeGroup ref="hasAlign"/>
+        <xs:attributeGroup ref="hasSettings"/>
 
         <xs:attribute name="multiselect" type="xs:boolean"/>
         <xs:attribute name="sortable" type="xs:boolean"/>
@@ -789,6 +794,7 @@
                 <xs:attribute name="rows" type="xs:int"/>
 
                 <xs:attributeGroup ref="hasDatatype"/>
+                <xs:attributeGroup ref="hasSettings"/>
 
                 <xs:attribute name="maxLength" type="xs:int"/>
                 <xs:attribute name="resizable" type="xs:boolean"/>
@@ -1325,6 +1331,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasWidthProp"/>
+        <xs:attributeGroup ref="hasSettings"/>
 
         <xs:attribute name="margin" type="xs:string"/>
 
@@ -1729,6 +1736,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasSpacing"/>
+        <xs:attributeGroup ref="hasSettings"/>
 
         <xs:attribute name="collapsable" type="xs:boolean"/>
         <xs:attribute name="collapsed" type="xs:boolean"/>

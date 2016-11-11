@@ -36,6 +36,8 @@ public class GroupBoxLayoutLoader extends ContainerLoader<GroupBoxLayout> {
         assignXmlDescriptor(resultComponent, element);
         assignFrame(resultComponent);
 
+        loadSettingsEnabled(resultComponent, element);
+
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
 
