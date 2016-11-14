@@ -606,8 +606,8 @@ configure(webToolkitModule) {
             exclude(group: 'com.vaadin.external.gwt', module: 'gwt-elemental')
             exclude(group: 'com.vaadin.external.gwt', module: 'gwt-dev')
         }
-        compile(bom["com.google.gwt:gwt-elemental"])
-        compile(bom["com.google.gwt:gwt-dev"])
+        compile(bom['com.google.gwt:gwt-elemental'])
+        compile(bom['com.google.gwt:gwt-dev'])
 
         runtime(bom['org.apache.tomcat:tomcat-servlet-api'])
     }
