@@ -52,10 +52,11 @@ public class TestListener implements
         Set<String> dirtyFields = persistence.getTools().getDirtyFields(entity);
         System.out.println(dirtyFields);
 
-        EntityManager em = persistence.getEntityManager();
-        Query q = em.createQuery("select max(s.createTs) from sys$Server s");
-        Date maxDate = (Date) q.getSingleResult();
-        System.out.println(maxDate);
+        // Using EntityManager is prohibited as it may lead to unpredicted results
+//        EntityManager em = persistence.getEntityManager();
+//        Query q = em.createQuery("select max(s.createTs) from sys$Server s");
+//        Date maxDate = (Date) q.getSingleResult();
+//        System.out.println(maxDate);
 
         // JPA update queries don't work: reentrant flush error
 //            Query q = em.createQuery("update sys$Server s set s.name = :name where s.id = :id");

@@ -100,7 +100,8 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
                 entity._persistence_setFetchGroup(new CubaEntityFetchGroup(fetchGroup));
         }
 
-        support.registerInstance(event.getObject(), event.getSession());
+        if (event.getObject() instanceof Entity)
+            support.registerInstance((Entity) event.getObject(), event.getSession());
     }
 
     @Override
