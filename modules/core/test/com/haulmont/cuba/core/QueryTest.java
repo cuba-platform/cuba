@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import javax.persistence.FlushModeType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -219,6 +220,35 @@ public class QueryTest {
             tx.commit();
         } finally {
             tx.end();
+        }
+    }
+
+    @Test
+    public void testFlushModeAuto() throws Exception {
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            TypedQuery<User> query;
+            List<User> list;
+
+            query = em.createQuery("select u from sec$User u where u.name = ?1", User.class);
+            query.setParameter(1, "testUser");
+            list = query.getResultList();
+            assertEquals(1, list.size());
+            User user = list.get(0);
+
+            user.setName("newName");
+
+            query = em.createQuery("select u from sec$User u where u.name = ?1", User.class);
+            query.setParameter(1, "newName");
+            query.setFlushMode(FlushModeType.AUTO);
+            list = query.getResultList();
+            assertEquals(1, list.size());
+            User user1 = list.get(0);
+
+            assertTrue(user1 == user);
+
+            tx.commit();
         }
     }
 

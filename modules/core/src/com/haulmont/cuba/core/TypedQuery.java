@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
 import javax.annotation.Nullable;
+import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.TemporalType;
 import java.util.Date;
@@ -105,4 +106,11 @@ public interface TypedQuery<T> extends Query {
      * @return the same query instance
      */
     TypedQuery<T> setCacheable(boolean cacheable);
+
+    /**
+     * Set the flush mode type to be used for the query execution.
+     * @param flushMode  flush mode
+     * @return the same query instance
+     */
+    TypedQuery<T> setFlushMode(FlushModeType flushMode);
 }
