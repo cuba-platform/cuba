@@ -140,4 +140,22 @@ public class PersistenceHelper {
             }
         }
     }
+
+    /**
+     * Determines whether the entity instance was <em>deleted</em>.
+     *
+     * @param entity entity instance
+     * @return  <li>true if the instance was deleted
+     *          <li>false otherwise
+     * @throws IllegalArgumentException if entity instance is null
+     */
+    public static boolean isDeleted(Object entity) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+        if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted())
+            return true;
+        if (entity instanceof BaseGenericIdEntity && BaseEntityInternalAccess.isRemoved((BaseGenericIdEntity) entity)) {
+            return true;
+        }
+        return false;
+    }
 }
