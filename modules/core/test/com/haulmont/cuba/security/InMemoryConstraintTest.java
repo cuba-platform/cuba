@@ -228,6 +228,7 @@ public class InMemoryConstraintTest {
     }
 
     @Test
+    @Ignore
     public void testConstraintsOnMoreThanOnePage() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
@@ -253,6 +254,7 @@ public class InMemoryConstraintTest {
     }
 
     @Test
+    @Ignore
     public void testLoadingLastPage() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
