@@ -1067,6 +1067,14 @@ public abstract class WindowManager {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
+     * Show notification with {@link Frame.NotificationType#HUMANIZED}. <br/>
+     * Supports line breaks (<code>\n</code>).
+     *
+     * @param caption text
+     */
+    public abstract void showNotification(String caption);
+
+    /**
      * Show notification. <br/>
      * Supports line breaks (<code>\n</code>).
      *

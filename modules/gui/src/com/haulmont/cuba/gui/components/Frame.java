@@ -468,6 +468,14 @@ public interface Frame
     }
 
     /**
+     * Show notification with {@link NotificationType#HUMANIZED}. <br/>
+     * Supports line breaks (<code>\n</code>).
+     *
+     * @param caption notification text
+     */
+    void showNotification(String caption);
+
+    /**
      * Show notification. <br/>
      * Supports line breaks (<code>\n</code>) for non HTML type.
      *

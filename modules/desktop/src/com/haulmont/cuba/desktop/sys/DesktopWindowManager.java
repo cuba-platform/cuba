@@ -1156,6 +1156,11 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     @Override
+    public void showNotification(String caption) {
+        showNotification(caption, null, NotificationType.HUMANIZED);
+    }
+
+    @Override
     public void showNotification(String caption, NotificationType type) {
         showNotification(caption, null, type);
     }
