@@ -321,12 +321,10 @@ public class WebFileUploadField extends WebAbstractUploadComponent<UploadCompone
     public void setIcon(String icon) {
         this.icon = icon;
 
-        if (component instanceof CubaFileUpload) {
-            if (!StringUtils.isEmpty(icon)) {
-                component.setIcon(WebComponentsHelper.getIcon(icon));
-            } else {
-                component.setIcon(null);
-            }
+        if (!StringUtils.isEmpty(icon)) {
+            component.setIcon(WebComponentsHelper.getIcon(icon));
+        } else {
+            component.setIcon(null);
         }
     }
 
