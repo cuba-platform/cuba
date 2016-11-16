@@ -163,6 +163,7 @@ public class RelatedAction extends BaseAction implements Action.HasBeforeActionP
         MetaClass effectiveMetaClass = extendedEntities.getEffectiveMetaClass(metaProperty.getRange().asClass());
 
         filterEntity.setXml(getRelatedEntitiesFilterXml(effectiveMetaClass, selectedParents, component));
+        filterEntity.setUser(userSession.getCurrentOrSubstitutedUser());
 
         component.setFilterEntity(filterEntity);
         component.apply(true);
