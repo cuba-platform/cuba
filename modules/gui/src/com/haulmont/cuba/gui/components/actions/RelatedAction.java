@@ -222,11 +222,6 @@ public class RelatedAction extends BaseAction implements Action.HasBeforeActionP
 
     @Nullable
     protected AbstractCondition getManyToManyCondition(List<Object> parentIds, CollectionDatasource datasource, String filterComponentName, String primaryKey) {
-        MetaProperty inverseField = metaProperty.getInverse();
-        if (inverseField == null) {
-            return null;
-        }
-
         CustomCondition customCondition = getCustomCondition(parentIds, datasource, filterComponentName, primaryKey, true);
 
         String parentEntityAlias = RandomStringUtils.randomAlphabetic(6);
@@ -242,11 +237,6 @@ public class RelatedAction extends BaseAction implements Action.HasBeforeActionP
 
     @Nullable
     protected AbstractCondition getManyToOneCondition(List<Object> parentIds, CollectionDatasource datasource, String filterComponentName, String primaryKey) {
-        MetaProperty inverseField = metaProperty.getInverse();
-        if (inverseField == null) {
-            return null;
-        }
-
         CustomCondition customCondition = getCustomCondition(parentIds, datasource, filterComponentName, primaryKey, true);
 
         String entityAlias = RandomStringUtils.randomAlphabetic(6);
