@@ -93,6 +93,11 @@ public class CubaFileUploadWrapper extends CustomField {
         } else {
             setFileNameButtonCaption(null);
         }
+
+        onSetInternalValue(newValue);
+    }
+
+    protected void onSetInternalValue(Object newValue) {
     }
 
     private void updateComponentWidth() {

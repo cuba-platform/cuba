@@ -21,7 +21,6 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.compatibility.FileUploadFieldListenerWrapper;
@@ -69,6 +68,13 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     protected UUID fileId;
     protected UUID tempFileId;
 
+    /*
+    * This flag is used only for MANUAL mode to register that
+    * file was uploaded with the upload button rather then setValue calling
+    * or changed property in the datasource
+    */
+    protected boolean internalValueChangedOnUpload = false;
+
     protected List<FileUploadStartListener> fileUploadStartListeners;     // lazily initialized list
     protected List<FileUploadFinishListener> fileUploadFinishListeners;   // lazily initialized list
     protected List<FileUploadErrorListener> fileUploadErrorListeners;     // lazily initialized list
@@ -90,9 +96,17 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
         }
 
         initComponent();
+        attachListener(component);
     }
 
     private void initComponent() {
+        component = new CubaFileUploadWrapper(uploadButton) {
+            @Override
+            protected void onSetInternalValue(Object newValue) {
+                internalValueChanged(newValue);
+            }
+        };
+
         component.addFileNameClickListener(e -> {
             FileDescriptor value = getValue();
             if (value == null)
@@ -109,6 +123,15 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
             }
         });
         component.setClearButtonListener((Button.ClickListener) this::clearButtonClicked);
+    }
+
+    protected void internalValueChanged(Object newValue) {
+        fileName = newValue == null ? null : ((FileDescriptor) newValue).getName();
+
+        if (!internalValueChangedOnUpload) {
+            fileId = null;
+            tempFileId = null;
+        }
     }
 
     protected void clearButtonClicked(Button.ClickEvent clickEvent) {
@@ -137,7 +160,9 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     protected void saveFile(FileDescriptor fileDescriptor) {
         switch (mode) {
             case MANUAL:
+                internalValueChangedOnUpload = true;
                 setValue(fileDescriptor);
+                internalValueChangedOnUpload = false;
                 break;
             case IMMEDIATE:
                 try {
@@ -153,18 +178,9 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
         }
     }
 
-    @Override
-    public void setValue(Object value) {
-        super.setValue(value);
-
-        if (value == null || !PersistenceHelper.isNew(value)) {
-            fileId = null;
-            tempFileId = null;
-        }
-    }
-
     protected void initOldUploadButton() {
-        final CubaUpload impl = createOldComponent();
+        uploadButton = createOldComponent();
+        final CubaUpload impl = (CubaUpload) uploadButton;
 
         impl.setButtonCaption(messages.getMainMessage("upload.submit"));
         impl.setDescription(null);
@@ -226,13 +242,11 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
 
             fireFileUploadError(event.getFilename(), event.getLength(), event.getReason());
         });
-
-        uploadButton = impl;
-        component = new CubaFileUploadWrapper(impl);
     }
 
     protected void initUploadButton() {
-        CubaFileUpload impl = createComponent();
+        uploadButton = createComponent();
+        CubaFileUpload impl = (CubaFileUpload) uploadButton;
 
         impl.setProgressWindowCaption(messages.getMainMessage("upload.uploadingProgressTitle"));
         impl.setUnableToUploadFileMessage(messages.getMainMessage("upload.unableToUploadFile"));
@@ -294,9 +308,6 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
             String warningMsg = messages.formatMainMessage("upload.fileIncorrectExtension.message", e.getFileName());
             getFrame().showNotification(warningMsg, NotificationType.WARNING);
         });
-
-        uploadButton = impl;
-        component = new CubaFileUploadWrapper(impl);
     }
 
     protected CubaFileUpload createComponent() {
