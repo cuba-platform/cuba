@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.upload;
 
 import com.haulmont.cuba.web.toolkit.ui.CubaUpload;
 import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.Icon;
 import com.vaadin.client.ui.upload.UploadConnector;
 import com.vaadin.shared.ui.Connect;
 
@@ -37,11 +38,30 @@ public class CubaUploadConnector extends UploadConnector {
     }
 
     @Override
+    public boolean delegateCaptionHandling() {
+        return false;
+    }
+
+    @Override
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
 
         if (stateChangeEvent.hasPropertyChanged("accept")) {
             getWidget().setAccept(getState().accept);
+        }
+
+        if (stateChangeEvent.hasPropertyChanged("resources")) {
+            if (getWidget().submitButton.icon != null) {
+                getWidget().submitButton.wrapper.removeChild(getWidget().submitButton.icon.getElement());
+                getWidget().submitButton.icon = null;
+            }
+            Icon icon = getIcon();
+            if (icon != null) {
+                getWidget().submitButton.icon = icon;
+
+                getWidget().submitButton.wrapper.insertBefore(icon.getElement(),
+                        getWidget().submitButton.captionElement);
+            }
         }
     }
 }
