@@ -720,12 +720,10 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
 
     @Override
     public void setUploadButtonIcon(String icon) {
-        if (uploadButton instanceof CubaFileUpload) {
-            if (!StringUtils.isEmpty(icon)) {
-                component.setUploadButtonIcon(icon);
-            } else {
-                component.setUploadButtonIcon(null);
-            }
+        if (!StringUtils.isEmpty(icon)) {
+            component.setUploadButtonIcon(icon);
+        } else {
+            component.setUploadButtonIcon(null);
         }
     }
 
