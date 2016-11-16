@@ -17,9 +17,11 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.ValueLoadContext;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
@@ -52,5 +54,10 @@ public class DataServiceBean implements DataService {
     @Override
     public long getCount(LoadContext<? extends Entity> context) {
         return dataManager.secure().getCount(context);
+    }
+
+    @Override
+    public List<KeyValueEntity> loadValues(ValueLoadContext context) {
+        return dataManager.secure().loadValues(context);
     }
 }

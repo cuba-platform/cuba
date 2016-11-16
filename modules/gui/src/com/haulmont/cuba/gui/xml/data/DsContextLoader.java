@@ -17,15 +17,19 @@
 
 package com.haulmont.cuba.gui.xml.data;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.StringDatatype;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.gui.data.impl.DsContextImpl;
-import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
+import com.haulmont.cuba.gui.data.impl.*;
 import com.haulmont.cuba.core.global.filter.QueryFilter;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -110,7 +114,25 @@ public class DsContextLoader {
         //noinspection unchecked
         elements = element.elements("runtimePropsDatasource");
         for (Element ds : elements) {
-            loadRuntimePropsDataSource(ds);
+            loadRuntimePropsDatasource(ds);
+        }
+
+        //noinspection unchecked
+        elements = element.elements("valueCollectionDatasource");
+        for (Element ds : elements) {
+            loadValueCollectionDatasource(ds);
+        }
+
+        //noinspection unchecked
+        elements = element.elements("valueGroupDatasource");
+        for (Element ds : elements) {
+            loadValueGroupDatasource(ds);
+        }
+
+        //noinspection unchecked
+        elements = element.elements("valueHierarchicalDatasource");
+        for (Element ds : elements) {
+            loadValueHierarchicalDatasource(ds);
         }
 
         context.executeLazyTasks();
@@ -154,7 +176,7 @@ public class DsContextLoader {
         if (datasource instanceof CollectionDatasource.Suspendable)
             ((CollectionDatasource.Suspendable) datasource).setSuspended(true);
 
-        loadQuery(element, metaClass, datasource);
+        loadQuery(element, datasource);
 
         loadDatasources(element, datasource);
 
@@ -190,7 +212,7 @@ public class DsContextLoader {
         if (datasource instanceof CollectionDatasource.Suspendable)
             ((CollectionDatasource.Suspendable) datasource).setSuspended(true);
 
-        loadQuery(element, metaClass, datasource);
+        loadQuery(element, datasource);
 
         loadDatasources(element, datasource);
 
@@ -260,7 +282,7 @@ public class DsContextLoader {
         //noinspection unchecked
         elements = element.elements("runtimePropsDatasource");
         for (Element ds : elements) {
-            loadRuntimePropsDataSource(ds);
+            loadRuntimePropsDatasource(ds);
         }
     }
 
@@ -357,14 +379,14 @@ public class DsContextLoader {
         if (datasource instanceof CollectionDatasource.Suspendable)
             ((CollectionDatasource.Suspendable) datasource).setSuspended(true);
 
-        loadQuery(element, metaClass, datasource);
+        loadQuery(element, datasource);
 
         loadDatasources(element, datasource);
 
         return datasource;
     }
 
-    private void loadQuery(Element element, MetaClass metaClass, CollectionDatasource datasource) {
+    private void loadQuery(Element element, CollectionDatasource datasource) {
         Element queryElem = element.element("query");
         if (queryElem != null) {
             Element filterElem = queryElem.element("filter");
@@ -372,7 +394,7 @@ public class DsContextLoader {
             String query = queryElem.getText();
             if (!StringUtils.isBlank(query)) {
                 if (filterElem != null)
-                    datasource.setQuery(query, new QueryFilter(filterElem, metaClass.getName()));
+                    datasource.setQuery(query, new QueryFilter(filterElem));
                 else
                     datasource.setQuery(query);
             }
@@ -414,7 +436,7 @@ public class DsContextLoader {
         return StringUtils.isEmpty(allowCommitStr) || Boolean.parseBoolean(allowCommitStr);
     }
 
-    protected RuntimePropsDatasource loadRuntimePropsDataSource(Element element){
+    protected RuntimePropsDatasource loadRuntimePropsDatasource(Element element){
         String id = getDatasourceId(element);
         MetaClass metaClass = loadMetaClass(element);
 
@@ -432,10 +454,101 @@ public class DsContextLoader {
 
         builder.reset().setMetaClass(metaClass).setId(id);
 
-        RuntimePropsDatasource datasource = builder.buildRuntimePropsDataSource(mainDsId, categorizedEntityMetaClass);
+        RuntimePropsDatasource datasource = builder.buildRuntimePropsDatasource(mainDsId, categorizedEntityMetaClass);
 
         loadDatasources(element, datasource);
         return datasource;
+    }
+
+    private ValueCollectionDatasourceImpl loadValueCollectionDatasource(Element element) {
+        String id = getDatasourceId(element);
+        builder.reset().setMetaClass(metadata.getClassNN(KeyValueEntity.class)).setId(id);
+
+        ValueCollectionDatasourceImpl datasource = builder.buildValuesCollectionDatasource();
+
+        String maxResults = element.attributeValue("maxResults");
+        if (!StringUtils.isEmpty(maxResults))
+            datasource.setMaxResults(Integer.parseInt(maxResults));
+
+        datasource.setSuspended(true);
+
+        loadQuery(element, datasource);
+
+        loadProperties(element, datasource);
+
+        datasource.setStoreName(element.attributeValue("store"));
+
+        return datasource;
+    }
+
+    private ValueGroupDatasourceImpl loadValueGroupDatasource(Element element) {
+        String id = getDatasourceId(element);
+        builder.reset().setMetaClass(metadata.getClassNN(KeyValueEntity.class)).setId(id);
+
+        ValueGroupDatasourceImpl datasource = builder.buildValuesGroupDatasource();
+
+        String maxResults = element.attributeValue("maxResults");
+        if (!StringUtils.isEmpty(maxResults))
+            datasource.setMaxResults(Integer.parseInt(maxResults));
+
+        datasource.setSuspended(true);
+
+        loadQuery(element, datasource);
+
+        loadProperties(element, datasource);
+
+        datasource.setStoreName(element.attributeValue("store"));
+
+        return datasource;
+    }
+
+    private ValueHierarchicalDatasourceImpl loadValueHierarchicalDatasource(Element element) {
+        String id = getDatasourceId(element);
+        builder.reset().setMetaClass(metadata.getClassNN(KeyValueEntity.class)).setId(id);
+
+        ValueHierarchicalDatasourceImpl datasource = builder.buildValuesHierarchicalDatasourceImpl();
+
+        String maxResults = element.attributeValue("maxResults");
+        if (!StringUtils.isEmpty(maxResults))
+            datasource.setMaxResults(Integer.parseInt(maxResults));
+
+        datasource.setSuspended(true);
+
+        loadQuery(element, datasource);
+
+        loadProperties(element, datasource);
+
+        String hierarchyProperty = element.attributeValue("hierarchyProperty");
+        if (!StringUtils.isEmpty(hierarchyProperty)) {
+            datasource.setHierarchyPropertyName(hierarchyProperty);
+        }
+
+        datasource.setStoreName(element.attributeValue("store"));
+
+        return datasource;
+    }
+
+    private void loadProperties(Element element, ValueDatasource datasource) {
+        Element propsEl = element.element("properties");
+        if (propsEl != null) {
+            for (Element propEl : Dom4j.elements(propsEl)) {
+                String name = propEl.attributeValue("name");
+                String className = propEl.attributeValue("class");
+                if (className != null) {
+                    datasource.addProperty(name, ReflectionHelper.getClass(className));
+                } else {
+                    String typeName = propEl.attributeValue("type");
+                    Datatype datatype = typeName == null ? Datatypes.get(StringDatatype.NAME) : Datatypes.get(typeName);
+                    datasource.addProperty(name, datatype);
+                }
+            }
+            String idName = propsEl.attributeValue("id");
+            if (idName != null) {
+                if (datasource.getMetaClass().getProperty(idName) == null)
+                    throw new DevelopmentException(String.format("Property '%s' is not defined", idName));
+                datasource.setIdName(idName);
+            }
+        }
     }
 
     protected String getDatasourceId(Element element) {

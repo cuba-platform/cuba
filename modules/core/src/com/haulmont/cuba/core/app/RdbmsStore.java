@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
@@ -388,6 +389,60 @@ public class RdbmsStore implements DataStore {
         updateReferences(persisted, res);
 
         return res;
+    }
+
+    @Override
+    public List<KeyValueEntity> loadValues(ValueLoadContext context) {
+        Preconditions.checkNotNullArgument(context, "context is null");
+        Preconditions.checkNotNullArgument(context.getQuery(), "query is null");
+
+        ValueLoadContext.Query contextQuery = context.getQuery();
+
+        if (log.isDebugEnabled())
+            log.debug("query: " + (DataServiceQueryBuilder.printQuery(contextQuery.getQueryString()))
+                    + (contextQuery.getFirstResult() == 0 ? "" : ", first=" + contextQuery.getFirstResult())
+                    + (contextQuery.getMaxResults() == 0 ? "" : ", max=" + contextQuery.getMaxResults()));
+
+        List<KeyValueEntity> entities = new ArrayList<>();
+
+        try (Transaction tx = persistence.createTransaction(storeName)) {
+            EntityManager em = persistence.getEntityManager(storeName);
+            em.setSoftDeletion(context.isSoftDeletion());
+
+            List<String> keys = context.getProperties();
+
+            DataServiceQueryBuilder queryBuilder = AppBeans.get(DataServiceQueryBuilder.NAME);
+            queryBuilder.init(contextQuery.getQueryString(), contextQuery.getParameters(), null, metadata.getClassNN(KeyValueEntity.class).getName());
+            Query query = queryBuilder.getQuery(em);
+
+            if (contextQuery.getFirstResult() != 0)
+                query.setFirstResult(contextQuery.getFirstResult());
+            if (contextQuery.getMaxResults() != 0)
+                query.setMaxResults(contextQuery.getMaxResults());
+
+            List resultList = query.getResultList();
+            for (Object item : resultList) {
+                KeyValueEntity entity = new KeyValueEntity();
+                entity.setIdName(context.getIdName());
+                entities.add(entity);
+
+                if (item instanceof Object[]) {
+                    Object[] row = (Object[]) item;
+                    for (int i = 0; i < keys.size(); i++) {
+                        String key = keys.get(i);
+                        if (row.length > i) {
+                            entity.setValue(key, row[i]);
+                        }
+                    }
+                } else if (!keys.isEmpty()) {
+                    entity.setValue(keys.get(0), item);
+                }
+            }
+
+            tx.commit();
+        }
+
+        return entities;
     }
 
     protected View getViewFromContext(CommitContext context, Entity entity) {

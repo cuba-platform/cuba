@@ -18,12 +18,16 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.core.sys.CubaEnhancingDisabled;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Entity that contains a variable set of attributes. For example:
@@ -41,11 +45,21 @@ import java.util.Map;
  */
 @com.haulmont.chile.core.annotations.MetaClass(name = "sys$KeyValueEntity")
 @SystemLevel
-public class KeyValueEntity extends AbstractNotPersistentEntity implements CubaEnhancingDisabled {
+public class KeyValueEntity
+        extends AbstractInstance
+        implements Entity<Object>, CubaEnhancingDisabled {
 
-    private Map<String, Object> properties = new LinkedHashMap<>();
+    protected UUID uuid;
 
-    private MetaClass metaClass;
+    protected Map<String, Object> properties = new LinkedHashMap<>();
+
+    protected String idName;
+
+    protected MetaClass metaClass;
+
+    public KeyValueEntity() {
+        uuid = UuidProvider.createUuid();
+    }
 
     @Override
     public MetaClass getMetaClass() {
@@ -56,6 +70,14 @@ public class KeyValueEntity extends AbstractNotPersistentEntity implements CubaE
 
     public void setMetaClass(MetaClass metaClass) {
         this.metaClass = metaClass;
+    }
+
+    public String getIdName() {
+        return idName;
+    }
+
+    public void setIdName(String idName) {
+        this.idName = idName;
     }
 
     @Override
@@ -71,5 +93,52 @@ public class KeyValueEntity extends AbstractNotPersistentEntity implements CubaE
             properties.put(name, value);
             propertyChanged(name, oldValue, value);
         }
+    }
+
+    @Override
+    public Object getId() {
+        if (idName == null)
+            return uuid;
+        else
+            return properties.get(idName);
+    }
+
+    public void setId(Object id) {
+        if (idName == null)
+            throw new IllegalStateException("Id name is not set");
+        properties.put(idName, id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        KeyValueEntity that = (KeyValueEntity) o;
+        Object id = getId();
+        Object thatId = that.getId();
+
+        if (id != null && thatId != null)
+            return id.equals(thatId);
+
+        return Objects.equals(uuid, that.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        Object id = getId();
+        if (id != null)
+            return id.hashCode();
+        return uuid.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        Object id = null;
+        if (idName != null)
+            id = properties.get(idName);
+        if (id == null)
+            id = "?(" + uuid + ")";
+        return "sys$KeyValueEntity-" + id;
     }
 }

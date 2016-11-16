@@ -18,10 +18,7 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
-import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.slf4j.Logger;
@@ -205,6 +202,12 @@ public class DataManagerBean implements DataManager {
                 Collections.<Entity>emptyList(),
                 Collections.singleton(entity));
         commit(context);
+    }
+
+    @Override
+    public List<KeyValueEntity> loadValues(ValueLoadContext context) {
+        DataStore store = storeFactory.get(context.getStoreName());
+        return store.loadValues(context);
     }
 
     protected boolean entityHasDynamicAttributes(Entity entity) {

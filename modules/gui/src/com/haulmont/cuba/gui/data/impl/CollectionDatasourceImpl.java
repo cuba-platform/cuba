@@ -499,7 +499,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             params = Collections.emptyMap();
         } else
             params = savedParameters;
-        LoadContext.Query q = createLoadContextQuery(context, params);
+        LoadContext.Query q = (LoadContext.Query) createDataQuery(context, params);
         if (sortInfos != null && sortOnDb) {
             setSortDirection(q);
         }
@@ -552,7 +552,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     protected LoadContext beforeLoadData(Map<String, Object> params) {
         final LoadContext context = new LoadContext(metaClass);
 
-        LoadContext.Query q = createLoadContextQuery(context, params);
+        LoadContext.Query q = (LoadContext.Query) createDataQuery(context, params);
         if (q == null) {
             detachListener(data.values());
             data.clear();

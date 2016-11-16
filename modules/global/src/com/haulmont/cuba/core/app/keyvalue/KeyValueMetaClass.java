@@ -42,6 +42,10 @@ public class KeyValueMetaClass extends MetadataObjectImpl implements MetaClass {
         properties.remove(propertyName);
     }
 
+    public KeyValueMetaClass() {
+        name = "sys$KeyValueEntity";
+    }
+
     @Nullable
     @Override
     public MetaClass getAncestor() {

@@ -838,10 +838,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             Collection<MetaPropertyPath> paths = datasource.getView() != null ?
                     // if a view is specified - use view properties
                     metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass()) :
-                    // otherwise use only string properties from meta-class - the temporary solution for KeyValue datasources
-                    metadataTools.getPropertyPaths(datasource.getMetaClass()).stream()
-                            .filter(mpp -> mpp.getRangeJavaClass().equals(String.class))
-                            .collect(Collectors.toList());
+                    // otherwise use all properties from meta-class
+                    metadataTools.getPropertyPaths(datasource.getMetaClass());
             for (MetaPropertyPath metaPropertyPath : paths) {
                 MetaProperty property = metaPropertyPath.getMetaProperty();
                 if (!property.getRange().getCardinality().isMany() && !metadataTools.isSystem(property)) {

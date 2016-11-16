@@ -42,18 +42,18 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
     @Override
     public Collection<K> getChildren(K itemId) {
         if (hierarchyPropertyName != null) {
-            final Entity item = getItem(itemId);
-            if (item == null)
+            final Entity currentItem = getItem(itemId);
+            if (currentItem == null)
                 return Collections.emptyList();
 
             List<K> res = new ArrayList<>();
 
             Collection<K> ids = getItemIds();
             for (K id : ids) {
-                Entity<K> currentItem = getItem(id);
-                Object parentItem = currentItem.getValue(hierarchyPropertyName);
-                if (parentItem != null && parentItem.equals(item))
-                    res.add(currentItem.getId());
+                Entity<K> item = getItemNN(id);
+                Entity<K> parentItem = item.getValue(hierarchyPropertyName);
+                if (parentItem != null && parentItem.getId().equals(itemId))
+                    res.add(item.getId());
             }
 
             return res;
@@ -68,8 +68,8 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
             if (item == null)
                 return null;
             else {
-                Entity<K> value = item.getValue(hierarchyPropertyName);
-                return value == null ? null : value.getId();
+                Entity<K> parentItem = item.getValue(hierarchyPropertyName);
+                return parentItem == null ? null : parentItem.getId();
             }
         }
         return null;
@@ -83,8 +83,8 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
             Set<K> result = new LinkedHashSet<>();
             for (K id : ids) {
                 Entity<K> item = getItemNN(id);
-                Object value = item.getValue(hierarchyPropertyName);
-                if (value == null || !containsItem(((T) value).getId()))
+                Entity<K> parentItem = item.getValue(hierarchyPropertyName);
+                if (parentItem == null || !containsItem(parentItem.getId()))
                     result.add(item.getId());
             }
             return result;
@@ -99,8 +99,8 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
         if (item == null) return false;
 
         if (hierarchyPropertyName != null) {
-            Object value = item.getValue(hierarchyPropertyName);
-            return (value == null || !containsItem(((T) value).getId()));
+            Entity<K> parentItem = item.getValue(hierarchyPropertyName);
+            return (parentItem == null || !containsItem(parentItem.getId()));
         } else {
             return true;
         }
@@ -108,15 +108,16 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public boolean hasChildren(K itemId) {
-        final Entity item = getItem(itemId);
-        if (item == null) return false;
+        final Entity currentItem = getItem(itemId);
+        if (currentItem == null)
+            return false;
 
         if (hierarchyPropertyName != null) {
             Collection<K> ids = getItemIds();
             for (K id : ids) {
-                Entity currentItem = getItem(id);
-                Object parentItem = currentItem.getValue(hierarchyPropertyName);
-                if (parentItem != null && parentItem.equals(item))
+                Entity item = getItemNN(id);
+                Entity parentItem = item.getValue(hierarchyPropertyName);
+                if (parentItem != null && parentItem.getId().equals(itemId))
                     return true;
             }
         }

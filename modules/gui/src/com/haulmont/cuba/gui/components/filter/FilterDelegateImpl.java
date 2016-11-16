@@ -1246,7 +1246,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         if (getResultingManualApplyRequired()) {
             // set initial denying condition to get empty datasource before explicit filter applying
-            QueryFilter queryFilter = new QueryFilter(new DenyingClause(), datasource.getMetaClass().getName());
+            QueryFilter queryFilter = new QueryFilter(new DenyingClause());
             if (dsQueryFilter != null) {
                 queryFilter = QueryFilter.merge(dsQueryFilter, queryFilter);
             }
@@ -1471,7 +1471,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
             if (!Strings.isNullOrEmpty(currentFilterXml)) {
                 Element element = Dom4j.readDocument(currentFilterXml).getRootElement();
-                QueryFilter queryFilter = new QueryFilter(element, datasource.getMetaClass().getName());
+                QueryFilter queryFilter = new QueryFilter(element);
 
                 if (dsQueryFilter != null) {
                     queryFilter = QueryFilter.merge(dsQueryFilter, queryFilter);

@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
     List&lt;User&gt; users = dataManager.loadList(context);
  * </pre>
  */
-public class LoadContext<E extends Entity> implements Serializable {
+public class LoadContext<E extends Entity> implements DataLoadContext, Serializable {
 
     private static final long serialVersionUID = -8808320502197308698L;
 
@@ -118,6 +118,7 @@ public class LoadContext<E extends Entity> implements Serializable {
      * @param queryString JPQL query string. Only named parameters are supported.
      * @return  query definition object
      */
+    @Override
     public Query setQueryString(String queryString) {
         final Query query = new Query(queryString);
         setQuery(query);
@@ -283,7 +284,7 @@ public class LoadContext<E extends Entity> implements Serializable {
     /**
      * Class that defines a query to be executed for data loading.
      */
-    public static class Query implements Serializable {
+    public static class Query implements DataLoadContextQuery, Serializable {
 
         private static final long serialVersionUID = 3819951144050635838L;
 
@@ -293,18 +294,6 @@ public class LoadContext<E extends Entity> implements Serializable {
         private int maxResults;
         private boolean cacheable;
 
-        public static class TemporalValue implements Serializable {
-
-            private static final long serialVersionUID = 4972088045550018312L;
-
-            public final Date date;
-            public final TemporalType type;
-
-            public TemporalValue(Date date, TemporalType type) {
-                this.date = date;
-                this.type = type;
-            }
-        }
         /**
          * @param queryString JPQL query string. Only named parameters are supported.
          */
@@ -359,8 +348,9 @@ public class LoadContext<E extends Entity> implements Serializable {
         /**
          * @param parameters map of the query parameters
          */
-        public void setParameters(Map<String, Object> parameters) {
+        public Query setParameters(Map<String, Object> parameters) {
             this.parameters.putAll(parameters);
+            return this;
         }
 
         /**

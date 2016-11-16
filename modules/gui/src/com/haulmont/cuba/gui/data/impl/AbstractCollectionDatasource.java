@@ -494,8 +494,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
-    protected LoadContext.Query createLoadContextQuery(LoadContext context, Map<String, Object> params) {
-        LoadContext.Query q;
+    protected DataLoadContextQuery createDataQuery(DataLoadContext context, Map<String, Object> params) {
+        DataLoadContextQuery q = null;
         if (query != null && queryParameters != null) {
             Map<String, Object> parameters = getQueryParameters(params);
             for (ParameterInfo info : queryParameters) {
@@ -532,7 +532,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 if (paramNames.contains(entry.getKey()))
                     q.setParameter(entry.getKey(), entry.getValue());
             }
-        } else {
+        } else if (!(context instanceof ValueLoadContext)) {
             Collection<MetaProperty> properties = metadata.getTools().getNamePatternProperties(metaClass);
             if (!properties.isEmpty()) {
                 StringBuilder orderBy = new StringBuilder();
@@ -550,8 +550,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             } else
                 q = context.setQueryString("select e from " + metaClass.getName() + " e");
         }
-        if (q != null) {
-            q.setCacheable(isCacheable());
+        if (q instanceof LoadContext.Query) {
+            ((LoadContext.Query) q).setCacheable(isCacheable());
         }
         return q;
     }
@@ -563,7 +563,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
      */
     public int getCount() {
         LoadContext<Entity> context = new LoadContext<>(metaClass);
-        LoadContext.Query q = createLoadContextQuery(context, savedParameters == null ? Collections.<String, Object>emptyMap() : savedParameters);
+        LoadContext.Query q = (LoadContext.Query) createDataQuery(context, savedParameters == null ? Collections.<String, Object>emptyMap() : savedParameters);
         context.setSoftDeletion(isSoftDeletion());
         if (q == null)
             return 0;

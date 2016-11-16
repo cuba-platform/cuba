@@ -17,23 +17,34 @@
 
 package com.haulmont.cuba.gui.data.impl;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.keyvalue.KeyValueMetaClass;
-import com.haulmont.cuba.core.app.keyvalue.KeyValueMetaProperty;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.GroupDatasource;
+import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
+import org.apache.log4j.Logger;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 
 import javax.annotation.Nullable;
 import java.util.Map;
-import java.util.UUID;
 
 /**
- * {@link GroupDatasource} that supports {@link KeyValueEntity}.
+ * {@link CollectionDatasource} that supports {@link KeyValueEntity}.
  */
-public class KeyValueGroupDatasourceImpl extends GroupDatasourceImpl<KeyValueEntity, UUID> {
+public class ValueCollectionDatasourceImpl
+        extends CollectionDatasourceImpl<KeyValueEntity, Object>
+        implements ValueDatasource {
+
+    protected final ValueDatasourceDelegate delegate;
+
+    public ValueCollectionDatasourceImpl() {
+        delegate = new ValueDatasourceDelegate(this);
+    }
 
     @Override
     public void setup(DsContext dsContext, DataSupplier dataSupplier, String id, MetaClass metaClass, @Nullable View view) {
@@ -43,13 +54,35 @@ public class KeyValueGroupDatasourceImpl extends GroupDatasourceImpl<KeyValueEnt
         this.metaClass = new KeyValueMetaClass();
     }
 
-    public KeyValueGroupDatasourceImpl addProperty(String name) {
-        ((KeyValueMetaClass) metaClass).addProperty(new KeyValueMetaProperty(metaClass, name, String.class));
+    @Override
+    public ValueCollectionDatasourceImpl setIdName(String name) {
+        delegate.setIdName(name);
+        return this;
+    }
+
+    public ValueCollectionDatasourceImpl addProperty(String name) {
+        delegate.addProperty(name);
+        return this;
+    }
+
+    public ValueCollectionDatasourceImpl addProperty(String name, Class aClass) {
+        delegate.addProperty(name, aClass);
+        return this;
+    }
+
+    public ValueCollectionDatasourceImpl addProperty(String name, Datatype type) {
+        delegate.addProperty(name, type);
         return this;
     }
 
     @Override
     protected void loadData(Map<String, Object> params) {
+        String tag = getLoggingTag("VDS");
+        StopWatch sw = new Log4JStopWatch(tag, Logger.getLogger(UIPerformanceLogger.class));
+
+        delegate.loadData(params);
+
+        sw.stop();
     }
 
     @Override
@@ -62,5 +95,9 @@ public class KeyValueGroupDatasourceImpl extends GroupDatasourceImpl<KeyValueEnt
     public void addItem(KeyValueEntity item) {
         super.addItem(item);
         item.setMetaClass(metaClass);
+    }
+
+    public void setStoreName(String storeName) {
+        this.delegate.setStoreName(storeName);
     }
 }

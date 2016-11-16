@@ -1926,6 +1926,76 @@
         <xs:attribute name="categorizedEntityClass" type="xs:string" use="optional"/>
     </xs:complexType>
 
+    <!-- ValueCollectionDatasource -->
+    <xs:complexType name="valueCollectionDatasourceType">
+        <xs:sequence>
+            <xs:element name="query" minOccurs="0" maxOccurs="1">
+                <xs:complexType mixed="true">
+                    <xs:sequence>
+                        <xs:element name="filter" type="filterType" minOccurs="0" maxOccurs="1"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="properties" type="valueDatasourcePropertiesType"/>
+        </xs:sequence>
+
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="maxResults" type="xs:int"/>
+        <xs:attribute name="store" type="xs:string"/>
+    </xs:complexType>
+
+    <!-- ValueGroupDatasource -->
+    <xs:complexType name="valueGroupDatasourceType">
+        <xs:sequence>
+            <xs:element name="query" minOccurs="0" maxOccurs="1">
+                <xs:complexType mixed="true">
+                    <xs:sequence>
+                        <xs:element name="filter" type="filterType" minOccurs="0" maxOccurs="1"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="properties" type="valueDatasourcePropertiesType"/>
+        </xs:sequence>
+
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="maxResults" type="xs:int"/>
+        <xs:attribute name="store" type="xs:string"/>
+    </xs:complexType>
+
+    <!-- ValueHierarchicalDatasource -->
+    <xs:complexType name="valueHierarchicalDatasourceType">
+        <xs:sequence>
+            <xs:element name="query" minOccurs="0" maxOccurs="1">
+                <xs:complexType mixed="true">
+                    <xs:sequence>
+                        <xs:element name="filter" type="filterType" minOccurs="0" maxOccurs="1"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="properties" type="valueDatasourcePropertiesType"/>
+        </xs:sequence>
+
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="maxResults" type="xs:int"/>
+        <xs:attribute name="store" type="xs:string"/>
+        <xs:attribute name="hierarchyProperty" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="valueDatasourcePropertiesType">
+        <xs:sequence>
+            <xs:element name="property" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType mixed="true">
+                    <xs:attribute name="name" type="xs:string" use="required"/>
+                    <xs:attribute name="type" type="datatypeEnum" />
+                    <xs:attribute name="class" type="xs:string" />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="properties" type="valueDatasourcePropertiesType"/>
+        </xs:sequence>
+
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+
     <!-- PropertyDatasource -->
     <xs:group name="nestedDatasources">
         <xs:sequence>
@@ -2104,6 +2174,9 @@
                                 <xs:element name="collectionDatasource" type="collectionDatasourceType"/>
                                 <xs:element name="hierarchicalDatasource" type="hierarchicalDatasourceType"/>
                                 <xs:element name="runtimePropsDatasource" type="runtimePropsDatasourceType"/>
+                                <xs:element name="valueCollectionDatasource" type="valueCollectionDatasourceType"/>
+                                <xs:element name="valueGroupDatasource" type="valueGroupDatasourceType"/>
+                                <xs:element name="valueHierarchicalDatasource" type="valueHierarchicalDatasourceType"/>
                             </xs:choice>
                         </xs:sequence>
                         <xs:attribute name="class" type="xs:string"/>
