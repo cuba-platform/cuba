@@ -1066,6 +1066,12 @@ public class WebWindowManager extends WindowManager {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+    @Override
+    public void showNotification(String caption) {
+        showNotification(caption, null, NotificationType.HUMANIZED);
+    }
+
     @Override
     public void showNotification(String caption, Frame.NotificationType type) {
         showNotification(caption, null, type);

@@ -206,11 +206,13 @@ public class WebWindow implements Window, Component.Wrapper,
         getContainer().addStyleName("cuba-window-layout");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <X> X unwrap(Class<X> internalComponentClass) {
         return (X) getComponent();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <X> X unwrapComposition(Class<X> internalCompositionClass) {
         return (X) getComposition();
@@ -527,6 +529,11 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions) {
         getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[actions.size()]));
+    }
+
+    @Override
+    public void showNotification(String caption) {
+        getWindowManager().showNotification(caption);
     }
 
     @Override

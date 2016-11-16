@@ -352,6 +352,11 @@ public class DesktopFrame
     }
 
     @Override
+    public void showNotification(String caption) {
+        getWindowManager().showNotification(caption);
+    }
+
+    @Override
     public void showNotification(String caption, NotificationType type) {
         getWindowManager().showNotification(caption, type);
     }

@@ -781,6 +781,11 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
+    public void showNotification(String caption) {
+        getWindowManager().showNotification(caption);
+    }
+
+    @Override
     public void showNotification(String caption, NotificationType type) {
         getWindowManager().showNotification(caption, type);
     }
