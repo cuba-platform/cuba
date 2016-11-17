@@ -74,6 +74,14 @@ create table TEST_COMPOSITE_KEY (
 )^
 
 ------------------------------------------------------------------------------------------------------------
+
+create table TEST_STRING_KEY (
+    CODE varchar(20) not null,
+    NAME varchar(50),
+    primary key (CODE)
+)^
+
+------------------------------------------------------------------------------------------------------------
 create table TEST_ROOT_ENTITY (
     ID varchar(36) not null,
     CREATE_TS timestamp,

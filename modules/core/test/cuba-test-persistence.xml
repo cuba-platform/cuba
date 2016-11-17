@@ -26,6 +26,7 @@
         <class>com.haulmont.cuba.testmodel.primary_keys.IdentityUuidEntity</class>
         <class>com.haulmont.cuba.testmodel.primary_keys.EntityKey</class>
         <class>com.haulmont.cuba.testmodel.primary_keys.CompositeKeyEntity</class>
+        <class>com.haulmont.cuba.testmodel.primary_keys.StringKeyEntity</class>
         <class>com.haulmont.cuba.testmodel.selfinherited.RootEntity</class>
         <class>com.haulmont.cuba.testmodel.selfinherited.ChildEntity</class>
         <class>com.haulmont.cuba.testmodel.softdelete_one_to_one.SoftDeleteOneToOneA</class>
