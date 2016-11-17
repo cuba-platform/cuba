@@ -455,18 +455,22 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         return data.containsKey(itemId);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void committed(Set<Entity> entities) {
         if (!State.VALID.equals(state)) {
             return;
         }
 
-        for (Entity newEntity : entities) {
-            if (newEntity.equals(item)) {
-                item = (T) newEntity;
+        for (Entity entity : entities) {
+            if (!metaClass.getJavaClass().isAssignableFrom(entity.getClass()))
+                continue;
+
+            if (entity.equals(item)) {
+                item = (T) entity;
             }
 
-            updateItem((T) newEntity);
+            updateItem((T) entity);
         }
 
         modified = false;
