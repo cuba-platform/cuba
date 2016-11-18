@@ -300,11 +300,19 @@ configure(coreModule) {
         scanForTestClasses = false
         includes = ['**/*Test.class']
         jvmArgs '-XX:-UseSplitVerifier'
+
+        systemProperties = [
+                'logback.configurationFile': System.getProperty('logback.configurationFile')
+        ]
     }
 
     task testEntityCache(type: Test) {
         scanForTestClasses = false
         includes = ['com/haulmont/cuba/entity_cache/EntityCacheTestSuite.class']
+
+        systemProperties = [
+                'logback.configurationFile': System.getProperty('logback.configurationFile')
+        ]
     }
 
     assembleDbScripts {
