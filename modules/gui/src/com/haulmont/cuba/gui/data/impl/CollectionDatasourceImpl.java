@@ -326,11 +326,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         data.put(item.getId(), item);
         attachListener(item);
 
-        if (PersistenceHelper.isNew(item)) {
-            itemsToCreate.add(item);
-        }
+        modified(item);
 
-        modified = true;
         fireCollectionChanged(Operation.ADD, Collections.singletonList(item));
     }
 
