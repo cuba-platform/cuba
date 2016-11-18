@@ -309,10 +309,6 @@ configure(coreModule) {
     task testEntityCache(type: Test) {
         scanForTestClasses = false
         includes = ['com/haulmont/cuba/entity_cache/EntityCacheTestSuite.class']
-
-        systemProperties = [
-                'logback.configurationFile': System.getProperty('logback.configurationFile')
-        ]
     }
 
     assembleDbScripts {
