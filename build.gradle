@@ -696,6 +696,11 @@ configure(desktopModule) {
         testCompile(guiModule.sourceSets.test.output)
         testRuntime(bom['org.apache.tomcat:tomcat-servlet-api'])
     }
+
+    // disable building of *.tar and *.zip artifacts by default assemble task
+    configurations.archives.artifacts.removeAll {
+        it.file =~ 'tar' || it.file =~ 'zip'
+    }
 }
 
 configure(restApiModule) {
