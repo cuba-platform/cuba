@@ -319,7 +319,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
         App app = App.getInstance();
         Connection connection = app.getConnection();
 
-        if (connection.isConnected()) {
+        if (connection.isAuthenticated()) {
             if (webConfig.getRememberMeEnabled()) {
                 if (Boolean.TRUE.equals(rememberMeCheckBox.getValue())) {
                     if (!loginByRememberMe) {
@@ -362,6 +362,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
         if (StringUtils.isEmpty(login) || StringUtils.isEmpty(password)) {
             showNotification(messages.getMainMessage("loginWindow.emptyLoginOrPassword"), NotificationType.WARNING);
+            return;
         }
 
         App app = App.getInstance();
