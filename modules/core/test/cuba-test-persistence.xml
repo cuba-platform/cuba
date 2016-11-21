@@ -32,5 +32,11 @@
         <class>com.haulmont.cuba.testmodel.softdelete_one_to_one.SoftDeleteOneToOneA</class>
         <class>com.haulmont.cuba.testmodel.softdelete_one_to_one.SoftDeleteOneToOneB</class>
         <class>com.haulmont.cuba.testmodel.cascadedelete.CascadeEntity</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.JoinA</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.JoinB</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.JoinC</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.JoinD</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.JoinE</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.JoinF</class>
     </persistence-unit>
 </persistence>
