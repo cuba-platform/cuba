@@ -52,7 +52,7 @@ public class EntityParamsDatasource extends CollectionDatasourceImpl<InfoParamEn
     }
 
     protected void compileInfo() {
-        if (instance instanceof BaseUuidEntity && !PersistenceHelper.isNew(instance)) {
+        if (instance instanceof BaseGenericIdEntity && !PersistenceHelper.isNew(instance)) {
             instance = reloadInstance(instance);
         }
 
@@ -126,27 +126,6 @@ public class EntityParamsDatasource extends CollectionDatasourceImpl<InfoParamEn
 
     protected Entity reloadInstance(Entity instance) {
         View reloadView = new View(instance.getMetaClass().getJavaClass(), true);
-
-        reloadView.addProperty("id");
-
-        if (instance instanceof Creatable) {
-            reloadView.addProperty("createTs");
-            reloadView.addProperty("createdBy");
-        }
-
-        if (instance instanceof Versioned && ((Versioned) instance).getVersion() != null) {
-            reloadView.addProperty("version");
-        }
-
-        if (instance instanceof Updatable) {
-            reloadView.addProperty("updateTs");
-            reloadView.addProperty("updatedBy");
-        }
-
-        if (instance instanceof SoftDelete) {
-            reloadView.addProperty("deleteTs");
-            reloadView.addProperty("deletedBy");
-        }
 
         LoadContext loadContext = new LoadContext(instance.getMetaClass());
         loadContext.setSoftDeletion(false);
