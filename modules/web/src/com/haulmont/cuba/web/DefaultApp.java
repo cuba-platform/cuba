@@ -84,7 +84,8 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
             // substitution listeners are cleared by connection on logout
             connection.addSubstitutionListener(this);
 
-            if (webConfig.getUseSessionFixationProtection()) {
+            if (connection.isAuthenticated()
+                    && webConfig.getUseSessionFixationProtection()) {
                 VaadinService.reinitializeSession(VaadinService.getCurrentRequest());
 
                 WrappedSession session = VaadinSession.getCurrent().getSession();
