@@ -17,18 +17,16 @@
 package com.haulmont.cuba.core.sys.querymacro;
 
 import com.haulmont.bali.datastruct.Pair;
-import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.context.annotation.Scope;
-
 import org.springframework.stereotype.Component;
+
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component("cuba_DateEqualsQueryMacroHandler")
 @Scope("prototype")
-public class DateEqualsMacroHandler implements QueryMacroHandler {
+public class DateEqualsMacroHandler extends AbstractQueryMacroHandler {
 
     protected static final Pattern MACRO_PATTERN = Pattern.compile("@dateEquals\\s*\\(([^\\)]+)\\)");
 
@@ -36,16 +34,8 @@ public class DateEqualsMacroHandler implements QueryMacroHandler {
     protected Map<String, Object> namedParameters;
     protected List<Pair<String, String>> paramNames = new ArrayList<>();
 
-    @Override
-    public String expandMacro(String queryString) {
-        count = 0;
-        Matcher matcher = MACRO_PATTERN.matcher(queryString);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            matcher.appendReplacement(sb, doExpand(matcher.group(1)));
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
+    public DateEqualsMacroHandler() {
+        super(MACRO_PATTERN);
     }
 
     @Override
@@ -53,6 +43,7 @@ public class DateEqualsMacroHandler implements QueryMacroHandler {
         this.namedParameters = namedParameters;
     }
 
+    @Override
     protected String doExpand(String macro) {
         count++;
         String[] args = macro.split(",");

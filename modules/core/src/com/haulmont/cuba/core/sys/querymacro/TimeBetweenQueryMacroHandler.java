@@ -20,7 +20,6 @@ import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import groovy.lang.Binding;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.context.annotation.Scope;
@@ -35,13 +34,14 @@ import java.util.regex.Pattern;
 
 @Component("cuba_TimeBetweenQueryMacroHandler")
 @Scope("prototype")
-public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
+public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
 
     protected static final Pattern MACRO_PATTERN = Pattern.compile("@between\\s*\\(([^\\)]+)\\)");
     protected static final Pattern PARAM_PATTERN = Pattern.compile("(now)\\s*([\\d\\s+-]*)");
     protected static final Pattern QUERY_PARAM_PATTERN = Pattern.compile(":(\\w+)");
 
     protected static final Map<String, Object> units = new HashMap<>();
+
     static {
         units.put("year", Calendar.YEAR);
         units.put("month", Calendar.MONTH);
@@ -54,16 +54,8 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
     protected int count;
     protected Map<String, Object> params = new HashMap<>();
 
-    @Override
-    public String expandMacro(String queryString) {
-        count = 0;
-        Matcher matcher = MACRO_PATTERN.matcher(queryString);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            matcher.appendReplacement(sb, doExpand(matcher.group(1)));
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
+    public TimeBetweenQueryMacroHandler() {
+        super(MACRO_PATTERN);
     }
 
     @Override
@@ -102,6 +94,7 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
         return sb.toString();
     }
 
+    @Override
     protected String doExpand(String macro) {
         count++;
         String[] args = macro.split(",");
@@ -145,13 +138,11 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
     protected Date computeDate(int num, String unit) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(AppBeans.get(TimeSource.class).currentTimestamp());
-        int calField1 = getCalendarField(unit);
+        int calField = getCalendarField(unit);
         if (num != 0) {
-            cal.add(calField1, num);
+            cal.add(calField, num);
         }
-        int calField = calField1;
-        Date date = DateUtils.truncate(cal.getTime(), calField);
-        return date;
+        return DateUtils.truncate(cal.getTime(), calField);
     }
 
     protected int getCalendarField(String unit) {

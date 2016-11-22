@@ -16,18 +16,16 @@
  */
 package com.haulmont.cuba.core.sys.querymacro;
 
-import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.context.annotation.Scope;
-
 import org.springframework.stereotype.Component;
+
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component("cuba_DateAfterQueryMacroHandler")
 @Scope("prototype")
-public class DateAfterMacroHandler implements QueryMacroHandler {
+public class DateAfterMacroHandler extends AbstractQueryMacroHandler {
 
     protected static final Pattern MACRO_PATTERN = Pattern.compile("@dateAfter\\s*\\(([^\\)]+)\\)");
 
@@ -35,19 +33,12 @@ public class DateAfterMacroHandler implements QueryMacroHandler {
     protected Map<String, Object> namedParameters;
     protected List<String> paramNames = new ArrayList<>();
 
-    @Override
-    public String expandMacro(String queryString) {
-        count = 0;
-        Matcher matcher = MACRO_PATTERN.matcher(queryString);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            matcher.appendReplacement(sb, doExpand(matcher.group(1)));
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
+    public DateAfterMacroHandler() {
+        super(MACRO_PATTERN);
     }
 
-    private String doExpand(String macro) {
+    @Override
+    protected String doExpand(String macro) {
         count++;
         String[] args = macro.split(",");
         if (args.length != 2)
