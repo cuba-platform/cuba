@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.*;
+import com.haulmont.cuba.web.gui.components.WebListEditor;
 import com.haulmont.cuba.web.gui.components.mainwindow.*;
 
 import java.util.Map;
@@ -97,6 +98,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(RelatedEntities.NAME, WebRelatedEntities.class);
         classes.put(BulkEditor.NAME, WebBulkEditor.class);
         classes.put(DatePicker.NAME, WebDatePicker.class);
+        classes.put(ListEditor.NAME, WebListEditor.class);
 
         classes.put(EntityLinkField.NAME, WebEntityLinkField.class);
 

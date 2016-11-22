@@ -1,0 +1,109 @@
+/*
+ * Copyright (c) 2008-2016 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.haulmont.cuba.gui.dynamicattributes;
+
+import com.google.common.base.Strings;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+
+/**
+ * Field generator that creates component for editing dynamic attributes with collection type.
+ */
+public class DynamicAttributeCustomFieldGenerator implements FieldGroup.CustomFieldGenerator {
+
+    private static Logger log = LoggerFactory.getLogger(DynamicAttributeCustomFieldGenerator.class);
+
+    @Override
+    public Component generateField(Datasource datasource, String propertyId) {
+        ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
+        ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+
+        MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(datasource.getMetaClass(), propertyId);
+        if (metaPropertyPath == null) {
+            log.error("MetaPropertyPath for dynamic attribute " + propertyId + " not found");
+            return null;
+        }
+        CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaPropertyPath.getMetaProperty());
+        if (categoryAttribute == null) {
+            log.error("Dynamic attribute " + propertyId + " not found");
+            return null;
+        }
+
+        ListEditor.ItemType itemType = listEditorItemTypeFromDynamicAttrType(categoryAttribute.getDataType());
+        listEditor.setItemType(itemType);
+        Metadata metadata = AppBeans.get(Metadata.class);
+        if (!Strings.isNullOrEmpty(categoryAttribute.getEntityClass())) {
+            Class<?> clazz = null;
+            try {
+                clazz = Class.forName(categoryAttribute.getEntityClass());
+            } catch (ClassNotFoundException e) {
+                log.error(ExceptionUtils.getStackTrace(e));
+                return null;
+            }
+            MetaClass metaClass = metadata.getClassNN(clazz);
+            listEditor.setEntityName(metaClass.getName());
+            listEditor.setUseLookupField(BooleanUtils.isTrue(categoryAttribute.getLookup()));
+        }
+
+        datasource.addStateChangeListener(e -> {
+            if (e.getState() == Datasource.State.VALID) {
+                Object value = datasource.getItem().getValue(propertyId);
+                if (value != null && value instanceof Collection) {
+                    listEditor.setValue(value);
+                }
+            }
+        });
+
+        listEditor.addValueChangeListener(e -> {
+            datasource.getItem().setValue(propertyId, e.getValue());
+        });
+        listEditor.setWidth("100%");
+        return listEditor;
+    }
+
+    protected ListEditor.ItemType listEditorItemTypeFromDynamicAttrType(PropertyType propertyType) {
+        switch (propertyType) {
+            case ENTITY:
+                return ListEditor.ItemType.ENTITY;
+            case DATE:
+                return ListEditor.ItemType.DATETIME;
+            case DOUBLE:
+                return ListEditor.ItemType.DOUBLE;
+            case INTEGER:
+                return ListEditor.ItemType.INTEGER;
+            case STRING:
+            case ENUMERATION:
+                return ListEditor.ItemType.STRING;
+            default:
+                throw new IllegalStateException("PropertyType " + propertyType + " not supported");
+        }
+    }
+}

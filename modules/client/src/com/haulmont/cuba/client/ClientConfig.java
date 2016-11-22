@@ -346,4 +346,11 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.ignoreUnfetchedAttributesInTable")
     @DefaultBoolean(false)
     boolean getIgnoreUnfetchedAttributesInTable();
+
+    @Property("cuba.gui.dynamicAttributesTableColumnMaxTextLength")
+    @Source(type = SourceType.DATABASE)
+    @DefaultInt(50)
+    int getDynamicAttributesTableColumnMaxTextLength();
+    void setDynamicAttributesTableColumnMaxTextLength(int maxTextLength);
+
 }

@@ -19,10 +19,12 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
@@ -51,6 +53,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
     protected DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.NAME);
     protected DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
+    protected ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
 
     protected ComponentLoader buttonsPanelLoader;
     protected Element panelElement;
@@ -188,6 +191,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
                     final Table.Column column = new Table.Column(metaPropertyPath);
                     column.setCaption(attribute.getName());
+                    column.setMaxTextLength(clientConfig.getDynamicAttributesTableColumnMaxTextLength());
                     component.addColumn(column);
                 }
             }

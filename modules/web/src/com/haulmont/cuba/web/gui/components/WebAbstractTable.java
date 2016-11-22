@@ -25,6 +25,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
@@ -2148,6 +2150,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
 
             String stringValue = value.toString();
+            if (columnId instanceof MetaPropertyPath) {
+                MetaProperty metaProperty = ((MetaPropertyPath) columnId).getMetaProperty();
+                if (DynamicAttributesUtils.isDynamicAttribute(metaProperty))
+                    stringValue = DynamicAttributesUtils.getDynamicAttributeValueAsString(metaProperty, value);
+            }
             String cellValue = stringValue;
             boolean isMultiLineCell = StringUtils.contains(stringValue, "\n");
             if (isMultiLineCell) {
@@ -2167,7 +2174,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         @Override
         public void onClick(Entity item, String columnId) {
             Column column = getColumn(columnId);
-            String value = item.getValueEx(columnId);
+            MetaProperty metaProperty;
+            String value;
+            if (DynamicAttributesUtils.isDynamicAttribute(columnId)) {
+                metaProperty = DynamicAttributesUtils.getMetaPropertyPath(item.getMetaClass(), columnId).getMetaProperty();
+                value = DynamicAttributesUtils.getDynamicAttributeValueAsString(metaProperty, item.getValueEx(columnId));
+            } else {
+                value = item.getValueEx(columnId);
+            }
             if (column.getMaxTextLength() != null) {
                 boolean isMultiLineCell = StringUtils.contains(value, "\n");
                 if (value == null || (value.length() <= column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP
@@ -2667,10 +2681,20 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     style = "c-table-cell-link";
                 } else if (column.getMaxTextLength() != null) {
                     Entity item = getDatasource().getItemNN(itemId);
-                    String value = item.getValueEx(propertyId.toString());
+                    Object value = item.getValueEx(propertyId.toString());
+                    String stringValue;
+                    if (value instanceof String) {
+                        stringValue = item.getValueEx(propertyId.toString());
+                    } else {
+                        if (DynamicAttributesUtils.isDynamicAttribute(propertyPath.getMetaProperty())) {
+                            stringValue = DynamicAttributesUtils.getDynamicAttributeValueAsString(propertyPath.getMetaProperty(), value);
+                        } else {
+                            stringValue = value == null ? null : value.toString();
+                        }
+                    }
                     if (column.getMaxTextLength() != null) {
-                        boolean isMultiLineCell = StringUtils.contains(value, "\n");
-                        if ((value != null && value.length() > column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP)
+                        boolean isMultiLineCell = StringUtils.contains(stringValue, "\n");
+                        if ((stringValue != null && stringValue.length() > column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP)
                                 || isMultiLineCell) {
                             style = "c-table-cell-textcut";
                         } else {
@@ -2694,6 +2718,20 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
         }
         return style;
+    }
+
+    protected String getStringPropertyValue(Entity entity, MetaProperty metaProperty) {
+        Object value = entity.getValueEx(metaProperty.getName());
+        if (value instanceof String) {
+            return (String) value;
+        } else {
+            if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+                return DynamicAttributesUtils.getDynamicAttributeValueAsString(metaProperty, value);
+            } else {
+                return value.toString();
+            }
+        }
+
     }
 
     protected class StyleGeneratorAdapter implements com.vaadin.ui.Table.CellStyleGenerator {

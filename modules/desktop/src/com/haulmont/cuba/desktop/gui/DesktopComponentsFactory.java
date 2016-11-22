@@ -88,6 +88,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(TokenList.NAME, DesktopTokenList.class);
         classes.put(RelatedEntities.NAME, DesktopRelatedEntities.class);
         classes.put(BulkEditor.NAME, DesktopBulkEditor.class);
+        classes.put(ListEditor.NAME, DesktopListEditor.class);
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {

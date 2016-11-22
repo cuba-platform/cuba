@@ -46,10 +46,9 @@ import java.util.*;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
- * Utility class to provide common metadata-related functionality.
- * <p/> Implemented as Spring bean to allow extension in application projects.
- * <p/> A reference to this class can be obtained either via DI or by {@link com.haulmont.cuba.core.global.Metadata#getTools()}.
- *
+ * Utility class to provide common metadata-related functionality. <p/> Implemented as Spring bean to allow extension in
+ * application projects. <p/> A reference to this class can be obtained either via DI or by {@link
+ * com.haulmont.cuba.core.global.Metadata#getTools()}.
  */
 @Component(MetadataTools.NAME)
 public class MetadataTools {
@@ -92,6 +91,13 @@ public class MetadataTools {
         Objects.requireNonNull(property, "property is null");
 
         Range range = property.getRange();
+        if (DynamicAttributesUtils.isDynamicAttribute(property)) {
+            CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(property);
+            if (categoryAttribute.getIsCollection() && value instanceof Collection) {
+                return DynamicAttributesUtils.getDynamicAttributeValueAsString(property, value);
+            }
+        }
+
         if (range.isDatatype()) {
             Datatype datatype = range.asDatatype();
             if (value instanceof Date && datatype.getName().equals(DateTimeDatatype.NAME)) {
@@ -134,8 +140,8 @@ public class MetadataTools {
     }
 
     /**
-     * @return name of a data store of the given entity or null if the entity is not persistent and no data store
-     * is defined for it
+     * @return name of a data store of the given entity or null if the entity is not persistent and no data store is
+     * defined for it
      */
     @Nullable
     public String getStoreName(MetaClass metaClass) {
@@ -167,7 +173,8 @@ public class MetadataTools {
     }
 
     /**
-     * @return MetaProperty representing a primary key attribute, or null if the entity has no primary key (e.g. embeddable)
+     * @return MetaProperty representing a primary key attribute, or null if the entity has no primary key (e.g.
+     * embeddable)
      */
     @Nullable
     public MetaProperty getPrimaryKeyProperty(MetaClass metaClass) {
@@ -186,7 +193,8 @@ public class MetadataTools {
 
     /**
      * Determine whether an object denoted by the given property is merged into persistence context together with the
-     * owning object. This is true if the property is ManyToMany, or if it is OneToMany with certain CasacdeType defined.
+     * owning object. This is true if the property is ManyToMany, or if it is OneToMany with certain CasacdeType
+     * defined.
      */
     public boolean isCascade(MetaProperty metaProperty) {
         Objects.requireNonNull(metaProperty, "metaProperty is null");
@@ -482,8 +490,8 @@ public class MetadataTools {
     }
 
     /**
-     * @return collection of properties owned by this metaclass and all its ancestors in the form of
-     * {@link MetaPropertyPath}s containing one property each
+     * @return collection of properties owned by this metaclass and all its ancestors in the form of {@link
+     * MetaPropertyPath}s containing one property each
      */
     public Collection<MetaPropertyPath> getPropertyPaths(MetaClass metaClass) {
         List<MetaPropertyPath> res = new ArrayList<>();
@@ -698,9 +706,9 @@ public class MetadataTools {
     }
 
     /**
-     * Create a new instance and make it a shallow copy of the instance given.
-     * <p/> This method copies attributes according to the metadata and relies on {@link com.haulmont.chile.core.model.Instance#getMetaClass()}
-     * method which should not return null.
+     * Create a new instance and make it a shallow copy of the instance given. <p/> This method copies attributes
+     * according to the metadata and relies on {@link com.haulmont.chile.core.model.Instance#getMetaClass()} method
+     * which should not return null.
      *
      * @param source source instance
      * @return new instance of the same Java class as source
@@ -716,11 +724,10 @@ public class MetadataTools {
     }
 
     /**
-     * Make a shallow copy of an instance.
-     * <p/> This method copies attributes according to the metadata and relies on {@link com.haulmont.chile.core.model.Instance#getMetaClass()}
-     * method which should not return null for both objects.
-     * <p/> The source and destination instances don't have to be of the same Java class or metaclass. Copying is
-     * performed in the following scenario: get each source property and copy the value to the destination if it
+     * Make a shallow copy of an instance. <p/> This method copies attributes according to the metadata and relies on
+     * {@link com.haulmont.chile.core.model.Instance#getMetaClass()} method which should not return null for both
+     * objects. <p/> The source and destination instances don't have to be of the same Java class or metaclass. Copying
+     * is performed in the following scenario: get each source property and copy the value to the destination if it
      * contains a property with the same name and it is not read-only.
      *
      * @param source source instance

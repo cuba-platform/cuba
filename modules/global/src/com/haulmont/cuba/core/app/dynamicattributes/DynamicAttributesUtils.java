@@ -17,16 +17,20 @@
 
 package com.haulmont.cuba.core.app.dynamicattributes;
 
+import com.google.common.base.Joiner;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public final class DynamicAttributesUtils {
     private DynamicAttributesUtils() {
@@ -132,5 +136,23 @@ public final class DynamicAttributesUtils {
                 return attribute.getJavaClassForEntity();
         }
         return String.class;
+    }
+
+    /**
+     * For collection dynamic attributes the method returns a list of formatted collection items joined with the comma,
+     * for non-collection dynamic attribute a formatted value is returned
+     */
+    public static String getDynamicAttributeValueAsString(MetaProperty metaProperty, Object value) {
+        CategoryAttribute categoryAttribute = getCategoryAttribute(metaProperty);
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+        if (categoryAttribute.getIsCollection()) {
+            if (value instanceof Collection) {
+                List<String> valuesList = ((Collection<Object>) value).stream()
+                        .map(item -> metadataTools.format(item, metaProperty))
+                        .collect(Collectors.toList());
+                return Joiner.on(", ").join(valuesList);
+            }
+        }
+        return metadataTools.format(value, metaProperty);
     }
 }

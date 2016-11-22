@@ -1,0 +1,172 @@
+/*
+ * Copyright (c) 2008-2016 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.haulmont.cuba.desktop.gui.components;
+
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.components.ListEditor;
+import com.haulmont.cuba.gui.components.listeditor.ListEditorDelegate;
+import com.haulmont.cuba.gui.data.Datasource;
+import org.apache.commons.lang.ObjectUtils;
+
+import javax.swing.*;
+import java.util.List;
+
+/**
+ */
+public class DesktopListEditor extends DesktopAbstractField<JPanel> implements ListEditor {
+
+    private final ListEditorDelegate delegate;
+    private List prevValue;
+
+    public DesktopListEditor() {
+        delegate = AppBeans.get(ListEditorDelegate.class);
+        delegate.setActualField(this);
+        //do not display the description because it causes an exception on desktop client
+        delegate.setDisplayDescription(false);
+        impl = (JPanel) DesktopComponentsHelper.getComposition(delegate.getLayout());
+    }
+
+    @Override
+    public void setValue(Object newValue) {
+        if (!(newValue instanceof List)) {
+            throw new IllegalArgumentException("Value type must be List");
+        }
+        delegate.setValue((List) newValue);
+        fireValueChanged(newValue);
+    }
+
+    protected void fireValueChanged(Object value) {
+        if (!ObjectUtils.equals(prevValue, value)) {
+            Object oldValue = prevValue;
+            prevValue = (List) value;
+
+            if (listeners != null && !listeners.isEmpty()) {
+                ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
+                for (ValueChangeListener listener : listeners) {
+                    listener.valueChanged(event);
+                }
+            }
+        }
+    }
+
+    @Override
+    public List getValue() {
+        return delegate.getValue();
+    }
+
+    @Override
+    public ItemType getItemType() {
+        return delegate.getItemType();
+    }
+
+    @Override
+    public void setItemType(ItemType itemType) {
+        delegate.setItemType(itemType);
+    }
+
+    @Override
+    public boolean isUseLookupField() {
+        return delegate.isUseLookupField();
+    }
+
+    @Override
+    public void setUseLookupField(boolean useLookupField) {
+        delegate.setUseLookupField(useLookupField);
+    }
+
+    @Override
+    public String getLookupScreen() {
+        return delegate.getLookupScreen();
+    }
+
+    @Override
+    public void setLookupScreen(String lookupScreen) {
+        delegate.setLookupScreen(lookupScreen);
+    }
+
+    @Override
+    public String getEntityName() {
+        return delegate.getEntityName();
+    }
+
+    @Override
+    public void setEntityName(String entityName) {
+        delegate.setEntityName(entityName);
+    }
+
+    @Override
+    public List<Object> getOptionsList() {
+        return delegate.getOptionsList();
+    }
+
+    @Override
+    public void setOptionsList(List<Object> optionsList) {
+        delegate.setOptionsList(optionsList);
+    }
+
+    @Override
+    public Datasource getDatasource() {
+        return null;
+    }
+
+    @Override
+    public MetaProperty getMetaProperty() {
+        return null;
+    }
+
+    @Override
+    public MetaPropertyPath getMetaPropertyPath() {
+        return null;
+    }
+
+    @Override
+    public void setDatasource(Datasource datasource, String property) {
+
+    }
+
+    @Override
+    public String getCaption() {
+        return null;
+    }
+
+    @Override
+    public void setCaption(String caption) {
+
+    }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
+
+    @Override
+    public void setDescription(String description) {
+
+    }
+
+    @Override
+    public boolean isEditable() {
+        return false;
+    }
+
+    @Override
+    public void setEditable(boolean editable) {
+
+    }
+}

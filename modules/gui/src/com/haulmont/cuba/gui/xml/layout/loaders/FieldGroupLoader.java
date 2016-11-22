@@ -33,9 +33,11 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributeCustomFieldGenerator;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.DeclarativeFieldGenerator;
 import com.haulmont.cuba.security.entity.EntityOp;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.LoggerFactory;
@@ -58,9 +60,9 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                 List<FieldGroup.FieldConfig> fields = new ArrayList<>();
                         ds.setLoadDynamicAttributes(true);
                 for (CategoryAttribute attribute : attributesToShow) {
-                    MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(ds.getMetaClass(), attribute);
                     FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(
                             DynamicAttributesUtils.encodeAttributeCode(attribute.getCode()));
+                    MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(ds.getMetaClass(), attribute);
                     field.setMetaPropertyPath(metaPropertyPath);
                     field.setType(metaPropertyPath.getRangeJavaClass());
                     field.setCaption(attribute.getName());
@@ -70,6 +72,9 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                             messages.getMainMessagePack(),
                             "validation.required.defaultMsg",
                             attribute.getName()));
+                    if (BooleanUtils.isTrue(attribute.getIsCollection())) {
+                        field.setCustom(true);
+                    }
                     loadWidth(field, attribute.getWidth());
                     fields.add(field);
                 }
@@ -528,16 +533,20 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         context.addPostInitTask((boundContext, window) -> {
             for (FieldGroup.FieldConfig field : resultComponent.getFields()) {
                 if (field.isCustom()) {
-                    Component fieldComponent = resultComponent.getFieldComponent(field);
-                    if (fieldComponent != null) {
-                        loadValidators(resultComponent, field);
-                        loadRequired(resultComponent, field);
-                        loadEditable(resultComponent, field);
-                        loadEnable(resultComponent, field);
-                        loadVisible(resultComponent, field);
+                    if (!DynamicAttributesUtils.isDynamicAttribute(field.getId())) {
+                        Component fieldComponent = resultComponent.getFieldComponent(field);
+                        if (fieldComponent != null) {
+                            loadValidators(resultComponent, field);
+                            loadRequired(resultComponent, field);
+                            loadEditable(resultComponent, field);
+                            loadEnable(resultComponent, field);
+                            loadVisible(resultComponent, field);
+                        } else {
+                            LoggerFactory.getLogger(FieldGroupLoader.class).warn(
+                                    "Missing component for custom field {}", field.getId());
+                        }
                     } else {
-                        LoggerFactory.getLogger(FieldGroupLoader.class).warn(
-                                "Missing component for custom field {}", field.getId());
+                        resultComponent.addCustomField(field, new DynamicAttributeCustomFieldGenerator());
                     }
                 }
             }

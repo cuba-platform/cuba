@@ -205,4 +205,7 @@
     <screen id="screenProfiler"
             template="com/haulmont/cuba/gui/app/core/screenprofiler/screen-profiler-window.xml"/>
 
+    <screen id="list-editor-popup"
+            template="/com/haulmont/cuba/gui/components/listeditor/list-editor-popup.xml"/>
+
 </screen-config>
