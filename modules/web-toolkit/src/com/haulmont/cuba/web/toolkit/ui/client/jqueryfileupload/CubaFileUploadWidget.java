@@ -50,6 +50,8 @@ public class CubaFileUploadWidget extends FlowPanel implements Focusable, HasEna
     protected String progressWindowCaption;
     protected String cancelButtonCaption;
 
+    protected boolean ignoreExceptions = false;
+
     protected long fileSizeLimit = -1;
     protected Set<String> permittedExtensions;
     protected FilePermissionsHandler filePermissionsHandler;
@@ -190,6 +192,12 @@ public class CubaFileUploadWidget extends FlowPanel implements Focusable, HasEna
 
             @Override
             protected void uploadFailed(String textStatus, String errorThrown) {
+                if (ignoreExceptions) {
+                    if (progressWindow != null)
+                        progressWindow.hide();
+                    return;
+                }
+
                 if (!canceled) {
                     if (unableToUploadFileMessage != null) {
                         // show notification without server round trip, server may be unreachable
@@ -330,6 +338,14 @@ public class CubaFileUploadWidget extends FlowPanel implements Focusable, HasEna
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    protected boolean isIgnoreExceptions() {
+        return ignoreExceptions;
+    }
+
+    protected void setIgnoreExceptions(boolean ignoreExceptions) {
+        this.ignoreExceptions = ignoreExceptions;
     }
 
     @Override

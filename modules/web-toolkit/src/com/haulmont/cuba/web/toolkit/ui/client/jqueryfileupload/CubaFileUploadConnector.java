@@ -61,8 +61,10 @@ public class CubaFileUploadConnector extends AbstractComponentConnector implemen
     public void onUnregister() {
         super.onUnregister();
 
-        getWidget().cancelAllUploads();
-        getWidget().setDropZone(null, null);
+        CubaFileUploadWidget widget = getWidget();
+        widget.setIgnoreExceptions(true);
+        widget.cancelAllUploads();
+        widget.setDropZone(null, null);
     }
 
     @Override
