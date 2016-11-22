@@ -17,7 +17,11 @@
 
 package com.haulmont.cuba.gui.app.core.categories;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
@@ -123,6 +127,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     @Inject
     protected CollectionDatasource<ScreenAndComponent, UUID> screensDs;
+
+    private ListEditor enumerationListEditor;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -238,6 +244,17 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             defaultEntityField.addClearAction();
 
             return defaultEntityField;
+        });
+
+        attributeFieldGroup.addCustomField("enumeration", (datasource, propertyId) -> {
+            enumerationListEditor = factory.createComponent(ListEditor.class);
+            enumerationListEditor.setWidth("100%");
+            enumerationListEditor.setItemType(ListEditor.ItemType.STRING);
+            enumerationListEditor.addValueChangeListener(e -> {
+                List<String> value = (List<String>) e.getValue();
+                attribute.setEnumeration(Joiner.on(",").join(value));
+            });
+            return enumerationListEditor;
         });
 
         attributeDs.addItemPropertyChangeListener(e -> {
@@ -422,6 +439,13 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                     }
                 }
         );
+
+        String enumeration = attribute.getEnumeration();
+        if (!Strings.isNullOrEmpty(enumeration)) {
+            Iterable<String> items = Splitter.on(",").omitEmptyStrings().split(enumeration);
+            enumerationListEditor.setValue(Lists.newArrayList(items));
+        }
+
         setupVisibility();
     }
 }

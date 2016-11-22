@@ -55,7 +55,7 @@
                         </field>
                         <field id="defaultEntityId" custom="true" width="100%"/>
 
-                        <field id="enumeration" required="true" width="100%"/>
+                        <field id="enumeration" custom="true" required="true" width="100%"/>
                         <field id="defaultString" width="100%"/>
                         <field id="defaultInt" width="100%"/>
                         <field id="defaultDouble" width="100%"/>
