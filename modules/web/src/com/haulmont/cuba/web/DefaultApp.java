@@ -27,7 +27,10 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.loginwindow.AppLoginWindow;
 import com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection;
-import com.vaadin.server.*;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.server.WrappedHttpSession;
+import com.vaadin.server.WrappedSession;
 import com.vaadin.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +88,7 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
             connection.addSubstitutionListener(this);
 
             if (connection.isAuthenticated()
+                    && !webAuthConfig.getExternalAuthentication()
                     && webConfig.getUseSessionFixationProtection()) {
                 VaadinService.reinitializeSession(VaadinService.getCurrentRequest());
 
