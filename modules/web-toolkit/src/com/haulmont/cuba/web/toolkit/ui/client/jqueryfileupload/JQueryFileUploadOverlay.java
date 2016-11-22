@@ -105,6 +105,10 @@ public class JQueryFileUploadOverlay {
         jqXHR.abort();
     }-*/;
 
+    protected native void skipLastFiles(JavaScriptObject jqXHR) /*-{
+        jqXHR.originalFiles.splice(1, jqXHR.originalFiles.length - 1);
+    }-*/;
+
     protected native int getOriginalFilesCount(JavaScriptObject jqXHR) /*-{
         return jqXHR.originalFiles.length;
     }-*/;
@@ -118,7 +122,16 @@ public class JQueryFileUploadOverlay {
     }-*/;
 
     protected void addPendingUpload(JavaScriptObject jqXHR) {
-        currentXHRs.add(jqXHR);
+        boolean multiple = fileInput.hasAttribute("multiple");
+        if (!multiple) {
+            if (!currentXHRs.isEmpty())
+                return;
+
+            currentXHRs.add(jqXHR);
+            skipLastFiles(jqXHR);
+        } else {
+            currentXHRs.add(jqXHR);
+        }
 
         if (currentXHRs.size() == getOriginalFilesCount(jqXHR)) {
             for (JavaScriptObject xhr : currentXHRs) {
