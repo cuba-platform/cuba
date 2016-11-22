@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.*;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.type.StringListTypeFactory;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 
 import java.util.List;
 
@@ -210,7 +211,8 @@ public interface WebConfig extends Config {
     List<String> getLinkHandlerActions();
 
     /**
-     * Reinitialize session after login to protect from Session Fixation attacks.
+     * Reinitialize session after login to protect from Session Fixation attacks. <br/>
+     * This parameter is ignored if {@link WebAuthConfig#getExternalAuthentication()} is set to true.
      */
     @Property("cuba.web.useSessionFixationProtection")
     @DefaultBoolean(true)
