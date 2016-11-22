@@ -225,13 +225,6 @@ public class CubaFoldersPane extends VerticalLayout {
     protected void setupUpdateTimer() {
         int period = webConfig.getAppFoldersRefreshPeriodSec() * 1000;
 
-        AppUI appUI = AppUI.getCurrent();
-        for (CubaTimer t : appUI.getTimers()) {
-            if (t instanceof FoldersPaneTimer) {
-                t.stop();
-            }
-        }
-
         timer = new FoldersPaneTimer();
         timer.setRepeating(true);
         timer.setDelay(period);
@@ -239,12 +232,16 @@ public class CubaFoldersPane extends VerticalLayout {
         timer.start();
 
         if (this.isAttached()) {
-            appUI.addTimer(timer);
+            AppUI ui = AppUI.getCurrent();
+            stopExistingFoldersPaneTimer(ui);
+            ui.addTimer(timer);
         } else {
             AttachListener attachListener = new AttachListener() {
                 @Override
                 public void attach(AttachEvent event) {
                     AppUI ui = (AppUI) getUI();
+
+                    stopExistingFoldersPaneTimer(ui);
                     ui.addTimer(timer);
 
                     // execute once
@@ -252,6 +249,14 @@ public class CubaFoldersPane extends VerticalLayout {
                 }
             };
             addAttachListener(attachListener);
+        }
+    }
+
+    protected void stopExistingFoldersPaneTimer(AppUI ui) {
+        for (CubaTimer t : ui.getTimers()) {
+            if (t instanceof FoldersPaneTimer) {
+                t.stop();
+            }
         }
     }
 
