@@ -1463,7 +1463,7 @@ public class WebWindowManager extends WindowManager {
         if (template != null) {
             //noinspection unchecked
             topLevelWindow = (Window.TopLevelWindow) createWindow(windowInfo, OpenType.NEW_TAB, params,
-                    LayoutLoaderConfig.getWindowLoaders());
+                    LayoutLoaderConfig.getWindowLoaders(), true);
         } else {
             Class screenClass = windowInfo.getScreenClass();
             if (screenClass != null) {
