@@ -250,7 +250,7 @@ public class CubaTooltip extends VTooltip {
         protected boolean elementIsIndicator(Element relativeElement) {
             return relativeElement != null
                     && ("v-required-field-indicator".equals(relativeElement.getClassName())
-                    || "cuba-tooltip-button".equals(relativeElement.getClassName()));
+                    || "c-tooltip-button".equals(relativeElement.getClassName()));
         }
 
         protected boolean hasIndicators(ComponentConnector connector) {

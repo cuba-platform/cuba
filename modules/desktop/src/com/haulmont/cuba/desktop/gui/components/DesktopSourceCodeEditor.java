@@ -41,6 +41,7 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
     protected boolean showPrintMargin = true;
     protected boolean highlightActiveLine = true;
     protected boolean handleTabKey = false;
+    protected int printMarginColumn = 80;
 
     @Override
     protected RSyntaxTextArea createTextComponentImpl() {
@@ -119,6 +120,14 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
                 impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
                 break;
 
+            case CSS:
+                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSS);
+                break;
+
+            case SCSS:
+                impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSS);
+                break;
+
             case Text:
                 impl.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
                 break;
@@ -169,6 +178,16 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
     @Override
     public boolean isShowPrintMargin() {
         return showPrintMargin;
+    }
+
+    @Override
+    public void setPrintMarginColumn(int printMarginColumn) {
+        this.printMarginColumn = printMarginColumn;
+    }
+
+    @Override
+    public int getPrinMarginColumn() {
+        return printMarginColumn;
     }
 
     @Override

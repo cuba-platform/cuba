@@ -25,7 +25,6 @@ import com.vaadin.ui.Layout;
 
 /**
  * Interface to generalize additional functionality in {@link CubaTable}, {@link CubaGroupTable} and {@link CubaTreeTable}
- *
  */
 public interface CubaEnhancedTable extends AggregationContainer {
     void setContextMenuPopup(Layout contextMenu);
@@ -86,6 +85,9 @@ public interface CubaEnhancedTable extends AggregationContainer {
     String getColumnDescription(Object columnId);
     void setColumnDescription(Object columnId, String description);
 
+    String getAggregationDescription(Object columnId);
+    void setAggregationDescription(Object columnId, String description);
+
     boolean getColumnSortable(Object columnId);
     void setColumnSortable(Object columnId, boolean sortable);
 
@@ -94,6 +96,8 @@ public interface CubaEnhancedTable extends AggregationContainer {
     interface CellClickListener {
         void onClick(Object itemId, Object columnId);
     }
+
+    void setBeforePaintListener(Runnable beforePaintListener);
 
     /**
      * Marker interface for generated columns which return String value.

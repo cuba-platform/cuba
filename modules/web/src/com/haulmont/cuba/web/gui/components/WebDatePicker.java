@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.DatePicker;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
@@ -32,8 +33,10 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaDatePicker;
 import com.vaadin.ui.InlineDateField;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.sql.Time;
 import java.util.Collection;
 import java.util.Date;
 
@@ -41,8 +44,10 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
 
     protected Resolution resolution = Resolution.DAY;
 
-    protected Datasource.ItemChangeListener itemChangeListener;
+    protected boolean updatingInstance;
+
     protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
+    protected Datasource.ItemChangeListener itemChangeListener;
 
     public WebDatePicker() {
         this.component = new CubaDatePicker();
@@ -62,50 +67,6 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
                 return new PropertyWrapper(item, propertyPath);
             }
         };
-    }
-
-    protected Date getEntityValue(Entity item) {
-        return InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-    }
-
-    @Override
-    public void setDatasource(Datasource datasource, String property) {
-        this.datasource = datasource;
-
-        MetaClass metaClass = datasource.getMetaClass();
-        resolveMetaPropertyPath(metaClass, property);
-
-        itemChangeListener = e -> {
-            Date value = getEntityValue(e.getItem());
-            this.setValue(value);
-        };
-        //noinspection unchecked
-        datasource.addItemChangeListener(new WeakItemChangeListener(datasource, itemChangeListener));
-
-        itemPropertyChangeListener = e -> {
-            if (e.getProperty().equals(metaPropertyPath.toString())) {
-                this.setValue(e.getValue());
-            }
-        };
-        //noinspection unchecked
-        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
-
-        if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
-            if (property.equals(metaPropertyPath.toString())) {
-                Date value = getEntityValue(datasource.getItem());
-                this.setValue(value);
-            }
-        }
-
-        setRequired(metaProperty.isMandatory());
-        if (StringUtils.isEmpty(getRequiredMessage())) {
-            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
-        }
-
-        if (metaProperty.isReadOnly()) {
-            setEditable(false);
-        }
     }
 
     @Override
@@ -137,6 +98,153 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
         component.setResolution(vResolution);
     }
 
+    private boolean checkRange(Date value) {
+        if (value != null) {
+            Messages messages = AppBeans.get(Messages.NAME);
+
+            if (component.getRangeStart() != null && value.before(component.getRangeStart())) {
+                if (getFrame() != null) {
+                    getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
+                            Frame.NotificationType.WARNING);
+                }
+
+                component.setValue((Date) prevValue);
+                return false;
+            }
+
+            if (component.getRangeEnd() != null && value.after(component.getRangeEnd())) {
+                if (getFrame() != null) {
+                    getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
+                            Frame.NotificationType.WARNING);
+                }
+
+                component.setValue((Date) prevValue);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public void setDatasource(Datasource datasource, String property) {
+        this.datasource = datasource;
+
+        MetaClass metaClass = datasource.getMetaClass();
+        resolveMetaPropertyPath(metaClass, property);
+
+        component.addValueChangeListener(event -> {
+            if (updatingInstance) {
+                return;
+            }
+
+            if (!checkRange(component.getValue())) {
+                return;
+            }
+
+            updatingInstance = true;
+            try {
+                if (datasource != null && metaPropertyPath != null) {
+                    if (datasource.getItem() != null) {
+                        InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), component.getValue());
+                    }
+                }
+            } finally {
+                updatingInstance = false;
+            }
+
+            Object newValue = getValue();
+            fireValueChanged(newValue);
+        });
+
+        itemChangeListener = e -> {
+            if (updatingInstance) {
+                return;
+            }
+            Date value = getEntityValue(e.getItem());
+            setValueToFields(value);
+            fireValueChanged(value);
+        };
+        //noinspection unchecked
+        datasource.addItemChangeListener(new WeakItemChangeListener(datasource, itemChangeListener));
+
+        itemPropertyChangeListener = e -> {
+            if (updatingInstance) {
+                return;
+            }
+            if (e.getProperty().equals(metaPropertyPath.toString())) {
+                setValueToFields((Date) e.getValue());
+                fireValueChanged(e.getValue());
+            }
+        };
+        //noinspection unchecked
+        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
+
+        if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
+            if (property.equals(metaPropertyPath.toString())) {
+                Date value = getEntityValue(datasource.getItem());
+                setValueToFields(value);
+                fireValueChanged(value);
+            }
+        }
+
+        setRequired(metaProperty.isMandatory());
+        if (StringUtils.isEmpty(getRequiredMessage())) {
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
+        }
+
+        if (metaProperty.isReadOnly()) {
+            setEditable(false);
+        }
+    }
+
+    protected Date convertDate() {
+        final Date datePickerDate = component.getValue();
+        if (datePickerDate == null) {
+            return null;
+        }
+
+        if (metaProperty != null) {
+            Class javaClass = metaProperty.getRange().asDatatype().getJavaClass();
+            if (javaClass.equals(java.sql.Date.class)) {
+                return new java.sql.Date(datePickerDate.getTime());
+            } else {
+                return datePickerDate;
+            }
+        } else {
+            return datePickerDate;
+        }
+    }
+
+    protected Date getEntityValue(Entity item) {
+        return InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
+    }
+
+    protected void fireValueChanged(Object value) {
+        if (!ObjectUtils.equals(prevValue, value)) {
+            Object oldValue = prevValue;
+
+            prevValue = value;
+
+            if (listeners != null && !listeners.isEmpty()) {
+                ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
+                for (ValueChangeListener listener : listeners) {
+                    listener.valueChanged(event);
+                }
+            }
+        }
+    }
+
+    protected void setValueToFields(Date value) {
+        updatingInstance = true;
+        try {
+            component.setValueIgnoreReadOnly(value);
+        } finally {
+            updatingInstance = false;
+        }
+    }
+
     @Override
     public Date getRangeStart() {
         return component.getRangeStart();
@@ -160,6 +268,15 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
     @SuppressWarnings("unchecked")
     @Override
     public Date getValue() {
-        return super.getValue();
+        return convertDate();
+    }
+
+    @Override
+    public void setValue(Object value) {
+        if (!checkRange((Date) value)) {
+            return;
+        }
+
+        super.setValue(value);
     }
 }

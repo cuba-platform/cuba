@@ -16,10 +16,12 @@
 
 package com.haulmont.restapi.service;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
+import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
@@ -29,6 +31,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.exception.RestAPIException;
 import com.haulmont.restapi.config.RestQueriesConfiguration;
+import org.apache.commons.lang.BooleanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
@@ -37,10 +40,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Component("cuba_QueriesControllerManager")
 public class QueriesControllerManager {
@@ -67,10 +67,24 @@ public class QueriesControllerManager {
                                String queryName,
                                @Nullable Integer limit,
                                @Nullable Integer offset,
+                               @Nullable String view,
+                               @Nullable Boolean returnNulls,
+                               @Nullable Boolean dynamicAttributes,
                                Map<String, String> params) throws ClassNotFoundException, ParseException {
         LoadContext<Entity> ctx = createQueryLoadContext(entityName, queryName, limit, offset, params);
+        ctx.setLoadDynamicAttributes(BooleanUtils.isTrue(dynamicAttributes));
+
+        //override default view defined in queries config
+        if (!Strings.isNullOrEmpty(view)) {
+            ctx.setView(view);
+        }
         List<Entity> entities = dataManager.loadList(ctx);
-        return entitySerializationAPI.toJson(entities);
+
+        List<EntitySerializationOption> serializationOptions = new ArrayList<>();
+        serializationOptions.add(EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
+        if (BooleanUtils.isTrue(returnNulls)) serializationOptions.add(EntitySerializationOption.SERIALIZE_NULLS);
+
+        return entitySerializationAPI.toJson(entities, ctx.getView(), serializationOptions.toArray(new EntitySerializationOption[0]));
     }
 
     public String getCount(String entityName,

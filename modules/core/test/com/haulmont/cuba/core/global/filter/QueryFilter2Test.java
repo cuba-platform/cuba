@@ -49,7 +49,7 @@ public class QueryFilter2Test {
     @Test
     public void testParse() throws Exception {
         Element element = Dom4j.readDocument(xml).getRootElement();
-        QueryFilter queryFilter = new QueryFilter(element, "sec$User");
+        QueryFilter queryFilter = new QueryFilter(element);
 
         Condition root = queryFilter.getRoot();
         System.out.println(new GroovyGenerator().generateGroovy(root));

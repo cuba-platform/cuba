@@ -18,15 +18,18 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.ButtonsPanel;
-import com.haulmont.cuba.gui.components.Tree;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,6 +42,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     protected ButtonsPanel buttonsPanel;
     protected HorizontalLayout topPanel;
     protected VerticalLayout componentComposition;
+    protected Action enterPressAction;
     protected IconProvider<? super E> iconProvider;
 
     @Override
@@ -129,6 +133,52 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
 
         component.setSizeFull();
         componentComposition.setExpandRatio(component, 1);
+
+        component.addShortcutListener(new ShortcutListener("tableEnter", com.vaadin.event.ShortcutAction.KeyCode.ENTER, null) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                if (target == WebAbstractTree.this.component) {
+                    if (enterPressAction != null) {
+                        enterPressAction.actionPerform(WebAbstractTree.this);
+                    } else {
+                        handleClickAction();
+                    }
+                }
+            }
+        });
+    }
+
+    protected void handleClickAction() {
+        Action action = getItemClickAction();
+        if (action == null) {
+            action = getEnterPressAction();
+            if (action == null) {
+                action = getAction("edit");
+                if (action == null) {
+                    action = getAction("view");
+                }
+            }
+        }
+
+        if (action != null && action.isEnabled()) {
+            Window window = ComponentsHelper.getWindowImplementation(WebAbstractTree.this);
+            if (window instanceof Window.Wrapper) {
+                window = ((Window.Wrapper) window).getWrappedWindow();
+            }
+
+            if (!(window instanceof Window.Lookup)) {
+                action.actionPerform(WebAbstractTree.this);
+            } else {
+                Window.Lookup lookup = (Window.Lookup) window;
+
+                com.haulmont.cuba.gui.components.Component lookupComponent = lookup.getLookupComponent();
+                if (lookupComponent != this)
+                    action.actionPerform(WebAbstractTree.this);
+                else if (action.getId().equals(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID)) {
+                    action.actionPerform(WebAbstractTree.this);
+                }
+            }
+        }
     }
 
     @Override
@@ -220,21 +270,32 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     }
 
     protected class StyleGeneratorAdapter implements com.vaadin.ui.Tree.ItemStyleGenerator {
+        protected boolean exceptionHandled = false;
 
         public static final String CUSTOM_STYLE_NAME_PREFIX = "cs ";
 
         @Override
         public String getStyle(com.vaadin.ui.Tree source, Object itemId) {
-            String style = null;
+            try {
+                String style = null;
 
-            if (styleProviders != null) {
-                String generatedStyle = getGeneratedStyle(itemId);
-                if (generatedStyle != null) {
-                    style = CUSTOM_STYLE_NAME_PREFIX + generatedStyle;
+                if (styleProviders != null) {
+                    String generatedStyle = getGeneratedStyle(itemId);
+                    if (generatedStyle != null) {
+                        style = CUSTOM_STYLE_NAME_PREFIX + generatedStyle;
+                    }
                 }
-            }
 
-            return style == null ? null : (CUSTOM_STYLE_NAME_PREFIX + style);
+                return style == null ? null : (CUSTOM_STYLE_NAME_PREFIX + style);
+            } catch (Exception e) {
+                LoggerFactory.getLogger(WebAbstractTree.class).error("Uncautch exception in Tree StyleProvider", e);
+                this.exceptionHandled = true;
+                return null;
+            }
+        }
+
+        public void resetExceptionHandledFlag() {
+            this.exceptionHandled = false;
         }
     }
 
@@ -270,5 +331,15 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
                 });
             }
         }
+    }
+
+    @Override
+    public void setEnterPressAction(Action action) {
+        enterPressAction = action;
+    }
+
+    @Override
+    public Action getEnterPressAction() {
+        return enterPressAction;
     }
 }

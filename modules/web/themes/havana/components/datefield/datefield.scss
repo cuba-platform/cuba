@@ -15,42 +15,61 @@
  *
  */
 
-@mixin havana-datefield($primary-stylename : cuba-datefield) {
-  @include base-datefield($primary-stylename);
+@mixin havana-datefield($primary-stylename: c-datefield) {
+  .#{$primary-stylename}-composition {
+    display: inline-table;
+  }
 
-  .#{$primary-stylename} {
+  div.#{$primary-stylename}-layout.v-csslayout {
+    display: table-row;
+
+    .c-maskedfield {
+      margin-left: 5px;
+      display: table-cell;
+    }
+
+    .v-datefield {
+      display: table-cell;
+    }
+  }
+
+  .v-datefield {
     white-space: nowrap;
 
-    input.#{$primary-stylename}-empty {
+    input {
+      height: 25px;
+    }
+
+    input.v-datefield-empty {
       color: #ccc;
     }
 
-    input.#{$primary-stylename}-empty:focus {
+    input.v-datefield-empty:focus {
       color: inherit;
     }
 
-    input.#{$primary-stylename}-empty.v-readonly:focus {
+    input.v-datefield-empty.v-readonly:focus {
       color: #ccc;
     }
   }
 
-  .#{$primary-stylename}-calendarpanel-header {
+  .v-datefield-calendarpanel-header {
     height: 25px;
   }
 
-  .#{$primary-stylename}-popupcalendar {
+  .v-datefield-popupcalendar {
     padding-right: 25px;
   }
 
-  .#{$primary-stylename}-popupcalendar.v-readonly {
+  .v-datefield-popupcalendar.v-readonly {
     padding-right: 0px;
 
-    .#{$primary-stylename}-button {
+    .v-datefield-button {
       display: none;
     }
   }
 
-  .#{$primary-stylename}-button {
+  .v-datefield-button {
     font-size: 12px;
     height: 25px;
     width: 25px;
@@ -68,17 +87,17 @@
     outline: 0;
   }
 
-  .#{$primary-stylename}-button-focus {
+  .v-datefield-button-focus {
     border: $cuba-field-focused-border-color solid 1px ;
     border-left: 0;
   }
 
-  .#{$primary-stylename}-button-readonly {
+  .v-datefield-button-readonly {
     display: none;
     visibility: hidden;
   }
 
-  .#{$primary-stylename}-popup {
+  .v-datefield-popup {
     font-family: $cuba-havana-fonts;
     color: #000;
     font-size: 12px;
@@ -87,11 +106,11 @@
     padding: 6px;
   }
 
-  .#{$primary-stylename}-calendarpanel-header td {
+  .v-datefield-calendarpanel-header td {
     text-align: center;
   }
 
-  .#{$primary-stylename}-calendarpanel {
+  .v-datefield-calendarpanel {
     outline: none;
     width: 19em;
     font-size: 12px;
@@ -181,55 +200,55 @@
     }
   }
 
-  .#{$primary-stylename}-calendarpanel-month {
+  .v-datefield-calendarpanel-month {
     font-weight: bold;
     text-align: center;
     white-space: nowrap;
   }
 
-  .#{$primary-stylename}-calendarpanel-day {
+  .v-datefield-calendarpanel-day {
     border: 1px solid transparent;
     height: 14px
   }
 
-  .#{$primary-stylename}-calendarpanel-day-today {
+  .v-datefield-calendarpanel-day-today {
     border: 1px solid $cuba-datefield-today-color;
     height: 14px
   }
 
-  .#{$primary-stylename}-calendarpanel-day-focused {
+  .v-datefield-calendarpanel-day-focused {
     border: 1px solid $cuba-datefield-day-focus-color;
     height: 14px
   }
 
-  .v-disabled .#{$primary-stylename}-calendarpanel-day,
-  .v-disabled .#{$primary-stylename}-calendarpanel-day-today {
+  .v-disabled .v-datefield-calendarpanel-day,
+  .v-disabled .v-datefield-calendarpanel-day-today {
     cursor: default;
   }
 
-  .#{$primary-stylename}-calendarpanel-day-entry {
+  .v-datefield-calendarpanel-day-entry {
     color: #6a98b5;
   }
 
-  .#{$primary-stylename}-calendarpanel-day-disabled {
+  .v-datefield-calendarpanel-day-disabled {
     font-weight: normal;
     color: #dddddd;
     cursor: default;
     opacity: 0.5;
   }
 
-  .#{$primary-stylename}-calendarpanel-day-entry.#{$primary-stylename}-calendarpanel-day-disabled {
+  .v-datefield-calendarpanel-day-entry.v-datefield-calendarpanel-day-disabled {
     color: #afd6f8;
   }
 
-  .#{$primary-stylename}-calendarpanel-day {
+  .v-datefield-calendarpanel-day {
     height: 16px;
     width: 14px;
     padding: 1px 3px;
     outline: 0;
   }
 
-  .#{$primary-stylename}-calendarpanel-day-selected {
+  .v-datefield-calendarpanel-day-selected {
     font-weight: bold;
     color: #fff;
     background: $cuba-datefield-selection-color;
@@ -238,26 +257,26 @@
     padding-right: 5px;
   }
 
-  .#{$primary-stylename}-time {
+  .v-datefield-time {
     white-space: nowrap;
     font-size: 11px;
   }
 
-  .#{$primary-stylename}-time .v-label {
+  .v-datefield-time .v-label {
     display: inline;
   }
 
-  .#{$primary-stylename}-time .v-select {
+  .v-datefield-time .v-select {
     font-size: 10px;
     padding: 0;
     margin: 0;
   }
 
-  .#{$primary-stylename}-popup:focus {
+  .v-datefield-popup:focus {
     outline: none;
   }
 
-  .#{$primary-stylename}-calendarpanel:focus {
+  .v-datefield-calendarpanel:focus {
     outline: none;
   }
 }

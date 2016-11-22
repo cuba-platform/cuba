@@ -21,7 +21,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxWidget;
 
 public class CubaFieldGroupWidget extends CubaGroupBoxWidget {
 
-    protected static final String CLASSNAME = "cuba-fieldgroup";
+    protected static final String CLASSNAME = "c-fieldgroup";
 
     public CubaFieldGroupWidget() {
         super(CLASSNAME);

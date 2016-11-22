@@ -16,14 +16,10 @@
  */
 
 @mixin halo-calendar($primary-stylename: v-calendar) {
-
-  .#{$primary-stylename}-event-month {
-    margin-bottom: 0px;
-  }
-
+  .#{$primary-stylename}-event-month,
   .#{$primary-stylename}-bottom-spacer,
   .#{$primary-stylename}-spacer,
   .#{$primary-stylename}-bottom-spacer-empty {
-    margin-bottom: 0px;
+    margin-bottom: 0;
   }
 }

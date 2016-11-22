@@ -17,8 +17,10 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.ValueLoadContext;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -54,4 +56,6 @@ public interface DataStore {
      * @return set of committed instances
      */
     Set<Entity> commit(CommitContext context);
+
+    List<KeyValueEntity> loadValues(ValueLoadContext context);
 }

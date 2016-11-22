@@ -67,6 +67,7 @@ import com.vaadin.server.Resource;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -89,6 +90,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         extends WebAbstractList<T, E>
         implements Table<E> {
 
+    private static final String HAS_TOP_PANEL_STYLENAME = "has-top-panel";
+
+    private static final String CUSTOM_STYLE_NAME_PREFIX = "cs ";
+
     protected Map<Object, Column> columns = new HashMap<>();
     protected List<Table.Column> columnsOrder = new ArrayList<>();
 
@@ -107,7 +112,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     protected Map<Entity, Datasource> fieldDatasources; // lazily initialized WeakHashMap;
 
-    protected VerticalLayout componentComposition;
+    protected CssLayout componentComposition;
 
     protected HorizontalLayout topPanel;
 
@@ -168,6 +173,38 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.addContainerProperty(column.getId(), column.getType(), null);
         if (StringUtils.isNotBlank(column.getDescription())) {
             component.setColumnDescription(column.getId(), column.getDescription());
+        }
+
+        if (StringUtils.isNotBlank(column.getValueDescription())) {
+            component.setAggregationDescription(column.getId(), column.getValueDescription());
+        } else if (column.getAggregation()!= null
+                && column.getAggregation().getType() != AggregationInfo.Type.CUSTOM) {
+            Messages messages = AppBeans.get(Messages.NAME);
+            String aggregationTypeLabel;
+
+            switch (column.getAggregation().getType()) {
+                case AVG:
+                    aggregationTypeLabel = "aggreagtion.avg";
+                    break;
+                case COUNT:
+                    aggregationTypeLabel = "aggreagtion.count";
+                    break;
+                case SUM:
+                    aggregationTypeLabel = "aggreagtion.sum";
+                    break;
+                case MIN:
+                    aggregationTypeLabel = "aggreagtion.min";
+                    break;
+                case MAX:
+                    aggregationTypeLabel = "aggreagtion.max";
+                    break;
+                default:
+                    throw new IllegalArgumentException(
+                            String.format("AggregationType %s is not supported",
+                                    column.getAggregation().getType().toString()));
+            }
+
+            component.setAggregationDescription(column.getId(), messages.getMainMessage(aggregationTypeLabel));
         }
 
         if (!column.isSortable()) {
@@ -429,7 +466,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         this.rowsCount = rowsCount;
         if (rowsCount != null) {
             if (topPanel == null) {
-                topPanel = new HorizontalLayout();
+                topPanel = createTopPanel();
                 topPanel.setWidth("100%");
                 componentComposition.addComponentAsFirst(topPanel);
             }
@@ -437,6 +474,33 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             topPanel.addComponent(rc);
             topPanel.setExpandRatio(rc, 1);
             topPanel.setComponentAlignment(rc, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
+
+            if (rowsCount instanceof VisibilityChangeNotifier) {
+                ((VisibilityChangeNotifier) rowsCount).addVisibilityChangeListener(event ->
+                        updateCompositionStylesTopPanelVisible()
+                );
+            }
+        }
+
+        updateCompositionStylesTopPanelVisible();
+    }
+
+    // if buttons panel becomes hidden we need to set top panel height to 0
+    protected void updateCompositionStylesTopPanelVisible() {
+        if (topPanel != null) {
+            boolean topPanelVisible = topPanel.getComponentCount() > 0;
+            for (Component childComponent : topPanel) {
+                if (!childComponent.isVisible()) {
+                    topPanelVisible = false;
+                    break;
+                }
+            }
+
+            if (!topPanelVisible) {
+                componentComposition.removeStyleName(HAS_TOP_PANEL_STYLENAME);
+            } else {
+                componentComposition.addStyleName(HAS_TOP_PANEL_STYLENAME);
+            }
         }
     }
 
@@ -510,6 +574,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.setImmediate(true);
         component.setValidationVisible(false);
         component.setShowBufferedSourceException(false);
+
+        component.setBeforePaintListener(() -> {
+            com.vaadin.ui.Table.CellStyleGenerator generator = component.getCellStyleGenerator();
+            if (generator instanceof WebAbstractTable.StyleGeneratorAdapter) {
+                //noinspection unchecked
+                ((StyleGeneratorAdapter) generator).resetExceptionHandledFlag();
+            }
+        });
 
         Messages messages = AppBeans.get(Messages.NAME);
         component.setSortAscendingLabel(messages.getMainMessage("tableSort.ascending"));
@@ -588,17 +660,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         setEditable(false);
 
-        componentComposition = new VerticalLayout();
+        componentComposition = new CssLayout();
+        componentComposition.setStyleName("c-table-composition");
         componentComposition.addComponent(component);
-
-        componentComposition.setSpacing(true);
-        componentComposition.setMargin(false);
-        componentComposition.setWidth("-1px");
+        componentComposition.setWidthUndefined();
 
         // todo artamonov adjust component size relative to composition size
 
         component.setSizeFull();
-        componentComposition.setExpandRatio(component, 1);
 
         component.setCellStyleGenerator(createStyleGenerator());
     }
@@ -769,10 +838,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             Collection<MetaPropertyPath> paths = datasource.getView() != null ?
                     // if a view is specified - use view properties
                     metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass()) :
-                    // otherwise use only string properties from meta-class - the temporary solution for KeyValue datasources
-                    metadataTools.getPropertyPaths(datasource.getMetaClass()).stream()
-                            .filter(mpp -> mpp.getRangeJavaClass().equals(String.class))
-                            .collect(Collectors.toList());
+                    // otherwise use all properties from meta-class
+                    metadataTools.getPropertyPaths(datasource.getMetaClass());
             for (MetaPropertyPath metaPropertyPath : paths) {
                 MetaProperty property = metaPropertyPath.getMetaProperty();
                 if (!property.getRange().getCardinality().isMany() && !metadataTools.isSystem(property)) {
@@ -1413,13 +1480,26 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
 
             if (topPanel == null) {
-                topPanel = new HorizontalLayout();
+                topPanel = createTopPanel();
                 topPanel.setWidth("100%");
                 componentComposition.addComponentAsFirst(topPanel);
             }
             topPanel.addComponent(WebComponentsHelper.unwrap(panel));
+            if (panel instanceof VisibilityChangeNotifier) {
+                ((VisibilityChangeNotifier) panel).addVisibilityChangeListener(event ->
+                        updateCompositionStylesTopPanelVisible()
+                );
+            }
             panel.setParent(this);
         }
+
+        updateCompositionStylesTopPanelVisible();
+    }
+
+    protected HorizontalLayout createTopPanel() {
+        HorizontalLayout topPanel = new HorizontalLayout();
+        topPanel.setStyleName("c-table-top");
+        return topPanel;
     }
 
     @Override
@@ -1575,6 +1655,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             column.setDescription(description);
         }
         component.setColumnDescription(column.getId(), description);
+    }
+
+    @Override
+    public void setTextSelectionEnabled(boolean value) {
+        component.setTextSelectionEnabled(value);
+    }
+
+    @Override
+    public boolean isTextSelectionEnabled() {
+        return component.isTextSelectionEnabled();
     }
 
     @Override
@@ -2093,7 +2183,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             VerticalLayout layout = new VerticalLayout();
             layout.setWidthUndefined();
-            layout.setStyleName("cuba-table-view-textcut");
+            layout.setStyleName("c-table-view-textcut");
 
             CubaTextArea textArea = new CubaTextArea();
             textArea.setValue(value);
@@ -2482,11 +2572,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     public void showCustomPopupActions(List<Action> actions) {
         VerticalLayout customContextMenu = new VerticalLayout();
         customContextMenu.setWidthUndefined();
-        customContextMenu.setStyleName("cuba-context-menu-container");
+        customContextMenu.setStyleName("c-cm-container");
 
         for (Action action : actions) {
             ContextMenuButton contextMenuButton = createContextMenuButton();
-            contextMenuButton.setStyleName("cuba-context-menu-button");
+            contextMenuButton.setStyleName("c-cm-button");
             contextMenuButton.setAction(action);
 
             Component vButton = WebComponentsHelper.unwrap(contextMenuButton);
@@ -2525,84 +2615,108 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         return component.isSelectable();
     }
 
-    protected class StyleGeneratorAdapter implements com.vaadin.ui.Table.CellStyleGenerator {
+    protected String generateCellStyle(Object itemId, Object propertyId) {
+        String style = null;
+        if (propertyId != null && itemId != null
+                && !component.isColumnEditable(propertyId)
+                && (component.getColumnGenerator(propertyId) == null
+                || component.getColumnGenerator(propertyId) instanceof WebAbstractTable.AbbreviatedColumnGenerator)) {
 
-        public static final String CUSTOM_STYLE_NAME_PREFIX = "cs ";
+            MetaPropertyPath propertyPath;
+            if (propertyId instanceof MetaPropertyPath) {
+                propertyPath = (MetaPropertyPath) propertyId;
+            } else {
+                propertyPath = datasource.getMetaClass().getPropertyPath(propertyId.toString());
+            }
+
+            if (propertyPath != null) {
+                style = generateDefaultCellStyle(itemId, propertyId, propertyPath);
+            }
+        }
+
+        if (styleProviders != null) {
+            String generatedStyle = getGeneratedCellStyle(itemId, propertyId);
+            // we use style names without v-table-cell-content prefix, so we add cs prefix
+            // all cells with custom styles will have v-table-cell-content-cs style name in class
+            if (style != null) {
+                if (generatedStyle != null) {
+                    style = CUSTOM_STYLE_NAME_PREFIX + generatedStyle + " " + style;
+                }
+            } else if (generatedStyle != null) {
+                style = CUSTOM_STYLE_NAME_PREFIX + generatedStyle;
+            }
+        }
+
+        return style == null ? null : (CUSTOM_STYLE_NAME_PREFIX + style);
+    }
+
+    protected String generateDefaultCellStyle(Object itemId, Object propertyId, MetaPropertyPath propertyPath) {
+        String style = null;
+
+        Column column = getColumn(propertyId.toString());
+        if (column != null) {
+            final String isLink = column.getXmlDescriptor() == null ?
+                    null : column.getXmlDescriptor().attributeValue("link");
+
+            if (propertyPath.getRange().isClass()) {
+                if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
+                    style = "c-table-cell-link";
+                }
+            } else if (propertyPath.getRange().isDatatype()) {
+                if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
+                    style = "c-table-cell-link";
+                } else if (column.getMaxTextLength() != null) {
+                    Entity item = getDatasource().getItemNN(itemId);
+                    String value = item.getValueEx(propertyId.toString());
+                    if (column.getMaxTextLength() != null) {
+                        boolean isMultiLineCell = StringUtils.contains(value, "\n");
+                        if ((value != null && value.length() > column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP)
+                                || isMultiLineCell) {
+                            style = "c-table-cell-textcut";
+                        } else {
+                            // use special marker stylename
+                            style = "c-table-clickable-text";
+                        }
+                    }
+                }
+            }
+        }
+
+        if (propertyPath.getRangeJavaClass() == Boolean.class) {
+            Entity item = datasource.getItem(itemId);
+            if (item != null) {
+                Boolean value = item.getValueEx(propertyId.toString());
+                if (BooleanUtils.isTrue(value)) {
+                    style = "boolean-cell boolean-cell-true";
+                } else {
+                    style = "boolean-cell boolean-cell-false";
+                }
+            }
+        }
+        return style;
+    }
+
+    protected class StyleGeneratorAdapter implements com.vaadin.ui.Table.CellStyleGenerator {
+        protected boolean exceptionHandled = false;
 
         @SuppressWarnings({"unchecked"})
         @Override
         public String getStyle(com.vaadin.ui.Table source, Object itemId, Object propertyId) {
-            String style = null;
-            if (propertyId != null && itemId != null
-                    && !component.isColumnEditable(propertyId)
-                    && (component.getColumnGenerator(propertyId) == null
-                    || component.getColumnGenerator(propertyId) instanceof AbbreviatedColumnGenerator)) {
-
-                MetaPropertyPath propertyPath;
-                if (propertyId instanceof MetaPropertyPath) {
-                    propertyPath = (MetaPropertyPath) propertyId;
-                } else {
-                    propertyPath = datasource.getMetaClass().getPropertyPath(propertyId.toString());
-                }
-
-                if (propertyPath != null) {
-                    Column column = getColumn(propertyId.toString());
-                    if (column != null) {
-                        final String isLink = column.getXmlDescriptor() == null ?
-                                null : column.getXmlDescriptor().attributeValue("link");
-
-                        if (propertyPath.getRange().isClass()) {
-                            if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
-                                style = "cuba-table-cell-link";
-                            }
-                        } else if (propertyPath.getRange().isDatatype()) {
-                            if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
-                                style = "cuba-table-cell-link";
-                            } else if (column.getMaxTextLength() != null) {
-                                Entity item = getDatasource().getItemNN(itemId);
-                                String value = item.getValueEx(propertyId.toString());
-                                if (column.getMaxTextLength() != null) {
-                                    boolean isMultiLineCell = StringUtils.contains(value, "\n");
-                                    if ((value != null && value.length() > column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP)
-                                            || isMultiLineCell) {
-                                        style = "cuba-table-cell-textcut";
-                                    } else {
-                                        // use special marker stylename
-                                        style = "cuba-table-clickable-text";
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if (propertyPath.getRangeJavaClass() == Boolean.class) {
-                        Entity item = datasource.getItem(itemId);
-                        if (item != null) {
-                            Boolean value = item.getValueEx(propertyId.toString());
-                            if (BooleanUtils.isTrue(value)) {
-                                style = "boolean-cell boolean-cell-true";
-                            } else {
-                                style = "boolean-cell boolean-cell-false";
-                            }
-                        }
-                    }
-                }
+            if (exceptionHandled) {
+                return null;
             }
 
-            if (styleProviders != null) {
-                String generatedStyle = getGeneratedCellStyle(itemId, propertyId);
-                // we use style names without v-table-cell-content prefix, so we add cs prefix
-                // all cells with custom styles will have v-table-cell-content-cs style name in class
-                if (style != null) {
-                    if (generatedStyle != null) {
-                        style = CUSTOM_STYLE_NAME_PREFIX + generatedStyle + " " + style;
-                    }
-                } else if (generatedStyle != null) {
-                    style = CUSTOM_STYLE_NAME_PREFIX + generatedStyle;
-                }
+            try {
+                return generateCellStyle(itemId, propertyId);
+            } catch (Exception e) {
+                LoggerFactory.getLogger(WebAbstractTable.class).error("Uncautch exception in Table StyleProvider", e);
+                this.exceptionHandled = true;
+                return null;
             }
+        }
 
-            return style == null ? null : (CUSTOM_STYLE_NAME_PREFIX + style);
+        public void resetExceptionHandledFlag() {
+            this.exceptionHandled = false;
         }
     }
 

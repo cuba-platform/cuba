@@ -30,7 +30,7 @@
     </dsContext>
 
     <layout expand="contentScrollbox" spacing="true">
-        <grid spacing="true" stylename="cuba-mbeans-information-panel" width="100%">
+        <grid spacing="true" stylename="c-mbeans-information-panel" width="100%">
             <columns>
                 <column flex="0"/>
                 <column flex="1"/>
@@ -38,11 +38,11 @@
             <rows>
                 <row>
                     <label value="msg://mbean.jmxConnection" align="MIDDLE_LEFT"/>
-                    <label datasource="mbeanDs" property="jmxInstance" stylename="h2"/>
+                    <label datasource="mbeanDs" property="jmxInstance"/>
                 </row>
                 <row>
                     <label value="msg://mbean.name" align="MIDDLE_LEFT"/>
-                    <label datasource="mbeanDs" property="objectName" id="domain" stylename="h2"/>
+                    <label datasource="mbeanDs" property="objectName" id="domain"/>
                 </row>
                 <row>
                     <label value="msg://mbean.className"/>
@@ -69,6 +69,7 @@
                 </buttonsPanel>
                 <columns>
                     <column id="name" caption="msg://mbean.attribute.name"/>
+                    <column id="description" caption="msg://mbean.attribute.descr"/>
                     <column id="type" caption="msg://mbean.attribute.type"/>
                     <column id="readableWriteable" caption="msg://mbean.attribute.access"/>
                     <column id="valueString" caption="msg://mbean.attribute.value"/>

@@ -18,10 +18,7 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
-import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.slf4j.Logger;
@@ -56,7 +53,7 @@ public class DataManagerBean implements DataManager {
         MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
         String storeName = metadata.getTools().getStoreName(metaClass);
         if (storeName == null) {
-            log.debug("Storage for {} is not defined, returning null", metaClass);
+            log.debug("Data store for {} is not defined, returning null", metaClass);
             return null;
         }
         DataStore storage = storeFactory.get(storeName);
@@ -69,8 +66,8 @@ public class DataManagerBean implements DataManager {
         MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
         String storeName = metadata.getTools().getStoreName(metaClass);
         if (storeName == null) {
-            log.debug("Storage for {} is not defined, returning empty list", metaClass);
-            return null;
+            log.debug("Data store for {} is not defined, returning empty list", metaClass);
+            return Collections.emptyList();
         }
         DataStore storage = storeFactory.get(storeName);
         return storage.loadList(context);
@@ -81,7 +78,7 @@ public class DataManagerBean implements DataManager {
         MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
         String storeName = metadata.getTools().getStoreName(metaClass);
         if (storeName == null) {
-            log.debug("Storage for {} is not defined, returning 0", metaClass);
+            log.debug("Data store for {} is not defined, returning 0", metaClass);
             return 0;
         }
         DataStore storage = storeFactory.get(storeName);
@@ -207,19 +204,27 @@ public class DataManagerBean implements DataManager {
         commit(context);
     }
 
+    @Override
+    public List<KeyValueEntity> loadValues(ValueLoadContext context) {
+        DataStore store = storeFactory.get(context.getStoreName());
+        return store.loadValues(context);
+    }
+
     protected boolean entityHasDynamicAttributes(Entity entity) {
         return entity instanceof BaseGenericIdEntity
                 && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null;
     }
 
     protected CommitContext createCommitContext(CommitContext context) {
+        CommitContext newCtx;
         if (context instanceof NotDetachedCommitContext) {
-            NotDetachedCommitContext newCtx = new NotDetachedCommitContext();
-            newCtx.setNewInstanceIds(((NotDetachedCommitContext) context).getNewInstanceIds());
-            return newCtx;
+            newCtx = new NotDetachedCommitContext();
+            ((NotDetachedCommitContext) newCtx).setNewInstanceIds(((NotDetachedCommitContext) context).getNewInstanceIds());
         } else {
-            return new CommitContext();
+            newCtx = new CommitContext();
         }
+        newCtx.setSoftDeletion(context.isSoftDeletion());
+        return newCtx;
     }
 
     @Override

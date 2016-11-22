@@ -77,6 +77,7 @@ public class EntityManagerImpl implements EntityManager {
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
         CubaUtil.setSoftDeletion(softDeletion);
+        CubaUtil.setOriginalSoftDeletion(softDeletion);
     }
 
     @Override
@@ -186,12 +187,18 @@ public class EntityManagerImpl implements EntityManager {
     private <T extends Entity> T findWithViews(MetaClass metaClass, Object id, List<View> views) {
         Object realId = getRealId(id);
         log.debug("find {} by id={}, views={}", metaClass.getJavaClass().getSimpleName(), realId, views);
-        Query query = createQuery("select e from " + metaClass.getName() + " e where e.id = ?1");
+
+        String pkName = metadata.getTools().getPrimaryKeyName(metaClass);
+        if (pkName == null)
+            throw new IllegalStateException("Cannot determine PK name for entity " + metaClass);
+
+        Query query = createQuery(String.format("select e from %s e where e.%s = ?1", metaClass.getName(), pkName));
         ((QueryImpl) query).setSingleResultExpected(true);
         query.setParameter(1, realId);
         for (View view : views) {
             query.addView(view);
         }
+        //noinspection unchecked
         return (T) query.getFirstResult();
     }
 
@@ -376,6 +383,7 @@ public class EntityManagerImpl implements EntityManager {
     protected <T extends Entity> T internalMerge(T entity) {
         try {
             CubaUtil.setSoftDeletion(false);
+            CubaUtil.setOriginalSoftDeletion(false);
 
             UUID uuid = null;
             if (entity.getId() instanceof IdProxy) {
@@ -392,6 +400,7 @@ public class EntityManagerImpl implements EntityManager {
             return merged;
         } finally {
             CubaUtil.setSoftDeletion(softDeletion);
+            CubaUtil.setOriginalSoftDeletion(softDeletion);
         }
     }
 

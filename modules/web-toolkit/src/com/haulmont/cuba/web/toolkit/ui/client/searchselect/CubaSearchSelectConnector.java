@@ -21,7 +21,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaSearchSelect;
 import com.vaadin.client.ui.combobox.ComboBoxConnector;
 import com.vaadin.shared.ui.Connect;
 
-@Connect(CubaSearchSelect.class)
+@Connect(value = CubaSearchSelect.class, loadStyle = Connect.LoadStyle.LAZY)
 public class CubaSearchSelectConnector extends ComboBoxConnector {
 
     @Override

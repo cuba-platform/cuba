@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
 import javax.annotation.Nullable;
+import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.TemporalType;
 import java.util.List;
@@ -224,11 +225,17 @@ public interface Query {
     Query addView(Class<? extends Entity> entityClass, String viewName);
 
     /**
-     * Set query results to be cached
-     * @param cacheable
+     * Indicates that the query results should be cached.
      * @return the same query instance
      */
     Query setCacheable(boolean cacheable);
+
+    /**
+     * Set the flush mode type to be used for the query execution.
+     * @param flushMode  flush mode
+     * @return the same query instance
+     */
+    Query setFlushMode(FlushModeType flushMode);
 
     /**
      * @return  underlying implementation provided by ORM

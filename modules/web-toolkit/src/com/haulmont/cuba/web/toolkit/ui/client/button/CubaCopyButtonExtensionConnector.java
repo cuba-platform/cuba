@@ -26,7 +26,7 @@ import com.vaadin.client.extensions.AbstractExtensionConnector;
 import com.vaadin.client.ui.VButton;
 import com.vaadin.shared.ui.Connect;
 
-@Connect(CubaCopyButtonExtension.class)
+@Connect(value = CubaCopyButtonExtension.class, loadStyle = Connect.LoadStyle.LAZY)
 public class CubaCopyButtonExtensionConnector extends AbstractExtensionConnector {
 
     @Override
@@ -49,10 +49,9 @@ public class CubaCopyButtonExtensionConnector extends AbstractExtensionConnector
                 }
             }
         });
-
     }
 
-    private native boolean copyToClipboard(String selector) /*-{
+    protected native boolean copyToClipboard(String selector) /*-{
         var copyTextArea = $doc.querySelector(selector);
         copyTextArea.select();
         try {

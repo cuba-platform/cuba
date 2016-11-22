@@ -160,15 +160,11 @@ public class MbeansDisplayWindow extends AbstractWindow {
         localJmxField.setValue(jmxControlAPI.getLocalNodeName());
         localJmxField.setEditable(false);
 
-        mbeansTable.setStyleProvider(new Table.StyleProvider() {
-            @Nullable
-            @Override
-            public String getStyleName(Entity entity, @Nullable String property) {
-                if (entity instanceof ManagedBeanInfo && ((ManagedBeanInfo) entity).getObjectName() == null) {
-                    return "cuba-jmx-tree-table-domain";
-                }
-                return null;
+        mbeansTable.setStyleProvider((entity, property) -> {
+            if (entity instanceof ManagedBeanInfo && ((ManagedBeanInfo) entity).getObjectName() == null) {
+                return "c-jmx-tree-table-domain";
             }
+            return null;
         });
     }
 

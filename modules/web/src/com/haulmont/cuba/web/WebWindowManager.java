@@ -61,6 +61,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.*;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import org.apache.commons.lang.BooleanUtils;
@@ -167,6 +168,7 @@ public class WebWindowManager extends WindowManager {
         if (openInfo != null) {
             OpenMode openMode = openInfo.getOpenMode();
             if (openMode == OpenMode.NEW_TAB
+                    || openMode == OpenMode.NEW_WINDOW
                     || openMode == OpenMode.THIS_TAB) {
                 // show in tabsheet
                 Layout layout = (Layout) openInfo.getData();
@@ -478,8 +480,8 @@ public class WebWindowManager extends WindowManager {
 
     protected Layout createNewTabLayout(final Window window, final boolean multipleOpen, WindowBreadCrumbs breadCrumbs,
                                         Component... additionalComponents) {
-        final VerticalLayout layout = new VerticalLayout();
-        layout.setStyleName("cuba-app-tabbed-window");
+        Layout layout = new CssLayout();
+        layout.setStyleName("c-app-window-wrap");
         layout.setSizeFull();
 
         layout.addComponent(breadCrumbs);
@@ -492,14 +494,13 @@ public class WebWindowManager extends WindowManager {
         final Component component = WebComponentsHelper.getComposition(window);
         component.setSizeFull();
         layout.addComponent(component);
-        layout.setExpandRatio(component, 1);
 
         WebAppWorkArea workArea = getConfiguredWorkArea();
 
         if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
+            layout.addStyleName("c-app-tabbed-window");
             CubaTabSheet tabSheet = workArea.getTabbedWindowContainer();
 
-            layout.setMargin(true);
             TabSheet.Tab newTab;
             Integer hashCode = getWindowHashCode(window);
             ComponentContainer tab = null;
@@ -546,8 +547,7 @@ public class WebWindowManager extends WindowManager {
             tabSheet.setSelectedTab(layout);
         } else {
             tabs.put(layout, breadCrumbs);
-            layout.addStyleName("cuba-app-single-window");
-            layout.setMargin(true);
+            layout.addStyleName("c-app-single-window");
 
             VerticalLayout mainLayout = workArea.getSingleWindowContainer();
             mainLayout.removeAllComponents();
@@ -596,12 +596,12 @@ public class WebWindowManager extends WindowManager {
 
         WebAppWorkArea workArea = getConfiguredWorkArea();
 
-        VerticalLayout layout;
+        Layout layout;
         if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
             TabSheet tabSheet = workArea.getTabbedWindowContainer();
-            layout = (VerticalLayout) tabSheet.getSelectedTab();
+            layout = (Layout) tabSheet.getSelectedTab();
         } else {
-            layout = (VerticalLayout) workArea.getSingleWindowContainer().getComponent(0);
+            layout = (Layout) workArea.getSingleWindowContainer().getComponent(0);
         }
 
         final WindowBreadCrumbs breadCrumbs = tabs.get(layout);
@@ -631,7 +631,6 @@ public class WebWindowManager extends WindowManager {
         final Component component = WebComponentsHelper.getComposition(window);
         component.setSizeFull();
         layout.addComponent(component);
-        layout.setExpandRatio(component, 1);
 
         breadCrumbs.addWindow(window);
 
@@ -671,7 +670,7 @@ public class WebWindowManager extends WindowManager {
 
     protected Component showWindowDialog(final Window window, OpenType openType, boolean forciblyDialog) {
         final CubaWindow vWindow = createDialogWindow(window);
-        vWindow.setStyleName("cuba-app-dialog-window");
+        vWindow.setStyleName("c-app-dialog-window");
         if (ui.isTestMode()) {
             vWindow.setCubaId("dialog_" + window.getId());
             vWindow.setId(ui.getTestIdManager().getTestId("dialog_" + window.getId()));
@@ -683,6 +682,7 @@ public class WebWindowManager extends WindowManager {
         vWindow.addPreCloseListener(event -> {
             event.setPreventClose(true);
 
+            // user has clicked on X
             window.close(Window.CLOSE_ACTION_ID);
         });
 
@@ -695,8 +695,11 @@ public class WebWindowManager extends WindowManager {
                 KeyCombination.Modifier.codes(closeCombination.getModifiers())
         );
 
-        Map<com.vaadin.event.Action, Runnable> actions = new HashMap<>();
-        actions.put(exitAction, () -> window.close(Window.CLOSE_ACTION_ID));
+        Map<com.vaadin.event.Action, Runnable> actions = Collections.singletonMap(exitAction, () -> {
+            if (openType.getOpenMode() != OpenMode.DIALOG || BooleanUtils.isNotFalse(window.getDialogOptions().getCloseable())) {
+                window.close(Window.CLOSE_ACTION_ID);
+            }
+        });
 
         WebComponentsHelper.setActions(vWindow, actions);
 
@@ -928,8 +931,6 @@ public class WebWindowManager extends WindowManager {
         List<Map.Entry<Window, WindowOpenInfo>> entries = new ArrayList<>(windowOpenMode.entrySet());
         for (int i = entries.size() - 1; i >= 0; i--) {
             WebWindow window = (WebWindow) entries.get(i).getKey();
-            window.stopTimers();
-
             if (window instanceof WebWindow.Editor) {
                 ((WebWindow.Editor) window).releaseLock();
             }
@@ -955,6 +956,8 @@ public class WebWindowManager extends WindowManager {
                 fireListeners(window, tabs.size() != 0);
                 break;
             }
+
+            case NEW_WINDOW:
             case NEW_TAB: {
                 final Layout layout = (Layout) openInfo.getData();
                 layout.removeComponent(WebComponentsHelper.getComposition(window));
@@ -985,7 +988,7 @@ public class WebWindowManager extends WindowManager {
                 break;
             }
             case THIS_TAB: {
-                final VerticalLayout layout = (VerticalLayout) openInfo.getData();
+                final Layout layout = (Layout) openInfo.getData();
 
                 final WindowBreadCrumbs breadCrumbs = tabs.get(layout);
                 if (breadCrumbs == null) {
@@ -1006,7 +1009,6 @@ public class WebWindowManager extends WindowManager {
                 layout.removeComponent(WebComponentsHelper.getComposition(window));
                 if (app.getConnection().isConnected()) {
                     layout.addComponent(component);
-                    layout.setExpandRatio(component, 1);
 
                     if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
                         TabSheet tabSheet = workArea.getTabbedWindowContainer();
@@ -1060,6 +1062,12 @@ public class WebWindowManager extends WindowManager {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    @Override
+    public void showNotification(String caption) {
+        showNotification(caption, null, NotificationType.HUMANIZED);
+    }
 
     @Override
     public void showNotification(String caption, Frame.NotificationType type) {
@@ -1119,7 +1127,7 @@ public class WebWindowManager extends WindowManager {
         });
 
         VerticalLayout layout = new VerticalLayout();
-        layout.setStyleName("cuba-app-message-dialog");
+        layout.setStyleName("c-app-message-dialog");
         if (messageType.getWidth() != null && messageType.getWidth() == AUTO_SIZE_PX) {
             layout.setWidthUndefined();
         }
@@ -1230,7 +1238,7 @@ public class WebWindowManager extends WindowManager {
         window.setModal(true);
 
         VerticalLayout layout = new VerticalLayout();
-        layout.setStyleName("cuba-app-option-dialog");
+        layout.setStyleName("c-app-option-dialog");
         layout.setSpacing(true);
         if (messageType.getWidth() != null && messageType.getWidth() == AUTO_SIZE_PX) {
             layout.setWidthUndefined();
@@ -1259,7 +1267,7 @@ public class WebWindowManager extends WindowManager {
             }
 
             if (action instanceof AbstractAction && ((AbstractAction) action).isPrimary()) {
-                button.addStyleName("cuba-primary-action");
+                button.addStyleName("c-primary-action");
                 button.focus();
 
                 hasPrimaryAction = true;
@@ -1543,10 +1551,10 @@ public class WebWindowManager extends WindowManager {
                     return;
                 }
 
-                if (AppWorkArea.Mode.TABBED == workArea.getMode()) {
-                    final CubaTabSheet tabSheet = workArea.getTabbedWindowContainer();
+                if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
+                    CubaTabSheet tabSheet = workArea.getTabbedWindowContainer();
                     if (tabSheet != null) {
-                        VerticalLayout layout = (VerticalLayout) tabSheet.getSelectedTab();
+                        Layout layout = (Layout) tabSheet.getSelectedTab();
                         if (layout != null) {
                             tabSheet.focus();
 

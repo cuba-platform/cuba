@@ -43,7 +43,7 @@ public class ScreenProfilerWindow extends AbstractWindow {
     @Inject
     protected CollectionDatasource<ScreenProfilerEvent, UUID> profilerEventsDs;
     @Inject
-    private CollectionDatasource<User, UUID> usersDs;
+    protected CollectionDatasource<User, UUID> usersDs;
     @Inject
     protected ScreenProfilerService screenProfilerService;
 
@@ -52,14 +52,11 @@ public class ScreenProfilerWindow extends AbstractWindow {
         super.init(params);
         updateProfilingCaption(screenProfilerService.isProfilingEnabled());
         disableComponents();
-        refreshEventsCheck.addValueChangeListener(new ValueChangeListener() {
-            @Override
-            public void valueChanged(ValueChangeEvent e) {
-                if (Boolean.TRUE.equals(e.getValue())) {
-                    refreshEventsTimer.start();
-                } else {
-                    refreshEventsTimer.stop();
-                }
+        refreshEventsCheck.addValueChangeListener(e -> {
+            if (Boolean.TRUE.equals(e.getValue())) {
+                refreshEventsTimer.start();
+            } else {
+                refreshEventsTimer.stop();
             }
         });
     }

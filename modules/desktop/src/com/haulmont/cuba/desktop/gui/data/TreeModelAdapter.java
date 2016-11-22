@@ -201,11 +201,13 @@ public class TreeModelAdapter implements TreeModel {
             if (datasource.getHierarchyPropertyName() != null) {
                 Entity entity = (Entity) object;
                 while (entity.getValue(datasource.getHierarchyPropertyName()) != null) {
-                    entity = entity.getValue(datasource.getHierarchyPropertyName());
+                    Entity parent = entity.getValue(datasource.getHierarchyPropertyName());
                     // noinspection ConstantConditions
-                    if (!datasource.containsItem(entity.getId())) {
+                    if (!datasource.containsItem(parent.getId())) {
                         break; // Child entities with removed parent are happen to be thrown to tree root.
                     }
+                    entity = datasource.getItemNN(parent.getId());
+
                     Node parentNode = createNode(entity);
                     list.add(0, parentNode);
                     node.setParent(parentNode);

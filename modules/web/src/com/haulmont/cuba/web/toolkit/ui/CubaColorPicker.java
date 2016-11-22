@@ -27,8 +27,7 @@ public class CubaColorPicker extends CustomField {
 
     public CubaColorPicker() {
         initColorPicker();
-        initLayout();
-        setPrimaryStyleName("cuba-color-picker");
+        setPrimaryStyleName("c-color-picker");
     }
 
     protected void initColorPicker() {
@@ -36,6 +35,7 @@ public class CubaColorPicker extends CustomField {
         field.addColorChangeListener(e ->
                 setValue(e.getColor())
         );
+        field.setCaption(null);
     }
 
     @Override
@@ -81,13 +81,6 @@ public class CubaColorPicker extends CustomField {
         }
     }
 
-    protected void initLayout() {
-        field = new ColorPicker();
-        field.addColorChangeListener(e ->
-                setValue(e.getColor())
-        );
-    }
-
     public class ColorPicker extends com.vaadin.ui.ColorPicker {
         protected String confirmButtonCaption;
         protected String cancelButtonCaption;
@@ -121,6 +114,16 @@ public class CubaColorPicker extends CustomField {
             window.setHueSliderCaption(hueSliderCaption);
             window.setSaturationSliderCaption(saturationSliderCaption);
             window.setValueSliderCaption(valueSliderCaption);
+            window.setModal(true);
+        }
+
+        @Override
+        protected void showPopup(boolean open) {
+            super.showPopup(open);
+
+            if (window != null) {
+                window.center();
+            }
         }
 
         @Override
@@ -252,6 +255,30 @@ public class CubaColorPicker extends CustomField {
     @Override
     public Class getType() {
         return Color.class;
+    }
+
+    public void setDefaultCaptionEnabled(boolean value) {
+        field.setDefaultCaptionEnabled(value);
+    }
+
+    public boolean isDefaultCaptionEnabled() {
+        return field.isDefaultCaptionEnabled();
+    }
+
+    public void setButtonCaption(String value) {
+        field.setCaption(value);
+    }
+
+    public String getButtonCaption() {
+        return field.getCaption();
+    }
+
+    public void setHistoryVisible(boolean value) {
+        field.setHistoryVisibility(value);
+    }
+
+    public boolean isHistoryVisible() {
+        return field.getHistoryVisibility();
     }
 
     public void setSwatchesVisible(boolean value) {

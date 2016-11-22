@@ -46,24 +46,24 @@ public class QueryCacheSupport implements QueryCacheSupportMBean {
     }
 
     @Override
-    public String invalidateAll() {
+    public String evictAll() {
         queryCacheMgr.invalidateAll(true);
-        return "Invalidated";
+        return "Done";
     }
 
     @Override
-    public String invalidate(String typeName) {
+    public String evict(String typeName) {
         if (Strings.isNullOrEmpty(typeName)) {
-            return "Please specify metaClass name";
+            return "Please specify entity name";
         }
         queryCacheMgr.invalidate(typeName, true);
-        return "Invalidated";
+        return "Done";
     }
 
     @Override
-    public String invalidateById(String queryId) {
+    public String evictById(String queryId) {
         if (Strings.isNullOrEmpty(queryId)) {
-            return "Please specify identifier";
+            return "Please specify query id";
         }
         UUID uuid;
         try {
@@ -72,17 +72,17 @@ public class QueryCacheSupport implements QueryCacheSupportMBean {
             return "Incorrect identifier";
         }
         queryCacheMgr.invalidate(uuid, true);
-        return "Invalidated";
+        return "Done";
     }
 
     @Override
-    public String printQueryResultsStat() {
+    public String printCacheContent() {
         Map<QueryKey, QueryResult> map = queryCache.asMap();
         StringBuilder builder = new StringBuilder();
         for (Map.Entry<QueryKey, QueryResult> entry : map.entrySet()) {
             QueryResult queryResult = entry.getValue();
             builder.append(entry.getKey().printDescription())
-                    .append(", count identifiers: ")
+                    .append(", instance count: ")
                     .append(queryResult.getResult() != null ? queryResult.getResult().size() : 0)
                     .append("\n");
         }
@@ -92,7 +92,7 @@ public class QueryCacheSupport implements QueryCacheSupportMBean {
     @Override
     public String printQueryResultsByQueryId(String queryId) {
         if (Strings.isNullOrEmpty(queryId)) {
-            return "Please specify identifier";
+            return "Please specify query id";
         }
         UUID uuid;
         try {

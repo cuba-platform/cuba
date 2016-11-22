@@ -15,7 +15,7 @@
  *
  */
 
-@mixin havana-cuba-fieldgroup($primary-stylename: cuba-fieldgroup) {
+@mixin havana-cuba-fieldgroup($primary-stylename: c-fieldgroup) {
   @include havana-cuba-groupbox($primary-stylename);
 
   /*

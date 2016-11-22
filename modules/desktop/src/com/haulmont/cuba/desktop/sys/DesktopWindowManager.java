@@ -461,14 +461,17 @@ public class DesktopWindowManager extends WindowManager {
         return DesktopComponentsHelper.getComposition(window);
     }
 
-    protected void addShortcuts(final Window window) {
+    protected void addShortcuts(Window window, OpenType openType) {
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 
         String closeShortcut = clientConfig.getCloseShortcut();
         window.addAction(new com.haulmont.cuba.gui.components.AbstractAction("closeWindowShortcutAction", closeShortcut) {
             @Override
             public void actionPerform(Component component) {
-                window.close("close");
+                if (openType.getOpenMode() != OpenMode.DIALOG
+                        || BooleanUtils.isNotFalse(window.getDialogOptions().getCloseable())) {
+                    window.close("close");
+                }
             }
         });
 
@@ -564,7 +567,7 @@ public class DesktopWindowManager extends WindowManager {
             @Override
             public void windowClosingAfterValidation(WindowEvent e) {
                 if (BooleanUtils.isNotFalse(window.getDialogOptions().getCloseable())) {
-                    if (window.close("close", false)) {
+                    if (window.close("close")) {
                         dialog.dispose();
                     }
                 }
@@ -1153,6 +1156,11 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     @Override
+    public void showNotification(String caption) {
+        showNotification(caption, null, NotificationType.HUMANIZED);
+    }
+
+    @Override
     public void showNotification(String caption, NotificationType type) {
         showNotification(caption, null, type);
     }
@@ -1715,7 +1723,7 @@ public class DesktopWindowManager extends WindowManager {
             windowOpenMode.put(window, openInfo);
         }
 
-        addShortcuts(window);
+        addShortcuts(window, openType);
     }
 
     public void checkModificationsAndCloseAll(final Runnable runIfOk, final @Nullable Runnable runIfCancel) {

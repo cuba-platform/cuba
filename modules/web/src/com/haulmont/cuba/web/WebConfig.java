@@ -53,6 +53,13 @@ public interface WebConfig extends Config {
     String getLoginDialogDefaultPassword();
 
     /**
+     * @return true if powered by link on loginWindow is shown
+     */
+    @DefaultBoolean(true)
+    @Property("cuba.web.loginDialogPoweredByLinkVisible")
+    boolean getLoginDialogPoweredByLinkVisible();
+
+    /**
      * @return HTTP session expiration timeout in seconds.<br/>
      * Should be equals or less than middleware user session timeout <code>cuba.userSessionExpirationTimeoutSec</code>
      */

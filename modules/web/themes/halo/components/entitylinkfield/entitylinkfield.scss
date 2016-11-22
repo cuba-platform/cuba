@@ -15,8 +15,8 @@
  *
  */
 
-@mixin halo-cuba-entitylinkfield($primary-stylename: cuba-buttonfield) {
-  .cuba-fieldgrouplayout-slot > .#{$primary-stylename} {
+@mixin halo-cuba-entitylinkfield($primary-stylename: c-buttonfield) {
+  .c-fglayout-slot > .#{$primary-stylename} {
     line-height: $v-unit-size;
   }
 }

@@ -28,7 +28,7 @@ import com.vaadin.client.ui.menubar.MenuItem;
 
 public class CubaSearchSelectWidget extends VFilterSelect {
 
-    protected static final String CLASSNAME = "cuba-searchselect";
+    protected static final String CLASSNAME = "c-searchselect";
 
     protected static final String INPUT_STATE = "edit-filter";
 

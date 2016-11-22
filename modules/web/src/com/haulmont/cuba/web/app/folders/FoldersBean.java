@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
+import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
@@ -100,6 +101,7 @@ public class FoldersBean implements Folders {
                 filterEntity.setIsSet(((SearchFolder) folder).getIsSet());
             }
             filterComponent.setFilterEntity(filterEntity);
+            filterComponent.switchFilterMode(FilterDelegate.FilterMode.GENERIC_MODE);
         }
 
         if (filterComponent != null && folder instanceof SearchFolder) {

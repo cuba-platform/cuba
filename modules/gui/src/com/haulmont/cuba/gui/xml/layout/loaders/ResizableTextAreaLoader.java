@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.ResizableTextArea;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 public class ResizableTextAreaLoader extends TextAreaLoader {
@@ -38,5 +37,7 @@ public class ResizableTextAreaLoader extends TextAreaLoader {
         if (StringUtils.isNotEmpty(resizable)) {
             textArea.setResizable(Boolean.parseBoolean(resizable));
         }
+
+        loadSettingsEnabled(textArea, element);
     }
 }

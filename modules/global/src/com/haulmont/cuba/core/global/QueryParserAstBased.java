@@ -211,20 +211,18 @@ public class QueryParserAstBased implements QueryParser {
             return null;
         }
 
-        String entityName = getEntityName();
         JpqlEntityModel entity;
         String entityPath;
         boolean collectionSelect = false;
         try {
-            entity = model.getEntityByName(entityName);
+            entity = rootQueryVariableContext.getEntityByVariableName(pathNode.getEntityVariableName());
             entityPath = pathNode.asPathString();
 
             for (int i = 0; i < pathNode.getChildCount(); i++) {
                 String fieldName = pathNode.getChild(i).toString();
                 Attribute entityAttribute = entity.getAttributeByName(fieldName);
                 if (entityAttribute != null && entityAttribute.isEntityReferenceAttribute()) {
-                    entityName = entityAttribute.getReferencedEntityName();
-                    entity = model.getEntityByName(entityName);
+                    entity = model.getEntityByName(entityAttribute.getReferencedEntityName());
                     if (!collectionSelect) {
                         collectionSelect = entityAttribute.isCollection();
                     }
@@ -233,7 +231,7 @@ public class QueryParserAstBased implements QueryParser {
                 }
             }
         } catch (UnknownEntityNameException e) {
-            throw new RuntimeException("Could not find entity by name " + entityName, e);
+            throw new RuntimeException(String.format("Unable to find entity by name %s", e.getEntityName()), e);
         }
 
         return entity != null && entity.getName() != null ? new EntityNameAndPath(entity.getName(), entityPath, collectionSelect) : null;

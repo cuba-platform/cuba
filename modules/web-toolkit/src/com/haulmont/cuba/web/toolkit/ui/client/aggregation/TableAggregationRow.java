@@ -139,6 +139,8 @@ public class TableAggregationRow extends Panel {
 
         td.setClassName(tableWidget.getStylePrimaryName() + "-cell-content");
 
+        td.addClassName(tableWidget.getStylePrimaryName() + "-aggregation-cell");
+
         if (style != null && !style.equals("")) {
             td.addClassName(tableWidget.getStylePrimaryName() + "-cell-content-" + style);
         }

@@ -14,38 +14,35 @@
  * limitations under the License.
  *
  */
-@mixin cuba-generic-filter {
 
-  .cuba-generic-filter .filter-control-with-top-border {
+@mixin cuba-generic-filter {
+  .c-generic-filter .filter-control-with-top-border {
     border-top: valo-border();
     padding-top: 5px;
   }
 
-  .cuba-generic-filter .filter-control-with-bottom-border {
+  .c-generic-filter .filter-control-with-bottom-border {
     border-bottom: valo-border();
     padding-bottom: 5px;
   }
 
-  .cuba-generic-filter .filter-control-no-border {
+  .c-generic-filter .filter-control-no-border {
     border-top: none;
-    padding-top: 0px;
+    padding-top: 0;
     border-bottom: none;
-    padding-bottom: 0px;
+    padding-bottom: 0;
   }
 
-  .cuba-generic-filter .filter-settings-button .v-popup-indicator {
+  .c-generic-filter .filter-settings-button .v-popup-indicator,
+  .c-generic-filter .filter-conditions .v-popupbutton .v-popup-indicator {
     display: none;
   }
 
-  .cuba-generic-filter .filter-conditions .v-popupbutton .v-popup-indicator {
-    display: none;
-  }
-
-  .cuba-generic-filter .filter-conditions .v-popupbutton {
+  .c-generic-filter .filter-conditions .v-popupbutton {
     background: transparent;
   }
 
-  .cuba-generic-filter .filter-search-button-layout {
+  .c-generic-filter .filter-search-button-layout {
     .v-button.filter-search-button {
       border-right: 1px solid transparent;
       border-bottom-right-radius: 0;

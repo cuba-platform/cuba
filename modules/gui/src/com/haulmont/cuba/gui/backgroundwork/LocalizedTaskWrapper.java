@@ -20,6 +20,7 @@ package com.haulmont.cuba.gui.backgroundwork;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.Frame.NotificationType;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
@@ -33,11 +34,10 @@ import java.util.Map;
 
 public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
 
-    protected Logger log = LoggerFactory.getLogger(BackgroundWorker.class);
+    private final Logger log = LoggerFactory.getLogger(BackgroundWorker.class);
 
     protected BackgroundTask<T, V> wrappedTask;
     protected Window window;
-    protected Messages messages = AppBeans.get(Messages.NAME);
 
     protected LocalizedTaskWrapper(BackgroundTask<T, V> wrappedTask, Window window) {
         super(wrappedTask.getTimeoutSeconds(), window);
@@ -56,60 +56,38 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
     }
 
     @Override
-    public boolean handleException(final Exception ex) {
+    public boolean handleException(Exception ex) {
         boolean handled = wrappedTask.handleException(ex);
-        if (!handled) {
-            final Frame ownerFrame = wrappedTask.getOwnerFrame();
-            if (ownerFrame != null) {
-                window.closeAndRun("close", () -> showExecutionError(ex));
 
-                log.error("Exception occurred in background task", ex);
-
-                handled = true;
-            } else {
-                window.close("", true);
-            }
-        } else {
+        if (handled || wrappedTask.getOwnerFrame() == null) {
             window.close("", true);
+        } else {
+            window.closeAndRun("close", () ->
+                    showExecutionError(ex)
+            );
+
+            log.error("Exception occurred in background task", ex);
+
+            handled = true;
         }
         return handled;
-    }
-
-    protected void showExecutionError(Exception ex) {
-        final Frame ownerFrame = wrappedTask.getOwnerFrame();
-        if (ownerFrame != null) {
-            String localizedMessage = ex.getLocalizedMessage();
-            if (StringUtils.isNotBlank(localizedMessage)) {
-                ownerFrame.showNotification(messages.getMessage(getClass(), "backgroundWorkProgress.executionError"),
-                        localizedMessage, Frame.NotificationType.WARNING);
-            } else {
-                ownerFrame.showNotification(messages.getMessage(getClass(), "backgroundWorkProgress.executionError"),
-                        Frame.NotificationType.WARNING);
-            }
-        }
     }
 
     @Override
     public boolean handleTimeoutException() {
         boolean handled = wrappedTask.handleTimeoutException();
-        if (!handled) {
-            final Frame ownerFrame = wrappedTask.getOwnerFrame();
-            if (ownerFrame != null) {
-                window.closeAndRun("close", new Runnable() {
-                    @Override
-                    public void run() {
-                        ownerFrame.showNotification(
-                                messages.getMessage(getClass(), "backgroundWorkProgress.timeout"),
-                                messages.getMessage(getClass(), "backgroundWorkProgress.timeoutMessage"),
-                                Frame.NotificationType.WARNING);
-                    }
-                });
-                handled = true;
-            } else {
-                window.close("", true);
-            }
-        } else {
+        if (handled || wrappedTask.getOwnerFrame() == null) {
             window.close("", true);
+        } else {
+            window.closeAndRun("close", () -> {
+                Messages messages = AppBeans.get(Messages.NAME);
+
+                wrappedTask.getOwnerFrame().showNotification(
+                        messages.getMessage(LocalizedTaskWrapper.class, "backgroundWorkProgress.timeout"),
+                        messages.getMessage(LocalizedTaskWrapper.class, "backgroundWorkProgress.timeoutMessage"),
+                        NotificationType.WARNING);
+            });
+            handled = true;
         }
         return handled;
     }
@@ -119,21 +97,19 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
         window.close("", true);
 
         try {
-            // after window close we should show exception messages immediately
             wrappedTask.done(result);
         } catch (Exception ex) {
+            // we should show exception messages immediately
             showExecutionError(ex);
         }
     }
 
     @Override
     public void canceled() {
-        window.close("", true);
-
         try {
-            // after window close we should show exception messages immediately
             wrappedTask.canceled();
         } catch (Exception ex) {
+            // we should show exception messages immediately
             showExecutionError(ex);
         }
     }
@@ -141,5 +117,23 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
     @Override
     public void progress(List<T> changes) {
         wrappedTask.progress(changes);
+    }
+
+    protected void showExecutionError(Exception ex) {
+        Frame ownerFrame = wrappedTask.getOwnerFrame();
+        if (ownerFrame != null) {
+            String localizedMessage = ex.getLocalizedMessage();
+
+            Messages messages = AppBeans.get(Messages.NAME);
+            if (StringUtils.isNotBlank(localizedMessage)) {
+                ownerFrame.showNotification(
+                        messages.getMessage(LocalizedTaskWrapper.class, "backgroundWorkProgress.executionError"),
+                        localizedMessage, NotificationType.WARNING);
+            } else {
+                ownerFrame.showNotification(
+                        messages.getMessage(LocalizedTaskWrapper.class, "backgroundWorkProgress.executionError"),
+                        NotificationType.WARNING);
+            }
+        }
     }
 }

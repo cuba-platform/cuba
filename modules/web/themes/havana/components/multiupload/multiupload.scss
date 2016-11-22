@@ -15,7 +15,7 @@
  *
  */
 
-@mixin havana-cuba-multiupload($primary-stylename : cuba-multiupload) {
+@mixin havana-cuba-multiupload($primary-stylename: c-multiupload) {
   .#{$primary-stylename} {
     @include box-defaults;
 

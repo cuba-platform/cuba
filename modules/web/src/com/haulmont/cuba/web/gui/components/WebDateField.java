@@ -34,12 +34,13 @@ import com.haulmont.cuba.web.toolkit.ui.CubaDateField;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateFieldWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
 import com.vaadin.data.Property;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Layout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.Time;
 import java.util.*;
+import java.util.Calendar;
 
 public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> implements DateField {
 
@@ -52,7 +53,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     protected CubaDateField dateField;
     protected WebTimeField timeField;
 
-    protected HorizontalLayout innerLayout;
+    protected Layout innerLayout;
 
     protected String dateTimeFormat;
     protected String dateFormat;
@@ -67,11 +68,9 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
     protected Datasource.ItemChangeListener itemChangeListener;
 
-    protected Messages messages;
-
     public WebDateField() {
-        innerLayout = new HorizontalLayout();
-        innerLayout.setSpacing(true);
+        innerLayout = new com.vaadin.ui.CssLayout();
+        innerLayout.addStyleName("c-datefield-layout");
 
         dateField = new CubaDateField();
         dateField.setImmediate(true);
@@ -96,8 +95,6 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         setResolution(Resolution.MIN);
 
         component = new CubaDateFieldWrapper(this, innerLayout);
-
-        messages = AppBeans.get(Messages.NAME);
     }
 
     protected Property.ValueChangeListener createDateValueChangeListener() {
@@ -167,6 +164,8 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
     private boolean checkRange(Date value) {
         if (value != null) {
+            Messages messages = AppBeans.get(Messages.NAME);
+
             if (dateField.getRangeStart() != null && value.before(dateField.getRangeStart())) {
                 if (getFrame() != null) {
                     getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
@@ -238,12 +237,12 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     public void updateLayout() {
         innerLayout.removeAllComponents();
         innerLayout.addComponent(dateField);
-        innerLayout.setExpandRatio(dateField, 1.0f);
+
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
-            innerLayout.setSpacing(true);
             innerLayout.addComponent(timeField.<com.vaadin.ui.Component>getComponent());
+            innerLayout.addStyleName("c-datefield-withtime");
         } else {
-            innerLayout.setSpacing(false);
+            innerLayout.removeStyleName("c-datefield-withtime");
         }
     }
 

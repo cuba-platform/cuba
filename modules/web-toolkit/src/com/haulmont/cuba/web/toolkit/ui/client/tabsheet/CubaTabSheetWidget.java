@@ -17,9 +17,11 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.appui.ValidationErrorHolder;
+import com.vaadin.client.ComputedStyle;
 import com.vaadin.client.ui.VTabsheet;
 import com.vaadin.shared.ui.tabsheet.TabState;
 import fi.jasoft.dragdroplayouts.client.ui.tabsheet.VDDTabSheet;
@@ -52,11 +54,11 @@ public class CubaTabSheetWidget extends VDDTabSheet {
 
         Tab tab = tabBar.getTab(index);
         if (tab.isHiddenOnServer()) {
-            tab.removeStyleName("cuba-tab-visible");
-            tab.addStyleName("cuba-tab-hidden");
+            tab.removeStyleName("c-tab-visible");
+            tab.addStyleName("c-tab-hidden");
         } else {
-            tab.removeStyleName("cuba-tab-hidden");
-            tab.addStyleName("cuba-tab-visible");
+            tab.removeStyleName("c-tab-hidden");
+            tab.addStyleName("c-tab-visible");
         }
     }
 
@@ -70,12 +72,12 @@ public class CubaTabSheetWidget extends VDDTabSheet {
             boolean firstVisibleAfterSelection = false;
             for (Widget widget : tabBar) {
                 Tab t = (Tab) widget;
-                t.removeStyleName("cuba-tab-sibling-visible");
+                t.removeStyleName("c-tab-sibling-visible");
 
                 if (!firstVisibleAfterSelection
                         && i > navIndex
                         && !t.isHiddenOnServer()) {
-                    t.addStyleName("cuba-tab-sibling-visible");
+                    t.addStyleName("c-tab-sibling-visible");
                     firstVisibleAfterSelection = true;
                 }
 
@@ -116,6 +118,34 @@ public class CubaTabSheetWidget extends VDDTabSheet {
             }
 
             super.onClose();
+        }
+    }
+
+    @Override
+    public void updateContentNodeHeight() {
+        if (!isDynamicHeight()) {
+            ComputedStyle fullHeight = new ComputedStyle(getElement());
+            double contentHeight = fullHeight.getHeight();
+
+            ComputedStyle tabsCs = new ComputedStyle(tabs);
+            contentHeight -= tabsCs.getHeight();
+
+            contentHeight -= deco.getOffsetHeight();
+
+            ComputedStyle cs = new ComputedStyle(contentNode);
+            contentHeight -= cs.getPaddingHeight();
+            contentHeight -= cs.getBorderHeight();
+
+            if (contentHeight < 0) {
+                contentHeight = 0;
+            }
+
+            // Set proper values for content element
+            double ceilHeight = Math.ceil(contentHeight);
+
+            contentNode.getStyle().setHeight(ceilHeight, Style.Unit.PX);
+        } else {
+            contentNode.getStyle().clearHeight();
         }
     }
 

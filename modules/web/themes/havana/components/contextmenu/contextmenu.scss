@@ -45,7 +45,7 @@
 }
 
 // custom cuba context menu with normal buttons
-@mixin havana-cuba-contextmenu($primary-stylename: cuba-context-menu-container) {
+@mixin havana-cuba-contextmenu($primary-stylename: c-cm-container) {
   .#{$primary-stylename} {
     background: $cuba-contextmenu-background-color;
     overflow: auto;
@@ -73,7 +73,7 @@
       text-decoration: none;
     }
 
-    .cuba-context-menu-button-selected {
+    .c-cm-button-selected {
       background: $cuba-field-selection-color;
       color: #fff;
       text-decoration: none;
@@ -84,7 +84,7 @@
       }
     }
 
-    .cuba-context-menu-button-selected.v-disabled {
+    .c-cm-button-selected.v-disabled {
        background: transparent;
        color: inherit;
        border: 1px solid transparent;

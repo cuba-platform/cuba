@@ -105,7 +105,7 @@ public class QueryKey implements Serializable {
 
     public String printDescription() {
         return MoreObjects.toStringHelper("Query")
-                .addValue(queryString)
+                .addValue("\"" + queryString.trim() + "\"")
                 .add("id", id)
                 .add("firstRow", firstRow)
                 .add("maxRows", maxRows)

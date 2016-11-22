@@ -110,7 +110,7 @@ public class CubaFoldersPane extends VerticalLayout {
         setMargin(false);
         setSpacing(true);
 
-        setStyleName("cuba-folders-pane");
+        setStyleName("c-folders-pane");
         //noinspection unchecked
         folderUpdateBackgroundTaskWrapper = new BackgroundTaskWrapper(new AppFolderUpdateBackgroundTask(10));
     }
@@ -216,7 +216,7 @@ public class CubaFoldersPane extends VerticalLayout {
         searchFoldersPane.setWidth("100%");
         if (isNeedFoldersTitle()) {
             searchFoldersLabel = new Label(messages.getMainMessage("folders.searchFoldersRoot"));
-            searchFoldersLabel.setStyleName("cuba-folders-pane-caption");
+            searchFoldersLabel.setStyleName("c-folders-pane-caption");
         } else {
             searchFoldersLabel = null;
         }
@@ -225,8 +225,8 @@ public class CubaFoldersPane extends VerticalLayout {
     protected void setupUpdateTimer() {
         int period = webConfig.getAppFoldersRefreshPeriodSec() * 1000;
 
-        AppUI appWindow = AppUI.getCurrent();
-        for (CubaTimer t : appWindow.getTimers()) {
+        AppUI appUI = AppUI.getCurrent();
+        for (CubaTimer t : appUI.getTimers()) {
             if (t instanceof FoldersPaneTimer) {
                 t.stop();
             }
@@ -238,7 +238,21 @@ public class CubaFoldersPane extends VerticalLayout {
         timer.addActionListener(createAppFolderUpdater());
         timer.start();
 
-        appWindow.addTimer(timer);
+        if (this.isAttached()) {
+            appUI.addTimer(timer);
+        } else {
+            AttachListener attachListener = new AttachListener() {
+                @Override
+                public void attach(AttachEvent event) {
+                    AppUI ui = (AppUI) getUI();
+                    ui.addTimer(timer);
+
+                    // execute once
+                    removeAttachListener(this);
+                }
+            };
+            addAttachListener(attachListener);
+        }
     }
 
     protected void setupAppFoldersPane(Component appFoldersPane) {
@@ -246,7 +260,7 @@ public class CubaFoldersPane extends VerticalLayout {
         appFoldersPane.setWidth("100%");
         if (isNeedFoldersTitle()) {
             appFoldersLabel = new Label(messages.getMainMessage("folders.appFoldersRoot"));
-            appFoldersLabel.setStyleName("cuba-folders-pane-caption");
+            appFoldersLabel.setStyleName("c-folders-pane-caption");
         } else {
             appFoldersLabel = null;
         }
@@ -609,9 +623,9 @@ public class CubaFoldersPane extends VerticalLayout {
                 String style;
                 // clickable tree item
                 if (getItemClickable(folder))
-                    style = "cuba-clickable-folder";
+                    style = "c-clickable-folder";
                 else
-                    style = "cuba-nonclickable-folder";
+                    style = "c-nonclickable-folder";
                 // handle custom styles
                 if (StringUtils.isNotBlank(folder.getItemStyle())) {
                     if (style.equals(""))

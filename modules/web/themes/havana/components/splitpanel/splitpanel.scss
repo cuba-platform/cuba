@@ -53,32 +53,32 @@
 
   // Dock Mode
 
-  .cuba-splitpanel-dock-button {
+  .c-splitpanel-dock-button {
     cursor: pointer;
     width: 11px;
     height: 40px;
     background: transparent;
   }
 
-  .cuba-splitpanel-dock-button-left {
+  .c-splitpanel-dock-button-left {
     background-image: url(sprites/dock-button-left.png); /** sprite-ref: components; */
   }
 
-  .cuba-splitpanel-dock-button-right {
+  .c-splitpanel-dock-button-right {
     background-image: url(sprites/dock-button-right.png); /** sprite-ref: components; */
   }
 
-  .cuba-splitpanel-dockable-right > div > .#{$primary-stylename}-hsplitter > div,
-  .cuba-splitpanel-dockable-left > div > .#{$primary-stylename}-hsplitter > div {
+  .c-splitpanel-dockable-right > div > .#{$primary-stylename}-hsplitter > div,
+  .c-splitpanel-dockable-left > div > .#{$primary-stylename}-hsplitter > div {
     background: transparent none;
   }
 
-  .cuba-splitpanel-dockable-left > div > .#{$primary-stylename}-hsplitter {
+  .c-splitpanel-dockable-left > div > .#{$primary-stylename}-hsplitter {
     width: 5px;
     background: url(images/dockable-split-left.png) center repeat-y;
   }
 
-  .cuba-splitpanel-dockable-right > div > .#{$primary-stylename}-hsplitter {
+  .c-splitpanel-dockable-right > div > .#{$primary-stylename}-hsplitter {
     width: 5px;
     background: url(images/dockable-split-right.png) center repeat-y;
   }

@@ -208,8 +208,8 @@ public class CubaGroupBox extends Panel implements ComponentContainer {
                 setStyleName("v-panel");
                 setPrimaryStyleName("v-panel");
             } else {
-                setStyleName("cuba-groupbox");
-                setPrimaryStyleName("cuba-groupbox");
+                setStyleName("c-groupbox");
+                setPrimaryStyleName("c-groupbox");
             }
 
             getState().showAsPanel = showAsPanel;

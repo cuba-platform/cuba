@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
@@ -23,10 +24,7 @@ import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI;
 import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.CategoryAttributeValue;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
@@ -42,6 +40,7 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -134,7 +133,8 @@ public class RdbmsStore implements DataStore {
             }
 
             if (result instanceof BaseGenericIdEntity && context.isLoadDynamicAttributes()) {
-                dynamicAttributesManagerAPI.fetchDynamicAttributes(Collections.singletonList((BaseGenericIdEntity) result));
+                dynamicAttributesManagerAPI.fetchDynamicAttributes(Collections.singletonList((BaseGenericIdEntity) result),
+                        collectEntityClassesWithDynamicAttributes(context.getView()));
             }
 
             tx.commit();
@@ -190,10 +190,9 @@ public class RdbmsStore implements DataStore {
             resultList = getResultList(context, query, ensureDistinct);
 
             // Fetch dynamic attributes
-            if (context.getView() != null
-                    && BaseGenericIdEntity.class.isAssignableFrom(context.getView().getEntityClass())
-                    && context.isLoadDynamicAttributes()) {
-                dynamicAttributesManagerAPI.fetchDynamicAttributes((List<BaseGenericIdEntity>) resultList);
+            if (!resultList.isEmpty() && resultList.get(0) instanceof BaseGenericIdEntity && context.isLoadDynamicAttributes()) {
+                dynamicAttributesManagerAPI.fetchDynamicAttributes((List<BaseGenericIdEntity>) resultList,
+                        collectEntityClassesWithDynamicAttributes(context.getView()));
             }
 
             tx.commit();
@@ -390,6 +389,60 @@ public class RdbmsStore implements DataStore {
         updateReferences(persisted, res);
 
         return res;
+    }
+
+    @Override
+    public List<KeyValueEntity> loadValues(ValueLoadContext context) {
+        Preconditions.checkNotNullArgument(context, "context is null");
+        Preconditions.checkNotNullArgument(context.getQuery(), "query is null");
+
+        ValueLoadContext.Query contextQuery = context.getQuery();
+
+        if (log.isDebugEnabled())
+            log.debug("query: " + (DataServiceQueryBuilder.printQuery(contextQuery.getQueryString()))
+                    + (contextQuery.getFirstResult() == 0 ? "" : ", first=" + contextQuery.getFirstResult())
+                    + (contextQuery.getMaxResults() == 0 ? "" : ", max=" + contextQuery.getMaxResults()));
+
+        List<KeyValueEntity> entities = new ArrayList<>();
+
+        try (Transaction tx = persistence.createTransaction(storeName)) {
+            EntityManager em = persistence.getEntityManager(storeName);
+            em.setSoftDeletion(context.isSoftDeletion());
+
+            List<String> keys = context.getProperties();
+
+            DataServiceQueryBuilder queryBuilder = AppBeans.get(DataServiceQueryBuilder.NAME);
+            queryBuilder.init(contextQuery.getQueryString(), contextQuery.getParameters(), null, metadata.getClassNN(KeyValueEntity.class).getName());
+            Query query = queryBuilder.getQuery(em);
+
+            if (contextQuery.getFirstResult() != 0)
+                query.setFirstResult(contextQuery.getFirstResult());
+            if (contextQuery.getMaxResults() != 0)
+                query.setMaxResults(contextQuery.getMaxResults());
+
+            List resultList = query.getResultList();
+            for (Object item : resultList) {
+                KeyValueEntity entity = new KeyValueEntity();
+                entity.setIdName(context.getIdName());
+                entities.add(entity);
+
+                if (item instanceof Object[]) {
+                    Object[] row = (Object[]) item;
+                    for (int i = 0; i < keys.size(); i++) {
+                        String key = keys.get(i);
+                        if (row.length > i) {
+                            entity.setValue(key, row[i]);
+                        }
+                    }
+                } else if (!keys.isEmpty()) {
+                    entity.setValue(keys.get(0), item);
+                }
+            }
+
+            tx.commit();
+        }
+
+        return entities;
     }
 
     protected View getViewFromContext(CommitContext context, Entity entity) {
@@ -715,6 +768,9 @@ public class RdbmsStore implements DataStore {
                     if (value != null) {
                         if (value.getId().equals(refEntity.getId())) {
                             if (entity instanceof AbstractInstance) {
+                                if (property.isReadOnly() && metadata.getTools().isTransient(property)) {
+                                    continue;
+                                }
                                 ((AbstractInstance) entity).setValue(property.getName(), refEntity, false);
                             }
                         } else {
@@ -763,6 +819,16 @@ public class RdbmsStore implements DataStore {
             }
         }
         return false;
+    }
+
+    protected Set<Class> collectEntityClassesWithDynamicAttributes(@Nullable View view) {
+        if (view == null) {
+            return Collections.emptySet();
+        }
+        return collectEntityClasses(view, new HashSet<>()).stream()
+                .filter(BaseGenericIdEntity.class::isAssignableFrom)
+                .filter(aClass -> !dynamicAttributesManagerAPI.getAttributesForMetaClass(metadata.getClassNN(aClass)).isEmpty())
+                .collect(Collectors.toSet());
     }
 
     protected Set<Class> collectEntityClasses(View view, Set<View> visited) {

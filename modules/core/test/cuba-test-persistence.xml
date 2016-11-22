@@ -26,7 +26,17 @@
         <class>com.haulmont.cuba.testmodel.primary_keys.IdentityUuidEntity</class>
         <class>com.haulmont.cuba.testmodel.primary_keys.EntityKey</class>
         <class>com.haulmont.cuba.testmodel.primary_keys.CompositeKeyEntity</class>
+        <class>com.haulmont.cuba.testmodel.primary_keys.StringKeyEntity</class>
         <class>com.haulmont.cuba.testmodel.selfinherited.RootEntity</class>
         <class>com.haulmont.cuba.testmodel.selfinherited.ChildEntity</class>
+        <class>com.haulmont.cuba.testmodel.softdelete_one_to_one.SoftDeleteOneToOneA</class>
+        <class>com.haulmont.cuba.testmodel.softdelete_one_to_one.SoftDeleteOneToOneB</class>
+        <class>com.haulmont.cuba.testmodel.cascadedelete.CascadeEntity</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.JoinA</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.JoinB</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.JoinC</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.JoinD</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.JoinE</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.JoinF</class>
     </persistence-unit>
 </persistence>

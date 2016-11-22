@@ -38,7 +38,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class ConfigCacheStrategy implements CachingStrategy {
     public static final String NAME = "cuba_ConfigCacheStrategy";
 
-    protected Logger log = LoggerFactory.getLogger(ConfigCacheStrategy.class);
+    private final Logger log = LoggerFactory.getLogger(ConfigCacheStrategy.class);
 
     protected volatile Map<String, String> cachedProperties = null;
 
@@ -85,6 +85,11 @@ public class ConfigCacheStrategy implements CachingStrategy {
 
     protected void updateCacheInBackground() {
         UserSession userSession = cacheUserSessionProvider.getUserSession();
+        if (userSession == null) {
+            // cache user session unavailable
+            return;
+        }
+
         try {
             AppContext.setSecurityContext(new SecurityContext(userSession));
 

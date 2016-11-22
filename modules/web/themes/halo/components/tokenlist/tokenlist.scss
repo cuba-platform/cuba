@@ -15,12 +15,12 @@
  *
  */
 
-@mixin halo-cuba-tokenlist($primary-stylename: cuba-tokenlist) {
+@mixin halo-cuba-tokenlist($primary-stylename: c-tokenlist) {
   .#{$primary-stylename} .v-csslayout {
     clear: both;
   }
 
-  .#{$primary-stylename} .cuba-tokenlist-label.v-widget {
+  .#{$primary-stylename} .c-tokenlist-label.v-widget {
     clear: both;
     margin: 0 round($v-layout-margin-right/2) round($v-layout-margin-bottom/2) 0;
     height: $v-unit-size;
@@ -29,7 +29,7 @@
     padding-left: round($v-layout-margin-left/2);
   }
 
-  .#{$primary-stylename} .cuba-tokenlist-label-close {
+  .#{$primary-stylename} .c-tokenlist-label-close {
     height: $v-unit-size;
     width: $v-unit-size;
     cursor: pointer;
@@ -44,15 +44,15 @@
     }
   }
 
-  .#{$primary-stylename}.v-disabled .cuba-tokenlist-label-close{
+  .#{$primary-stylename}.v-disabled .c-tokenlist-label-close{
     @include opacity($v-disabled-opacity);
   }
 
-  .#{$primary-stylename}.readonly .cuba-tokenlist-label-close{
+  .#{$primary-stylename}.readonly .c-tokenlist-label-close{
     display: none;
   }
 
-  .#{$primary-stylename} .cuba-tokenlist-label-content {
+  .#{$primary-stylename} .c-tokenlist-label-content {
     white-space: nowrap;
     outline: none;
     font-size: 0;
@@ -60,7 +60,7 @@
     overflow: hidden;
   }
 
-  .#{$primary-stylename} .cuba-tokenlist-label-content .content {
+  .#{$primary-stylename} .c-tokenlist-label-content .content {
     white-space: nowrap;
     cursor: default;
     overflow: hidden;
@@ -71,35 +71,39 @@
     width: 100%;
   }
 
-  .#{$primary-stylename} .cuba-tokenlist-label.noedit {
+  .#{$primary-stylename} .v-panel {
+    border: none;
+  }
+
+  .#{$primary-stylename} .c-tokenlist-label.noedit {
     background-image: none;
     padding-right: $v-layout-margin-right;
   }
 
-  .#{$primary-stylename} .cuba-tokenlist-label-content.noedit .content {
+  .#{$primary-stylename} .c-tokenlist-label-content.noedit .content {
     margin-right: 0;
   }
 
-  .#{$primary-stylename} .cuba-tokenlist-label.open .content {
+  .#{$primary-stylename} .c-tokenlist-label.open .content {
     cursor: pointer;
   }
 
   .#{$primary-stylename}.inline {
-    .cuba-tokenlist-label.v-widget {
+    .c-tokenlist-label.v-widget {
       clear: none;
       margin-right: round($v-layout-margin-right/2);
       float: left;
     }
 
-    .cuba-tokenlist-label.v-widget {
+    .c-tokenlist-label.v-widget {
       display: inline-block;
     }
 
-    .cuba-tokenlist-label-content {
+    .c-tokenlist-label-content {
       padding-right: 0;
     }
 
-    .cuba-tokenlist-label-content .content {
+    .c-tokenlist-label-content .content {
       width: auto;
     }
   }

@@ -243,6 +243,7 @@ public class PersistenceImpl implements Persistence {
         public EntityManagerContextSynchronization(String store) {
             this.store = store;
             prevSoftDeletion = CubaUtil.setSoftDeletion(softDeletion);
+            CubaUtil.setOriginalSoftDeletion(softDeletion);
         }
 
         @Override
@@ -250,6 +251,7 @@ public class PersistenceImpl implements Persistence {
             context = contextHolder.get(store);
             contextHolder.remove(store);
             CubaUtil.setSoftDeletion(prevSoftDeletion);
+            CubaUtil.setOriginalSoftDeletion(prevSoftDeletion);
         }
 
         @Override
@@ -257,6 +259,7 @@ public class PersistenceImpl implements Persistence {
             contextHolder.set(context, store);
             if (context != null) {
                 CubaUtil.setSoftDeletion(context.isSoftDeletion());
+                CubaUtil.setOriginalSoftDeletion(context.isSoftDeletion());
             }
         }
 
@@ -301,6 +304,7 @@ public class PersistenceImpl implements Persistence {
             }
             contextHolder.remove(store);
             CubaUtil.setSoftDeletion(prevSoftDeletion);
+            CubaUtil.setOriginalSoftDeletion(prevSoftDeletion);
         }
 
         @Override

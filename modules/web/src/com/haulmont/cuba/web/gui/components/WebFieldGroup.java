@@ -22,6 +22,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -32,14 +34,17 @@ import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
-import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup> implements FieldGroup {
+public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> implements FieldGroup {
+
+    protected CubaFieldGroup wrapper;
+    protected boolean wrapperAttached = false;
 
     protected Map<String, FieldConfig> fields = new LinkedHashMap<>();
     protected Map<FieldConfig, Integer> fieldsColumn = new HashMap<>();
@@ -61,7 +66,9 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup> implemen
     protected Messages messages = AppBeans.get(Messages.NAME);
 
     public WebFieldGroup() {
-        component = new CubaFieldGroup() {
+        wrapper = new CubaFieldGroup();
+
+        component = new CubaFieldGroupLayout() {
             @Override
             public void addField(Object propertyId, com.vaadin.ui.Field field) {
                 FieldConfig fieldConf = WebFieldGroup.this.getField(propertyId.toString());
@@ -82,7 +89,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup> implemen
                 super.addCustomField(propertyId, fieldGenerator, col, colFields.indexOf(fieldConf));
             }
         };
-        component.setLayout(new CubaFieldGroupLayout());
         fieldFactory = createFieldFactory();
     }
 
@@ -160,7 +166,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup> implemen
         fillColumnFields(col, field);
     }
 
-    private void fillColumnFields(int col, FieldConfig field) {
+    protected void fillColumnFields(int col, FieldConfig field) {
         List<FieldConfig> fields = columnFields.get(col);
         if (fields == null) {
             fields = new ArrayList<>();
@@ -193,28 +199,27 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup> implemen
 
     @Override
     public void setCaptionAlignment(FieldCaptionAlignment captionAlignment) {
-        CubaFieldGroupLayout layout = component.getLayout();
-        layout.setUseInlineCaption(WebComponentsHelper.convertFieldGroupCaptionAlignment(captionAlignment));
+        component.setUseInlineCaption(WebComponentsHelper.convertFieldGroupCaptionAlignment(captionAlignment));
     }
 
     @Override
     public int getFieldCaptionWidth() {
-        return component.getLayout().getFixedCaptionWidth();
+        return component.getFixedCaptionWidth();
     }
 
     @Override
     public void setFieldCaptionWidth(int fixedCaptionWidth) {
-        component.getLayout().setFixedCaptionWidth(fixedCaptionWidth);
+        component.setFixedCaptionWidth(fixedCaptionWidth);
     }
 
     @Override
     public int getFieldCaptionWidth(int column) {
-        return component.getLayout().getFieldCaptionWidth(column);
+        return component.getFieldCaptionWidth(column);
     }
 
     @Override
     public void setFieldCaptionWidth(int column, int width) {
-        component.getLayout().setFieldCaptionWidth(column, width);
+        component.setFieldCaptionWidth(column, width);
     }
 
     @Override
@@ -232,9 +237,9 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup> implemen
             throw new IllegalStateException(String.format("Field '%s' must be defined as custom", fieldConfig.getId()));
         }
 
-        component.addCustomField(fieldConfig.getId(), new CubaFieldGroup.CustomFieldGenerator() {
+        component.addCustomField(fieldConfig.getId(), new CubaFieldGroupLayout.CustomFieldGenerator() {
             @Override
-            public com.vaadin.ui.Field generateField(Object propertyId, CubaFieldGroup component) {
+            public com.vaadin.ui.Field generateField(Object propertyId, CubaFieldGroupLayout component) {
                 Datasource fieldDatasource;
                 if (fieldConfig.getDatasource() != null) {
                     fieldDatasource = fieldConfig.getDatasource();
@@ -372,7 +377,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup> implemen
     public void setDatasource(final Datasource datasource) {
         this.datasource = datasource;
 
-        component.setCols(cols);
+        component.setColumns(cols);
 
         if (!this.fields.isEmpty()) {
             component.setRows(rowsCount());
@@ -542,7 +547,11 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup> implemen
 
     @Override
     public void setCaption(String caption) {
-        component.setCaption(caption);
+        if (wrapperAttached) {
+            wrapper.setCaption(caption);
+        } else {
+            component.setCaption(caption);
+        }
     }
 
     @Override
@@ -812,12 +821,34 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup> implemen
 
     @Override
     public boolean isBorderVisible() {
-        return component.isBorderVisible();
+        return wrapper.isBorderVisible();
     }
 
     @Override
     public void setBorderVisible(boolean borderVisible) {
-        component.setBorderVisible(borderVisible);
+        wrapper.setBorderVisible(borderVisible);
+
+        if (component.isAttached() && !wrapperAttached) {
+            LoggerFactory.getLogger(WebFieldGroup.class)
+                    .warn("Unable to set border visible for FieldGroup after adding to component tree");
+            return;
+        }
+
+        if (borderVisible && !wrapperAttached) {
+            wrapper.setContent(component);
+
+            wrapperAttached = true;
+        }
+    }
+
+    @Override
+    public com.vaadin.ui.Component getComposition() {
+        if (wrapperAttached) {
+            // wrapper is connected to layout
+            return wrapper;
+        }
+
+        return super.getComposition();
     }
 
     @Override

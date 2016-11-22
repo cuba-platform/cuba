@@ -85,7 +85,7 @@ public class QueryCacheManager {
      */
     @SuppressWarnings("unchecked")
     public <T> List<T> getResultListFromCache(QueryKey queryKey, List<View> views) {
-        log.debug("Find query in cache: {}", queryKey.printDescription());
+        log.debug("Looking for query in cache: {}", queryKey.printDescription());
         List<T> resultList = null;
         QueryResult queryResult = queryCache.get(queryKey);
         if (queryResult != null) {
@@ -93,13 +93,13 @@ public class QueryCacheManager {
             resultList = new ArrayList<>(queryResult.getResult().size());
             MetaClass metaClass = metadata.getClassNN(queryResult.getType());
             if (!metadata.getTools().isCacheable(metaClass)) {
-                log.warn("Using cached without entity cache for type {}", queryResult.getType());
+                log.warn("Using cacheable query without entity cache for {}", queryResult.getType());
             }
             for (Object id : queryResult.getResult()) {
                 resultList.add((T) em.find(metaClass.getJavaClass(), id, views.toArray(new View[views.size()])));
             }
         } else {
-            log.debug("Query results is not found in cache: {}", queryKey.printDescription());
+            log.debug("Query results are not found in cache: {}", queryKey.printDescription());
         }
         return resultList;
     }
@@ -110,12 +110,12 @@ public class QueryCacheManager {
      */
     @SuppressWarnings("unchecked")
     public <T> T getSingleResultFromCache(QueryKey queryKey, List<View> views) {
-        log.debug("Find query in cache: {}", queryKey.printDescription());
+        log.debug("Looking for query in cache: {}", queryKey.printDescription());
         QueryResult queryResult = queryCache.get(queryKey);
         if (queryResult != null) {
             MetaClass metaClass = metadata.getClassNN(queryResult.getType());
             if (!metadata.getTools().isCacheable(metaClass)) {
-                log.warn("Using cached query without entity cache for type {}", queryResult.getType());
+                log.warn("Using cacheable query without entity cache for {}", queryResult.getType());
             }
             if (queryResult.getException() != null) {
                 RuntimeException ex = queryResult.getException();
@@ -127,7 +127,7 @@ public class QueryCacheManager {
                 return (T) em.find(metaClass.getJavaClass(), id, views.toArray(new View[views.size()]));
             }
         }
-        log.debug("Query results is not found in cache: {}", queryKey.printDescription());
+        log.debug("Query results are not found in cache: {}", queryKey.printDescription());
         return null;
     }
 
@@ -217,7 +217,7 @@ public class QueryCacheManager {
     }
 
     /**
-     * Discards all queries results in the cache.
+     * Discards all query results in the cache.
      * @param sendInCluster - if true - discard queries results in all query caches in cluster
      */
     public void invalidateAll(boolean sendInCluster) {

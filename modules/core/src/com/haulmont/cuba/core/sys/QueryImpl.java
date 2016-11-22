@@ -72,6 +72,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
     private Integer firstResult;
     private boolean singleResultExpected;
     private boolean cacheable;
+    private FlushModeType flushMode;
 
     private Collection<QueryMacroHandler> macroHandlers;
 
@@ -126,10 +127,15 @@ public class QueryImpl<T> implements TypedQuery<T> {
                     }
                 }
             }
-            if (view != null && !view.loadPartialEntities()) {
-                query.setFlushMode(FlushModeType.AUTO);
+
+            if (flushMode == null) {
+                if (view != null && !view.loadPartialEntities()) {
+                    query.setFlushMode(FlushModeType.AUTO);
+                } else {
+                    query.setFlushMode(FlushModeType.COMMIT);
+                }
             } else {
-                query.setFlushMode(FlushModeType.COMMIT);
+                query.setFlushMode(flushMode);
             }
 
             boolean nullParam = false;
@@ -213,6 +219,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
             transformer.replaceWithSelectEntityVariable("tempEntityAlias");
             transformer.addFirstSelectionSource(String.format("%s tempEntityAlias", nestedEntityName));
             transformer.addWhereAsIs(String.format("tempEntityAlias.id = %s.id", nestedEntityPath));
+            transformer.addEntityInGroupBy("tempEntityAlias");
             result = transformer.getResult();
         }
 
@@ -412,7 +419,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         checkState();
 
         if (value instanceof IdProxy) {
-            value = ((IdProxy) value).getNN();
+            value = ((IdProxy) value).get();
         } else if (implicitConversions) {
             value = handleImplicitConversions(value);
         }
@@ -459,7 +466,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 throw new RuntimeException("Error setting parameter value", e);
             }
         } else if (value instanceof IdProxy) {
-            value = ((IdProxy) value).getNN();
+            value = ((IdProxy) value).get();
         } else if (implicitConversions) {
             value = handleImplicitConversions(value);
         }
@@ -547,6 +554,12 @@ public class QueryImpl<T> implements TypedQuery<T> {
     @Override
     public TypedQuery<T> setCacheable(boolean cacheable) {
         this.cacheable = cacheable;
+        return this;
+    }
+
+    @Override
+    public TypedQuery<T> setFlushMode(FlushModeType flushMode) {
+        this.flushMode = flushMode;
         return this;
     }
 

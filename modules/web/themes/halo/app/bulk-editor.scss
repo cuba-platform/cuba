@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@mixin cuba-bulk-editor($primary-stylename: bulk-editor) {
+@mixin cuba-bulk-editor($primary-stylename: c-bulk-editor) {
   .#{$primary-stylename}-grid .field-label {
     line-height: $v-unit-size;
   }

@@ -24,17 +24,13 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
-public class WindowBreadCrumbs extends HorizontalLayout {
-
+public class WindowBreadCrumbs extends CssLayout {
     protected boolean visibleExplicitly = true;
     protected Label label;
 
@@ -46,8 +42,8 @@ public class WindowBreadCrumbs extends HorizontalLayout {
 
     protected LinkedList<Window> windows = new LinkedList<>();
 
-    protected HorizontalLayout logoLayout;
-    protected HorizontalLayout linksLayout;
+    protected Layout logoLayout;
+    protected Layout linksLayout;
     protected Button closeBtn;
 
     protected Map<Button, Window> btn2win = new HashMap<>();
@@ -57,32 +53,26 @@ public class WindowBreadCrumbs extends HorizontalLayout {
     public WindowBreadCrumbs(WebAppWorkArea workArea) {
         setWidth(100, Unit.PERCENTAGE);
         setHeight(-1, Unit.PIXELS);
-        setStyleName("cuba-headline-container");
+        setStyleName("c-headline-container");
 
         tabbedMode = workArea.getMode() == AppWorkArea.Mode.TABBED;
 
-        if (tabbedMode)
+        if (tabbedMode) {
             super.setVisible(false);
+        }
 
-        logoLayout = new HorizontalLayout();
-        logoLayout.setStyleName("cuba-breadcrumbs-logo");
-        logoLayout.setMargin(true);
-        logoLayout.setSpacing(true);
+        logoLayout = createLogoLayout();
 
-        linksLayout = new HorizontalLayout();
-        linksLayout.setStyleName("cuba-breadcrumbs");
+        linksLayout = createLinksLayout();
         linksLayout.setSizeUndefined();
 
         if (!tabbedMode) {
-            closeBtn = new CubaButton("", new Button.ClickListener() {
-                @Override
-                public void buttonClick(Button.ClickEvent event) {
-                    final Window window = getCurrentWindow();
-                    window.close(Window.CLOSE_ACTION_ID);
-                }
+            closeBtn = new CubaButton("", (Button.ClickListener) event -> {
+                Window window = getCurrentWindow();
+                window.close(Window.CLOSE_ACTION_ID);
             });
             closeBtn.setIcon(WebComponentsHelper.getIcon("icons/close.png"));
-            closeBtn.setStyleName("cuba-closetab-button");
+            closeBtn.setStyleName("c-closetab-button");
         }
 
         AppUI ui = AppUI.getCurrent();
@@ -97,10 +87,8 @@ public class WindowBreadCrumbs extends HorizontalLayout {
             }
         }
 
-        HorizontalLayout enclosingLayout = new HorizontalLayout();
-        enclosingLayout.setStyleName("cuba-breadcrumbs-container");
+        Layout enclosingLayout = createEnclosingLayout();
         enclosingLayout.addComponent(linksLayout);
-        enclosingLayout.setComponentAlignment(linksLayout, Alignment.MIDDLE_LEFT);
 
         addComponent(logoLayout);
         addComponent(enclosingLayout);
@@ -108,8 +96,24 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         if (closeBtn != null) {
             addComponent(closeBtn);
         }
+    }
 
-        setExpandRatio(enclosingLayout, 1);
+    protected Layout createEnclosingLayout() {
+        Layout enclosingLayout = new CssLayout();
+        enclosingLayout.setStyleName("c-breadcrumbs-container");
+        return enclosingLayout;
+    }
+
+    protected Layout createLinksLayout() {
+        CssLayout linksLayout = new CssLayout();
+        linksLayout.setStyleName("c-breadcrumbs");
+        return linksLayout;
+    }
+
+    protected Layout createLogoLayout() {
+        CssLayout logoLayout = new CssLayout();
+        logoLayout.setStyleName("c-breadcrumbs-logo");
+        return logoLayout;
     }
 
     public Window getCurrentWindow() {
@@ -124,6 +128,14 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         update();
         if (windows.size() > 1 && tabbedMode)
             super.setVisible(visibleExplicitly);
+
+        if (getParent() != null) {
+            if (isVisible()) {
+                getParent().addStyleName("c-breadcrumbs-visible");
+            } else {
+                getParent().removeStyleName("c-breadcrumbs-visible");
+            }
+        }
     }
 
     public void removeWindow() {
@@ -133,6 +145,14 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         }
         if (windows.size() <= 1 && tabbedMode)
             super.setVisible(false);
+
+        if (getParent() != null) {
+            if (isVisible()) {
+                getParent().addStyleName("c-breadcrumbs-visible");
+            } else {
+                getParent().removeStyleName("c-breadcrumbs-visible");
+            }
+        }
     }
 
     @Override
@@ -140,6 +160,14 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         this.visibleExplicitly = visible;
 
         super.setVisible(isVisible() && visibleExplicitly);
+
+        if (getParent() != null) {
+            if (isVisible()) {
+                getParent().addStyleName("c-breadcrumbs-visible");
+            } else {
+                getParent().removeStyleName("c-breadcrumbs-visible");
+            }
+        }
     }
 
     public void addListener(Listener listener) {
@@ -182,18 +210,17 @@ public class WindowBreadCrumbs extends HorizontalLayout {
 
             if (it.hasNext()) {
                 linksLayout.addComponent(button);
-                linksLayout.setComponentAlignment(button, Alignment.MIDDLE_LEFT);
 
                 Label separatorLab = new Label("&nbsp;&gt;&nbsp;");
+                separatorLab.setStyleName("c-breadcrumbs-separator");
                 separatorLab.setSizeUndefined();
                 separatorLab.setContentMode(ContentMode.HTML);
                 linksLayout.addComponent(separatorLab);
-                linksLayout.setComponentAlignment(separatorLab, Alignment.MIDDLE_LEFT);
             } else {
                 Label captionLabel = new Label(window.getCaption());
+                captionLabel.setStyleName("c-breadcrumbs-win-caption");
                 captionLabel.setSizeUndefined();
                 linksLayout.addComponent(captionLabel);
-                linksLayout.setComponentAlignment(captionLabel, Alignment.MIDDLE_LEFT);
 
                 this.label = captionLabel;
             }

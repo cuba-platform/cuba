@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.KeyValueEntity;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -141,6 +142,8 @@ public interface DataManager {
      * @param entity    entity instance
      */
     void remove(Entity entity);
+
+    List<KeyValueEntity> loadValues(ValueLoadContext context);
 
     /**
      * Returns the DataManager implementation that is guaranteed to apply security restrictions.

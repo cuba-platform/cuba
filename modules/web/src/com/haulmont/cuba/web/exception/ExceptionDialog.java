@@ -166,7 +166,7 @@ public class ExceptionDialog extends CubaWindow {
         buttonsLayout.addComponent(spacer);
         buttonsLayout.setExpandRatio(spacer, 1);
 
-        String cubaLogContentClass = "cuba-exception-dialog-log-content";
+        String cubaLogContentClass = "c-exception-dialog-log-content";
         String cubaCopyLogContentClass = cubaLogContentClass + "-" + UUID.randomUUID();
 
         if (browserSupportCopy()) {

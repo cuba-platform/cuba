@@ -100,7 +100,8 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
                 entity._persistence_setFetchGroup(new CubaEntityFetchGroup(fetchGroup));
         }
 
-        support.registerInstance(event.getObject(), event.getSession());
+        if (event.getObject() instanceof Entity)
+            support.registerInstance((Entity) event.getObject(), event.getSession());
     }
 
     @Override
@@ -132,7 +133,12 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
     @Override
     public void postUpdate(DescriptorEvent event) {
         String storeName = support.getStorageName(event.getSession());
-        manager.fireListener((Entity) event.getSource(), EntityListenerType.AFTER_UPDATE, storeName);
+        Entity entity = (Entity) event.getSource();
+        if (entity instanceof SoftDelete && persistence.getTools().isDirty(entity, "deleteTs") && ((SoftDelete) entity).isDeleted()) {
+            manager.fireListener(entity, EntityListenerType.AFTER_DELETE, storeName);
+        } else {
+            manager.fireListener(entity, EntityListenerType.AFTER_UPDATE, storeName);
+        }
     }
 
     @Override

@@ -20,6 +20,7 @@ package com.haulmont.cuba.client.sys;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.*;
 
 import org.springframework.stereotype.Component;
@@ -129,6 +130,11 @@ public class DataManagerClientImpl implements DataManager {
                         Collections.<Entity>emptyList(),
                         Collections.singleton(entity));
         commit(context);
+    }
+
+    @Override
+    public List<KeyValueEntity> loadValues(ValueLoadContext context) {
+        return dataService.loadValues(context);
     }
 
     @Override

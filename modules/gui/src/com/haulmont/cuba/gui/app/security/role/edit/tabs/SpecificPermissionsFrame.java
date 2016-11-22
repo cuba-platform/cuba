@@ -24,10 +24,7 @@ import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 import com.haulmont.cuba.gui.app.security.role.edit.BasicPermissionTreeStyleProvider;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
-import com.haulmont.cuba.gui.components.AbstractFrame;
-import com.haulmont.cuba.gui.components.BoxLayout;
-import com.haulmont.cuba.gui.components.CheckBox;
-import com.haulmont.cuba.gui.components.TreeTable;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -81,6 +78,9 @@ public class SpecificPermissionsFrame extends AbstractFrame {
 
     @Inject
     protected Companion companion;
+
+    @Inject
+    private GroupBoxLayout specificEditPane;
 
     protected boolean itemChanging = false;
 
@@ -140,10 +140,13 @@ public class SpecificPermissionsFrame extends AbstractFrame {
         boolean hasPermissionsToModifyPermission = isCreatePermitted && isDeletePermitted;
 
         applyPermissions(hasPermissionsToModifyPermission);
+
+        specificEditPane.setEnabled(security.isEntityOpPermitted(metadata.getClass(Role.class), EntityOp.UPDATE));
     }
 
     protected void updateCheckBoxes(BasicPermissionTarget item) {
         itemChanging = true;
+
         if (item != null) {
             if (item.getPermissionVariant() == PermissionVariant.ALLOWED) {
                 allowCheckBox.setValue(true);

@@ -173,18 +173,13 @@ public class BulkEditorWindow extends AbstractWindow {
         grid.setSpacing(true);
         grid.setColumns(4);
         grid.setRows((managedFields.size() + 1) / 2);
-        grid.setStyleName("bulk-editor-grid");
+        grid.setStyleName("c-bulk-editor-grid");
 
         contentPane.add(grid);
         grid.setFrame(frame);
 
-        ArrayList<ManagedField> editFields = new ArrayList<>(managedFields.values());
-        Collections.sort(editFields, new Comparator<ManagedField>() {
-            @Override
-            public int compare(ManagedField o1, ManagedField o2) {
-                return o1.getLocalizedName().compareTo(o2.getLocalizedName());
-            }
-        });
+        List<ManagedField> editFields = new ArrayList<>(managedFields.values());
+        editFields.sort((o1, o2) -> o1.getLocalizedName().compareTo(o2.getLocalizedName()));
 
         String fieldWidth = themeConstants.get("cuba.gui.BulkEditorWindow.field.width");
 

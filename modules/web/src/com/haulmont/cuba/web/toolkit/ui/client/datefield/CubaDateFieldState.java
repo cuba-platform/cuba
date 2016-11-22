@@ -21,10 +21,6 @@ import com.vaadin.shared.annotations.NoLayout;
 import com.vaadin.shared.ui.datefield.PopupDateFieldState;
 
 public class CubaDateFieldState extends PopupDateFieldState {
-    {
-        primaryStyleName = "cuba-datefield";
-    }
-
     @NoLayout
     public String dateMask = "";
 }

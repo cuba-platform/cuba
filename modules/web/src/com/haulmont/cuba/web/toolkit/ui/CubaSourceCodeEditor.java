@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.web.toolkit.ui.client.sourcecodeeditor.CubaSourceCodeEditorState;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
@@ -25,7 +24,7 @@ import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.AbstractTextField;
 import org.vaadin.aceeditor.AceEditor;
 
-public class CubaSourceCodeEditor extends AceEditor implements AutoCompleteSupport {
+public class CubaSourceCodeEditor extends AceEditor {
 
     public CubaSourceCodeEditor() {
         String aceLocation = "VAADIN/resources/ace";
@@ -80,5 +79,15 @@ public class CubaSourceCodeEditor extends AceEditor implements AutoCompleteSuppo
 
     public boolean isHandleTabKey() {
         return getState(false).handleTabKey;
+    }
+
+    public int getPrintMarginColumn() {
+        return getState(false).printMarginColumn;
+    }
+
+    public void setPrintMarginColumn(int printMarginColumn) {
+        if (getPrintMarginColumn() != printMarginColumn) {
+            getState().printMarginColumn = printMarginColumn;
+        }
     }
 }

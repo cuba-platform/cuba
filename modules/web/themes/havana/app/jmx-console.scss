@@ -16,11 +16,11 @@
  */
 
 @mixin cuba-jmx-console {
-  .cuba-mbeans-operation-container {
+  .c-mbeans-operation-container {
     border-bottom: 1px solid #71a4d5;
   }
 
-  .cuba-mbeans-information-panel {
+  .c-mbeans-information-panel {
     padding: 10px;
     border: 1px solid $cuba-groupbox-nocaption-border-color;
   }

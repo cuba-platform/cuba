@@ -24,6 +24,7 @@ public class CubaColorPickerSelect extends ColorPickerSelect {
     public CubaColorPickerSelect() {
         super();
         range.setItemCaptionMode(ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
+        range.setTextInputAllowed(false);
     }
 
     public void setAllCaption(String allCaption) {

@@ -113,6 +113,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
     @Inject
     private ComponentsFactory componentsFactory;
 
+    @Inject
+    private GroupBoxLayout editPane;
+
     protected class AttributePermissionControl {
 
         protected Label attributeLabel;
@@ -300,6 +303,8 @@ public class AttributePermissionsFrame extends AbstractFrame {
         boolean isCreatePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.CREATE);
         boolean isDeletePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.DELETE);
         hasPermissionsToModifyPermission = isCreatePermitted && isDeletePermitted;
+
+        editPane.setEnabled(security.isEntityOpPermitted(metadata.getClass(Role.class), EntityOp.UPDATE));
     }
 
     public void applyFilter() {

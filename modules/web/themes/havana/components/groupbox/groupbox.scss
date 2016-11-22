@@ -15,7 +15,7 @@
  *
  */
 
-@mixin havana-cuba-groupbox($primary-stylename : cuba-groupbox) {
+@mixin havana-cuba-groupbox($primary-stylename: c-groupbox) {
     @include base-panel($primary-stylename);
 
   .#{$primary-stylename} {

@@ -15,7 +15,7 @@
  *
  */
 
-@mixin halo-cuba-contextmenu($primary-stylename: cuba-context-menu-container) {
+@mixin halo-cuba-contextmenu($primary-stylename: c-cm-container) {
   .#{$primary-stylename} {
     @include valo-selection-overlay-style;
 
@@ -35,11 +35,11 @@
       text-align: left;
     }
 
-    .cuba-context-menu-button-selected {
+    .c-cm-button-selected {
       @include valo-selection-item-selected-style;
     }
 
-    .cuba-context-menu-button-selected.v-disabled {
+    .c-cm-button-selected.v-disabled {
        color: inherit;
        background: transparent;
     }
@@ -80,9 +80,4 @@
 
     outline: 0;
   }
-
-//  .#{$primary-stylename}-item-basic-icon-container,
-//  .#{$primary-stylename}-item-basic-text {
-//    display: inline-block;
-//  }
 }

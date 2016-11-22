@@ -295,6 +295,11 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
     }
 
     @Override
+    public void showNotification(String caption) {
+        App.getInstance().getWindowManager().showNotification(caption);
+    }
+
+    @Override
     public void showNotification(String caption, String description, NotificationType type) {
         App.getInstance().getWindowManager().showNotification(caption, description, type);
     }

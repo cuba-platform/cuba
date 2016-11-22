@@ -59,6 +59,12 @@ public class DefaultExceptionHandler implements ExceptionHandler {
             return true;
         }
 
+        AppUI ui = AppUI.getCurrent();
+        if (ui == null) {
+            // there is no UI, just add error to log
+            return true;
+        }
+
         if (t != null) {
             if (app.getConnection().getSession() != null) {
                 showDialog(app, t);

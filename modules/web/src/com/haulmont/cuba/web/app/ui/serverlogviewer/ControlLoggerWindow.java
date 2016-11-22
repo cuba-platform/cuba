@@ -124,18 +124,18 @@ public class ControlLoggerWindow extends AbstractWindow {
                                 HBoxLayout buttonPanel = (HBoxLayout) button.getParent();
                                 for (Component childButton : buttonPanel.getComponents()) {
                                     if (childButton instanceof Button) {
-                                        childButton.setStyleName("cuba-logger-level loglevel-" + logLevel.toString());
+                                        childButton.setStyleName("c-logger-level loglevel-" + logLevel.toString());
                                     }
                                 }
-                                button.setStyleName("cuba-logger-level loglevel-" + logLevel.toString() + " currentlevel");
+                                button.setStyleName("c-logger-level loglevel-" + logLevel.toString() + " currentlevel");
                             }
                         });
 
                 button.setCaption(logLevel.toString());
                 if (logLevel == level) {
-                    button.setStyleName("cuba-logger-level loglevel-" + logLevel.toString() + " currentlevel");
+                    button.setStyleName("c-logger-level loglevel-" + logLevel.toString() + " currentlevel");
                 } else {
-                    button.setStyleName("cuba-logger-level loglevel-" + logLevel.toString());
+                    button.setStyleName("c-logger-level loglevel-" + logLevel.toString());
                 }
                 buttonField.add(button);
             }

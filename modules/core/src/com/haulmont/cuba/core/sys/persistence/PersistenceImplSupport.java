@@ -19,12 +19,15 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.google.common.base.Strings;
 import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.listener.AfterCompleteTransactionListener;
+import com.haulmont.cuba.core.listener.BeforeCommitTransactionListener;
 import com.haulmont.cuba.core.app.FtsSender;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.FtsConfigHelper;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.Stores;
-import com.haulmont.cuba.core.global.FtsConfigHelper;
 import com.haulmont.cuba.core.sys.entitycache.QueryCacheManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
@@ -39,21 +42,30 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.ResourceHolderSupport;
 import org.springframework.transaction.support.ResourceHolderSynchronization;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component(PersistenceImplSupport.NAME)
-public class PersistenceImplSupport {
+public class PersistenceImplSupport implements ApplicationContextAware {
 
     public static final String NAME = "cuba_PersistenceImplSupport";
 
     public static final String RESOURCE_HOLDER_KEY = ContainerResourceHolder.class.getName();
+
+    @Inject
+    protected Persistence persistence;
 
     @Inject
     protected EntityListenerManager entityListenerManager;
@@ -69,9 +81,22 @@ public class PersistenceImplSupport {
     @Inject
     protected OrmCacheSupport ormCacheSupport;
 
-    protected ThreadLocal<Boolean> firingEntityListeners = new ThreadLocal<>();
+    protected List<BeforeCommitTransactionListener> beforeCommitTxListeners;
+
+    protected List<AfterCompleteTransactionListener> afterCompleteTxListeners;
 
     private static Logger log = LoggerFactory.getLogger(PersistenceImplSupport.class.getName());
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        Map<String, BeforeCommitTransactionListener> beforeCommitMap = applicationContext.getBeansOfType(BeforeCommitTransactionListener.class);
+        beforeCommitTxListeners = new ArrayList<>(beforeCommitMap.values());
+        beforeCommitTxListeners.sort(new OrderComparator());
+
+        Map<String, AfterCompleteTransactionListener> afterCompleteMap = applicationContext.getBeansOfType(AfterCompleteTransactionListener.class);
+        afterCompleteTxListeners = new ArrayList<>(afterCompleteMap.values());
+        afterCompleteTxListeners.sort(new OrderComparator());
+    }
 
     public void registerInstance(Entity entity, EntityManager entityManager) {
         if (!TransactionSynchronizationManager.isActualTransactionActive())
@@ -85,7 +110,7 @@ public class PersistenceImplSupport {
         }
     }
 
-    public void registerInstance(Object object, AbstractSession session) {
+    public void registerInstance(Entity entity, AbstractSession session) {
         // Can be called outside of a transaction when fetching lazy attributes
         if (!TransactionSynchronizationManager.isActualTransactionActive())
             return;
@@ -93,10 +118,10 @@ public class PersistenceImplSupport {
         if (!(session instanceof UnitOfWork))
             throw new RuntimeException("Session is not a UnitOfWork: " + session);
 
-        getInstanceContainerResourceHolder(getStorageName(session)).registerInstanceForUnitOfWork(object, (UnitOfWork) session);
+        getInstanceContainerResourceHolder(getStorageName(session)).registerInstanceForUnitOfWork(entity, (UnitOfWork) session);
     }
 
-    public Collection<Object> getInstances(EntityManager entityManager) {
+    public Collection<Entity> getInstances(EntityManager entityManager) {
         if (!TransactionSynchronizationManager.isActualTransactionActive())
             throw new RuntimeException("No transaction");
 
@@ -126,16 +151,9 @@ public class PersistenceImplSupport {
     }
 
     public void fireEntityListeners(EntityManager entityManager) {
-        if (Boolean.TRUE.equals(firingEntityListeners.get()))
-            return;
-        firingEntityListeners.set(true);
-        try {
-            UnitOfWork unitOfWork = entityManager.getDelegate().unwrap(UnitOfWork.class);
-            String storeName = getStorageName(unitOfWork);
-            traverseEntities(getInstanceContainerResourceHolder(storeName), new OnFlushEntityVisitor(storeName));
-        } finally {
-            firingEntityListeners.remove();
-        }
+        UnitOfWork unitOfWork = entityManager.getDelegate().unwrap(UnitOfWork.class);
+        String storeName = getStorageName(unitOfWork);
+        traverseEntities(getInstanceContainerResourceHolder(storeName), new OnFlushEntityVisitor(storeName));
     }
 
     protected boolean isDeleted(BaseGenericIdEntity entity, AttributeChangeListener changeListener) {
@@ -155,24 +173,44 @@ public class PersistenceImplSupport {
     }
 
     protected void beforeStore(ContainerResourceHolder container, EntityVisitor visitor,
-                             Collection<Object> instances, Set<Object> processed) {
+                               Collection<Entity> instances, Set<Entity> processed) {
         boolean possiblyChanged = false;
-        for (Object instance : instances) {
+        Set<Entity> withoutPossibleChanges = new HashSet<>();
+        for (Entity instance : instances) {
             processed.add(instance);
 
             if (!(instance instanceof ChangeTracker && instance instanceof BaseGenericIdEntity))
                 continue;
 
             BaseGenericIdEntity entity = (BaseGenericIdEntity) instance;
-            possiblyChanged = visitor.visit(entity) || possiblyChanged;
+            boolean result = visitor.visit(entity);
+            if (!result) {
+                withoutPossibleChanges.add(instance);
+            }
+            possiblyChanged = result || possiblyChanged;
         }
         if (!possiblyChanged)
             return;
 
-        Collection<Object> afterProcessing = container.getAllInstances();
+        Collection<Entity> afterProcessing = container.getAllInstances();
         if (afterProcessing.size() > processed.size()) {
             afterProcessing.removeAll(processed);
             beforeStore(container, visitor, afterProcessing, processed);
+        }
+
+        if (!withoutPossibleChanges.isEmpty()) {
+            afterProcessing = withoutPossibleChanges.stream()
+                    .filter(instance -> {
+                        ChangeTracker changeTracker = (ChangeTracker) instance;
+                        AttributeChangeListener changeListener =
+                                (AttributeChangeListener) changeTracker._persistence_getPropertyChangeListener();
+                        return changeListener != null
+                                && changeListener.hasChanges();
+                    })
+                    .collect(Collectors.toList());
+            if (!afterProcessing.isEmpty()) {
+                beforeStore(container, visitor, afterProcessing, processed);
+            }
         }
     }
 
@@ -182,7 +220,7 @@ public class PersistenceImplSupport {
 
     public static class ContainerResourceHolder extends ResourceHolderSupport {
 
-        protected Map<UnitOfWork, Set<Object>> unitOfWorkMap = new HashMap<>();
+        protected Map<UnitOfWork, Set<Entity>> unitOfWorkMap = new HashMap<>();
 
         protected String storeName;
 
@@ -194,7 +232,7 @@ public class PersistenceImplSupport {
             return storeName;
         }
 
-        protected void registerInstanceForUnitOfWork(Object instance, UnitOfWork unitOfWork) {
+        protected void registerInstanceForUnitOfWork(Entity instance, UnitOfWork unitOfWork) {
             if (log.isTraceEnabled())
                 log.trace("ContainerResourceHolder.registerInstanceForUnitOfWork: instance = " +
                         instance + ", UnitOfWork = " + unitOfWork);
@@ -203,7 +241,7 @@ public class PersistenceImplSupport {
                 BaseEntityInternalAccess.setManaged((BaseGenericIdEntity) instance, true);
             }
 
-            Set<Object> instances = unitOfWorkMap.get(unitOfWork);
+            Set<Entity> instances = unitOfWorkMap.get(unitOfWork);
             if (instances == null) {
                 instances = new HashSet<>();
                 unitOfWorkMap.put(unitOfWork, instances);
@@ -211,13 +249,13 @@ public class PersistenceImplSupport {
             instances.add(instance);
         }
 
-        protected Collection<Object> getInstances(UnitOfWork unitOfWork) {
+        protected Collection<Entity> getInstances(UnitOfWork unitOfWork) {
             return new HashSet<>(unitOfWorkMap.get(unitOfWork));
         }
 
-        protected Collection<Object> getAllInstances() {
-            Set<Object> set = new HashSet<>();
-            for (Set<Object> instances : unitOfWorkMap.values()) {
+        protected Collection<Entity> getAllInstances() {
+            Set<Entity> set = new HashSet<>();
+            for (Set<Entity> instances : unitOfWorkMap.values()) {
                 set.addAll(instances);
             }
             return set;
@@ -246,7 +284,7 @@ public class PersistenceImplSupport {
 
             traverseEntities(container, new OnCommitEntityVisitor(container.getStorageName()));
 
-            Collection<Object> instances = container.getAllInstances();
+            Collection<Entity> instances = container.getAllInstances();
             Set<String> typeNames = new HashSet<>();
             for (Object instance : instances) {
                 if (instance instanceof Entity) {
@@ -266,12 +304,18 @@ public class PersistenceImplSupport {
                     entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_DETACH, container.getStorageName());
                 }
             }
+
+            Collection<Entity> allInstances = container.getAllInstances();
+            for (BeforeCommitTransactionListener transactionListener : beforeCommitTxListeners) {
+                transactionListener.beforeCommit(persistence.getEntityManager(container.getStorageName()), allInstances);
+            }
+
             queryCacheManager.invalidate(typeNames, true);
         }
 
         @Override
         public void afterCompletion(int status) {
-            Collection<Object> instances = container.getAllInstances();
+            Collection<Entity> instances = container.getAllInstances();
             if (log.isTraceEnabled())
                 log.trace("ContainerResourceSynchronization.afterCompletion: instances = " + instances);
             for (Object instance : instances) {
@@ -283,6 +327,11 @@ public class PersistenceImplSupport {
                     BaseEntityInternalAccess.setDetached(baseGenericIdEntity, true);
                 }
             }
+
+            for (AfterCompleteTransactionListener listener : afterCompleteTxListeners) {
+                listener.afterComplete(status == TransactionSynchronization.STATUS_COMMITTED, instances);
+            }
+
             super.afterCompletion(status);
         }
 

@@ -32,7 +32,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 @Deprecated
 public class CubaMultiUploadWidget extends FormPanel {
 
-    public static final String CLASSNAME = "cuba-multiupload";
+    public static final String CLASSNAME = "c-multiupload";
     
     protected static boolean scriptInjected = false;
 

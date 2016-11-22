@@ -42,8 +42,8 @@ import java.util.Map;
 public class TablePresentations extends VerticalLayout {
 
     public static final String CUSTOM_STYLE_NAME_PREFIX = "cs";
-    protected static final String MENUITEM_STYLE_CURRENT = "cuba-table-presentations-menuitem-current";
-    protected static final String MENUITEM_STYLE_DEFAULT = "cuba-table-presentations-menuitem-default";
+    protected static final String MENUITEM_STYLE_CURRENT = "c-table-prefs-menuitem-current";
+    protected static final String MENUITEM_STYLE_DEFAULT = "c-table-prefs-menuitem-default";
 
     protected CubaMenuBar menuBar;
     protected WebPopupButton button;
@@ -65,7 +65,7 @@ public class TablePresentations extends VerticalLayout {
         this.tableImpl = (CubaEnhancedTable) WebComponentsHelper.unwrap(table);
 
         setSizeUndefined();
-        setStyleName("cuba-table-presentations");
+        setStyleName("c-table-prefs");
         setParent((HasComponents) WebComponentsHelper.unwrap(component));
 
         initLayout();
@@ -178,13 +178,13 @@ public class TablePresentations extends VerticalLayout {
         setSpacing(true);
 
         Label titleLabel = new Label(messages.getMainMessage("PresentationsPopup.title"));
-        titleLabel.setStyleName("cuba-table-presentations-title");
+        titleLabel.setStyleName("c-table-prefs-title");
         titleLabel.setWidth("-1px");
         addComponent(titleLabel);
         setComponentAlignment(titleLabel, Alignment.MIDDLE_CENTER);
 
         menuBar = new CubaMenuBar();
-        menuBar.setStyleName("cuba-table-presentations-list");
+        menuBar.setStyleName("c-table-prefs-list");
         menuBar.setWidth("100%");
         menuBar.setHeight("-1px");
         menuBar.setVertical(true);

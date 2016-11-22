@@ -122,6 +122,11 @@ parameters:
     in: query
     description: Specifies whether null fields will be written to the result JSON
     type: boolean
+  dynamicAttributesParam:
+    name: dynamicAttributes
+    in: query
+    description: Specifies whether entity dynamic attributes should be returned
+    type: boolean
 
 ################################################################################
 #                                   Definitions                                #
@@ -566,6 +571,7 @@ paths:
           type: string
           default: ""
         - $ref: '#/parameters/returnNullsParam'
+        - $ref: '#/parameters/dynamicAttributesParam'
 
       responses:
         200:
@@ -635,6 +641,7 @@ paths:
       parameters:
         - $ref: '#/parameters/entityViewParam'
         - $ref: '#/parameters/returnNullsParam'
+        - $ref: '#/parameters/dynamicAttributesParam'
       responses:
         200:
           description: Success. The entitiy is returned in the response body.
@@ -729,6 +736,14 @@ paths:
         description: Position of the first result to retrieve
         type: string
         default: ""
+      - name: view
+        in: query
+        description: |
+          Name of the view which is used for loading the entity. Specify this parameter if you want to extract entities with the view
+          other than it is defined in the REST queries configuration file.
+        type: string
+      - $ref: '#/parameters/returnNullsParam'
+      - $ref: '#/parameters/dynamicAttributesParam'
     get:
       tags:
         - Queries
@@ -759,7 +774,7 @@ paths:
     get:
       tags:
         - Queries
-      summary: Execute a query
+      summary: Return a number of entities in query result
       description: |
         Returns a number of entities that matches the query. You can use the `all` keyword for the `queryNameParam`
         to get the number of all available entities.

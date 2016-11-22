@@ -18,11 +18,11 @@
 @mixin cuba-breadcrumbs {
   $breadCrumbsHeight: 25px;
 
-  .v-horizontallayout.cuba-breadcrumbs-logo {
+  .v-horizontallayout.c-breadcrumbs-logo {
     padding: 0;
   }
 
-  .cuba-breadcrumbs {
+  .c-breadcrumbs {
     .v-label {
       font-family: $cuba-havana-fonts;
       font-size: 10px;
@@ -57,7 +57,7 @@
     }
   }
 
-  .v-button.cuba-closetab-button {
+  .v-button.c-closetab-button {
     border: none;
     background: transparent none;
 
@@ -67,16 +67,23 @@
     }
   }
 
-  .v-button.cuba-closetab-button:hover {
+  .v-button.c-closetab-button:hover {
     .v-button-wrap {
       background: transparent none;
       padding: 0;
     }
   }
 
-  .cuba-headline-container {
+  .c-headline-container {
+    display: block;
+
     .v-button:hover {
       background: transparent;
     }
+  }
+
+  .c-breadcrumbs-separator,
+  .c-breadcrumbs-win-caption {
+    vertical-align: bottom;
   }
 }

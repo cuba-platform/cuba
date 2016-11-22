@@ -489,6 +489,11 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     }
 
     @Override
+    public void showNotification(String caption) {
+        frame.showNotification(caption);
+    }
+
+    @Override
     public void showNotification(String caption, NotificationType type) {
         frame.showNotification(caption, type);
     }

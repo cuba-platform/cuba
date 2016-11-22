@@ -26,31 +26,24 @@ import org.dom4j.Element;
 import java.util.*;
 
 public class QueryFilter extends FilterParser {
-    private final String targetEntity;
 
-    public QueryFilter(Condition condition, String targetEntity) {
+    public QueryFilter(Condition condition) {
         super(condition);
-        this.targetEntity = targetEntity;
     }
 
-    public QueryFilter(Element element, String targetEntity) {
+    public QueryFilter(Element element) {
         super(element);
-        this.targetEntity = targetEntity;
     }
 
     public static QueryFilter merge(QueryFilter src1, QueryFilter src2) {
         if (src1 == null || src2 == null)
             throw new IllegalArgumentException("Source query filter is null");
 
-        if (!src1.targetEntity.equals(src2.targetEntity))
-            throw new IllegalArgumentException("Target entities do not match");
-
-
         Condition root = new LogicalCondition("root", LogicalOp.AND);
         root.getConditions().add(src1.getRoot());
         root.getConditions().add(src2.getRoot());
 
-        QueryFilter queryFilter = new QueryFilter(root, src1.targetEntity);
+        QueryFilter queryFilter = new QueryFilter(root);
         return queryFilter;
     }
 

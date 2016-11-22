@@ -15,18 +15,16 @@
  *
  */
 
-@mixin halo-cuba-flowlayout($primary-stylename : cuba-flowlayout) {
-  @include valo-csslayout($primary-stylename);
-
-  .#{$primary-stylename} {
+@mixin halo-cuba-flowlayout($primary-stylename: c-flowlayout) {
+  .v-csslayout.#{$primary-stylename} {
     overflow-y: auto;
   }
 
-  .#{$primary-stylename} > * {
+  .v-csslayout.#{$primary-stylename} > * {
     float: left;
   }
 
-  .#{$primary-stylename}-spacing > * {
+  .#{$primary-stylename}.v-csslayout-spacing > * {
     margin-right: $v-layout-spacing-horizontal;
     margin-bottom: $v-layout-spacing-vertical;
   }

@@ -34,7 +34,6 @@ import java.util.*;
 
 /**
  * Component for 'In list' filter condition
- *
  */
 public class InListParamComponent {
 
@@ -113,7 +112,7 @@ public class InListParamComponent {
         composition.add(clearButton);
         composition.expand(field);
 
-        composition.setStyleName("cuba-pickerfield");
+        composition.setStyleName("c-pickerfield");
     }
 
     public InListParamComponent(CollectionDatasource collectionDatasource) {

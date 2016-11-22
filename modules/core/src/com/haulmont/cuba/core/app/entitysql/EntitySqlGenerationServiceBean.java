@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.EntitySqlGenerationService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewRepository;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,9 @@ public class EntitySqlGenerationServiceBean implements EntitySqlGenerationServic
 
     @Inject
     protected ViewRepository viewRepository;
+
+    @Inject
+    protected MetadataTools metadataTools;
 
     @Override
     public String generateInsertScript(Entity entity) {
@@ -69,15 +73,17 @@ public class EntitySqlGenerationServiceBean implements EntitySqlGenerationServic
     }
 
     protected Entity reload(Entity entity) {
-        Transaction tx = persistence.createTransaction();
-        try {
-            Entity reloaded = persistence.getEntityManager().find(entity.getClass(), entity.getId(), createFullView(entity));
+        String storeName = metadataTools.getStoreName(entity.getMetaClass());
+        if (storeName == null)
+            throw new RuntimeException("Cannot determine data store for " + entity);
+
+        try (Transaction tx = persistence.createTransaction(storeName)) {
+            Entity reloaded = persistence.getEntityManager(storeName)
+                    .find(entity.getClass(), entity.getId(), createFullView(entity));
             if (reloaded != null) {
                 entity = reloaded;
             }
             tx.commit();
-        } finally {
-            tx.end();
         }
         return entity;
     }

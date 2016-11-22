@@ -55,7 +55,7 @@ public class QueryFilterTest {
     private QueryFilter createFilter(String name) {
         InputStream stream = QueryFilterTest.class.getResourceAsStream("/com/haulmont/cuba/core/global/filter/" + name);
         Document doc = Dom4j.readDocument(stream);
-        return new QueryFilter(doc.getRootElement(), "saneco$GenDoc");
+        return new QueryFilter(doc.getRootElement());
     }
 
     @Test

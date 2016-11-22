@@ -16,8 +16,7 @@
  */
 
 @mixin cuba-table-presentations {
-
-  .cuba-table-presentations-icon {
+  .c-table-prefs-icon {
     float: right;
     width: 16px;
     height: 16px;
@@ -30,18 +29,18 @@
     background-image: url(sprites/table-presentations-icon.png); /** sprite-ref: application; */
   }
 
-  .collapsing-allowed .cuba-table-presentations-icon {
+  .collapsing-allowed .c-table-prefs-icon {
     margin-right: 22px;
   }
 
-  .cuba-table-presentations-editor {
+  .c-table-prefs-editor {
     z-index: 19000 !important;  // do not hide parts of popup menu
     background-color: #fff;
     border: 1px solid $cuba-field-selection-color;
     padding: 5px 3px 5px 3px;
     font-family: $cuba-havana-fonts;
 
-    .cuba-table-presentations-title {
+    .c-table-prefs-title {
       color: gray;
       margin-left: 5px;
       margin-right: 5px;
@@ -52,7 +51,7 @@
       line-height: 14px;
     }
 
-    .cuba-table-presentations-list.v-menubar {
+    .c-table-prefs-list.v-menubar {
       height: auto;
       padding-left: 4px;
       padding-right: 4px;
@@ -60,7 +59,7 @@
 
     $menuitem-padding: 4px;
 
-    .cuba-table-presentations-list.v-menubar .v-menubar-menuitem {
+    .c-table-prefs-list.v-menubar .v-menubar-menuitem {
       line-height: 18px;
       padding: 0 2px 0 ($v-font-size + 2 * $menuitem-padding);
       display: block;
@@ -71,7 +70,7 @@
       }
     }
 
-    .cuba-table-presentations-list.v-menubar .v-menubar-menuitem:hover {
+    .c-table-prefs-list.v-menubar .v-menubar-menuitem:hover {
       background-color: $cuba-field-selection-color;
 
       .v-menubar-menuitem-caption {
@@ -80,13 +79,13 @@
       }
     }
 
-    .cuba-table-presentations-list.v-menubar .cuba-table-presentations-menuitem-default {
+    .c-table-prefs-list.v-menubar .c-table-prefs-menuitem-default {
       background: transparent;
       background-repeat: no-repeat;
       background-image: url(../icons/star.png);
     }
 
-    .cuba-table-presentations-list.v-menubar .cuba-table-presentations-menuitem-current {
+    .c-table-prefs-list.v-menubar .c-table-prefs-menuitem-current {
       font-weight: bold;
       background: transparent;
       background-repeat: no-repeat;

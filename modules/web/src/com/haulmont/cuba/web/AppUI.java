@@ -217,17 +217,17 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
         String initErrorMessage = messages.getMainMessage("app.initErrorMessage");
 
         VerticalLayout content = new VerticalLayout();
-        content.setStyleName("cuba-init-error-view");
+        content.setStyleName("c-init-error-view");
         content.setSizeFull();
 
         VerticalLayout errorPanel = new VerticalLayout();
-        errorPanel.setStyleName("cuba-init-error-panel");
+        errorPanel.setStyleName("c-init-error-panel");
         errorPanel.setWidthUndefined();
         errorPanel.setSpacing(true);
 
         Label captionLabel = new Label(initErrorCaption);
         captionLabel.setWidthUndefined();
-        captionLabel.setStyleName("cuba-init-error-caption");
+        captionLabel.setStyleName("c-init-error-caption");
         captionLabel.addStyleName("h2");
         captionLabel.setValue(initErrorCaption);
 
@@ -235,13 +235,13 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
 
         Label messageLabel = new Label(initErrorCaption);
         messageLabel.setWidthUndefined();
-        messageLabel.setStyleName("cuba-init-error-message");
+        messageLabel.setStyleName("c-init-error-message");
         messageLabel.setValue(initErrorMessage);
 
         errorPanel.addComponent(messageLabel);
 
         Button retryButton = new Button(messages.getMainMessage("app.initRetry"));
-        retryButton.setStyleName("cuba-init-error-retry");
+        retryButton.setStyleName("c-init-error-retry");
         retryButton.addClickListener((Button.ClickListener) event -> {
             // always restart UI
             String url = ControllerUtils.getLocationWithoutParams() + "?restartApp";
@@ -368,7 +368,7 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
 
             try {
                 LinkHandler linkHandler = AppBeans.getPrototype(LinkHandler.NAME, app, action, params);
-                if (app.connection.isConnected()) {
+                if (app.connection.isConnected() && linkHandler.canHandleLink()) {
                     linkHandler.handle();
                 } else {
                     app.linkHandler = linkHandler;

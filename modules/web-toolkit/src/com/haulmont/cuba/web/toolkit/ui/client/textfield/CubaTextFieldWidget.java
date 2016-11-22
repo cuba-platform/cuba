@@ -29,8 +29,8 @@ import java.util.LinkedList;
 public class CubaTextFieldWidget extends VTextField implements ShortcutActionHandler.ShortcutActionHandlerOwner {
 
     private static final String PROMPT_STYLE = "prompt";
-    private static final String CUBA_DISABLED_OR_READONLY = "cuba-disabled-or-readonly";
-    private static final String CUBA_EMPTY_VALUE = "cuba-empty-value";
+    private static final String CUBA_DISABLED_OR_READONLY = "c-disabled-or-readonly";
+    private static final String CUBA_EMPTY_VALUE = "c-empty-value";
 
     protected ShortcutActionHandler shortcutHandler;
 

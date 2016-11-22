@@ -64,6 +64,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         loadVisible(resultComponent, element);
         loadEditable(resultComponent, element);
         loadValidators(resultComponent, element);
+        loadSettingsEnabled(resultComponent, element);
 
         loadAlign(resultComponent, element);
         loadStyleName(resultComponent, element);
@@ -85,6 +86,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
         loadColumnHeaderVisible(resultComponent, element);
         loadShowSelection(resultComponent, element);
+        loadTextSelectionEnabled(resultComponent, element);
 
         Element columnsElement = element.element("columns");
         Element rowsElement = element.element("rows");
@@ -158,6 +160,13 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         String multiselect = element.attributeValue("multiselect");
         if (StringUtils.isNotEmpty(multiselect)) {
             resultComponent.setMultiSelect(Boolean.parseBoolean(multiselect));
+        }
+    }
+
+    protected void loadTextSelectionEnabled(Table table, Element element) {
+        String textSelectionEnabled = element.attributeValue("textSelectionEnabled");
+        if (StringUtils.isNotEmpty(textSelectionEnabled)) {
+            table.setTextSelectionEnabled(Boolean.parseBoolean(textSelectionEnabled));
         }
     }
 
@@ -402,6 +411,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             String aggregationType = aggregationElement.attributeValue("type");
             if (StringUtils.isNotEmpty(aggregationType)) {
                 aggregation.setType(AggregationInfo.Type.valueOf(aggregationType));
+            }
+
+            String valueDescription = aggregationElement.attributeValue("valueDescription");
+            if (StringUtils.isNotEmpty(valueDescription)) {
+                column.setValueDescription(loadResourceString(valueDescription));
             }
 
             Formatter formatter = loadFormatter(aggregationElement);

@@ -52,6 +52,9 @@ public class CubaTableState extends TableState {
     public Map<String, String> columnDescriptions;
 
     @NoLayout
+    public Map<String, String> aggregationDescriptions;
+
+    @NoLayout
     public String tableSortResetLabel;
 
     @NoLayout

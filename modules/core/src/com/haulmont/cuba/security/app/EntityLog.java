@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
+import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.global.*;
@@ -379,7 +380,9 @@ public class EntityLog implements EntityLogAPI {
     }
 
     protected UUID getValueId(Object value) {
-        if (value instanceof Entity) {
+        if (value instanceof EmbeddableEntity) {
+            return null;
+        } else if (value instanceof Entity) {
             return (UUID) ((Entity) value).getId();
         } else {
             return null;

@@ -505,10 +505,10 @@ public class MetadataTools {
     }
 
     /**
-     * Collects {@link MetaPropertyPath}s defined by the given view, traversing the whole view graph.
+     * Collects all meta-properties of the given meta-class included to the given view as {@link MetaPropertyPath}s.
      *
-     * @param view      starting view
-     * @param metaClass metaclass for which the view was defined
+     * @param view      view
+     * @param metaClass meta-class
      * @return collection of paths
      */
     public Collection<MetaPropertyPath> getViewPropertyPaths(View view, MetaClass metaClass) {
@@ -523,7 +523,7 @@ public class MetadataTools {
     }
 
     /**
-     * Determine whether the view contains a property, traversing the view graph according to the given property path.
+     * Determine whether the view contains a property, traversing a view branch according to the given property path.
      *
      * @param view         view instance. If null, return false immediately.
      * @param propertyPath property path defining the property

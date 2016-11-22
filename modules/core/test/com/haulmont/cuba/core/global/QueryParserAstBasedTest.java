@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
+import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import org.junit.Test;
 
 import java.util.Set;
@@ -244,6 +245,12 @@ public class QueryParserAstBasedTest {
         assertEquals("h.group", parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
 
         parser = new QueryParserAstBased(model,
+                "select g.group from sec$GroupHierarchy h join h.group g"
+        );
+        assertNull(parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
+        assertNull(parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
+
+        parser = new QueryParserAstBased(model,
                 "select h.parent.other from sec$GroupHierarchy h where h.userGroup = :par"
         );
         assertEquals("sec$GroupHierarchy", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
@@ -298,6 +305,19 @@ public class QueryParserAstBasedTest {
         assertNull(parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
     }
 
+    @Test
+    public void testNestedEntityGroupBy() throws Exception {
+        DomainModel model = prepareDomainModel();
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
+                "select c.group, count(c.id) from sec$Constraint c group by c.group"
+        );
+        transformer.replaceWithSelectEntityVariable("tempEntityAlias");
+        transformer.addFirstSelectionSource(String.format("%s tempEntityAlias", "sec$Group"));
+        transformer.addWhereAsIs(String.format("tempEntityAlias.id = %s.id", "c.group"));
+        transformer.addEntityInGroupBy("tempEntityAlias");
+        System.out.println(transformer.getResult());
+    }
+
     private DomainModel prepareDomainModel() {
         EntityBuilder builder = new EntityBuilder();
         builder.startNewEntity("sec$GroupHierarchy");
@@ -314,7 +334,7 @@ public class QueryParserAstBasedTest {
         JpqlEntityModel constraintEntity = builder.produce();
 
 
-        JpqlEntityModel groupEntity = builder.produceImmediately("sec$Group", "name");
+        JpqlEntityModel groupEntity = builder.produceImmediately("sec$Group", "name", "group");
 
         builder = new EntityBuilder();
         builder.startNewEntity("sec$User");

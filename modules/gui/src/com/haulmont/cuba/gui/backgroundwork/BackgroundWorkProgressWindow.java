@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.gui.backgroundwork;
 
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
@@ -59,13 +59,16 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
     @Inject
     protected BackgroundWorker backgroundWorker;
     @Inject
-    protected ProgressBar taskProgress;
+    protected ProgressBar taskProgressBar;
 
     @Inject
     protected ThemeConstants themeConstants;
 
     protected BackgroundTaskHandler<V> taskHandler;
     protected boolean cancelAllowed = false;
+
+    protected T totalProgress;
+    protected boolean percentProgress;
 
     /**
      * Show modal window with message which will last until task completes.
@@ -93,7 +96,7 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
         params.put("cancelAllowed", cancelAllowed);
         params.put("percentProgress", percentProgress);
 
-        task.getOwnerFrame().openWindow("backgroundWorkProgressWindow", WindowManager.OpenType.DIALOG, params);
+        task.getOwnerFrame().openWindow("backgroundWorkProgressWindow", OpenType.DIALOG, params);
     }
 
     /**
@@ -153,11 +156,8 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams()
-                .setWidth(themeConstants.getInt("cuba.gui.BackgroundWorkProgressWindow.width"));
-
         @SuppressWarnings("unchecked")
-        final BackgroundTask<T, V> task = (BackgroundTask<T, V>) params.get("task");
+        BackgroundTask<T, V> task = (BackgroundTask<T, V>) params.get("task");
         String title = (String) params.get("title");
         if (title != null) {
             setCaption(title);
@@ -172,71 +172,54 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
         cancelAllowed = BooleanUtils.isTrue(cancelAllowedNullable);
 
         Boolean percentProgressNullable = (Boolean) params.get("percentProgress");
-        boolean percentProgress = BooleanUtils.isTrue(percentProgressNullable);
+        this.percentProgress = BooleanUtils.isTrue(percentProgressNullable);
 
         cancelButton.setVisible(cancelAllowed);
-        getDialogParams().setCloseable(cancelAllowed);
+        getDialogOptions().setCloseable(cancelAllowed);
 
         @SuppressWarnings("unchecked")
         final T total = (T) params.get("total");
+        this.totalProgress = total;
 
-        taskProgress.setValue(0.0f);
+        showProgress(0);
 
-        WrapperTask wrapperTask = new WrapperTask(task, total, percentProgress);
+        BackgroundTask<T, V> wrapperTask = new LocalizedTaskWrapper<>(task, this);
+        wrapperTask.addProgressListener(new BackgroundTask.ProgressListenerAdapter<T, V>() {
+            @Override
+            public void onProgress(List<T> changes) {
+                if (!changes.isEmpty()) {
+                    Number lastProcessedValue = changes.get(changes.size() - 1);
+                    showProgress(lastProcessedValue);
+                }
+            }
+        });
 
         taskHandler = backgroundWorker.handle(wrapperTask);
         taskHandler.execute();
     }
 
     public void cancel() {
-        if (!taskHandler.cancel()) {
-            close(Window.CLOSE_ACTION_ID);
-        }
+        close(Window.CLOSE_ACTION_ID);
     }
 
     @Override
-    protected boolean preClose(String actionId) {
-        if (cancelAllowed) {
-            if (!taskHandler.cancel()) {
-                return true;
-            }
+    public boolean close(String actionId) {
+        if (taskHandler.cancel()) {
+            return super.close(actionId);
         }
-
         return false;
     }
 
-    protected class WrapperTask extends LocalizedTaskWrapper<T, V> {
+    protected void showProgress(Number processedValue) {
+        float value = processedValue.floatValue() / totalProgress.floatValue();
 
-        protected Number total;
-        protected boolean percentProgress = false;
+        taskProgressBar.setValue(value);
 
-        public WrapperTask(BackgroundTask<T, V> wrappedTask, Number total, boolean percentProgress) {
-            super(wrappedTask, BackgroundWorkProgressWindow.this);
-            this.total = total;
-            this.percentProgress = percentProgress;
-
-            showProgressText(0, 0);
-        }
-
-        protected void showProgressText(Number last, float progressValue) {
-            if (!percentProgress) {
-                progressText.setValue(formatMessage("backgroundWorkProgress.progressTextFormat", last, total));
-            } else {
-                int percentValue = (int) Math.ceil(progressValue * 100);
-                progressText.setValue(formatMessage("backgroundWorkProgress.progressPercentFormat", percentValue));
-            }
-        }
-
-        @Override
-        public void progress(List<T> changes) {
-            if (!changes.isEmpty()) {
-                Number last = changes.get(changes.size() - 1);
-                float value = last.floatValue() / total.floatValue();
-                taskProgress.setValue(value);
-                showProgressText(last, value);
-            }
-
-            super.progress(changes);
+        if (!percentProgress) {
+            progressText.setValue(formatMessage("backgroundWorkProgress.progressTextFormat", processedValue, totalProgress));
+        } else {
+            int percentValue = (int) Math.ceil(value * 100);
+            progressText.setValue(formatMessage("backgroundWorkProgress.progressPercentFormat", percentValue));
         }
     }
 }

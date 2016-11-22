@@ -39,7 +39,7 @@ import java.util.Map;
 
 public class WebFtsField extends WebAbstractComponent<HorizontalLayout> implements FtsField {
 
-    public static final String FTS_FIELD_STYLENAME = "cuba-fts-field-wrap";
+    public static final String FTS_FIELD_STYLENAME = "c-fts-field-wrap";
 
     protected TextField searchField;
     protected Button searchBtn;
@@ -52,7 +52,7 @@ public class WebFtsField extends WebAbstractComponent<HorizontalLayout> implemen
         com.haulmont.cuba.gui.components.TextField searchFieldComponent =
                 cf.createComponent(com.haulmont.cuba.gui.components.TextField.class);
         searchField = (TextField) WebComponentsHelper.unwrap(searchFieldComponent);
-        searchField.setStyleName("cuba-fts-field");
+        searchField.setStyleName("c-fts-field");
 
         AppUI ui = AppUI.getCurrent();
         if (ui.isTestMode()) {
@@ -67,15 +67,10 @@ public class WebFtsField extends WebAbstractComponent<HorizontalLayout> implemen
         });
 
         searchBtn = new CubaButton();
-        searchBtn.setStyleName("cuba-fts-button");
+        searchBtn.setStyleName("c-fts-button");
         searchBtn.setIcon(WebComponentsHelper.getIcon("app/images/fts-button.png"));
         searchBtn.addClickListener(
-                new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(Button.ClickEvent event) {
-                        openSearchWindow();
-                    }
-                }
+                (Button.ClickListener) event -> openSearchWindow()
         );
 
         component.addComponent(searchField);

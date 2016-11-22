@@ -40,6 +40,7 @@
 @import "components/textarea/textarea";
 @import "components/tokenlist/tokenlist";
 @import "components/datefield/datefield";
+@import "components/datepicker/datepicker";
 @import "components/grouptable/grouptable";
 @import "components/fieldgroup/fieldgroup";
 @import "components/splitpanel/splitpanel";
@@ -104,6 +105,7 @@
   @include halo-checkbox;
   @include halo-tabsheet;
   @include halo-datefield;
+  @include halo-datepicker;
   @include halo-splitpanel;
   @include halo-scrollbox;
   @include halo-twincolumn;

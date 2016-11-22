@@ -23,4 +23,18 @@
       margin-left: 0 !important;
     }
   }
+
+  .#{$primary-stylename}-popup .v-window-contents {
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+  }
+
+  .#{$primary-stylename}-popup .v-window-footer {
+    padding-bottom: 0;
+  }
+
+  .#{$primary-stylename}-popup .v-filterselect {
+    margin-bottom: round($v-unit-size/4);
+  }
 }

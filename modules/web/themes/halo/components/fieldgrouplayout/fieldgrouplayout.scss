@@ -15,7 +15,7 @@
  *
  */
 
-@mixin halo-cuba-fieldgrouplayout($primary-stylename: cuba-fieldgrouplayout) {
+@mixin halo-cuba-fieldgrouplayout($primary-stylename: c-fglayout) {
   @include valo-gridlayout-global($primary-stylename);
   @include valo-gridlayout($primary-stylename);
 
@@ -43,11 +43,11 @@
   }
 
   // set line-height for all captions exclude captions for CheckBox and Label
-  .#{$primary-stylename}-slot.cuba-full-height-widget .v-caption {
+  .#{$primary-stylename}-slot.c-full-height-widget .v-caption {
     height: $v-unit-size;
   }
 
-  .#{$primary-stylename}-slot.cuba-full-height-widget .v-caption .v-captiontext {
+  .#{$primary-stylename}-slot.c-full-height-widget .v-caption .v-captiontext {
     line-height: $v-unit-size;
   }
 }

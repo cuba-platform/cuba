@@ -27,7 +27,7 @@ import com.vaadin.client.ui.VPanel;
 
 public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
 
-    public static final String CLASSNAME = "cuba-groupbox";
+    public static final String CLASSNAME = "c-groupbox";
 
     protected boolean expanded = true;
 

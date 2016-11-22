@@ -73,4 +73,30 @@ public interface PopupView extends Component.HasCaption, Component.BelongToFrame
      * @return true if caption is shown as HTML.
      */
     boolean isCaptionAsHtml();
+
+    void addPopupVisibilityListener(PopupVisibilityListener listener);
+    void removePopupVisibilityListener(PopupVisibilityListener listener);
+
+    /**
+     * Popup window visibility change listener.
+     */
+    interface PopupVisibilityListener {
+        void popupVisibilityChange(PopupVisibilityEvent popupVisibilityEvent);
+    }
+
+    class PopupVisibilityEvent {
+        protected PopupView popupView;
+
+        public PopupVisibilityEvent(PopupView popupView) {
+            this.popupView = popupView;
+        }
+
+        public PopupView getPopupView() {
+            return popupView;
+        }
+
+        public boolean isPopupVisible() {
+            return popupView.isPopupVisible();
+        }
+    }
 }

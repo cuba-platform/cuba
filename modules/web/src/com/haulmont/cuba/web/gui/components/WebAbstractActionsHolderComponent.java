@@ -61,7 +61,7 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
         contextMenuPopup = new VerticalLayout();
         contextMenuPopup.setCubaId("cubaContextMenu");
         contextMenuPopup.setSizeUndefined();
-        contextMenuPopup.setStyleName("cuba-context-menu-container");
+        contextMenuPopup.setStyleName("c-cm-container");
 
         shortcutsDelegate = new ShortcutsDelegate<ShortcutListener>() {
             @Override
@@ -119,7 +119,7 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
 
         if (StringUtils.isNotEmpty(action.getCaption())) {
             ContextMenuButton contextMenuButton = createContextMenuButton();
-            contextMenuButton.setStyleName("cuba-context-menu-button");
+            contextMenuButton.setStyleName("c-cm-button");
             contextMenuButton.setAction(action);
 
             contextMenuButtons.add(contextMenuButton);

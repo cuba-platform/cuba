@@ -15,8 +15,21 @@
  *
  */
 
-@mixin havana-cuba-pickerfield($primary-stylename: cuba-pickerfield) {
+@mixin havana-cuba-pickerfield($primary-stylename: c-pickerfield) {
   .#{$primary-stylename} {
+    display: inline-table;
+  }
+
+  div.#{$primary-stylename}-layout.v-csslayout {
+    display: table-row;
+  }
+
+  .#{$primary-stylename}-layout > .v-filterselect,
+  .v-textfield.#{$primary-stylename}-text {
+    display: table-cell;
+  }
+
+  .#{$primary-stylename}-layout {
     .v-textfield {
       height: 25px;
       padding-top: 0;
@@ -30,25 +43,26 @@
     }
 
     .v-button {
+      display: table-cell !important;
       padding: 0;
-      display: block !important;
       text-align: center !important;
       border: 1px solid $cuba-field-border-color;
       background: #fff;
       border-left: 0;
-      height: 25px;
+      height: 100%;
+      vertical-align: middle;
       line-height: 18px;
       min-width: 24px;
+      width: 24px;
 
       .v-button-wrap {
         display: inline-block;
-        line-height: 23px;
+        line-height: 12px;
         margin: 0;
 
         img {
           margin: 0;
           border-top: 0;
-          border-bottom: 3px transparent solid;
         }
 
         .v-button-caption {
@@ -81,9 +95,13 @@
       border: 1px solid $cuba-field-border-color;
       overflow: hidden;
     }
+
+    .v-filterselect-button {
+      height: 25px;
+    }
   }
 
-  .#{$primary-stylename}.v-readonly {
+  .#{$primary-stylename}-layout.v-readonly {
     background-color: transparent;
 
     .v-button {

@@ -433,10 +433,40 @@ public class DsBuilder {
         return datasource;
     }
 
-    public RuntimePropsDatasource buildRuntimePropsDataSource(String mainDsId, @Nullable MetaClass categorizedEntityClass) {
+    public RuntimePropsDatasource buildRuntimePropsDatasource(String mainDsId, @Nullable MetaClass categorizedEntityClass) {
         init();
         RuntimePropsDatasourceImpl datasource;
         datasource = new RuntimePropsDatasourceImpl(dsContext, dataSupplier, id, mainDsId, categorizedEntityClass);
+        registerDatasource(datasource);
+        return datasource;
+    }
+
+    public ValueCollectionDatasourceImpl buildValuesCollectionDatasource() {
+        ValueCollectionDatasourceImpl datasource = new ValueCollectionDatasourceImpl();
+        datasource.setup(dsContext, dataSupplier, id, metaClass, null);
+        if (maxResults > 0)
+            datasource.setMaxResults(maxResults);
+        datasource.setSoftDeletion(softDeletion);
+        registerDatasource(datasource);
+        return datasource;
+    }
+
+    public ValueGroupDatasourceImpl buildValuesGroupDatasource() {
+        ValueGroupDatasourceImpl datasource = new ValueGroupDatasourceImpl();
+        datasource.setup(dsContext, dataSupplier, id, metaClass, null);
+        if (maxResults > 0)
+            datasource.setMaxResults(maxResults);
+        datasource.setSoftDeletion(softDeletion);
+        registerDatasource(datasource);
+        return datasource;
+    }
+
+    public ValueHierarchicalDatasourceImpl buildValuesHierarchicalDatasourceImpl() {
+        ValueHierarchicalDatasourceImpl datasource = new ValueHierarchicalDatasourceImpl();
+        datasource.setup(dsContext, dataSupplier, id, metaClass, null);
+        if (maxResults > 0)
+            datasource.setMaxResults(maxResults);
+        datasource.setSoftDeletion(softDeletion);
         registerDatasource(datasource);
         return datasource;
     }

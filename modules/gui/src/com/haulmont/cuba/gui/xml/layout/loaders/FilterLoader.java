@@ -59,6 +59,7 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
         loadCaption(resultComponent, element);
         loadWidth(resultComponent, element, "100%");
         loadCollapsible(resultComponent, element, true);
+        loadSettingsEnabled(resultComponent, element);
 
         String useMaxResults = element.attributeValue("useMaxResults");
         resultComponent.setUseMaxResults(useMaxResults == null || Boolean.parseBoolean(useMaxResults));
@@ -103,14 +104,15 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
             });
         }
 
-        String defaultMode = element.attributeValue("defaultMode");
-        if (defaultMode != null &&"fts".equals(defaultMode)) {
-                resultComponent.switchFilterMode(FilterDelegate.FilterMode.FTS_MODE);
-        }
-
         String modeSwitchVisible = element.attributeValue("modeSwitchVisible");
         resultComponent.setModeSwitchVisible(modeSwitchVisible == null || Boolean.parseBoolean(modeSwitchVisible));
 
-        context.addPostInitTask((context1, window) -> ((FilterImplementation) resultComponent).loadFiltersAndApplyDefault());
+        context.addPostInitTask((context1, window) -> {
+            ((FilterImplementation) resultComponent).loadFiltersAndApplyDefault();
+            String defaultMode = element.attributeValue("defaultMode");
+            if (defaultMode != null &&"fts".equals(defaultMode)) {
+                resultComponent.switchFilterMode(FilterDelegate.FilterMode.FTS_MODE);
+            }
+        });
     }
 }

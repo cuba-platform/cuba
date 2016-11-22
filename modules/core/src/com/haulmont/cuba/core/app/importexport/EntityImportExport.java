@@ -17,19 +17,23 @@
 
 package com.haulmont.cuba.core.app.importexport;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.sys.SecurityTokenManager;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -57,6 +61,12 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     @Inject
     protected Metadata metadata;
+
+    @Inject
+    protected DynamicAttributesManagerAPI dynamicAttributesManagerAPI;
+
+    @Inject
+    protected PersistenceSecurity persistenceSecurity;
 
     @Override
     public byte[] exportEntities(Collection<? extends Entity> entities, View view) {
@@ -177,6 +187,10 @@ public class EntityImportExport implements EntityImportExportAPI {
                     Entity merged = em.merge(entity);
                     result.add(merged);
                 }
+
+                if (entityHasDynamicAttributes(entity)) {
+                    dynamicAttributesManagerAPI.storeDynamicAttributes((BaseGenericIdEntity) entity);
+                }
             }
 
             entitiesToRemove.forEach(em::remove);
@@ -192,9 +206,13 @@ public class EntityImportExport implements EntityImportExportAPI {
                                   Set<Entity> entitiesToRemove,
                                   Collection<ReferenceInfo> referenceInfoList) {
         EntityManager em = persistence.getEntityManager();
-        //set softDeletion to false because we can import deleted entity, so we'll restore them and update
+        //set softDeletion to false because we can import deleted entity, so we'll restore it and update
         em.setSoftDeletion(false);
         Entity dstEntity = em.reload(srcEntity);
+        if (dstEntity instanceof BaseGenericIdEntity) {
+            byte[] securityToken = BaseEntityInternalAccess.getSecurityToken((BaseGenericIdEntity) srcEntity);
+            BaseEntityInternalAccess.setSecurityToken((BaseGenericIdEntity) dstEntity, securityToken);
+        }
         MetaClass metaClass = srcEntity.getMetaClass();
         if (dstEntity == null) {
             dstEntity = metadata.create(metaClass);
@@ -221,7 +239,15 @@ public class EntityImportExport implements EntityImportExportAPI {
             }
         }
 
+        if (entityHasDynamicAttributes(srcEntity)) {
+            ((BaseGenericIdEntity) dstEntity).setDynamicAttributes(((BaseGenericIdEntity) srcEntity).getDynamicAttributes());
+        }
+
         return dstEntity;
+    }
+
+    private boolean entityHasDynamicAttributes(Entity entity) {
+        return entity instanceof BaseGenericIdEntity && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null;
     }
 
     protected Entity importEmbeddedAttribute(Entity srcEntity,
@@ -283,8 +309,23 @@ public class EntityImportExport implements EntityImportExportAPI {
         MetaProperty inverseMetaProperty = metaProperty.getInverse();
         boolean isComposition = metaProperty.getType() == MetaProperty.Type.COMPOSITION;
 
+//        if (srcEntity instanceof BaseGenericIdEntity) {
+//            persistenceSecurity.restoreFilteredData((BaseGenericIdEntity<?>) srcEntity);
+//        }
+
+        Multimap<String, UUID> filteredItems = ArrayListMultimap.create();
+        if (srcEntity instanceof BaseGenericIdEntity) {
+            //create an entity copy here, because filtered items must not be reloaded in the srcEntity for now,
+            //we only need a collection of filtered properties
+            byte[] securityToken = BaseEntityInternalAccess.getSecurityToken((BaseGenericIdEntity) srcEntity);
+            Entity srcEntityCopy = metadata.getTools().deepCopy(srcEntity);
+            BaseEntityInternalAccess.setSecurityToken((BaseGenericIdEntity) srcEntityCopy, securityToken);
+            persistenceSecurity.restoreFilteredData((BaseGenericIdEntity<?>) srcEntityCopy);
+            filteredItems = BaseEntityInternalAccess.getFilteredData((BaseGenericIdEntity) srcEntityCopy);
+        }
+
         Collection<Entity> srcPropertyValue = srcEntity.getValue(viewProperty.getName());
-        if (srcPropertyValue == null) {
+        if (srcPropertyValue == null && filteredItems.isEmpty()) {
             //remove absent items from the composition collection
             if (isComposition) {
                 Collection<? extends Entity> value = dstEntity.getValue(viewProperty.getName());
@@ -319,8 +360,10 @@ public class EntityImportExport implements EntityImportExportAPI {
         if (isComposition) {
             Collection<? extends Entity> dstValue = dstEntity.getValue(viewProperty.getName());
             if (dstValue != null) {
+                Multimap<String, UUID> finalFilteredItems = filteredItems;
                 List<? extends Entity> compositionEntitiesToRemove = dstValue.stream()
-                        .filter(entity -> !collection.contains(entity))
+                        .filter(entity -> !collection.contains(entity) &&
+                                (finalFilteredItems == null || !finalFilteredItems.containsValue(entity.getId())))
                         .collect(Collectors.toList());
                 entitiesToRemove.addAll(compositionEntitiesToRemove);
             }
@@ -331,6 +374,7 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     protected void processReferenceInfo(ReferenceInfo referenceInfo, Map<Object, Entity> entitiesToCreate, Map<Object, Entity> loadedEntities) {
         Entity entity = referenceInfo.getEntity();
+
         String propertyName = referenceInfo.getPropertyName();
 
         MetaProperty metaProperty = entity.getMetaClass().getPropertyNN(propertyName);
@@ -368,6 +412,9 @@ public class EntityImportExport implements EntityImportExportAPI {
                 }
             }
             entity.setValue(propertyName, collection);
+
+            //restore filtered data, otherwise they will be lost
+            persistenceSecurity.restoreFilteredData((BaseGenericIdEntity<?>) entity);
         } else {
             Entity propertyValue = (Entity) referenceInfo.getPropertyValue();
             if (propertyValue == null) {

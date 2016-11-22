@@ -16,18 +16,44 @@
  */
 
 @mixin cuba-login-window {
-  .cuba-login-panel {
+  .c-login-panel {
     background: $v-panel-background-color;
     border: valo-border();
     border-radius: $v-border-radius;
     padding: $v-layout-margin-top $v-layout-margin-right*4 $v-layout-margin-bottom $v-layout-margin-left*4;
   }
 
-  .cuba-login-main-layout {
+  .c-login-main-layout {
     background-color: $v-app-background-color;
   }
 
-  .cuba-login-icon > img {
+  .c-login-icon > img {
     height: 32px;
+  }
+
+  .c-powered-by {
+    font-size: 11px;
+    padding-bottom: $v-unit-size;
+
+    a {
+      margin-left: 5px;
+      display: inline-block;
+      text-decoration: none;
+      font-weight: bold;
+      color: #006BAC;
+
+      background: url(images/cuba-icon-login.png);
+      background-repeat: no-repeat;
+      background-position: left center;
+      background-size: contain;
+      background-clip: border-box;
+      padding-left: 24px;
+      padding-top: 3px;
+      padding-bottom: 3px;
+    }
+
+    .c-cuba-word {
+      color: #5b5857;
+    }
   }
 }

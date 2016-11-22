@@ -205,6 +205,8 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="Java"/>
             <xs:enumeration value="HTML"/>
+            <xs:enumeration value="CSS"/>
+            <xs:enumeration value="SCSS"/>
             <xs:enumeration value="XML"/>
             <xs:enumeration value="Groovy"/>
             <xs:enumeration value="SQL"/>
@@ -267,6 +269,17 @@
             <xs:enumeration value="STARTS_WITH"/>
             <xs:enumeration value="ENDS_WITH"/>
         </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="calendarTimeFormat">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="12H"/>
+                    <xs:enumeration value="24H"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
     </xs:simpleType>
 
     <xs:simpleType name="defaultValidator">
@@ -365,6 +378,10 @@
         <xs:attribute name="stylename" type="xs:string"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="hasSettings">
+        <xs:attribute name="settingsEnabled" type="xs:boolean"/>
+    </xs:attributeGroup>
+
     <xs:attributeGroup name="hasResponsive">
         <xs:attribute name="responsive" type="xs:boolean"/>
     </xs:attributeGroup>
@@ -446,6 +463,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEditState"/>
         <xs:attributeGroup ref="hasAlign"/>
+        <xs:attributeGroup ref="hasSettings"/>
 
         <xs:attribute name="multiselect" type="xs:boolean"/>
         <xs:attribute name="sortable" type="xs:boolean"/>
@@ -453,6 +471,7 @@
         <xs:attribute name="columnControlVisible" type="xs:boolean"/>
         <xs:attribute name="columnHeaderVisible" type="xs:boolean"/>
         <xs:attribute name="showSelection" type="xs:boolean"/>
+        <xs:attribute name="textSelectionEnabled" type="xs:boolean"/>
 
         <xs:attribute name="aggregatable" type="xs:boolean"/>
         <xs:attribute name="aggregationStyle" type="aggregationStyle"/>
@@ -724,6 +743,32 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- Calendar -->
+    <xs:complexType name="calendarComponent">
+        <xs:attributeGroup ref="hasId"/>
+
+        <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasAlign"/>
+
+        <xs:attribute name="datasource" type="xs:string"/>
+
+        <xs:attribute name="startDate" type="xs:string"/>
+        <xs:attribute name="endDate" type="xs:string"/>
+        <xs:attribute name="timeFormat" type="calendarTimeFormat"/>
+
+        <xs:attribute name="startDateProperty" type="xs:string"/>
+        <xs:attribute name="endDateProperty" type="xs:string"/>
+        <xs:attribute name="captionProperty" type="xs:string"/>
+        <xs:attribute name="descriptionProperty" type="xs:string"/>
+        <xs:attribute name="stylenameProperty" type="xs:string"/>
+        <xs:attribute name="isAllDayProperty" type="xs:string"/>
+    </xs:complexType>
+
     <!-- TextField -->
     <xs:complexType name="textFieldComponent">
         <xs:complexContent>
@@ -749,6 +794,7 @@
                 <xs:attribute name="rows" type="xs:int"/>
 
                 <xs:attributeGroup ref="hasDatatype"/>
+                <xs:attributeGroup ref="hasSettings"/>
 
                 <xs:attribute name="maxLength" type="xs:int"/>
                 <xs:attribute name="resizable" type="xs:boolean"/>
@@ -765,6 +811,7 @@
             <xs:extension base="baseFieldComponent">
                 <xs:attribute name="mode" type="sourceCodeEditorMode"/>
                 <xs:attribute name="printMargin" type="xs:boolean"/>
+                <xs:attribute name="printMarginColumn" type="xs:integer"/>
                 <xs:attribute name="showGutter" type="xs:boolean"/>
                 <xs:attribute name="highlightActiveLine" type="xs:boolean"/>
                 <xs:attribute name="handleTabKey" type="xs:boolean"/>
@@ -828,10 +875,13 @@
                 <xs:attribute name="lookupRedCaption" type="resourceString"/>
                 <xs:attribute name="lookupGreenCaption" type="resourceString"/>
                 <xs:attribute name="lookupBlueCaption" type="resourceString"/>
+                <xs:attribute name="buttonCaption" type="resourceString"/>
 
                 <xs:attribute name="swatchesVisible" type="xs:boolean"/>
                 <xs:attribute name="rgbVisible" type="xs:boolean"/>
                 <xs:attribute name="hsvVisible" type="xs:boolean"/>
+                <xs:attribute name="historyVisible" type="xs:boolean"/>
+                <xs:attribute name="defaultCaptionEnabled" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1176,6 +1226,7 @@
                     </xs:sequence>
                     <xs:attribute name="type" type="aggregation" use="optional"/>
                     <xs:attribute name="strategyClass" type="xs:string" use="optional"/>
+                    <xs:attribute name="valueDescription" type="resourceString" use="optional"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
@@ -1280,6 +1331,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasWidthProp"/>
+        <xs:attributeGroup ref="hasSettings"/>
 
         <xs:attribute name="margin" type="xs:string"/>
 
@@ -1684,6 +1736,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasSpacing"/>
+        <xs:attributeGroup ref="hasSettings"/>
 
         <xs:attribute name="collapsable" type="xs:boolean"/>
         <xs:attribute name="collapsed" type="xs:boolean"/>
@@ -1873,6 +1926,76 @@
         <xs:attribute name="categorizedEntityClass" type="xs:string" use="optional"/>
     </xs:complexType>
 
+    <!-- ValueCollectionDatasource -->
+    <xs:complexType name="valueCollectionDatasourceType">
+        <xs:sequence>
+            <xs:element name="query" minOccurs="0" maxOccurs="1">
+                <xs:complexType mixed="true">
+                    <xs:sequence>
+                        <xs:element name="filter" type="filterType" minOccurs="0" maxOccurs="1"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="properties" type="valueDatasourcePropertiesType"/>
+        </xs:sequence>
+
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="maxResults" type="xs:int"/>
+        <xs:attribute name="store" type="xs:string"/>
+    </xs:complexType>
+
+    <!-- ValueGroupDatasource -->
+    <xs:complexType name="valueGroupDatasourceType">
+        <xs:sequence>
+            <xs:element name="query" minOccurs="0" maxOccurs="1">
+                <xs:complexType mixed="true">
+                    <xs:sequence>
+                        <xs:element name="filter" type="filterType" minOccurs="0" maxOccurs="1"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="properties" type="valueDatasourcePropertiesType"/>
+        </xs:sequence>
+
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="maxResults" type="xs:int"/>
+        <xs:attribute name="store" type="xs:string"/>
+    </xs:complexType>
+
+    <!-- ValueHierarchicalDatasource -->
+    <xs:complexType name="valueHierarchicalDatasourceType">
+        <xs:sequence>
+            <xs:element name="query" minOccurs="0" maxOccurs="1">
+                <xs:complexType mixed="true">
+                    <xs:sequence>
+                        <xs:element name="filter" type="filterType" minOccurs="0" maxOccurs="1"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="properties" type="valueDatasourcePropertiesType"/>
+        </xs:sequence>
+
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="maxResults" type="xs:int"/>
+        <xs:attribute name="store" type="xs:string"/>
+        <xs:attribute name="hierarchyProperty" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="valueDatasourcePropertiesType">
+        <xs:sequence>
+            <xs:element name="property" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType mixed="true">
+                    <xs:attribute name="name" type="xs:string" use="required"/>
+                    <xs:attribute name="type" type="datatypeEnum" />
+                    <xs:attribute name="class" type="xs:string" />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="properties" type="valueDatasourcePropertiesType"/>
+        </xs:sequence>
+
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+
     <!-- PropertyDatasource -->
     <xs:group name="nestedDatasources">
         <xs:sequence>
@@ -1982,6 +2105,7 @@
                 <xs:element name="treeTable" type="tableComponent"/>
                 <xs:element name="groupTable" type="groupTableComponent"/>
                 <xs:element name="buttonsPanel" type="buttonsPanelComponent"/>
+                <xs:element name="calendar" type="calendarComponent"/>
 
                 <xs:element name="filter" type="filterComponent"/>
 
@@ -2050,6 +2174,9 @@
                                 <xs:element name="collectionDatasource" type="collectionDatasourceType"/>
                                 <xs:element name="hierarchicalDatasource" type="hierarchicalDatasourceType"/>
                                 <xs:element name="runtimePropsDatasource" type="runtimePropsDatasourceType"/>
+                                <xs:element name="valueCollectionDatasource" type="valueCollectionDatasourceType"/>
+                                <xs:element name="valueGroupDatasource" type="valueGroupDatasourceType"/>
+                                <xs:element name="valueHierarchicalDatasource" type="valueHierarchicalDatasourceType"/>
                             </xs:choice>
                         </xs:sequence>
                         <xs:attribute name="class" type="xs:string"/>

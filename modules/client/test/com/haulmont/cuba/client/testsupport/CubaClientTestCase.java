@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,6 +71,13 @@ public class CubaClientTestCase {
     protected TestMessages messages;
 
     protected TestMessageTools messageTools;
+
+    public CubaClientTestCase() {
+        String property = System.getProperty("logback.configurationFile");
+        if (StringUtils.isBlank(property)) {
+            System.setProperty("logback.configurationFile", "test-logback.xml");
+        }
+    }
 
     /**
      * Add entities package to build metadata from. Should be invoked by concrete test classes in their @Before method.

@@ -66,7 +66,8 @@
   .v-gridlayout,
   .v-verticallayout,
   .v-horizontallayout,
-  .cuba-fieldgrouplayout {
+  .v-csslayout,
+  .c-fglayout {
     font-size: 0;
   }
 
@@ -78,6 +79,10 @@
   // noinspection CssInvalidPseudoSelector
   ::-ms-clear {
     display: none;
+  }
+
+  .v-caption-text {
+    font-size: 12px;
   }
 
   .v-ios.v-touch &,

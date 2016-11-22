@@ -20,9 +20,9 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.global.QueryUtils;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchField;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource.State;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.gui.data.OptionsDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaSearchSelect;
 import com.vaadin.data.Property;
 import com.vaadin.server.ErrorMessage;
@@ -37,6 +37,8 @@ public class WebSearchField extends WebLookupField implements SearchField {
     protected int minSearchStringLength = 0;
     protected Mode mode = Mode.CASE_SENSITIVE;
     protected boolean escapeValueForLike = false;
+
+    protected String styleName;
 
     protected Frame.NotificationType defaultNotificationType = Frame.NotificationType.TRAY;
 
@@ -134,6 +136,19 @@ public class WebSearchField extends WebLookupField implements SearchField {
     }
 
     @Override
+    public void setStyleName(String styleName) {
+        if (StringUtils.isNotEmpty(this.styleName)) {
+            getComposition().removeStyleName(this.styleName);
+        }
+
+        this.styleName = styleName;
+
+        if (StringUtils.isNotEmpty(styleName)) {
+            getComposition().addStyleName(styleName);
+        }
+    }
+
+    @Override
     public int getMinSearchStringLength() {
         return minSearchStringLength;
     }
@@ -189,15 +204,6 @@ public class WebSearchField extends WebLookupField implements SearchField {
     }
 
     @Override
-    public void setOptionsDatasource(CollectionDatasource datasource) {
-        super.setOptionsDatasource(datasource);
-
-        LookupOptionsDsWrapper containerDataSource = (LookupOptionsDsWrapper) component.getContainerDataSource();
-        containerDataSource.setExecuteAutoRefreshInvalid(false);
-        containerDataSource.setAutoRefresh(false);
-    }
-
-    @Override
     public void setOptionsList(List optionsList) {
         throw new UnsupportedOperationException();
     }
@@ -210,5 +216,11 @@ public class WebSearchField extends WebLookupField implements SearchField {
     @Override
     public void setOptionsEnum(Class<? extends EnumClass> optionsEnum) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void setupDsAutoRefresh(OptionsDsWrapper ds) {
+        ds.setAutoRefresh(false);
+        ds.setExecuteAutoRefreshInvalid(false);
     }
 }

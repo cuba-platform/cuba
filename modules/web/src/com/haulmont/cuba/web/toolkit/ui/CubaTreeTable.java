@@ -72,9 +72,12 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
 
     protected Map<Object, String> columnDescriptions; // lazily initialized map
 
+    protected Map<Object, String> aggregationTooltips; // lazily initialized map
+
     protected Table.AggregationStyle aggregationStyle = Table.AggregationStyle.TOP;
     protected Object focusColumn;
     protected Object focusItem;
+    protected Runnable beforePaintListener;
 
     public CubaTreeTable() {
         registerRpc(new CubaTableServerRpc() {
@@ -721,6 +724,7 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
 
         updateClickableColumnKeys();
         updateColumnDescriptions();
+        updateAggregatableTooltips();
 
         if (Table.AggregationStyle.BOTTOM.equals(getAggregationStyle())) {
             updateFooterAggregation();
@@ -732,6 +736,16 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
 
             focusColumn = null;
             focusItem = null;
+        }
+    }
+
+    protected void updateAggregatableTooltips() {
+        if (aggregationTooltips != null) {
+            Map<String, String> aggregationTooltipsByKey = new HashMap<>();
+            for (Map.Entry<Object, String> columnEntry : aggregationTooltips.entrySet()) {
+                aggregationTooltipsByKey.put(columnIdMap.key(columnEntry.getKey()), columnEntry.getValue());
+            }
+            getState().aggregationDescriptions = aggregationTooltipsByKey;
         }
     }
 
@@ -798,10 +812,35 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
             }
             columnDescriptions.put(columnId, description);
         } else if (columnDescriptions != null) {
-            if (columnDescriptions.containsKey(columnId)) {
+            if (columnDescriptions.remove(columnId) != null) {
                 markAsDirty();
             }
-            columnDescriptions.remove(columnId);
+        }
+    }
+
+    @Override
+    public String getAggregationDescription(Object columnId) {
+        if (aggregationTooltips != null) {
+            return aggregationTooltips.get(columnId);
+        }
+        return null;
+    }
+
+    @Override
+    public void setAggregationDescription(Object columnId, String tooltip) {
+        if (tooltip != null) {
+            if (aggregationTooltips == null) {
+                aggregationTooltips = new HashMap<>();
+            }
+            if (!Objects.equals(aggregationTooltips.get(columnId), tooltip)) {
+                markAsDirty();
+            }
+            aggregationTooltips.put(columnId, tooltip);
+        } else if (aggregationTooltips != null) {
+            if (aggregationTooltips.containsKey(columnId)) {
+                markAsDirty();
+            }
+            aggregationTooltips.remove(columnId);
         }
     }
 
@@ -842,5 +881,19 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
         ContainerOrderedWrapper wrapper = new ContainerOrderedWrapper(newDataSource);
         wrapper.setResetOnItemSetChange(true);
         return wrapper;
+    }
+
+    @Override
+    public void setBeforePaintListener(Runnable beforePaintListener) {
+        this.beforePaintListener = beforePaintListener;
+    }
+
+    @Override
+    public void paintContent(PaintTarget target) throws PaintException {
+        if (beforePaintListener != null) {
+            beforePaintListener.run();
+        }
+
+        super.paintContent(target);
     }
 }

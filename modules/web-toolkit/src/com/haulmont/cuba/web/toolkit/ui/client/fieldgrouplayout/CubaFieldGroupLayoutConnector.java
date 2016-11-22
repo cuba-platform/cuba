@@ -20,17 +20,16 @@ package com.haulmont.cuba.web.toolkit.ui.client.fieldgrouplayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.gridlayout.CubaGridLayoutConnector;
-import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
-import com.vaadin.client.UIDL;
+import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaFieldGroupLayout.class)
 public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
 
-    protected boolean needUpdateCaptionSizes = false;
+    protected boolean initialStateChangePerformed = false;
 
     @Override
     public CubaFieldGroupLayoutWidget getWidget() {
@@ -40,29 +39,6 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
     @Override
     public CubaFieldGroupLayoutState getState() {
         return (CubaFieldGroupLayoutState) super.getState();
-    }
-
-    @Override
-    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        super.updateFromUIDL(uidl, client);
-
-        // try layout now to smooth layout process
-        if (needUpdateCaptionSizes) {
-            updateCaptionSizes();
-        }
-
-        needUpdateCaptionSizes = false;
-    }
-
-    @Override
-    public void layoutHorizontally() {
-        if (needUpdateCaptionSizes) {
-            updateCaptionSizes();
-        }
-
-        super.layoutHorizontally();
-
-        needUpdateCaptionSizes = false;
     }
 
     @Override
@@ -78,8 +54,36 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
     public void updateCaption(ComponentConnector childConnector) {
         super.updateCaption(childConnector);
 
+        if (getState().useInlineCaption && initialStateChangePerformed) {
+            updateCaptionSizes();
+
+            // always relayout after caption changes
+            getLayoutManager().setNeedsLayout(this);
+        }
+    }
+
+    @Override
+    public void onStateChanged(StateChangeEvent stateChangeEvent) {
+        super.onStateChanged(stateChangeEvent);
+
         if (getState().useInlineCaption) {
-            needUpdateCaptionSizes = true;
+            updateCaptionSizes();
+        }
+
+        if (stateChangeEvent.isInitialStateChange()) {
+            this.initialStateChangePerformed = true;
+        }
+    }
+
+    @Override
+    public void onConnectorHierarchyChange(ConnectorHierarchyChangeEvent event) {
+        // construct component cells with known caption alignment
+        getWidget().useInlineCaption = getState().useInlineCaption;
+
+        super.onConnectorHierarchyChange(event);
+
+        if (getState().useInlineCaption && initialStateChangePerformed) {
+            updateCaptionSizes();
 
             // always relayout after caption changes
             getLayoutManager().setNeedsLayout(this);
@@ -93,21 +97,6 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
                 updateCaptionSizes(index, column);
             }
             index++;
-        }
-    }
-
-    @Override
-    public void onConnectorHierarchyChange(ConnectorHierarchyChangeEvent event) {
-        // construct component cells with known caption alignment
-        getWidget().useInlineCaption = getState().useInlineCaption;
-
-        super.onConnectorHierarchyChange(event);
-
-        if (getState().useInlineCaption) {
-            needUpdateCaptionSizes = true;
-
-            // always relayout after caption changes
-            getLayoutManager().setNeedsLayout(CubaFieldGroupLayoutConnector.this);
         }
     }
 

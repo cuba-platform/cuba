@@ -15,11 +15,22 @@
  *
  */
 
-@mixin halo-datefield($primary-stylename : cuba-datefield) {
-  @include valo-datefield($primary-stylename);
+@mixin halo-datefield($primary-stylename : c-datefield) {
+  .#{$primary-stylename}-composition {
+    display: inline-table;
+  }
 
-  .#{$primary-stylename}-popup {
-    @include valo-datefield-calendarpanel-style(#{$primary-stylename}-calendarpanel);
+  .#{$primary-stylename}-layout {
+    display: table-row;
+
+    .c-maskedfield {
+      margin-left: $v-layout-spacing-horizontal/2;
+      display: table-cell;
+    }
+
+    .#{$primary-stylename} {
+      display: table-cell;
+    }
   }
 
   .#{$primary-stylename} {
@@ -29,6 +40,7 @@
     [class*="textfield"] {
       padding-left: $padding-width;
       padding-right: $v-unit-size * 1.2;
+      height: $v-unit-size;
     }
 
     [class*="button"] {
@@ -40,23 +52,18 @@
   }
 
   .#{$primary-stylename}-composition-error {
-    .#{$primary-stylename} {
-      .#{$primary-stylename}-textfield {
-        @include valo-textfield-error-style;
-      }
-
-      .#{$primary-stylename}-button {
-        color: $v-error-indicator-color;
-        border-color: $v-error-indicator-color;
-      }
+    .c-maskedfield,
+    .v-datefield-textfield {
+      @include valo-textfield-error-style;
     }
 
-    .cuba-maskedfield {
-      @include valo-textfield-error-style;
+    .v-datefield-button {
+      color: $v-error-indicator-color;
+      border-color: $v-error-indicator-color;
     }
   }
 
-  .#{$primary-stylename}-calendarpanel-day.#{$primary-stylename}-calendarpanel-day-focused {
+  .#{$primary-stylename} .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-focused {
     border-color: $v-focus-color;
   }
 }

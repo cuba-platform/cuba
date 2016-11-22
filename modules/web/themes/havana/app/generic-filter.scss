@@ -17,36 +17,36 @@
 
 @mixin cuba-generic-filter {
 
-  .cuba-generic-filter .filter-control-with-top-border {
+  .c-generic-filter .filter-control-with-top-border {
     border-top: solid 1px #BABFC0;
     padding-top: 5px;
   }
 
-  .cuba-generic-filter .filter-control-with-bottom-border {
+  .c-generic-filter .filter-control-with-bottom-border {
     border-bottom: solid 1px #BABFC0;
     padding-bottom: 5px;
   }
 
-  .cuba-generic-filter .filter-control-no-border {
+  .c-generic-filter .filter-control-no-border {
     border-top: none;
     padding-top: 0px;
     border-bottom: none;
     padding-bottom: 0px;
   }
 
-  .cuba-generic-filter .filter-settings-button .v-popup-indicator {
+  .c-generic-filter .filter-settings-button .v-popup-indicator {
     display: none;
   }
 
-  .cuba-generic-filter .filter-conditions .v-popupbutton .v-popup-indicator {
+  .c-generic-filter .filter-conditions .v-popupbutton .v-popup-indicator {
     display: none;
   }
 
-  .cuba-generic-filter .filter-conditions .v-popupbutton {
+  .c-generic-filter .filter-conditions .v-popupbutton {
     background: transparent;
   }
 
-  .cuba-generic-filter .filter-search-button-layout {
+  .c-generic-filter .filter-search-button-layout {
     .v-button.filter-search-button {
       border-right-color: transparent;
     }

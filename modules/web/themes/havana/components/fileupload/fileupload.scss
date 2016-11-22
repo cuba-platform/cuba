@@ -15,7 +15,7 @@
  *
  */
 
-@mixin havana-cuba-fileupload($primary-stylename: cuba-fileupload) {
+@mixin havana-cuba-fileupload($primary-stylename: c-fileupload) {
   .#{$primary-stylename} {
     position: relative;
     overflow: hidden;
@@ -23,6 +23,14 @@
 
   .#{$primary-stylename}:hover .v-button {
     background: transparent url(../button/images/button-hover.gif) repeat-x;
+  }
+
+  .#{$primary-stylename}.v-disabled input {
+    cursor: default;
+  }
+
+  .#{$primary-stylename}.v-disabled:hover .v-button {
+    background: transparent url(../button/images/button.gif) repeat-x;
   }
 
   .#{$primary-stylename} input {
@@ -42,6 +50,10 @@
     height: 100%;
 
     @include box-defaults;
+  }
+
+  .#{$primary-stylename}.v-disabled input[type="file"]::-webkit-file-upload-button {
+    cursor: default;
   }
 
   .#{$primary-stylename} input[type="file"]::-webkit-file-upload-button {

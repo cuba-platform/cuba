@@ -15,33 +15,31 @@
  *
  */
 
-@mixin halo-cuba-grouptable($primary-stylename : cuba-grouptable) {
-  .#{$primary-stylename} {
-    .#{$primary-stylename}-group-cell-expander {
-      @include box-defaults;
+@mixin halo-cuba-grouptable($primary-stylename: c-grouptable) {
+  .#{$primary-stylename}-group-cell-expander {
+    @include box-defaults;
 
-      vertical-align: middle;
-      display: inline-block;
-      cursor: pointer;
+    vertical-align: middle;
+    display: inline-block;
+    cursor: pointer;
 
-      &:before {
-        color: $v-font-color;
-        font-family: FontAwesome;
-        content: "\f196";
-      }
+    &:before {
+      color: $v-font-color;
+      font-family: FontAwesome;
+      content: "\f196";
     }
+  }
 
-    .v-expanded .#{$primary-stylename}-group-cell-expander {
-      &:before {
-        color: $v-font-color;
-        font-family: FontAwesome;
-        content: "\f147";
-      }
+  .v-expanded .#{$primary-stylename}-group-cell-expander {
+    &:before {
+      color: $v-font-color;
+      font-family: FontAwesome;
+      content: "\f147";
     }
+  }
 
-    .#{$primary-stylename}-float {
-      display: inline-block;
-      vertical-align: middle;
-    }
+  .#{$primary-stylename}-float {
+    display: inline-block;
+    vertical-align: middle;
   }
 }

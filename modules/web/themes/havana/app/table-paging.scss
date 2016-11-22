@@ -16,14 +16,14 @@
  */
 
 @mixin cuba-table-paging {
-  .cuba-paging {
+  .c-paging {
     .v-label {
       line-height: 18px;
       border: 0;
     }
   }
 
-  .v-button.cuba-paging-change-page {
+  .v-button.c-paging-change-page {
     height: auto;
 
     .v-button-wrap {
@@ -36,7 +36,7 @@
     }
   }
 
-  .v-button.v-button-link.cuba-paging-count {
+  .v-button.v-button-link.c-paging-count {
     border: 0;
     height: auto;
 
@@ -49,7 +49,7 @@
     }
   }
 
-  .v-button.v-button-link.cuba-paging-count-number {
+  .v-button.v-button-link.c-paging-count-number {
     cursor: default;
 
     .v-button-wrap .v-button-caption {

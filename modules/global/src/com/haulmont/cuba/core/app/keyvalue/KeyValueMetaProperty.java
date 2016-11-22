@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.app.keyvalue;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.impl.ClassRange;
@@ -60,6 +61,16 @@ public class KeyValueMetaProperty extends MetadataObjectImpl implements MetaProp
             this.range = new DatatypeRange(Datatypes.getNN(javaClass));
             this.type = Type.DATATYPE;
         }
+    }
+
+    public KeyValueMetaProperty(MetaClass metaClass, String name, Datatype datatype) {
+        this.name = name;
+        this.javaClass = datatype.getJavaClass();
+        this.metaClass = metaClass;
+        this.mandatory = false;
+
+        this.range = new DatatypeRange(datatype);
+        this.type = Type.DATATYPE;
     }
 
     @Override

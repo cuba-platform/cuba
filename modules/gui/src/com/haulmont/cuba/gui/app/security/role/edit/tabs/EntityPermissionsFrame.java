@@ -103,6 +103,9 @@ public class EntityPermissionsFrame extends AbstractFrame {
     @Inject
     protected CheckBox allDenyCheck;
 
+    @Inject
+    private GroupBoxLayout editPane;
+
     /* Checkbox operations controls */
 
     protected class EntityOperationControl {
@@ -234,6 +237,8 @@ public class EntityPermissionsFrame extends AbstractFrame {
         boolean isCreatePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.CREATE);
         boolean isDeletePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.DELETE);
         boolean hasPermissionsToModifyePermission = isCreatePermitted && isDeletePermitted;
+
+        editPane.setEnabled(security.isEntityOpPermitted(metadata.getClass(Role.class), EntityOp.UPDATE));
 
         applyPermissions(hasPermissionsToModifyePermission);
     }

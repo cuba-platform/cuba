@@ -16,7 +16,7 @@
  */
 
 @mixin cuba-folders-pane {
-  .cuba-folders-pane {
+  .c-folders-pane {
     background: #fff url(images/folders-pane-bg.png) top repeat-x;
 
     .v-tree {
@@ -69,7 +69,7 @@
     border: 2px solid $cuba-field-focused-border-color;
   }
 
-  .v-label.cuba-folders-pane-caption {
+  .v-label.c-folders-pane-caption {
     font-size: 14px;
     color: $cuba-folderspane-caption-color;
     background: url(images/folders-pane-header-bg.png) no-repeat 5px bottom;

@@ -961,7 +961,21 @@ public class QueryTransformerAstBasedTest {
         res = transformer.getResult();
         assertEquals("select h from sec$GroupHierarchy h where h.group = ?1 order by h.token.parentToken.name desc", res);
 
+        transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h order by h.level desc");
+        transformer.replaceOrderBy(false, "parent.other.createdBy");
+        res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h left join h.parent h_parent left join h_parent.other h_parent_other order by h_parent_other.createdBy",
+                res);
 
+        transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h order by h.level desc");
+        transformer.replaceOrderBy(false, "parent.other.token.name");
+        res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h left join h.parent h_parent left join h_parent.other h_parent_other order by h_parent_other.token.name",
+                res);
     }
 
     @Test
@@ -979,16 +993,16 @@ public class QueryTransformerAstBasedTest {
         transformer.replaceOrderBy(true, "parent.other.group");
         res = transformer.getResult();
         assertEquals(
-                "select h from sec$GroupHierarchy h left join h.parent.other h_parent_other order by h_parent_other.group desc",
+                "select h from sec$GroupHierarchy h left join h.parent h_parent left join h_parent.other h_parent_other order by h_parent_other.group desc",
                 res);
         transformer.reset();
 
         transformer = new QueryTransformerAstBased(model,
                 "select h from sec$GroupHierarchy h");
-        transformer.replaceOrderBy(false, "parent.group", "parent.name");
+        transformer.replaceOrderBy(false, "parent.group", "parent.createdBy");
         res = transformer.getResult();
         assertEquals(
-                "select h from sec$GroupHierarchy h left join h.parent h_parent order by h_parent.group, h_parent.name",
+                "select h from sec$GroupHierarchy h left join h.parent h_parent order by h_parent.group, h_parent.createdBy",
                 res);
 
     }

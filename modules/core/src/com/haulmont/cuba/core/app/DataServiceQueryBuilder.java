@@ -140,8 +140,8 @@ public class DataServiceQueryBuilder {
                     value = list;
                 }
 
-                if (value instanceof LoadContext.Query.TemporalValue) {
-                    LoadContext.Query.TemporalValue temporalValue = (LoadContext.Query.TemporalValue) value;
+                if (value instanceof TemporalValue) {
+                    TemporalValue temporalValue = (TemporalValue) value;
                     query.setParameter(name, temporalValue.date, temporalValue.type);
                 } else {
                     query.setParameter(name, value);

@@ -17,25 +17,19 @@
 
 $cuba-searchselect-edit-color: scale-color(lighten($v-focus-color, 35%), $saturation: -15%) !default;
 
-@mixin halo-cuba-searchselect($primary-stylename: cuba-searchselect) {
-  @include valo-combobox($primary-stylename);
-  @include halo-filterselect($primary-stylename);
-
-  .#{$primary-stylename} {
-    padding-right: 0px;
-
-    .#{$primary-stylename}-input {
-      padding-right: 0px;
-    }
-
-    .#{$primary-stylename}-button {
-      background: none;
-      display: none;
-    }
+@mixin halo-cuba-searchselect($primary-stylename: c-searchselect) {
+  .#{$primary-stylename},
+  .#{$primary-stylename} .v-filterselect-input {
+    padding-right: 0;
   }
 
-  .#{$primary-stylename}-edit-filter.#{$primary-stylename}-focus,
-  .#{$primary-stylename}-edit-filter.#{$primary-stylename}-focus .#{$primary-stylename}-input:focus {
+  .#{$primary-stylename} .v-filterselect-button {
+    background: none;
+    display: none;
+  }
+
+  .#{$primary-stylename}.v-filterselect-edit-filter.v-filterselect-focus,
+  .#{$primary-stylename}.v-filterselect-edit-filter.v-filterselect-focus .v-filterselect-input:focus {
     background-color: $cuba-searchselect-edit-color;
   }
 }

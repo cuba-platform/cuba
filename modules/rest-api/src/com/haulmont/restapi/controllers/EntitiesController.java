@@ -18,10 +18,9 @@ package com.haulmont.restapi.controllers;
 
 import com.haulmont.restapi.data.CreatedEntityInfo;
 import com.haulmont.restapi.service.EntitiesControllerManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
@@ -34,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
  * Controller that performs CRUD entity operations
  */
 @RestController
-@RequestMapping(value = "/v2/entities", produces = "application/json; charset=UTF-8")
+@RequestMapping(value = "/v2/entities", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class EntitiesController {
 
     @Inject
@@ -44,8 +43,9 @@ public class EntitiesController {
     public String loadEntity(@PathVariable String entityName,
                              @PathVariable String entityId,
                              @RequestParam(required = false) String view,
-                             @RequestParam(required = false) Boolean returnNulls) {
-        return entitiesControllerManager.loadEntity(entityName, entityId, view, returnNulls);
+                             @RequestParam(required = false) Boolean returnNulls,
+                             @RequestParam(required = false) Boolean dynamicAttributes) {
+        return entitiesControllerManager.loadEntity(entityName, entityId, view, returnNulls, dynamicAttributes);
     }
 
     @GetMapping("/{entityName}")
@@ -54,8 +54,9 @@ public class EntitiesController {
                                    @RequestParam(required = false) Integer limit,
                                    @RequestParam(required = false) Integer offset,
                                    @RequestParam(required = false) String sort,
-                                   @RequestParam(required = false) Boolean returnNulls) {
-        return entitiesControllerManager.loadEntitiesList(entityName, view, limit, offset, sort, returnNulls);
+                                   @RequestParam(required = false) Boolean returnNulls,
+                                   @RequestParam(required = false) Boolean dynamicAttributes) {
+        return entitiesControllerManager.loadEntitiesList(entityName, view, limit, offset, sort, returnNulls, dynamicAttributes);
     }
 
     @PostMapping("/{entityName}")

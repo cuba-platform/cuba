@@ -34,7 +34,7 @@
             <properties include=".*"/>
         </filter>
 
-        <groupTable id="tasksTable" width="100%" presentations="true">
+        <groupTable id="tasksTable" width="100%" presentations="true" multiselect="true">
             <buttonsPanel>
                 <button action="tasksTable.create" icon="icons/create.png"/>
                 <button id="activateBtn"/>

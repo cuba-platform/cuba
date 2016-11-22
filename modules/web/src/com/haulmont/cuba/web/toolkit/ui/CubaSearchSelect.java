@@ -30,6 +30,8 @@ public class CubaSearchSelect extends CubaComboBox {
 
     public CubaSearchSelect() {
         super.setFilteringMode(FilteringMode.OFF);
+
+        setStyleName("c-searchselect");
     }
 
     @Override
@@ -66,9 +68,9 @@ public class CubaSearchSelect extends CubaComboBox {
     }
 
     @Override
-    protected List<?> sanitetizeList(List<?> options, boolean needNullSelectOption) {
+    protected List<?> sanitizeList(List<?> options, boolean needNullSelectOption) {
         // not needed to show null value in list
-        return super.sanitetizeList(options, false);
+        return super.sanitizeList(options, false);
     }
 
     @Override

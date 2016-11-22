@@ -15,7 +15,7 @@
  *
  */
 
-@mixin havana-cuba-fileupload-wrapper($primary-stylename: cuba-fileupload-wrapper) {
+@mixin havana-cuba-fileupload-wrapper($primary-stylename: c-fileupload-wrapper) {
   .fileupload-wrapper-container {
     height: 25px;
     min-height: 25px;
@@ -25,7 +25,7 @@
     width: 5px;
   }
 
-  .v-button-cuba-fileupload-empty {
+  .v-button-c-fileupload-empty {
     cursor: default;
 
     & .v-button-wrap .v-button-caption {
@@ -34,7 +34,7 @@
     }
   }
 
-  .v-button-cuba-fileupload-empty.error {
+  .v-button-c-fileupload-empty.error {
     cursor: default;
 
     & > .v-button-wrap > .v-button-caption {

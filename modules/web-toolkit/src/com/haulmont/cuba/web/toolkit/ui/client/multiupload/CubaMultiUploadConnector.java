@@ -26,7 +26,7 @@ import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Deprecated
-@Connect(CubaMultiUpload.class)
+@Connect(value = CubaMultiUpload.class, loadStyle = Connect.LoadStyle.LAZY)
 public class CubaMultiUploadConnector extends AbstractComponentConnector implements Paintable {
 
     protected boolean initialized = false;

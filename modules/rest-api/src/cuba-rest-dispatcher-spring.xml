@@ -34,6 +34,13 @@
 
     <mvc:annotation-driven/>
 
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.haulmont.restapi.sys.RestCleanupInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
     <!-- According to the spec the token endpoint should be secured by the basic authentication -->
     <security:http pattern="/rest/v2/oauth/**"
           create-session="stateless"
@@ -143,7 +150,7 @@
         <property name="allowCredentials" value="true"/>
     </bean>
 
-    <bean id="cuba_RestMultipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="${cuba.rest.maxUploadSize}"/>
     </bean>
 </beans>

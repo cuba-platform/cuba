@@ -15,7 +15,7 @@
  *
  */
 
-@mixin halo-cuba-fileupload($primary-stylename: cuba-fileupload) {
+@mixin halo-cuba-fileupload($primary-stylename: c-fileupload) {
   .#{$primary-stylename} {
     position: relative;
 
@@ -61,6 +61,10 @@
     @include box-defaults;
   }
 
+  .#{$primary-stylename}.v-disabled input {
+    cursor: default;
+  }
+
   .#{$primary-stylename} input[type="file"]::-webkit-file-upload-button {
     cursor: pointer;
     display: block;
@@ -72,6 +76,10 @@
     max-height: 100%;
 
     @include box-defaults;
+  }
+
+  .#{$primary-stylename}.v-disabled input[type="file"]::-webkit-file-upload-button {
+    cursor: default;
   }
 
   .#{$primary-stylename}.v-has-width .v-button {

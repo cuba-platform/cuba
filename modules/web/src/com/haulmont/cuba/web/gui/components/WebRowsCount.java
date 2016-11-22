@@ -20,13 +20,18 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RowsCount;
+import com.haulmont.cuba.gui.components.VisibilityChangeNotifier;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import com.haulmont.cuba.web.toolkit.ui.CubaRowsCount;
 
-public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements RowsCount {
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements RowsCount, VisibilityChangeNotifier {
 
     protected CollectionDatasource datasource;
     protected boolean refreshing;
@@ -39,9 +44,11 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
 
+    protected List<VisibilityChangeListener> visibilityChangeListeners;
+
     public WebRowsCount() {
         component = new CubaRowsCount();
-        component.setStyleName("cuba-table-rows-count");
+        component.setStyleName("c-table-rows-count");
     }
 
     @Override
@@ -171,7 +178,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
         int count = ((CollectionDatasource.SupportsPaging) datasource).getCount();
         component.getCountButton().setCaption(String.valueOf(count));
-        component.getCountButton().addStyleName("cuba-paging-count-number");
+        component.getCountButton().addStyleName("c-paging-count-number");
         component.getCountButton().setEnabled(false);
     }
 
@@ -277,7 +284,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
         if (component.getCountButton().isVisible() && !refreshing || refreshSizeButton) {
             component.getCountButton().setCaption(messages.getMainMessage("table.rowsCount.msg3"));
-            component.getCountButton().removeStyleName("cuba-paging-count-number");
+            component.getCountButton().removeStyleName("c-paging-count-number");
             component.getCountButton().setEnabled(true);
         }
     }
@@ -287,6 +294,36 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
             return String.valueOf(size);
         } else {
             return (start + 1) + "-" + (start + size);
+        }
+    }
+
+    @Override
+    public void addVisibilityChangeListener(VisibilityChangeListener listener) {
+        if (visibilityChangeListeners == null) {
+            visibilityChangeListeners = new LinkedList<>();
+        }
+
+        if (!visibilityChangeListeners.contains(listener)) {
+            visibilityChangeListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeVisibilityChangeListener(VisibilityChangeListener listener) {
+        if (!visibilityChangeListeners.contains(listener)) {
+            visibilityChangeListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+
+        if (visibilityChangeListeners != null) {
+            VisibilityChangeEvent event = new VisibilityChangeEvent(this, visible);
+            for (VisibilityChangeListener listener : new ArrayList<>(visibilityChangeListeners)) {
+                listener.componentVisibilityChanged(event);
+            }
         }
     }
 }

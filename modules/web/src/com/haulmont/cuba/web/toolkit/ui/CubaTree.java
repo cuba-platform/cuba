@@ -36,6 +36,8 @@ import java.util.*;
 
 public class CubaTree extends Tree implements HasComponents {
 
+    protected Runnable beforePaintListener;
+
     public CubaTree() {
         setValidationVisible(false);
         setShowBufferedSourceException(false);
@@ -121,6 +123,10 @@ public class CubaTree extends Tree implements HasComponents {
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
+        if (beforePaintListener != null) {
+            beforePaintListener.run();
+        }
+
         if (isNodeCaptionsAsHtml()) {
             target.addAttribute("nodeCaptionsAsHtml", true);
         }
@@ -215,5 +221,9 @@ public class CubaTree extends Tree implements HasComponents {
 
     public interface ItemIconProvider {
         Resource getItemIcon(Object itemId);
+    }
+
+    public void setBeforePaintListener(Runnable beforePaintListener) {
+        this.beforePaintListener = beforePaintListener;
     }
 }

@@ -38,6 +38,7 @@ import javax.inject.Inject;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -59,14 +60,14 @@ public class ServicesControllerManager {
     protected Logger log = LoggerFactory.getLogger(ServicesControllerManager.class);
 
     @Nullable
-    public String invokeServiceMethodGet(String serviceName, String methodName, Map<String, String> paramsMap) {
+    public ServiceCallResult invokeServiceMethodGet(String serviceName, String methodName, Map<String, String> paramsMap) {
         List<String> paramNames = new ArrayList<>(paramsMap.keySet());
         List<String> paramValuesStr = new ArrayList<>(paramsMap.values());
         return _invokeServiceMethod(serviceName, methodName, paramNames, paramValuesStr);
     }
 
     @Nullable
-    public String invokeServiceMethodPost(String serviceName, String methodName, String paramsJson) {
+    public ServiceCallResult invokeServiceMethodPost(String serviceName, String methodName, String paramsJson) {
         Map<String, String> paramsMap = parseParamsJson(paramsJson);
         List<String> paramNames = new ArrayList<>(paramsMap.keySet());
         List<String> paramValuesStr = new ArrayList<>(paramsMap.values());
@@ -110,12 +111,12 @@ public class ServicesControllerManager {
     }
 
     @Nullable
-    protected String _invokeServiceMethod(String serviceName, String methodName, List<String> paramNames, List<String> paramValuesStr) {
+    protected ServiceCallResult _invokeServiceMethod(String serviceName, String methodName, List<String> paramNames, List<String> paramValuesStr) {
         Object service = AppBeans.get(serviceName);
         Method serviceMethod = restServicesConfiguration.getServiceMethod(serviceName, methodName, paramNames);
         if (serviceMethod == null) {
             throw new RestAPIException("Service method not found",
-                    "Service method not found",
+                    serviceName + "." + methodName + "(" + paramNames.stream().collect(Collectors.joining(",")) + ")",
                     HttpStatus.NOT_FOUND);
         }
         List<Object> paramValues = new ArrayList<>();
@@ -144,16 +145,34 @@ public class ServicesControllerManager {
 
         Class<?> methodReturnType = serviceMethod.getReturnType();
         if (Entity.class.isAssignableFrom(methodReturnType)) {
-            return entitySerializationAPI.toJson((Entity) methodResult);
+            return new ServiceCallResult(entitySerializationAPI.toJson((Entity) methodResult), true);
         } else if (Collection.class.isAssignableFrom(methodReturnType)) {
-            return entitySerializationAPI.toJson((Collection<? extends Entity>) methodResult);
+            return new ServiceCallResult(entitySerializationAPI.toJson((Collection<? extends Entity>) methodResult), true);
         } else {
             Datatype<?> datatype = Datatypes.get(methodReturnType);
             if (datatype != null) {
-                return datatype.format(methodResult);
+                return new ServiceCallResult(datatype.format(methodResult), false);
             } else {
-                return restParseUtils.serializePOJO(methodResult, methodReturnType);
+                return new ServiceCallResult(restParseUtils.serializePOJO(methodResult, methodReturnType), true);
             }
+        }
+    }
+
+    public static class ServiceCallResult {
+        protected String stringValue;
+        protected boolean validJson;
+
+        public ServiceCallResult(String stringValue, boolean validJson) {
+            this.stringValue = stringValue;
+            this.validJson = validJson;
+        }
+
+        public boolean isValidJson() {
+            return validJson;
+        }
+
+        public String getStringValue() {
+            return stringValue;
         }
     }
 }

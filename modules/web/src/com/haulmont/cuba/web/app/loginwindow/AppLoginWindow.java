@@ -141,6 +141,8 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
         loginField.requestFocus();
 
+        initPoweredByLink();
+
         initLogoImage();
 
         initDefaultCredentials();
@@ -148,6 +150,13 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
         initLocales();
 
         initRememberMe();
+    }
+
+    protected void initPoweredByLink() {
+        Component poweredByLink = getComponent("poweredByLink");
+        if (poweredByLink != null) {
+            poweredByLink.setVisible(webConfig.getLoginDialogPoweredByLinkVisible());
+        }
     }
 
     protected void initLocales() {
@@ -310,7 +319,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
         App app = App.getInstance();
         Connection connection = app.getConnection();
 
-        if (connection.isConnected()) {
+        if (connection.isAuthenticated()) {
             if (webConfig.getRememberMeEnabled()) {
                 if (Boolean.TRUE.equals(rememberMeCheckBox.getValue())) {
                     if (!loginByRememberMe) {
@@ -353,6 +362,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
         if (StringUtils.isEmpty(login) || StringUtils.isEmpty(password)) {
             showNotification(messages.getMainMessage("loginWindow.emptyLoginOrPassword"), NotificationType.WARNING);
+            return;
         }
 
         App app = App.getInstance();

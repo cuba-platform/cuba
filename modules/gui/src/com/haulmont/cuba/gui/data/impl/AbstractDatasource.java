@@ -117,6 +117,7 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
             itemsToUpdate.remove(item);
             itemsToUpdate.add(item);
         }
+        itemsToDelete.remove(item);
         modified = true;
     }
 
@@ -167,11 +168,13 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
         // Iterate through all datasources in the same DsContext
         for (Datasource sibling : getDsContext().getAll()) {
             // If the datasource is a property datasource of the Child
-            if (sibling instanceof NestedDatasource && ((NestedDatasource) sibling).getMaster().equals(this)) {
+            if (sibling instanceof NestedDatasource
+                    && ((NestedDatasource) sibling).getMaster().equals(this)
+                    && !metadata.getTools().isEmbeddable(sibling.getMetaClass())) {
                 // Look for corresponding property datasource in the Parent's DsContext
                 for (Datasource siblingOfParent : parentDs.getDsContext().getAll()) {
-                    if (siblingOfParent instanceof NestedDatasource &&
-                            ((NestedDatasource) siblingOfParent).getProperty().equals(((NestedDatasource) sibling).getProperty())) {
+                    if (siblingOfParent instanceof NestedDatasource
+                            && ((NestedDatasource) siblingOfParent).getMaster() == parentDs) {
                         // If such corresponding datasource found, set it as a parent for our property datasource
                         ((DatasourceImplementation) sibling).setParent(siblingOfParent);
                     }

@@ -21,7 +21,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxState;
 
 public class CubaFieldGroupState extends CubaGroupBoxState {
     {
-        primaryStyleName = "cuba-fieldgroup";
+        primaryStyleName = "c-fieldgroup";
     }
 
     public boolean borderVisible = false;

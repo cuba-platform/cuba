@@ -16,7 +16,7 @@
  */
 
 //noinspection ALL
-@mixin halo-cuba-groupbox($primary-stylename : cuba-groupbox) {
+@mixin halo-cuba-groupbox($primary-stylename: c-groupbox) {
   @include valo-panel($primary-stylename);
   @include halo-panel($primary-stylename);
 

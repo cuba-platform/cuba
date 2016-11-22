@@ -1,0 +1,1 @@
+update SYS_CATEGORY_ATTR set IS_COLLECTION = false;

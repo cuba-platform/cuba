@@ -45,9 +45,9 @@ public class TableCustomSortDelegate {
         Label sortByAscendingButton = new Label(tableWidget.getSortAscendingLabel());
         Label sortClearSortButton = new Label(tableWidget.getSortResetLabel());
 
-        sortByDescendingButton.addStyleName("cuba-table-contextmenu-item");
-        sortByAscendingButton.addStyleName("cuba-table-contextmenu-item");
-        sortClearSortButton.addStyleName("cuba-table-contextmenu-item");
+        sortByDescendingButton.addStyleName("c-table-contextmenu-item");
+        sortByAscendingButton.addStyleName("c-table-contextmenu-item");
+        sortClearSortButton.addStyleName("c-table-contextmenu-item");
 
         sortDirectionMenu.add(sortByAscendingButton);
         sortDirectionMenu.add(sortByDescendingButton);
@@ -85,18 +85,18 @@ public class TableCustomSortDelegate {
             @Override
             public void onClick(ClickEvent event) {
                 tableWidget.getClient().updateVariable(tableWidget.getPaintableId(), "resetsortorder", columnId, true);
-                sortIndicator.addClassName("cuba-sort-indicator-visible");
+                sortIndicator.addClassName("c-sort-indicator-visible");
                 sortDirectionPopup.hide();
             }
         });
 
-        sortDirectionMenu.addStyleName("cuba-table-contextmenu");
+        sortDirectionMenu.addStyleName("c-table-contextmenu");
         sortDirectionPopup.setWidget(sortDirectionMenu);
 
         sortDirectionPopup.addCloseHandler(new CloseHandler<PopupPanel>() {
             @Override
             public void onClose(CloseEvent<PopupPanel> event) {
-                sortIndicator.removeClassName("cuba-sort-indicator-visible");
+                sortIndicator.removeClassName("c-sort-indicator-visible");
             }
         });
 
@@ -104,6 +104,6 @@ public class TableCustomSortDelegate {
         ComputedStyle sortIndicatorStyle = new ComputedStyle(sortIndicator);
         Tools.showPopup(sortDirectionPopup, sortIndicator.getAbsoluteLeft(), sortIndicator.getAbsoluteTop() +
                 ((int) sortIndicatorStyle.getHeight()));
-        sortIndicator.addClassName("cuba-sort-indicator-visible");
+        sortIndicator.addClassName("c-sort-indicator-visible");
     }
 }

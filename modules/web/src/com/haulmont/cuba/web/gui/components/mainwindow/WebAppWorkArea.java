@@ -31,6 +31,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.themes.ValoTheme;
 import fi.jasoft.dragdroplayouts.client.ui.LayoutDragMode;
 import fi.jasoft.dragdroplayouts.drophandlers.DefaultTabSheetDropHandler;
 
@@ -41,18 +42,18 @@ import java.util.List;
 
 public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements AppWorkArea {
 
-    public static final String WORKAREA_STYLENAME = "cuba-app-workarea";
+    public static final String WORKAREA_STYLENAME = "c-app-workarea";
 
-    public static final String MODE_TABBED_STYLENAME = "cuba-app-workarea-tabbed";
-    public static final String MODE_SINGLE_STYLENAME = "cuba-app-workarea-single";
+    public static final String MODE_TABBED_STYLENAME = "c-app-workarea-tabbed";
+    public static final String MODE_SINGLE_STYLENAME = "c-app-workarea-single";
 
-    public static final String STATE_INITIAL_STYLENAME = "cuba-app-workarea-initial";
-    public static final String STATE_WINDOWS_STYLENAME = "cuba-app-workarea-windows";
+    public static final String STATE_INITIAL_STYLENAME = "c-app-workarea-initial";
+    public static final String STATE_WINDOWS_STYLENAME = "c-app-workarea-windows";
 
-    public static final String SINGLE_CONTAINER_STYLENAME = "cuba-main-singlewindow";
-    public static final String TABBED_CONTAINER_STYLENAME = "cuba-main-tabsheet";
+    public static final String SINGLE_CONTAINER_STYLENAME = "c-main-singlewindow";
+    public static final String TABBED_CONTAINER_STYLENAME = "c-main-tabsheet";
 
-    public static final String INITIAL_LAYOUT_STYLENAME = "cuba-initial-layout";
+    public static final String INITIAL_LAYOUT_STYLENAME = "c-initial-layout";
 
     protected Mode mode = Mode.TABBED;
     protected State state = State.INITIAL_LAYOUT;
@@ -190,6 +191,8 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         tabSheet.setDropHandler(new DefaultTabSheetDropHandler());
         tabSheet.setHeight("100%");
         tabSheet.setStyleName(TABBED_CONTAINER_STYLENAME);
+        tabSheet.addStyleName(ValoTheme.TABSHEET_FRAMED);
+        tabSheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
 
         Action.Handler actionHandler = createTabSheetActionHandler(tabSheet);
         tabSheet.addActionHandler(actionHandler);

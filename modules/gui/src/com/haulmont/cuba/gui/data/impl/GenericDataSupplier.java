@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.data.DataSupplier;
 
@@ -76,6 +77,11 @@ public class GenericDataSupplier implements DataSupplier {
     @Override
     public void remove(Entity entity) {
         dataManager.remove(entity);
+    }
+
+    @Override
+    public List<KeyValueEntity> loadValues(ValueLoadContext context) {
+        return dataManager.loadValues(context);
     }
 
     @Override

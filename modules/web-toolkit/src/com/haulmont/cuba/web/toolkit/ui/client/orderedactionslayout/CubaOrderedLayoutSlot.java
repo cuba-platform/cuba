@@ -35,7 +35,7 @@ import java.util.List;
 
 public class CubaOrderedLayoutSlot extends Slot {
 
-    public static final String TOOLTIP_CLASSNAME = "cuba-tooltip-button";
+    public static final String TOOLTIP_CLASSNAME = "c-tooltip-button";
 
     protected Element tooltipIcon;
     protected String descriptionText;

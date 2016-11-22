@@ -19,10 +19,8 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.entity.KeyValueEntity;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.data.DataSupplier;
 
 import javax.annotation.Nonnull;
@@ -114,6 +112,11 @@ public class TestDataSupplier implements DataSupplier {
 
     @Override
     public void remove(Entity entity) {
+    }
+
+    @Override
+    public List<KeyValueEntity> loadValues(ValueLoadContext context) {
+        return Collections.emptyList();
     }
 
     @Override

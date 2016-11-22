@@ -18,17 +18,26 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.fieldgrouplayout.CubaFieldGroupLayoutState;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.GridLayout;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CubaFieldGroupLayout extends GridLayout {
 
+    protected int currentX = 0;
+    protected int currentY = 0;
+
+    protected Map<Object, Field> fields = new HashMap<>();
+
     protected Map<Integer, Integer> columnFieldCaptionWidth = null;
 
     public CubaFieldGroupLayout() {
         setHideEmptyRowsAndColumns(true);
+        setSpacing(true);
     }
 
     @Override
@@ -93,5 +102,70 @@ public class CubaFieldGroupLayout extends GridLayout {
         if (getState(false).useInlineCaption != useInlineCaption) {
             getState().useInlineCaption = useInlineCaption;
         }
+    }
+
+    public void addField(Object propertyId, Field field) {
+        addField(propertyId, field, currentX, currentY);
+    }
+
+    public void addField(Object propertyId, Field field, int col) {
+        addField(propertyId, field, col, currentY);
+    }
+
+    public void addField(Object propertyId, Field field, int col, int row) {
+        if (col < 0 || col >= getColumns() || row < 0 || row >= getRows()) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        currentX = col;
+        currentY = row;
+
+        attachField(propertyId, field);
+
+        if (isReadOnly() != field.isReadOnly() && isReadOnly()) {
+            field.setReadOnly(isReadOnly());
+        }
+
+        if (row < getRows()) {
+            currentY++;
+        } else if (col < getColumns()) {
+            currentX++;
+        }
+    }
+
+    protected void attachField(Object propertyId, Field field) {
+        if (propertyId == null || field == null) {
+            return;
+        }
+
+        Component oldComponent = getComponent(currentX, currentY);
+        if (oldComponent != null) {
+            removeComponent(oldComponent);
+        }
+
+        addComponent(field, currentX, currentY);
+
+        fields.put(propertyId, field);
+    }
+
+    public void addCustomField(Object propertyId, CustomFieldGenerator fieldGenerator) {
+        addCustomField(propertyId, fieldGenerator, currentX, currentY);
+    }
+
+    public void addCustomField(Object propertyId, CustomFieldGenerator fieldGenerator, int col) {
+        addCustomField(propertyId, fieldGenerator, col, currentY);
+    }
+
+    public void addCustomField(Object propertyId, CustomFieldGenerator fieldGenerator, int col, int row) {
+        Field field = fieldGenerator.generateField(propertyId, this);
+        addField(propertyId, field, col, row);
+    }
+
+    public Field getField(Object propertyId) {
+        return fields.get(propertyId);
+    }
+
+    public interface CustomFieldGenerator extends Serializable {
+        com.vaadin.ui.Field generateField(Object propertyId, CubaFieldGroupLayout component);
     }
 }

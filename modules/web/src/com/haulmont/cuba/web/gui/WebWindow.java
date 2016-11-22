@@ -45,13 +45,13 @@ import com.haulmont.cuba.web.toolkit.ui.CubaSingleModeContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TabSheet;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -140,7 +140,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
     protected ComponentContainer createLayout() {
         CubaVerticalActionsLayout layout = new CubaVerticalActionsLayout();
-        layout.setStyleName("cuba-window-layout");
+        layout.setStyleName("c-window-layout");
         layout.setSizeFull();
         return layout;
     }
@@ -203,14 +203,16 @@ public class WebWindow implements Window, Component.Wrapper,
     public void setStyleName(String name) {
         getContainer().setStyleName(name);
 
-        getContainer().addStyleName("cuba-window-layout");
+        getContainer().addStyleName("c-window-layout");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <X> X unwrap(Class<X> internalComponentClass) {
         return (X) getComponent();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <X> X unwrapComposition(Class<X> internalCompositionClass) {
         return (X) getComposition();
@@ -530,6 +532,11 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
+    public void showNotification(String caption) {
+        getWindowManager().showNotification(caption);
+    }
+
+    @Override
     public void showNotification(String caption, NotificationType type) {
         getWindowManager().showNotification(caption, type);
     }
@@ -671,7 +678,21 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void addTimer(Timer timer) {
-        AppUI.getCurrent().addTimer(((WebTimer) timer).getTimerImpl());
+        if (component.isAttached()) {
+            attachTimerToUi((WebTimer) timer);
+        } else {
+            ClientConnector.AttachListener attachListener = new ClientConnector.AttachListener() {
+                @Override
+                public void attach(ClientConnector.AttachEvent event) {
+                    if (timers.contains(timer)) {
+                        attachTimerToUi((WebTimer) timer);
+                    }
+                    // execute attach listener only once
+                    component.removeAttachListener(this);
+                }
+            };
+            component.addAttachListener(attachListener);
+        }
 
         if (timers == null) {
             timers = new LinkedList<>();
@@ -679,15 +700,26 @@ public class WebWindow implements Window, Component.Wrapper,
         timers.add(timer);
     }
 
+    protected void attachTimerToUi(WebTimer timer) {
+        AppUI appUI = (AppUI) component.getUI();
+        appUI.addTimer(timer.getTimerImpl());
+    }
+
     @Override
-    public Timer getTimer(final String id) {
+    public Timer getTimer(String id) {
         if (timers == null) {
             return null;
         }
 
-        return (Timer) CollectionUtils.find(timers, object -> StringUtils.equals(id, ((Timer) object).getId()));
+        return timers.stream()
+                .filter(timer -> Objects.equals(timer.getId(), id))
+                .findFirst()
+                .orElse(null);
     }
 
+    /**
+     * Completely stop and remove timers of the window.
+     */
     public void stopTimers() {
         AppUI appUI = AppUI.getCurrent();
         if (timers != null) {
@@ -696,6 +728,7 @@ public class WebWindow implements Window, Component.Wrapper,
                 WebTimer webTimer = (WebTimer) timer;
                 appUI.removeTimer(webTimer.getTimerImpl());
             }
+            timers.clear();
         }
     }
 
@@ -1158,12 +1191,12 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Nullable
-    protected VerticalLayout asSingleWindow() {
+    protected Layout asSingleWindow() {
         if (component.isAttached()) {
             com.vaadin.ui.Component parent = component;
             while (parent != null) {
                 if (parent.getParent() instanceof CubaSingleModeContainer) {
-                    return (VerticalLayout) parent;
+                    return (Layout) parent;
                 }
 
                 parent = parent.getParent();
@@ -1186,7 +1219,7 @@ public class WebWindow implements Window, Component.Wrapper,
                     setTabCaptionAndDescription(tabWindow);
                     windowManager.getBreadCrumbs((ComponentContainer) tabWindow.getComponent()).update();
                 } else {
-                    VerticalLayout singleModeWindow = asSingleWindow();
+                    Layout singleModeWindow = asSingleWindow();
                     if (singleModeWindow != null) {
                         windowManager.getBreadCrumbs(singleModeWindow).update();
                     }
@@ -1656,16 +1689,16 @@ public class WebWindow implements Window, Component.Wrapper,
         @Override
         protected ComponentContainer createLayout() {
             final CubaVerticalActionsLayout form = new CubaVerticalActionsLayout();
-            form.setStyleName("cuba-lookup-window-wrapper");
+            form.setStyleName("c-lookup-window-wrapper");
 
             container = new VerticalLayout();
-            container.setStyleName("cuba-window-layout");
+            container.setStyleName("c-window-layout");
 
             boolean isTestMode = AppUI.getCurrent().isTestMode();
 
             HorizontalLayout okbar = new HorizontalLayout();
             okbar.setHeight(-1, Unit.PIXELS);
-            okbar.setStyleName("cuba-window-actions-pane");
+            okbar.setStyleName("c-window-actions-pane");
             okbar.setMargin(new MarginInfo(true, false, false, false));
             okbar.setSpacing(true);
 
@@ -1674,7 +1707,7 @@ public class WebWindow implements Window, Component.Wrapper,
             selectButton.setCaption(messages.getMainMessage("actions.Select"));
             selectButton.setIcon(WebComponentsHelper.getIcon("icons/ok.png"));
             selectButton.addClickListener(selectAction);
-            selectButton.setStyleName("cuba-window-action-button");
+            selectButton.setStyleName("c-window-action-button");
             if (isTestMode) {
                 selectButton.setCubaId("selectButton");
             }
@@ -1687,7 +1720,7 @@ public class WebWindow implements Window, Component.Wrapper,
                     close("cancel");
                 }
             });
-            cancelButton.setStyleName("cuba-window-action-button");
+            cancelButton.setStyleName("c-window-action-button");
             cancelButton.setIcon(WebComponentsHelper.getIcon("icons/cancel.png"));
             if (isTestMode) {
                 cancelButton.setCubaId("cancelButton");

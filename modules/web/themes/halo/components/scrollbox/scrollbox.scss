@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@mixin halo-scrollbox($primary-stylename : cuba-scrollbox) {
+@mixin halo-scrollbox($primary-stylename: c-scrollbox) {
   .#{$primary-stylename} {
     border: 0;
     box-shadow: none;

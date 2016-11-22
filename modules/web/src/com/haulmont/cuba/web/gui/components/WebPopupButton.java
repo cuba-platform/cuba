@@ -39,7 +39,7 @@ import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         implements PopupButton, Component.SecuredActionsHolder {
 
-    private final static String CONTEXT_MENU_BUTTON = "cuba-context-menu-button";
+    private final static String CONTEXT_MENU_BUTTON = "c-cm-button";
 
     protected Component popupComponent;
     protected com.vaadin.ui.Component vPopupComponent;

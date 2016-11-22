@@ -64,6 +64,16 @@ public interface Table<E extends Entity>
     void setColumnCaption(Table.Column column, String caption);
 
     /**
+     * Enable or disable text selection in Table cells.
+     * Set true to enable.
+     */
+    void setTextSelectionEnabled(boolean value);
+    /**
+     * @return true if text selection is enabled.
+     */
+    boolean isTextSelectionEnabled();
+
+    /**
      * Assign description for column in runtime.
      */
     void setColumnDescription(String columnId, String description);
@@ -224,7 +234,9 @@ public interface Table<E extends Entity>
      */
     interface StyleProvider<E extends Entity> {
         /**
-         * Called by {@link Table} to get a style for row or cell.
+         * Called by {@link Table} to get a style for row or cell. <br/>
+         * All unhandled exceptions from StyleProvider in Web components by default are logged with ERROR level
+         * and not shown to users.
          *
          * @param entity   an entity instance represented by the current row
          * @param property column identifier if getting a style for a cell, or null if getting the style for a row
@@ -443,6 +455,7 @@ public interface Table<E extends Entity>
         protected Object id;
         protected String caption;
         protected String description;
+        protected String valueDescription;
         protected boolean editable;
         protected Formatter formatter;
         protected Integer width;
@@ -496,6 +509,14 @@ public interface Table<E extends Entity>
             if (owner != null) {
                 owner.setColumnDescription(this, description);
             }
+        }
+
+        public String getValueDescription() {
+            return valueDescription;
+        }
+
+        public void setValueDescription(String valueDescription) {
+            this.valueDescription = valueDescription;
         }
 
         public Boolean isEditable() {

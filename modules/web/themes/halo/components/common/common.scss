@@ -22,13 +22,20 @@
 
   @if $v-show-required-indicators == false {
     .v-required-field-indicator,
-    .cuba-tooltip-button {
+    .c-tooltip-button {
       display: none;
     }
   } @else {
-    .cuba-tooltip-button::before {
+    .c-tooltip-button {
+      display: inline-block;
+      font-size: 0;
+      width: $v-font-size;
+    }
+
+    .c-tooltip-button::before {
       font-family: FontAwesome;
       content: "\f059";
+      font-size: $v-font-size;
     }
   }
 
@@ -41,7 +48,8 @@
   .v-gridlayout,
   .v-verticallayout,
   .v-horizontallayout,
-  .cuba-fieldgrouplayout {
+  .v-csslayout,
+  .c-fglayout {
     font-size: 0;
   }
 
@@ -53,6 +61,10 @@
   .v-caption {
     padding-left: 0;
     padding-bottom: 0;
+  }
+
+  .v-captiontext {
+    font-size: $v-font-size;
   }
 
   .v-ios.v-touch &,

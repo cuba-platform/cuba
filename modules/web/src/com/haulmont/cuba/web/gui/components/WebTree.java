@@ -32,6 +32,7 @@ import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.ui.Tree;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -55,6 +56,13 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
         component = new CubaTree();
         component.setMultiSelect(false);
         component.setImmediate(true);
+        component.setBeforePaintListener(() -> {
+            Tree.ItemStyleGenerator generator = component.getItemStyleGenerator();
+            if (generator instanceof WebAbstractTree.StyleGeneratorAdapter) {
+                //noinspection unchecked
+                ((StyleGeneratorAdapter) generator).resetExceptionHandledFlag();
+            }
+        });
 
         component.setItemCaptionMode(ItemCaptionMode.ITEM);
 

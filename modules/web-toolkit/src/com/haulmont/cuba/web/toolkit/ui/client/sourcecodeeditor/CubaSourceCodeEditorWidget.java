@@ -23,6 +23,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import org.vaadin.aceeditor.client.AceEditorWidget;
+import org.vaadin.aceeditor.client.gwt.GwtAceEditor;
 import org.vaadin.aceeditor.client.gwt.GwtAceEvent;
 import org.vaadin.aceeditor.client.gwt.GwtAceFocusBlurHandler;
 
@@ -117,8 +118,24 @@ public class CubaSourceCodeEditorWidget extends AceEditorWidget {
         }
     }
 
+    public int getPrintMarginColumn() {
+        return getRendererPrintMarginColumn(editor);
+    }
+
+    public void setPrintMarginColumn(int printMarginColumn) {
+        setRendererPrintMarginColumn(editor, printMarginColumn);
+    }
+
     public native void unbindTabKey(JavaScriptObject editor) /*-{
         editor.commands.bindKey("Shift-Tab", null);
         editor.commands.bindKey("Tab", null);
 	}-*/;
+
+    protected native void setRendererPrintMarginColumn(GwtAceEditor editor, int printMarginColumn) /*-{
+        editor.renderer.setPrintMarginColumn(printMarginColumn);
+    }-*/;
+
+    protected native int getRendererPrintMarginColumn(GwtAceEditor editor) /*-{
+        return editor.renderer.getPrintMarginColumn();
+    }-*/;
 }

@@ -74,6 +74,14 @@ create table TEST_COMPOSITE_KEY (
 )^
 
 ------------------------------------------------------------------------------------------------------------
+
+create table TEST_STRING_KEY (
+    CODE varchar(20) not null,
+    NAME varchar(50),
+    primary key (CODE)
+)^
+
+------------------------------------------------------------------------------------------------------------
 create table TEST_ROOT_ENTITY (
     ID varchar(36) not null,
     CREATE_TS timestamp,
@@ -97,3 +105,148 @@ create table TEST_CHILD_ENTITY (
     constraint TEST_CHILD_ENTITY_ENTITY_ID foreign key (ENTITY_ID) references TEST_ROOT_ENTITY(ID),
     primary key (ENTITY_ID)
 )^
+
+------------------------------------------------------------------------------------------------------------
+
+create table TEST_SOFT_DELETE_OTO_B (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    ENTITY_TYPE varchar(1),
+    NAME varchar(255),
+    primary key (ID)
+)^
+
+create table TEST_SOFT_DELETE_OTO_A (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    ENTITY_TYPE varchar(1),
+    NAME varchar(255),
+    B_ID varchar(36),
+    constraint TEST_SOFT_DELETE_OTO_A_B_ID foreign key (B_ID) references TEST_SOFT_DELETE_OTO_B(ID),
+    primary key (ID)
+)^
+
+--------------------------------------------------------------------------------------------------------------
+
+create table TEST_CASCADE_ENTITY (
+    ID varchar(36),
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    FATHER_ID varchar(36),
+    --
+    primary key (ID)
+)^
+
+alter table TEST_CASCADE_ENTITY add constraint FK_TEST_CASCADE_ENTITY_FATHER foreign key (FATHER_ID) references TEST_CASCADE_ENTITY(ID)^
+
+----------------------------------------------------------------------------------------------------------------
+
+create table TEST_JOIN_F (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    primary key (ID)
+)^
+
+create table TEST_JOIN_D (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    primary key (ID)
+)^
+
+create table TEST_JOIN_E (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    F_ID varchar(36),
+    constraint TEST_JOIN_E_F_ID foreign key (F_ID) references TEST_JOIN_F(ID),
+    primary key (ID)
+)^
+
+create table TEST_JOIN_C (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    D_ID varchar(36),
+    E_ID varchar(36),
+    constraint TEST_JOIN_A_D_ID foreign key (D_ID) references TEST_JOIN_D(ID),
+    constraint TEST_JOIN_A_E_ID foreign key (E_ID) references TEST_JOIN_E(ID),
+    primary key (ID)
+)^
+
+create table TEST_JOIN_B (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    C_ID varchar(36),
+    constraint TEST_JOIN_MAIN_C_ID foreign key (C_ID) references TEST_JOIN_C(ID),
+    primary key (ID)
+)^
+
+create table TEST_JOIN_A (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    B_ID varchar(36),
+    constraint TEST_JOIN_B_ID foreign key (B_ID) references TEST_JOIN_B(ID),
+    primary key (ID)
+)^
+
+
+----------------------------------------------------------------------------------------------------------------

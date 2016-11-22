@@ -22,18 +22,17 @@ import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.FetchMode;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.security.entity.Group;
-import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.testmodel.softdelete_one_to_one.SoftDeleteOneToOneA;
+import com.haulmont.cuba.testmodel.softdelete_one_to_one.SoftDeleteOneToOneB;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.eclipse.persistence.internal.helper.CubaUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,10 +44,15 @@ public class SoftDeleteTest {
     public static TestContainer cont = TestContainer.Common.INSTANCE;
     
     private UUID groupId;
-    private UUID userId;
+    private UUID userId, user1Id;
     private UUID role2Id;
+    private UUID role3Id;
     private UUID userRole1Id;
     private UUID userRole2Id;
+    private UUID userRole3Id;
+    private UUID oneToOneA1Id, oneToOneA2Id, oneToOneA3Id;
+    private UUID oneToOneB1Id, oneToOneB2Id;
+    private UUID group1Id, groupHierarchyId, constraint1Id, constraint2Id;
     private Persistence persistence;
 
     @Before
@@ -71,6 +75,13 @@ public class SoftDeleteTest {
             user.setGroup(group);
             em.persist(user);
 
+            User user1 = new User();
+            user1Id = user1.getId();
+            user1.setName("testUser1");
+            user1.setLogin("testLogin1");
+            user1.setGroup(group);
+            em.persist(user1);
+
             Role role1 = em.find(Role.class, UUID.fromString("0c018061-b26f-4de2-a5be-dff348347f93"));
 
             UserRole userRole1 = new UserRole();
@@ -84,12 +95,71 @@ public class SoftDeleteTest {
             role2.setName("roleToBeDeleted");
             em.persist(role2);
 
+            Role role3 = new Role();
+            role3Id = role3.getId();
+            role3.setName("roleToBeDeleted3");
+            em.persist(role3);
+
             UserRole userRole2 = new UserRole();
             userRole2Id = userRole2.getId();
             userRole2.setUser(user);
             userRole2.setRole(role2);
             em.persist(userRole2);
-            
+
+            UserRole userRole3 = new UserRole();
+            userRole3Id = userRole3.getId();
+            userRole3.setUser(user1);
+            userRole3.setRole(role3);
+            em.persist(userRole3);
+
+            SoftDeleteOneToOneB oneToOneB1 = cont.metadata().create(SoftDeleteOneToOneB.class);
+            oneToOneB1.setName("oneToOneB1");
+            em.persist(oneToOneB1);
+            oneToOneB1Id = oneToOneB1.getId();
+
+            SoftDeleteOneToOneB oneToOneB2 = cont.metadata().create(SoftDeleteOneToOneB.class);
+            oneToOneB2.setName("oneToOneB2");
+            em.persist(oneToOneB2);
+            oneToOneB2Id = oneToOneB2.getId();
+
+            SoftDeleteOneToOneA oneToOneA1 = cont.metadata().create(SoftDeleteOneToOneA.class);
+            oneToOneA1.setName("oneToOneA1");
+            oneToOneA1.setB(oneToOneB1);
+            em.persist(oneToOneA1);
+            oneToOneA1Id = oneToOneA1.getId();
+
+            SoftDeleteOneToOneA oneToOneA2 = cont.metadata().create(SoftDeleteOneToOneA.class);
+            oneToOneA2.setName("oneToOneA2");
+            oneToOneA2.setB(oneToOneB2);
+            em.persist(oneToOneA2);
+            oneToOneA2Id = oneToOneA2.getId();
+
+            Group group1 = new Group();
+            group1Id = group1.getId();
+            group1.setName("testGroup1");
+            em.persist(group1);
+
+            GroupHierarchy groupHierarchy = new GroupHierarchy();
+            groupHierarchyId = groupHierarchy.getId();
+            groupHierarchy.setGroup(group1);
+            groupHierarchy.setParent(group1);
+            groupHierarchy.setLevel(1);
+            em.persist(groupHierarchy);
+
+            Constraint constraint1 = new Constraint();
+            constraint1Id = constraint1.getId();
+            constraint1.setCode("constraint1");
+            constraint1.setEntityName("sec$Constraint");
+            constraint1.setGroup(group1);
+            em.persist(constraint1);
+
+            Constraint constraint2 = new Constraint();
+            constraint2Id = constraint2.getId();
+            constraint2.setCode("constraint2");
+            constraint2.setEntityName("sec$Constraint");
+            constraint2.setGroup(group1);
+            em.persist(constraint2);
+
             tx.commitRetaining();
 
             em = cont.persistence().getEntityManager();
@@ -100,6 +170,19 @@ public class SoftDeleteTest {
             Role r = em.find(Role.class, role2Id);
             em.remove(r);
 
+            SoftDeleteOneToOneA oneToOneA = em.find(SoftDeleteOneToOneA.class, oneToOneA1Id);
+            em.remove(oneToOneA);
+
+            SoftDeleteOneToOneB oneToOneB = em.find(SoftDeleteOneToOneB.class, oneToOneB2Id);
+            em.remove(oneToOneB);
+
+            Constraint constraint = em.find(Constraint.class, constraint2Id);
+            em.remove(constraint);
+
+            //remove from db to prevent cascade delete user role
+            QueryRunner queryRunner = new QueryRunner();
+            queryRunner.update(em.getConnection(), "update SEC_ROLE set DELETE_TS = CREATE_TS, DELETED_BY = CREATED_BY where name = 'roleToBeDeleted3'");
+
             tx.commit();
         } finally {
             tx.end();
@@ -108,10 +191,17 @@ public class SoftDeleteTest {
 
     @After
     public void tearDown() throws Exception {
-        cont.deleteRecord("SEC_USER_ROLE", userRole1Id, userRole2Id);
-        cont.deleteRecord("SEC_ROLE", role2Id);
-        cont.deleteRecord("SEC_USER", userId);
+        cont.deleteRecord("SEC_USER_ROLE", userRole1Id, userRole2Id, userRole3Id);
+        cont.deleteRecord("SEC_GROUP_HIERARCHY", groupHierarchyId);
+        cont.deleteRecord("SEC_CONSTRAINT", constraint1Id, constraint2Id);
+        cont.deleteRecord("SEC_ROLE", role2Id, role3Id);
+        cont.deleteRecord("SEC_USER", userId, user1Id);
         cont.deleteRecord("SEC_GROUP", groupId);
+        cont.deleteRecord("TEST_SOFT_DELETE_OTO_A", oneToOneA1Id, oneToOneA2Id);
+        if (oneToOneA3Id != null) {
+            cont.deleteRecord("TEST_SOFT_DELETE_OTO_A", oneToOneA3Id);
+        }
+        cont.deleteRecord("TEST_SOFT_DELETE_OTO_B", oneToOneB1Id, oneToOneB2Id);
     }
 
     @Test
@@ -246,9 +336,9 @@ public class SoftDeleteTest {
             Group group = user.getGroup();
 
             tx.commit();
-//////////////////////////////////////////////// fails!
-//            assertNotNull(group);
-//            assertTrue(group.isDeleted());
+
+            assertNotNull(group);
+            assertTrue(group.isDeleted());
         }
 
         System.out.println("===================== END testManyToOne =====================");
@@ -257,7 +347,7 @@ public class SoftDeleteTest {
     @Test
     public void testOneToMany() {
         System.out.println("===================== BEGIN testOneToMany =====================");
-
+        // test fetchMode = AUTO
         Transaction tx = cont.persistence().createTransaction();
         try {
             EntityManager em = cont.persistence().getEntityManager();
@@ -282,6 +372,29 @@ public class SoftDeleteTest {
         } finally {
             tx.end();
         }
+
+        // test fetchMode = JOIN
+        tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            View view = new View(User.class, "testView")
+                    .addProperty("name")
+                    .addProperty("login")
+                    .addProperty("userRoles", new View(UserRole.class, "testView"), FetchMode.JOIN);
+            User user = em.find(User.class, userId, view);
+
+            List<UserRole> userRoles = user.getUserRoles();
+            assertEquals(1, userRoles.size());
+            for (UserRole ur : userRoles) {
+                assertNotNull(ur.getRole());
+            }
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
         System.out.println("===================== END testOneToMany =====================");
     }
 
@@ -601,11 +714,283 @@ public class SoftDeleteTest {
         loadDeletedUser();
     }
 
+    @Test
+    public void testOneToOneMappedBy() {
+        System.out.println("===================== BEGIN testOneToOneMappedBy =====================");
+        // test fetchMode = AUTO
+        System.out.println("===================== BEGIN testOneToOneMappedBy fetchMode = AUTO =====================");
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            View view = new View(SoftDeleteOneToOneB.class, "testView")
+                    .addProperty("name")
+                    .addProperty("a",
+                            new View(SoftDeleteOneToOneA.class, "testView").addProperty("name"));
+            SoftDeleteOneToOneB oneToOneB = em.find(SoftDeleteOneToOneB.class, oneToOneB1Id, view);
+            assertNotNull(oneToOneB);
+            assertNull(oneToOneB.getA());
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        // test fetchMode = BATCH
+        System.out.println("===================== BEGIN testOneToOneMappedBy fetchMode = BATCH =====================");
+        tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            View view = new View(SoftDeleteOneToOneB.class, "testView")
+                    .addProperty("name")
+                    .addProperty("a",
+                            new View(SoftDeleteOneToOneA.class, "testView").addProperty("name"), FetchMode.BATCH);
+            SoftDeleteOneToOneB oneToOneB = em.find(SoftDeleteOneToOneB.class, oneToOneB1Id, view);
+            assertNotNull(oneToOneB);
+            assertNull(oneToOneB.getA());
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        // test fetchMode = UNDEFINED
+        System.out.println("===================== BEGIN testOneToOneMappedBy fetchMode = UNDEFINED =====================");
+        tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            View view = new View(SoftDeleteOneToOneB.class, "testView")
+                    .addProperty("name")
+                    .addProperty("a",
+                            new View(SoftDeleteOneToOneA.class, "testView").addProperty("name"), FetchMode.UNDEFINED);
+            SoftDeleteOneToOneB oneToOneB = em.find(SoftDeleteOneToOneB.class, oneToOneB1Id, view);
+            assertNotNull(oneToOneB);
+            assertNull(oneToOneB.getA());
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        System.out.println("===================== END testOneToOneMappedBy =====================");
+    }
+
+    @Test
+    public void testOneToOneMappedByLazy() {
+        System.out.println("===================== BEGIN testOneToOneMappedByLazy =====================");
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+            SoftDeleteOneToOneB oneToOneB = em.find(SoftDeleteOneToOneB.class, oneToOneB1Id);
+            assertNotNull(oneToOneB);
+            assertNull(oneToOneB.getA());
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        System.out.println("===================== END testOneToOneMappedByLazy =====================");
+    }
+
+    @Test
+    public void testOneToOneMappedByQuery() {
+        System.out.println("===================== BEGIN testOneToOneMappedByQuery =====================");
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            SoftDeleteOneToOneA oneToOneA3 = cont.metadata().create(SoftDeleteOneToOneA.class);
+            oneToOneA3.setName("oneToOneA3");
+            oneToOneA3.setB(em.find(SoftDeleteOneToOneB.class, oneToOneB1Id));
+            em.persist(oneToOneA3);
+            oneToOneA3Id = oneToOneA3.getId();
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            View view = new View(SoftDeleteOneToOneB.class, "testView")
+                    .addProperty("name")
+                    .addProperty("a",
+                            new View(SoftDeleteOneToOneA.class, "testView").addProperty("name"));
+
+            List<SoftDeleteOneToOneB> r = em.createQuery("select b from test$SoftDeleteOneToOneB b where b.name = :name",
+                    SoftDeleteOneToOneB.class)
+                    .setParameter("name", "oneToOneB1")
+                    .setView(view)
+                    .getResultList();
+
+            assertEquals(1, r.size());
+            assertEquals(r.get(0).getA().getId(), oneToOneA3Id);
+            assertEquals(r.get(0).getA().getName(), "oneToOneA3");
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        System.out.println("===================== END testOneToOneMappedByQuery =====================");
+    }
+
+    @Test
+    public void testOneToOneLazy() {
+        System.out.println("===================== BEGIN testOneToOneLazy =====================");
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+            SoftDeleteOneToOneA oneToOneA = em.find(SoftDeleteOneToOneA.class, oneToOneA2Id);
+            assertNotNull(oneToOneA);
+            assertNotNull(oneToOneA.getB());
+            assertEquals(oneToOneA.getB().getId(), oneToOneB2Id);
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        System.out.println("===================== END testOneToOneLazy =====================");
+    }
+
+    @Test
+    public void testOneToOne() {
+        System.out.println("===================== BEGIN testOneToOne =====================");
+        // test fetchMode = AUTO
+        System.out.println("===================== BEGIN testOneToOne fetchMode = AUTO =====================");
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            View view = new View(SoftDeleteOneToOneA.class, "testView")
+                    .addProperty("name")
+                    .addProperty("b",
+                            new View(SoftDeleteOneToOneB.class, "testView").addProperty("name"));
+            SoftDeleteOneToOneA oneToOneA = em.find(SoftDeleteOneToOneA.class, oneToOneA2Id, view);
+            assertNotNull(oneToOneA);
+            assertNotNull(oneToOneA.getB());
+            assertEquals(oneToOneA.getB().getId(), oneToOneB2Id);
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        // test fetchMode = BATCH
+        System.out.println("===================== BEGIN testOneToOneBy fetchMode = BATCH =====================");
+        tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            View view = new View(SoftDeleteOneToOneA.class, "testView")
+                    .addProperty("name")
+                    .addProperty("b",
+                            new View(SoftDeleteOneToOneB.class, "testView").addProperty("name"), FetchMode.BATCH);
+            SoftDeleteOneToOneA oneToOneA = em.find(SoftDeleteOneToOneA.class, oneToOneA2Id, view);
+            assertNotNull(oneToOneA);
+            assertNotNull(oneToOneA.getB());
+            assertEquals(oneToOneA.getB().getId(), oneToOneB2Id);
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        // test fetchMode = UNDEFINED
+        System.out.println("===================== BEGIN testOneToOneBy fetchMode = UNDEFINED =====================");
+        tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            View view = new View(SoftDeleteOneToOneA.class, "testView")
+                    .addProperty("name")
+                    .addProperty("b",
+                            new View(SoftDeleteOneToOneB.class, "testView").addProperty("name"), FetchMode.UNDEFINED);
+            SoftDeleteOneToOneA oneToOneA = em.find(SoftDeleteOneToOneA.class, oneToOneA2Id, view);
+            assertNotNull(oneToOneA);
+            assertNotNull(oneToOneA.getB());
+            assertEquals(oneToOneA.getB().getId(), oneToOneB2Id);
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        System.out.println("===================== END testOneToOne =====================");
+    }
+
+    @Test
+    public void testOneToOneQuery() {
+        System.out.println("===================== BEGIN testOneToOneQuery =====================");
+        // test fetchMode = AUTO
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            View view = new View(SoftDeleteOneToOneA.class, "testView")
+                    .addProperty("name")
+                    .addProperty("b",
+                            new View(SoftDeleteOneToOneB.class, "testView").addProperty("name"));
+
+            List<SoftDeleteOneToOneA> r = em.createQuery("select a from test$SoftDeleteOneToOneA a where a.name = :name",
+                    SoftDeleteOneToOneA.class)
+                    .setParameter("name", "oneToOneA2")
+                    .setView(view)
+                    .getResultList();
+
+            assertEquals(1, r.size());
+            assertEquals(r.get(0).getB().getId(), oneToOneB2Id);
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        System.out.println("===================== END testOneToOneQuery =====================");
+    }
+
+
     private void loadDeletedUser() {
         try (Transaction tx = cont.persistence().createTransaction()) {
             User u = cont.entityManager().find(User.class, userId);
             assertNull(u);
             tx.commit();
         }
+    }
+
+
+    @Test
+    public void testReferenceToDeletedEntityThroughOneToMany() throws Exception {
+        View userRoleView = new View(UserRole.class).addProperty("role", new View(Role.class).addProperty("deleteTs"));
+        View userView = new View(User.class).addProperty("userRoles", userRoleView);
+
+        Role deleted = cont.persistence().callInTransaction((em) -> em.find(Role.class, role3Id));
+        assertNull(deleted);
+
+        UserRole userRole = cont.persistence().callInTransaction((em) -> em.find(UserRole.class, userRole3Id, userRoleView));
+        assertNotNull(userRole.getRole());
+        assertEquals(role3Id, userRole.getRole().getId());
+        assertTrue(userRole.getRole().isDeleted());
+
+        User user = cont.persistence().callInTransaction((em) -> em.find(User.class, user1Id, userView));
+        assertEquals(role3Id, user.getUserRoles().iterator().next().getRole().getId());
+        Assert.assertTrue(user.getUserRoles().iterator().next().getRole().isDeleted());
+    }
+
+    @Test
+    public void testReferenceToDeletedEntityOneToManyThroughManyToOne() {
+        View constraintView = new View(Constraint.class)
+                .addProperty("code");
+        View groupView = new View(Group.class)
+                .addProperty("name")
+                .addProperty("constraints", constraintView, FetchMode.BATCH);
+        View groupHierarchyView = new View(GroupHierarchy.class).addProperty("group", groupView, FetchMode.BATCH);
+
+        GroupHierarchy groupHierarchy = cont.persistence().callInTransaction((em) -> em.find(GroupHierarchy.class, groupHierarchyId, groupHierarchyView));
+        assertNotNull(groupHierarchy);
+        assertNotNull(groupHierarchy.getGroup());
+        assertEquals(1, groupHierarchy.getGroup().getConstraints().size());
     }
 }

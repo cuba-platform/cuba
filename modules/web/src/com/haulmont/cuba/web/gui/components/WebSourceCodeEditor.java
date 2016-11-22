@@ -37,6 +37,8 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
     protected Suggester suggester;
     protected SuggestionExtension suggestionExtension;
 
+    protected AutoCompleteSupport autoCompleteSupport;
+
     public WebSourceCodeEditor() {
         component = createCubaSourceCodeEditor();
 
@@ -45,6 +47,18 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
         component.setInvalidCommitted(true);
         component.setInvalidAllowed(false);
         component.setBuffered(false);
+
+        autoCompleteSupport = new AutoCompleteSupport() {
+            @Override
+            public int getCursorPosition() {
+                return component.getCursorPosition();
+            }
+
+            @Override
+            public Object getValue() {
+                return component.getValue();
+            }
+        };
 
         attachListener(component);
     }
@@ -90,6 +104,14 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
                 editorMode = AceMode.properties;
                 break;
 
+            case CSS:
+                editorMode = AceMode.css;
+                break;
+
+            case SCSS:
+                editorMode = AceMode.scss;
+                break;
+
             default:
                 editorMode = AceMode.text;
                 break;
@@ -116,7 +138,7 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
 
     @Override
     public AutoCompleteSupport getAutoCompleteSupport() {
-        return component;
+        return autoCompleteSupport;
     }
 
     @Override
@@ -137,6 +159,16 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
     @Override
     public boolean isShowPrintMargin() {
         return component.isShowPrintMargin();
+    }
+
+    @Override
+    public void setPrintMarginColumn(int printMarginColumn) {
+        component.setPrintMarginColumn(printMarginColumn);
+    }
+
+    @Override
+    public int getPrinMarginColumn() {
+        return component.getPrintMarginColumn();
     }
 
     @Override
@@ -167,7 +199,6 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
     }
 
     protected class SourceCodeEditorSuggester implements org.vaadin.aceeditor.Suggester {
-
         @Override
         public List<Suggestion> getSuggestions(String text, int cursor) {
             if (suggester == null) {
