@@ -43,6 +43,7 @@ import com.vaadin.client.ui.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Set;
 
 import static com.haulmont.cuba.web.toolkit.ui.client.Tools.isAnyModifierKeyPressed;
@@ -370,6 +371,28 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
     @Override
     public RowRequestHandler getRowRequestHandler() {
         return rowRequestHandler;
+    }
+
+    @Override
+    protected void reassignHeaderCellWidth(int colIndex, HeaderCell hcell, int minWidth) {
+        for (Widget rowWidget : ((CubaTreeTableWidget.CubaTreeTableBody) scrollBody).getRenderedRows()) {
+            if (isGenericRow(rowWidget)) {
+                VScrollTableBody.VScrollTableRow row = (VScrollTableBody.VScrollTableRow) rowWidget;
+
+                double realColWidth = row.getRealCellWidth(colIndex);
+                if (realColWidth > 0) {
+                    if (realColWidth > minWidth) {
+                        hcell.setWidth(realColWidth + "px");
+                    }
+
+                    break;
+                }
+            }
+        }
+    }
+
+    protected boolean isGenericRow(Widget rowWidget) {
+        return rowWidget instanceof VScrollTableBody.VScrollTableRow;
     }
 
     protected class CubaTreeTableTableHead extends TableHead {
@@ -825,6 +848,10 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
         public void renderInitialRows(UIDL rowData, int firstIndex, int rows) {
             profilerMarker = ScreenClientProfiler.getInstance().getProfilerMarker();
             super.renderInitialRows(rowData, firstIndex, rows);
+        }
+
+        public LinkedList<Widget> getRenderedRows() {
+            return renderedRows;
         }
     }
 

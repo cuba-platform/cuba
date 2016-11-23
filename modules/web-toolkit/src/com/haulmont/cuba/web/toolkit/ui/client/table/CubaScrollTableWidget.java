@@ -42,6 +42,7 @@ import com.vaadin.client.ui.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Set;
 
 import static com.haulmont.cuba.web.toolkit.ui.client.Tools.isAnyModifierKeyPressed;
@@ -236,6 +237,36 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
         if (aggregationRow != null && aggregationRow.isInitialized()) {
             aggregationRow.setCellWidth(colIndex, w);
         }
+    }
+
+    @Override
+    protected void reassignHeaderCellWidth(int colIndex, HeaderCell hcell, int minWidth) {
+        if (isCustomColumn(colIndex)) {
+            return;
+        }
+
+        for (Widget rowWidget : ((CubaScrollTableBody) scrollBody).getRenderedRows()) {
+            if (isGenericRow(rowWidget)) {
+                VScrollTableBody.VScrollTableRow row = (VScrollTableBody.VScrollTableRow) rowWidget;
+
+                double realColWidth = row.getRealCellWidth(colIndex);
+                if (realColWidth > 0) {
+                    if (realColWidth > minWidth) {
+                        hcell.setWidth(realColWidth + "px");
+                    }
+
+                    break;
+                }
+            }
+        }
+    }
+
+    protected boolean isCustomColumn(int colIndex) {
+        return false;
+    }
+
+    protected boolean isGenericRow(Widget rowWidget) {
+        return rowWidget instanceof VScrollTableBody.VScrollTableRow;
     }
 
     @Override
@@ -866,6 +897,10 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
         public void renderInitialRows(UIDL rowData, int firstIndex, int rows) {
             profilerMarker = ScreenClientProfiler.getInstance().getProfilerMarker();
             super.renderInitialRows(rowData, firstIndex, rows);
+        }
+
+        public LinkedList<Widget> getRenderedRows() {
+            return renderedRows;
         }
     }
 
