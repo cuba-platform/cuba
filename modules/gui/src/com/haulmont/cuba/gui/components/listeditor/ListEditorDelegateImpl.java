@@ -68,13 +68,16 @@ public class ListEditorDelegateImpl implements ListEditorDelegate{
         WindowManager windowManager = windowManagerProvider.get();
 
         layout = componentsFactory.createComponent(HBoxLayout.class);
-        layout.setSpacing(true);
+        layout.setStyleName("c-listeditor-layout");
         layout.setWidth("100%");
 
         displayValuesField = componentsFactory.createComponent(TextField.class);
+        displayValuesField.setStyleName("c-listeditor-text");
         displayValuesField.setEditable(false);
         Button openEditorBtn = componentsFactory.createComponent(Button.class);
-        openEditorBtn.setCaption("...");
+        openEditorBtn.setIcon("components/pickerfield/images/lookup-btn.png");
+        openEditorBtn.setStyleName("c-listeditor-button");
+        openEditorBtn.setCaption("");
         openEditorBtn.setAction(new AbstractAction("openEditor") {
 
             @Override

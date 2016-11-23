@@ -40,6 +40,7 @@ public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor
         delegate = AppBeans.get(ListEditorDelegate.class);
         delegate.setActualField(this);
         component = new CubaListEditor(delegate.getLayout());
+        setStyleName("c-listeditor");
     }
 
     @Override
