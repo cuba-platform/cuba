@@ -358,7 +358,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             View view = new View(baseAttributeValueView, null, false)
                     .addProperty("categoryAttribute", new View(baseAttributeView, null, false).addProperty("category"));
 
-            List<CategoryAttributeValue> _resultList = em.createQuery("select cav from sys$CategoryAttributeValue cav where cav.entityId in :ids", CategoryAttributeValue.class)
+            List<CategoryAttributeValue> _resultList = em.createQuery("select cav from sys$CategoryAttributeValue cav where cav.entityId in :ids and cav.parent is null", CategoryAttributeValue.class)
                     .setParameter("ids", entityIds)
                     .setView(view)
                     .getResultList();
