@@ -5,11 +5,6 @@ import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * @author Dmitry Chigileychik
- * @version $Id$
- * @since 22.11.2016
- */
 public abstract class AbstractQueryMacroHandler implements QueryMacroHandler {
     protected int count;
     private final Pattern macroPattern;
