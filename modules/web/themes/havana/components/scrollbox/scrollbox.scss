@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-@mixin halo-scrollbox($primary-stylename: c-scrollbox) {
+@mixin havana-scrollbox($primary-stylename: c-scrollbox) {
   .#{$primary-stylename} {
-    border: 0;
-    box-shadow: none;
-    background: transparent;
-  }
+    .#{$primary-stylename} > .v-panel-captionwrap {
+      display: none;
+    }
 
-  .#{$primary-stylename} > .v-panel-captionwrap {
-    display: none;
-  }
+    .#{$primary-stylename}-content {
+      border: 0;
+    }
 
-  .#{$primary-stylename} > .v-panel-content {
-    border: 0;
-  }
-
-  .#{$primary-stylename} > .v-panel-deco {
-    display: none;
-  }
-
-  .v-scrollable > .#{$primary-stylename} {
-    overflow: auto;
+    .#{$primary-stylename}-deco {
+      display: none;
+    }
   }
 }

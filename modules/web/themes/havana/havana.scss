@@ -75,6 +75,7 @@
 @import "components/richtextarea/richtextarea";
 @import "components/draganddrop/draganddrop";
 @import "components/fileuploadwrapper/fileuploadwrapper";
+@import "components/scrollbox/scrollbox";
 
 // Application specific
 @import "app/app-window";
@@ -135,6 +136,7 @@
   @include havana-progressindicator;
   @include havana-contextmenu-addon;
   @include havana-draganddrop;
+  @include havana-scrollbox;
 
   @include havana-cuba-groupbox;
   @include havana-cuba-tokenlist;

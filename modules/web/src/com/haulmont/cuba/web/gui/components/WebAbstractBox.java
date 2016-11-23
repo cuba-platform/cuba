@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractOrderedLayout;
 
 import javax.annotation.Nonnull;
@@ -202,5 +203,27 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
     @Override
     public void setSpacing(boolean enabled) {
         component.setSpacing(enabled);
+    }
+
+    @Override
+    public String getCaption() {
+        return getComposition().getCaption();
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        getComposition().setCaption(caption);
+    }
+
+    @Override
+    public String getDescription() {
+        return getComposition().getDescription();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        if (getComposition() instanceof AbstractComponent) {
+            ((AbstractComponent) getComposition()).setDescription(description);
+        }
     }
 }

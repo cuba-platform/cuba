@@ -30,7 +30,7 @@ import java.util.Map;
 public interface Table<E extends Entity>
         extends
             ListComponent<E>, Component.Editable, Component.HasSettings,
-            Component.HasButtonsPanel, Component.HasPresentations {
+            Component.HasButtonsPanel, Component.HasPresentations, Component.HasCaption, Component.HasIcon {
 
     enum ColumnAlignment {
         LEFT,

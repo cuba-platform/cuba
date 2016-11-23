@@ -23,13 +23,13 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -88,6 +88,40 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     @Override
     public void setEditable(boolean editable) {
         component.setReadOnly(!editable);
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        this.icon = icon;
+
+        getComposition().setIcon(WebComponentsHelper.getIcon(icon));
+    }
+
+    @Override
+    public String getCaption() {
+        return getComposition().getCaption();
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        getComposition().setCaption(caption);
+    }
+
+    @Override
+    public String getDescription() {
+        return getComposition().getDescription();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        if (getComposition() instanceof AbstractComponent) {
+            ((AbstractComponent) getComposition()).setDescription(description);
+        }
     }
 
     @Override

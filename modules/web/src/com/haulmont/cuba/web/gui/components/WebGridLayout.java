@@ -230,4 +230,24 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
     public void setSpacing(boolean enabled) {
         component.setSpacing(enabled);
     }
+
+    @Override
+    public String getCaption() {
+        return component.getCaption();
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        component.setCaption(caption);
+    }
+
+    @Override
+    public String getDescription() {
+        return component.getDescription();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        component.setDescription(description);
+    }
 }

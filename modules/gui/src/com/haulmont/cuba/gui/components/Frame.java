@@ -40,7 +40,9 @@ public interface Frame
                 Component.BelongToFrame,
                 Component.Spacing,
                 Component.Margin,
-                Component.ActionsHolder {
+                Component.ActionsHolder,
+                Component.HasIcon,
+                Component.HasCaption {
 
     /** XML element name used to show a frame in an enclosing screen. */
     String NAME = "frame";

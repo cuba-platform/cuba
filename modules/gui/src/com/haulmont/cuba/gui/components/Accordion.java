@@ -22,7 +22,7 @@ import org.dom4j.Element;
 
 import java.util.Collection;
 
-public interface Accordion extends Component.Container, Component.BelongToFrame {
+public interface Accordion extends Component.Container, Component.BelongToFrame, Component.HasCaption, Component.HasIcon {
     String NAME = "accordion";
 
     /**

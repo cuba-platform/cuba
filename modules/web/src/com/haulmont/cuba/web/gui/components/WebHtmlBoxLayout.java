@@ -145,4 +145,24 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
     }
+
+    @Override
+    public String getCaption() {
+        return component.getCaption();
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        component.setCaption(caption);
+    }
+
+    @Override
+    public String getDescription() {
+        return component.getDescription();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        component.setDescription(description);
+    }
 }

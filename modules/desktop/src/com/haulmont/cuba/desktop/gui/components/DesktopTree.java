@@ -47,7 +47,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
-import java.util.List;
 
 public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderComponent<JTree> implements Tree<E> {
 
@@ -67,6 +66,8 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
     protected MouseAdapter itemClickListener;
     protected Action enterPressAction;
     protected boolean editable = true;
+
+    protected String caption;
 
     protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
 
@@ -519,6 +520,27 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
     public void setEditable(boolean editable) {
         this.editable = editable;
     }
+
+    @Override
+    public String getCaption() {
+        return caption;
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    @Override
+    public String getDescription() {
+        return impl.getToolTipText();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        impl.setToolTipText(description);
+    }
+
 
     @Override
     protected void attachAction(Action action) {

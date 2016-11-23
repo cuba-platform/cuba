@@ -460,6 +460,8 @@
 
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEditState"/>
         <xs:attributeGroup ref="hasAlign"/>
@@ -695,6 +697,7 @@
         <xs:attributeGroup ref="hasEditable"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasIcon"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasSize"/>
@@ -1095,6 +1098,8 @@
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasIcon"/>
         <xs:attribute name="src" type="xs:string"/>
         <xs:attribute name="type" type="embeddedType"/>
     </xs:complexType>
@@ -1118,6 +1123,8 @@
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasIcon"/>
         <xs:attribute name="multiselect" type="xs:boolean"/>
     </xs:complexType>
 
@@ -1206,6 +1213,8 @@
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasExpand"/>
         <xs:attributeGroup ref="hasAlign"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
 
@@ -1326,7 +1335,8 @@
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="requiresDatasource"/>
 
-        <xs:attributeGroup ref="hasCaptionProp"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
@@ -1423,6 +1433,8 @@
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasAlign"/>
 
@@ -1542,6 +1554,8 @@
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasCaption"/>
 
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
@@ -1557,6 +1571,8 @@
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="isLayoutComponent"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasCaption"/>
     </xs:complexType>
 
     <!-- FlowBoxLayout -->
@@ -1566,6 +1582,8 @@
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasSpacingMargin"/>
@@ -1578,6 +1596,8 @@
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasResponsive"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
@@ -1596,6 +1616,8 @@
 
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasSpacingMargin"/>
         <xs:attributeGroup ref="hasVisibility"/>
@@ -1613,6 +1635,8 @@
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasAlign"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasCaption"/>
 
         <xs:attribute name="orientation" type="orientation"/>
         <xs:attribute name="pos" type="xs:string"/>
@@ -1647,6 +1671,8 @@
 
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasStyle"/>
@@ -1678,6 +1704,8 @@
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasCaption"/>
     </xs:complexType>
 
     <!-- GridLayout -->
@@ -1718,6 +1746,8 @@
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasSpacingMargin"/>
@@ -1728,7 +1758,8 @@
         <xs:group ref="layoutOrComponent" minOccurs="0"/>
 
         <xs:attributeGroup ref="hasId"/>
-        <xs:attributeGroup ref="hasCaptionProp"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasAlign"/>
@@ -1750,6 +1781,8 @@
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasAlign"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasVisibility"/>
 
         <xs:attribute name="src" type="xs:string"/>

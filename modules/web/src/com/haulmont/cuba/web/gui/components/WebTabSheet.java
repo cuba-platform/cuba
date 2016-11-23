@@ -479,6 +479,26 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         }
     }
 
+    @Override
+    public String getCaption() {
+        return component.getCaption();
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        component.setCaption(caption);
+    }
+
+    @Override
+    public String getDescription() {
+        return component.getDescription();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        component.setDescription(description);
+    }
+
     protected class LazyTabChangeListener implements com.vaadin.ui.TabSheet.SelectedTabChangeListener {
         protected BoxLayout tabContent;
         protected Element descriptor;

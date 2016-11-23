@@ -18,8 +18,8 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nonnull;
@@ -41,6 +41,7 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     protected DesktopAbstractBox content;
 
     protected boolean scheduledRepaint = false;
+    protected String caption;
 
     public DesktopScrollBoxLayout() {
         impl = new JScrollPane();
@@ -357,5 +358,25 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
                 ((DesktopAbstractComponent) component).setParentEnabled(resultEnabled);
             }
         }
+    }
+
+    @Override
+    public String getCaption() {
+        return caption;
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    @Override
+    public String getDescription() {
+        return impl.getToolTipText();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        impl.setToolTipText(description);
     }
 }

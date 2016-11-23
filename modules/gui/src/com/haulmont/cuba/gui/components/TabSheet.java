@@ -24,7 +24,7 @@ import java.util.Collection;
 /**
  * TabSheet component interface.
  */
-public interface TabSheet extends Component.Container, Component.BelongToFrame {
+public interface TabSheet extends Component.Container, Component.BelongToFrame, Component.HasIcon, Component.HasCaption {
 
     String NAME = "tabSheet";
 

@@ -1533,6 +1533,16 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     @Override
+    public String getIcon() {
+        return groupBoxLayout.getIcon();
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        groupBoxLayout.setIcon(icon);
+    }
+
+    @Override
     public void setManualApplyRequired(Boolean manualApplyRequired) {
         this.manualApplyRequired = manualApplyRequired;
     }

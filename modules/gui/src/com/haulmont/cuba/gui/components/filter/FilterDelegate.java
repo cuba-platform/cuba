@@ -57,6 +57,10 @@ public interface FilterDelegate {
 
     void setCaption(String caption);
 
+    String getIcon();
+
+    void setIcon(String icon);
+
     void setMaxResults(int maxResults);
 
     int getMaxResults();

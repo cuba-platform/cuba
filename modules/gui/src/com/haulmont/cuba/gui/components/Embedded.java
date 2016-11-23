@@ -30,7 +30,7 @@ import java.util.Map;
  * Web implementation may require a browser plugin. Only images support is mandatory for all implementations.
  *
  */
-public interface Embedded extends Component, Component.BelongToFrame {
+public interface Embedded extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasIcon {
 
     String NAME = "embedded";
 

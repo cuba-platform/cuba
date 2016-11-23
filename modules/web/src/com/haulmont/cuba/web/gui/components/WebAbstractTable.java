@@ -26,7 +26,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
-import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
@@ -84,7 +83,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -1452,11 +1450,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     public String getCaption() {
-        return component.getCaption();
+        return getComposition().getCaption();
     }
 
     public void setCaption(String caption) {
-        component.setCaption(caption);
+        getComposition().setCaption(caption);
     }
 
     @Override
@@ -2834,5 +2832,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
 
         component.setCurrentPageFirstItemId(item.getId());
+    }
+
+    @Override
+    public String getDescription() {
+        return component.getDescription();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        component.setDescription(description);
     }
 }

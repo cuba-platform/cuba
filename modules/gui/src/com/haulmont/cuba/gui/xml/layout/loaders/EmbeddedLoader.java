@@ -83,5 +83,9 @@ public class EmbeddedLoader extends AbstractComponentLoader<Embedded> {
         loadHeight(resultComponent, element);
         loadWidth(resultComponent, element);
         loadAlign(resultComponent, element);
+
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
+        loadIcon(resultComponent, element);
     }
 }

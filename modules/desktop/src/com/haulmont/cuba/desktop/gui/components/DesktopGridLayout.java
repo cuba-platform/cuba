@@ -23,8 +23,8 @@ import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.GridLayoutAdapter;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.GridLayout;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.GridLayout;
 import net.miginfocom.layout.CC;
 
 import javax.annotation.Nonnull;
@@ -42,6 +42,7 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
     protected Map<Component, Pair<JPanel, BoxLayoutAdapter>> wrappers = new HashMap<>();
 
     protected boolean scheduledRepaint = false;
+    protected String caption;
 
     public DesktopGridLayout() {
         impl = new JPanel();
@@ -388,5 +389,25 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
                 ((DesktopAbstractComponent) component).setParentEnabled(resultEnabled);
             }
         }
+    }
+
+    @Override
+    public String getCaption() {
+        return caption;
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    @Override
+    public String getDescription() {
+        return impl.getToolTipText();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        impl.setToolTipText(description);
     }
 }

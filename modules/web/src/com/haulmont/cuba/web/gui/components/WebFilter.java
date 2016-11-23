@@ -320,4 +320,13 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         delegate.switchFilterMode(filterMode);
     }
 
+    @Override
+    public String getIcon() {
+        return delegate.getIcon();
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        delegate.setIcon(icon);
+    }
 }

@@ -20,6 +20,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.vaadin.ui.AbstractComponent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,7 +28,7 @@ import java.util.*;
 
 public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
         extends WebAbstractComponent<T>
-        implements Component.OrderedContainer, Component.BelongToFrame {
+        implements Component.OrderedContainer, Component.BelongToFrame, Component.HasCaption, Component.HasIcon {
 
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected Map<String, Component> componentByIds = new HashMap<>();
@@ -154,5 +155,28 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
     @Override
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
+    }
+
+
+    @Override
+    public String getCaption() {
+        return getComposition().getCaption();
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        getComposition().setCaption(caption);
+    }
+
+    @Override
+    public String getDescription() {
+        return getComposition().getDescription();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        if (getComposition() instanceof AbstractComponent) {
+            ((AbstractComponent) getComposition()).setDescription(description);
+        }
     }
 }

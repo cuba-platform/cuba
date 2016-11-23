@@ -21,10 +21,11 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
+import com.haulmont.cuba.web.toolkit.ui.CubaScrollBoxPanel;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractOrderedLayout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -34,7 +35,7 @@ import java.util.*;
 
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
 
-public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements ScrollBoxLayout {
+public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel> implements ScrollBoxLayout {
 
     public static final String CUBA_SCROLLBOX_CONTENT_STYLE = "c-scrollbox-content";
 
@@ -47,7 +48,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
     protected String styleName;
 
     public WebScrollBoxLayout() {
-        component = new Panel();
+        component = new CubaScrollBoxPanel();
         component.setStyleName("c-scrollbox");
 
         CubaVerticalActionsLayout content = new CubaVerticalActionsLayout();
@@ -294,5 +295,25 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
     @Override
     public void setSpacing(boolean enabled) {
         getContent().setSpacing(enabled);
+    }
+
+    @Override
+    public String getCaption() {
+        return component.getCaption();
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        component.setCaption(caption);
+    }
+
+    @Override
+    public String getDescription() {
+        return component.getDescription();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        component.setDescription(description);
     }
 }

@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.toolkit.ui.CubaAccordion;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -108,6 +109,28 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
     @Override
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
+    }
+
+    @Override
+    public String getCaption() {
+        return getComposition().getCaption();
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        getComposition().setCaption(caption);
+    }
+
+    @Override
+    public String getDescription() {
+        return getComposition().getDescription();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        if (getComposition() instanceof AbstractComponent) {
+            ((AbstractComponent) getComposition()).setDescription(description);
+        }
     }
 
     protected class Tab implements Accordion.Tab {

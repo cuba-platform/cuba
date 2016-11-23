@@ -35,6 +35,7 @@ public class DesktopEmbedded extends DesktopAbstractComponent<JPanel> implements
 
     private Type type; // only IMAGE currently supported, hope object and browser will never needed for desktop
     private Image image;
+    private String caption;
 
     public DesktopEmbedded() {
         type = Type.IMAGE;
@@ -157,6 +158,26 @@ public class DesktopEmbedded extends DesktopAbstractComponent<JPanel> implements
     @Override
     public Type getType() {
         return type;
+    }
+
+    @Override
+    public String getCaption() {
+        return caption;
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    @Override
+    public String getDescription() {
+        return impl.getToolTipText();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        impl.setToolTipText(description);
     }
 
     private class ImagePanel extends JPanel {

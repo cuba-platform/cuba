@@ -101,6 +101,10 @@ public class FrameComponentLoader extends ContainerLoader<Frame> {
         loadHeight(resultComponent, element, ComponentsHelper.getComponentHeigth(resultComponent));
         loadWidth(resultComponent, element, ComponentsHelper.getComponentWidth(resultComponent));
 
+        loadIcon(resultComponent, element);
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
+
         if (context.getFrame() != null) {
             resultComponent.setFrame(context.getFrame());
         }

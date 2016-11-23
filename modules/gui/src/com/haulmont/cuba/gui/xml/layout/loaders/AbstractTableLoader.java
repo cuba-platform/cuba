@@ -75,6 +75,10 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         loadHeight(resultComponent, element);
         loadWidth(resultComponent, element);
 
+        loadIcon(resultComponent, element);
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
+
         loadSortable(resultComponent, element);
         loadReorderingAllowed(resultComponent, element);
         loadColumnControlVisible(resultComponent, element);

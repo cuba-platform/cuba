@@ -183,6 +183,36 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     }
 
     @Override
+    public String getCaption() {
+        return frame.getCaption();
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        frame.setCaption(caption);
+    }
+
+    @Override
+    public String getDescription() {
+        return frame.getDescription();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        frame.setDescription(description);
+    }
+
+    @Override
+    public String getIcon() {
+        return frame.getIcon();
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        frame.setIcon(icon);
+    }
+
+    @Override
     public void add(Component component) {
         frame.add(component);
     }

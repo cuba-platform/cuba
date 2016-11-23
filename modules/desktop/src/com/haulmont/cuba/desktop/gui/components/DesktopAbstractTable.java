@@ -152,6 +152,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
     protected CollectionDsActionsNotifier collectionDsActionsNotifier;
+    protected String caption;
 
     protected DesktopAbstractTable() {
         shortcutsDelegate.setAllowEnterShortcut(false);
@@ -2341,6 +2342,26 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
         }
 
         impl.scrollRowToVisible(rowIndex);
+    }
+
+    @Override
+    public String getCaption() {
+        return caption;
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    @Override
+    public String getDescription() {
+        return impl.getToolTipText();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        impl.setToolTipText(description);
     }
 
     /**

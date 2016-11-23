@@ -23,6 +23,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
+import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ui.VPanel;
 
 public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
@@ -184,5 +185,16 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
         void expand();
 
         void collapse();
+    }
+
+    @Override
+    public void setIconUri(String iconUri, ApplicationConnection client) {
+        if (icon != null) {
+            captionNode.removeChild(icon.getElement());
+        }
+        icon = client.getIcon(iconUri);
+        if (icon != null) {
+            DOM.insertChild(captionNode, icon.getElement(), 1);
+        }
     }
 }

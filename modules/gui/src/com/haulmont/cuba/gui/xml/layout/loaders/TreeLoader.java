@@ -74,6 +74,10 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
                 resultComponent.setCaptionMode(CaptionMode.PROPERTY);
             }
         }
+
+        loadIcon(resultComponent, element);
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
     }
 
     protected void createButtonsPanel(Tree resultComponent, Element element) {

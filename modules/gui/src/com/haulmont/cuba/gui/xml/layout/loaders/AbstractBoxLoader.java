@@ -39,6 +39,10 @@ public abstract class AbstractBoxLoader<T extends BoxLayout> extends ContainerLo
         loadHeight(resultComponent, element);
         loadWidth(resultComponent, element);
 
+        loadIcon(resultComponent, element);
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
+
         loadSubComponentsAndExpand(resultComponent, element);
     }
 }

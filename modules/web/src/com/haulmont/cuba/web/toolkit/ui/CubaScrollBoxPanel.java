@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2008-2016 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,26 +14,9 @@
  * limitations under the License.
  */
 
-@mixin halo-scrollbox($primary-stylename: c-scrollbox) {
-  .#{$primary-stylename} {
-    border: 0;
-    box-shadow: none;
-    background: transparent;
-  }
+package com.haulmont.cuba.web.toolkit.ui;
 
-  .#{$primary-stylename} > .v-panel-captionwrap {
-    display: none;
-  }
+import com.vaadin.ui.Panel;
 
-  .#{$primary-stylename} > .v-panel-content {
-    border: 0;
-  }
-
-  .#{$primary-stylename} > .v-panel-deco {
-    display: none;
-  }
-
-  .v-scrollable > .#{$primary-stylename} {
-    overflow: auto;
-  }
+public class CubaScrollBoxPanel extends Panel {
 }

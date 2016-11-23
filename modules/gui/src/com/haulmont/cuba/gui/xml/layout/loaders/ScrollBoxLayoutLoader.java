@@ -86,6 +86,10 @@ public class ScrollBoxLayoutLoader extends ContainerLoader<ScrollBoxLayout> {
         loadHeight(resultComponent, element);
         loadWidth(resultComponent, element);
 
+        loadIcon(resultComponent, element);
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
+
         loadSubComponents();
 
         for (Component child : resultComponent.getOwnComponents()) {

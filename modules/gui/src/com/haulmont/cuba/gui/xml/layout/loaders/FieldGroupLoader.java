@@ -495,7 +495,9 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
         loadStyleName(resultComponent, element);
 
+        loadIcon(resultComponent, element);
         loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
 
         loadHeight(resultComponent, element);
 

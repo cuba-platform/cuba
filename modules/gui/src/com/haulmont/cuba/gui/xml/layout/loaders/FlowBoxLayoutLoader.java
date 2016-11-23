@@ -43,6 +43,10 @@ public class FlowBoxLayoutLoader extends ContainerLoader<FlowBoxLayout> {
         loadHeight(resultComponent, element);
         loadWidth(resultComponent, element);
 
+        loadIcon(resultComponent, element);
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
+
         loadSubComponents();
     }
 }

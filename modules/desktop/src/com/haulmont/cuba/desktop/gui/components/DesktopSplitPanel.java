@@ -44,6 +44,7 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected boolean settingsEnabled = true;
     protected boolean locked = false;
+    protected String caption;
 
     public DesktopSplitPanel() {
         impl = new JSplitPane() {
@@ -363,5 +364,25 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
                 ((DesktopAbstractComponent) component).setParentEnabled(resultEnabled);
             }
         }
+    }
+
+    @Override
+    public String getCaption() {
+        return caption;
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    @Override
+    public String getDescription() {
+        return impl.getToolTipText();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        impl.setToolTipText(description);
     }
 }

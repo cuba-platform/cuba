@@ -22,8 +22,8 @@ import org.dom4j.Element;
 
 import java.util.Map;
 
-public interface FieldGroup extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasBorder,
-        Component.Editable, Component.Validatable {
+public interface FieldGroup extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
+        Component.HasBorder, Component.Editable, Component.Validatable {
 
     String NAME = "fieldGroup";
 

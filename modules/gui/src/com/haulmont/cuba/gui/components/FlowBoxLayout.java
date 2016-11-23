@@ -17,8 +17,8 @@
 
 package com.haulmont.cuba.gui.components;
 
-public interface FlowBoxLayout extends Component.OrderedContainer, Component.BelongToFrame,
-                                       Component.Margin, Component.Spacing {
+public interface FlowBoxLayout extends Component.OrderedContainer, Component.BelongToFrame, Component.Margin,
+                                       Component.Spacing, Component.HasCaption, Component.HasIcon {
 
     String NAME = "flowBox";
 }
