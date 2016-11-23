@@ -300,6 +300,16 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         return super.handleNavigation(keycode, ctrl, shift);
     }
 
+    @Override
+    protected boolean isGenericRow(Widget rowWidget) {
+        return super.isGenericRow(rowWidget) && !(rowWidget instanceof CubaGroupTableBody.CubaGroupTableGroupRow);
+    }
+
+    @Override
+    protected boolean isCustomColumn(int colIndex) {
+        return GROUP_DIVIDER_COLUMN_KEY.equals(getColKeyByIndex(colIndex));
+    }
+
     public CubaGroupTableBody.CubaGroupTableGroupRow getRenderedGroupRowByKey(String key) {
         if (scrollBody != null) {
             final Iterator<Widget> it = scrollBody.iterator();
