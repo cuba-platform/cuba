@@ -25,7 +25,9 @@ import com.google.gwt.user.client.ui.RootPanel;
 import fi.jasoft.dragdroplayouts.client.ui.util.HTML5Support;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.CubaFileUploadWidget.CUBA_FILEUPLOAD_DROPZONE_CLASS;
 
@@ -39,7 +41,11 @@ public class JQueryFileUploadOverlay {
 
     protected List<JavaScriptObject> currentXHRs = new ArrayList<JavaScriptObject>();
 
-    protected static List<Element> dropZones = new ArrayList<Element>();
+    /*
+    * Keys   - Drop zones
+    * Values - FileUpload elements, which use these dropzones
+    */
+    protected static Map<Element, Element> dropZoneFileUpload = new HashMap<Element, Element>();
 
     private Element dropZoneElement;
 
@@ -122,6 +128,13 @@ public class JQueryFileUploadOverlay {
     }-*/;
 
     protected void addPendingUpload(JavaScriptObject jqXHR) {
+        if (this.fileInput.hasAttribute("disabled")) {
+            for (JavaScriptObject currentXHR : currentXHRs) {
+                cancelXHR(currentXHR);
+            }
+            return;
+        }
+
         boolean multiple = fileInput.hasAttribute("multiple");
         if (!multiple) {
             if (!currentXHRs.isEmpty())
@@ -213,11 +226,9 @@ public class JQueryFileUploadOverlay {
                 globalDragDropHandlersAttached = true;
             }
 
-            if (!dropZones.contains(dropZoneElement)) {
-                dropZones.add(dropZoneElement);
-            }
+            dropZoneFileUpload.put(dropZoneElement, fileInput);
         } else {
-            dropZones.remove(this.dropZoneElement);
+            dropZoneFileUpload.remove(this.dropZoneElement);
         }
 
         this.dropZoneElement = dropZoneElement;
@@ -229,7 +240,7 @@ public class JQueryFileUploadOverlay {
             public void onDragOver(DragOverEvent event) {
                 globalDocumentDragOver(event);
 
-                if (dropZones.size() > 0) {
+                if (dropZoneFileUpload.size() > 0) {
                     event.preventDefault();
                 }
             }
@@ -260,7 +271,7 @@ public class JQueryFileUploadOverlay {
         RootPanel.get().addBitlessDomHandler(new DropHandler() {
             @Override
             public void onDrop(DropEvent event) {
-                if (dropZones.size() > 0) {
+                if (dropZoneFileUpload.size() > 0) {
                     event.preventDefault();
                 }
             }
@@ -306,8 +317,10 @@ public class JQueryFileUploadOverlay {
             dragStopTimer = null;
 
             // find all drop zones and add classname
-            for (Element dropZone : dropZones) {
-                dropZone.addClassName(CUBA_FILEUPLOAD_DROPZONE_CLASS);
+            for (Map.Entry<Element, Element> entry : dropZoneFileUpload.entrySet()) {
+                if (!entry.getValue().hasAttribute("disabled")) {
+                    entry.getKey().addClassName(CUBA_FILEUPLOAD_DROPZONE_CLASS);
+                }
             }
         }
     }
@@ -327,7 +340,7 @@ public class JQueryFileUploadOverlay {
     }
 
     protected static void forceHideDropZones() {
-        for (Element dropZone : dropZones) {
+        for (Element dropZone : dropZoneFileUpload.keySet()) {
             dropZone.removeClassName(CUBA_FILEUPLOAD_DROPZONE_CLASS);
         }
         if (dragStopTimer != null) {
