@@ -19,34 +19,27 @@ package com.haulmont.cuba.core.sys.querymacro;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import org.springframework.context.annotation.Scope;
-
 import org.springframework.stereotype.Component;
+
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component("cuba_EnumQueryMacroHandler")
 @Scope("prototype")
-public class EnumQueryMacroHandler implements QueryMacroHandler {
+public class EnumQueryMacroHandler extends AbstractQueryMacroHandler {
 
+    protected int count;
     protected Map<String, Object> namedParameters;
 
     protected static final Pattern MACRO_PATTERN = Pattern.compile("@enum\\s*\\(([^\\)]+)\\)");
 
-    @Override
-    public String expandMacro(String queryString) {
-        Matcher matcher = MACRO_PATTERN.matcher(queryString);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            matcher.appendReplacement(sb, doExpand(matcher.group(1)));
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
+    public EnumQueryMacroHandler() {
+        super(MACRO_PATTERN);
     }
 
-    private String doExpand(String enumString) {
+    @Override
+    protected String doExpand(String enumString) {
         int idx = enumString.lastIndexOf('.');
         String className = enumString.substring(0, idx);
         String valueName = enumString.substring(idx + 1);

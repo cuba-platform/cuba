@@ -18,36 +18,26 @@ package com.haulmont.cuba.core.sys.querymacro;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.context.annotation.Scope;
-
 import org.springframework.stereotype.Component;
+
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component("cuba_TimeTodayQueryMacroHandler")
 @Scope("prototype")
-public class TimeTodayQueryMacroHandler implements QueryMacroHandler {
+public class TimeTodayQueryMacroHandler extends AbstractQueryMacroHandler {
 
     private static final Pattern MACRO_PATTERN = Pattern.compile("@today\\s*\\(([^\\)]+)\\)");
 
     private int count;
     private Map<String, Object> params = new HashMap<>();
 
-    @Override
-    public String expandMacro(String queryString) {
-        count = 0;
-        Matcher matcher = MACRO_PATTERN.matcher(queryString);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            matcher.appendReplacement(sb, doExpand(matcher.group(1)));
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
+    public TimeTodayQueryMacroHandler() {
+        super(MACRO_PATTERN);
     }
 
     @Override
@@ -64,7 +54,8 @@ public class TimeTodayQueryMacroHandler implements QueryMacroHandler {
         return queryString;
     }
 
-    private String doExpand(String macro) {
+    @Override
+    protected String doExpand(String macro) {
         count++;
         String param1 = macro.replace(".", "_") + "_" + count + "_1";
         String param2 = macro.replace(".", "_") + "_" + count + "_2";
