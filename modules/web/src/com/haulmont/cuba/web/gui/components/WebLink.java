@@ -19,7 +19,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.Link;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
-import org.apache.commons.lang.StringUtils;
 
 public class WebLink extends WebAbstractComponent<com.vaadin.ui.Link> implements Link {
 
@@ -50,25 +49,5 @@ public class WebLink extends WebAbstractComponent<com.vaadin.ui.Link> implements
     @Override
     public String getTarget() {
         return component.getTargetName();
-    }
-
-    @Override
-    public String getCaption() {
-        return component.getCaption();
-    }
-
-    @Override
-    public void setCaption(String caption) {
-        component.setCaption(caption);
-    }
-
-    @Override
-    public String getDescription() {
-        return component.getDescription();
-    }
-
-    @Override
-    public void setDescription(String description) {
-        component.setDescription(description);
     }
 }

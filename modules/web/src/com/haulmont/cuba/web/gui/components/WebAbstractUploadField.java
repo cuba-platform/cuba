@@ -26,7 +26,7 @@ import com.haulmont.cuba.gui.components.UploadField;
 
 import java.util.Set;
 
-public abstract class WebAbstractUploadField<T extends com.vaadin.ui.Field>
+public abstract class WebAbstractUploadField<T extends com.vaadin.ui.AbstractField>
         extends WebAbstractField<T>
         implements UploadField {
 

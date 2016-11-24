@@ -32,7 +32,10 @@ import com.haulmont.cuba.web.gui.components.calendar.CalendarEventWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaCalendar;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 
 public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements Calendar {
     private CollectionDatasource datasource;
@@ -471,25 +474,5 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     @Override
     public CalendarEventProvider getEventProvider() {
         return ((CalendarEventProviderWrapper) component.getEventProvider()).getCalendarEventProvider();
-    }
-
-    @Override
-    public String getCaption() {
-        return component.getCaption();
-    }
-
-    @Override
-    public void setCaption(String caption) {
-        component.setCaption(caption);
-    }
-
-    @Override
-    public String getDescription() {
-        return component.getDescription();
-    }
-
-    @Override
-    public void setDescription(String description) {
-        component.setDescription(description);
     }
 }

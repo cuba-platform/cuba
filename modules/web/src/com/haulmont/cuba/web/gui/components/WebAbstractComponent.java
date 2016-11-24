@@ -36,9 +36,9 @@ import java.util.List;
 /**
  * @param <T>
  */
-public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
+public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractComponent>
         implements
-        Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon {
+        Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon, Component.HasCaption {
 
     public static final List<Sizeable.Unit> UNIT_SYMBOLS = Collections.unmodifiableList(Arrays.asList(
             Sizeable.Unit.PIXELS, Sizeable.Unit.POINTS, Sizeable.Unit.PICAS,
@@ -192,6 +192,26 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     @Override
     public String getIcon() {
         return icon;
+    }
+
+    @Override
+    public String getCaption() {
+        return component.getCaption();
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        component.setCaption(caption);
+    }
+
+    @Override
+    public String getDescription() {
+        return component.getDescription();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        component.setDescription(description);
     }
 
     @Override

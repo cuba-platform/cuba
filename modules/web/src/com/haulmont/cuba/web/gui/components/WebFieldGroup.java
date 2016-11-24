@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -34,7 +32,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.LoggerFactory;
@@ -542,7 +540,11 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
 
     @Override
     public String getCaption() {
-        return component.getCaption();
+        if (wrapperAttached) {
+            return wrapper.getCaption();
+        } else {
+            return component.getCaption();
+        }
     }
 
     @Override
@@ -552,16 +554,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         } else {
             component.setCaption(caption);
         }
-    }
-
-    @Override
-    public String getDescription() {
-        return component.getDescription();
-    }
-
-    @Override
-    public void setDescription(String description) {
-        component.setDescription(description);
     }
 
     @Override

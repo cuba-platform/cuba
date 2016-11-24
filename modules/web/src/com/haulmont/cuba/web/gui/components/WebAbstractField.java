@@ -32,8 +32,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.AbstractField;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -47,7 +45,7 @@ import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 /**
  * @param <T>
  */
-public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends WebAbstractComponent<T> implements Field {
+public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> extends WebAbstractComponent<T> implements Field {
 
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
@@ -183,37 +181,8 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
 
     @Override
     public void setValue(Object value) {
-        if (component instanceof AbstractField) {
-            //noinspection unchecked
-            ((AbstractField) component).setValueIgnoreReadOnly(value);
-        } else {
-            //noinspection unchecked
-            component.setValue(value);
-        }
-    }
-
-    @Override
-    public String getCaption() {
-        return component.getCaption();
-    }
-
-    @Override
-    public void setCaption(String caption) {
-        component.setCaption(caption);
-    }
-
-    @Override
-    public String getDescription() {
-        return component.getDescription();
-    }
-
-    @Override
-    public void setDescription(String description) {
-        if (component instanceof AbstractComponent) {
-            ((AbstractComponent) component).setDescription(description);
-        } else {
-            throw new UnsupportedOperationException("Unable to set description for " + component.getClass().getName());
-        }
+        //noinspection unchecked
+        component.setValueIgnoreReadOnly(value);
     }
 
     @Override

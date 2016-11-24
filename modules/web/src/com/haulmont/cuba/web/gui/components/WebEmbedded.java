@@ -220,26 +220,6 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
         }
     }
 
-    @Override
-    public String getCaption() {
-        return component.getCaption();
-    }
-
-    @Override
-    public void setCaption(String caption) {
-        component.setCaption(caption);
-    }
-
-    @Override
-    public String getDescription() {
-        return component.getDescription();
-    }
-
-    @Override
-    public void setDescription(String description) {
-        component.setDescription(description);
-    }
-
     protected static class EmptyStreamSource implements StreamResource.StreamSource {
         public static final String EMPTY_IMAGE_PATH = "/com/haulmont/cuba/web/gui/components/resources/empty.png";
 

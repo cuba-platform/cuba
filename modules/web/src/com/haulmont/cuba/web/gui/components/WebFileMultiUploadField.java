@@ -33,9 +33,9 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.toolkit.FileUploadTypesHelper;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaAbstractUploadComponent;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
 import com.haulmont.cuba.web.toolkit.ui.CubaMultiUpload;
-import com.haulmont.cuba.web.toolkit.ui.UploadComponent;
 import com.vaadin.server.Page;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.ui.Component;
@@ -49,7 +49,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class WebFileMultiUploadField extends WebAbstractUploadComponent<UploadComponent> implements FileMultiUploadField {
+public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaAbstractUploadComponent> implements FileMultiUploadField {
 
     private final Logger log = LoggerFactory.getLogger(WebFileMultiUploadField.class);
 
@@ -279,26 +279,6 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<UploadCo
 
     protected CubaMultiUpload createOldComponent() {
         return new CubaMultiUpload();
-    }
-
-    @Override
-    public String getCaption() {
-        return component.getCaption();
-    }
-
-    @Override
-    public void setCaption(String caption) {
-        component.setCaption(caption);
-    }
-
-    @Override
-    public String getDescription() {
-        return component.getDescription();
-    }
-
-    @Override
-    public void setDescription(String description) {
-        component.setDescription(description);
     }
 
     @Deprecated

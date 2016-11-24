@@ -25,7 +25,6 @@ import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.LegacyComponent;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -40,8 +39,8 @@ import java.util.*;
  */
 @JavaScript(value = "vaadin://resources/swfobject/swfobject-2.2.js")
 @Deprecated
-public class CubaMultiUpload extends AbstractComponent
-        implements LegacyComponent, UploadComponent {
+public class CubaMultiUpload extends CubaAbstractUploadComponent
+        implements LegacyComponent {
 
     private List<UploadListener> uploadListeners = new ArrayList<>();
 

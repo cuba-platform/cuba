@@ -279,16 +279,6 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
     }
 
     @Override
-    public String getDescription() {
-        return component.getDescription();
-    }
-
-    @Override
-    public void setDescription(String description) {
-        component.setDescription(description);
-    }
-
-    @Override
     public void setIcon(String icon) {
         super.setIcon(icon);
         if (!StringUtils.isEmpty(icon)) {

@@ -58,24 +58,4 @@ public class WebNewWindowButton extends WebAbstractComponent<CubaButton> impleme
 
         component.addStyleName(NEWWINDOW_BUTTON_STYLENAME);
     }
-
-    @Override
-    public void setCaption(String caption) {
-        component.setCaption(caption);
-    }
-
-    @Override
-    public String getCaption() {
-        return component.getCaption();
-    }
-
-    @Override
-    public void setDescription(String description) {
-        component.setDescription(description);
-    }
-
-    @Override
-    public String getDescription() {
-        return component.getDescription();
-    }
 }
