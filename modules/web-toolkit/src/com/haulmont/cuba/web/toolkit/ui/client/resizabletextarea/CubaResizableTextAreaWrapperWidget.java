@@ -22,9 +22,9 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
 import com.vaadin.client.ComputedStyle;
-import com.vaadin.client.ui.VCustomComponent;
+import com.vaadin.client.ui.VCustomField;
 
-public class CubaResizableTextAreaWrapperWidget extends VCustomComponent {
+public class CubaResizableTextAreaWrapperWidget extends VCustomField {
 
     public static final String RESIZE_ELEMENT = "c-resizabletextarea-resize-corner";
 
