@@ -188,6 +188,8 @@ public class CategoryAttributeValue extends StandardEntity {
             booleanValue = null;
             entityValue = null;
             dateValue = null;
+            transientEntityValue = null;
+            transientCollectionValue = null;
         } else if (value instanceof Date) {
             setDateValue((Date) value);
         } else if (value instanceof Integer) {
