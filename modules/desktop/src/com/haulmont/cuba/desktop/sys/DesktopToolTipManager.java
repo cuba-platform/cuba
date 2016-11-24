@@ -25,7 +25,6 @@ import java.awt.event.*;
 
 /**
  * Class that encapsulates displaying of tooltips for all components.
- *
  */
 public class DesktopToolTipManager extends MouseAdapter {
 
@@ -170,7 +169,12 @@ public class DesktopToolTipManager extends MouseAdapter {
         if (!field.isShowing())
             return;
 
-        Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
+        PointerInfo pointerInfo = MouseInfo.getPointerInfo();
+        if (pointerInfo == null) {
+            return;
+        }
+
+        Point mouseLocation = pointerInfo.getLocation();
         Point location = new Point();
 
         GraphicsConfiguration gc;
