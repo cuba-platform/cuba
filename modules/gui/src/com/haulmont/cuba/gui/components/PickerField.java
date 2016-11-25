@@ -45,7 +45,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Generic UI component to select and display an entity instance. Consists of the text field and the set of buttons
+ * Generic UI component designed to select and display an entity instance. Consists of the text field and the set of buttons
  * defined by actions.
  *
  * @see LookupAction
@@ -71,11 +71,47 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
     void setMetaClass(MetaClass metaClass);
 
+    /**
+     * Adds LookupAction to the component. If the LookupAction already exists, it will be replaced with the new instance.
+     * @return added action
+     */
     LookupAction addLookupAction();
 
+    /**
+     * @return LookupAction instance
+     * @throws java.lang.IllegalArgumentException if the LookupAction does not exist in the component
+     */
+    default LookupAction getLookupAction() {
+        return (LookupAction) getActionNN(LookupAction.NAME);
+    }
+
+    /**
+     * Adds ClearAction to the component. If the ClearAction already exists, it will be replaced with the new instance.
+     * @return added action
+     */
     ClearAction addClearAction();
 
+    /**
+     * @return ClearAction instance
+     * @throws java.lang.IllegalArgumentException if the ClearAction does not exist in the component
+     */
+    default ClearAction getClearAction() {
+        return (ClearAction) getActionNN(ClearAction.NAME);
+    }
+
+    /**
+     * Adds OpenAction to the component. If the OpenAction already exists, it will be replaced with the new instance.
+     * @return added action
+     */
     OpenAction addOpenAction();
+
+    /**
+     * @return OpenAction instance
+     * @throws java.lang.IllegalArgumentException if the OpenAction does not exist in the component
+     */
+    default OpenAction getOpenAction() {
+        return (OpenAction) getActionNN(OpenAction.NAME);
+    }
 
     void addFieldListener(FieldListener listener);
 
