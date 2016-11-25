@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-package com.haulmont.restapi.exception;
+package com.haulmont.cuba.core.global.validation.groups;
 
-public class ErrorInfo {
-
-    protected String error;
-    protected String details;
-
-    public ErrorInfo(String error, String details) {
-        this.error = error;
-        this.details = details;
-    }
-
-    public String getError() {
-        return error;
-    }
-
-    public String getDetails() {
-        return details;
-    }
+/**
+ * Bean validation constrain group used by REST-API for data validation. <br/>
+ * You can assign this group for constraints that must be checked only when instance is passed to REST-API. <br/>
+ * This validation group is not used for service calls.
+ */
+public interface RestApiChecks {
 }

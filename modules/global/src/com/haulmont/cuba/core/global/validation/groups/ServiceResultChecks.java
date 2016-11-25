@@ -14,23 +14,11 @@
  * limitations under the License.
  */
 
-package com.haulmont.restapi.exception;
+package com.haulmont.cuba.core.global.validation.groups;
 
-public class ErrorInfo {
-
-    protected String error;
-    protected String details;
-
-    public ErrorInfo(String error, String details) {
-        this.error = error;
-        this.details = details;
-    }
-
-    public String getError() {
-        return error;
-    }
-
-    public String getDetails() {
-        return details;
-    }
+/**
+ * Bean validation constraint group used by core server for service methods result validation. <br/>
+ * You can assign this group for constraints that must be checked only when instance is returned from a service method.
+ */
+public interface ServiceResultChecks {
 }

@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-package com.haulmont.restapi.exception;
+package com.haulmont.cuba.core.sys.validation;
 
-public class ErrorInfo {
+import com.haulmont.cuba.core.global.TimeSource;
+import org.hibernate.validator.spi.time.TimeProvider;
 
-    protected String error;
-    protected String details;
+public class CubaValidationTimeProvider implements TimeProvider {
 
-    public ErrorInfo(String error, String details) {
-        this.error = error;
-        this.details = details;
+    protected TimeSource timeSource;
+
+    public CubaValidationTimeProvider(TimeSource timeSource) {
+        this.timeSource = timeSource;
     }
 
-    public String getError() {
-        return error;
-    }
-
-    public String getDetails() {
-        return details;
+    @Override
+    public long getCurrentTime() {
+        return timeSource.currentTimeMillis();
     }
 }

@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-package com.haulmont.restapi.exception;
+package com.haulmont.cuba.core.global.validation;
 
-public class ErrorInfo {
+import com.haulmont.cuba.core.global.SupportedByClient;
 
-    protected String error;
-    protected String details;
+import javax.validation.ValidationException;
 
-    public ErrorInfo(String error, String details) {
-        this.error = error;
-        this.details = details;
-    }
-
-    public String getError() {
-        return error;
-    }
-
-    public String getDetails() {
-        return details;
+@SupportedByClient
+public class CustomValidationException extends ValidationException {
+    public CustomValidationException(String message) {
+        super(message);
     }
 }

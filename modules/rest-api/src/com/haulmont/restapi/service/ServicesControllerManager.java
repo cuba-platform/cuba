@@ -35,6 +35,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.validation.ValidationException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.*;
@@ -136,12 +138,18 @@ public class ServicesControllerManager {
         Object methodResult;
         try {
             methodResult = serviceMethod.invoke(service, paramValues.toArray());
-        } catch (Exception e) {
-            log.error("Error on service method invoke", e);
-            throw new RestAPIException("Error on service method invoke", "", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (InvocationTargetException | IllegalAccessException ex) {
+            if (ex.getCause() instanceof ValidationException) {
+                throw (ValidationException) ex.getCause();
+            } else {
+                log.error("Error on service method invoke", ex.getCause());
+                throw new RestAPIException("Error on service method invoke", "", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
 
-        if (methodResult == null) return null;
+        if (methodResult == null) {
+            return null;
+        }
 
         Class<?> methodReturnType = serviceMethod.getReturnType();
         if (Entity.class.isAssignableFrom(methodReturnType)) {

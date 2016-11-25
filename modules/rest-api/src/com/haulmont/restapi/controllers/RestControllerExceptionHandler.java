@@ -16,6 +16,10 @@
 
 package com.haulmont.restapi.controllers;
 
+import com.haulmont.cuba.core.global.validation.CustomValidationException;
+import com.haulmont.cuba.core.global.validation.MethodParametersValidationException;
+import com.haulmont.cuba.core.global.validation.MethodResultValidationException;
+import com.haulmont.restapi.exception.ConstraintViolationInfo;
 import com.haulmont.restapi.exception.ErrorInfo;
 import com.haulmont.restapi.exception.RestAPIException;
 import org.slf4j.Logger;
@@ -26,10 +30,22 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
 @ControllerAdvice("com.haulmont.restapi.controllers")
 public class RestControllerExceptionHandler {
 
     private final Logger log = LoggerFactory.getLogger(RestControllerExceptionHandler.class);
+
+    protected static final Class[] serializableInvalidValueTypes = new Class[]{
+            String.class, Date.class, Number.class, Enum.class
+    };
 
     @ExceptionHandler(RestAPIException.class)
     @ResponseBody
@@ -39,11 +55,93 @@ public class RestControllerExceptionHandler {
         return new ResponseEntity<>(errorInfo, e.getHttpStatus());
     }
 
+    @ExceptionHandler(MethodResultValidationException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorInfo> handleMethodResultValidationException(MethodResultValidationException e) {
+        log.error("MethodResultValidationException in service", e);
+        ErrorInfo errorInfo = new ErrorInfo("Server error", "");
+        return new ResponseEntity<>(errorInfo, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(MethodParametersValidationException.class)
+    @ResponseBody
+    public ResponseEntity<List<ConstraintViolationInfo>> handleMethodParametersViolation(MethodParametersValidationException e) {
+        log.debug("MethodParametersValidationException: {}, violations:\n{}", e.getMessage(), e.getConstraintViolations());
+
+        List<ConstraintViolationInfo> violationInfos = getConstraintViolationInfos(e.getConstraintViolations());
+
+        return new ResponseEntity<>(violationInfos, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseBody
+    public ResponseEntity<List<ConstraintViolationInfo>> handleConstraintViolation(ConstraintViolationException e) {
+        log.debug("ConstraintViolationException: {}, violations:\n{}", e.getMessage(), e.getConstraintViolations());
+
+        List<ConstraintViolationInfo> violationInfos = getConstraintViolationInfos(e.getConstraintViolations());
+
+        return new ResponseEntity<>(violationInfos, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CustomValidationException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorInfo> handleCustomValidationException(CustomValidationException e) {
+        log.debug("CustomValidationException: {}", e.getMessage());
+
+        ErrorInfo errorInfo = new ErrorInfo("Validation error", e.getLocalizedMessage());
+        return new ResponseEntity<>(errorInfo, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorInfo> handleValidationException(ValidationException e) {
+        log.error("ValidationException in service", e);
+        ErrorInfo errorInfo = new ErrorInfo("Server error", "");
+        return new ResponseEntity<>(errorInfo, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseEntity<ErrorInfo> handleException(Exception e) {
         log.error("Exception in REST controller", e);
         ErrorInfo errorInfo = new ErrorInfo("Server error", "");
         return new ResponseEntity<>(errorInfo, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    protected List<ConstraintViolationInfo> getConstraintViolationInfos(Set<ConstraintViolation<?>> violations) {
+        List<ConstraintViolationInfo> violationInfos = new ArrayList<>();
+
+        for (ConstraintViolation<?> violation : violations) {
+            ConstraintViolationInfo info = new ConstraintViolationInfo();
+
+            info.setMessage(violation.getMessage());
+            info.setMessageTemplate(violation.getMessageTemplate());
+
+            Object invalidValue = violation.getInvalidValue();
+            if (invalidValue != null) {
+                Class<?> invalidValueClass = invalidValue.getClass();
+
+                boolean serializable = false;
+                for (Class serializableType : serializableInvalidValueTypes) {
+                    //noinspection unchecked
+                    if (serializableType.isAssignableFrom(invalidValueClass)) {
+                        serializable = true;
+                        break;
+                    }
+                }
+                if (serializable) {
+                    info.setInvalidValue(invalidValue);
+                } else {
+                    info.setInvalidValue(null);
+                }
+            }
+
+            if (violation.getPropertyPath() != null) {
+                info.setPath(violation.getPropertyPath().toString());
+            }
+
+            violationInfos.add(info);
+        }
+        return violationInfos;
     }
 }

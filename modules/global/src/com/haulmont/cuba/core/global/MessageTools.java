@@ -37,7 +37,6 @@ import java.util.Objects;
  * <p/> Implemented as Spring bean to allow extension in application projects.
  * <p/> A reference to this class can be obtained either via DI or by
  * {@link com.haulmont.cuba.core.global.Messages#getTools()} method.
- *
  */
 @Component(MessageTools.NAME)
 public class MessageTools {
@@ -80,6 +79,15 @@ public class MessageTools {
     }
 
     /**
+     * Get localized message by reference provided in the full format.
+     * @param ref   reference to message in the following format: <code>msg://message_pack/message_id</code>
+     * @return      localized message or input string itself if it doesn't begin with <code>msg://</code>
+     */
+    public String loadString(String ref, Locale locale) {
+        return loadString(null, ref, locale);
+    }
+
+    /**
      * Get localized message by reference provided in full or brief format.
      * @param messagesPack  messages pack to use if the second parameter is in brief format
      * @param ref           reference to message in the following format:
@@ -92,21 +100,51 @@ public class MessageTools {
      */
     @Nullable
     public String loadString(@Nullable String messagesPack, @Nullable String ref) {
+        return loadString(messagesPack, ref, null);
+    }
+
+    /**
+     * Get localized message by reference provided in full or brief format.
+     * @param messagesPack  messages pack to use if the second parameter is in brief format
+     * @param ref           reference to message in the following format:
+     * @param locale        locale
+     * <ul>
+     * <li>Full: <code>msg://message_pack/message_id</code>
+     * <li>Brief: <code>msg://message_id</code>, in this case the first parameter is taken into account
+     * <li>Message from a main messages pack: <code>mainMsg://message_id</code>
+     * </ul>
+     * @return localized message or input string itself if it doesn't begin with <code>msg://</code> or <code>mainMsg://</code>
+     */
+    @Nullable
+    public String loadString(@Nullable String messagesPack, @Nullable String ref, @Nullable Locale locale) {
         if (ref != null) {
             if (ref.startsWith(MARK)) {
                 String path = ref.substring(6);
                 final String[] strings = path.split("/");
                 if (strings.length == 1 && messagesPack != null) {
-                    ref = messages.getMessage(messagesPack, strings[0]);
+                    if (locale == null) {
+                        ref = messages.getMessage(messagesPack, strings[0]);
+                    } else {
+                        ref = messages.getMessage(messagesPack, strings[0], locale);
+                    }
                 } else if (strings.length == 2) {
-                    ref = messages.getMessage(strings[0], strings[1]);
+                    if (locale == null) {
+                        ref = messages.getMessage(strings[0], strings[1]);
+                    } else {
+                        ref = messages.getMessage(strings[0], strings[1], locale);
+                    }
                 } else {
                     throw new UnsupportedOperationException("Unsupported resource string format: '" + ref
                             + "', messagesPack=" + messagesPack);
                 }
             } else if (ref.startsWith(MAIN_MARK)) {
                 String path = ref.substring(10);
-                return messages.getMainMessage(path);
+
+                if (locale == null) {
+                    return messages.getMainMessage(path);
+                } else {
+                    return messages.getMainMessage(path, locale);
+                }
             }
         }
         return ref;

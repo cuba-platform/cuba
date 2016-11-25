@@ -28,18 +28,21 @@ import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.validation.groups.RestApiChecks;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.data.CreatedEntityInfo;
 import com.haulmont.restapi.exception.RestAPIException;
 import org.apache.commons.lang.BooleanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
+import javax.validation.groups.Default;
 import java.util.*;
 
 /**
@@ -68,9 +71,10 @@ public class EntitiesControllerManager {
     protected Security security;
 
     @Inject
-    protected RestControllerUtils restControllerUtils;
+    protected BeanValidation beanValidation;
 
-    protected Logger log = LoggerFactory.getLogger(EntitiesControllerManager.class);
+    @Inject
+    protected RestControllerUtils restControllerUtils;
 
     public String loadEntity(String entityName,
                              String entityId,
@@ -156,6 +160,14 @@ public class EntitiesControllerManager {
         checkCanCreateEntity(metaClass);
         //todo MG catch invalid json
         Entity entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
+
+        Validator validator = beanValidation.getValidator();
+        Set<ConstraintViolation<Entity>> violations = validator.validate(entity, Default.class, RestApiChecks.class);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(
+                    "Validation failed on entity creation through REST-API for " + entityName, violations);
+        }
+
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
 
         Collection<Entity> importedEntities;
@@ -175,12 +187,25 @@ public class EntitiesControllerManager {
         MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanUpdateEntity(metaClass);
         Object id = getIdFromString(entityId, metaClass);
-        Entity existingEntity = dataManager.load(new LoadContext(metaClass).setId(id));
+
+        LoadContext loadContext = new LoadContext(metaClass).setId(id);
+        @SuppressWarnings("unchecked")
+        Entity existingEntity = dataManager.load(loadContext);
+
         checkEntityIsNotNull(entityName, entityId, existingEntity);
         Entity entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
         if (entity instanceof BaseGenericIdEntity) {
+            //noinspection unchecked
             ((BaseGenericIdEntity) entity).setId(id);
         }
+
+        Validator validator = beanValidation.getValidator();
+        Set<ConstraintViolation<Entity>> violations = validator.validate(entity, Default.class, RestApiChecks.class);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(
+                    "Validation failed on entity creation through REST-API for " + entityName, violations);
+        }
+
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
         Collection<Entity> importedEntities;
         try {
@@ -277,5 +302,4 @@ public class EntitiesControllerManager {
         }
         return null;
     }
-
 }

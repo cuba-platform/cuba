@@ -201,6 +201,8 @@ configure(globalModule) {
 
         compile(bom['org.json:json'])
         compile(bom['com.google.code.gson:gson'])
+        compile(bom['org.hibernate:hibernate-validator'])
+        compile(bom['org.glassfish.web:javax.el'])
 
         provided(bom['org.apache.tomcat:tomcat-servlet-api'])
     }

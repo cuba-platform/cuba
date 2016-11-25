@@ -20,3 +20,4 @@ modules/web-toolkit/build/
 modules/shared-lib/build/
 modules/rest-api/build/
 modules/idp/build/
+modules/*/test-home/
