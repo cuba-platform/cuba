@@ -94,6 +94,26 @@ public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor
     }
 
     @Override
+    public String getEntityJoinClause() {
+        return delegate.getEntityJoinClause();
+    }
+
+    @Override
+    public void setEntityJoinClause(String entityJoinClause) {
+        delegate.setEntityJoinClause(entityJoinClause);
+    }
+
+    @Override
+    public String getEntityWhereClause() {
+        return delegate.getEntityWhereClause();
+    }
+
+    @Override
+    public void setEntityWhereClause(String entityWhereClause) {
+        delegate.setEntityWhereClause(entityWhereClause);
+    }
+
+    @Override
     public void setValue(Object newValue) {
         if (!(newValue instanceof List)) {
             throw new IllegalArgumentException("Value type must be List");

@@ -761,6 +761,8 @@ create table SYS_CATEGORY_ATTR (
     WIDTH varchar(20),
     ROWS_COUNT integer,
     IS_COLLECTION tinyint,
+    JOIN_CLAUSE varchar(4000),
+    WHERE_CLAUSE varchar(4000),
     --
     primary key nonclustered (ID),
     constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)

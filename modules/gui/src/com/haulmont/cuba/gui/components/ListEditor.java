@@ -55,6 +55,14 @@ public interface ListEditor extends Field {
      */
     void setOptionsList(List<Object> optionsList);
 
+    String getEntityJoinClause();
+
+    void setEntityJoinClause(String entityJoinClause);
+
+    String getEntityWhereClause();
+
+    void setEntityWhereClause(String entityWhereClause);
+
     enum ItemType {
         STRING,
         DATE,

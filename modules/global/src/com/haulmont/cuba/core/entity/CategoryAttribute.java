@@ -109,6 +109,12 @@ public class CategoryAttribute extends StandardEntity {
     @Column(name = "IS_COLLECTION")
     private Boolean isCollection = false;
 
+    @Column(name = "WHERE_CLAUSE")
+    private String whereClause;
+
+    @Column(name = "JOIN_CLAUSE")
+    private String joinClause;
+
     public void setCategory(Category entityType) {
         this.category = entityType;
     }
@@ -298,6 +304,22 @@ public class CategoryAttribute extends StandardEntity {
 
     public void setIsCollection(Boolean isCollection) {
         this.isCollection = isCollection;
+    }
+
+    public String getWhereClause() {
+        return whereClause;
+    }
+
+    public void setWhereClause(String whereClause) {
+        this.whereClause = whereClause;
+    }
+
+    public String getJoinClause() {
+        return joinClause;
+    }
+
+    public void setJoinClause(String joinClause) {
+        this.joinClause = joinClause;
     }
 
     public Set<String> targetScreensSet() {

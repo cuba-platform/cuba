@@ -81,6 +81,9 @@ create table SYS_CATEGORY_ATTR (
     WIDTH varchar2(20),
     ROWS_COUNT integer,
     IS_COLLECTION char(1),
+    JOIN_CLAUSE varchar2(4000),
+    WHERE_CLAUSE varchar2(4000),
+
     primary key(ID)
 )^
 create index IDX_SYS_CATEGORY_ATTR_CATEGORY on SYS_CATEGORY_ATTR(CATEGORY_ID)^

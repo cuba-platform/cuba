@@ -22,12 +22,14 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
@@ -63,6 +65,12 @@ public class ListEditorPopupWindow extends AbstractWindow {
     @WindowParam
     protected Boolean useLookupField;
 
+    @WindowParam
+    protected String entityJoinClause;
+
+    @WindowParam
+    protected String entityWhereClause;
+
     @WindowParam(required = true)
     protected ListEditor.ItemType itemType;
 
@@ -77,6 +85,9 @@ public class ListEditorPopupWindow extends AbstractWindow {
 
     @Inject
     protected ThemeConstants theme;
+
+    @Inject
+    protected DynamicAttributesGuiTools dynamicAttributesGuiTools;
 
     protected Map<Object, String> valuesMap;
 
@@ -179,22 +190,33 @@ public class ListEditorPopupWindow extends AbstractWindow {
         Field componentForEntity;
         if (BooleanUtils.isNotTrue(useLookupField)) {
             PickerField pickerField = componentsFactory.createComponent(PickerField.class);
-            if (!Strings.isNullOrEmpty(lookupScreen)) {
-                PickerField.LookupAction lookupAction = (PickerField.LookupAction) pickerField.getAction(PickerField.LookupAction.NAME);
-                if (lookupAction != null) {
-                    lookupAction.setLookupScreen(lookupScreen);
-                }
-            }
-            pickerField.addLookupAction();
             pickerField.setMetaClass(metaClass);
+
+            if (!Strings.isNullOrEmpty(entityJoinClause) || !Strings.isNullOrEmpty(entityWhereClause)) {
+                PickerField.LookupAction lookupAction = dynamicAttributesGuiTools.createLookupAction(pickerField, entityJoinClause, entityWhereClause);
+                pickerField.addAction(lookupAction);
+            } else {
+                if (!Strings.isNullOrEmpty(lookupScreen)) {
+                    PickerField.LookupAction lookupAction = (PickerField.LookupAction) pickerField.getAction(PickerField.LookupAction.NAME);
+                    if (lookupAction != null) {
+                        lookupAction.setLookupScreen(lookupScreen);
+                    }
+                }
+                pickerField.addLookupAction();
+            }
             componentForEntity = pickerField;
         } else {
             LookupField lookupField = componentsFactory.createComponent(LookupField.class);
-            CollectionDatasource optionsDs = new DsBuilder()
-                    .setMetaClass(metaClass)
-                    .setViewName(View.MINIMAL)
-                    .buildCollectionDatasource();
-            optionsDs.refresh();
+            CollectionDatasource optionsDs;
+            if (!Strings.isNullOrEmpty(entityJoinClause) || !Strings.isNullOrEmpty(entityWhereClause)) {
+                optionsDs = dynamicAttributesGuiTools.createOptionsDatasourceForLookup(metaClass, entityJoinClause, entityWhereClause);
+            } else {
+                optionsDs = new DsBuilder()
+                        .setMetaClass(metaClass)
+                        .setViewName(View.MINIMAL)
+                        .buildCollectionDatasource();
+                optionsDs.refresh();
+            }
             lookupField.setOptionsDatasource(optionsDs);
             componentForEntity = lookupField;
         }

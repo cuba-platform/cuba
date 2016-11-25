@@ -24,7 +24,9 @@ import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.FieldGroup;
+import com.haulmont.cuba.gui.components.ListEditor;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
@@ -56,6 +58,9 @@ public class DynamicAttributeCustomFieldGenerator implements FieldGroup.CustomFi
             log.error("Dynamic attribute " + propertyId + " not found");
             return null;
         }
+
+        listEditor.setEntityJoinClause(categoryAttribute.getJoinClause());
+        listEditor.setEntityWhereClause(categoryAttribute.getWhereClause());
 
         ListEditor.ItemType itemType = listEditorItemTypeFromDynamicAttrType(categoryAttribute.getDataType());
         listEditor.setItemType(itemType);

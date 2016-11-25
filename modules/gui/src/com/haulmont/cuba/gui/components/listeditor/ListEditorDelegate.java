@@ -56,4 +56,12 @@ public interface ListEditorDelegate {
     void setOptionsList(List<Object> optionsList);
 
     void setDisplayDescription(boolean displayDescription);
+
+    String getEntityJoinClause();
+
+    void setEntityJoinClause(String entityJoinClause);
+
+    String getEntityWhereClause();
+
+    void setEntityWhereClause(String entityWhereClause);
 }

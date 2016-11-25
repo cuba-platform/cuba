@@ -31,14 +31,11 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParam;
-import com.haulmont.cuba.gui.commonlookup.CommonLookupController;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
 import com.haulmont.cuba.gui.components.validators.LongValidator;
-import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
@@ -48,7 +45,10 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import static com.haulmont.cuba.gui.components.PickerField.LookupAction;
 
@@ -252,8 +252,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                             ((LookupPickerField) pickerField).setOptionsDatasource(optionsDs);
                         } else {
                             pickerField = componentsFactory.createComponent(PickerField.class);
-                            LookupAction lookupAction = pickerField.addLookupAction();
-                            dynamicAttributesGuiTools.initEntityLookupAction(lookupAction, metaProperty);
+                            dynamicAttributesGuiTools.initEntityPickerField(pickerField, metaProperty.getAttribute());
                         }
                         pickerField.setMetaClass(ds.getMetaClass());
                         pickerField.setFrame(RuntimePropertiesFrame.this);

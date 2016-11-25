@@ -32,6 +32,8 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ScreensHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.gui.components.autocomplete.JpqlSuggestionFactory;
+import com.haulmont.cuba.gui.components.autocomplete.Suggestion;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
@@ -53,6 +55,7 @@ import java.util.*;
 public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected static final Multimap<PropertyType, String> FIELDS_VISIBLE_FOR_DATATYPES = ArrayListMultimap.create();
     protected static final Set<String> ALWAYS_VISIBLE_FIELDS = new HashSet<>(Arrays.asList("name", "code", "required", "dataType", "isCollection"));
+    protected static final String WHERE = " where ";
 
     static {
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.BOOLEAN, "defaultBoolean");
@@ -74,6 +77,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "lookup");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "defaultEntityId");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "width");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "joinClause");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "whereClause");
     }
 
     protected CategoryAttribute attribute;
@@ -129,6 +134,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected CollectionDatasource<ScreenAndComponent, UUID> screensDs;
 
     private ListEditor enumerationListEditor;
+    private SourceCodeEditor joinField;
+    private SourceCodeEditor whereField;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -257,6 +264,28 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             return enumerationListEditor;
         });
 
+        attributeFieldGroup.addCustomField("whereClause", (datasource, propertyId) -> {
+            whereField = factory.createComponent(SourceCodeEditor.class);
+            whereField.setDatasource(attributeDs, "whereClause");
+            whereField.setWidth("100%");
+            whereField.setHeight(themeConstants.get("cuba.gui.customConditionFrame.whereField.height"));
+            whereField.setSuggester((source, text, cursorPosition) -> requestHint(whereField, text, cursorPosition));
+            whereField.setHighlightActiveLine(false);
+            whereField.setShowGutter(false);
+            return whereField;
+        });
+
+        attributeFieldGroup.addCustomField("joinClause", (datasource, propertyId) -> {
+            joinField = factory.createComponent(SourceCodeEditor.class);
+            joinField.setDatasource(attributeDs, "joinClause");
+            joinField.setWidth("100%");
+            joinField.setHeight(themeConstants.get("cuba.gui.customConditionFrame.joinField.height"));
+            joinField.setSuggester((source, text, cursorPosition) -> requestHint(joinField, text, cursorPosition));
+            joinField.setHighlightActiveLine(false);
+            joinField.setShowGutter(false);
+            return joinField;
+        });
+
         attributeDs.addItemPropertyChangeListener(e -> {
             String property = e.getProperty();
             CategoryAttribute attribute = getItem();
@@ -269,9 +298,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             if ("name".equalsIgnoreCase(property)) {
                 fillAttributeCode();
             }
-            if ("screen".equalsIgnoreCase(property)) {
-                dynamicAttributesGuiTools.initEntityLookupAction(entityLookupAction,
-                        metadata.getClass(attribute.getJavaClassForEntity()), attribute.getScreen());
+            if ("screen".equalsIgnoreCase(property) || "joinClause".equals(property) || "whereClause".equals(property)) {
+                dynamicAttributesGuiTools.initEntityPickerField(defaultEntityField, attribute);
             }
         });
     }
@@ -298,7 +326,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 defaultEntityField.setMetaClass(metaClass);
                 fillDefaultEntities(entityClass);
                 fillSelectEntityScreens(entityClass);
-                dynamicAttributesGuiTools.initEntityLookupAction(entityLookupAction, metaClass, attribute.getScreen());
+
+                dynamicAttributesGuiTools.initEntityPickerField(defaultEntityField, attribute);
             } else {
                 defaultEntityField.setEditable(false);
             }
@@ -447,5 +476,38 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         }
 
         setupVisibility();
+    }
+
+    protected List<Suggestion> requestHint(SourceCodeEditor sender, String text, int senderCursorPosition) {
+        String joinStr = joinField.getValue();
+        String whereStr = whereField.getValue();
+
+        // CAUTION: the magic entity name!  The length is three character to match "{E}" length in query
+        String entityAlias = "a39";
+
+        int queryPosition = -1;
+        Class javaClassForEntity = attribute.getJavaClassForEntity();
+        if (javaClassForEntity == null) return new ArrayList<>();
+
+        MetaClass metaClass = metadata.getClassNN(javaClassForEntity);
+        String queryStart = "select " + entityAlias + " from " + metaClass.getName() + " " + entityAlias + " ";
+
+        StringBuilder queryBuilder = new StringBuilder(queryStart);
+        if (joinStr != null && !joinStr.equals("")) {
+            if (sender == joinField) {
+                queryPosition = queryBuilder.length() + senderCursorPosition - 1;
+            }
+            queryBuilder.append(joinStr);
+        }
+        if (whereStr != null && !whereStr.equals("")) {
+            if (sender == whereField) {
+                queryPosition = queryBuilder.length() + WHERE.length() + senderCursorPosition - 1;
+            }
+            queryBuilder.append(WHERE).append(whereStr);
+        }
+        String query = queryBuilder.toString();
+        query = query.replace("{E}", entityAlias);
+
+        return JpqlSuggestionFactory.requestHint(query, queryPosition, sender.getAutoCompleteSupport(), senderCursorPosition);
     }
 }

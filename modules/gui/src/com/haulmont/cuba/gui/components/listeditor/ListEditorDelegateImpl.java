@@ -57,6 +57,8 @@ public class ListEditorDelegateImpl implements ListEditorDelegate{
     protected String lookupScreen;
     protected boolean useLookupField;
     protected List<Object> optionsList;
+    protected String entityJoinClause;
+    protected String entityWhereClause;
 
     protected TextField displayValuesField;
     protected HBoxLayout layout;
@@ -88,6 +90,8 @@ public class ListEditorDelegateImpl implements ListEditorDelegate{
                 params.put("useLookupField", useLookupField);
                 params.put("optionsList", optionsList);
                 params.put("lookupScreen", lookupScreen);
+                params.put("entityJoinClause", entityJoinClause);
+                params.put("entityWhereClause", entityWhereClause);
                 params.put("values", getValue());
                 ListEditorPopupWindow listEditorPopup = (ListEditorPopupWindow) windowManager
                         .openWindow(windowConfig.getWindowInfo("list-editor-popup"), WindowManager.OpenType.DIALOG, params);
@@ -189,5 +193,25 @@ public class ListEditorDelegateImpl implements ListEditorDelegate{
     @Override
     public void setDisplayDescription(boolean displayDescription) {
         this.displayDescription = displayDescription;
+    }
+
+    @Override
+    public String getEntityJoinClause() {
+        return entityJoinClause;
+    }
+
+    @Override
+    public void setEntityJoinClause(String entityJoinClause) {
+        this.entityJoinClause = entityJoinClause;
+    }
+
+    @Override
+    public String getEntityWhereClause() {
+        return entityWhereClause;
+    }
+
+    @Override
+    public void setEntityWhereClause(String entityWhereClause) {
+        this.entityWhereClause = entityWhereClause;
     }
 }

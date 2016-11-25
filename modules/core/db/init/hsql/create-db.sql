@@ -718,6 +718,8 @@ create table SYS_CATEGORY_ATTR(
     WIDTH varchar(20),
     ROWS_COUNT integer,
     IS_COLLECTION boolean,
+    JOIN_CLAUSE varchar(4000),
+    WHERE_CLAUSE varchar(4000),
     --
     primary key (ID)
 )^

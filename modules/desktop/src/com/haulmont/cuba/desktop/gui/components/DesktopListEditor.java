@@ -121,6 +121,26 @@ public class DesktopListEditor extends DesktopAbstractField<JPanel> implements L
     }
 
     @Override
+    public String getEntityJoinClause() {
+        return delegate.getEntityJoinClause();
+    }
+
+    @Override
+    public void setEntityJoinClause(String entityJoinClause) {
+        delegate.setEntityJoinClause(entityJoinClause);
+    }
+
+    @Override
+    public String getEntityWhereClause() {
+        return delegate.getEntityWhereClause();
+    }
+
+    @Override
+    public void setEntityWhereClause(String entityWhereClause) {
+        delegate.setEntityWhereClause(entityWhereClause);
+    }
+
+    @Override
     public Datasource getDatasource() {
         return null;
     }

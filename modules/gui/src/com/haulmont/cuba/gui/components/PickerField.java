@@ -331,8 +331,11 @@ public interface PickerField extends Field, Component.ActionsHolder {
                         afterLookupCloseHandler.onClose(lookupWindow, actionId);
                     }
                 });
+                afterLookupWindowOpened(lookupWindow);
             }
         }
+
+        protected void afterLookupWindowOpened(Window lookupWindow) {}
 
         /**
          * Hook to be implemented in subclasses. Called by the action for new value selected from Lookup window.

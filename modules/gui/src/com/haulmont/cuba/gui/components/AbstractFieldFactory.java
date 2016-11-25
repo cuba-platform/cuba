@@ -31,12 +31,10 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -334,25 +332,25 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                 DynamicAttributesMetaProperty metaProperty = (DynamicAttributesMetaProperty) mpp.getMetaProperty();
                 CategoryAttribute attribute = metaProperty.getAttribute();
                 if (Boolean.TRUE.equals(attribute.getLookup())) {
-                    optionsDatasource = new DsBuilder(datasource.getDsContext())
-                            .setMetaClass(metaProperty.getRange().asClass())
-                            .setViewName(View.MINIMAL)
-                            .buildCollectionDatasource();
-                    optionsDatasource.refresh();
+                    DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
+                    optionsDatasource = dynamicAttributesGuiTools.createOptionsDatasourceForLookup(metaProperty.getRange().asClass(),
+                            attribute.getJoinClause(), attribute.getWhereClause());
                 }
             }
 
             PickerField pickerField;
             if (optionsDatasource == null) {
                 pickerField = componentsFactory.createComponent(PickerField.class);
-                PickerField.LookupAction lookupAction = pickerField.addLookupAction();
+                pickerField.setDatasource(datasource, property);
                 if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
                     DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
-                    dynamicAttributesGuiTools.initEntityLookupAction(lookupAction, (DynamicAttributesMetaProperty) mpp.getMetaProperty());
+                    DynamicAttributesMetaProperty dynamicAttributesMetaProperty = (DynamicAttributesMetaProperty) mpp.getMetaProperty();
+                    dynamicAttributesGuiTools.initEntityPickerField(pickerField, dynamicAttributesMetaProperty.getAttribute());
                 }
                 pickerField.addClearAction();
             } else {
                 LookupPickerField lookupPickerField = componentsFactory.createComponent(LookupPickerField.class);
+                lookupPickerField.setDatasource(datasource, property);
                 lookupPickerField.setOptionsDatasource(optionsDatasource);
 
                 pickerField = lookupPickerField;
@@ -367,8 +365,6 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                     pickerField.setCaptionProperty(captionProperty);
                 }
             }
-
-            pickerField.setDatasource(datasource, property);
 
             return pickerField;
         } else {
