@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
@@ -102,9 +101,6 @@ public abstract class App {
 
     @Inject
     protected ThemeConstantsRepository themeConstantsRepository;
-
-    @Inject
-    protected ClientCacheManager clientCacheManager;
 
     @Inject
     protected UserSessionService userSessionService;
