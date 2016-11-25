@@ -40,20 +40,20 @@ public final class BaseEntityInternalAccess {
         return entity.__new;
     }
 
-    public static void setNew(AbstractNotPersistentEntity entity, boolean cubaNew) {
-        entity.__new = cubaNew;
+    public static void setNew(AbstractNotPersistentEntity entity, boolean _new) {
+        entity.__new = _new;
     }
 
-    public static void setNew(BaseGenericIdEntity entity, boolean cubaNew) {
-        entity.__new = cubaNew;
+    public static void setNew(BaseGenericIdEntity entity, boolean _new) {
+        entity.__new = _new;
     }
 
     public static boolean isManaged(BaseGenericIdEntity entity) {
         return entity.__managed;
     }
 
-    public static void setManaged(BaseGenericIdEntity entity, boolean cubaManaged) {
-        entity.__managed = cubaManaged;
+    public static void setManaged(BaseGenericIdEntity entity, boolean managed) {
+        entity.__managed = managed;
     }
 
     public static boolean isDetached(BaseGenericIdEntity entity) {
@@ -127,6 +127,4 @@ public final class BaseEntityInternalAccess {
             throw new RuntimeException(String.format("Unable to set value to %s.%s", entity.getClass().getSimpleName(), attribute), e);
         }
     }
-
-
 }

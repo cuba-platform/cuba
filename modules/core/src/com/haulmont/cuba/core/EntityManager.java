@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core;
 
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
@@ -41,10 +42,16 @@ public interface EntityManager {
 
     /**
      * Merge the state of the given entity into the current persistence context.
+     * <p>If a new or patch entity (see {@code PersistenceHelper} methods) with non-null ID is passed to merge,
+     * EntityManager loads the corresponding object from the database and updates it with non-null values
+     * of attributes of the passed entity. If the object does not exist in the database, the passed entity is persisted
+     * and returned.
      *
      * @param entity    entity instance
      * @return the instance that the state was merged to
      * @throws IllegalArgumentException if instance is not an entity or is a removed entity
+     * @see com.haulmont.cuba.core.global.PersistenceHelper#isNew(Object)
+     * @see com.haulmont.cuba.core.global.PersistenceHelper#makePatch(BaseGenericIdEntity)
      */
     <T extends Entity> T merge(T entity);
 

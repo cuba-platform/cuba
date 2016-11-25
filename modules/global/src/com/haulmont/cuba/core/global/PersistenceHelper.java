@@ -158,4 +158,48 @@ public class PersistenceHelper {
         }
         return false;
     }
+
+    /**
+     * Makes a newly constructed object detached. The detached object can be passed to {@code DataManager.commit()} or
+     * to {@code EntityManager.merge()} to save its state to the database.
+     * <p>If an object with such ID does not exist in the database, a new object will be inserted.
+     * <p>If the entity is {@code Versioned}, the version attribute should be equal to the latest version existing in
+     * the database, or null for a new object.
+     *
+     * @param entity    entity in the New state
+     * @throws IllegalStateException if the entity is Managed
+     * @see #isDetached(Object)
+     * @see #makePatch(BaseGenericIdEntity)
+     */
+    public static void makeDetached(BaseGenericIdEntity entity) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+        if (BaseEntityInternalAccess.isManaged(entity))
+            throw new IllegalStateException("entity is managed");
+
+        BaseEntityInternalAccess.setNew(entity, false);
+        BaseEntityInternalAccess.setDetached(entity, true);
+    }
+
+    /**
+     * Makes a newly constructed object a patch object. The patch object is {@code !isNew() && !isDetached() && !isManaged()}.
+     * The patch object can be passed to {@code DataManager.commit()} or
+     * to {@code EntityManager.merge()} to save its state to the database. Only <b>non-null values</b> of attributes are
+     * updated.
+     * <p>If an object with such ID does not exist in the database, a new object will be inserted.
+     * <p>If the entity is {@code Versioned}, the version attribute should be null or equal to the latest version existing in
+     * the database.
+     *
+     * @param entity    entity in the New or Detached state
+     * @throws IllegalStateException if the entity is Managed
+     * @see #isDetached(Object)
+     * @see #makeDetached(BaseGenericIdEntity)
+     */
+    public static void makePatch(BaseGenericIdEntity entity) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+        if (BaseEntityInternalAccess.isManaged(entity))
+            throw new IllegalStateException("entity is managed");
+
+        BaseEntityInternalAccess.setNew(entity, false);
+        BaseEntityInternalAccess.setDetached(entity, false);
+    }
 }

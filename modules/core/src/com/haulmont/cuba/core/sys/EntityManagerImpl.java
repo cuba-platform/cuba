@@ -96,7 +96,7 @@ public class EntityManagerImpl implements EntityManager {
         String storeName = support.getStorageName(delegate.unwrap(UnitOfWork.class));
         entityListenerMgr.fireListener(entity, EntityListenerType.BEFORE_ATTACH, storeName);
 
-        if (PersistenceHelper.isNew(entity) && entity.getId() != null) {
+        if ((PersistenceHelper.isNew(entity) || !PersistenceHelper.isDetached(entity)) && entity.getId() != null) {
             // if a new instance is passed to merge(), we suppose it is persistent but "not detached"
             Entity destEntity = findOrCreate(entity.getClass(), entity.getId());
             deepCopyIgnoringNulls(entity, destEntity);

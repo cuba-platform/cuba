@@ -38,5 +38,7 @@
         <class>com.haulmont.cuba.testmodel.fetchjoin.JoinD</class>
         <class>com.haulmont.cuba.testmodel.fetchjoin.JoinE</class>
         <class>com.haulmont.cuba.testmodel.fetchjoin.JoinF</class>
+        <class>com.haulmont.cuba.testmodel.sales.Customer</class>
+        <class>com.haulmont.cuba.testmodel.sales.Order</class>
     </persistence-unit>
 </persistence>

@@ -248,5 +248,35 @@ create table TEST_JOIN_A (
     primary key (ID)
 )^
 
-
 ----------------------------------------------------------------------------------------------------------------
+
+create table TEST_CUSTOMER (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    primary key (ID)
+)^
+
+create table TEST_ORDER (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    DATE_ timestamp,
+    AMOUNT numeric(19,2),
+    CUSTOMER_ID varchar(36),
+    USER_ID varchar(36),
+    primary key (ID),
+    constraint TEST_ORDER_CUSTOMER foreign key (CUSTOMER_ID) references TEST_CUSTOMER(ID),
+    constraint TEST_ORDER_USER foreign key (USER_ID) references SEC_USER(ID)
+)^

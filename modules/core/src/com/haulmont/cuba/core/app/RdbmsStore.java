@@ -291,48 +291,44 @@ public class RdbmsStore implements DataStore {
 
             persistence.getEntityManagerContext(storeName).setDbHints(context.getDbHints());
 
-            if (context instanceof NotDetachedCommitContext) {
-                persistOrMergeNotDetached((NotDetachedCommitContext) context, em, res);
-            } else {
-                List<BaseGenericIdEntity> entitiesToStoreDynamicAttributes = new ArrayList<>();
+            List<BaseGenericIdEntity> entitiesToStoreDynamicAttributes = new ArrayList<>();
 
-                // persist new
-                for (Entity entity : context.getCommitInstances()) {
-                    if (PersistenceHelper.isNew(entity)) {
-                        checkOperationPermitted(entity, ConstraintOperationType.CREATE);
-                        attributeSecurity.beforePersist(entity);
-                        em.persist(entity);
-                        res.add(entity);
-                        persisted.add(entity);
+            // persist new
+            for (Entity entity : context.getCommitInstances()) {
+                if (PersistenceHelper.isNew(entity)) {
+                    checkOperationPermitted(entity, ConstraintOperationType.CREATE);
+                    attributeSecurity.beforePersist(entity);
+                    em.persist(entity);
+                    res.add(entity);
+                    persisted.add(entity);
 
-                        if (entityHasDynamicAttributes(entity)) {
-                            entitiesToStoreDynamicAttributes.add((BaseGenericIdEntity) entity);
-                        }
+                    if (entityHasDynamicAttributes(entity)) {
+                        entitiesToStoreDynamicAttributes.add((BaseGenericIdEntity) entity);
                     }
                 }
+            }
 
-                // merge detached
-                for (Entity entity : context.getCommitInstances()) {
-                    if (PersistenceHelper.isDetached(entity)) {
-                        security.restoreFilteredData((BaseGenericIdEntity) entity);
-                        checkOperationPermitted(entity, ConstraintOperationType.UPDATE);
-                        attributeSecurity.beforeMerge(entity);
-                        View view = getViewFromContext(context, entity);
+            // merge the rest - instances can be detached or not
+            for (Entity entity : context.getCommitInstances()) {
+                if (!PersistenceHelper.isNew(entity)) {
+                    security.restoreFilteredData((BaseGenericIdEntity) entity);
+                    checkOperationPermitted(entity, ConstraintOperationType.UPDATE);
+                    attributeSecurity.beforeMerge(entity);
+                    View view = getViewFromContext(context, entity);
 
-                        Entity merged = em.merge(entity, view);
-                        res.add(merged);
-                        if (entityHasDynamicAttributes(entity)) {
-                            BaseGenericIdEntity originalBaseGenericIdEntity = (BaseGenericIdEntity) entity;
-                            BaseGenericIdEntity mergedBaseGenericIdEntity = (BaseGenericIdEntity) merged;
-                            mergedBaseGenericIdEntity.setDynamicAttributes(originalBaseGenericIdEntity.getDynamicAttributes());
-                            entitiesToStoreDynamicAttributes.add(mergedBaseGenericIdEntity);
-                        }
+                    Entity merged = em.merge(entity, view);
+                    res.add(merged);
+                    if (entityHasDynamicAttributes(entity)) {
+                        BaseGenericIdEntity originalBaseGenericIdEntity = (BaseGenericIdEntity) entity;
+                        BaseGenericIdEntity mergedBaseGenericIdEntity = (BaseGenericIdEntity) merged;
+                        mergedBaseGenericIdEntity.setDynamicAttributes(originalBaseGenericIdEntity.getDynamicAttributes());
+                        entitiesToStoreDynamicAttributes.add(mergedBaseGenericIdEntity);
                     }
                 }
+            }
 
-                for (BaseGenericIdEntity entity : entitiesToStoreDynamicAttributes) {
-                    dynamicAttributesManagerAPI.storeDynamicAttributes(entity);
-                }
+            for (BaseGenericIdEntity entity : entitiesToStoreDynamicAttributes) {
+                dynamicAttributesManagerAPI.storeDynamicAttributes(entity);
             }
 
             // remove
@@ -466,57 +462,6 @@ public class RdbmsStore implements DataStore {
     protected boolean entityHasDynamicAttributes(Entity entity) {
         return entity instanceof BaseGenericIdEntity
                 && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null;
-    }
-
-    protected void persistOrMergeNotDetached(NotDetachedCommitContext context, EntityManager em, Set<Entity> result) {
-        List<EntityLoadInfo> newInstances = new ArrayList<>(context.getNewInstanceIds().size());
-        for (String str : context.getNewInstanceIds()) {
-            newInstances.add(entityLoadInfoBuilder.parse(str));
-        }
-
-        for (Entity entity : context.getCommitInstances()) {
-            MetaClass metaClass = metadata.getSession().getClassNN(entity.getClass());
-            for (MetaProperty property : metaClass.getProperties()) {
-                if (property.getRange().isClass()
-                        && !metadata.getTools().isEmbedded(property)
-                        && !property.getRange().getCardinality().isMany()
-                        && !property.isReadOnly()
-                        && PersistenceHelper.isLoaded(entity, property.getName())) {
-
-                    Entity refEntity = entity.getValue(property.getName());
-                    if (refEntity == null || refEntity.getId() == null)
-                        continue;
-
-                    if (entityLoadInfoBuilder.contains(newInstances, refEntity)) {
-                        // reference to a new entity
-                        Entity e = getEntityById(context.getCommitInstances(), refEntity.getId());
-                        ((AbstractInstance) entity).setValue(property.getName(), e, false);
-                    } else if (metadata.getTools().isPersistent(refEntity.getMetaClass())) {
-                        // reference to an existing entity
-                        refEntity = em.getReference(refEntity.getMetaClass().getJavaClass(), refEntity.getId());
-                        ((AbstractInstance) entity).setValue(property.getName(), refEntity, false);
-                    }
-                }
-            }
-
-            if (entity instanceof BaseGenericIdEntity) {
-                dynamicAttributesManagerAPI.storeDynamicAttributes((BaseGenericIdEntity) entity);
-            }
-
-            if (entityLoadInfoBuilder.contains(newInstances, entity)) {
-                checkOperationPermitted(entity, ConstraintOperationType.CREATE);
-                attributeSecurity.beforePersist(entity);
-                em.persist(entity);
-                result.add(entity);
-            } else {
-                security.restoreFilteredData((BaseGenericIdEntity) entity);
-                checkOperationPermitted(entity, ConstraintOperationType.UPDATE);
-                attributeSecurity.beforeMerge(entity);
-                View view = context.getViews().get(entity);
-                Entity e = em.merge(entity, view);
-                result.add(e);
-            }
-        }
     }
 
     protected Query createQuery(EntityManager em, LoadContext context) {
@@ -674,29 +619,14 @@ public class RdbmsStore implements DataStore {
         Set<MetaClass> checkedUpdateRights = new HashSet<>();
         Set<MetaClass> checkedDeleteRights = new HashSet<>();
 
-        if (context instanceof NotDetachedCommitContext) {
-            Set newInstanceIdSet = new HashSet<>(((NotDetachedCommitContext) context).getNewInstanceIds());
-            for (Entity entity : context.getCommitInstances()) {
-                if (entity == null)
-                    continue;
+        for (Entity entity : context.getCommitInstances()) {
+            if (entity == null)
+                continue;
 
-                MetaClass metaClass = entity.getMetaClass();
-                if (newInstanceIdSet.contains(metaClass.getName() + "-" + entity.getId())) {
-                    checkPermission(checkedCreateRights, metaClass, EntityOp.CREATE);
-                } else {
-                    checkPermission(checkedUpdateRights, metaClass, EntityOp.UPDATE);
-                }
-            }
-        } else {
-            for (Entity entity : context.getCommitInstances()) {
-                if (entity == null)
-                    continue;
-
-                if (PersistenceHelper.isNew(entity)) {
-                    checkPermission(checkedCreateRights, entity.getMetaClass(), EntityOp.CREATE);
-                } else {
-                    checkPermission(checkedUpdateRights, entity.getMetaClass(), EntityOp.UPDATE);
-                }
+            if (PersistenceHelper.isNew(entity)) {
+                checkPermission(checkedCreateRights, entity.getMetaClass(), EntityOp.CREATE);
+            } else {
+                checkPermission(checkedUpdateRights, entity.getMetaClass(), EntityOp.UPDATE);
             }
         }
 
@@ -780,18 +710,6 @@ public class RdbmsStore implements DataStore {
                 }
             }
         }
-    }
-
-    @Nullable
-    protected Entity getEntityById(Collection<Entity> entities, Object id) {
-        if (id == null)
-            return null;
-
-        for (Entity entity : entities)
-            if (id.equals(entity.getId()))
-                return entity;
-
-        return null;
     }
 
     protected boolean needToApplyInMemoryReadConstraints(LoadContext context) {

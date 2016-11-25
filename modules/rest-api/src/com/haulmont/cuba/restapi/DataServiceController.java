@@ -18,9 +18,12 @@
 package com.haulmont.cuba.restapi;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.DomainDescriptionService;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.global.*;
@@ -36,6 +39,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.activation.MimeType;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -77,6 +81,9 @@ public class DataServiceController {
 
     @Inject
     protected ClientCacheManager clientCacheManager;
+
+    @Inject
+    protected EntityLoadInfoBuilder entityLoadInfoBuilder;
 
     @RequestMapping(value = "/api/find.{type}", method = RequestMethod.GET)
     public void find(@PathVariable String type,
@@ -281,6 +288,14 @@ public class DataServiceController {
 
             assignUuidToNewInstances(commitInstances, newInstanceIds);
 
+            for (Object commitInstance : commitInstances) {
+                if (commitInstance instanceof BaseGenericIdEntity
+                        && !isNewInstance(newInstanceIds, commitInstance)
+                        && !PersistenceHelper.isDetached(commitInstance)) {
+                    PersistenceHelper.makePatch((BaseGenericIdEntity) commitInstance);
+                }
+            }
+
             //send error if the user don't have permissions to commit at least one of the entities
             if (!commitPermitted(commitInstances, newInstanceIds)) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -294,11 +309,45 @@ public class DataServiceController {
                 return;
             }
 
-            NotDetachedCommitContext commitContext = new NotDetachedCommitContext();
+            CommitContext commitContext = new CommitContext();
             commitContext.setCommitInstances(commitInstances);
             commitContext.setRemoveInstances(removeInstances);
             commitContext.setSoftDeletion(commitRequest.isSoftDeletion());
-            commitContext.setNewInstanceIds(newInstanceIds);
+
+            List<EntityLoadInfo> newInstances = new ArrayList<>(newInstanceIds.size());
+            for (String str : newInstanceIds) {
+                newInstances.add(entityLoadInfoBuilder.parse(str));
+            }
+
+            for (Entity entity : commitContext.getCommitInstances()) {
+                MetaClass metaClass = metadata.getSession().getClassNN(entity.getClass());
+                for (MetaProperty property : metaClass.getProperties()) {
+                    if (property.getRange().isClass()
+                            && !metadata.getTools().isEmbedded(property)
+                            && !property.getRange().getCardinality().isMany()
+                            && !property.isReadOnly()
+                            && PersistenceHelper.isLoaded(entity, property.getName())) {
+
+                        Entity refEntity = entity.getValue(property.getName());
+                        if (refEntity == null || refEntity.getId() == null)
+                            continue;
+
+                        if (entityLoadInfoBuilder.contains(newInstances, refEntity)) {
+                            // reference to a new entity
+                            Entity e = getEntityById(commitContext.getCommitInstances(), refEntity.getId());
+                            ((AbstractInstance) entity).setValue(property.getName(), e, false);
+                        } else if (BaseGenericIdEntity.class.isAssignableFrom(refEntity.getMetaClass().getJavaClass())) {
+                            // reference to an existing entity
+                            Object refEntityId = refEntity.getId();
+                            refEntity = metadata.create(refEntity.getMetaClass());
+                            ((BaseGenericIdEntity) refEntity).setId(refEntityId);
+                            PersistenceHelper.makeDetached((BaseGenericIdEntity) refEntity);
+                            ((AbstractInstance) entity).setValue(property.getName(), refEntity, false);
+                        }
+                    }
+                }
+            }
+
             Set<Entity> result = dataService.commit(commitContext);
 
             String converted = converter.process(result);
@@ -310,6 +359,31 @@ public class DataServiceController {
         } finally {
             authentication.end();
         }
+    }
+
+    @Nullable
+    protected Entity getEntityById(Collection<Entity> entities, Object id) {
+        if (id == null)
+            return null;
+
+        for (Entity entity : entities)
+            if (id.equals(entity.getId()))
+                return entity;
+
+        return null;
+    }
+
+    private boolean isNewInstance(Set<String> newInstanceIds, Object instance) {
+        for (Object id : newInstanceIds) {
+            Entity entity = (Entity) instance;
+            if (entity instanceof HasUuid) {
+                String entityFullId = EntityLoadInfo.create(entity).toString();
+                if (entityFullId.equals(id)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void assignUuidToNewInstances(Collection commitInstances, Collection newInstanceIds) {

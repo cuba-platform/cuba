@@ -292,9 +292,7 @@ configure(coreModule) {
     	testRuntime(bom['org.postgresql:postgresql'])
     }
 
-    task enhanceTestModel(type: CubaTestEnhancing) {
-        persistenceConfig = 'cuba-test-persistence.xml'
-    }
+    task enhanceTestModel(type: CubaTestEnhancing)
 
     test {
         scanForTestClasses = false
