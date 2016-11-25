@@ -34,6 +34,14 @@ import java.util.List;
 public interface FilterDelegate {
     String NAME = "cuba_FilterDelegate";
 
+    Filter.BeforeFilterAppliedHandler getBeforeFilterAppliedHandler();
+
+    void setBeforeFilterAppliedHandler(Filter.BeforeFilterAppliedHandler beforeFilterAppliedHandler);
+
+    Filter.AfterFilterAppliedHandler getAfterFilterAppliedHandler();
+
+    void setAfterFilterAppliedHandler(Filter.AfterFilterAppliedHandler afterFilterAppliedHandler);
+
     enum FilterMode {
         GENERIC_MODE,
         FTS_MODE

@@ -329,4 +329,24 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     public void setIcon(String icon) {
         delegate.setIcon(icon);
     }
+
+    @Override
+    public BeforeFilterAppliedHandler getBeforeFilterAppliedHandler() {
+        return delegate.getBeforeFilterAppliedHandler();
+    }
+
+    @Override
+    public void setBeforeFilterAppliedHandler(BeforeFilterAppliedHandler beforeFilterAppliedHandler) {
+        delegate.setBeforeFilterAppliedHandler(beforeFilterAppliedHandler);
+    }
+
+    @Override
+    public AfterFilterAppliedHandler getAfterFilterAppliedHandler() {
+        return delegate.getAfterFilterAppliedHandler();
+    }
+
+    @Override
+    public void setAfterFilterAppliedHandler(AfterFilterAppliedHandler afterFilterAppliedHandler) {
+        delegate.setAfterFilterAppliedHandler(afterFilterAppliedHandler);
+    }
 }

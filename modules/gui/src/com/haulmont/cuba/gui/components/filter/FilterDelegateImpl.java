@@ -188,6 +188,10 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected List<FDExpandedStateChangeListener> expandedStateChangeListeners;
 
+    protected Filter.BeforeFilterAppliedHandler beforeFilterAppliedHandler;
+
+    protected Filter.AfterFilterAppliedHandler afterFilterAppliedHandler;
+
     protected enum ConditionsFocusType {
         NONE,
         FIRST,
@@ -1364,6 +1368,9 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     @Override
     public boolean apply(boolean isNewWindow) {
+        if (beforeFilterAppliedHandler != null) {
+            if (!beforeFilterAppliedHandler.beforeFilterApplied()) return false;
+        }
         if (clientConfig.getGenericFilterChecking()) {
             if (filterEntity != null && conditions.getRoots().size() > 0) {
                 boolean haveCorrectCondition = hasCorrectCondition();
@@ -1403,6 +1410,9 @@ public class FilterDelegateImpl implements FilterDelegate {
             filterHelper.removeTableFtsTooltips((Table) applyTo);
         }
 
+        if (afterFilterAppliedHandler != null) {
+            afterFilterAppliedHandler.afterFilterApplied();
+        }
         return true;
     }
 
@@ -1983,6 +1993,26 @@ public class FilterDelegateImpl implements FilterDelegate {
                 }
             }
         }
+    }
+
+    @Override
+    public Filter.BeforeFilterAppliedHandler getBeforeFilterAppliedHandler() {
+        return beforeFilterAppliedHandler;
+    }
+
+    @Override
+    public void setBeforeFilterAppliedHandler(Filter.BeforeFilterAppliedHandler beforeFilterAppliedHandler) {
+        this.beforeFilterAppliedHandler = beforeFilterAppliedHandler;
+    }
+
+    @Override
+    public Filter.AfterFilterAppliedHandler getAfterFilterAppliedHandler() {
+        return afterFilterAppliedHandler;
+    }
+
+    @Override
+    public void setAfterFilterAppliedHandler(Filter.AfterFilterAppliedHandler afterFilterAppliedHandler) {
+        this.afterFilterAppliedHandler = afterFilterAppliedHandler;
     }
 
     protected class FiltersLookupChangeListener implements Component.ValueChangeListener {

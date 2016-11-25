@@ -351,4 +351,24 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             }
         }
     }
+
+    @Override
+    public BeforeFilterAppliedHandler getBeforeFilterAppliedHandler() {
+        return delegate.getBeforeFilterAppliedHandler();
+    }
+
+    @Override
+    public void setBeforeFilterAppliedHandler(BeforeFilterAppliedHandler beforeFilterAppliedHandler) {
+        delegate.setBeforeFilterAppliedHandler(beforeFilterAppliedHandler);
+    }
+
+    @Override
+    public AfterFilterAppliedHandler getAfterFilterAppliedHandler() {
+        return delegate.getAfterFilterAppliedHandler();
+    }
+
+    @Override
+    public void setAfterFilterAppliedHandler(AfterFilterAppliedHandler afterFilterAppliedHandler) {
+        delegate.setAfterFilterAppliedHandler(afterFilterAppliedHandler);
+    }
 }

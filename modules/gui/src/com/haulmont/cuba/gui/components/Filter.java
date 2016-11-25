@@ -42,6 +42,22 @@ public interface Filter extends Component.Margin, Component.BelongToFrame, Compo
         void filterEntityChanged(FilterEntity filterEntity);
     }
 
+    interface BeforeFilterAppliedHandler {
+        boolean beforeFilterApplied();
+    }
+
+    interface AfterFilterAppliedHandler {
+        void afterFilterApplied();
+    }
+
+    BeforeFilterAppliedHandler getBeforeFilterAppliedHandler();
+
+    void setBeforeFilterAppliedHandler(BeforeFilterAppliedHandler beforeFilterAppliedHandler);
+
+    AfterFilterAppliedHandler getAfterFilterAppliedHandler();
+
+    void setAfterFilterAppliedHandler(AfterFilterAppliedHandler afterFilterAppliedHandler);
+
     CollectionDatasource getDatasource();
     void setDatasource(CollectionDatasource datasource);
 
