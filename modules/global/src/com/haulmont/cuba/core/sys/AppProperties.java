@@ -165,6 +165,7 @@ public class AppProperties {
             return getSystemOrAppProperty(pair.getFirst());
     }
 
+    @Nullable
     private String getSystemOrAppProperty(String key) {
         String systemValue = System.getProperty(key);
 
@@ -173,40 +174,21 @@ public class AppProperties {
             value = properties.get(key);
         }
 
-        if (!configPropertyNames.contains(key)) {
-            return value;
-        }
+        if (configPropertyNames.contains(key) || (StringUtils.isNotEmpty(value) && value.startsWith("+"))) {
+            List<String> values = null;
 
-        List<String> values = null;
-
-        if (StringUtils.isNotEmpty(value)) {
-            if (value.startsWith("\\+")) {
-                return value.substring(1);
-            }
-
-            if (!value.startsWith("+")) {
-                return value;
-            }
-
-            String cleanValue = value.substring(1);
-            int index = 0;
-            for (String valuePart : split(cleanValue)) {
-                if (values == null) {
-                    values = new LinkedList<>();
+            if (StringUtils.isNotEmpty(value)) {
+                if (value.startsWith("\\+")) {
+                    return value.substring(1);
                 }
 
-                if (!values.contains(valuePart)) {
-                    values.add(index, valuePart);
-                    index++;
+                if (!value.startsWith("+")) {
+                    return value;
                 }
-            }
-        }
 
-        for (AppComponent component : Lists.reverse(appComponents.getComponents())) {
-            String compValue = component.getProperty(key);
-            if (StringUtils.isNotEmpty(compValue)) {
+                String cleanValue = value.substring(1);
                 int index = 0;
-                for (String valuePart : split(compValue)) {
+                for (String valuePart : split(cleanValue)) {
                     if (values == null) {
                         values = new LinkedList<>();
                     }
@@ -216,23 +198,42 @@ public class AppProperties {
                         index++;
                     }
                 }
+            }
 
-                if (!component.isAdditiveProperty(key)) {
-                    // we found overwrite, stop iteration
-                    break;
+            for (AppComponent component : Lists.reverse(appComponents.getComponents())) {
+                String compValue = component.getProperty(key);
+                if (StringUtils.isNotEmpty(compValue)) {
+                    int index = 0;
+                    for (String valuePart : split(compValue)) {
+                        if (values == null) {
+                            values = new LinkedList<>();
+                        }
+
+                        if (!values.contains(valuePart)) {
+                            values.add(index, valuePart);
+                            index++;
+                        }
+                    }
+
+                    if (!component.isAdditiveProperty(key)) {
+                        // we found overwrite, stop iteration
+                        break;
+                    }
                 }
             }
+
+            if (values == null) {
+                return null;
+            }
+
+            String joinedValue = Joiner.on(" ").join(values);
+
+            log.trace("Additive property {} is set to {}", key, joinedValue);
+
+            return joinedValue;
+        } else {
+            return value;
         }
-
-        if (values == null) {
-            return null;
-        }
-
-        String joinedValue = Joiner.on(" ").join(values);
-
-        log.trace("Composite property {} is set to {}", key, joinedValue);
-
-        return joinedValue;
     }
 
     private Iterable<String> split(String compValue) {
