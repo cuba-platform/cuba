@@ -259,18 +259,22 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
 
                 assignTypicalAttributes(fieldComponent);
 
+                if (fieldComponent instanceof HasCaption) {
+                    HasCaption hasCaptionComponent = (HasCaption) fieldComponent;
+
+                    if (StringUtils.isEmpty(hasCaptionComponent.getCaption())) {
+                        hasCaptionComponent.setCaption(getDefaultCaption(fieldConfig, fieldDatasource));
+                    }
+
+                    if (fieldConfig.getDescription() != null && StringUtils.isEmpty(hasCaptionComponent.getDescription())) {
+                        // custom field hasn't manually set description
+                        hasCaptionComponent.setDescription(fieldConfig.getDescription());
+                    }
+                }
+
                 if (fieldComponent instanceof Field) {
                     Field cubaField = (Field) fieldComponent;
 
-                    if (StringUtils.isEmpty(cubaField.getCaption())) {
-                        // if custom field hasn't manually set caption
-                        cubaField.setCaption(getDefaultCaption(fieldConfig, fieldDatasource));
-                    }
-
-                    if (fieldConfig.getDescription() != null && StringUtils.isEmpty(cubaField.getDescription())) {
-                        // custom field hasn't manually set description
-                        cubaField.setDescription(fieldConfig.getDescription());
-                    }
                     if (fieldConfig.isRequired()) {
                         cubaField.setRequired(fieldConfig.isRequired());
                     }
@@ -280,9 +284,15 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
                     if (!fieldConfig.isEditable() || !isEditable()) {
                         cubaField.setEditable(false);
                     }
-                } else if (!(fieldComponent instanceof HasCaption)) {
-                    // if component does not support caption
-                    fieldImpl.setCaption(getDefaultCaption(fieldConfig, fieldDatasource));
+                } else {
+                    if (fieldComponent instanceof HasCaption) {
+                        HasCaption hasCaptionComponent = (HasCaption) fieldComponent;
+                        if (StringUtils.isNotEmpty(hasCaptionComponent.getCaption())) {
+                            fieldImpl.setCaption(hasCaptionComponent.getCaption());
+                        }
+                    } else {
+                        fieldImpl.setCaption(getDefaultCaption(fieldConfig, fieldDatasource));
+                    }
 
                     if (fieldConfig.getDescription() != null && fieldImpl instanceof AbstractComponent) {
                         ((AbstractComponent) fieldImpl).setDescription(fieldConfig.getDescription());
