@@ -16,5 +16,16 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.vaadin.shared.ui.orderedlayout.HorizontalLayoutState;
+
 public class CubaHorizontalActionsLayout extends CubaOrderedActionsLayout {
+    @Override
+    protected HorizontalLayoutState getState() {
+        return (HorizontalLayoutState) super.getState();
+    }
+
+    @Override
+    protected HorizontalLayoutState getState(boolean markAsDirty) {
+        return (HorizontalLayoutState) super.getState(markAsDirty);
+    }
 }

@@ -20,6 +20,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.horizontalactionslayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.client.orderedactionslayout.CubaOrderedActionsLayoutConnector;
 import com.vaadin.shared.ui.Connect;
+import com.vaadin.shared.ui.orderedlayout.HorizontalLayoutState;
 
 @Connect(value = CubaHorizontalActionsLayout.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaHorizontalActionsLayoutConnector extends CubaOrderedActionsLayoutConnector {
@@ -27,5 +28,10 @@ public class CubaHorizontalActionsLayoutConnector extends CubaOrderedActionsLayo
     @Override
     public CubaHorizontalActionsLayoutWidget getWidget() {
         return (CubaHorizontalActionsLayoutWidget)  super.getWidget();
+    }
+
+    @Override
+    public HorizontalLayoutState getState() {
+        return (HorizontalLayoutState) super.getState();
     }
 }
