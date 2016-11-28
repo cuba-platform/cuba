@@ -19,7 +19,9 @@ package com.haulmont.cuba.core.global;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -155,5 +157,10 @@ public class QueryParserRegex implements QueryParser {
     @Override
     public boolean isParameterInCondition(String parameterName) {
         return false;
+    }
+
+    @Override
+    public List<QueryPath> getQueryPaths() {
+        return Collections.emptyList();
     }
 }

@@ -17,7 +17,10 @@
 package com.haulmont.cuba.core.global;
 
 
+import com.haulmont.chile.core.model.MetaClass;
+
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -26,6 +29,30 @@ import java.util.Set;
  */
 public interface QueryParser {
     String NAME = "cuba_QueryParser";
+
+    class QueryPath {
+        protected String entityName;
+        protected String pathString;
+        protected boolean selectedPath;
+
+        public QueryPath(String entityName, String pathString, boolean selectedPath) {
+            this.entityName = entityName;
+            this.pathString = pathString;
+            this.selectedPath = selectedPath;
+        }
+
+        public String getEntityName() {
+            return entityName;
+        }
+
+        public String getPathString() {
+            return pathString;
+        }
+
+        public boolean isSelectedPath() {
+            return selectedPath;
+        }
+    }
 
     /** Get all parameter names */
     Set<String> getParamNames();
@@ -69,4 +96,6 @@ public interface QueryParser {
     boolean isCollectionSecondaryEntitySelect();
 
     boolean isParameterInCondition(String parameterName);
+
+    List<QueryPath> getQueryPaths();
 }

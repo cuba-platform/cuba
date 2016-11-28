@@ -162,6 +162,15 @@ public interface ServerConfig extends Config {
     boolean getEntityAttributePermissionChecking();
 
     /**
+     * If set to false, attribute permissions are not enforced on Middleware. This is appropriate if only server-side
+     * clients are used.
+     */
+    @Property("cuba.constraintErrorOnLoadValues")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(false)
+    boolean getConstraintErrorOnLoadValues();
+
+    /**
      * <= 16 symbols string, used as key for AES encryption of security token
      */
     @Property("cuba.keyForSecurityTokenEncryption")

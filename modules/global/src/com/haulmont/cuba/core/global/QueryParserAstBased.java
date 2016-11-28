@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static java.lang.String.format;
+
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Component(QueryParser.NAME)
 @PerformanceLog
@@ -78,7 +80,7 @@ public class QueryParserAstBased implements QueryParser {
             }
             List<ErrorRec> errors = new ArrayList<>(queryTreeAnalyzer.getInvalidIdVarNodes());
             if (!errors.isEmpty()) {
-                throw new JpqlSyntaxException(String.format("Errors found for input jpql:[%s]", StringUtils.strip(query)), errors);
+                throw new JpqlSyntaxException(format("Errors found for input jpql:[%s]", StringUtils.strip(query)), errors);
             }
         }
         return queryTreeAnalyzer;
@@ -106,7 +108,7 @@ public class QueryParserAstBased implements QueryParser {
         if (mainEntityIdentification != null) {
             return mainEntityIdentification.getEntityNameFromQuery();
         }
-        throw new RuntimeException("Unable to find entity name [" + query + "]");
+        throw new RuntimeException(format("Unable to find entity name [%s]", StringUtils.strip(query)));
     }
 
     @Override
@@ -120,7 +122,7 @@ public class QueryParserAstBased implements QueryParser {
         if (mainEntityIdentification != null) {
             return mainEntityIdentification.getVariableName();
         }
-        throw new RuntimeException("Unable to find entity alias [" + query + "]");
+        throw new RuntimeException(format("Unable to find entity alias [%s]", StringUtils.strip(query)));
     }
 
     @Override
@@ -185,6 +187,26 @@ public class QueryParserAstBased implements QueryParser {
         return entityNameAndAlias != null && entityNameAndAlias.collectionSelect;
     }
 
+    @Override
+    public List<QueryPath> getQueryPaths() {
+        List<QueryPath> queryPaths = new ArrayList<>();
+        QueryVariableContext context = getQueryAnalyzer().getRootQueryVariableContext();
+        TreeVisitor visitor = new TreeVisitor();
+        PathNodeFinder finder = new PathNodeFinder();
+        visitor.visit(getQueryAnalyzer().getTree(), finder);
+        for (PathNode node : finder.getSelectedPathNodes()) {
+            JpqlEntityModel model = context.getEntityByVariableName(node.getEntityVariableName());
+            QueryPath queryPath = new QueryPath(model.getName(), node.asPathString(), true);
+            queryPaths.add(queryPath);
+        }
+        for (PathNode node : finder.getOtherPathNodes()) {
+            JpqlEntityModel model = context.getEntityByVariableName(node.getEntityVariableName());
+            QueryPath queryPath = new QueryPath(model.getName(), node.asPathString(), false);
+            queryPaths.add(queryPath);
+        }
+        return queryPaths;
+    }
+
     protected EntityNameAndPath getEntityNameAndPathIfSecondaryReturnedInsteadOfMain() {
         List<PathNode> returnedPathNodes = getQueryAnalyzer().getReturnedPathNodes();
         if (CollectionUtils.isEmpty(returnedPathNodes) || returnedPathNodes.size() > 1) {
@@ -231,7 +253,7 @@ public class QueryParserAstBased implements QueryParser {
                 }
             }
         } catch (UnknownEntityNameException e) {
-            throw new RuntimeException(String.format("Unable to find entity by name %s", e.getEntityName()), e);
+            throw new RuntimeException(format("Unable to find entity by name %s", e.getEntityName()), e);
         }
 
         return entity != null && entity.getName() != null ? new EntityNameAndPath(entity.getName(), entityPath, collectionSelect) : null;
