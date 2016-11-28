@@ -94,6 +94,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     private static final String CUSTOM_STYLE_NAME_PREFIX = "cs ";
 
+    // Style names used by table itself
+    protected List<String> internalStyles = new ArrayList<>();
+
     protected Map<Object, Column> columns = new HashMap<>();
     protected List<Table.Column> columnsOrder = new ArrayList<>();
 
@@ -498,8 +501,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             if (!topPanelVisible) {
                 componentComposition.removeStyleName(HAS_TOP_PANEL_STYLENAME);
+
+                internalStyles.remove(HAS_TOP_PANEL_STYLENAME);
             } else {
                 componentComposition.addStyleName(HAS_TOP_PANEL_STYLENAME);
+
+                if (!internalStyles.contains(HAS_TOP_PANEL_STYLENAME)) {
+                    internalStyles.add(HAS_TOP_PANEL_STYLENAME);
+                }
             }
         }
     }
@@ -661,9 +670,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         setEditable(false);
 
         componentComposition = new CssLayout();
-        componentComposition.setStyleName("c-table-composition");
+        componentComposition.addStyleName("c-table-composition");
         componentComposition.addComponent(component);
         componentComposition.setWidthUndefined();
+
+        // default added style
+        internalStyles.add("c-table-composition");
 
         // todo artamonov adjust component size relative to composition size
 
@@ -1169,6 +1181,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
 
         tableValidators.add(validator);
+    }
+
+    @Override
+    public void setStyleName(String name) {
+        super.setStyleName(name);
+
+        for (String internalStyle : internalStyles) {
+            componentComposition.addStyleName(internalStyle);
+        }
     }
 
     public void validate() throws ValidationException {
