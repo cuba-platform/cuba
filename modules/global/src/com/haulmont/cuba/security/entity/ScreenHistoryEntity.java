@@ -32,7 +32,6 @@ import java.util.UUID;
 
 /**
  * Screen history item.
- *
  */
 @Entity(name = "sec$ScreenHistory")
 @Table(name = "SEC_SCREEN_HISTORY")
@@ -41,17 +40,10 @@ public class ScreenHistoryEntity extends BaseUuidEntity implements Creatable {
 
     private static final long serialVersionUID = 1L;
 
-    @PostConstruct
-    protected void init() {
-        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
-        setUser(userSession.getUser());
-        setSubstitutedUser(userSession.getSubstitutedUser());
-    }
-
     @Column(name = "CREATE_TS")
     protected Date createTs;
 
-    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    @Column(name = "CREATED_BY", length = 50)
     protected String createdBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -135,5 +127,12 @@ public class ScreenHistoryEntity extends BaseUuidEntity implements Creatable {
     public String getDisplayUser() {
         UserFormatTools formatTools = AppBeans.get(UserFormatTools.NAME);
         return formatTools.formatUser(user, substitutedUser);
+    }
+
+    @PostConstruct
+    protected void init() {
+        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+        setUser(userSession.getUser());
+        setSubstitutedUser(userSession.getSubstitutedUser());
     }
 }

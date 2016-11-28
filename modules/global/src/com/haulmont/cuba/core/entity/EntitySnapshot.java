@@ -34,7 +34,6 @@ import java.util.UUID;
 
 /**
  * Snapshot for entity.
- *
  */
 @Entity(name = "sys$EntitySnapshot")
 @Table(name = "SYS_ENTITY_SNAPSHOT")
@@ -46,7 +45,7 @@ public class EntitySnapshot extends BaseUuidEntity implements Creatable {
     @Column(name = "CREATE_TS")
     protected Date createTs;
 
-    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    @Column(name = "CREATED_BY", length = 50)
     protected String createdBy;
 
     @Column(name = "VIEW_XML")

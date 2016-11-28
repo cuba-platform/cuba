@@ -37,7 +37,7 @@ public class Presentation extends BaseUuidEntity implements Creatable, Updatable
     @Column(name = "CREATE_TS")
     protected Date createTs;
 
-    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    @Column(name = "CREATED_BY", length = 50)
     protected String createdBy;
 
     @Column(name = "COMPONENT")
@@ -59,7 +59,7 @@ public class Presentation extends BaseUuidEntity implements Creatable, Updatable
     @Column(name = "UPDATE_TS")
     protected Date updateTs;
 
-    @Column(name = "UPDATED_BY", length = LOGIN_FIELD_LEN)
+    @Column(name = "UPDATED_BY", length = 50)
     protected String updatedBy;
 
     @Transient

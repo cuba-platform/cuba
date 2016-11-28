@@ -37,7 +37,7 @@ public class JmxInstance extends StandardEntity {
     @Column(name = "ADDRESS", length = 500, nullable = false)
     protected String address;
 
-    @Column(name = "LOGIN", length = LOGIN_FIELD_LEN, nullable = false)
+    @Column(name = "LOGIN", length = 50, nullable = false)
     protected String login;
 
     @Column(name = "PASSWORD", length = 255)

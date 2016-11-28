@@ -34,7 +34,7 @@ public class FtsQueue extends BaseUuidEntity implements Creatable {
     @Column(name = "CREATE_TS")
     protected Date createTs;
 
-    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    @Column(name = "CREATED_BY", length = 50)
     protected String createdBy;
 
     @Column(name = "ENTITY_ID")

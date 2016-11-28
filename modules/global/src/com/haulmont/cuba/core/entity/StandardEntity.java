@@ -36,19 +36,19 @@ public class StandardEntity extends BaseUuidEntity implements Versioned, Creatab
     @Column(name = "CREATE_TS")
     protected Date createTs;
 
-    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    @Column(name = "CREATED_BY", length = 50)
     protected String createdBy;
 
     @Column(name = "UPDATE_TS")
     protected Date updateTs;
 
-    @Column(name = "UPDATED_BY", length = LOGIN_FIELD_LEN)
+    @Column(name = "UPDATED_BY", length = 50)
     protected String updatedBy;
 
     @Column(name = "DELETE_TS")
     protected Date deleteTs;
 
-    @Column(name = "DELETED_BY", length = LOGIN_FIELD_LEN)
+    @Column(name = "DELETED_BY", length = 50)
     protected String deletedBy;
 
     @Override
