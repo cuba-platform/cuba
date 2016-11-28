@@ -18,6 +18,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.MaskedField;
+import com.haulmont.cuba.gui.components.MaskedField.ValueMode;
 import org.apache.commons.lang.StringUtils;
 
 public class MaskedFieldLoader extends AbstractTextFieldLoader<MaskedField> {
@@ -32,10 +33,12 @@ public class MaskedFieldLoader extends AbstractTextFieldLoader<MaskedField> {
         super.loadComponent();
 
         String mask = element.attributeValue("mask");
-        if (!StringUtils.isEmpty(mask)) {
+        if (StringUtils.isNotEmpty(mask)) {
             resultComponent.setMask(loadResourceString(mask));
         }
-        String valueModeStr = element.attributeValue("valueMode", MaskedField.ValueMode.CLEAR.getId());
-        resultComponent.setValueMode(MaskedField.ValueMode.fromId(valueModeStr));
+        String valueModeStr = element.attributeValue("valueMode");
+        if (StringUtils.isNotEmpty(valueModeStr)) {
+            resultComponent.setValueMode(ValueMode.valueOf(valueModeStr.toUpperCase()));
+        }
     }
 }

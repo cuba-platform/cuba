@@ -200,8 +200,10 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         if (xmlDescriptor != null) {
             maskedField.setMask(xmlDescriptor.attributeValue("mask"));
 
-            String valueModeStr = xmlDescriptor.attributeValue("valueMode", MaskedField.ValueMode.CLEAR.getId());
-            maskedField.setValueMode(MaskedField.ValueMode.fromId(valueModeStr));
+            String valueModeStr = xmlDescriptor.attributeValue("valueMode");
+            if (StringUtils.isNotEmpty(valueModeStr)) {
+                maskedField.setValueMode(MaskedField.ValueMode.valueOf(valueModeStr.toUpperCase()));
+            }
         }
         return maskedField;
     }
@@ -436,7 +438,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                         throw new RuntimeException(e1);
                     }
                 } catch (NoSuchMethodException e1) {
-                    throw new IllegalStateException("No suitable methods named " + invokeMethodName + " for invoke");
+                    throw new IllegalStateException(String.format("No suitable methods named %s for invoke", invokeMethodName));
                 }
             }
         }

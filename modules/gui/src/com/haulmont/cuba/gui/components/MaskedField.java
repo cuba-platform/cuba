@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.chile.core.datatypes.impl.EnumClass;
-
 /**
  * Masked field component generic interface.
  * FieldConfig supports following format symbols:
@@ -32,34 +30,8 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
  * <li>~ - + or -</li>
  * </ul>
  * Any other symbols in format will be treated as mask literals.
- *
  */
 public interface MaskedField extends TextField {
-
-    enum ValueMode implements EnumClass<String> {
-        MASKED("masked"),
-        CLEAR("clear");
-
-        private String id;
-
-        ValueMode(String id) {
-            this.id = id;
-        }
-
-        @Override
-        public String getId() {
-            return id;
-        }
-
-        public static ValueMode fromId(String id) {
-            for (ValueMode mode : ValueMode.values()) {
-                if (mode.getId().equals(id)) {
-                    return mode;
-                }
-            }
-            return null;
-        }
-    }
 
     String NAME = "maskedField";
 
@@ -73,12 +45,16 @@ public interface MaskedField extends TextField {
      * CLEAR - value contain only user input.
      * </p>
      *
-     * @param mode
+     * @param mode value mode
      */
     void setValueMode(ValueMode mode);
-
     ValueMode getValueMode();
 
     boolean isSendNullRepresentation();
     void setSendNullRepresentation(boolean sendNullRepresentation);
+
+    enum ValueMode {
+        MASKED,
+        CLEAR
+    }
 }
