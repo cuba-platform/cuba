@@ -17,57 +17,38 @@
 package com.haulmont.cuba.core.global;
 
 
-import com.haulmont.chile.core.model.MetaClass;
-
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
 /**
  * Parses JPQL query and returns some information about it.
- *
  */
 public interface QueryParser {
     String NAME = "cuba_QueryParser";
 
-    class QueryPath {
-        protected String entityName;
-        protected String pathString;
-        protected boolean selectedPath;
-
-        public QueryPath(String entityName, String pathString, boolean selectedPath) {
-            this.entityName = entityName;
-            this.pathString = pathString;
-            this.selectedPath = selectedPath;
-        }
-
-        public String getEntityName() {
-            return entityName;
-        }
-
-        public String getPathString() {
-            return pathString;
-        }
-
-        public boolean isSelectedPath() {
-            return selectedPath;
-        }
-    }
-
-    /** Get all parameter names */
+    /**
+     * Get all parameter names
+     */
     Set<String> getParamNames();
 
-    /** Main entity name */
+    /**
+     * Main entity name
+     */
     String getEntityName();
 
     Set<String> getAllEntityNames();
 
-    /** Main entity alias */
+    /**
+     * Main entity alias
+     */
     String getEntityAlias(String targetEntity);
 
     String getEntityAlias();
 
-    /** Returns true if this is a standard select from an entity - not count() and not fields (e.id, etc.) */
+    /**
+     * Returns true if this is a standard select from an entity - not count() and not fields (e.id, etc.)
+     */
     boolean isEntitySelect(String targetEntity);
 
     boolean hasIsNullCondition(String attribute);
@@ -98,4 +79,38 @@ public interface QueryParser {
     boolean isParameterInCondition(String parameterName);
 
     List<QueryPath> getQueryPaths();
+
+    class QueryPath {
+        protected String entityName;
+        protected String pathString;
+        protected String variableName;
+        protected boolean selectedPath;
+
+        public QueryPath(String entityName, String variableName, String pathString, boolean selectedPath) {
+            this.entityName = entityName;
+            this.variableName = variableName;
+            this.pathString = pathString;
+            this.selectedPath = selectedPath;
+        }
+
+        public String getEntityName() {
+            return entityName;
+        }
+
+        public String getFullPath() {
+            return pathString;
+        }
+
+        public String getPropertyPath() {
+            if (pathString.contains(".")) {
+                return pathString.replace(variableName + ".", "");
+            } else {
+                return pathString;
+            }
+        }
+
+        public boolean isSelectedPath() {
+            return selectedPath;
+        }
+    }
 }

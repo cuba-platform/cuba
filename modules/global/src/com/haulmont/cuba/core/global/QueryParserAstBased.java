@@ -196,12 +196,12 @@ public class QueryParserAstBased implements QueryParser {
         visitor.visit(getQueryAnalyzer().getTree(), finder);
         for (PathNode node : finder.getSelectedPathNodes()) {
             JpqlEntityModel model = context.getEntityByVariableName(node.getEntityVariableName());
-            QueryPath queryPath = new QueryPath(model.getName(), node.asPathString(), true);
+            QueryPath queryPath = new QueryPath(model.getName(), node.getEntityVariableName(), node.asPathString(), true);
             queryPaths.add(queryPath);
         }
         for (PathNode node : finder.getOtherPathNodes()) {
             JpqlEntityModel model = context.getEntityByVariableName(node.getEntityVariableName());
-            QueryPath queryPath = new QueryPath(model.getName(), node.asPathString(), false);
+            QueryPath queryPath = new QueryPath(model.getName(), node.getEntityVariableName(), node.asPathString(), false);
             queryPaths.add(queryPath);
         }
         return queryPaths;
