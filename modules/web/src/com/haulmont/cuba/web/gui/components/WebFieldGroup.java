@@ -830,7 +830,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
     public void setBorderVisible(boolean borderVisible) {
         wrapper.setBorderVisible(borderVisible);
 
-        if (component.isAttached() && !wrapperAttached) {
+        if (component.getParent() != null && !wrapperAttached) {
             LoggerFactory.getLogger(WebFieldGroup.class)
                     .warn("Unable to set border visible for FieldGroup after adding to component tree");
             return;

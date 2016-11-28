@@ -342,13 +342,15 @@ public class EntityInspectorEditor extends AbstractWindow {
      */
     private void createDataComponents(MetaClass metaClass, Entity item) {
         FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        fieldGroup.setBorderVisible(true);
         fieldGroup.setWidth("100%");
-        LinkedList<FieldGroup.FieldConfig> customFields = new LinkedList<>();
 
         contentPane.add(fieldGroup);
         fieldGroup.setFrame(frame);
         MetadataTools tools = metadata.getTools();
         MetaProperty primaryKeyProperty = tools.getPrimaryKeyProperty(metaClass);
+
+        LinkedList<FieldGroup.FieldConfig> customFields = new LinkedList<>();
         for (MetaProperty metaProperty : metaClass.getProperties()) {
             boolean isRequired = isRequired(metaProperty);
             boolean isReadonly = metaProperty.isReadOnly();
@@ -390,7 +392,6 @@ public class EntityInspectorEditor extends AbstractWindow {
         }
         fieldGroup.setDatasource(datasource);
         createCustomFields(fieldGroup, customFields);
-        fieldGroup.setBorderVisible(true);
     }
     /**
      * Creates field group for the embedded property
@@ -407,9 +408,11 @@ public class EntityInspectorEditor extends AbstractWindow {
                     embeddedMetaProperty.getName()));
         }
         FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        fieldGroup.setBorderVisible(true);
+        fieldGroup.setCaption(getPropertyCaption(embedDs.getMetaClass(), embeddedMetaProperty));
+
         contentPane.add(fieldGroup);
         fieldGroup.setFrame(frame);
-        fieldGroup.setCaption(getPropertyCaption(embedDs.getMetaClass(), embeddedMetaProperty));
 
         MetaClass embeddableMetaClass = embeddedMetaProperty.getRange().asClass();
         Collection<FieldGroup.FieldConfig> customFields = new LinkedList<>();
@@ -448,7 +451,6 @@ public class EntityInspectorEditor extends AbstractWindow {
             }
         }
         fieldGroup.setDatasource(embedDs);
-        fieldGroup.setBorderVisible(true);
     }
 
     private boolean isByteArray(MetaProperty metaProperty) {
