@@ -25,6 +25,8 @@ import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
 public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> implements MaskedField {
 
     protected String inputPrompt;
+    // just stub
+    protected CaseConversion caseConversion;
 
     @Override
     public void setMask(String mask) {
@@ -113,5 +115,15 @@ public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> im
     @Override
     public void setCursorPosition(int position) {
         component.setCursorPosition(position);
+    }
+
+    @Override
+    public CaseConversion getCaseConversion() {
+        return caseConversion;
+    }
+
+    @Override
+    public void setCaseConversion(CaseConversion caseConversion) {
+        this.caseConversion = caseConversion;
     }
 }

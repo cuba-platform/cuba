@@ -19,14 +19,13 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.web.toolkit.ui.CubaTextArea;
-import com.vaadin.ui.TextArea;
 
-public class WebTextArea extends WebAbstractTextArea<TextArea> implements com.haulmont.cuba.gui.components.TextArea {
+public class WebTextArea extends WebAbstractTextArea<CubaTextArea> implements com.haulmont.cuba.gui.components.TextArea {
 
     protected Datatype datatype;
 
     @Override
-    protected TextArea createTextFieldImpl() {
+    protected CubaTextArea createTextFieldImpl() {
         return new CubaTextArea();
     }
 
@@ -68,5 +67,17 @@ public class WebTextArea extends WebAbstractTextArea<TextArea> implements com.ha
         } else {
             component.setConverter(new TextFieldStringToDatatypeConverter(datatype));
         }
+    }
+
+    @Override
+    public CaseConversion getCaseConversion() {
+        return CaseConversion.valueOf(component.getCaseConversion().name());
+    }
+
+    @Override
+    public void setCaseConversion(CaseConversion caseConversion) {
+        com.haulmont.cuba.web.toolkit.ui.CaseConversion widgetCaseConversion =
+                com.haulmont.cuba.web.toolkit.ui.CaseConversion.valueOf(caseConversion.name());
+        component.setCaseConversion(widgetCaseConversion);
     }
 }

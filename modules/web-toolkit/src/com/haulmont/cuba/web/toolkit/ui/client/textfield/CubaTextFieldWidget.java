@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.textfield;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
@@ -35,10 +36,43 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
     protected ShortcutActionHandler shortcutHandler;
 
     protected boolean readOnlyFocusable = false;
+    protected String caseConversion = "NONE";
 
     public CubaTextFieldWidget() {
         // handle shortcuts
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
+
+        addInputHandler(getElement());
+    }
+
+    protected native void addInputHandler(Element elementID)/*-{
+        var temp = this;  // hack to hold on to 'this' reference
+
+        var listener = $entry(function (e) {
+            temp.@com.haulmont.cuba.web.toolkit.ui.client.textfield.CubaTextFieldWidget::handleInput()();
+        });
+
+        if (elementID.addEventListener) {
+            elementID.addEventListener("input", listener, false);
+        } else {
+            elementID.attachEvent("input", listener);
+        }
+    }-*/;
+
+    public void handleInput() {
+        String text = getText();
+
+        if ("UPPER".equals(caseConversion)) {
+            text = text.toUpperCase();
+        } else if ("LOWER".equals(caseConversion)) {
+            text = text.toLowerCase();
+        } else {
+            return;
+        }
+
+        int cursorPos = getCursorPos();
+        setText(text);
+        setCursorPos(cursorPos);
     }
 
     @Override
@@ -137,5 +171,9 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
         } else {
             removeStyleName(CUBA_DISABLED_OR_READONLY);
         }
+    }
+
+    public void setCaseConversion(String caseConversion) {
+        this.caseConversion = caseConversion;
     }
 }

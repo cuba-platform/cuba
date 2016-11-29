@@ -246,4 +246,16 @@ public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> impl
             component.setConverter(new TextFieldStringToDatatypeConverter(datatype));
         }
     }
+
+    @Override
+    public CaseConversion getCaseConversion() {
+        return CaseConversion.valueOf(component.getCaseConversion().name());
+    }
+
+    @Override
+    public void setCaseConversion(CaseConversion caseConversion) {
+        com.haulmont.cuba.web.toolkit.ui.CaseConversion widgetCaseConversion =
+                com.haulmont.cuba.web.toolkit.ui.CaseConversion.valueOf(caseConversion.name());
+        component.setCaseConversion(widgetCaseConversion);
+    }
 }

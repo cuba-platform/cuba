@@ -24,6 +24,7 @@ public interface TextField
             TextInputField.MaxLengthLimited,
             TextInputField.TrimSupported,
             TextInputField.CursorPositionSupported,
+            TextInputField.CaseConversionSupported,
             Component.HasFormatter,
             Component.HasInputPrompt {
 

@@ -22,6 +22,7 @@ public interface TextArea extends TextInputField,
                                   TextInputField.MaxLengthLimited,
                                   TextInputField.CursorPositionSupported,
                                   TextInputField.TrimSupported,
+                                  TextInputField.CaseConversionSupported,
                                   Component.HasInputPrompt {
 
     String NAME = "textArea";

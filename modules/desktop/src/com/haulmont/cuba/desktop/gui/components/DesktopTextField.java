@@ -31,6 +31,8 @@ import java.awt.*;
 public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> implements TextField {
 
     protected String inputPrompt;
+    // just stub
+    protected CaseConversion caseConversion;
 
     @Override
     protected JTextField createTextComponentImpl() {
@@ -150,6 +152,16 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     public void setCursorPosition(int position) {
         impl.setSelectionStart(position);
         impl.setSelectionEnd(position);
+    }
+
+    @Override
+    public CaseConversion getCaseConversion() {
+        return caseConversion;
+    }
+
+    @Override
+    public void setCaseConversion(CaseConversion caseConversion) {
+        this.caseConversion = caseConversion;
     }
 
     protected class FlushableTextField extends JTextField implements Flushable {

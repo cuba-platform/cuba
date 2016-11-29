@@ -25,6 +25,7 @@ import com.vaadin.server.*;
 import com.vaadin.ui.TextField;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class CubaTextField extends TextField implements Action.Container {
 
@@ -119,5 +120,16 @@ public class CubaTextField extends TextField implements Action.Container {
 
     public boolean isReadOnlyFocusable() {
         return getState(false).readOnlyFocusable;
+    }
+
+    public CaseConversion getCaseConversion() {
+        return CaseConversion.valueOf(getState(false).caseConversion);
+    }
+
+    public void setCaseConversion(CaseConversion caseConversion) {
+        CaseConversion widgetCaseConversion = CaseConversion.valueOf(getState(false).caseConversion);
+        if (!Objects.equals(caseConversion, widgetCaseConversion)) {
+            getState(true).caseConversion = caseConversion.name();
+        }
     }
 }

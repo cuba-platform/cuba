@@ -53,6 +53,18 @@ public class WebTextField extends WebAbstractTextField<CubaTextField> implements
     }
 
     @Override
+    public CaseConversion getCaseConversion() {
+        return CaseConversion.valueOf(component.getCaseConversion().name());
+    }
+
+    @Override
+    public void setCaseConversion(CaseConversion caseConversion) {
+        com.haulmont.cuba.web.toolkit.ui.CaseConversion widgetCaseConversion =
+                com.haulmont.cuba.web.toolkit.ui.CaseConversion.valueOf(caseConversion.name());
+        component.setCaseConversion(widgetCaseConversion);
+    }
+
+    @Override
     public Formatter getFormatter() {
         return formatter;
     }

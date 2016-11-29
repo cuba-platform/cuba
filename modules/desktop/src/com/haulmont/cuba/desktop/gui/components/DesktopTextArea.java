@@ -38,6 +38,8 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
     protected int rows;
 
     protected String inputPrompt;
+    // just stub
+    protected CaseConversion caseConversion;
 
     public DesktopTextArea() {
         setRows(5);
@@ -224,6 +226,16 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
         } else {
             PromptSupport.setPrompt(null, impl);
         }
+    }
+
+    @Override
+    public CaseConversion getCaseConversion() {
+        return caseConversion;
+    }
+
+    @Override
+    public void setCaseConversion(CaseConversion caseConversion) {
+        this.caseConversion = caseConversion;
     }
 
     protected class TextAreaFlushableField extends JTextArea implements Flushable {

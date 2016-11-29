@@ -19,6 +19,16 @@ package com.haulmont.cuba.gui.components;
 
 public interface TextInputField extends Field {
 
+    /**
+     * Defines case conversion for text input fields,
+     * which implement {@link TextInputField.CaseConversionSupported} interface.
+     */
+    enum CaseConversion {
+        NONE,
+        LOWER,
+        UPPER
+    }
+
     interface TrimSupported extends TextInputField {
         boolean isTrimming();
         void setTrimming(boolean trimming);
@@ -36,5 +46,17 @@ public interface TextInputField extends Field {
          * @param position new cursor position
          */
         void setCursorPosition(int position);
+    }
+
+    interface CaseConversionSupported extends TextInputField {
+        /**
+         * @return conversion mode or null if automatic conversion is disabled
+         */
+        CaseConversion getCaseConversion();
+
+        /**
+         * Disable automatic case conversion or enable with chosen mode
+         */
+        void setCaseConversion(CaseConversion caseConversion);
     }
 }

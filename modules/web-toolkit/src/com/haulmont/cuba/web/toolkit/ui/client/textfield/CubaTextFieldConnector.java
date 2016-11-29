@@ -61,4 +61,9 @@ public class CubaTextFieldConnector extends TextFieldConnector {
     void updateReadOnlyFocusable() {
         getWidget().setReadOnlyFocusable(getState().readOnlyFocusable);
     }
+
+    @OnStateChange("caseConversion")
+    void updateCaseConversion() {
+        getWidget().setCaseConversion(getState().caseConversion);
+    }
 }

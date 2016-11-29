@@ -24,4 +24,7 @@ public class CubaTextFieldState extends AbstractTextFieldState {
 
     @NoLayout
     public boolean readOnlyFocusable;
+
+    @NoLayout
+    public String caseConversion = "NONE";
 }

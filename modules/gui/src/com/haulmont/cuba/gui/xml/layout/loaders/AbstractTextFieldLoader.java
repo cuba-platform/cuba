@@ -35,4 +35,11 @@ public abstract class AbstractTextFieldLoader<T extends TextInputField> extends 
             component.setMaxLength(Integer.parseInt(maxLength));
         }
     }
+
+    protected void loadCaseConversion(TextInputField.CaseConversionSupported component, Element element) {
+        final String caseConversion = element.attributeValue("caseConversion");
+        if (!StringUtils.isEmpty(caseConversion)) {
+            component.setCaseConversion(TextInputField.CaseConversion.valueOf(caseConversion));
+        }
+    }
 }

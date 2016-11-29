@@ -36,6 +36,14 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="caseConversion">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NONE"/>
+            <xs:enumeration value="LOWER"/>
+            <xs:enumeration value="UPPER"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="datatypeEnum">
         <xs:union>
             <xs:simpleType>
@@ -749,6 +757,7 @@
                 <xs:attribute name="maxLength" type="xs:int"/>
                 <xs:attribute name="trim" type="xs:boolean"/>
                 <xs:attribute name="inputPrompt" type="resourceString"/>
+                <xs:attribute name="caseConversion" type="caseConversion"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -759,6 +768,8 @@
             <xs:extension base="baseTextComponent">
                 <xs:attribute name="cols" type="xs:int"/>
                 <xs:attribute name="rows" type="xs:int"/>
+                
+                <xs:attribute name="caseConversion" type="caseConversion"/>
 
                 <xs:attributeGroup ref="hasDatatype"/>
                 <xs:attributeGroup ref="hasSettings"/>

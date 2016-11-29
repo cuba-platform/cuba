@@ -36,6 +36,7 @@ public class TextAreaLoader extends AbstractTextFieldLoader<TextArea> {
         loadMaxLength(resultComponent, element);
         loadTrimming(resultComponent, element);
         loadInputPrompt(resultComponent, element);
+        loadCaseConversion(resultComponent, element);
 
         String cols = element.attributeValue("cols");
         if (StringUtils.isNotEmpty(cols)) {
