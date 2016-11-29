@@ -678,7 +678,7 @@ public class RdbmsStore implements DataStore {
                     .filter(path -> !path.isSelectedPath())
                     .forEach(path -> {
                         MetaClass metaClass = metadata.getClassNN(path.getEntityName());
-                        if (!isEntityAttrViewPermitted(metaClass.getPropertyPath(path.getFullPath()))) {
+                        if (!isEntityAttrViewPermitted(metaClass.getPropertyPath(path.getPropertyPath()))) {
                             throw new AccessDeniedException(PermissionType.ENTITY_ATTR, metaClass + "." + path.getFullPath());
                         }
                     });
@@ -725,15 +725,17 @@ public class RdbmsStore implements DataStore {
     }
 
     protected List<Integer> getSelectNotPermittedIndexes(QueryParser queryParser) {
-        int index = 0;
         List<Integer> indexes = new ArrayList<>();
-        for (QueryParser.QueryPath path : queryParser.getQueryPaths()) {
-            if (path.isSelectedPath()) {
-                MetaClass metaClass = metadata.getClassNN(path.getEntityName());
-                if (!isEntityAttrViewPermitted(metaClass.getPropertyPath(path.getPropertyPath()))) {
-                    indexes.add(index);
+        if (isAuthorizationRequired()) {
+            int index = 0;
+            for (QueryParser.QueryPath path : queryParser.getQueryPaths()) {
+                if (path.isSelectedPath()) {
+                    MetaClass metaClass = metadata.getClassNN(path.getEntityName());
+                    if (!isEntityAttrViewPermitted(metaClass.getPropertyPath(path.getPropertyPath()))) {
+                        indexes.add(index);
+                    }
+                    index++;
                 }
-                index++;
             }
         }
         return indexes;
