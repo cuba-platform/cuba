@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core;
 
+import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
@@ -63,6 +64,9 @@ public class NonEntityQueryTest {
     public void setUp() throws Exception {
         dataManager = AppBeans.get(DataManager.class);
         passwordEncryption = AppBeans.get(PasswordEncryption.class);
+
+        QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
+        runner.update("delete from SYS_SERVER");
 
         Transaction tx = cont.persistence().createTransaction();
         try {
