@@ -32,6 +32,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -378,6 +379,16 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     @Override
     public void validate() throws ValidationException {
         frame.validate();
+    }
+
+    @Override
+    public boolean validate(List<Validatable> fields) {
+        return frame.validate(fields);
+    }
+
+    @Override
+    public boolean validateAll() {
+        return frame.validateAll();
     }
 
     /**

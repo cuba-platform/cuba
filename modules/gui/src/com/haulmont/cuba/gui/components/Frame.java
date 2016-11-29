@@ -97,6 +97,20 @@ public interface Frame
     void validate() throws ValidationException;
 
     /**
+     * Check validity by invoking validators on specified components which support them
+     * and show validation result notification.
+     * @return true if the validation was successful, false if there were any problems
+     */
+    boolean validate(List<Validatable> fields);
+
+    /**
+     * Check validity by invoking validators on all components which support them
+     * and show validation result notification.
+     * @return true if the validation was successful, false if there were any problems
+     */
+    boolean validateAll();
+
+    /**
      * @return {@link DialogParams} that will be used for opening next window in modal mode.
      * <p/> If called in <code>init()</code>
      * method of a screen, which is being opened in {@link WindowManager.OpenType#DIALOG} mode, affects the current

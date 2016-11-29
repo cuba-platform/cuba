@@ -532,4 +532,43 @@ public class WebComponentsHelper {
             }
         });
     }
+
+    public static void focusProblemComponent(ValidationErrors errors) {
+        com.haulmont.cuba.gui.components.Component component = null;
+        if (!errors.getAll().isEmpty()) {
+            component = errors.getAll().iterator().next().component;
+        }
+
+        if (component != null) {
+            try {
+                com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
+                com.vaadin.ui.Component c = vComponent;
+                com.vaadin.ui.Component prevC = null;
+                while (c != null) {
+                    if (c instanceof com.vaadin.ui.TabSheet && !((com.vaadin.ui.TabSheet) c).getSelectedTab().equals(prevC)) {
+                        ((com.vaadin.ui.TabSheet) c).setSelectedTab(prevC);
+                        break;
+                    }
+                    if (c instanceof CubaGroupBox && !((CubaGroupBox) c).isExpanded()) {
+                        ((CubaGroupBox) c).setExpanded(true);
+                        break;
+                    }
+                    prevC = c;
+                    c = c.getParent();
+                }
+
+                // focus first up component
+                c = vComponent;
+                while (c != null) {
+                    if (c instanceof com.vaadin.ui.Component.Focusable) {
+                        ((com.vaadin.ui.Component.Focusable) c).focus();
+                        break;
+                    }
+                    c = c.getParent();
+                }
+            } catch (Exception e) {
+                LoggerFactory.getLogger(WebComponentsHelper.class).warn("Error while validation handling ", e);
+            }
+        }
+    }
 }

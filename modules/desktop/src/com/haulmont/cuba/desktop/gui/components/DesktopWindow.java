@@ -35,8 +35,6 @@ import com.haulmont.cuba.desktop.sys.DialogWindow;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
-import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
-import com.haulmont.cuba.desktop.sys.vcl.FocusableComponent;
 import com.haulmont.cuba.desktop.sys.vcl.JTabbedPaneExt;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
@@ -79,7 +77,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 public class DesktopWindow implements Window, Component.Disposable,
         Component.Wrapper, Component.HasXmlDescriptor, Component.SecuredActionsHolder, WrappedWindow, DesktopContainer {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    protected static final Logger log = LoggerFactory.getLogger(DesktopWindow.class);
     protected Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
 
     protected boolean disposed = false;
@@ -1346,67 +1344,11 @@ public class DesktopWindow implements Window, Component.Disposable,
         if (errors.isEmpty())
             return true;
 
-        focusProblemComponent(errors);
+        DesktopComponentsHelper.focusProblemComponent(errors);
 
         showValidationErrors(errors);
 
         return false;
-    }
-
-    protected void focusProblemComponent(ValidationErrors errors) {
-        Component component = null;
-        if (!errors.getAll().isEmpty()) {
-            component = errors.getAll().iterator().next().component;
-        }
-
-        if (component != null) {
-            try {
-                final JComponent jComponent = DesktopComponentsHelper.unwrap(component);
-                java.awt.Component c = jComponent;
-                java.awt.Component prevC = null;
-                while (c != null) {
-                    if (c instanceof JTabbedPane && !((JTabbedPane) c).getSelectedComponent().equals(prevC)) {
-                        final JTabbedPane tabbedPane = (JTabbedPane) c;
-
-                        // do not focus tabbed pane on programmaticaly selection change
-                        JTabbedPaneExt.setFocusOnSelectionChange(false);
-                        tabbedPane.setSelectedComponent(prevC);
-                        break;
-                    }
-                    if (c instanceof CollapsiblePanel && !((CollapsiblePanel) c).isExpanded()) {
-                        ((CollapsiblePanel) c).setExpanded(true);
-                        break;
-                    }
-                    prevC = c;
-                    c = c.getParent();
-                }
-
-                if (!JTabbedPaneExt.isFocusOnSelectionChange()) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            JTabbedPaneExt.setFocusOnSelectionChange(true);
-                        }
-                    });
-                }
-
-                if (jComponent instanceof FocusableComponent) {
-                    ((FocusableComponent) jComponent).focus();
-                } else {
-                    // focus first up component
-                    c = jComponent;
-                    while (c != null) {
-                        if (c.isFocusable()) {
-                            c.requestFocus();
-                            break;
-                        }
-                        c = c.getParent();
-                    }
-                }
-            } catch (Exception e) {
-                log.warn("Error while problem component focusing", e);
-            }
-        }
     }
 
     protected void showValidationErrors(final ValidationErrors errors) {

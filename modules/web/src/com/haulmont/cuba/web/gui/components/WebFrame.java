@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.FrameContext;
@@ -28,7 +29,10 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -42,6 +46,8 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
 
+    private static final Logger log = LoggerFactory.getLogger(WebFrame.class);
+
     protected String messagePack;
     protected FrameContext context;
     protected DsContext dsContext;
@@ -51,6 +57,7 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
     protected Map<String, com.haulmont.cuba.gui.components.Component> allComponents = new HashMap<>();
 
     protected WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
 
@@ -187,6 +194,71 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
                 ((Validatable) component).validate();
             }
         }
+    }
+
+    @Override
+    public boolean validate(List<Validatable> fields) {
+        ValidationErrors errors = new ValidationErrors();
+
+        for (Validatable field : fields) {
+            try {
+                field.validate();
+            } catch (ValidationException e) {
+                if (log.isTraceEnabled())
+                    log.trace("Validation failed", e);
+                else if (log.isDebugEnabled())
+                    log.debug("Validation failed: " + e);
+
+                ComponentsHelper.fillErrorMessages(field, e, errors);
+            }
+        }
+
+        return handleValidationErrors(errors);
+    }
+
+    @Override
+    public boolean validateAll() {
+        ValidationErrors errors = new ValidationErrors();
+
+        Collection<Component> components = ComponentsHelper.getComponents(this);
+        for (Component component : components) {
+            if (component instanceof Validatable) {
+                Validatable validatable = (Validatable) component;
+                try {
+                    validatable.validate();
+                } catch (ValidationException e) {
+                    if (log.isTraceEnabled())
+                        log.trace("Validation failed", e);
+                    else if (log.isDebugEnabled())
+                        log.debug("Validation failed: " + e);
+
+                    ComponentsHelper.fillErrorMessages(validatable, e, errors);
+                }
+            }
+        }
+
+        return handleValidationErrors(errors);
+    }
+
+    protected boolean handleValidationErrors(ValidationErrors errors) {
+        if (errors.isEmpty())
+            return true;
+
+        showValidationErrors(errors);
+
+        WebComponentsHelper.focusProblemComponent(errors);
+
+        return false;
+    }
+
+    protected void showValidationErrors(ValidationErrors errors) {
+        StringBuilder buffer = new StringBuilder();
+        for (ValidationErrors.Item error : errors.getAll()) {
+            buffer.append(error.description).append("\n");
+        }
+
+        showNotification(messages.getMessage(WebWindow.class, "validationFail.caption"),
+                buffer.toString(), NotificationType.TRAY);
     }
 
     @Override

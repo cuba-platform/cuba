@@ -23,12 +23,15 @@ import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareAction;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
+import com.haulmont.cuba.desktop.sys.vcl.FocusableComponent;
+import com.haulmont.cuba.desktop.sys.vcl.JTabbedPaneExt;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import javax.swing.Action;
+import javax.swing.*;
 import javax.swing.BoxLayout;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -397,5 +400,61 @@ public class DesktopComponentsHelper {
         }
 
         return null;
+    }
+
+    public static void focusProblemComponent(ValidationErrors errors) {
+        Component component = null;
+        if (!errors.getAll().isEmpty()) {
+            component = errors.getAll().iterator().next().component;
+        }
+
+        if (component != null) {
+            try {
+                final JComponent jComponent = DesktopComponentsHelper.unwrap(component);
+                java.awt.Component c = jComponent;
+                java.awt.Component prevC = null;
+                while (c != null) {
+                    if (c instanceof JTabbedPane && !((JTabbedPane) c).getSelectedComponent().equals(prevC)) {
+                        final JTabbedPane tabbedPane = (JTabbedPane) c;
+
+                        // do not focus tabbed pane on programmaticaly selection change
+                        JTabbedPaneExt.setFocusOnSelectionChange(false);
+                        tabbedPane.setSelectedComponent(prevC);
+                        break;
+                    }
+                    if (c instanceof CollapsiblePanel && !((CollapsiblePanel) c).isExpanded()) {
+                        ((CollapsiblePanel) c).setExpanded(true);
+                        break;
+                    }
+                    prevC = c;
+                    c = c.getParent();
+                }
+
+                if (!JTabbedPaneExt.isFocusOnSelectionChange()) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            JTabbedPaneExt.setFocusOnSelectionChange(true);
+                        }
+                    });
+                }
+
+                if (jComponent instanceof FocusableComponent) {
+                    ((FocusableComponent) jComponent).focus();
+                } else {
+                    // focus first up component
+                    c = jComponent;
+                    while (c != null) {
+                        if (c.isFocusable()) {
+                            c.requestFocus();
+                            break;
+                        }
+                        c = c.getParent();
+                    }
+                }
+            } catch (Exception e) {
+                LoggerFactory.getLogger(DesktopComponentsHelper.class).warn("Error while problem component focusing", e);
+            }
+        }
     }
 }

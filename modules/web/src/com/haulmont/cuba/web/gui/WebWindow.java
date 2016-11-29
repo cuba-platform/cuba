@@ -40,7 +40,6 @@ import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
-import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaSingleModeContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
@@ -69,7 +68,7 @@ public class WebWindow implements Window, Component.Wrapper,
                                   Component.HasXmlDescriptor, WrappedWindow, Component.Disposable,
                                   Component.SecuredActionsHolder, Component.HasIcon {
 
-    private static Logger log = LoggerFactory.getLogger(WebWindow.class);
+    private static final Logger log = LoggerFactory.getLogger(WebWindow.class);
 
     protected String id;
     protected String debugId;
@@ -364,7 +363,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
         showValidationErrors(errors);
 
-        focusProblemComponent(errors);
+        WebComponentsHelper.focusProblemComponent(errors);
 
         return false;
     }
@@ -377,45 +376,6 @@ public class WebWindow implements Window, Component.Wrapper,
 
         showNotification(messages.getMessage(WebWindow.class, "validationFail.caption"),
                 buffer.toString(), NotificationType.TRAY);
-    }
-
-    protected void focusProblemComponent(ValidationErrors errors) {
-        Component component = null;
-        if (!errors.getAll().isEmpty()) {
-            component = errors.getAll().iterator().next().component;
-        }
-
-        if (component != null) {
-            try {
-                com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
-                com.vaadin.ui.Component c = vComponent;
-                com.vaadin.ui.Component prevC = null;
-                while (c != null) {
-                    if (c instanceof TabSheet && !((TabSheet) c).getSelectedTab().equals(prevC)) {
-                        ((TabSheet) c).setSelectedTab(prevC);
-                        break;
-                    }
-                    if (c instanceof CubaGroupBox && !((CubaGroupBox) c).isExpanded()) {
-                        ((CubaGroupBox) c).setExpanded(true);
-                        break;
-                    }
-                    prevC = c;
-                    c = c.getParent();
-                }
-
-                // focus first up component
-                c = vComponent;
-                while (c != null) {
-                    if (c instanceof com.vaadin.ui.Component.Focusable) {
-                        ((com.vaadin.ui.Component.Focusable) c).focus();
-                        break;
-                    }
-                    c = c.getParent();
-                }
-            } catch (Exception e) {
-                log.warn("Error while validation handling ", e);
-            }
-        }
     }
 
     @Override

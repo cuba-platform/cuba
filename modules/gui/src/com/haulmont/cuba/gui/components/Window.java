@@ -174,14 +174,14 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     /**
      * Check validity by invoking validators on specified components which support them
      * and show validation result notification.
-     * @return true if the validation was succesful, false if there were any problems
+     * @return true if the validation was successful, false if there were any problems
      */
     boolean validate(List<Validatable> fields);
 
     /**
      * Check validity by invoking validators on all components which support them
      * and show validation result notification.
-     * @return true if the validation was succesful, false if there were any problems
+     * @return true if the validation was successful, false if there were any problems
      */
     boolean validateAll();
 

@@ -43,7 +43,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     public static final String SWING_PROPERTY_CLASS = "cubaClass";
     public static final String SWING_PROPERTY_ID = "cubaId";
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     protected C impl;
 

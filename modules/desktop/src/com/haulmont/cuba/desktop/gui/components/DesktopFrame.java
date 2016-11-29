@@ -19,6 +19,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.DetachedFrame;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -26,6 +27,7 @@ import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -33,6 +35,7 @@ import com.haulmont.cuba.gui.data.DsContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.*;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.WindowAdapter;
@@ -60,6 +63,7 @@ public class DesktopFrame
     private List<DetachListener> detachListeners = new ArrayList<>();
     
     private WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     private DesktopFrameActionsHolder actionsHolder;
 
@@ -142,6 +146,75 @@ public class DesktopFrame
                 ((Validatable) component).validate();
             }
         }
+    }
+
+    @Override
+    public boolean validate(List<Validatable> fields) {
+        ValidationErrors errors = new ValidationErrors();
+
+        for (Validatable field : fields) {
+            try {
+                field.validate();
+            } catch (ValidationException e) {
+                if (log.isTraceEnabled())
+                    log.trace("Validation failed", e);
+                else if (log.isDebugEnabled())
+                    log.debug("Validation failed: " + e);
+
+                ComponentsHelper.fillErrorMessages(field, e, errors);
+            }
+        }
+
+        return handleValidationErrors(errors);
+    }
+
+    @Override
+    public boolean validateAll() {
+        ValidationErrors errors = new ValidationErrors();
+
+        Collection<Component> components = ComponentsHelper.getComponents(this);
+        for (Component component : components) {
+            if (component instanceof Validatable) {
+                Validatable validatable = (Validatable) component;
+                try {
+                    validatable.validate();
+                } catch (ValidationException e) {
+                    if (log.isTraceEnabled())
+                        log.trace("Validation failed", e);
+                    else if (log.isDebugEnabled())
+                        log.debug("Validation failed: " + e);
+
+                    ComponentsHelper.fillErrorMessages(validatable, e, errors);
+                }
+            }
+        }
+
+        return handleValidationErrors(errors);
+    }
+
+    protected boolean handleValidationErrors(ValidationErrors errors) {
+        if (errors.isEmpty())
+            return true;
+
+        DesktopComponentsHelper.focusProblemComponent(errors);
+
+        showValidationErrors(errors);
+
+        return false;
+    }
+
+    protected void showValidationErrors(final ValidationErrors errors) {
+        SwingUtilities.invokeLater(() -> {
+            StringBuilder buffer = new StringBuilder();
+            for (ValidationErrors.Item error : errors.getAll()) {
+                buffer.append(error.description).append("\n");
+            }
+            showNotification(
+                    messages.getMainMessage("validationFail.caption"),
+                    buffer.toString(),
+                    NotificationType.HUMANIZED
+            );
+        });
     }
 
     private DesktopWindowManager getWindowManager() {
