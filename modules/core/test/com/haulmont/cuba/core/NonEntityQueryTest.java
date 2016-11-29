@@ -47,7 +47,9 @@ public class NonEntityQueryTest {
     private DataManager dataManager;
     private PasswordEncryption passwordEncryption;
 
-    private UUID serverId, role1Id, permission1Id, userId, groupId, userRole1Id;
+    private UUID serverId, role1Id,
+            permission1Id, permission2Id,
+            userId, groupId, userRole1Id;
 
     @Before
     public void setUp() throws Exception {
@@ -76,6 +78,14 @@ public class NonEntityQueryTest {
             permission1.setTarget("sys$Server:name");
             permission1.setValue(0);
             em.persist(permission1);
+
+            Permission permission2 = new Permission();
+            permission2Id = permission2.getId();
+            permission2.setRole(role1);
+            permission2.setType(PermissionType.ENTITY_OP);
+            permission2.setTarget("sys$EntitySnapshot:read");
+            permission2.setValue(0);
+            em.persist(permission2);
 
             Group group = new Group();
             groupId = group.getId();
@@ -106,7 +116,7 @@ public class NonEntityQueryTest {
     public void tearDown() throws Exception {
         cont.deleteRecord("SYS_SERVER", serverId);
         cont.deleteRecord("SEC_USER_ROLE", userRole1Id);
-        cont.deleteRecord("SEC_PERMISSION", permission1Id);
+        cont.deleteRecord("SEC_PERMISSION", permission1Id, permission2Id);
         cont.deleteRecord("SEC_ROLE", role1Id);
         cont.deleteRecord("SEC_USER", userId);
         cont.deleteRecord("SEC_GROUP", groupId);
@@ -197,6 +207,12 @@ public class NonEntityQueryTest {
             } catch (AccessDeniedException e1) {
             }
 
+            context = ValueLoadContext.create();
+            context.setQueryString("select count(sn) from sys$Server s, sys$EntitySnapshot sn");
+            context.addProperty("count");
+
+            list = dataManager.secure().loadValues(context);
+            assertEquals(0, list.size());
         } finally {
             ((TestUserSessionSource) uss).setUserSession(savedUserSession);
         }

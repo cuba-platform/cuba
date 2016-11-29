@@ -405,12 +405,9 @@ public class RdbmsStore implements DataStore {
                     + (contextQuery.getMaxResults() == 0 ? "" : ", max=" + contextQuery.getMaxResults()));
 
         QueryParser queryParser = queryTransformerFactory.parser(contextQuery.getQueryString());
-        MetaClass metaClass = metadata.getClassNN(queryParser.getEntityName());
-        if (!isEntityOpPermitted(metaClass, EntityOp.READ)) {
-            log.debug("reading of {} not permitted, returning empty list", metaClass);
+        if (!checkValueQueryPermissions(queryParser)) {
             return Collections.emptyList();
         }
-        checkValueQueryPermissions(queryParser);
 
         List<KeyValueEntity> entities = new ArrayList<>();
 
@@ -672,7 +669,7 @@ public class RdbmsStore implements DataStore {
             throw new AccessDeniedException(PermissionType.ENTITY_OP, metaClass.getName());
     }
 
-    protected void checkValueQueryPermissions(QueryParser queryParser) {
+    protected boolean checkValueQueryPermissions(QueryParser queryParser) {
         if (isAuthorizationRequired()) {
             queryParser.getQueryPaths().stream()
                     .filter(path -> !path.isSelectedPath())
@@ -683,6 +680,10 @@ public class RdbmsStore implements DataStore {
                         }
                     });
             MetaClass metaClass = metadata.getClassNN(queryParser.getEntityName());
+            if (!isEntityOpPermitted(metaClass, EntityOp.READ)) {
+                log.debug("reading of {} not permitted, returning empty list", metaClass);
+                return false;
+            }
             if (security.hasInMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL)) {
                 String msg = String.format("%s is not permitted for %s", ConstraintOperationType.READ, metaClass.getName());
                 if (serverConfig.getConstraintErrorOnLoadValues()) {
@@ -694,7 +695,12 @@ public class RdbmsStore implements DataStore {
             Set<String> entityNames = queryParser.getAllEntityNames();
             entityNames.remove(metaClass.getName());
             for (String entityName : entityNames) {
-                if (security.hasConstraints(metadata.getClassNN(entityName))) {
+                MetaClass entityMetaClass = metadata.getClassNN(entityName);
+                if (!isEntityOpPermitted(entityMetaClass, EntityOp.READ)) {
+                    log.debug("reading of {} not permitted, returning empty list", entityMetaClass);
+                    return false;
+                }
+                if (security.hasConstraints(entityMetaClass)) {
                     String msg = String.format("%s is not permitted for %s", ConstraintOperationType.READ, entityName);
                     if (serverConfig.getConstraintErrorOnLoadValues()) {
                         throw new RowLevelSecurityException(msg, entityName, ConstraintOperationType.READ);
@@ -704,6 +710,7 @@ public class RdbmsStore implements DataStore {
                 }
             }
         }
+        return true;
     }
 
     protected boolean isEntityOpPermitted(MetaClass metaClass, EntityOp operation) {
