@@ -24,13 +24,18 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
 public class WindowBreadCrumbs extends CssLayout {
+    protected static final String BREADCRUMBS_VISIBLE_WRAP_STYLE = "c-breadcrumbs-visible";
+
     protected boolean visibleExplicitly = true;
     protected Label label;
 
@@ -48,7 +53,7 @@ public class WindowBreadCrumbs extends CssLayout {
 
     protected Map<Button, Window> btn2win = new HashMap<>();
 
-    protected Set<Listener> listeners = new HashSet<>();
+    protected List<Listener> listeners = new ArrayList<>();
 
     public WindowBreadCrumbs(WebAppWorkArea workArea) {
         setWidth(100, Unit.PERCENTAGE);
@@ -60,6 +65,10 @@ public class WindowBreadCrumbs extends CssLayout {
         if (tabbedMode) {
             super.setVisible(false);
         }
+
+        addAttachListener((AttachListener) event ->
+                adjustParentStyles()
+        );
 
         logoLayout = createLogoLayout();
 
@@ -130,11 +139,7 @@ public class WindowBreadCrumbs extends CssLayout {
             super.setVisible(visibleExplicitly);
 
         if (getParent() != null) {
-            if (isVisible()) {
-                getParent().addStyleName("c-breadcrumbs-visible");
-            } else {
-                getParent().removeStyleName("c-breadcrumbs-visible");
-            }
+            adjustParentStyles();
         }
     }
 
@@ -147,11 +152,7 @@ public class WindowBreadCrumbs extends CssLayout {
             super.setVisible(false);
 
         if (getParent() != null) {
-            if (isVisible()) {
-                getParent().addStyleName("c-breadcrumbs-visible");
-            } else {
-                getParent().removeStyleName("c-breadcrumbs-visible");
-            }
+            adjustParentStyles();
         }
     }
 
@@ -162,16 +163,22 @@ public class WindowBreadCrumbs extends CssLayout {
         super.setVisible(isVisible() && visibleExplicitly);
 
         if (getParent() != null) {
-            if (isVisible()) {
-                getParent().addStyleName("c-breadcrumbs-visible");
-            } else {
-                getParent().removeStyleName("c-breadcrumbs-visible");
-            }
+            adjustParentStyles();
+        }
+    }
+
+    protected void adjustParentStyles() {
+        if (isVisible()) {
+            getParent().addStyleName(BREADCRUMBS_VISIBLE_WRAP_STYLE);
+        } else {
+            getParent().removeStyleName(BREADCRUMBS_VISIBLE_WRAP_STYLE);
         }
     }
 
     public void addListener(Listener listener) {
-        listeners.add(listener);
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
     }
 
     public void removeListener(Listener listener) {
@@ -182,7 +189,7 @@ public class WindowBreadCrumbs extends CssLayout {
         listeners.clear();
     }
 
-    private void fireListeners(Window window) {
+    protected void fireListeners(Window window) {
         for (Listener listener : listeners) {
             listener.windowClick(window);
         }
