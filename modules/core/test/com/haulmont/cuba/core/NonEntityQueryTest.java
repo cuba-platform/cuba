@@ -44,8 +44,8 @@ public class NonEntityQueryTest {
     @ClassRule
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
-    private static final String USER_NAME_1 = "testUser1";
-    private static final String USER_NAME_2 = "testUser2";
+    private static final String USER_NAME_1 = "queryTestUser1";
+    private static final String USER_NAME_2 = "queryTestUser2";
     private static final String USER_PASSWORD = "testUser";
 
     private DataManager dataManager;
