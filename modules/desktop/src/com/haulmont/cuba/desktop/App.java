@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.sys.MessagesClientImpl;
 import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
 import com.haulmont.cuba.core.global.*;
@@ -32,7 +33,7 @@ import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.TestIdManager;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -681,7 +682,7 @@ public class App implements ConnectionListener {
      */
     protected void afterLoggedIn() {
         UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
-        final User user = sessionSource.getUserSession().getUser();
+        User user = sessionSource.getUserSession().getUser();
         // Change password on logon
         if (Boolean.TRUE.equals(user.getChangePasswordAtNextLogon())) {
             mainFrame.deactivate("");
@@ -692,9 +693,9 @@ public class App implements ConnectionListener {
 
             WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
             WindowInfo changePasswordDialog = windowConfig.getWindowInfo("sec$User.changePassword");
-            wm.getDialogParams().setCloseable(false);
-            Map<String, Object> params = Collections.singletonMap("cancelEnabled", (Object) Boolean.FALSE);
-            Window changePasswordWindow = wm.openEditor(changePasswordDialog, user, WindowManager.OpenType.DIALOG, params);
+            Window changePasswordWindow = wm.openEditor(changePasswordDialog, user,
+                    OpenType.DIALOG.closeable(false),
+                    ParamsMap.of("cancelEnabled", false));
             changePasswordWindow.addCloseListener(actionId -> {
                 for (Window window : wm.getOpenWindows()) {
                     window.setEnabled(true);
