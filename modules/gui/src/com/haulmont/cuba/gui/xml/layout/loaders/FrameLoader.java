@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractFrame;
+import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.WrappedFrame;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -31,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -54,6 +56,13 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
         if (aClass == null) {
             throw new GuiDevelopmentException("Unable to load controller class", frame.getId());
         }
+
+        if (AbstractWindow.class.isAssignableFrom(aClass)) {
+            LoggerFactory.getLogger(FrameLoader.class).warn(
+                    "Frame class should not be inherited from AbstractWindow. It may cause problems with controller life cycle. " +
+                    "Frame controllers should inherit AbstractFrame.");
+        }
+
         return ((WrappedFrame) frame).wrapBy(aClass);
     }
 
