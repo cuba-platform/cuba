@@ -132,6 +132,11 @@ public class EditorWindowDelegate extends WindowDelegate {
 
         DatasourceImplementation parentDs = (DatasourceImplementation) ((DatasourceImplementation) ds).getParent();
 
+        DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.NAME);
+        if (dynamicAttributesGuiTools.screenContainsDynamicAttributes(ds.getView(), getWrapper().getId())) {
+            ds.setLoadDynamicAttributes(true);
+        }
+
         if (parentDs != null) {
             if (!PersistenceHelper.isNew(item)
                     && !parentDs.getItemsToCreate().contains(item) && !parentDs.getItemsToUpdate().contains(item)
@@ -162,7 +167,6 @@ public class EditorWindowDelegate extends WindowDelegate {
         }
 
         if (ds.getLoadDynamicAttributes() && item instanceof BaseGenericIdEntity) {
-            DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.NAME);
             if (PersistenceHelper.isNew(item)) {
                 dynamicAttributesGuiTools.initDefaultAttributeValues((BaseGenericIdEntity) item, item.getMetaClass());
             }

@@ -45,6 +45,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component(DynamicAttributesGuiTools.NAME)
 public class DynamicAttributesGuiTools {
@@ -93,6 +94,54 @@ public class DynamicAttributesGuiTools {
 
         return categoryAttributes;
     }
+
+    /**
+     * Method checks whether any class in the view hierarchy contains dynamic attributes that must be displayed on
+     * the current screen
+     */
+    public boolean screenContainsDynamicAttributes(View mainDatasourceView, String screenId) {
+        DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
+        Set<Class> classesWithDynamicAttributes = collectEntityClassesWithDynamicAttributes(mainDatasourceView);
+        for (Class classWithDynamicAttributes : classesWithDynamicAttributes) {
+            MetaClass metaClass = metadata.getClassNN(classWithDynamicAttributes);
+            if (!dynamicAttributesGuiTools.getAttributesToShowOnTheScreen(metaClass, screenId, null)
+                    .isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected Set<Class> collectEntityClassesWithDynamicAttributes(@Nullable View view) {
+        if (view == null) {
+            return Collections.emptySet();
+        }
+
+        DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.class);
+        Metadata metadata = AppBeans.get(Metadata.class);
+        return collectEntityClasses(view, new HashSet<>()).stream()
+                .filter(BaseGenericIdEntity.class::isAssignableFrom)
+                .filter(aClass -> !dynamicAttributes.getAttributesForMetaClass(metadata.getClassNN(aClass)).isEmpty())
+                .collect(Collectors.toSet());
+    }
+
+    protected Set<Class> collectEntityClasses(View view, Set<View> visited) {
+        if (visited.contains(view)) {
+            return Collections.emptySet();
+        } else {
+            visited.add(view);
+        }
+
+        HashSet<Class> classes = new HashSet<>();
+        classes.add(view.getEntityClass());
+        for (ViewProperty viewProperty : view.getProperties()) {
+            if (viewProperty.getView() != null) {
+                classes.addAll(collectEntityClasses(viewProperty.getView(), visited));
+            }
+        }
+        return classes;
+    }
+
 
     public void initDefaultAttributeValues(BaseGenericIdEntity item, MetaClass metaClass) {
         Preconditions.checkNotNullArgument(metaClass, "metaClass is null");
