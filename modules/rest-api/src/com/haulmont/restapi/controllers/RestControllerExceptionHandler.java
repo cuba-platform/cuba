@@ -33,10 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @ControllerAdvice("com.haulmont.restapi.controllers")
 public class RestControllerExceptionHandler {
@@ -85,11 +82,16 @@ public class RestControllerExceptionHandler {
 
     @ExceptionHandler(CustomValidationException.class)
     @ResponseBody
-    public ResponseEntity<ErrorInfo> handleCustomValidationException(CustomValidationException e) {
+    public ResponseEntity<List<ConstraintViolationInfo>> handleCustomValidationException(CustomValidationException e) {
         log.debug("CustomValidationException: {}", e.getMessage());
 
-        ErrorInfo errorInfo = new ErrorInfo("Validation error", e.getLocalizedMessage());
-        return new ResponseEntity<>(errorInfo, HttpStatus.BAD_REQUEST);
+        ConstraintViolationInfo errorInfo = new ConstraintViolationInfo();
+        errorInfo.setPath("");
+        errorInfo.setInvalidValue(null);
+        errorInfo.setMessage(e.getLocalizedMessage());
+        errorInfo.setMessageTemplate("{com.haulmont.cuba.core.global.validation.CustomValidationException}");
+
+        return new ResponseEntity<>(Collections.singletonList(errorInfo), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ValidationException.class)
