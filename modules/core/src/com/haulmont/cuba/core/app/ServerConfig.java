@@ -162,8 +162,7 @@ public interface ServerConfig extends Config {
     boolean getEntityAttributePermissionChecking();
 
     /**
-     * If set to false, attribute permissions are not enforced on Middleware. This is appropriate if only server-side
-     * clients are used.
+     * If set to true and query for loading values doesn't check the security constraints, error should be occurred
      */
     @Property("cuba.constraintErrorOnLoadValues")
     @Source(type = SourceType.DATABASE)

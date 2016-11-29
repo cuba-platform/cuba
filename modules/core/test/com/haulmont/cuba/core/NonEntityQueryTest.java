@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.core;
 
+import com.haulmont.cuba.core.app.ConfigStorageService;
+import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.*;
@@ -30,6 +32,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -41,7 +44,8 @@ public class NonEntityQueryTest {
     @ClassRule
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
-    private static final String USER_NAME = "testUser";
+    private static final String USER_NAME_1 = "testUser1";
+    private static final String USER_NAME_2 = "testUser2";
     private static final String USER_PASSWORD = "testUser";
 
     private DataManager dataManager;
@@ -49,7 +53,11 @@ public class NonEntityQueryTest {
 
     private UUID serverId, role1Id,
             permission1Id, permission2Id,
-            userId, groupId, userRole1Id;
+            user1Id, user2Id,
+            group1Id, group2Id,
+            constraint1Id, constraint2Id,
+            userRole1Id,
+            entitySnapshotId;
 
     @Before
     public void setUp() throws Exception {
@@ -59,12 +67,20 @@ public class NonEntityQueryTest {
         Transaction tx = cont.persistence().createTransaction();
         try {
             EntityManager em = cont.persistence().getEntityManager();
+            UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+            UserSession userSession = uss.getUserSession();
 
             Server server = new Server();
             server.setName("someServer");
             server.setRunning(false);
             serverId = server.getId();
             em.persist(server);
+
+            EntitySnapshot entitySnapshot = new EntitySnapshot();
+            entitySnapshot.setSnapshotDate(new Date());
+            entitySnapshot.setAuthor(userSession.getCurrentOrSubstitutedUser());
+            entitySnapshotId = entitySnapshot.getId();
+            em.persist(entitySnapshot);
 
             Role role1 = new Role();
             role1Id = role1.getId();
@@ -87,17 +103,17 @@ public class NonEntityQueryTest {
             permission2.setValue(0);
             em.persist(permission2);
 
-            Group group = new Group();
-            groupId = group.getId();
-            group.setName("testGroup");
-            em.persist(group);
+            Group group1 = new Group();
+            group1Id = group1.getId();
+            group1.setName("testGroup1");
+            em.persist(group1);
 
             User user1 = new User();
-            userId = user1.getId();
-            user1.setName(USER_NAME);
-            user1.setLogin(USER_NAME);
-            user1.setPassword(passwordEncryption.getPasswordHash(userId, USER_PASSWORD));
-            user1.setGroup(group);
+            user1Id = user1.getId();
+            user1.setName(USER_NAME_1);
+            user1.setLogin(USER_NAME_1);
+            user1.setPassword(passwordEncryption.getPasswordHash(user1Id, USER_PASSWORD));
+            user1.setGroup(group1);
             em.persist(user1);
 
             UserRole userRole1 = new UserRole();
@@ -105,6 +121,34 @@ public class NonEntityQueryTest {
             userRole1.setUser(user1);
             userRole1.setRole(role1);
             em.persist(userRole1);
+
+            Group group2 = new Group();
+            group2Id = group2.getId();
+            group2.setName("testGroup2");
+            em.persist(group2);
+
+            Constraint constraint1 = new Constraint();
+            constraint1Id = constraint1.getId();
+            constraint1.setEntityName("sys$Server");
+            constraint1.setWhereClause("{E}.running = true");
+            constraint1.setGroup(group2);
+            em.persist(constraint1);
+
+            Constraint constraint2 = new Constraint();
+            constraint2Id = constraint2.getId();
+            constraint2.setEntityName("sys$EntitySnapshot");
+            constraint2.setCheckType(ConstraintCheckType.MEMORY);
+            constraint2.setGroovyScript("{E}.viewXml = 'xml'");
+            constraint2.setGroup(group2);
+            em.persist(constraint2);
+
+            User user2 = new User();
+            user2Id = user2.getId();
+            user2.setName(USER_NAME_2);
+            user2.setLogin(USER_NAME_2);
+            user2.setPassword(passwordEncryption.getPasswordHash(user2Id, USER_PASSWORD));
+            user2.setGroup(group2);
+            em.persist(user2);
 
             tx.commit();
         } finally {
@@ -118,8 +162,10 @@ public class NonEntityQueryTest {
         cont.deleteRecord("SEC_USER_ROLE", userRole1Id);
         cont.deleteRecord("SEC_PERMISSION", permission1Id, permission2Id);
         cont.deleteRecord("SEC_ROLE", role1Id);
-        cont.deleteRecord("SEC_USER", userId);
-        cont.deleteRecord("SEC_GROUP", groupId);
+        cont.deleteRecord("SEC_USER", user1Id, user2Id);
+        cont.deleteRecord("SEC_CONSTRAINT", constraint1Id, constraint2Id);
+        cont.deleteRecord("SEC_GROUP", group1Id, group2Id);
+        cont.deleteRecord("SYS_ENTITY_SNAPSHOT", entitySnapshotId);
     }
 
     @Test
@@ -128,16 +174,16 @@ public class NonEntityQueryTest {
                 .setQuery(ValueLoadContext.createQuery("select u.id, u.login from sec$User u where u.id = :id1 or u.id = :id2 order by u.login")
                     .setParameter("id1", TestSupport.ADMIN_USER_ID)
                     .setParameter("id2", TestSupport.ANONYMOUS_USER_ID))
-                .addProperty("userId").addProperty("login");
+                .addProperty("user1Id").addProperty("login");
 
         List<KeyValueEntity> list = dataManager.loadValues(context);
 
         assertEquals(2, list.size());
         KeyValueEntity e = list.get(0);
-        assertEquals(TestSupport.ADMIN_USER_ID, e.getValue("userId"));
+        assertEquals(TestSupport.ADMIN_USER_ID, e.getValue("user1Id"));
         assertEquals("admin", e.getValue("login"));
         e = list.get(1);
-        assertEquals(TestSupport.ANONYMOUS_USER_ID, e.getValue("userId"));
+        assertEquals(TestSupport.ANONYMOUS_USER_ID, e.getValue("user1Id"));
         assertEquals("anonymous", e.getValue("login"));
     }
 
@@ -159,7 +205,7 @@ public class NonEntityQueryTest {
     @Test
     public void testDeniedAttribute() throws Exception {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-        UserSession userSession = lw.login(USER_NAME, passwordEncryption.getPlainHash(USER_PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login(USER_NAME_1, passwordEncryption.getPlainHash(USER_PASSWORD), Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -217,4 +263,95 @@ public class NonEntityQueryTest {
             ((TestUserSessionSource) uss).setUserSession(savedUserSession);
         }
     }
+
+    @Test
+    public void testConstraints() throws Exception {
+        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
+        UserSession userSession = lw.login(USER_NAME_2, passwordEncryption.getPlainHash(USER_PASSWORD), Locale.getDefault());
+        assertNotNull(userSession);
+
+        UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+        UserSession savedUserSession = uss.getUserSession();
+        ((TestUserSessionSource) uss).setUserSession(userSession);
+        try {
+            ValueLoadContext context = ValueLoadContext.create();
+            context.setQueryString("select s.name from sys$Server s");
+            context.addProperty("name");
+
+            List<KeyValueEntity> list = dataManager.secure().loadValues(context);
+            assertEquals(0, list.size());
+        } finally {
+            ((TestUserSessionSource) uss).setUserSession(savedUserSession);
+        }
+    }
+
+    @Test
+    public void testInMemoryAndSeveralConstraints() throws Exception {
+        ConfigStorageService configStorageService = AppBeans.get(ConfigStorageService.class);
+        configStorageService.setDbProperty("cuba.constraintErrorOnLoadValues", "false");
+
+        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
+        UserSession userSession = lw.login(USER_NAME_2, passwordEncryption.getPlainHash(USER_PASSWORD), Locale.getDefault());
+        assertNotNull(userSession);
+
+        UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+        UserSession savedUserSession = uss.getUserSession();
+        ((TestUserSessionSource) uss).setUserSession(userSession);
+        try {
+            ValueLoadContext context = ValueLoadContext.create();
+            context.setQueryString("select s.viewXml from sys$EntitySnapshot s");
+            context.addProperty("viewXml");
+
+            List<KeyValueEntity> list = dataManager.secure().loadValues(context);
+            assertEquals(1, list.size());
+
+            context  = ValueLoadContext.create();
+            context.setQueryString("select s.name, sn.viewXml from sys$Server s, sys$EntitySnapshot sn");
+            context.addProperty("name");
+            context.addProperty("viewXml");
+
+            list = dataManager.secure().loadValues(context);
+            assertEquals(0, list.size());
+        } finally {
+            ((TestUserSessionSource) uss).setUserSession(savedUserSession);
+        }
+    }
+
+    @Test
+    public void testInMemoryAndSeveralConstraintsWithError() throws Exception {
+        ConfigStorageService configStorageService = AppBeans.get(ConfigStorageService.class);
+        configStorageService.setDbProperty("cuba.constraintErrorOnLoadValues", "true");
+
+        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
+        UserSession userSession = lw.login(USER_NAME_2, passwordEncryption.getPlainHash(USER_PASSWORD), Locale.getDefault());
+        assertNotNull(userSession);
+
+        UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+        UserSession savedUserSession = uss.getUserSession();
+        ((TestUserSessionSource) uss).setUserSession(userSession);
+        try {
+            ValueLoadContext context = ValueLoadContext.create();
+            context.setQueryString("select s.viewXml from sys$EntitySnapshot s");
+            context.addProperty("viewXml");
+
+            try {
+                dataManager.secure().loadValues(context);
+                fail();
+            } catch (RowLevelSecurityException e) {
+            }
+
+            context  = ValueLoadContext.create();
+            context.setQueryString("select s.name, sn.viewXml from sys$Server s, sys$EntitySnapshot sn");
+            context.addProperty("name");
+            context.addProperty("viewXml");
+            try {
+                dataManager.secure().loadValues(context);
+                fail();
+            } catch (RowLevelSecurityException e) {
+            }
+        } finally {
+            ((TestUserSessionSource) uss).setUserSession(savedUserSession);
+        }
+    }
+
 }
