@@ -17,11 +17,9 @@
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.components.listeditor.ListEditorPopupWindow"
         caption="msg://listEditorPopup.caption">
-    <layout spacing="true" expand="scrollbox">
+    <layout spacing="true" expand="valuesLayout">
         <hbox id="addItemLayout" spacing="true" width="100%"/>
-        <scrollBox id="scrollbox" scrollBars="both">
-            <vbox id="valuesLayout" spacing="true"/>
-        </scrollBox>
+        <scrollBox id="valuesLayout" scrollBars="both"/>
         <hbox id="buttonsPanel" spacing="true">
             <button id="commit" invoke="commit" caption="mainMsg://actions.Ok" icon="icons/ok.png"/>
             <button id="close" invoke="cancel" caption="mainMsg://actions.Cancel" icon="icons/cancel.png"/>

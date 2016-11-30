@@ -51,7 +51,7 @@ public class ListEditorPopupWindow extends AbstractWindow {
     protected HBoxLayout addItemLayout;
 
     @Inject
-    protected VBoxLayout valuesLayout;
+    protected ScrollBoxLayout valuesLayout;
 
     @Inject
     protected ComponentsFactory componentsFactory;
@@ -270,7 +270,7 @@ public class ListEditorPopupWindow extends AbstractWindow {
             }
         });
         itemLayout.add(delItemBtn);
-        delItemBtn.setAlignment(Alignment.MIDDLE_LEFT);
+//        delItemBtn.setAlignment(Alignment.MIDDLE_LEFT);
 
         valuesLayout.add(itemLayout);
         valuesMap.put(value, str);
