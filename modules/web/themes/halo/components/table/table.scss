@@ -248,4 +248,9 @@
   .#{$primary-stylename} .cuba-sort-indicator-visible {
     opacity: 1;
   }
+
+  .v-ff & .v-table-header tr > .c-grouptable-group-divider-header:first-child .v-table-caption-container {
+    padding-left: 8px;
+    border-left: 0;
+  }
 }
