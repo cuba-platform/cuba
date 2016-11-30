@@ -23,17 +23,26 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.filter.SecurityJpqlGenerator;
 import com.haulmont.cuba.gui.ScreensHelper;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.components.autocomplete.JpqlSuggestionFactory;
 import com.haulmont.cuba.gui.components.autocomplete.Suggestion;
+import com.haulmont.cuba.gui.components.filter.ConditionsTree;
+import com.haulmont.cuba.gui.components.filter.FakeFilterSupport;
+import com.haulmont.cuba.gui.components.filter.FilterParser;
+import com.haulmont.cuba.gui.components.filter.Param;
+import com.haulmont.cuba.gui.components.filter.edit.FilterEditor;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
@@ -42,7 +51,10 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.security.entity.FilterEntity;
+import javafx.scene.layout.HBox;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -50,7 +62,6 @@ import java.util.*;
 /**
  * Class that encapsulates editing of {@link com.haulmont.cuba.core.entity.CategoryAttribute} entities.
  * <p>
- *
  */
 public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected static final Multimap<PropertyType, String> FIELDS_VISIBLE_FOR_DATATYPES = ArrayListMultimap.create();
@@ -79,6 +90,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "width");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "joinClause");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "whereClause");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "constraintWizard");
     }
 
     protected CategoryAttribute attribute;
@@ -286,6 +298,22 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             return joinField;
         });
 
+        attributeFieldGroup.addCustomField("constraintWizard", (datasource, propertyId) -> {
+            HBoxLayout hbox = factory.createComponent(HBoxLayout.class);
+            hbox.setWidth("100%");
+            LinkButton linkButton = factory.createComponent(LinkButton.class);
+            linkButton.setAction(new BaseAction("constraintWizard") {
+                @Override
+                public void actionPerform(Component component) {
+                    openConstraintWizard();
+                }
+            });
+            linkButton.setCaption(getMessage("constraintWizard"));
+            linkButton.setAlignment(Alignment.MIDDLE_LEFT);
+            hbox.add(linkButton);
+            return hbox;
+        });
+
         attributeDs.addItemPropertyChangeListener(e -> {
             String property = e.getProperty();
             CategoryAttribute attribute = getItem();
@@ -304,6 +332,40 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         });
     }
 
+    public void openConstraintWizard() {
+        Class entityClass = attribute.getJavaClassForEntity();
+        if (entityClass == null) {
+            showNotification(getMessage("selectEntityType"));
+            return;
+        }
+        MetaClass metaClass = metadata.getClassNN(entityClass);
+        FakeFilterSupport fakeFilterSupport = new FakeFilterSupport(this, metaClass);
+
+        final Filter fakeFilter = fakeFilterSupport.createFakeFilter();
+        final FilterEntity filterEntity = fakeFilterSupport.createFakeFilterEntity(attribute.getFilterXml());
+        final ConditionsTree conditionsTree = fakeFilterSupport.createFakeConditionsTree(fakeFilter, filterEntity);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("filter", fakeFilter);
+        params.put("filterEntity", filterEntity);
+        params.put("conditions", conditionsTree);
+        params.put("useShortConditionForm", true);
+
+        FilterEditor filterEditor = (FilterEditor) openWindow("filterEditor", WindowManager.OpenType.DIALOG, params);
+        filterEditor.addCloseListener(actionId -> {
+            if (!COMMIT_ACTION_ID.equals(actionId)) return;
+            FilterParser filterParser1 = AppBeans.get(FilterParser.class);
+            filterEntity.setXml(filterParser1.getXml(filterEditor.getConditions(), Param.ValueProperty.DEFAULT_VALUE));
+            if (filterEntity.getXml() != null) {
+                Element element = Dom4j.readDocument(filterEntity.getXml()).getRootElement();
+                com.haulmont.cuba.core.global.filter.FilterParser filterParser = new com.haulmont.cuba.core.global.filter.FilterParser(element);
+                String jpql = new SecurityJpqlGenerator().generateJpql(filterParser.getRoot());
+                attribute.setWhereClause(jpql);
+                attribute.setFilterXml(filterEntity.getXml());
+            }
+        });
+    }
+
     private void setupVisibility() {
         for (FieldGroup.FieldConfig fieldConfig : attributeFieldGroup.getFields()) {
             if (!ALWAYS_VISIBLE_FIELDS.contains(fieldConfig.getId())) {
@@ -314,7 +376,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         Collection<String> componentIds = FIELDS_VISIBLE_FOR_DATATYPES.get(attribute.getDataType());
         if (componentIds != null) {
             for (String componentId : componentIds) {
-                attributeFieldGroup.getFieldComponent(componentId).setVisible(true);
+                attributeFieldGroup.setVisible(componentId, true);
             }
         }
 

@@ -45,6 +45,7 @@
                         <field id="entityClass" custom="true" required="true" width="100%"/>
                         <field id="screen" custom="true" width="100%"/>
                         <field id="lookup"/>
+                        <field id="constraintWizard" custom="true" caption=""/>
                         <field id="joinClause" width="100%" custom="true"/>
                         <field id="whereClause" width="100%" rows="3" custom="true"/>
                         <field id="width" width="100%">

@@ -83,6 +83,7 @@ create table SYS_CATEGORY_ATTR (
     IS_COLLECTION char(1),
     JOIN_CLAUSE varchar2(4000),
     WHERE_CLAUSE varchar2(4000),
+    FILTER_XML clob,
 
     primary key(ID)
 )^

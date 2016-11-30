@@ -115,6 +115,9 @@ public class CategoryAttribute extends StandardEntity {
     @Column(name = "JOIN_CLAUSE")
     private String joinClause;
 
+    @Column(name = "FILTER_XML")
+    protected String filterXml;
+
     public void setCategory(Category entityType) {
         this.category = entityType;
     }
@@ -320,6 +323,14 @@ public class CategoryAttribute extends StandardEntity {
 
     public void setJoinClause(String joinClause) {
         this.joinClause = joinClause;
+    }
+
+    public String getFilterXml() {
+        return filterXml;
+    }
+
+    public void setFilterXml(String filterXml) {
+        this.filterXml = filterXml;
     }
 
     public Set<String> targetScreensSet() {

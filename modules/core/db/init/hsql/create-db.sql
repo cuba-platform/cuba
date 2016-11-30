@@ -720,6 +720,7 @@ create table SYS_CATEGORY_ATTR(
     IS_COLLECTION boolean,
     JOIN_CLAUSE varchar(4000),
     WHERE_CLAUSE varchar(4000),
+    FILTER_XML longvarchar,
     --
     primary key (ID)
 )^
