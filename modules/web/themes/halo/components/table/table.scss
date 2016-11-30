@@ -256,4 +256,9 @@
       margin-top: -1 * ($v-unit-size + ceil($v-layout-spacing-vertical));
     }
   }
+
+  .v-ff & .v-table-header tr > .c-grouptable-group-divider-header:first-child .v-table-caption-container {
+    padding-left: 8px;
+    border-left: 0;
+  }
 }

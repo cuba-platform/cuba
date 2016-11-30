@@ -374,6 +374,15 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
     }
 
     @Override
+    public void forceReassignColumnWidths() {
+        int visibleCellCount = tHead.getVisibleCellCount();
+        for (int i = 0; i < visibleCellCount; i++) {
+            HeaderCell hcell = tHead.getHeaderCell(i);
+            reassignHeaderCellWidth(i, hcell, hcell.getMinWidth());
+        }
+    }
+
+    @Override
     protected void reassignHeaderCellWidth(int colIndex, HeaderCell hcell, int minWidth) {
         for (Widget rowWidget : ((CubaTreeTableWidget.CubaTreeTableBody) scrollBody).getRenderedRows()) {
             if (isGenericRow(rowWidget)) {
