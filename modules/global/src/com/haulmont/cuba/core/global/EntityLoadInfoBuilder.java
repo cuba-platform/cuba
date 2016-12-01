@@ -70,7 +70,7 @@ public class EntityLoadInfoBuilder {
 
     /**
      * Parse an info from the string.
-     * @param str   string representation of the info
+     * @param str   string representation of the info. See {@link EntityLoadInfo} for formats.
      * @return      info instance or null if the string can not be parsed. Any exception is silently swallowed.
      */
     @Nullable
