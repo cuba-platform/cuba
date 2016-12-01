@@ -33,10 +33,10 @@ import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
 import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
+import com.haulmont.cuba.web.toolkit.ui.CubaCssLayout;
 import com.vaadin.data.Property;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.Field;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.StringUtils;
 
@@ -44,7 +44,9 @@ import java.util.List;
 
 import static com.vaadin.server.Sizeable.Unit;
 
-public class WebUserIndicator extends WebAbstractComponent<HorizontalLayout> implements UserIndicator {
+public class WebUserIndicator extends WebAbstractComponent<CubaCssLayout> implements UserIndicator {
+
+    protected static final String USER_INDICATOR_STYLENAME = "c-userindicator";
 
     protected UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
 
@@ -52,7 +54,16 @@ public class WebUserIndicator extends WebAbstractComponent<HorizontalLayout> imp
     protected CubaComboBox userComboBox;
 
     public WebUserIndicator() {
-        component = new HorizontalLayout();
+        component = new CubaCssLayout();
+
+        setStyleName(USER_INDICATOR_STYLENAME);
+    }
+
+    @Override
+    public void setStyleName(String name) {
+        super.setStyleName(name);
+
+        component.addStyleName(USER_INDICATOR_STYLENAME);
     }
 
     @Override
