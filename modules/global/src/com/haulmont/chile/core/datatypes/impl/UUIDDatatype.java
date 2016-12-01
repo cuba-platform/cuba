@@ -56,7 +56,15 @@ public class UUIDDatatype implements Datatype<UUID> {
 
     @Override
     public UUID parse(String value) throws ParseException {
-        return StringUtils.isBlank(value) ? null : UuidProvider.fromString(value.trim());
+        if (StringUtils.isBlank(value)) {
+            return null;
+        } else {
+            try {
+                return UuidProvider.fromString(value.trim());
+            } catch (Exception e) {
+                throw new ParseException("Error parsing UUID", 0);
+            }
+        }
     }
 
     @Override
