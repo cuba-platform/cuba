@@ -131,15 +131,25 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
             //recreate default value component based on param type
             if (!initializing && defaultValueLayout.isVisible()) {
+                ParamType paramType = (ParamType) e.getValue();
                 if ((isEntity || isEnum) && (entitySelect.getValue() == null)) {
                     defaultValueLayout.remove(defaultValueComponent);
                     param.setJavaClass(null);
                 } else {
-                    Class paramJavaClass = getParamJavaClass((ParamType) e.getValue());
+                    Class paramJavaClass = getParamJavaClass(paramType);
                     param.setJavaClass(paramJavaClass);
                     param.setDefaultValue(null);
                     createDefaultValueComponent();
                 }
+            }
+        });
+
+        inExprCb.addValueChangeListener(e -> {
+            condition.getParam().setInExpr(BooleanUtils.isTrue((Boolean) e.getValue()));
+            //recreate default value component based on "in list" checkbox value
+            if (!initializing && defaultValueLayout.isVisible()) {
+                condition.getParam().setDefaultValue(null);
+                createDefaultValueComponent();
             }
         });
 

@@ -210,6 +210,14 @@ public class Param {
         }
     }
 
+    public boolean isInExpr() {
+        return inExpr;
+    }
+
+    public void setInExpr(boolean inExpr) {
+        this.inExpr = inExpr;
+    }
+
     public Class getJavaClass() {
         return javaClass;
     }
