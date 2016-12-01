@@ -36,6 +36,7 @@ import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.condition.FilterConditionUtils;
+import com.haulmont.cuba.gui.components.listeditor.ListEditorHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
@@ -497,24 +498,21 @@ public class Param {
 
 
     protected Component createTextField(final ValueProperty valueProperty) {
-        TextField field = componentsFactory.createComponent(TextField.class);
+        if (inExpr) {
+            ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+            listEditor.setItemType(ListEditor.ItemType.STRING);
+            initListEditor(listEditor, valueProperty);
+            return listEditor;
+        }
 
+        TextField field = componentsFactory.createComponent(TextField.class);
         field.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
 
         field.addValueChangeListener(e -> {
             Object paramValue = null;
             if (!StringUtils.isBlank((String) e.getValue())) {
-                if (inExpr) {
-                    paramValue = new ArrayList<String>();
-                    String[] parts = ((String) e.getValue()).split(",");
-                    for (String part : parts) {
-                        ((List) paramValue).add(part.trim());
-                    }
-                } else {
-                    paramValue = e.getValue();
-                }
+                paramValue = e.getValue();
             }
-
             if (paramValue instanceof String) {
                 Configuration configuration = AppBeans.get(Configuration.NAME);
                 if (configuration.getConfig(ClientConfig.class).getGenericFilterTrimParamValues()) {
@@ -548,9 +546,12 @@ public class Param {
                     javaClass = java.sql.Date.class;
                 }
             }
-            final InListParamComponent inListParamComponent = new InListParamComponent(javaClass);
-            initListEdit(inListParamComponent, valueProperty);
-            return inListParamComponent.getComponent();
+
+            ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+            ListEditor.ItemType itemType = java.sql.Date.class.equals(javaClass) ? ListEditor.ItemType.DATE : ListEditor.ItemType.DATETIME;
+            listEditor.setItemType(itemType);
+            initListEditor(listEditor, valueProperty);
+            return listEditor;
         }
 
         DateField dateField = componentsFactory.createComponent(DateField.class);
@@ -583,6 +584,12 @@ public class Param {
     }
 
     protected Component createNumberField(final Datatype datatype, final ValueProperty valueProperty) {
+        if (inExpr) {
+            ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+            listEditor.setItemType(ListEditorHelper.itemTypeFromDatatype(datatype));
+            initListEditor(listEditor, valueProperty);
+            return listEditor;
+        }
         TextField field = componentsFactory.createComponent(TextField.class);
 
         field.addValueChangeListener(e -> {
@@ -592,28 +599,12 @@ public class Param {
                 UserSessionSource userSessionSource1 = AppBeans.get(UserSessionSource.NAME);
 
                 Object v;
-                if (inExpr) {
-                    v = new ArrayList();
-                    String[] parts = ((String) e.getValue()).split(",");
-                    for (String part : parts) {
-                        Object p;
-                        try {
-                            p = datatype.parse(part, userSessionSource1.getLocale());
-                        } catch (ParseException ex) {
-                            WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
-                            wm.showNotification(messages.getMainMessage("filter.param.numberInvalid"), Frame.NotificationType.ERROR);
-                            return;
-                        }
-                        ((List) v).add(p);
-                    }
-                } else {
-                    try {
-                        v = datatype.parse((String) e.getValue(), userSessionSource1.getLocale());
-                    } catch (ParseException ex) {
-                        WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
-                        wm.showNotification(messages.getMainMessage("filter.param.numberInvalid"), Frame.NotificationType.ERROR);
-                        return;
-                    }
+                try {
+                    v = datatype.parse((String) e.getValue(), userSessionSource1.getLocale());
+                } catch (ParseException ex) {
+                    WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
+                    wm.showNotification(messages.getMainMessage("filter.param.numberInvalid"), Frame.NotificationType.TRAY);
+                    return;
                 }
                 _setValue(v, valueProperty);
             } else if (e.getValue() instanceof String && StringUtils.isBlank((String) e.getValue())) {
@@ -648,6 +639,13 @@ public class Param {
     }
 
     protected Component createUuidField(final ValueProperty valueProperty) {
+        if (inExpr) {
+            ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+            listEditor.setItemType(ListEditor.ItemType.UUID);
+            initListEditor(listEditor, valueProperty);
+            return listEditor;
+        }
+
         TextField field = componentsFactory.createComponent(TextField.class);
 
         field.addValueChangeListener(e -> {
@@ -657,24 +655,10 @@ public class Param {
             } else if ((!StringUtils.isBlank(strValue))) {
                 Messages messages1 = AppBeans.get(Messages.NAME);
 
-                if (inExpr) {
-                    List list = new ArrayList();
-                    String[] parts = strValue.split(",");
-                    try {
-                        for (String part : parts) {
-                            list.add(UUID.fromString(part.trim()));
-                        }
-                        _setValue(list, valueProperty);
-                    } catch (IllegalArgumentException ie) {
-                        AppBeans.get(WindowManagerProvider.class).get().showNotification(messages1.getMainMessage("filter.param.uuid.Err"), Frame.NotificationType.TRAY);
-                        _setValue(null, valueProperty);
-                    }
-                } else {
-                    try {
-                        _setValue(UUID.fromString(strValue), valueProperty);
-                    } catch (IllegalArgumentException ie) {
-                        AppBeans.get(WindowManagerProvider.class).get().showNotification(messages1.getMainMessage("filter.param.uuid.Err"), Frame.NotificationType.TRAY);
-                    }
+                try {
+                    _setValue(UUID.fromString(strValue), valueProperty);
+                } catch (IllegalArgumentException ie) {
+                    AppBeans.get(WindowManagerProvider.class).get().showNotification(messages1.getMainMessage("filter.param.uuid.Err"), Frame.NotificationType.TRAY);
                 }
             } else if (StringUtils.isBlank(strValue)) {
                 _setValue(null, valueProperty);
@@ -684,14 +668,11 @@ public class Param {
         });
 
         Object _value = _getValue(valueProperty);
-        if (_value instanceof List) {
-            field.setValue(StringUtils.join((Collection) _value, ","));
-        } else if (_value instanceof String) {
+        if (_value instanceof String) {
             field.setValue(_value);
         } else {
             field.setValue("");
         }
-
         return field;
     }
 
@@ -706,9 +687,11 @@ public class Param {
 
         if (useLookupScreen) {
             if (inExpr) {
-                final InListParamComponent inListParamComponent = new InListParamComponent(metaClass);
-                initListEdit(inListParamComponent, valueProperty);
-                return inListParamComponent.getComponent();
+                ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+                listEditor.setItemType(ListEditor.ItemType.ENTITY);
+                listEditor.setEntityName(metaClass.getName());
+                initListEditor(listEditor, valueProperty);
+                return listEditor;
             } else {
                 PickerField picker = componentsFactory.createComponent(PickerField.class);
                 picker.setMetaClass(metaClass);
@@ -727,9 +710,13 @@ public class Param {
             CollectionDatasource<Entity<Object>, Object> optionsDataSource = createOptionsDataSource(metaClass);
 
             if (inExpr) {
-                final InListParamComponent inListParamComponent = new InListParamComponent(optionsDataSource);
-                initListEdit(inListParamComponent, valueProperty);
-                return inListParamComponent.getComponent();
+                ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+                listEditor.setItemType(ListEditor.ItemType.ENTITY);
+                listEditor.setEntityName(metaClass.getName());
+                listEditor.setUseLookupField(true);
+                listEditor.setEntityWhereClause(entityWhere);
+                initListEditor(listEditor, valueProperty);
+                return listEditor;
             } else {
                 final LookupPickerField lookup = componentsFactory.createComponent(LookupPickerField.class);
                 lookup.addClearAction();
@@ -776,9 +763,12 @@ public class Param {
 
     protected Component createEnumLookup(final ValueProperty valueProperty) {
         if (inExpr) {
-            final InListParamComponent inListParamComponent = new InListParamComponent(javaClass);
-            initListEdit(inListParamComponent, valueProperty);
-            return inListParamComponent.getComponent();
+            ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+            listEditor.setItemType(ListEditor.ItemType.ENUM);
+            listEditor.setEnumClass(javaClass);
+            initListEditor(listEditor, valueProperty);
+            return listEditor;
+
         } else {
             LookupField lookup = componentsFactory.createComponent(LookupField.class);
             List options = Arrays.asList(javaClass.getEnumConstants());
@@ -816,9 +806,11 @@ public class Param {
         }
 
         if (inExpr) {
-            final InListParamComponent inListParamComponent = new InListParamComponent(runtimeEnum);
-            initListEdit(inListParamComponent, valueProperty);
-            return inListParamComponent.getComponent();
+            ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+            listEditor.setItemType(ListEditor.ItemType.STRING);
+            listEditor.setOptionsList(runtimeEnum);
+            initListEditor(listEditor, valueProperty);
+            return listEditor;
         } else {
             LookupField lookup = componentsFactory.createComponent(LookupField.class);
             lookup.setOptionsList(runtimeEnum);
@@ -833,16 +825,17 @@ public class Param {
         }
     }
 
-    protected void initListEdit(InListParamComponent component, ValueProperty valueProperty) {
-        component.addValueListener((prevValue, value1) -> _setValue(value1, valueProperty));
-
-        Object _value = _getValue(valueProperty);
-        if (_value != null) {
-            Map<Object, String> values = new HashMap<>();
-            for (Object v : (List) _value) {
-                values.put(v, getValueCaption(v));
+    protected void initListEditor(ListEditor listEditor, ValueProperty valueProperty) {
+        listEditor.addValueChangeListener(e -> {
+            Object value = e.getValue();
+            if (value instanceof List && ((List) value).isEmpty()) {
+                value = null;
             }
-            component.setValues(values);
+            _setValue(value, valueProperty);
+        });
+        Object value = _getValue(valueProperty);
+        if (value != null) {
+            listEditor.setValue(value);
         }
     }
 

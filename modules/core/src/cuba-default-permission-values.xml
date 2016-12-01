@@ -32,7 +32,6 @@
     <permission target="filterEditor" value="1" type="10"/>
     <permission target="filterSelect" value="1" type="10"/>
     <permission target="groupConditionFrame" value="1" type="10"/>
-    <permission target="inListParamEditor" value="1" type="10"/>
     <permission target="layoutAnalyzer" value="1" type="10"/>
     <permission target="mainWindow" value="1" type="10"/>
     <permission target="multiuploadDialog" value="1" type="10"/>
