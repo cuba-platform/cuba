@@ -112,13 +112,18 @@ public class DesktopListEditor extends DesktopAbstractField<JPanel> implements L
     }
 
     @Override
-    public List<Object> getOptionsList() {
+    public List<?> getOptionsList() {
         return delegate.getOptionsList();
     }
 
     @Override
-    public void setOptionsList(List<Object> optionsList) {
+    public void setOptionsList(List<?> optionsList) {
         delegate.setOptionsList(optionsList);
+    }
+
+    @Override
+    public void setClearButtonVisible(boolean visible) {
+        delegate.setClearButtonVisible(visible);
     }
 
     @Override

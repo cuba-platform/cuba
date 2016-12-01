@@ -56,10 +56,10 @@
 
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
-    border-left: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 
-    border-top-right-radius: $v-border-radius;
-    border-bottom-right-radius: $v-border-radius;
+    border-left: 0;
 
     color: mix($v-textfield-background-color, valo-font-color($v-textfield-background-color));
     background: $v-textfield-background-color;
@@ -109,6 +109,16 @@
 
     .v-button-caption {
       display: none;
+    }
+  }
+
+  .#{$primary-stylename}-layout .v-slot-c-listeditor-button:last-child > .v-button.#{$primary-stylename}-button {
+    border-top-right-radius: $v-border-radius;
+    border-bottom-right-radius: $v-border-radius;
+
+    &:focus {
+      border-top-right-radius: $v-border-radius;
+      border-bottom-right-radius: $v-border-radius;
     }
   }
 

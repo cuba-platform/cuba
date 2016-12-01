@@ -20,6 +20,7 @@ import com.google.common.base.Joiner;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.springframework.context.annotation.Scope;
@@ -64,6 +65,7 @@ public class ListEditorDelegateImpl implements ListEditorDelegate{
 
     protected TextField displayValuesField;
     protected HBoxLayout layout;
+    protected Button clearBtn;
 
     protected boolean displayDescription = true;
 
@@ -130,10 +132,13 @@ public class ListEditorDelegateImpl implements ListEditorDelegate{
     @Override
     public void setValue(List newValue) {
         this.value = newValue;
-        List<String> captions = ((List<Object>)newValue).stream()
-                .map(o -> ListEditorHelper.getValueCaption(o, itemType))
-                .collect(Collectors.toList());
-        String strValue = Joiner.on(", ").join(captions);
+        String strValue = null;
+        if (newValue != null) {
+            List<String> captions = ((List<Object>) newValue).stream()
+                    .map(o -> ListEditorHelper.getValueCaption(o, itemType))
+                    .collect(Collectors.toList());
+            strValue = Joiner.on(", ").join(captions);
+        }
         displayValuesField.setValue(strValue);
         if (displayDescription) {
             displayValuesField.setDescription(strValue);
@@ -237,5 +242,28 @@ public class ListEditorDelegateImpl implements ListEditorDelegate{
     @Override
     public void setEntityWhereClause(String entityWhereClause) {
         this.entityWhereClause = entityWhereClause;
+    }
+
+    @Override
+    public void setClearButtonVisible(boolean visible) {
+        if (visible) {
+            addClearBtn();
+        } else {
+            layout.remove(clearBtn);
+        }
+    }
+
+    protected void addClearBtn() {
+        clearBtn = componentsFactory.createComponent(Button.class);
+        clearBtn.setIcon("components/pickerfield/images/clear-btn.png");
+        clearBtn.setStyleName("c-listeditor-button");
+        clearBtn.setCaption("");
+        clearBtn.setAction(new BaseAction("clear") {
+            @Override
+            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                actualField.setValue(null);
+            }
+        });
+        layout.add(clearBtn);
     }
 }

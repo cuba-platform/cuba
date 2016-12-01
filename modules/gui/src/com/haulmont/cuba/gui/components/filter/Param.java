@@ -837,6 +837,7 @@ public class Param {
         if (value != null) {
             listEditor.setValue(value);
         }
+        listEditor.setClearButtonVisible(true);
     }
 
     public void toXml(Element element, ValueProperty valueProperty) {

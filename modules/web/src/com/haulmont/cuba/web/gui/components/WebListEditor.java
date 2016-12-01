@@ -135,8 +135,13 @@ public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor
     }
 
     @Override
+    public void setClearButtonVisible(boolean visible) {
+        delegate.setClearButtonVisible(visible);
+    }
+
+    @Override
     public void setValue(Object newValue) {
-        if (!(newValue instanceof List)) {
+        if (newValue != null && !(newValue instanceof List)) {
             throw new IllegalArgumentException("Value type must be List");
         }
         super.setValue(newValue);

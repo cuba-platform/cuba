@@ -72,6 +72,8 @@ public interface ListEditor extends Field {
 
     void setEnumClass(Class<? extends Enum> enumClass);
 
+    void setClearButtonVisible(boolean visible);
+
     enum ItemType {
         STRING,
         DATE,

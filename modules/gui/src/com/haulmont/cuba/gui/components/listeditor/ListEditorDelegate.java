@@ -73,4 +73,6 @@ public interface ListEditorDelegate {
     String getEntityWhereClause();
 
     void setEntityWhereClause(String entityWhereClause);
+
+    void setClearButtonVisible(boolean visible);
 }
