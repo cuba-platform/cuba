@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
@@ -183,13 +184,7 @@ public class ListEditorPopupWindow extends AbstractWindow {
                 addBtn.setAction(new AbstractAction("add") {
                     @Override
                     public void actionPerform(Component component) {
-                        Object value = componentForAdding.getValue();
-                        if (value != null) {
-                            componentForAdding.setValue(null);
-                            if (!valueExists(value)) {
-                                addValueToLayout(value, ListEditorHelper.getValueCaption(value, itemType));
-                            }
-                        }
+                        _addValue(componentForAdding);
                     }
                 });
                 addBtn.setCaption(getMessage("actions.Add"));
@@ -198,9 +193,27 @@ public class ListEditorPopupWindow extends AbstractWindow {
         }
     }
 
+    protected void _addValue(Field componentForAdding) {
+        Object value = componentForAdding.getValue();
+        if (value != null) {
+            componentForAdding.setValue(null);
+            if (!valueExists(value)) {
+                addValueToLayout(value, ListEditorHelper.getValueCaption(value, itemType));
+            }
+        }
+    }
+
     protected TextField createTextField(Datatype datatype) {
         TextField textField = componentsFactory.createComponent(TextField.class);
         textField.setDatatype(datatype);
+
+        FilterHelper.ShortcutListener shortcutListener = new FilterHelper.ShortcutListener("add", new KeyCombination(KeyCombination.Key.ENTER)) {
+            @Override
+            public void handleShortcutPressed() {
+                _addValue(textField);
+            }
+        };
+        AppBeans.get(FilterHelper.class).addShortcutListener(textField, shortcutListener);
         return textField;
     }
 
