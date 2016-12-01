@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components.listeditor;
 import com.haulmont.cuba.gui.components.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * The implementation of this class contains a logic for creation the {@link ListEditor} component, that is used by
@@ -51,9 +52,17 @@ public interface ListEditorDelegate {
 
     void setUseLookupField(boolean useLookupField);
 
-    List<Object> getOptionsList();
+    List<?> getOptionsList();
 
-    void setOptionsList(List<Object> optionsList);
+    void setOptionsList(List<?> optionsList);
+
+    Map<String, Object> getOptionsMap();
+
+    void setOptionsMap(Map<String, Object> optionsMap);
+
+    Class<? extends Enum> getEnumClass();
+
+    void setEnumClass(Class<? extends Enum> enumClass);
 
     void setDisplayDescription(boolean displayDescription);
 

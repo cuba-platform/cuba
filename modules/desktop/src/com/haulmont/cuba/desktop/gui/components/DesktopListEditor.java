@@ -26,6 +26,7 @@ import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
 import java.util.List;
+import java.util.Map;
 
 /**
  */
@@ -138,6 +139,26 @@ public class DesktopListEditor extends DesktopAbstractField<JPanel> implements L
     @Override
     public void setEntityWhereClause(String entityWhereClause) {
         delegate.setEntityWhereClause(entityWhereClause);
+    }
+
+    @Override
+    public Map<String, Object> getOptionsMap() {
+        return delegate.getOptionsMap();
+    }
+
+    @Override
+    public void setOptionsMap(Map<String, Object> optionsMap) {
+        delegate.setOptionsMap(optionsMap);
+    }
+
+    @Override
+    public Class<? extends Enum> getEnumClass() {
+        return delegate.getEnumClass();
+    }
+
+    @Override
+    public void setEnumClass(Class<? extends Enum> enumClass) {
+        delegate.setEnumClass(enumClass);
     }
 
     @Override

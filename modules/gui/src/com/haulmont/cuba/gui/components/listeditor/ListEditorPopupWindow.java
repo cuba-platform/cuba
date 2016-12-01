@@ -39,8 +39,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A dialog that is used for editing values of the {@link ListEditor} component.
@@ -79,6 +81,12 @@ public class ListEditorPopupWindow extends AbstractWindow {
 
     @WindowParam
     protected List<Object> optionsList;
+
+    @WindowParam
+    protected Map<String, Object> optionsMap;
+
+    @WindowParam
+    protected Class<? extends Enum> enumClass;
 
     @Inject
     protected Metadata metadata;
@@ -123,8 +131,14 @@ public class ListEditorPopupWindow extends AbstractWindow {
         addItemLayout.removeAll();
         final Field componentForAdding;
 
-        if (optionsList != null) {
-            componentForAdding = createLookupWithOptions();
+        if (optionsMap != null) {
+            componentForAdding = createLookupField();
+            ((LookupField)componentForAdding).setOptionsMap(optionsMap);
+            addItemLayout.add(componentForAdding);
+            addItemLayout.expand(componentForAdding);
+        } else if (optionsList != null) {
+            componentForAdding = createLookupField();
+            ((LookupField)componentForAdding).setOptionsList(optionsList);
             addItemLayout.add(componentForAdding);
             addItemLayout.expand(componentForAdding);
         } else {
@@ -145,11 +159,17 @@ public class ListEditorPopupWindow extends AbstractWindow {
                 case STRING:
                     componentForAdding = createTextField(Datatypes.get(String.class));
                     break;
+                case UUID:
+                    componentForAdding = createTextField(Datatypes.get(UUID.class));
+                    break;
                 case DATE:
                     componentForAdding = createComponentForDate(DateField.Resolution.DAY);
                     break;
                 case DATETIME:
                     componentForAdding = createComponentForDate(DateField.Resolution.MIN);
+                    break;
+                case ENUM:
+                    componentForAdding = createComponentForEnum();
                     break;
                 default:
                     throw new IllegalStateException("Cannot process the itemType " + itemType);
@@ -236,10 +256,8 @@ public class ListEditorPopupWindow extends AbstractWindow {
         return dateField;
     }
 
-    protected LookupField createLookupWithOptions() {
+    protected LookupField createLookupField() {
         LookupField lookupField = componentsFactory.createComponent(LookupField.class);
-        lookupField.setOptionsList(optionsList);
-
         lookupField.addValueChangeListener(e -> {
             Object selectedValue = e.getValue();
             if (selectedValue != null) {
@@ -248,6 +266,18 @@ public class ListEditorPopupWindow extends AbstractWindow {
             lookupField.setValue(null);
         });
 
+        return lookupField;
+    }
+
+    protected LookupField createComponentForEnum() {
+        if (enumClass == null) {
+            throw new IllegalStateException("EnumClass parameter is not defined");
+        }
+        LookupField lookupField = createLookupField();
+        Enum[] enumConstants = enumClass.getEnumConstants();
+        Map<String, Enum> enumValuesMap = Stream.of(enumConstants)
+                .collect(Collectors.toMap(o -> messages.getMessage(o), Function.identity()));
+        lookupField.setOptionsMap(enumValuesMap);
         return lookupField;
     }
 
@@ -270,7 +300,6 @@ public class ListEditorPopupWindow extends AbstractWindow {
             }
         });
         itemLayout.add(delItemBtn);
-//        delItemBtn.setAlignment(Alignment.MIDDLE_LEFT);
 
         valuesLayout.add(itemLayout);
         valuesMap.put(value, str);

@@ -56,9 +56,11 @@ public class ListEditorDelegateImpl implements ListEditorDelegate{
     protected String entityName;
     protected String lookupScreen;
     protected boolean useLookupField;
-    protected List<Object> optionsList;
+    protected List<?> optionsList;
+    protected Map<String, Object> optionsMap;
     protected String entityJoinClause;
     protected String entityWhereClause;
+    protected Class<? extends Enum> enumClass;
 
     protected TextField displayValuesField;
     protected HBoxLayout layout;
@@ -89,6 +91,8 @@ public class ListEditorDelegateImpl implements ListEditorDelegate{
                 params.put("entityName", entityName);
                 params.put("useLookupField", useLookupField);
                 params.put("optionsList", optionsList);
+                params.put("optionsMap", optionsMap);
+                params.put("enumClass", enumClass);
                 params.put("lookupScreen", lookupScreen);
                 params.put("entityJoinClause", entityJoinClause);
                 params.put("entityWhereClause", entityWhereClause);
@@ -177,13 +181,33 @@ public class ListEditorDelegateImpl implements ListEditorDelegate{
     }
 
     @Override
-    public List<Object> getOptionsList() {
+    public List<?> getOptionsList() {
         return optionsList;
     }
 
     @Override
-    public void setOptionsList(List<Object> optionsList) {
+    public void setOptionsList(List<?> optionsList) {
         this.optionsList = optionsList;
+    }
+
+    @Override
+    public Map<String, Object> getOptionsMap() {
+        return optionsMap;
+    }
+
+    @Override
+    public void setOptionsMap(Map<String, Object> optionsMap) {
+        this.optionsMap = optionsMap;
+    }
+
+    @Override
+    public Class<? extends Enum> getEnumClass() {
+        return enumClass;
+    }
+
+    @Override
+    public void setEnumClass(Class<? extends Enum> enumClass) {
+        this.enumClass = enumClass;
     }
 
     public boolean isDisplayDescription() {

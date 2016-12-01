@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * The component is used for displaying and editing a collection of values.
@@ -48,12 +49,16 @@ public interface ListEditor extends Field {
      */
     void setEntityName(String entityName);
 
-    List<Object> getOptionsList();
+    List<?> getOptionsList();
 
     /**
      * Set the list of available collection items values
      */
-    void setOptionsList(List<Object> optionsList);
+    void setOptionsList(List<?> optionsList);
+
+    Map<String, Object> getOptionsMap();
+
+    void setOptionsMap(Map<String, Object> optionsMap);
 
     String getEntityJoinClause();
 
@@ -62,6 +67,10 @@ public interface ListEditor extends Field {
     String getEntityWhereClause();
 
     void setEntityWhereClause(String entityWhereClause);
+
+    Class<? extends Enum> getEnumClass();
+
+    void setEnumClass(Class<? extends Enum> enumClass);
 
     enum ItemType {
         STRING,

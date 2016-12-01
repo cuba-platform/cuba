@@ -28,6 +28,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.springframework.ldap.OperationNotSupportedException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -84,13 +85,23 @@ public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor
     }
 
     @Override
-    public List<Object> getOptionsList() {
+    public List<?> getOptionsList() {
         return delegate.getOptionsList();
     }
 
     @Override
-    public void setOptionsList(List<Object> optionsList) {
+    public void setOptionsList(List<?> optionsList) {
         delegate.setOptionsList(optionsList);
+    }
+
+    @Override
+    public Map<String, Object> getOptionsMap() {
+        return delegate.getOptionsMap();
+    }
+
+    @Override
+    public void setOptionsMap(Map<String, Object> optionsMap) {
+        delegate.setOptionsMap(optionsMap);
     }
 
     @Override
@@ -111,6 +122,16 @@ public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor
     @Override
     public void setEntityWhereClause(String entityWhereClause) {
         delegate.setEntityWhereClause(entityWhereClause);
+    }
+
+    @Override
+    public Class<? extends Enum> getEnumClass() {
+        return delegate.getEnumClass();
+    }
+
+    @Override
+    public void setEnumClass(Class<? extends Enum> enumClass) {
+        delegate.setEnumClass(enumClass);
     }
 
     @Override

@@ -16,10 +16,15 @@
 
 package com.haulmont.cuba.gui.components.listeditor;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ListEditor;
+
+import static com.haulmont.cuba.gui.components.ListEditor.ItemType.*;
 
 /**
  */
@@ -48,8 +53,35 @@ public class ListEditorHelper {
                 return Datatypes.get(BigDecimalDatatype.NAME).format(v);
             case DOUBLE:
                 return Datatypes.get(DoubleDatatype.NAME).format(v);
+            case ENUM:
+                return AppBeans.get(Messages.class).getMessage((Enum) v);
             default:
                 throw new IllegalStateException("Unknown item type");
+        }
+    }
+
+    public static ListEditor.ItemType itemTypeFromDatatype(Datatype datatype) {
+        switch (datatype.getName()) {
+            case StringDatatype.NAME:
+                return STRING;
+            case IntegerDatatype.NAME:
+                return INTEGER;
+            case BigDecimalDatatype.NAME:
+                return BIGDECIMAL;
+            case DoubleDatatype.NAME:
+                return DOUBLE;
+            case LongDatatype.NAME:
+                return LONG;
+            case DateDatatype.NAME:
+                return DATE;
+            case DateTimeDatatype.NAME:
+                return DATETIME;
+            case BooleanDatatype.NAME:
+                return BOOLEAN;
+            case UUIDDatatype.NAME:
+                return UUID;
+            default:
+                throw new IllegalArgumentException("Datatype " + datatype.getName() + " is not supported");
         }
     }
 
