@@ -273,4 +273,14 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     public void setCaptionFormatter(Converter captionFormatter) {
         this.captionFormatter = captionFormatter;
     }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        field.setTabIndex(tabIndex);
+    }
+
+    @Override
+    public int getTabIndex() {
+        return field.getTabIndex();
+    }
 }
