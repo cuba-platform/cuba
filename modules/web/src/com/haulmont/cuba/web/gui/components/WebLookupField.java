@@ -197,7 +197,7 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
             }
 
             if (!Objects.equals(oldValue, value)) {
-                ValueChangeEvent event = new ValueChangeEvent(this, prevValue, value);
+                ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
                 getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
             }
 
