@@ -901,9 +901,13 @@ public class MetadataTools {
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
 
         for (ViewProperty property : view.getProperties()) {
+            MetaProperty metaProperty = metaClass.getPropertyNN(property.getName());
+            if (visitor.skip(metaProperty))
+                continue;
+
             View propertyView = property.getView();
 
-            visitor.visit(entity, metaClass.getPropertyNN(property.getName()));
+            visitor.visit(entity, metaProperty);
 
             Object value = entity.getValue(property.getName());
 

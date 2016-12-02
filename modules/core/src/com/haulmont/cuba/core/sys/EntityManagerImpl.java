@@ -397,6 +397,18 @@ public class EntityManagerImpl implements EntityManager {
                     && !uuid.equals(((IdProxy) merged.getId()).getUuid())) {
                 ((IdProxy) merged.getId()).setUuid(uuid);
             }
+
+            // copy non-persistent attributes to the resulting merged instance
+            for (MetaProperty property : metadata.getClassNN(entity.getClass()).getProperties()) {
+                String name = property.getName();
+                if (metadata.getTools().isTransient(property) && !property.isReadOnly()) {
+                    Object value = entity.getValue(name);
+                    if (value != null) {
+                        merged.setValue(name, value);
+                    }
+                }
+            }
+
             return merged;
         } finally {
             CubaUtil.setSoftDeletion(softDeletion);

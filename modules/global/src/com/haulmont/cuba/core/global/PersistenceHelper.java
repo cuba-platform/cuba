@@ -112,6 +112,8 @@ public class PersistenceHelper {
 
     /**
      * Checks if the property is loaded from DB.
+     * <p>Non-persistent attributes are considered loaded if they do not have related properties, or all related
+     * properties are loaded.
      *
      * @param entity   entity
      * @param property name of the property. Only immediate attributes of the entity are supported.

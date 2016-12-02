@@ -223,4 +223,12 @@ public interface ServerConfig extends Config {
     @Property("cuba.logInternalServiceInvocation")
     @DefaultBoolean(false)
     boolean getLogInternalServiceInvocation();
+
+    /**
+     * @return batch size for loading related entities from different data stores
+     */
+    @Property("cuba.alienEntityLoadingBatchSize")
+    @Source(type = SourceType.DATABASE)
+    @DefaultInt(50)
+    int getAlienEntityLoadingBatchSize();
 }
