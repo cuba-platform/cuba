@@ -51,6 +51,7 @@ public class DynamicAttributesCondition extends AbstractCondition {
 
     protected UUID categoryId;
     protected UUID categoryAttributeId;
+    protected boolean isCollection;
     protected String propertyPath;
     protected String join;
     private static Pattern LIKE_PATTERN = Pattern.compile("(like \\S+)\\s+(?!ESCAPE)");
@@ -60,6 +61,7 @@ public class DynamicAttributesCondition extends AbstractCondition {
         this.join = condition.getJoin();
         this.categoryId = condition.getCategoryId();
         this.categoryAttributeId = condition.getCategoryAttributeId();
+        this.isCollection = condition.getIsCollection();
     }
 
     public DynamicAttributesCondition(AbstractConditionDescriptor descriptor, String entityAlias, String propertyPath) {
@@ -100,6 +102,7 @@ public class DynamicAttributesCondition extends AbstractCondition {
             }
         }
 
+        isCollection = Boolean.parseBoolean(element.attributeValue("isCollection"));
         resolveParam(element);
     }
 
@@ -119,6 +122,9 @@ public class DynamicAttributesCondition extends AbstractCondition {
         if (!isBlank(join)) {
             element.addAttribute("join", StringEscapeUtils.escapeXml(join));
         }
+        if (isCollection) {
+            element.addAttribute("isCollection", "true");
+        }
     }
 
     public UUID getCategoryId() {
@@ -135,6 +141,14 @@ public class DynamicAttributesCondition extends AbstractCondition {
 
     public void setCategoryAttributeId(UUID categoryAttributeId) {
         this.categoryAttributeId = categoryAttributeId;
+    }
+
+    public boolean getIsCollection() {
+        return isCollection;
+    }
+
+    public void setIsCollection(boolean collection) {
+        isCollection = collection;
     }
 
     @Override
@@ -182,13 +196,21 @@ public class DynamicAttributesCondition extends AbstractCondition {
             }
         }
 
-        if (operator == Op.ENDS_WITH || operator == Op.STARTS_WITH || operator == Op.CONTAINS || operator == Op.DOES_NOT_CONTAIN) {
-            Matcher matcher = LIKE_PATTERN.matcher(text);
-            if (matcher.find()) {
-                String escapeCharacter = ("\\".equals(QueryUtils.ESCAPE_CHARACTER) || "$".equals(QueryUtils.ESCAPE_CHARACTER))
-                        ? QueryUtils.ESCAPE_CHARACTER + QueryUtils.ESCAPE_CHARACTER
-                        : QueryUtils.ESCAPE_CHARACTER;
-                text = matcher.replaceAll("$1 ESCAPE '" + escapeCharacter + "' ");
+        if (!isCollection) {
+            if (operator == Op.ENDS_WITH || operator == Op.STARTS_WITH || operator == Op.CONTAINS || operator == Op.DOES_NOT_CONTAIN) {
+                Matcher matcher = LIKE_PATTERN.matcher(text);
+                if (matcher.find()) {
+                    String escapeCharacter = ("\\".equals(QueryUtils.ESCAPE_CHARACTER) || "$".equals(QueryUtils.ESCAPE_CHARACTER))
+                            ? QueryUtils.ESCAPE_CHARACTER + QueryUtils.ESCAPE_CHARACTER
+                            : QueryUtils.ESCAPE_CHARACTER;
+                    text = matcher.replaceAll("$1 ESCAPE '" + escapeCharacter + "' ");
+                }
+            }
+        } else {
+            if (operator == Op.CONTAINS) {
+                text = text.replace("not exists", "exists");
+            } else if (operator == Op.DOES_NOT_CONTAIN && !text.contains("not exists")) {
+                text = text.replace("exists ", "not exists ");
             }
         }
     }

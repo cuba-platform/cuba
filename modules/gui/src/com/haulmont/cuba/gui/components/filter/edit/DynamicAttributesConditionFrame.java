@@ -38,6 +38,7 @@ import com.haulmont.cuba.gui.components.filter.OpManager;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.RandomStringUtils;
 
@@ -87,7 +88,8 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
 
         attributeLookup.addValueChangeListener(e -> {
             if (e.getValue() != null) {
-                fillOperationSelect(DynamicAttributesUtils.getAttributeClass((CategoryAttribute) e.getValue()));
+                CategoryAttribute categoryAttribute = (CategoryAttribute) e.getValue();
+                fillOperationSelect(categoryAttribute);
             }
         });
     }
@@ -145,7 +147,6 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
                     ".id and " + cavAlias + ".categoryAttribute.id='" +
                     attributeLookup.<CategoryAttribute>getValue().getId() + "'))";
         } else {
-            condition.setJoin(", sys$CategoryAttributeValue " + cavAlias + " ");
             String valueFieldName = "stringValue";
             if (Entity.class.isAssignableFrom(javaClass))
                 valueFieldName = "entityValue";
@@ -160,21 +161,30 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
             else if (Date.class.isAssignableFrom(javaClass))
                 valueFieldName = "dateValue";
 
-            String paramStr = " ? ";
-            if (!op.isUnary())
-                if (Op.IN.equals(op) || Op.NOT_IN.equals(op))
-                    paramStr = " ( ? ) ";
+            if (!attribute.getIsCollection()) {
+                condition.setJoin(", sys$CategoryAttributeValue " + cavAlias + " ");
 
-            where = cavAlias + ".entityId=" +
-                    "{E}" +
-                    propertyPath +
-                    ".id and " + cavAlias + "." +
-                    valueFieldName +
-                    " " +
-                    operation +
-                    (op.isUnary() ? " " : paramStr) + "and " + cavAlias + ".categoryAttribute.id='" +
-                    attributeLookup.<CategoryAttribute>getValue().getId() + "'";
-            where = where.replace("?", ":" + paramName);
+                String paramStr = " ? ";
+                if (!op.isUnary())
+                    if (Op.IN.equals(op) || Op.NOT_IN.equals(op))
+                        paramStr = " ( ? ) ";
+
+                where = cavAlias + ".entityId=" +
+                        "{E}" +
+                        propertyPath +
+                        ".id and " + cavAlias + "." +
+                        valueFieldName +
+                        " " +
+                        operation +
+                        (op.isUnary() ? " " : paramStr) + "and " + cavAlias + ".categoryAttribute.id='" +
+                        attributeLookup.<CategoryAttribute>getValue().getId() + "'";
+                where = where.replace("?", ":" + paramName);
+            } else {
+                where = "(exists (select " + cavAlias + " from sys$CategoryAttributeValue " + cavAlias +
+                        " where " + cavAlias + ".entityId=" + "{E}" + propertyPath +".id and "
+                        + cavAlias + "." + valueFieldName + " = :" + paramName + " and " +
+                        cavAlias + ".categoryAttribute.id='" + attributeLookup.<CategoryAttribute>getValue().getId() + "'))";
+            }
         }
 
         condition.setWhere(where);
@@ -202,6 +212,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         condition.setParam(param);
         condition.setCategoryId(categoryLookup.<Category>getValue().getId());
         condition.setCategoryAttributeId(attributeLookup.<CategoryAttribute>getValue().getId());
+        condition.setIsCollection(BooleanUtils.isTrue(attributeLookup.<CategoryAttribute>getValue().getIsCollection()));
         condition.setLocCaption(attribute.getName());
 
         return true;
@@ -259,9 +270,12 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         attributeLookup.setValue(selectedAttribute);
     }
 
-    protected void fillOperationSelect(Class clazz) {
+    protected void fillOperationSelect(CategoryAttribute categoryAttribute) {
+        Class clazz = DynamicAttributesUtils.getAttributeClass(categoryAttribute);
         OpManager opManager = AppBeans.get(OpManager.class);
-        List<Op> ops = new LinkedList<>(opManager.availableOps(clazz));
+        EnumSet<Op> availableOps = BooleanUtils.isTrue(categoryAttribute.getIsCollection()) ?
+                opManager.availableOpsForCollectionDynamicAttribute() : opManager.availableOps(clazz);
+        List<Op> ops = new LinkedList<>(availableOps);
         operationLookup.setOptionsList(ops);
         Op operator = condition.getOperator();
         if (operator != null) {

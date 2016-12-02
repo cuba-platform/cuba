@@ -50,4 +50,9 @@ public class OpManagerImpl implements OpManager {
         else
             throw new UnsupportedOperationException("Unsupported java class: " + javaClass);
     }
+
+    @Override
+    public EnumSet<Op> availableOpsForCollectionDynamicAttribute() {
+        return EnumSet.of(CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY);
+    }
 }

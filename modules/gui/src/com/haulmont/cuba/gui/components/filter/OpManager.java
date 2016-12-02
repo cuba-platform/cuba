@@ -25,4 +25,6 @@ public interface OpManager {
     String NAME = "cuba_OpManager";
 
     EnumSet<Op> availableOps(Class javaClass);
+
+    EnumSet<Op> availableOpsForCollectionDynamicAttribute();
 }
