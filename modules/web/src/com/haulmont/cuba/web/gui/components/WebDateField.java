@@ -68,13 +68,12 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
     protected Datasource.ItemChangeListener itemChangeListener;
 
-    protected Messages messages;
-
     public WebDateField() {
         innerLayout = new HorizontalLayout();
         innerLayout.setSpacing(true);
 
         dateField = new CubaDateField();
+        dateField.setValidationVisible(false);
         dateField.setImmediate(true);
         dateField.setInvalidAllowed(true);
 
@@ -97,8 +96,6 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         setResolution(Resolution.MIN);
 
         component = new CubaDateFieldWrapper(this, innerLayout);
-
-        messages = AppBeans.get(Messages.NAME);
     }
 
     protected Property.ValueChangeListener createDateValueChangeListener() {
@@ -148,50 +145,58 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
     @Override
     public void setRangeStart(Date value) {
-        dateField.setRangeStart(value);
+        dateField.setRangeStart(toUserDate(value));
     }
 
     @Override
     public Date getRangeStart() {
-        return dateField.getRangeStart();
+        return toServerDate(dateField.getRangeStart());
     }
 
     @Override
     public void setRangeEnd(Date value) {
-        dateField.setRangeEnd(value);
+        dateField.setRangeEnd(toUserDate(value));
     }
 
     @Override
     public Date getRangeEnd() {
-        return dateField.getRangeEnd();
+        return toServerDate(dateField.getRangeEnd());
     }
 
     private boolean checkRange(Date value) {
+        if (updatingInstance) {
+            return true;
+        }
+
         if (value != null) {
             if (dateField.getRangeStart() != null && value.before(dateField.getRangeStart())) {
-                if (getFrame() != null) {
-                    getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
-                            Frame.NotificationType.WARNING);
-                }
-
-                dateField.setValue((Date) prevValue);
-                timeField.setValue((Date) prevValue);
+                handleDateOutOfRange(value);
                 return false;
             }
 
             if (dateField.getRangeEnd() != null && value.after(dateField.getRangeEnd())) {
-                if (getFrame() != null) {
-                    getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
-                            Frame.NotificationType.WARNING);
-                }
-
-                dateField.setValue((Date) prevValue);
-                timeField.setValue((Date) prevValue);
+                handleDateOutOfRange(value);
                 return false;
             }
         }
 
         return true;
+    }
+
+    protected void handleDateOutOfRange(Date value) {
+        if (getFrame() != null) {
+            Messages messages = AppBeans.get(Messages.NAME);
+            getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
+                    Frame.NotificationType.TRAY);
+        }
+
+        updatingInstance = true;
+        try {
+            dateField.setValue((Date) prevValue);
+            timeField.setValue((Date) prevValue);
+        } finally {
+            updatingInstance = false;
+        }
     }
 
     @Override

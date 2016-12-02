@@ -222,50 +222,57 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
     @Override
     public void setRangeStart(Date value) {
-        startDate = value;
+        startDate = toUserDate(value);
     }
 
     @Override
     public Date getRangeStart() {
-        return startDate;
+        return toServerDate(startDate);
     }
 
     @Override
     public void setRangeEnd(Date value) {
-        endDate = value;
+        endDate = toUserDate(value);
     }
 
     @Override
     public Date getRangeEnd() {
-        return endDate;
+        return toServerDate(endDate);
     }
 
-    private boolean checkRange(Date value) {
+    protected boolean checkRange(Date value) {
+        if (updatingInstance) {
+            return true;
+        }
+
         if (value != null) {
             if (startDate != null && value.before(startDate)) {
-                if (getFrame() != null) {
-                    getFrame().showNotification(messages.getMainMessage("dateField.dateOutOfRangeMessage"),
-                            Frame.NotificationType.WARNING);
-                }
-
-                datePicker.setDate((Date) prevValue);
-                timeField.setValue((Date) prevValue);
+                handleDateOutOfRange(value);
                 return false;
             }
 
             if (endDate != null && value.after(endDate)) {
-                if (getFrame() != null) {
-                    getFrame().showNotification(messages.getMainMessage("dateField.dateOutOfRangeMessage"),
-                            Frame.NotificationType.WARNING);
-                }
-
-                datePicker.setDate((Date) prevValue);
-                timeField.setValue((Date) prevValue);
+                handleDateOutOfRange(value);
                 return false;
             }
         }
 
         return true;
+    }
+
+    protected void handleDateOutOfRange(Date value) {
+        if (getFrame() != null) {
+            getFrame().showNotification(messages.getMainMessage("dateField.dateOutOfRangeMessage"),
+                    Frame.NotificationType.TRAY);
+        }
+
+        updatingInstance = true;
+        try {
+            datePicker.setDate((Date) prevValue);
+            timeField.setValue((Date) prevValue);
+        } finally {
+            updatingInstance = false;
+        }
     }
 
     @Override
