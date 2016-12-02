@@ -243,6 +243,10 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     }
 
     protected boolean checkRange(Date value) {
+        if (updatingInstance) {
+            return true;
+        }
+
         if (value != null) {
             if (startDate != null && value.before(startDate)) {
                 handleDateOutOfRange(value);
@@ -260,13 +264,17 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
     protected void handleDateOutOfRange(Date value) {
         if (getFrame() != null) {
-            Messages messages = AppBeans.get(Messages.NAME);
             getFrame().showNotification(messages.getMainMessage("dateField.dateOutOfRangeMessage"),
                     NotificationType.TRAY);
         }
 
-        datePicker.setDate((Date) prevValue);
-        timeField.setValue((Date) prevValue);
+        updatingInstance = true;
+        try {
+            datePicker.setDate((Date) prevValue);
+            timeField.setValue((Date) prevValue);
+        } finally {
+            updatingInstance = false;
+        }
     }
 
     @Override

@@ -26,7 +26,6 @@ import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Frame.NotificationType;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
@@ -77,6 +76,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         innerLayout.addStyleName("c-datefield-layout");
 
         dateField = new CubaDateField();
+        dateField.setValidationVisible(false);
         dateField.setImmediate(true);
         dateField.setInvalidAllowed(true);
 
@@ -167,6 +167,10 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     }
 
     protected boolean checkRange(Date value) {
+        if (updatingInstance) {
+            return true;
+        }
+
         if (value != null) {
             if (dateField.getRangeStart() != null && value.before(dateField.getRangeStart())) {
                 handleDateOutOfRange(value);
@@ -186,11 +190,16 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         if (getFrame() != null) {
             Messages messages = AppBeans.get(Messages.NAME);
             getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
-                    NotificationType.TRAY);
+                    Frame.NotificationType.TRAY);
         }
 
-        dateField.setValue((Date) prevValue);
-        timeField.setValue((Date) prevValue);
+        updatingInstance = true;
+        try {
+            dateField.setValue((Date) prevValue);
+            timeField.setValue((Date) prevValue);
+        } finally {
+            updatingInstance = false;
+        }
     }
 
     @Override

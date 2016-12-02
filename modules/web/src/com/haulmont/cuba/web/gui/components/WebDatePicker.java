@@ -100,6 +100,10 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
     }
 
     protected boolean checkRange(Date value) {
+        if (updatingInstance) {
+            return true;
+        }
+
         if (value != null) {
             if (component.getRangeStart() != null && value.before(component.getRangeStart())) {
                 handleDateOutOfRange(value);
@@ -116,13 +120,18 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
     }
 
     protected void handleDateOutOfRange(Date value) {
-        Messages messages = AppBeans.get(Messages.NAME);
         if (getFrame() != null) {
+            Messages messages = AppBeans.get(Messages.NAME);
             getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
-                    Frame.NotificationType.WARNING);
+                    Frame.NotificationType.TRAY);
         }
 
-        component.setValue((Date) prevValue);
+        updatingInstance = true;
+        try {
+            component.setValue((Date) prevValue);
+        } finally {
+            updatingInstance = false;
+        }
     }
 
     @Override
