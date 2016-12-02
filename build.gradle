@@ -445,7 +445,7 @@ configure(guiModule) {
     dependencies {
         compile(clientModule)
 
-        compile(bom['com.haulmont.thirdparty:poi'])
+        compile(bom['org.apache.poi:poi'])
 
         testCompile(clientModule.sourceSets.test.output)
     }
