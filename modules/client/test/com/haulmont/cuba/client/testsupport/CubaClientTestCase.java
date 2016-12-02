@@ -72,6 +72,8 @@ public class CubaClientTestCase {
 
     protected TestMessageTools messageTools;
 
+    protected TestBeanValidation beanValidation;
+
     public CubaClientTestCase() {
         String property = System.getProperty("logback.configurationFile");
         if (StringUtils.isBlank(property)) {
@@ -126,6 +128,8 @@ public class CubaClientTestCase {
         messages = new TestMessages(userSessionSource, configuration, metadata, extendedEntities);
         messageTools = (TestMessageTools) messages.getTools();
 
+        beanValidation = new TestBeanValidation();
+
         ((TestMetadataTools) metadata.getTools()).setMessages(messages);
         ((TestMetadataTools) metadata.getTools()).setUserSessionSource(userSessionSource);
 
@@ -176,6 +180,10 @@ public class CubaClientTestCase {
                 AppBeans.get(MessageTools.NAME); result = messageTools;
                 AppBeans.get(MessageTools.class); result = messageTools;
                 AppBeans.get(MessageTools.NAME, MessageTools.class); result = messageTools;
+
+                AppBeans.get(BeanValidation.NAME); result = beanValidation;
+                AppBeans.get(BeanValidation.class); result = beanValidation;
+                AppBeans.get(BeanValidation.NAME, BeanValidation.class); result = beanValidation;
             }
         };
     }
