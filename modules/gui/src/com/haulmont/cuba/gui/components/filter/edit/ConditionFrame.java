@@ -66,8 +66,8 @@ public abstract class ConditionFrame<T extends AbstractCondition> extends Abstra
 
         if (width != null) {
             List<Integer> widthValues = new ArrayList<>();
-            int conditionsColumnsQty = filter != null ? filter.getColumnsCount() : clientConfig.getGenericFilterColumnsCount();
-            for (int i = 1; i <= conditionsColumnsQty; i++) {
+            int conditionsColumnsCount = filter != null ? filter.getColumnsCount() : clientConfig.getGenericFilterColumnsCount();
+            for (int i = 1; i <= conditionsColumnsCount; i++) {
                 widthValues.add(i);
             }
             width.setOptionsList(widthValues);

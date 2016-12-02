@@ -1332,7 +1332,7 @@
         <xs:attribute name="manualApplyRequired" type="xs:boolean"/>
         <xs:attribute name="editable" type="xs:boolean"/>
         <xs:attribute name="folderActionsEnabled" type="xs:boolean"/>
-        <xs:attribute name="columnsQty" type="xs:int"/>
+        <xs:attribute name="columnsCount" type="xs:int"/>
         <xs:attribute name="collapsable" type="xs:boolean"/>
         <xs:attribute name="collapsed" type="xs:boolean"/>
         <xs:attribute name="defaultMode">
