@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.VBoxLayout;
@@ -97,6 +98,16 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         } else {
             component.addStyleName(STATE_WINDOWS_STYLENAME);
         }
+    }
+
+    @Override
+    public String getStyleName() {
+        return StringHelper.removeExtraSpaces(super.getStyleName()
+                .replace(WORKAREA_STYLENAME, "")
+                .replace(MODE_TABBED_STYLENAME, "")
+                .replace(MODE_SINGLE_STYLENAME, "")
+                .replace(STATE_INITIAL_STYLENAME, "")
+                .replace(STATE_WINDOWS_STYLENAME, ""));
     }
 
     @Override

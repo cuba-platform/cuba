@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.gui.components.mainwindow.NewWindowButton;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
@@ -30,11 +31,11 @@ import java.net.URL;
 
 public class WebNewWindowButton extends WebAbstractComponent<CubaButton> implements NewWindowButton {
 
-    public static final String NEWWINDOW_BUTTON_STYLENAME = "c-newwindow-button";
+    public static final String NEW_WINDOW_BUTTON_STYLENAME = "c-newwindow-button";
 
     public WebNewWindowButton() {
         component = new CubaButton();
-        component.addStyleName(NEWWINDOW_BUTTON_STYLENAME);
+        component.addStyleName(NEW_WINDOW_BUTTON_STYLENAME);
         component.setDescription(null);
 
         URL pageUrl;
@@ -56,6 +57,11 @@ public class WebNewWindowButton extends WebAbstractComponent<CubaButton> impleme
     public void setStyleName(String name) {
         super.setStyleName(name);
 
-        component.addStyleName(NEWWINDOW_BUTTON_STYLENAME);
+        component.addStyleName(NEW_WINDOW_BUTTON_STYLENAME);
+    }
+
+    @Override
+    public String getStyleName() {
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(NEW_WINDOW_BUTTON_STYLENAME, ""));
     }
 }

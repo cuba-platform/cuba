@@ -269,6 +269,14 @@ public class ParamWrapper implements Component.HasValue {
     }
 
     @Override
+    public void addStyleName(String styleName) {
+    }
+
+    @Override
+    public void removeStyleName(String styleName) {
+    }
+
+    @Override
     public <X> X unwrap(Class<X> internalComponentClass) {
         return null;
     }

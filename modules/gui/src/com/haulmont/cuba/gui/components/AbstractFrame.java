@@ -563,12 +563,22 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
 
     @Override
     public String getStyleName() {
-        return styleName;
+        return frame.getStyleName();
     }
 
     @Override
     public void setStyleName(String styleName) {
-        this.styleName = styleName;
+        frame.setStyleName(styleName);
+    }
+
+    @Override
+    public void addStyleName(String styleName) {
+        frame.addStyleName(styleName);
+    }
+
+    @Override
+    public void removeStyleName(String styleName) {
+        frame.removeStyleName(styleName);
     }
 
     @SuppressWarnings("unchecked")

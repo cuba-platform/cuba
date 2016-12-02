@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -38,7 +39,9 @@ import com.haulmont.cuba.web.toolkit.ui.converters.StringToEnumConverter;
 import com.vaadin.shared.ui.label.ContentMode;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
 
 public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implements Label {
 
@@ -274,5 +277,10 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
         } else {
             getComposition().removeStyleName(CAPTION_STYLE);
         }
+    }
+
+    @Override
+    public String getStyleName() {
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(CAPTION_STYLE, ""));
     }
 }

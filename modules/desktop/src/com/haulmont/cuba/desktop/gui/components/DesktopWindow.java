@@ -53,6 +53,7 @@ import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.settings.Settings;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -126,6 +127,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     protected boolean scheduledRepaint = false;
     protected DialogOptions dialogOptions = new DesktopDialogOptions();
     protected String icon;
+    protected List<String> styles;
 
     public DesktopWindow() {
         initLayout();
@@ -1174,11 +1176,50 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public String getStyleName() {
-        return null;
+        return String.join(" ", styles);
     }
 
     @Override
-    public void setStyleName(String name) {
+    public void setStyleName(String styleName) {
+        if (styles == null)
+            styles = new LinkedList<>();
+
+        styles.clear();
+
+        parseAndApplyTheme(styleName);
+    }
+
+    @Override
+    public void addStyleName(String styleName) {
+        if (styles == null)
+            styles = new LinkedList<>();
+
+        if (StringUtils.isEmpty(styleName) || styles.contains(styleName))
+            return;
+
+        parseAndApplyTheme(styleName);
+    }
+
+    protected void parseAndApplyTheme(String styleName) {
+        if (StringUtils.isNotEmpty(styleName)) {
+            StringTokenizer tokenizer = new StringTokenizer(styleName, " ");
+            while (tokenizer.hasMoreTokens()) {
+                String style = tokenizer.nextToken();
+                if (!styles.contains(style))
+                    styles.add(style);
+            }
+        }
+    }
+
+    @Override
+    public void removeStyleName(String styleName) {
+        if (StringUtils.isEmpty(styleName) || CollectionUtils.isEmpty(styles) || !styles.contains(styleName))
+            return;
+
+        StringTokenizer tokenizer = new StringTokenizer(styleName, " ");
+        while (tokenizer.hasMoreTokens()) {
+            styles.remove(tokenizer.nextToken());
+        }
     }
 
     @Override

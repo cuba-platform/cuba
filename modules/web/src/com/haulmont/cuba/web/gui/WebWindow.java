@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
@@ -69,6 +70,7 @@ public class WebWindow implements Window, Component.Wrapper,
                                   Component.SecuredActionsHolder, Component.HasIcon {
 
     private static final Logger log = LoggerFactory.getLogger(WebWindow.class);
+    protected static final String C_WINDOW_LAYOUT = "c-window-layout";
 
     protected String id;
     protected String debugId;
@@ -139,7 +141,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
     protected ComponentContainer createLayout() {
         CubaVerticalActionsLayout layout = new CubaVerticalActionsLayout();
-        layout.setStyleName("c-window-layout");
+        layout.setStyleName(C_WINDOW_LAYOUT);
         layout.setSizeFull();
         return layout;
     }
@@ -195,14 +197,24 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public String getStyleName() {
-        return component.getStyleName();
+        return StringHelper.removeExtraSpaces(component.getStyleName().replace(C_WINDOW_LAYOUT, ""));
     }
 
     @Override
     public void setStyleName(String name) {
         getContainer().setStyleName(name);
 
-        getContainer().addStyleName("c-window-layout");
+        getContainer().addStyleName(C_WINDOW_LAYOUT);
+    }
+
+    @Override
+    public void addStyleName(String styleName) {
+        getContainer().addStyleName(styleName);
+    }
+
+    @Override
+    public void removeStyleName(String styleName) {
+        getContainer().removeStyleName(styleName);
     }
 
     @SuppressWarnings("unchecked")
@@ -1663,7 +1675,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
         @Override
         public String getStyleName() {
-            return container.getStyleName();
+            return StringHelper.removeExtraSpaces(container.getStyleName().replace(C_WINDOW_LAYOUT, ""));
         }
 
         @Override
@@ -1672,7 +1684,7 @@ public class WebWindow implements Window, Component.Wrapper,
             form.setStyleName("c-lookup-window-wrapper");
 
             container = new VerticalLayout();
-            container.setStyleName("c-window-layout");
+            container.setStyleName(C_WINDOW_LAYOUT);
 
             boolean isTestMode = AppUI.getCurrent().isTestMode();
 

@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ListComponent;
@@ -33,6 +34,7 @@ import java.util.List;
 
 public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements RowsCount, VisibilityChangeNotifier {
 
+    protected static final String C_TABLE_ROWS_COUNT = "c-table-rows-count";
     protected CollectionDatasource datasource;
     protected boolean refreshing;
     protected State state;
@@ -48,7 +50,12 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     public WebRowsCount() {
         component = new CubaRowsCount();
-        component.setStyleName("c-table-rows-count");
+        component.setStyleName(C_TABLE_ROWS_COUNT);
+    }
+
+    @Override
+    public String getStyleName() {
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_TABLE_ROWS_COUNT, ""));
     }
 
     @Override

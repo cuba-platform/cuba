@@ -106,10 +106,39 @@ public interface Component {
     Alignment getAlignment();
     void setAlignment(Alignment alignment);
 
-    /** Current style name. Styles implementation is client-type-specific */
+    /**
+     * Styles implementation is client-type-specific.
+     *
+     * @return current style name.
+     */
     String getStyleName();
-    /** Set style name. Styles implementation is client-type-specific */
+
+    /**
+     * Sets one or more style names of the component, replacing any
+     * previous styles. Multiple styles can be specified as a
+     * space-separated list of style names.
+     *
+     * Styles implementation is client-type-specific.
+     *
+     * @param styleName one or more style names separated by space.
+     * */
     void setStyleName(String styleName);
+
+    /**
+     * Adds one or more style names to this component. Multiple styles can be
+     * specified as a space-separated list of style names.
+     *
+     * @param styleName one or more style names separated by space.
+     */
+    void addStyleName(String styleName);
+
+    /**
+     * Removes one or more style names from component. Multiple styles can be
+     * specified as a space-separated list of style names.
+     *
+     * @param styleName one or more style names separated by space.
+     */
+    void removeStyleName(String styleName);
 
     /**
      * Get client specific component instance. Can be used in client module to simplify invocation of underlying API.

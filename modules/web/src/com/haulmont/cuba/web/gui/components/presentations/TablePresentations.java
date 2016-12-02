@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components.presentations;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.AbstractAction;
@@ -44,6 +45,7 @@ public class TablePresentations extends VerticalLayout {
     public static final String CUSTOM_STYLE_NAME_PREFIX = "cs";
     protected static final String MENUITEM_STYLE_CURRENT = "c-table-prefs-menuitem-current";
     protected static final String MENUITEM_STYLE_DEFAULT = "c-table-prefs-menuitem-default";
+    protected static final String C_TABLE_PREFS = "c-table-prefs";
 
     protected CubaMenuBar menuBar;
     protected WebPopupButton button;
@@ -65,7 +67,7 @@ public class TablePresentations extends VerticalLayout {
         this.tableImpl = (CubaEnhancedTable) WebComponentsHelper.unwrap(table);
 
         setSizeUndefined();
-        setStyleName("c-table-prefs");
+        setStyleName(C_TABLE_PREFS);
         setParent((HasComponents) WebComponentsHelper.unwrap(component));
 
         initLayout();
@@ -124,6 +126,11 @@ public class TablePresentations extends VerticalLayout {
         });
 
         build();
+    }
+
+    @Override
+    public String getStyleName() {
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_TABLE_PREFS, ""));
     }
 
     protected void removeCurrentItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {

@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.app.folders;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.FoldersService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
@@ -67,6 +68,7 @@ import static com.haulmont.cuba.gui.components.Window.COMMIT_ACTION_ID;
 public class CubaFoldersPane extends VerticalLayout {
 
     private static final long serialVersionUID = 6666603397626574763L;
+    protected static final String C_FOLDERS_PANE = "c-folders-pane";
 
     protected boolean visible;
 
@@ -110,9 +112,14 @@ public class CubaFoldersPane extends VerticalLayout {
         setMargin(false);
         setSpacing(true);
 
-        setStyleName("c-folders-pane");
+        setStyleName(C_FOLDERS_PANE);
         //noinspection unchecked
         folderUpdateBackgroundTaskWrapper = new BackgroundTaskWrapper(new AppFolderUpdateBackgroundTask(10));
+    }
+
+    @Override
+    public String getStyleName() {
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_FOLDERS_PANE, ""));
     }
 
     public void loadFolders() {

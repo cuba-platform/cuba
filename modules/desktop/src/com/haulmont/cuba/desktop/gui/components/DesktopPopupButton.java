@@ -370,7 +370,18 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
         }
 
         @Override
-        public void setStyleName(String name) {
+        public void setStyleName(String styleName) {
+            DesktopPopupButton.this.setStyleName(styleName);
+        }
+
+        @Override
+        public void addStyleName(String styleName) {
+            DesktopPopupButton.this.addStyleName(styleName);
+        }
+
+        @Override
+        public void removeStyleName(String styleName) {
+            DesktopPopupButton.this.removeStyleName(styleName);
         }
 
         @Override

@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
@@ -35,6 +36,7 @@ import java.util.*;
 
 public class WindowBreadCrumbs extends CssLayout {
     protected static final String BREADCRUMBS_VISIBLE_WRAP_STYLE = "c-breadcrumbs-visible";
+    protected static final String C_HEADLINE_CONTAINER = "c-headline-container";
 
     protected boolean visibleExplicitly = true;
     protected Label label;
@@ -58,7 +60,7 @@ public class WindowBreadCrumbs extends CssLayout {
     public WindowBreadCrumbs(WebAppWorkArea workArea) {
         setWidth(100, Unit.PERCENTAGE);
         setHeight(-1, Unit.PIXELS);
-        setStyleName("c-headline-container");
+        setStyleName(C_HEADLINE_CONTAINER);
 
         tabbedMode = workArea.getMode() == AppWorkArea.Mode.TABBED;
 
@@ -105,6 +107,11 @@ public class WindowBreadCrumbs extends CssLayout {
         if (closeBtn != null) {
             addComponent(closeBtn);
         }
+    }
+
+    @Override
+    public String getStyleName() {
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_HEADLINE_CONTAINER, ""));
     }
 
     protected Layout createEnclosingLayout() {

@@ -28,13 +28,15 @@ import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Frame;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.util.Locale;
+import java.util.*;
 
 public abstract class DesktopAbstractComponent<C extends JComponent>
         implements
@@ -67,7 +69,8 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     protected String debugId;
 
-    protected String styleName;
+    // lazily initialized list
+    protected List<String> styles;
 
     protected C getImpl() {
         return impl;
@@ -269,16 +272,68 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public String getStyleName() {
-        return styleName;
+        if (CollectionUtils.isEmpty(styles))
+            return StringUtils.EMPTY;
+
+        return String.join(" ", styles);
     }
 
     @Override
-    public void setStyleName(String name) {
-        DesktopTheme theme = App.getInstance().getTheme();
-        if (theme != null) {
-            this.styleName = name;
-            theme.applyStyle(this, name);
+    public void setStyleName(String styleName) {
+        if (styles == null)
+            styles = new LinkedList<>();
+
+        styles.clear();
+
+        parseAndApplyTheme(styleName);
+    }
+
+    @Override
+    public void addStyleName(String styleName) {
+        if (styles == null)
+            styles = new LinkedList<>();
+
+        if (StringUtils.isEmpty(styleName) || styles.contains(styleName))
+            return;
+
+        parseAndApplyTheme(styleName);
+    }
+
+    protected void parseAndApplyTheme(String styleName) {
+        String style = null;
+        if (StringUtils.isNotEmpty(styleName)) {
+            StringTokenizer tokenizer = new StringTokenizer(styleName, " ");
+            while (tokenizer.hasMoreTokens()) {
+                style = tokenizer.nextToken();
+                styles.add(style);
+            }
         }
+
+        DesktopTheme appTheme = App.getInstance().getTheme();
+        if (appTheme != null)
+            appTheme.applyStyle(this, style);
+    }
+
+    @Override
+    public void removeStyleName(String styleName) {
+        if (StringUtils.isEmpty(styleName) || CollectionUtils.isEmpty(styles) || !styles.contains(styleName))
+            return;
+
+        List<String> passedStyles = new ArrayList<>();
+
+        StringTokenizer tokenizer = new StringTokenizer(styleName, " ");
+        while (tokenizer.hasMoreTokens()) {
+            passedStyles.add(tokenizer.nextToken());
+        }
+
+        String appliedStyleName = styles.get(styles.size() - 1);
+        if (passedStyles.contains(appliedStyleName)) {
+            DesktopTheme appTheme = App.getInstance().getTheme();
+            if (appTheme != null)
+                appTheme.applyStyle(this, null);
+        }
+
+        styles.removeAll(passedStyles);
     }
 
     @Override

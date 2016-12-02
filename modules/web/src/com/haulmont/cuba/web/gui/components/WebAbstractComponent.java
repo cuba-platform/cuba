@@ -179,6 +179,16 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
     }
 
     @Override
+    public void addStyleName(String styleName) {
+        getComposition().addStyleName(styleName);
+    }
+
+    @Override
+    public void removeStyleName(String styleName) {
+        getComposition().removeStyleName(styleName);
+    }
+
+    @Override
     public boolean isEnabled() {
         return WebComponentsHelper.isComponentEnabled(getComposition());
     }

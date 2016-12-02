@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
@@ -115,6 +116,14 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
         super.setStyleName(name);
         if (getIcon() != null)
             component.addStyleName(ICON_STYLE);
+    }
+
+    @Override
+    public String getStyleName() {
+        if (getIcon() != null)
+            return StringHelper.removeExtraSpaces(super.getStyleName().replace(ICON_STYLE, ""));
+
+        return super.getStyleName();
     }
 
     @Override

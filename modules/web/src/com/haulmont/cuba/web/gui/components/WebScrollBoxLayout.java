@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
@@ -38,6 +39,7 @@ import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAl
 public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel> implements ScrollBoxLayout {
 
     public static final String CUBA_SCROLLBOX_CONTENT_STYLE = "c-scrollbox-content";
+    protected static final String C_SCROLLBOX = "c-scrollbox";
 
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected Map<String, Component> componentByIds = new HashMap<>();
@@ -49,7 +51,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel>
 
     public WebScrollBoxLayout() {
         component = new CubaScrollBoxPanel();
-        component.setStyleName("c-scrollbox");
+        component.setStyleName(C_SCROLLBOX);
 
         CubaVerticalActionsLayout content = new CubaVerticalActionsLayout();
         content.setWidth("100%");
@@ -155,7 +157,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel>
 
     @Override
     public String getStyleName() {
-        return styleName;
+        return StringHelper.removeExtraSpaces(styleName.replace(C_SCROLLBOX, ""));
     }
 
     @Override

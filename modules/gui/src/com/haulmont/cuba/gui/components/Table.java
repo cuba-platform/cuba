@@ -791,6 +791,16 @@ public interface Table<E extends Entity>
         }
 
         @Override
+        public void addStyleName(String styleName) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void removeStyleName(String styleName) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
         public <X> X unwrap(Class<X> internalComponentClass) {
             return null;
         }

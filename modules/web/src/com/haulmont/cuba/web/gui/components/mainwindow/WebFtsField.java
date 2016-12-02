@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.mainwindow.FtsField;
@@ -129,5 +130,10 @@ public class WebFtsField extends WebAbstractComponent<HorizontalLayout> implemen
         super.setStyleName(name);
 
         component.addStyleName(FTS_FIELD_STYLENAME);
+    }
+
+    @Override
+    public String getStyleName() {
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(FTS_FIELD_STYLENAME, ""));
     }
 }

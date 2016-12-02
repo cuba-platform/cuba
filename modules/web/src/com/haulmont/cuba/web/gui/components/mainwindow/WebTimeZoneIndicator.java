@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.TimeZones;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -29,17 +30,23 @@ import java.util.TimeZone;
 
 public class WebTimeZoneIndicator extends WebAbstractComponent<Label> implements TimeZoneIndicator {
 
+    protected static final String C_USER_TIMEZONE_LABEL = "c-user-timezone-label";
     protected String styleName;
 
     public WebTimeZoneIndicator() {
         component = new Label();
         component.setSizeUndefined();
-        component.setStyleName("c-user-timezone-label");
+        component.setStyleName(C_USER_TIMEZONE_LABEL);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
         TimeZone timeZone = uss.getUserSession().getTimeZone();
         TimeZones timeZones = AppBeans.get(TimeZones.NAME);
         component.setValue(timeZones.getDisplayNameShort(timeZone));
+    }
+
+    @Override
+    public String getStyleName() {
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_USER_TIMEZONE_LABEL, ""));
     }
 
     @Override

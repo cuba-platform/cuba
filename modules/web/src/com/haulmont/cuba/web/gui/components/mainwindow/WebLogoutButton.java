@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.LogoutButton;
@@ -59,5 +60,10 @@ public class WebLogoutButton extends WebAbstractComponent<CubaButton> implements
         super.setStyleName(name);
 
         component.addStyleName(LOGOUT_BUTTON_STYLENAME);
+    }
+
+    @Override
+    public String getStyleName() {
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(LOGOUT_BUTTON_STYLENAME, ""));
     }
 }

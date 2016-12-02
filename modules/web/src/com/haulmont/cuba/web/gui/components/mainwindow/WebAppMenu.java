@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.sys.MenuBuilder;
@@ -36,6 +37,11 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
         super.setStyleName(name);
 
         component.addStyleName(MENU_STYLENAME);
+    }
+
+    @Override
+    public String getStyleName() {
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(MENU_STYLENAME, ""));
     }
 
     @Override
