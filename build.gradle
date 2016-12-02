@@ -279,7 +279,7 @@ configure(coreModule) {
         compile(bom['org.springframework:spring-tx'])
         compile(bom['org.springframework:spring-webmvc'])
 
-        compile(bom['com.haulmont.thirdparty:poi']) // POI is actually not required by core, but remains here to simplify dependencies for reports project
+        compile(bom['org.apache.poi:poi']) // POI is actually not required by core, but remains here to simplify dependencies for reports project
 
         compile(bom['org.jsoup:jsoup']) // simplify version management for fts
 
