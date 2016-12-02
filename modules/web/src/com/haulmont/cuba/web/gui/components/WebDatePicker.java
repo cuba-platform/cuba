@@ -36,7 +36,6 @@ import com.vaadin.ui.InlineDateField;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.sql.Time;
 import java.util.Collection;
 import java.util.Date;
 
@@ -134,27 +133,11 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
         resolveMetaPropertyPath(metaClass, property);
 
         component.addValueChangeListener(event -> {
-            if (updatingInstance) {
-                return;
-            }
-
             if (!checkRange(component.getValue())) {
                 return;
             }
 
-            updatingInstance = true;
-            try {
-                if (datasource != null && metaPropertyPath != null) {
-                    if (datasource.getItem() != null) {
-                        InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), component.getValue());
-                    }
-                }
-            } finally {
-                updatingInstance = false;
-            }
-
-            Object newValue = getValue();
-            fireValueChanged(newValue);
+            updateInstance();
         });
 
         itemChangeListener = e -> {
@@ -199,8 +182,8 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
         }
     }
 
-    protected Date convertDate() {
-        final Date datePickerDate = component.getValue();
+    protected Date constructDate() {
+        Date datePickerDate = component.getValue();
         if (datePickerDate == null) {
             return null;
         }
@@ -268,15 +251,34 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
     @SuppressWarnings("unchecked")
     @Override
     public Date getValue() {
-        return convertDate();
+        return constructDate();
     }
 
     @Override
     public void setValue(Object value) {
-        if (!checkRange((Date) value)) {
+        setValueToFields((Date) value);
+        updateInstance();
+    }
+
+    protected void updateInstance() {
+        if (updatingInstance) {
             return;
         }
 
-        super.setValue(value);
+        updatingInstance = true;
+        try {
+            if (datasource != null && metaPropertyPath != null) {
+                Date value = constructDate();
+
+                if (datasource.getItem() != null) {
+                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+                }
+            }
+        } finally {
+            updatingInstance = false;
+        }
+
+        Object newValue = getValue();
+        fireValueChanged(newValue);
     }
 }
