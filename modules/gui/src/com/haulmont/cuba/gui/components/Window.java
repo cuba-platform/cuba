@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
 import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
@@ -267,14 +268,14 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
 
         /**
          * Called by the framework to validate the screen components and commit changes.
-         * @return true if commit was succesful
+         * @return true if commit was successful
          */
         boolean commit();
 
         /**
          * Called by the framework to commit changes with optional validation.
          * @param validate false to avoid validation
-         * @return true if commit was succesful
+         * @return true if commit was successful
          */
         boolean commit(boolean validate);
 
@@ -289,6 +290,24 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
          * @return true if the edited item has been pessimistically locked when the screen is opened
          */
         boolean isLocked();
+
+        /**
+         * @return true if Editor will perform additional validation on {@link #validateAll()}
+         * call using {@link com.haulmont.cuba.core.global.BeanValidation}.
+         * @see com.haulmont.cuba.core.global.BeanValidation
+         */
+        boolean isCrossFieldValidate();
+        /**
+         * Enable/disable cross field validation on {@link #validateAll()} call. <br/>
+         * Cross field validation is triggered for item of main datasource with {@link UiCrossFieldChecks} group only
+         * (without {@link javax.validation.groups.Default} group) when there are no other validation errors in UI components. <br/>
+         *
+         * Cross field validation is triggered before {@link AbstractWindow#postValidate} hook.
+         *
+         * @param crossFieldValidate cross field validate flag
+         * @see com.haulmont.cuba.core.global.BeanValidation
+         */
+        void setCrossFieldValidate(boolean crossFieldValidate);
     }
 
     /**

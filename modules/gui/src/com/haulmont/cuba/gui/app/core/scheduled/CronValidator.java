@@ -34,7 +34,7 @@ public class CronValidator implements Field.Validator {
             try {
                 new CronSequenceGenerator(value.toString(), serverInfoService.getTimeZone());
             } catch (Exception e) {
-                throw new ValidationException(messages.getMessage(getClass(), "validation.cronInvalid"));
+                throw new ValidationException(messages.getMessage(CronValidator.class, "validation.cronInvalid"));
             }
         }
     }

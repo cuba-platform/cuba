@@ -20,20 +20,25 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanValidation;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
+import com.haulmont.cuba.gui.components.validators.BeanValidator;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import org.apache.commons.lang.StringUtils;
 
+import javax.validation.metadata.BeanDescriptor;
 import java.util.*;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
@@ -92,6 +97,8 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> ex
             if (itemWrapper != null) {
                 itemWrapper.unsubscribe();
             }
+
+            disableBeanValidator();
         }
 
         if (datasource != null) {
@@ -122,6 +129,35 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> ex
             securityWeakItemChangeListener = new WeakItemChangeListener(datasource, securityItemChangeListener);
             //noinspection unchecked
             this.datasource.addItemChangeListener(securityWeakItemChangeListener);
+
+            initBeanValidator();
+        }
+    }
+
+    protected void initBeanValidator() {
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+        MetaClass propertyEnclosingMetaClass = metadataTools.getPropertyEnclosingMetaClass(metaPropertyPath);
+        Class enclosingJavaClass = propertyEnclosingMetaClass.getJavaClass();
+
+        if (enclosingJavaClass != KeyValueEntity.class
+                && !DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+            BeanValidation beanValidation = AppBeans.get(BeanValidation.NAME);
+            javax.validation.Validator validator = beanValidation.getValidator();
+            BeanDescriptor beanDescriptor = validator.getConstraintsForClass(enclosingJavaClass);
+
+            if (beanDescriptor.hasConstraints()) {
+                addValidator(new BeanValidator(enclosingJavaClass, metaProperty.getName()));
+            }
+        }
+    }
+
+    protected void disableBeanValidator() {
+        if (validators != null) {
+            for (Validator validator : new ArrayList<>(validators)) {
+                if (validator instanceof BeanValidator) {
+                    validators.remove(validator);
+                }
+            }
         }
     }
 
@@ -235,6 +271,15 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> ex
         if (validators != null) {
             validators.remove(validator);
         }
+    }
+
+    @Override
+    public Collection<Validator> getValidators() {
+        if (validators == null) {
+            return Collections.emptyList();
+        }
+
+        return Collections.unmodifiableCollection(validators);
     }
 
     @Override

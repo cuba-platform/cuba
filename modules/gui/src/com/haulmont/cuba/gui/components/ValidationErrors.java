@@ -23,7 +23,6 @@ import java.util.List;
 
 /**
  * Encapsulates errors found during components validation.
- *
  */
 public class ValidationErrors {
 

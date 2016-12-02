@@ -130,25 +130,21 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
 
     @Override
     protected boolean isMandatory(Field field) {
-        Column columnAnnotation = field.getAnnotation(Column.class);
-        OneToOne oneToOneAnnotation = field.getAnnotation(OneToOne.class);
         OneToMany oneToManyAnnotation = field.getAnnotation(OneToMany.class);
-        ManyToOne manyToOneAnnotation = field.getAnnotation(ManyToOne.class);
         ManyToMany manyToManyAnnotation = field.getAnnotation(ManyToMany.class);
 
-        if (columnAnnotation != null) {
-            return !columnAnnotation.nullable();
-        } else if (oneToOneAnnotation != null) {
-            return !oneToOneAnnotation.optional();
-        } else if (oneToManyAnnotation != null) {
+        if (oneToManyAnnotation != null || manyToManyAnnotation != null) {
             return false;
-        } else if (manyToOneAnnotation != null) {
-            return !manyToOneAnnotation.optional();
-        } else if (manyToManyAnnotation != null) {
-            return false;
-        } else {
-            return super.isMandatory(field);
         }
+
+        Column columnAnnotation = field.getAnnotation(Column.class);
+        OneToOne oneToOneAnnotation = field.getAnnotation(OneToOne.class);
+        ManyToOne manyToOneAnnotation = field.getAnnotation(ManyToOne.class);
+
+        return (columnAnnotation != null && !columnAnnotation.nullable())
+                || (oneToOneAnnotation != null && !oneToOneAnnotation.optional())
+                || (manyToOneAnnotation != null && !manyToOneAnnotation.optional())
+                || super.isMandatory(field);
     }
 
     @Override

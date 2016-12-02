@@ -24,16 +24,34 @@ import java.io.Serializable;
 import java.util.Locale;
 
 /**
- * Infrastructure interface to work with bean validation.
+ * Infrastructure interface for validation with JSR303 rules.
  */
 public interface BeanValidation {
     String NAME = "cuba_BeanValidation";
 
+    /**
+     * Get default validator for current locale if there is current UserSession or with default locale.
+     *
+     * @return validator
+     */
     Validator getValidator();
 
+    /**
+     * Get validator with custom constraint mapping and current locale if there is current UserSession or with default locale.
+     *
+     * @param constraintMapping constraint mapping
+     * @return validator
+     */
     Validator getValidator(ConstraintMapping constraintMapping);
 
-    Validator getValidator(@Nullable ConstraintMapping constraintMapping, ValidationOptions opts);
+    /**
+     * Get validator with custom constraint mapping and additional validation options.
+     *
+     * @param constraintMapping constraint mapping
+     * @param options           options
+     * @return validator
+     */
+    Validator getValidator(@Nullable ConstraintMapping constraintMapping, ValidationOptions options);
 
     class ValidationOptions implements Serializable {
         protected Boolean failFast;

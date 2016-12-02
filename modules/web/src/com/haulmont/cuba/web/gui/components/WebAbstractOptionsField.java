@@ -82,6 +82,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             if (itemWrapper != null) {
                 itemWrapper.unsubscribe();
             }
+
+            disableBeanValidator();
         }
 
         if (datasource != null) {
@@ -129,6 +131,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             securityWeakItemChangeListener = new WeakItemChangeListener(datasource, securityItemChangeListener);
             //noinspection unchecked
             this.datasource.addItemChangeListener(securityWeakItemChangeListener);
+
+            initBeanValidator();
         }
     }
 

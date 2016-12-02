@@ -474,17 +474,22 @@ public abstract class ComponentsHelper {
      * @param e         exception
      * @param errors    errors container
      */
-    public static void fillErrorMessages(Component.Validatable component, ValidationException e, ValidationErrors errors) {
-        if (e instanceof FieldGroup.FieldsValidationException && component instanceof FieldGroup) {
-            FieldGroup fieldGroup = (FieldGroup) component;
-
-            Map<FieldGroup.FieldConfig, Exception> fields = ((FieldGroup.FieldsValidationException) e).getProblemFields();
-            for (Map.Entry<FieldGroup.FieldConfig, Exception> problem : fields.entrySet()) {
-                Component fieldComponent = fieldGroup.getFieldComponent(problem.getKey());
-                errors.add(fieldComponent, problem.getValue().getMessage());
-            }
-        } else if (e instanceof RequiredValueMissingException) {
+    public static void fillErrorMessages(Component.Validatable component, ValidationException e,
+                                         ValidationErrors errors) {
+        if (e instanceof RequiredValueMissingException) {
             errors.add(((RequiredValueMissingException) e).getComponent(), e.getMessage());
+        } else if (e instanceof CompositeValidationException) {
+            for (CompositeValidationException.ViolationCause cause : ((CompositeValidationException) e).getCauses()) {
+                errors.add((Component) component, cause.getMessage());
+            }
+        } else if (e instanceof FieldGroup.FieldsValidationException) {
+            FieldGroup.FieldsValidationException fve = (FieldGroup.FieldsValidationException) e;
+            Map<Component.Validatable, ValidationException> fields = fve.getProblemFields();
+            for (Map.Entry<Component.Validatable, ValidationException> problem : fields.entrySet()) {
+                ValidationException exception = problem.getValue();
+
+                fillErrorMessages(problem.getKey(), exception, errors);
+            }
         } else {
             errors.add((Component) component, e.getMessage());
         }

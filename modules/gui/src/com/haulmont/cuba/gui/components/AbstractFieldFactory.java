@@ -239,16 +239,10 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         }
 
         textField.setDatasource(datasource, property);
-        MetaProperty metaProperty = textField.getMetaProperty();
 
-        final String maxLength = xmlDescriptor != null ? xmlDescriptor.attributeValue("maxLength") : null;
-        if (!StringUtils.isEmpty(maxLength)) {
+        String maxLength = xmlDescriptor != null ? xmlDescriptor.attributeValue("maxLength") : null;
+        if (StringUtils.isNotEmpty(maxLength)) {
             ((TextInputField.MaxLengthLimited) textField).setMaxLength(Integer.parseInt(maxLength));
-        } else {
-            Integer len = (Integer) metaProperty.getAnnotations().get("length");
-            if (len != null) {
-                ((TextInputField.MaxLengthLimited) textField).setMaxLength(len);
-            }
         }
 
         return textField;

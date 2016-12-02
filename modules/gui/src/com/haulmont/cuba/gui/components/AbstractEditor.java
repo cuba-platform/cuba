@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
 
 /**
  * Base class for edit screen controllers.
- *
  */
 public class AbstractEditor<T extends Entity> extends AbstractWindow implements Window.Editor {
 
@@ -113,6 +112,16 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     @Override
     public boolean isLocked() {
         return ((Editor) frame).isLocked();
+    }
+
+    @Override
+    public boolean isCrossFieldValidate() {
+        return ((Editor) frame).isCrossFieldValidate();
+    }
+
+    @Override
+    public void setCrossFieldValidate(boolean crossFieldValidate) {
+        ((Editor) frame).setCrossFieldValidate(crossFieldValidate);
     }
 
     /**

@@ -244,6 +244,8 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
         if (metaProperty.isReadOnly()) {
             setEditable(false);
         }
+
+        initBeanValidator();
     }
 
     @Override

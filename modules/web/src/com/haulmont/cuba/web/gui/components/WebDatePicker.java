@@ -18,12 +18,11 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.DatePicker;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -35,6 +34,9 @@ import com.haulmont.cuba.web.toolkit.ui.CubaDatePicker;
 import com.vaadin.ui.InlineDateField;
 import org.apache.commons.lang.StringUtils;
 
+import javax.validation.constraints.Future;
+import javax.validation.constraints.Past;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
@@ -97,32 +99,30 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
         component.setResolution(vResolution);
     }
 
-    private boolean checkRange(Date value) {
+    protected boolean checkRange(Date value) {
         if (value != null) {
-            Messages messages = AppBeans.get(Messages.NAME);
-
             if (component.getRangeStart() != null && value.before(component.getRangeStart())) {
-                if (getFrame() != null) {
-                    getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
-                            Frame.NotificationType.WARNING);
-                }
-
-                component.setValue((Date) prevValue);
+                handleDateOutOfRange(value);
                 return false;
             }
 
             if (component.getRangeEnd() != null && value.after(component.getRangeEnd())) {
-                if (getFrame() != null) {
-                    getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
-                            Frame.NotificationType.WARNING);
-                }
-
-                component.setValue((Date) prevValue);
+                handleDateOutOfRange(value);
                 return false;
             }
         }
 
         return true;
+    }
+
+    protected void handleDateOutOfRange(Date value) {
+        Messages messages = AppBeans.get(Messages.NAME);
+        if (getFrame() != null) {
+            getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
+                    Frame.NotificationType.WARNING);
+        }
+
+        component.setValue((Date) prevValue);
     }
 
     @Override
@@ -195,6 +195,39 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
 
         if (metaProperty.isReadOnly()) {
             setEditable(false);
+        }
+
+        initBeanValidator();
+        setDateRangeByProperty(metaProperty);
+    }
+
+    protected void setDateRangeByProperty(MetaProperty metaProperty) {
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+
+        if (metaProperty.getAnnotations().get(Past.class.getName()) != null) {
+            TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+            Date currentTimestamp = timeSource.currentTimestamp();
+
+            Calendar calendar = Calendar.getInstance(sessionSource.getLocale());
+            calendar.setTime(currentTimestamp);
+            calendar.set(Calendar.HOUR_OF_DAY, 23);
+            calendar.set(Calendar.MINUTE, 59);
+            calendar.set(Calendar.SECOND, 59);
+            calendar.set(Calendar.MILLISECOND, 999);
+
+            setRangeEnd(calendar.getTime());
+        } else if (metaProperty.getAnnotations().get(Future.class.getName()) != null) {
+            TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+            Date currentTimestamp = timeSource.currentTimestamp();
+
+            Calendar calendar = Calendar.getInstance(sessionSource.getLocale());
+            calendar.setTime(currentTimestamp);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+
+            setRangeStart(calendar.getTime());
         }
     }
 

@@ -930,14 +930,13 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         }
     }
 
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Override
     public void validate() throws ValidationException {
         if (!isVisible() || !isEditable() || !isEnabled()) {
             return;
         }
 
-        final Map<FieldConfig, Exception> problems = new LinkedHashMap<>();
+        Map<Component.Validatable, ValidationException> problemFields = null; // lazily initialized
 
         for (Map.Entry<FieldConfig, Component> componentEntry : fieldComponents.entrySet()) {
             FieldConfig field = componentEntry.getKey();
@@ -951,35 +950,19 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
             if ((fieldComponent instanceof Validatable) &&
                     (fieldComponent instanceof Editable)) {
                 // If editable
-                if (fieldComponent.isVisible() &&
-                        fieldComponent.isEnabled() &&
-                        ((Editable) fieldComponent).isEditable()) {
-
-                    try {
-                        ((Validatable) fieldComponent).validate();
-                    } catch (ValidationException ex) {
-                        problems.put(field, ex);
+                try {
+                    ((Validatable) fieldComponent).validate();
+                } catch (ValidationException ex) {
+                    if (problemFields == null) {
+                        problemFields = new LinkedHashMap<>();
                     }
+                    problemFields.put((Validatable) fieldComponent, ex);
                 }
             }
         }
 
-        if (!problems.isEmpty()) {
-            Map<FieldConfig, Exception> problemFields = new LinkedHashMap<>();
-            for (Map.Entry<FieldConfig, Exception> entry : problems.entrySet()) {
-                problemFields.put(getField(entry.getKey().getId()), entry.getValue());
-            }
-
-            StringBuilder msgBuilder = new StringBuilder();
-            for (Iterator<Exception> iterator = problemFields.values().iterator(); iterator.hasNext(); ) {
-                Exception ex = iterator.next();
-                msgBuilder.append(ex.getMessage());
-                if (iterator.hasNext()) {
-                    msgBuilder.append("\n");
-                }
-            }
-
-            FieldsValidationException validationException = new FieldsValidationException(msgBuilder.toString());
+        if (problemFields != null && !problemFields.isEmpty()) {
+            FieldsValidationException validationException = new FieldsValidationException();
             validationException.setProblemFields(problemFields);
 
             throw validationException;
@@ -1094,5 +1077,26 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
 
     public void setFieldFactory(FieldFactory fieldFactory) {
         this.fieldFactory = fieldFactory;
+    }
+
+    public static class FieldValidationInfo {
+        private FieldConfig fieldConfig;
+        private ValidationException validationException;
+
+        public FieldConfig getFieldConfig() {
+            return fieldConfig;
+        }
+
+        public void setFieldConfig(FieldConfig fieldConfig) {
+            this.fieldConfig = fieldConfig;
+        }
+
+        public ValidationException getValidationException() {
+            return validationException;
+        }
+
+        public void setValidationException(ValidationException validationException) {
+            this.validationException = validationException;
+        }
     }
 }

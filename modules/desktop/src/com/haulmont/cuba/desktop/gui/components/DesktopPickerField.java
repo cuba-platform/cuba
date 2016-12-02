@@ -339,6 +339,8 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
         securityItemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
         // noinspection unchecked
         this.datasource.addItemChangeListener(new WeakItemChangeListener(this.datasource, securityItemChangeListener));
+
+        initBeanValidator();
     }
 
     protected void fireChangeListeners(Object newValue) {

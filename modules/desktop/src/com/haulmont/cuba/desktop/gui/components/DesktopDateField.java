@@ -35,7 +35,7 @@ import com.haulmont.cuba.desktop.sys.vcl.DatePicker.DatePicker;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.desktop.sys.vcl.FocusableComponent;
 import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.Frame.NotificationType;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -47,6 +47,8 @@ import org.apache.commons.lang.StringUtils;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.Past;
 import java.awt.*;
 import java.text.ParseException;
 import java.util.*;
@@ -222,50 +224,49 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
     @Override
     public void setRangeStart(Date value) {
-        startDate = value;
+        startDate = toUserDate(value);
     }
 
     @Override
     public Date getRangeStart() {
-        return startDate;
+        return toServerDate(startDate);
     }
 
     @Override
     public void setRangeEnd(Date value) {
-        endDate = value;
+        endDate = toUserDate(value);
     }
 
     @Override
     public Date getRangeEnd() {
-        return endDate;
+        return toServerDate(endDate);
     }
 
-    private boolean checkRange(Date value) {
+    protected boolean checkRange(Date value) {
         if (value != null) {
             if (startDate != null && value.before(startDate)) {
-                if (getFrame() != null) {
-                    getFrame().showNotification(messages.getMainMessage("dateField.dateOutOfRangeMessage"),
-                            Frame.NotificationType.WARNING);
-                }
-
-                datePicker.setDate((Date) prevValue);
-                timeField.setValue((Date) prevValue);
+                handleDateOutOfRange(value);
                 return false;
             }
 
             if (endDate != null && value.after(endDate)) {
-                if (getFrame() != null) {
-                    getFrame().showNotification(messages.getMainMessage("dateField.dateOutOfRangeMessage"),
-                            Frame.NotificationType.WARNING);
-                }
-
-                datePicker.setDate((Date) prevValue);
-                timeField.setValue((Date) prevValue);
+                handleDateOutOfRange(value);
                 return false;
             }
         }
 
         return true;
+    }
+
+    protected void handleDateOutOfRange(Date value) {
+        if (getFrame() != null) {
+            Messages messages = AppBeans.get(Messages.NAME);
+            getFrame().showNotification(messages.getMainMessage("dateField.dateOutOfRangeMessage"),
+                    NotificationType.TRAY);
+        }
+
+        datePicker.setDate((Date) prevValue);
+        timeField.setValue((Date) prevValue);
     }
 
     @Override
@@ -391,6 +392,37 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
         if (metaProperty.isReadOnly()) {
             setEditable(false);
+        }
+
+        initBeanValidator();
+        setDateRangeByProperty(metaProperty);
+    }
+
+    protected void setDateRangeByProperty(MetaProperty metaProperty) {
+        if (metaProperty.getAnnotations().get(Past.class.getName()) != null) {
+            TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+            Date currentTimestamp = timeSource.currentTimestamp();
+
+            Calendar calendar = Calendar.getInstance(userSession.getLocale());
+            calendar.setTime(currentTimestamp);
+            calendar.set(Calendar.HOUR_OF_DAY, 23);
+            calendar.set(Calendar.MINUTE, 59);
+            calendar.set(Calendar.SECOND, 59);
+            calendar.set(Calendar.MILLISECOND, 999);
+
+            setRangeEnd(calendar.getTime());
+        } else if (metaProperty.getAnnotations().get(Future.class.getName()) != null) {
+            TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+            Date currentTimestamp = timeSource.currentTimestamp();
+
+            Calendar calendar = Calendar.getInstance(userSession.getLocale());
+            calendar.setTime(currentTimestamp);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+
+            setRangeStart(calendar.getTime());
         }
     }
 

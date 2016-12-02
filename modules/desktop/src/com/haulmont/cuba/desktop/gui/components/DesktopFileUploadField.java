@@ -627,6 +627,8 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
         securityItemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
         // noinspection unchecked
         this.datasource.addItemChangeListener(new WeakItemChangeListener(this.datasource, securityItemChangeListener));
+
+        initBeanValidator();
     }
 
     protected void updateInstance(Object value) {

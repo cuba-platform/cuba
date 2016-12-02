@@ -28,6 +28,7 @@ import com.haulmont.chile.core.model.impl.*;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -40,13 +41,17 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 
 import javax.annotation.Nullable;
+import javax.validation.constraints.*;
 import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.*;
 
 public class ChileAnnotationsLoader implements MetaClassLoader {
 
-    private Logger log = LoggerFactory.getLogger(ChileAnnotationsLoader.class);
+    private static final String VALIDATION_MIN = "_min";
+    private static final String VALIDATION_MAX = "_max";
+
+    private final Logger log = LoggerFactory.getLogger(ChileAnnotationsLoader.class);
 
     protected Session session;
 
@@ -68,7 +73,7 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
                 try {
                     classes.add(ReflectionHelper.loadClass(className));
                 } catch (ClassNotFoundException e) {
-                    log.warn("Class " + className + " not found for model " + packageName);
+                    log.warn("Class {} not found for model {}", className, packageName);
                 }
             }
         } else {
@@ -90,7 +95,7 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
                     tasks.addAll(info.getTasks());
                 } else if (classNames != null) {
                     // If the class name is specified explicitly, print a warning
-                    log.warn("Class " + aClass.getName() + " is not loaded into metadata");
+                    log.warn("Class {} is not loaded into metadata", aClass.getName());
                 }
             }
         }
@@ -131,7 +136,9 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
     protected boolean isMandatory(Field field) {
         com.haulmont.chile.core.annotations.MetaProperty metaPropertyAnnotation =
                 field.getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class);
-        return metaPropertyAnnotation != null && metaPropertyAnnotation.mandatory();
+
+        return (metaPropertyAnnotation != null && metaPropertyAnnotation.mandatory())
+               || field.getAnnotation(NotNull.class) != null;
     }
 
     protected boolean isMetaPropertyField(Field field) {
@@ -155,15 +162,15 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
         if (Object.class.equals(clazz))
             return null;
 
-        final com.haulmont.chile.core.annotations.MetaClass metaClassAnnotaion =
+        final com.haulmont.chile.core.annotations.MetaClass metaClassAnnotation =
                 clazz.getAnnotation(com.haulmont.chile.core.annotations.MetaClass.class);
 
-        if (metaClassAnnotaion == null) {
+        if (metaClassAnnotation == null) {
             log.trace(String.format("Class %s isn't annotated as metadata entity, ignore it", clazz.getName()));
             return null;
         }
 
-        String className = metaClassAnnotaion.name();
+        String className = metaClassAnnotation.name();
         if (StringUtils.isEmpty(className)) {
             className = clazz.getSimpleName();
         }
@@ -289,7 +296,7 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
         loadPropertyAnnotations(metaProperty, method);
     }
 
-    private void loadPropertyAnnotations(MetaProperty metaProperty, AnnotatedElement annotatedElement) {
+    protected void loadPropertyAnnotations(MetaProperty metaProperty, AnnotatedElement annotatedElement) {
         SystemLevel systemLevel = annotatedElement.getAnnotation(SystemLevel.class);
         if (systemLevel != null) {
             metaProperty.getAnnotations().put(SystemLevel.class.getName(), systemLevel.value());
@@ -308,6 +315,52 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
             if (!(related.length == 1 && related[0].equals(""))) {
                 metaProperty.getAnnotations().put("relatedProperties", Joiner.on(',').join(related));
             }
+        }
+
+        loadBeanValidationAnnotations(metaProperty, annotatedElement);
+    }
+
+    protected void loadBeanValidationAnnotations(MetaProperty metaProperty, AnnotatedElement annotatedElement) {
+        Size size = annotatedElement.getAnnotation(Size.class);
+        if (size != null) {
+            metaProperty.getAnnotations().put(Size.class.getName() + VALIDATION_MIN, size.min());
+            metaProperty.getAnnotations().put(Size.class.getName() + VALIDATION_MAX, size.max());
+        }
+
+        Length length = annotatedElement.getAnnotation(Length.class);
+        if (length != null) {
+            metaProperty.getAnnotations().put(Length.class.getName() + VALIDATION_MIN, length.min());
+            metaProperty.getAnnotations().put(Length.class.getName() + VALIDATION_MAX, length.max());
+        }
+
+        Min min = annotatedElement.getAnnotation(Min.class);
+        if (min != null) {
+            metaProperty.getAnnotations().put(Min.class.getName(), min.value());
+        }
+
+        Max max = annotatedElement.getAnnotation(Max.class);
+        if (max != null) {
+            metaProperty.getAnnotations().put(Max.class.getName(), max.value());
+        }
+
+        DecimalMin decimalMin = annotatedElement.getAnnotation(DecimalMin.class);
+        if (decimalMin != null) {
+            metaProperty.getAnnotations().put(DecimalMin.class.getName(), decimalMin.value());
+        }
+
+        DecimalMax decimalMax = annotatedElement.getAnnotation(DecimalMax.class);
+        if (decimalMax != null) {
+            metaProperty.getAnnotations().put(DecimalMax.class.getName(), decimalMax.value());
+        }
+
+        Past past = annotatedElement.getAnnotation(Past.class);
+        if (past != null) {
+            metaProperty.getAnnotations().put(Past.class.getName(), true);
+        }
+
+        Future future = annotatedElement.getAnnotation(Future.class);
+        if (future != null) {
+            metaProperty.getAnnotations().put(Future.class.getName(), true);
         }
     }
 
@@ -497,7 +550,7 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
         }
         if (type == null)
             throw new IllegalArgumentException("Field " + field
-                    + " must either be of parameterized type or have a JPA annotation declaring a targetEntity");
+                    + " must either be of parametrized type or have a JPA annotation declaring a targetEntity");
         return type;
     }
 
@@ -619,7 +672,7 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
         @Override
         public String getWarning() {
             return String.format(
-                    "Range for propery '%s' wasn't initialized (range class '%s')",
+                    "Range for property '%s' wasn't initialized (range class '%s')",
                     metaProperty.getName(), rangeClass.getName());
         }
 

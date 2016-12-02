@@ -20,6 +20,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 
+import java.util.List;
 import java.util.Map;
 
 public interface FieldGroup extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
@@ -29,12 +30,12 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
 
     String DEFAULT_FIELD_WIDTH = "200px";
 
-    java.util.List<FieldConfig> getFields();
+    List<FieldConfig> getFields();
     FieldConfig getField(String id);
 
     Component getFieldComponent(String id);
     Component getFieldComponent(FieldConfig fieldConfig);
-    java.util.List<Component> getOwnComponents();
+    List<Component> getOwnComponents();
 
     void addField(FieldConfig field);
     void addField(FieldConfig field, int col);
@@ -254,7 +255,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
     }
 
     class FieldsValidationException extends ValidationException {
-        private Map<FieldConfig, Exception> problemFields;
+        private Map<Component.Validatable, ValidationException> problemFields;
 
         public FieldsValidationException() {
         }
@@ -271,11 +272,11 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
             super(cause);
         }
 
-        public Map<FieldConfig, Exception> getProblemFields() {
+        public Map<Component.Validatable, ValidationException> getProblemFields() {
             return problemFields;
         }
 
-        public void setProblemFields(Map<FieldConfig, Exception> problemFields) {
+        public void setProblemFields(Map<Component.Validatable, ValidationException> problemFields) {
             this.problemFields = problemFields;
         }
     }

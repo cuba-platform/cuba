@@ -19,12 +19,14 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Frame.NotificationType;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
@@ -38,6 +40,8 @@ import com.vaadin.ui.Layout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.validation.constraints.Future;
+import javax.validation.constraints.Past;
 import java.sql.Time;
 import java.util.*;
 import java.util.Calendar;
@@ -144,52 +148,49 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
     @Override
     public void setRangeStart(Date value) {
-        dateField.setRangeStart(value);
+        dateField.setRangeStart(toUserDate(value));
     }
 
     @Override
     public Date getRangeStart() {
-        return dateField.getRangeStart();
+        return toServerDate(dateField.getRangeStart());
     }
 
     @Override
     public void setRangeEnd(Date value) {
-        dateField.setRangeEnd(value);
+        dateField.setRangeEnd(toUserDate(value));
     }
 
     @Override
     public Date getRangeEnd() {
-        return dateField.getRangeEnd();
+        return toServerDate(dateField.getRangeEnd());
     }
 
-    private boolean checkRange(Date value) {
+    protected boolean checkRange(Date value) {
         if (value != null) {
-            Messages messages = AppBeans.get(Messages.NAME);
-
             if (dateField.getRangeStart() != null && value.before(dateField.getRangeStart())) {
-                if (getFrame() != null) {
-                    getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
-                            Frame.NotificationType.WARNING);
-                }
-
-                dateField.setValue((Date) prevValue);
-                timeField.setValue((Date) prevValue);
+                handleDateOutOfRange(value);
                 return false;
             }
 
             if (dateField.getRangeEnd() != null && value.after(dateField.getRangeEnd())) {
-                if (getFrame() != null) {
-                    getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
-                            Frame.NotificationType.WARNING);
-                }
-
-                dateField.setValue((Date) prevValue);
-                timeField.setValue((Date) prevValue);
+                handleDateOutOfRange(value);
                 return false;
             }
         }
 
         return true;
+    }
+
+    protected void handleDateOutOfRange(Date value) {
+        if (getFrame() != null) {
+            Messages messages = AppBeans.get(Messages.NAME);
+            getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
+                    NotificationType.TRAY);
+        }
+
+        dateField.setValue((Date) prevValue);
+        timeField.setValue((Date) prevValue);
     }
 
     @Override
@@ -409,6 +410,37 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
         if (metaProperty.isReadOnly()) {
             setEditable(false);
+        }
+
+        initBeanValidator();
+        setDateRangeByProperty(metaProperty);
+    }
+
+    protected void setDateRangeByProperty(MetaProperty metaProperty) {
+        if (metaProperty.getAnnotations().get(Past.class.getName()) != null) {
+            TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+            Date currentTimestamp = timeSource.currentTimestamp();
+
+            Calendar calendar = Calendar.getInstance(userSession.getLocale());
+            calendar.setTime(currentTimestamp);
+            calendar.set(Calendar.HOUR_OF_DAY, 23);
+            calendar.set(Calendar.MINUTE, 59);
+            calendar.set(Calendar.SECOND, 59);
+            calendar.set(Calendar.MILLISECOND, 999);
+
+            setRangeEnd(calendar.getTime());
+        } else if (metaProperty.getAnnotations().get(Future.class.getName()) != null) {
+            TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+            Date currentTimestamp = timeSource.currentTimestamp();
+
+            Calendar calendar = Calendar.getInstance(userSession.getLocale());
+            calendar.setTime(currentTimestamp);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+
+            setRangeStart(calendar.getTime());
         }
     }
 

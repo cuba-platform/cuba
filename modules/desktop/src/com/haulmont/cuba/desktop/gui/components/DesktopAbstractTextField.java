@@ -260,6 +260,8 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
         if (metaProperty.isReadOnly()) {
             setEditable(false);
         }
+
+        initBeanValidator();
     }
 
     @Override

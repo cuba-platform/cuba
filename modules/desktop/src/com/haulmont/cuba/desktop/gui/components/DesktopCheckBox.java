@@ -143,6 +143,8 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
         if (metaProperty.isReadOnly()) {
             setEditable(false);
         }
+
+        initBeanValidator();
     }
 
     @Override

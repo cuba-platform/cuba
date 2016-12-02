@@ -21,22 +21,25 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.BeanValidation;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.components.validators.BeanValidator;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
+import javax.validation.metadata.BeanDescriptor;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 public abstract class DesktopAbstractField<C extends JComponent> extends DesktopAbstractComponent<C> implements Field {
 
@@ -45,7 +48,7 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
     protected boolean required;
     protected String requiredMessage;
 
-    protected Set<Validator> validators = new HashSet<>();
+    protected Set<Validator> validators = new LinkedHashSet<>();
 
     // todo move nimbus constants to theme
     protected Color requiredBgColor = (Color) UIManager.get("cubaRequiredBackground");
@@ -91,6 +94,11 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
     @Override
     public void removeValidator(Validator validator) {
         validators.remove(validator);
+    }
+
+    @Override
+    public Collection<Validator> getValidators() {
+        return Collections.unmodifiableCollection(validators);
     }
 
     @Override
@@ -144,6 +152,33 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
 
     protected void decorateMissingValue(JComponent jComponent, boolean missingValueState) {
         jComponent.setBackground(missingValueState ? requiredBgColor : defaultBgColor);
+    }
+
+    protected void initBeanValidator() {
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+        MetaClass propertyEnclosingMetaClass = metadataTools.getPropertyEnclosingMetaClass(metaPropertyPath);
+        Class enclosingJavaClass = propertyEnclosingMetaClass.getJavaClass();
+
+        if (enclosingJavaClass != KeyValueEntity.class
+                && !DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+            BeanValidation beanValidation = AppBeans.get(BeanValidation.NAME);
+            javax.validation.Validator validator = beanValidation.getValidator();
+            BeanDescriptor beanDescriptor = validator.getConstraintsForClass(enclosingJavaClass);
+
+            if (beanDescriptor.hasConstraints()) {
+                addValidator(new BeanValidator(enclosingJavaClass, metaProperty.getName()));
+            }
+        }
+    }
+
+    protected void disableBeanValidator() {
+        if (validators != null) {
+            for (Validator validator : new ArrayList<>(validators)) {
+                if (validator instanceof BeanValidator) {
+                    validators.remove(validator);
+                }
+            }
+        }
     }
 
     @Override

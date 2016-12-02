@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.collect.Iterables;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -26,6 +27,7 @@ import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Categorized;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
@@ -35,8 +37,13 @@ import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.annotation.Nullable;
+import javax.validation.ConstraintViolation;
+import javax.validation.ElementKind;
+import javax.validation.Path;
+import javax.validation.Validator;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
 public class EditorWindowDelegate extends WindowDelegate {
 
@@ -45,6 +52,8 @@ public class EditorWindowDelegate extends WindowDelegate {
     protected boolean commitActionPerformed;
     protected boolean commitAndCloseButtonExists;
     protected boolean readOnly;
+
+    protected boolean crossFieldValidate = true;
 
     protected Metadata metadata = AppBeans.get(Metadata.NAME);
     protected Messages messages = AppBeans.get(Messages.NAME);
@@ -102,7 +111,6 @@ public class EditorWindowDelegate extends WindowDelegate {
             commitAction.setShortcut(commitShortcut);
         }
         this.window.addAction(commitAction);
-
 
         this.window.addAction(
                 new AbstractAction(Window.Editor.WINDOW_CLOSE) {
@@ -303,5 +311,32 @@ public class EditorWindowDelegate extends WindowDelegate {
             metaClass = ds.getMetaClass();
         }
         return metaClass;
+    }
+
+    public boolean isCrossFieldValidate() {
+        return crossFieldValidate;
+    }
+
+    public void setCrossFieldValidate(boolean crossFieldValidate) {
+        this.crossFieldValidate = crossFieldValidate;
+    }
+
+    public void validateAdditionalRules(ValidationErrors errors) {
+        // all previous validations return no errors
+        if (crossFieldValidate && errors.isEmpty()) {
+            BeanValidation beanValidation = AppBeans.get(BeanValidation.NAME);
+
+            Validator validator = beanValidation.getValidator();
+            Set<ConstraintViolation<Entity>> violations = validator.validate(getItem(), UiCrossFieldChecks.class);
+
+            violations.stream()
+                    .filter(violation -> {
+                        Path propertyPath = violation.getPropertyPath();
+
+                        Path.Node lastNode = Iterables.getLast(propertyPath);
+                        return lastNode.getKind() == ElementKind.BEAN;
+                    })
+                    .forEach(violation -> errors.add(violation.getMessage()));
+        }
     }
 }

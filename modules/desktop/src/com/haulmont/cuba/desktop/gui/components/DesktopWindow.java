@@ -1335,7 +1335,12 @@ public class DesktopWindow implements Window, Component.Disposable,
             }
         }
 
+        validateAdditionalRules(errors);
+
         return handleValidationErrors(errors);
+    }
+
+    protected void validateAdditionalRules(ValidationErrors errors) {
     }
 
     protected boolean handleValidationErrors(ValidationErrors errors) {
@@ -1574,6 +1579,21 @@ public class DesktopWindow implements Window, Component.Disposable,
         @Override
         public boolean isLocked() {
             return ((EditorWindowDelegate) delegate).isLocked();
+        }
+
+        @Override
+        public boolean isCrossFieldValidate() {
+            return ((EditorWindowDelegate) delegate).isCrossFieldValidate();
+        }
+
+        @Override
+        public void setCrossFieldValidate(boolean crossFieldValidate) {
+            ((EditorWindowDelegate) delegate).setCrossFieldValidate(crossFieldValidate);
+        }
+
+        @Override
+        protected void validateAdditionalRules(ValidationErrors errors) {
+            ((EditorWindowDelegate) delegate).validateAdditionalRules(errors);
         }
     }
 

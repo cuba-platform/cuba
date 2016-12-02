@@ -27,7 +27,6 @@ import java.util.List;
 
 /**
  * Base class for simple screen controllers.
- *
  */
 public class AbstractWindow extends AbstractFrame 
         implements Window, Component.HasXmlDescriptor, Window.Wrapper, Component.SecuredActionsHolder {
@@ -95,7 +94,7 @@ public class AbstractWindow extends AbstractFrame
      */
     @Override
     public String getCaption() {
-        return ((Window) frame).getCaption();
+        return frame.getCaption();
     }
 
     /**
@@ -104,7 +103,7 @@ public class AbstractWindow extends AbstractFrame
      */
     @Override
     public void setCaption(String caption) {
-        ((Window) frame).setCaption(caption);
+        frame.setCaption(caption);
     }
 
     /**
@@ -113,7 +112,7 @@ public class AbstractWindow extends AbstractFrame
      */
     @Override
     public String getDescription() {
-        return ((Window) frame).getDescription();
+        return frame.getDescription();
     }
 
     /**
@@ -122,7 +121,7 @@ public class AbstractWindow extends AbstractFrame
      */
     @Override
     public void setDescription(String description) {
-        ((Window) frame).setDescription(description);
+        frame.setDescription(description);
     }
 
     /** INTERNAL. Don't call from application code. */
@@ -193,7 +192,7 @@ public class AbstractWindow extends AbstractFrame
 
     @Override
     public boolean validate(List<Validatable> fields) {
-        return ((Window) frame).validate(fields);
+        return frame.validate(fields);
     }
 
     /**
@@ -206,7 +205,7 @@ public class AbstractWindow extends AbstractFrame
      */
     @Override
     public boolean validateAll() {
-        return ((Window) frame).validateAll();
+        return frame.validateAll();
     }
 
     @Override
@@ -300,11 +299,11 @@ public class AbstractWindow extends AbstractFrame
 
     @Override
     public String getIcon() {
-        return ((Window) frame).getIcon();
+        return frame.getIcon();
     }
 
     @Override
     public void setIcon(String icon) {
-        ((Window) frame).setIcon(icon);
+        frame.setIcon(icon);
     }
 }

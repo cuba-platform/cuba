@@ -30,23 +30,20 @@ import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEnumConverter;
 import com.vaadin.ui.AbstractTextField;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import javax.validation.constraints.Size;
 import java.text.ParseException;
 import java.util.Locale;
 
-/**
- * @param <T>
- */
 public abstract class WebAbstractTextField<T extends AbstractTextField>
         extends
             WebAbstractField<T>
         implements
             TextInputField {
-
-    private static Logger log = LoggerFactory.getLogger(WebAbstractTextField.class);
 
     protected Locale locale = AppBeans.<UserSessionSource>get(UserSessionSource.NAME).getLocale();
 
@@ -62,31 +59,6 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
         component.setNullRepresentation("");
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
-
-        // todo artamonov remove unnecessary validator #PL-4506
-        component.addValidator(
-                new com.vaadin.data.Validator() {
-                    @Override
-                    public void validate(Object value) throws InvalidValueException {
-                        if (!isValid(value)) {
-                            component.markAsDirty();
-                            throw new InvalidValueException("Unable to parse value: " + value);
-                        }
-                    }
-
-                    public boolean isValid(Object value) {
-                        Datatype datatype = getActualDatatype();
-                        if (value instanceof String && datatype != null) {
-                            try {
-                                datatype.parse((String) value, locale);
-                            } catch (ParseException e) {
-                                return false;
-                            }
-                        }
-                        return true;
-                    }
-                }
-        );
     }
 
     protected abstract T createTextFieldImpl();
@@ -104,6 +76,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
             try {
                 return (V) datatype.parse(value, locale);
             } catch (ParseException e) {
+                Logger log = LoggerFactory.getLogger(WebAbstractTextField.class);
                 log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
                 return null;
             }
@@ -146,10 +119,21 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
     public void setDatasource(Datasource datasource, String property) {
         super.setDatasource(datasource, property);
 
-        if (metaProperty != null) {
+        if (metaProperty != null
+                && this instanceof TextInputField.MaxLengthLimited) {
             Integer maxLength = (Integer) metaProperty.getAnnotations().get("length");
-            if (maxLength != null && this instanceof TextInputField.MaxLengthLimited) {
+            if (maxLength != null) {
                 ((TextInputField.MaxLengthLimited) this).setMaxLength(maxLength);
+            }
+
+            Integer sizeMax = (Integer) metaProperty.getAnnotations().get(Size.class.getName() + "_max");
+            if (sizeMax != null) {
+                ((TextInputField.MaxLengthLimited) this).setMaxLength(sizeMax);
+            }
+
+            Integer lengthMax = (Integer) metaProperty.getAnnotations().get(Length.class.getName() + "_max");
+            if (lengthMax != null) {
+                ((TextInputField.MaxLengthLimited) this).setMaxLength(lengthMax);
             }
         }
     }

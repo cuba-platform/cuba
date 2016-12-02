@@ -22,7 +22,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 
 /**
  * A component that represents data from one property of a datasource.
- *
  */
 public interface DatasourceComponent extends Component, Component.HasValue {
 

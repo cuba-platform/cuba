@@ -59,8 +59,6 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
 
     protected Metadata metadata = AppBeans.get(Metadata.NAME);
 
-    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     protected Datasource.ItemChangeListener itemChangeListener;
@@ -86,7 +84,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
 
                     MetaClass metaClass = metadata.getClassNN(value.getClass());
                     MetaProperty property = metaClass.getProperty(captionProperty);
-                    return metadataTools.format(propertyValue, property);
+                    return metadata.getTools().format(propertyValue, property);
                 }
 
                 return super.convertToPresentation(value, targetType, locale);
@@ -205,6 +203,8 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
             if (itemWrapper != null) {
                 itemWrapper.unsubscribe();
             }
+
+            disableBeanValidator();
         }
 
         if (datasource != null) {
@@ -260,6 +260,8 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
             securityWeakItemChangeListener = new WeakItemChangeListener(datasource, securityItemChangeListener);
             //noinspection unchecked
             this.datasource.addItemChangeListener(securityWeakItemChangeListener);
+
+            initBeanValidator();
         }
     }
 

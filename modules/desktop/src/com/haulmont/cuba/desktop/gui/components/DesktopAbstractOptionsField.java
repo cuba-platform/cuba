@@ -222,6 +222,8 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         securityItemChangeListener = e -> handleFilteredAttributes(this, this.datasource, metaPropertyPath);
         // noinspection unchecked
         this.datasource.addItemChangeListener(new WeakItemChangeListener(this.datasource, securityItemChangeListener));
+
+        initBeanValidator();
     }
 
     protected void fireChangeListeners(Object newValue) {

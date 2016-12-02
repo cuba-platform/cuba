@@ -16,9 +16,10 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import java.util.Collection;
+
 /**
  * Base interface for "fields" - components intended to display and edit value of a certain entity attribute.
- *
  */
 public interface Field extends DatasourceComponent, Component.HasCaption, Component.HasValue, Component.Editable,
                                Component.BelongToFrame, Component.Validatable, Component.HasIcon {
@@ -39,6 +40,11 @@ public interface Field extends DatasourceComponent, Component.HasCaption, Compon
      */
     void addValidator(Validator validator);
     void removeValidator(Validator validator);
+
+    /**
+     * @return unmodifiable collection with Field validators
+     */
+    Collection<Validator> getValidators();
 
     /**
      * Field validator.<br>

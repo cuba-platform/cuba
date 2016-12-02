@@ -81,6 +81,7 @@ public class WindowLoader extends FrameLoader<Window> {
         loadSubComponentsAndExpand(resultComponent, layoutElement);
 
         loadFocusedComponent(resultComponent, element);
+        loadCrossFieldValidate(resultComponent, element);
     }
 
     protected void loadDialogOptions(Window resultComponent, Element element) {
@@ -221,6 +222,18 @@ public class WindowLoader extends FrameLoader<Window> {
     protected void loadFocusedComponent(Window window, Element element) {
         String componentId = element.attributeValue("focusComponent");
         window.setFocusComponent(componentId);
+    }
+
+    protected void loadCrossFieldValidate(Window window, Element element) {
+        String crossFieldValidate = element.attributeValue("crossFieldValidate");
+        if (StringUtils.isNotEmpty(crossFieldValidate)) {
+            if (window instanceof Window.Editor) {
+                ((Window.Editor) window).setCrossFieldValidate(Boolean.parseBoolean(crossFieldValidate));
+            } else {
+                throw new GuiDevelopmentException("Window should extend Window.Editor to use crossFieldValidate attribute",
+                        context.getCurrentFrameId());
+            }
+        }
     }
 
     protected void addInitTimerMethodTask(Timer timer, String timerMethodName) {
