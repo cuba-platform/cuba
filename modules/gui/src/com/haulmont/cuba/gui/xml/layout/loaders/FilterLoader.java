@@ -75,9 +75,9 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
         String editable = element.attributeValue("editable");
         resultComponent.setEditable(editable == null || Boolean.parseBoolean(editable));
 
-        String columnsQty = element.attributeValue("columnsCount");
-        if (!Strings.isNullOrEmpty(columnsQty)) {
-            resultComponent.setColumnsCount(Integer.parseInt(columnsQty));
+        String columnsCount = element.attributeValue("columnsCount");
+        if (!Strings.isNullOrEmpty(columnsCount)) {
+            resultComponent.setColumnsCount(Integer.parseInt(columnsCount));
         }
 
         String folderActionsEnabled = element.attributeValue("folderActionsEnabled");
