@@ -30,21 +30,17 @@ public class CalendarEventProviderWrapper
 
     protected CalendarEventProvider calendarEventProvider;
     protected List<CalendarEvent> itemsCache = new ArrayList<>();
-    private List<EventSetChangeListener> listeners = new ArrayList<>();
+    protected List<EventSetChangeListener> listeners = new ArrayList<>();
 
     public CalendarEventProviderWrapper(CalendarEventProvider calendarEventProvider) {
         this.calendarEventProvider = calendarEventProvider;
-        calendarEventProvider.addEventSetChangeListener(new CalendarEventProvider.EventSetChangeListener() {
-            @Override
-            public void eventSetChange(CalendarEventProvider.EventSetChangeEvent changeEvent) {
-                fireEventSetChange();
-            }
-        });
+        calendarEventProvider.addEventSetChangeListener(changeEvent -> fireEventSetChange());
     }
 
     protected void fireEventSetChange() {
-        EventSetChangeEvent event = new EventSetChangeEvent(this);
+        itemsCache.clear();
 
+        EventSetChangeEvent event = new EventSetChangeEvent(this);
         for (EventSetChangeListener listener : listeners) {
             listener.eventSetChange(event);
         }
@@ -80,8 +76,9 @@ public class CalendarEventProviderWrapper
 
     @Override
     public void addEventSetChangeListener(EventSetChangeListener listener) {
-        listeners.add(listener);
-        calendarEventProvider.addEventSetChangeListener((CalendarEventProvider.EventSetChangeListener) changeEvent -> itemsCache.clear());
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
     }
 
     @Override

@@ -33,12 +33,11 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaDatePicker;
 import com.vaadin.ui.InlineDateField;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.sql.Time;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Objects;
 
 public class WebDatePicker extends WebAbstractField<InlineDateField> implements DatePicker {
 
@@ -222,17 +221,13 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
     }
 
     protected void fireValueChanged(Object value) {
-        if (!ObjectUtils.equals(prevValue, value)) {
-            Object oldValue = prevValue;
+        Object oldValue = prevValue;
 
+        if (!Objects.equals(oldValue, value)) {
             prevValue = value;
 
-            if (listeners != null && !listeners.isEmpty()) {
-                ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
-                for (ValueChangeListener listener : listeners) {
-                    listener.valueChanged(event);
-                }
-            }
+            ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
+            getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
         }
     }
 

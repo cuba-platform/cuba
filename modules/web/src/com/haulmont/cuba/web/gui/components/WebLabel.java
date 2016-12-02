@@ -44,25 +44,28 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
 
     public static final String CAPTION_STYLE = "c-label-caption-on-left";
 
-    protected List<ValueChangeListener> listeners = null;
-
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
     protected MetaPropertyPath metaPropertyPath;
 
     protected Formatter formatter;
 
-    protected String oldValue = "";
+    protected String prevValue = "";
 
     protected ItemWrapper itemWrapper;
 
     public WebLabel() {
         component = new CubaLabel();
         component.setSizeUndefined();
-        component.addValueChangeListener(event -> {
+        component.addValueChangeListener(vEvent -> {
             String newValue = component.getValue();
-            fireValueChanged(oldValue, newValue);
-            oldValue = newValue;
+            String oldValue = prevValue;
+            prevValue = newValue;
+
+            if (!Objects.equals(oldValue, newValue)) {
+                ValueChangeEvent event = new ValueChangeEvent(this, oldValue, newValue);
+                getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
+            }
         });
     }
 
@@ -158,6 +161,7 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
         return new ItemWrapper(datasource, datasource.getMetaClass(), propertyPaths);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getValue() {
         return (T) component.getValue();
@@ -196,20 +200,12 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
 
     @Override
     public void addValueChangeListener(ValueChangeListener listener) {
-        if (listeners == null) {
-            listeners = new LinkedList<>();
-        }
-
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
-        }
+        getEventRouter().addListener(ValueChangeListener.class, listener);
     }
 
     @Override
     public void removeValueChangeListener(ValueChangeListener listener) {
-        if (listeners != null) {
-            listeners.remove(listener);
-        }
+        getEventRouter().removeListener(ValueChangeListener.class, listener);
     }
 
     @Override
@@ -220,14 +216,6 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
     @Override
     public void setFormatter(Formatter formatter) {
         this.formatter = formatter;
-    }
-
-    protected void fireValueChanged(Object prevValue, Object value) {
-        if (listeners != null) {
-            for (ValueChangeListener listener : new ArrayList<>(listeners)) {
-                listener.valueChanged(new ValueChangeEvent(this, prevValue, value));
-            }
-        }
     }
 
     public String formatValue(Object value) {

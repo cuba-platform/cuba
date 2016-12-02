@@ -32,26 +32,18 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
-/**
- * @param <T>
- */
 public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> extends WebAbstractComponent<T> implements Field {
 
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
     protected MetaPropertyPath metaPropertyPath;
 
-    protected List<ValueChangeListener> listeners; // lazily initialized list
     protected List<Field.Validator> validators; // lazily initialized list
 
     protected Object prevValue;
@@ -207,41 +199,25 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> ex
 
     @Override
     public void addValueChangeListener(ValueChangeListener listener) {
-        if (listeners == null) {
-            listeners = new ArrayList<>();
-        }
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
-        }
+        getEventRouter().addListener(ValueChangeListener.class, listener);
     }
 
     @Override
     public void removeValueChangeListener(ValueChangeListener listener) {
-        if (listeners != null) {
-            listeners.remove(listener);
-        }
+        getEventRouter().removeListener(ValueChangeListener.class, listener);
     }
 
     protected void attachListener(T component) {
-        component.addValueChangeListener(event -> {
+        component.addValueChangeListener(vEvent -> {
             final Object value = getValue();
             final Object oldValue = prevValue;
             prevValue = value;
 
-            fireValueChanged(oldValue, value);
-        });
-    }
-
-    protected void fireValueChanged(Object prevValue, Object value) {
-        if (!ObjectUtils.equals(prevValue, value)) {
-            if (listeners != null && !listeners.isEmpty()) {
-                ValueChangeEvent event = new ValueChangeEvent(this, prevValue, value);
-
-                for (ValueChangeListener listener : listeners) {
-                    listener.valueChanged(event);
-                }
+            if (!Objects.equals(oldValue, value)) {
+                ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
+                getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
             }
-        }
+        });
     }
 
     @Override

@@ -141,8 +141,6 @@ public class WebFileMultiUploadField extends WebAbstractUploadComponent<CubaAbst
             return outputStream;
         });
 
-        setExpandable(false);
-
         impl.addUploadListener(new CubaMultiUpload.UploadListener() {
             @Override
             public void fileUploadStart(String fileName, long contentLength) {

@@ -16,23 +16,17 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.google.common.base.Joiner;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.HBoxLayout;
+import com.haulmont.cuba.gui.components.ListEditor;
 import com.haulmont.cuba.gui.components.listeditor.ListEditorDelegate;
-import com.haulmont.cuba.gui.components.listeditor.ListEditorHelper;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
-import org.apache.commons.lang.ObjectUtils;
-import org.springframework.ldap.OperationNotSupportedException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
-/**
- */
 public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor> implements ListEditor {
 
     protected ListEditorDelegate delegate;
@@ -146,27 +140,19 @@ public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor
         }
         super.setValue(newValue);
         delegate.setValue((List) newValue);
-        fireValueChanged(newValue);
+
+        Object oldValue = prevValue;
+        if (!Objects.equals(oldValue, newValue)) {
+            prevValue = newValue;
+
+            ValueChangeEvent event = new ValueChangeEvent(this, oldValue, newValue);
+            getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
+        }
     }
 
     @Override
     public List getValue() {
         return delegate.getValue();
-    }
-
-    protected void fireValueChanged(Object value) {
-        if (!ObjectUtils.equals(prevValue, value)) {
-            Object oldValue = prevValue;
-
-            prevValue = value;
-
-            if (listeners != null && !listeners.isEmpty()) {
-                ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
-                for (ValueChangeListener listener : listeners) {
-                    listener.valueChanged(event);
-                }
-            }
-        }
     }
 
     public class CubaListEditor extends CustomField<List> {

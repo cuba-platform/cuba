@@ -186,15 +186,20 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
     @Override
     protected void attachListener(CubaComboBox component) {
-        component.addValueChangeListener(event -> {
+        component.addValueChangeListener(vEvent -> {
             final Object value = getValue();
             final Object oldValue = prevValue;
             prevValue = value;
 
             if (optionsDatasource != null) {
+                //noinspection unchecked
                 optionsDatasource.setItem((Entity) value);
             }
-            fireValueChanged(oldValue, value);
+
+            if (!Objects.equals(oldValue, value)) {
+                ValueChangeEvent event = new ValueChangeEvent(this, prevValue, value);
+                getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
+            }
 
             checkMissingValue();
         });

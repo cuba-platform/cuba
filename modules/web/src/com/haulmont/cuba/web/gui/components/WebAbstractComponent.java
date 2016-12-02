@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.EventRouter;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Component;
@@ -33,12 +34,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @param <T>
- */
 public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractComponent>
-        implements
-        Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon, Component.HasCaption {
+        implements Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon,
+                   Component.HasCaption {
 
     public static final List<Sizeable.Unit> UNIT_SYMBOLS = Collections.unmodifiableList(Arrays.asList(
             Sizeable.Unit.PIXELS, Sizeable.Unit.POINTS, Sizeable.Unit.PICAS,
@@ -50,17 +48,28 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
     protected String id;
     protected T component;
 
-    protected String icon;
-
     protected Element element;
     protected Frame frame;
     protected Component parent;
 
     protected Alignment alignment = Alignment.TOP_LEFT;
-
-    protected boolean expandable = true;
-
+    protected String icon;
     protected int tabIndex = 0;
+
+    private EventRouter eventRouter;
+
+    /**
+     * Use EventRouter for listeners instead of fields with listeners List.
+     *
+     * @return lazily initialized {@link EventRouter} instance.
+     * @see EventRouter
+     */
+    protected EventRouter getEventRouter() {
+        if (eventRouter == null) {
+            eventRouter = new EventRouter();
+        }
+        return eventRouter;
+    }
 
     @Override
     public Frame getFrame() {
@@ -306,14 +315,6 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
         getComposition().setWidth(width);
     }
 
-    public boolean isExpandable() {
-        return expandable;
-    }
-
-    public void setExpandable(boolean expandable) {
-        this.expandable = expandable;
-    }
-
     @Override
     public Alignment getAlignment() {
         return alignment;
@@ -354,11 +355,11 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
 
     @Override
     public <X> X unwrap(Class<X> internalComponentClass) {
-        return (X) getComponent();
+        return internalComponentClass.cast (getComponent());
     }
 
     @Override
     public <X> X unwrapComposition(Class<X> internalCompositionClass) {
-        return (X) getComposition();
+        return internalCompositionClass.cast(getComposition());
     }
 }
