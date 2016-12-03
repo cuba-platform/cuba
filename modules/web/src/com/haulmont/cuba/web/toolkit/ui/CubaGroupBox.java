@@ -205,10 +205,8 @@ public class CubaGroupBox extends Panel implements ComponentContainer {
     public void setShowAsPanel(boolean showAsPanel) {
         if (getState(false).showAsPanel != showAsPanel) {
             if (showAsPanel) {
-                setStyleName("v-panel");
                 setPrimaryStyleName("v-panel");
             } else {
-                setStyleName("c-groupbox");
                 setPrimaryStyleName("c-groupbox");
             }
 

@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
@@ -38,6 +39,8 @@ import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAl
 
 public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements GroupBoxLayout {
 
+    private static final String GROUPBOX_PANEL_STYLENAME = "c-panel-groupbox";
+
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected Map<String, Component> componentByIds = new HashMap<>();
 
@@ -49,7 +52,8 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
     public WebGroupBox() {
         component = new CubaGroupBox();
-        component.setExpandChangeHandler(expanded -> fireExpandStateChange(expanded));
+        component.addStyleName(GROUPBOX_PANEL_STYLENAME);
+        component.setExpandChangeHandler(this::fireExpandStateChange);
 
         CubaVerticalActionsLayout container = new CubaVerticalActionsLayout();
         component.setContent(container);
@@ -380,5 +384,17 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     @Override
     public boolean isShowAsPanel() {
         return component.isShowAsPanel();
+    }
+
+    @Override
+    public void setStyleName(String name) {
+        super.setStyleName(name);
+
+        component.addStyleName(GROUPBOX_PANEL_STYLENAME);
+    }
+
+    @Override
+    public String getStyleName() {
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(GROUPBOX_PANEL_STYLENAME, ""));
     }
 }

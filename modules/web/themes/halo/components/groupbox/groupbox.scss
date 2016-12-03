@@ -211,4 +211,9 @@
   .v-scrollable > .#{$primary-stylename} {
     overflow: auto;
   }
+
+  // Panel mode
+  .v-panel.c-panel-groupbox > .v-panel-content {
+    padding: $v-layout-margin-top $v-layout-margin-right $v-layout-margin-bottom $v-layout-margin-left;
+  }
 }
