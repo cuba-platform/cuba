@@ -22,12 +22,22 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.Util;
+import com.vaadin.client.WidgetUtil;
+import com.vaadin.client.ui.VOverlay;
+import com.vaadin.client.ui.VUI;
+import com.vaadin.client.ui.VWindow;
+import com.vaadin.client.ui.window.WindowConnector;
 import fi.jasoft.dragdroplayouts.client.ui.util.HTML5Support;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.CubaFileUploadWidget.CUBA_FILEUPLOAD_DROPZONE_CLASS;
 
@@ -293,6 +303,72 @@ public class JQueryFileUploadOverlay {
         });
     }
 
+    protected static boolean isUnderOverlay(Element dropZoneElement) {
+        Widget dropZoneWidget = WidgetUtil.findWidget(dropZoneElement, null);
+        if (dropZoneWidget == null)
+            return false;
+
+        ComponentConnector dropZoneConnector = Util.findConnectorFor(dropZoneWidget);
+        if (dropZoneConnector == null)
+            return false;
+
+        ApplicationConnection ac = dropZoneConnector.getConnection();
+        List<WindowConnector> windowConnectors = ac.getUIConnector().getSubWindows();
+        if (windowConnectors == null || windowConnectors.size() == 0)
+            return false;
+
+        List<VWindow> windows = windowConnectors.stream()
+                .map(WindowConnector::getWidget)
+                .collect(Collectors.toList());
+
+        Widget dropZoneTopParent = getWidgetTopParent(dropZoneWidget);
+        if (dropZoneTopParent instanceof VWindow) {
+            return modalWindowIsUnderOverlay((VWindow) dropZoneTopParent, windows);
+        } else if (dropZoneTopParent instanceof VUI) {
+            return containsModalWindow(windows);
+        } else {
+            Widget topParentOwner = ((VOverlay) dropZoneTopParent).getOwner();
+            Widget ownerParent = getWidgetTopParent(topParentOwner);
+
+            if (ownerParent instanceof VWindow) {
+                return modalWindowIsUnderOverlay((VWindow) ownerParent, windows);
+            } else {
+                return containsModalWindow(windows);
+            }
+        }
+    }
+
+    protected static Widget getWidgetTopParent(Widget widget) {
+        Widget parent = widget.getParent();
+
+        while (!(parent instanceof VWindow) &&
+                !(parent instanceof VUI) &&
+                !(parent instanceof VOverlay)) {
+            parent = parent.getParent();
+        }
+
+        return parent;
+    }
+
+    protected static boolean containsModalWindow(List<VWindow> overlayWindows) {
+        for (VWindow overlayWindow : overlayWindows) {
+            if (overlayWindow.vaadinModality)
+                return true;
+        }
+
+        return false;
+    }
+
+    protected static boolean modalWindowIsUnderOverlay(VWindow modalWindow, List<VWindow> overlayWindows) {
+        for (int i = overlayWindows.indexOf(modalWindow) + 1; i < overlayWindows.size(); i++) {
+            VWindow overlayWindow = overlayWindows.get(i);
+            if (overlayWindow.vaadinModality)
+                return true;
+        }
+
+        return false;
+    }
+
     protected static void globalDocumentDrop(DropEvent event) {
         forceHideDropZones();
     }
@@ -318,8 +394,12 @@ public class JQueryFileUploadOverlay {
 
             // find all drop zones and add classname
             for (Map.Entry<Element, Element> entry : dropZoneFileUpload.entrySet()) {
+                Element dropZoneElement = entry.getKey();
+                if (isUnderOverlay(dropZoneElement))
+                    continue;
+
                 if (!entry.getValue().hasAttribute("disabled")) {
-                    entry.getKey().addClassName(CUBA_FILEUPLOAD_DROPZONE_CLASS);
+                    dropZoneElement.addClassName(CUBA_FILEUPLOAD_DROPZONE_CLASS);
                 }
             }
         }
