@@ -45,8 +45,8 @@ import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Stream;
+
+import static java.lang.String.format;
 
 /**
  * Implementation of {@link TypedQuery} interface based on EclipseLink.
@@ -216,12 +216,12 @@ public class QueryImpl<T> implements TypedQuery<T> {
         String nestedEntityPath = parser.getEntityPathIfSecondaryReturnedInsteadOfMain();
         if (nestedEntityName != null) {
             if (parser.isCollectionSecondaryEntitySelect()) {
-                throw new IllegalStateException(String.format("Collection attributes are not supported in select clause: %s", nestedEntityPath));
+                throw new IllegalStateException(format("Collection attributes are not supported in select clause: %s", nestedEntityPath));
             }
             QueryTransformer transformer = queryTransformerFactory.transformer(result);
             transformer.replaceWithSelectEntityVariable("tempEntityAlias");
-            transformer.addFirstSelectionSource(String.format("%s tempEntityAlias", nestedEntityName));
-            transformer.addWhereAsIs(String.format("tempEntityAlias.id = %s.id", nestedEntityPath));
+            transformer.addFirstSelectionSource(format("%s tempEntityAlias", nestedEntityName));
+            transformer.addWhereAsIs(format("tempEntityAlias.id = %s.id", nestedEntityPath));
             transformer.addEntityInGroupBy("tempEntityAlias");
             result = transformer.getResult();
         }
@@ -314,7 +314,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         JpaQuery<T> query = getQuery();
         preExecute(query);
-        FetchGroup fg = prepareFetchGroup(views);
+        FetchGroup fg = new FetchGroupBuilder(views).build();
         query.setHint(QueryHints.FETCH_GROUP, fg);
         @SuppressWarnings("unchecked")
         List<T> resultList = (List<T>) getResultFromCache(query, false, obj -> {
@@ -336,7 +336,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         JpaQuery<T> jpaQuery = getQuery();
         preExecute(jpaQuery);
-        FetchGroup fg = prepareFetchGroup(views);
+        FetchGroup fg = new FetchGroupBuilder(views).build();
         jpaQuery.setHint(QueryHints.FETCH_GROUP, fg);
 
 
@@ -362,7 +362,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         try {
             JpaQuery<T> query = getQuery();
             preExecute(query);
-            FetchGroup fg = prepareFetchGroup(views);
+            FetchGroup fg = new FetchGroupBuilder(views).build();
             query.setHint(QueryHints.FETCH_GROUP, fg);
             @SuppressWarnings("unchecked")
             List<T> resultList = (List<T>) getResultFromCache(query, false, obj -> {
@@ -383,33 +383,6 @@ public class QueryImpl<T> implements TypedQuery<T> {
             }
         } finally {
             maxResults = saveMaxResults;
-        }
-    }
-
-
-    protected FetchGroup prepareFetchGroup(List<View> views) {
-        FetchGroup fg = views.stream().flatMap(v -> v.getProperties().stream())
-                                      .flatMap(this::excludeKeys)
-                                      .collect(FetchGroup::new, FetchGroup::addAttribute, this::mergeFetchGroups);
-        fg.setShouldLoadAll(true);
-        return
-    }
-
-    private void mergeFetchGroups(FetchGroup first, FetchGroup second) {
-            first.addAttributes(second.getAttributeNames());
-    }
-
-    private Stream<String> excludeKeys(ViewProperty property) {
-        Function<CharSequence, StringJoiner> appendPrefix =
-                new StringJoiner(".").add(property.getName())::add;
-
-        View view = property.getView();
-        if (view != null) {
-            return view.getProperties().stream().flatMap(this::excludeKeys)
-                                                .map(appendPrefix)
-                                                .map(StringJoiner::toString);
-        } else {
-            return Stream.empty();
         }
     }
 
