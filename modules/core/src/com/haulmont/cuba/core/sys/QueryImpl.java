@@ -36,6 +36,7 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,8 @@ import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * Implementation of {@link TypedQuery} interface based on EclipseLink.
@@ -311,6 +314,8 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         JpaQuery<T> query = getQuery();
         preExecute(query);
+        FetchGroup fg = prepareFetchGroup(views);
+        query.setHint(QueryHints.FETCH_GROUP, fg);
         @SuppressWarnings("unchecked")
         List<T> resultList = (List<T>) getResultFromCache(query, false, obj -> {
             ((List) obj).stream().filter(item -> item instanceof Entity).forEach(item -> {
@@ -331,6 +336,10 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         JpaQuery<T> jpaQuery = getQuery();
         preExecute(jpaQuery);
+        FetchGroup fg = prepareFetchGroup(views);
+        jpaQuery.setHint(QueryHints.FETCH_GROUP, fg);
+
+
         @SuppressWarnings("unchecked")
         T result = (T) getResultFromCache(jpaQuery, true, obj -> {
             if (obj instanceof Entity) {
@@ -353,6 +362,8 @@ public class QueryImpl<T> implements TypedQuery<T> {
         try {
             JpaQuery<T> query = getQuery();
             preExecute(query);
+            FetchGroup fg = prepareFetchGroup(views);
+            query.setHint(QueryHints.FETCH_GROUP, fg);
             @SuppressWarnings("unchecked")
             List<T> resultList = (List<T>) getResultFromCache(query, false, obj -> {
                 List list = (List) obj;
@@ -372,6 +383,33 @@ public class QueryImpl<T> implements TypedQuery<T> {
             }
         } finally {
             maxResults = saveMaxResults;
+        }
+    }
+
+
+    protected FetchGroup prepareFetchGroup(List<View> views) {
+        FetchGroup fg = views.stream().flatMap(v -> v.getProperties().stream())
+                                      .flatMap(this::excludeKeys)
+                                      .collect(FetchGroup::new, FetchGroup::addAttribute, this::mergeFetchGroups);
+        fg.setShouldLoadAll(true);
+        return
+    }
+
+    private void mergeFetchGroups(FetchGroup first, FetchGroup second) {
+            first.addAttributes(second.getAttributeNames());
+    }
+
+    private Stream<String> excludeKeys(ViewProperty property) {
+        Function<CharSequence, StringJoiner> appendPrefix =
+                new StringJoiner(".").add(property.getName())::add;
+
+        View view = property.getView();
+        if (view != null) {
+            return view.getProperties().stream().flatMap(this::excludeKeys)
+                                                .map(appendPrefix)
+                                                .map(StringJoiner::toString);
+        } else {
+            return Stream.empty();
         }
     }
 
