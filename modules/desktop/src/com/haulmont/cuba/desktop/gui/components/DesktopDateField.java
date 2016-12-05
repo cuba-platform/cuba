@@ -248,12 +248,14 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         }
 
         if (value != null) {
-            if (startDate != null && value.before(startDate)) {
+            Date rangeStart = getRangeStart();
+            if (rangeStart != null && value.before(rangeStart)) {
                 handleDateOutOfRange(value);
                 return false;
             }
 
-            if (endDate != null && value.after(endDate)) {
+            Date rangeEnd = getRangeEnd();
+            if (rangeEnd != null && value.after(rangeEnd)) {
                 handleDateOutOfRange(value);
                 return false;
             }
