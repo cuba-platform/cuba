@@ -169,12 +169,14 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         }
 
         if (value != null) {
-            if (dateField.getRangeStart() != null && value.before(dateField.getRangeStart())) {
+            Date rangeStart = getRangeStart();
+            if (rangeStart != null && value.before(rangeStart)) {
                 handleDateOutOfRange(value);
                 return false;
             }
 
-            if (dateField.getRangeEnd() != null && value.after(dateField.getRangeEnd())) {
+            Date rangeEnd = getRangeEnd();
+            if (rangeEnd != null && value.after(rangeEnd)) {
                 handleDateOutOfRange(value);
                 return false;
             }
@@ -438,6 +440,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         }
     }
 
+    // Returns date value in server time zone
     protected Date constructDate() {
         final Date datePickerDate = dateField.getValue();
         if (datePickerDate == null) {
