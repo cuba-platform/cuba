@@ -60,4 +60,13 @@ public final class EventRouter {
                     .remove(listener);
         }
     }
+
+    public <L> boolean hasListeners(Class<L> listenerClass) {
+        if (events != null) {
+            List<Object> listeners = events.getOrDefault(listenerClass, Collections.emptyList());
+            return !listeners.isEmpty();
+        }
+
+        return false;
+    }
 }
