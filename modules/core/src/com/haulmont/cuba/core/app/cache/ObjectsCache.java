@@ -17,11 +17,20 @@
 
 package com.haulmont.cuba.core.app.cache;
 
+import com.google.common.collect.Lists;
 import com.haulmont.bali.datastruct.Pair;
+import com.haulmont.cuba.core.app.ClusterManagerAPI;
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,29 +42,30 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Cache for application objects
- *
  */
 public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheController {
 
-    private String name;
-    private CacheSet cacheSet;
-    private CacheLoader loader;
-    private boolean logUpdateEvent = false;
+    protected String name;
+    protected CacheSet cacheSet;
+    protected CacheLoader loader;
+    protected boolean logUpdateEvent = false;
 
-    private static Logger log = LoggerFactory.getLogger(ObjectsCache.class);
+    protected static Logger log = LoggerFactory.getLogger(ObjectsCache.class);
 
-    private ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
-    private ReentrantLock updateDataLock = new ReentrantLock();
+    protected ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
+    protected ReentrantLock updateDataLock = new ReentrantLock();
 
-    private Date lastUpdateTime;
-    private long lastUpdateDuration;
+    protected Date lastUpdateTime;
+    protected long lastUpdateDuration;
 
-    private final static int UPDATE_COUNT_FOR_AVERAGE_DURATION = 10;
-    private List<Long> updateDurations = new ArrayList<>(UPDATE_COUNT_FOR_AVERAGE_DURATION);
-    private int updateDurationsIndex = 0;
+    protected final static int UPDATE_COUNT_FOR_AVERAGE_DURATION = 10;
+    protected List<Long> updateDurations = new ArrayList<>(UPDATE_COUNT_FOR_AVERAGE_DURATION);
+    protected int updateDurationsIndex = 0;
 
     @Inject
-    private ObjectsCacheManagerAPI managerAPI;
+    protected ObjectsCacheManagerAPI managerAPI;
+    @Inject
+    protected ClusterManagerAPI clusterManagerAPI;
 
     public ObjectsCache() {
         cacheSet = new CacheSet(Collections.emptyList());
@@ -88,7 +98,7 @@ public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheControlle
         this.logUpdateEvent = logUpdateEvent;
     }
 
-    private boolean isValidState() {
+    protected boolean isValidState() {
         if (StringUtils.isEmpty(name)) {
             log.error("Not set name for ObjectsCache instance");
             return false;
@@ -265,6 +275,58 @@ public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheControlle
                 try {
                     // Modify cache set
                     this.cacheSet = temporaryCacheSet;
+                    sendCacheUpdateMessage(cacheSet.getRemovedItems(),
+                            cacheSet.getAddedItems());
+                } finally {
+                    cacheLock.writeLock().unlock();
+                }
+            } finally {
+                updateDataLock.unlock();
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void sendCacheUpdateMessage(Set<Object> removedItems, Set<Object> addedItems) {
+        if (clusterManagerAPI.isStarted())
+            clusterManagerAPI.send(new CacheUpdateMessage(name, copyItemsCollection(removedItems), addedItems));
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T> List<T> copyItemsCollection(Collection<T> items) {
+        List<T> result = Lists.newArrayList();
+        for (T item : items) {
+            if (item instanceof BaseGenericIdEntity
+                    && BooleanUtils.isFalse(BaseEntityInternalAccess.isDetached((BaseGenericIdEntity) item)))
+                item = (T) copy((BaseGenericIdEntity) item);
+            result.add(item);
+        }
+
+        return result;
+    }
+
+    // Items passed to update method can be managed we send only their copies
+    protected Entity copy(BaseGenericIdEntity entity) {
+        BaseGenericIdEntity result = (BaseGenericIdEntity) AppBeans.get(Metadata.class).create(entity.getMetaClass());
+        result.setId(entity.getId());
+        return result;
+    }
+
+    public void updateCache(CacheUpdateMessage msg) {
+        if (isValidState()) {
+            updateDataLock.lock();
+            try {
+                cacheLock.writeLock().lock();
+                try {
+                    Collection<Object> itemsToRemove = msg.getItemsToRemove();
+                    Collection<Object> itemsToAdd = msg.getItemsToAdd();
+
+                    if (CollectionUtils.isNotEmpty(itemsToRemove))
+                        cacheSet.getItems().removeAll(itemsToRemove);
+
+                    if (CollectionUtils.isNotEmpty(itemsToAdd))
+                        cacheSet.getItems().addAll(itemsToAdd);
+
                 } finally {
                     cacheLock.writeLock().unlock();
                 }

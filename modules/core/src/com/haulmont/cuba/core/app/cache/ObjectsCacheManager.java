@@ -17,10 +17,14 @@
 
 package com.haulmont.cuba.core.app.cache;
 
+import com.haulmont.cuba.core.app.ClusterListenerAdapter;
+import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,6 +40,21 @@ public class ObjectsCacheManager implements ObjectsCacheManagerAPI {
     protected ConcurrentMap<String, ObjectsCacheController> controllers = new ConcurrentHashMap<>();
 
     protected Logger log = LoggerFactory.getLogger(getClass());
+
+    protected ClusterManagerAPI clusterManagerAPI;
+
+    @Inject
+    public void setClusterManagerAPI(ClusterManagerAPI clusterManagerAPI) {
+        this.clusterManagerAPI = clusterManagerAPI;
+        clusterManagerAPI.addListener(CacheUpdateMessage.class, new ClusterListenerAdapter<CacheUpdateMessage>() {
+            @Override
+            public void receive(CacheUpdateMessage message) {
+                ObjectsCacheController controller = getController(message.cacheName);
+                if (controller instanceof ObjectsCache)
+                    ((ObjectsCache) controller).updateCache(message);
+            }
+        });
+    }
 
     @Override
     public void registerCache(ObjectsCacheInstance objectsCache) {

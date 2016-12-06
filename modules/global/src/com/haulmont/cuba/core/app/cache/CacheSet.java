@@ -17,14 +17,12 @@
 
 package com.haulmont.cuba.core.app.cache;
 
+import com.google.common.collect.Sets;
 import com.haulmont.bali.datastruct.Pair;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -34,6 +32,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @SuppressWarnings({"unused"})
 public class CacheSet implements Cloneable {
+    protected Set<Object> addedItems = Sets.newHashSet();
+    protected Set<Object> removedItems = Sets.newHashSet();
+
     private Collection<Object> items;
 
     public CacheSet() {
@@ -45,7 +46,23 @@ public class CacheSet implements Cloneable {
     }
 
     public Collection<Object> getItems() {
-        return items;
+        return new DifferencesDecorator<>(items);
+    }
+
+    public Set<Object> getAddedItems() {
+        return addedItems;
+    }
+
+    public void setAddedItems(Set<Object> addedItems) {
+        this.addedItems = addedItems;
+    }
+
+    public Set<Object> getRemovedItems() {
+        return removedItems;
+    }
+
+    public void setRemovedItems(Set<Object> removedItems) {
+        this.removedItems = removedItems;
     }
 
     /**
@@ -181,6 +198,114 @@ public class CacheSet implements Cloneable {
                     return false;
             }
             return true;
+        }
+    }
+
+    public class DifferencesDecorator<E> implements Collection<E> {
+        protected Collection<E> items;
+
+
+        public DifferencesDecorator(Collection<E> items) {
+            this.items = items;
+        }
+
+        @Override
+        public int size() {
+            return items.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return items.isEmpty();
+        }
+
+        @Override
+        public boolean contains(Object o) {
+            return items.contains(o);
+        }
+
+        @Override
+        public Iterator<E> iterator() {
+            return new IteratorDecorator(items.iterator());
+        }
+
+        @Override
+        public Object[] toArray() {
+            return items.toArray();
+        }
+
+        @Override
+        public <T> T[] toArray(T[] a) {
+            return items.toArray(a);
+        }
+
+        @Override
+        public boolean add(E o) {
+            addedItems.add(o);
+            return items.add(o);
+        }
+
+        @Override
+        public boolean remove(Object o) {
+            removedItems.add(o);
+            return items.remove(o);
+        }
+
+        @Override
+        public boolean containsAll(Collection<?> c) {
+            return items.containsAll(c);
+        }
+
+        @Override
+        public boolean addAll(Collection<? extends E> c) {
+            addedItems.addAll(c);
+            return items.addAll(c);
+        }
+
+        @Override
+        public boolean retainAll(Collection<?> c) {
+            for (E item : items) {
+                if (!c.contains(item))
+                    removedItems.add(item);
+            }
+            return items.retainAll(c);
+        }
+
+        @Override
+        public boolean removeAll(Collection<?> c) {
+            removedItems.addAll(c);
+            return items.removeAll(c);
+        }
+
+        @Override
+        public void clear() {
+            items.clear();
+        }
+
+        protected class IteratorDecorator implements Iterator<E> {
+            protected Iterator<E> iterator;
+            protected E current;
+
+            public IteratorDecorator(Iterator<E> iterator) {
+                this.iterator = iterator;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
+
+            @Override
+            public E next() {
+                current = iterator.next();
+                return current;
+            }
+
+            @Override
+            public void remove() {
+                removedItems.add(current);
+                iterator.remove();
+            }
         }
     }
 }
