@@ -191,10 +191,10 @@ public class EntityLog implements EntityLogAPI {
 
     @Override
     public void registerCreate(Entity entity, boolean auto) {
-        if (doNotRegister(entity))
-            return;
-
         try {
+            if (doNotRegister(entity))
+                return;
+
             String entityName = getEntityName(entity);
             Set<String> attributes = getLoggedAttributes(entityName, auto);
             if (attributes != null && attributes.contains("*")) {
@@ -203,27 +203,39 @@ public class EntityLog implements EntityLogAPI {
             if (attributes == null) {
                 return;
             }
-            Date ts = timeSource.currentTimestamp();
-            EntityManager em = persistence.getEntityManager();
-
-            EntityLogItem item = metadata.create(EntityLogItem.class);
-            item.setEventTs(ts);
-            item.setUser(findUser(em));
-            item.setType(EntityLogItem.Type.CREATE);
-            item.setEntity(entityName);
-            item.setEntityId(((HasUuid) entity).getUuid());
-
-            Properties properties = new Properties();
-            for (String attr : attributes) {
-                writeAttribute(properties, entity, attr);
+            String storeName = metadata.getTools().getStoreName(metadata.getClassNN(entityName));
+            if (Stores.isMain(storeName)) {
+                internalRegisterCreate(entity, entityName, attributes);
+            } else {
+                // Create a new transaction in main DB if we are saving an entity from additional data store
+                try (Transaction tx = persistence.createTransaction()) {
+                    internalRegisterCreate(entity, entityName, attributes);
+                    tx.commit();
+                }
             }
-            item.setChanges(getChanges(properties));
-
-            em.persist(item);
-
         } catch (Exception e) {
-            log.warn("Unable to log entity " + entity + ", id=" + entity.getId(), e);
+            logError(entity, e);
         }
+    }
+
+    protected void internalRegisterCreate(Entity entity, String entityName, Set<String> attributes) throws IOException {
+        Date ts = timeSource.currentTimestamp();
+        EntityManager em = persistence.getEntityManager();
+
+        EntityLogItem item = metadata.create(EntityLogItem.class);
+        item.setEventTs(ts);
+        item.setUser(findUser(em));
+        item.setType(EntityLogItem.Type.CREATE);
+        item.setEntity(entityName);
+        item.setEntityId(((HasUuid) entity).getUuid());
+
+        Properties properties = new Properties();
+        for (String attr : attributes) {
+            writeAttribute(properties, entity, attr);
+        }
+        item.setChanges(getChanges(properties));
+
+        em.persist(item);
     }
 
     protected User findUser(EntityManager em) {
@@ -253,51 +265,61 @@ public class EntityLog implements EntityLogAPI {
 
     @Override
     public void registerModify(Entity entity, boolean auto, @Nullable EntityAttributeChanges changes) {
-        if (doNotRegister(entity))
-            return;
+        try {
+            if (doNotRegister(entity))
+                return;
 
-        String entityName = getEntityName(entity);
-        Set<String> attributes = getLoggedAttributes(entityName, auto);
-        if (attributes != null && attributes.contains("*")) {
-            attributes = getAllAttributes(entity);
-        }
-        if (attributes == null) {
-            return;
-        }
-
-        // Join to an existing transaction in main DB or create a new one if we came here with a tx for an additional DB
-        try (Transaction tx = persistence.getTransaction()) {
-            Date ts = timeSource.currentTimestamp();
-            EntityManager em = persistence.getEntityManager();
-
-            Set<String> dirty;
-            if (changes == null) {
-                dirty = persistence.getTools().getDirtyFields(entity);
-            } else {
-                dirty = changes.getAttributes();
+            String entityName = getEntityName(entity);
+            Set<String> attributes = getLoggedAttributes(entityName, auto);
+            if (attributes != null && attributes.contains("*")) {
+                attributes = getAllAttributes(entity);
+            }
+            if (attributes == null) {
+                return;
             }
 
-            Properties properties = new Properties();
-            for (String attr : attributes) {
-                if (dirty.contains(attr)) {
-                    writeAttribute(properties, entity, attr);
+            String storeName = metadata.getTools().getStoreName(metadata.getClassNN(entityName));
+            if (Stores.isMain(storeName)) {
+                internalRegisterModify(entity, changes, entityName, attributes);
+            } else {
+                // Create a new transaction in main DB if we are saving an entity from additional data store
+                try (Transaction tx = persistence.createTransaction()) {
+                    internalRegisterModify(entity, changes, entityName, attributes);
+                    tx.commit();
                 }
             }
-            if (!properties.isEmpty()) {
-                EntityLogItem item = metadata.create(EntityLogItem.class);
-                item.setEventTs(ts);
-                item.setUser(findUser(em));
-                item.setType(EntityLogItem.Type.MODIFY);
-                item.setEntity(entityName);
-                item.setEntityId(((HasUuid) entity).getUuid());
-                item.setChanges(getChanges(properties));
-
-                em.persist(item);
-            }
-
-            tx.commit();
         } catch (Exception e) {
-            log.warn("Unable to log entity " + entity + ", id=" + entity.getId(), e);
+            logError(entity, e);
+        }
+    }
+
+    protected void internalRegisterModify(Entity entity, @Nullable EntityAttributeChanges changes, String entityName, Set<String> attributes) throws IOException {
+        Date ts = timeSource.currentTimestamp();
+        EntityManager em = persistence.getEntityManager();
+
+        Set<String> dirty;
+        if (changes == null) {
+            dirty = persistence.getTools().getDirtyFields(entity);
+        } else {
+            dirty = changes.getAttributes();
+        }
+
+        Properties properties = new Properties();
+        for (String attr : attributes) {
+            if (dirty.contains(attr)) {
+                writeAttribute(properties, entity, attr);
+            }
+        }
+        if (!properties.isEmpty()) {
+            EntityLogItem item = metadata.create(EntityLogItem.class);
+            item.setEventTs(ts);
+            item.setUser(findUser(em));
+            item.setType(EntityLogItem.Type.MODIFY);
+            item.setEntity(entityName);
+            item.setEntityId(((HasUuid) entity).getUuid());
+            item.setChanges(getChanges(properties));
+
+            em.persist(item);
         }
     }
 
@@ -334,10 +356,10 @@ public class EntityLog implements EntityLogAPI {
 
     @Override
     public void registerDelete(Entity entity, boolean auto) {
-        if (doNotRegister(entity))
-            return;
-
         try {
+            if (doNotRegister(entity))
+                return;
+
             String entityName = getEntityName(entity);
             Set<String> attributes = getLoggedAttributes(entityName, auto);
             if (attributes != null && attributes.contains("*")) {
@@ -346,26 +368,39 @@ public class EntityLog implements EntityLogAPI {
             if (attributes == null) {
                 return;
             }
-            Date ts = timeSource.currentTimestamp();
-            EntityManager em = persistence.getEntityManager();
-
-            EntityLogItem item = metadata.create(EntityLogItem.class);
-            item.setEventTs(ts);
-            item.setUser(findUser(em));
-            item.setType(EntityLogItem.Type.DELETE);
-            item.setEntity(entityName);
-            item.setEntityId(((HasUuid) entity).getUuid());
-
-            Properties properties = new Properties();
-            for (String attr : attributes) {
-                writeAttribute(properties, entity, attr);
+            String storeName = metadata.getTools().getStoreName(metadata.getClassNN(entityName));
+            if (Stores.isMain(storeName)) {
+                internalRegisterDelete(entity, entityName, attributes);
+            } else {
+                // Create a new transaction in main DB if we are saving an entity from additional data store
+                try (Transaction tx = persistence.createTransaction()) {
+                    internalRegisterDelete(entity, entityName, attributes);
+                    tx.commit();
+                }
             }
-            item.setChanges(getChanges(properties));
-
-            em.persist(item);
         } catch (Exception e) {
-            log.warn("Unable to log entity " + entity + ", id=" + entity.getId(), e);
+            logError(entity, e);
         }
+    }
+
+    protected void internalRegisterDelete(Entity entity, String entityName, Set<String> attributes) throws IOException {
+        Date ts = timeSource.currentTimestamp();
+        EntityManager em = persistence.getEntityManager();
+
+        EntityLogItem item = metadata.create(EntityLogItem.class);
+        item.setEventTs(ts);
+        item.setUser(findUser(em));
+        item.setType(EntityLogItem.Type.DELETE);
+        item.setEntity(entityName);
+        item.setEntityId(((HasUuid) entity).getUuid());
+
+        Properties properties = new Properties();
+        for (String attr : attributes) {
+            writeAttribute(properties, entity, attr);
+        }
+        item.setChanges(getChanges(properties));
+
+        em.persist(item);
     }
 
     protected Set<String> getAllAttributes(Entity entity) {
@@ -409,5 +444,9 @@ public class EntityLog implements EntityLogAPI {
         } else {
             return String.valueOf(value);
         }
+    }
+
+    protected void logError(Entity entity, Exception e) {
+        log.warn("Unable to log entity " + entity + ", id=" + entity.getId(), e);
     }
 }
