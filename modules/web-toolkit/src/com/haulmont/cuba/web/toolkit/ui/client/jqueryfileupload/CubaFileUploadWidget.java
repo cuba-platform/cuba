@@ -81,7 +81,7 @@ public class CubaFileUploadWidget extends FlowPanel implements Focusable, HasEna
 
         getElement().appendChild(inputElement);
 
-        fileUpload = new JQueryFileUploadOverlay(inputElement) {
+        fileUpload = new JQueryFileUploadOverlay(this) {
             protected boolean canceled = false;
 
             @Override
