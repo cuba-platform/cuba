@@ -248,6 +248,11 @@ public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> impl
     }
 
     @Override
+    public String getRawValue() {
+        return component.getValue();
+    }
+
+    @Override
     public CaseConversion getCaseConversion() {
         return CaseConversion.valueOf(component.getCaseConversion().name());
     }

@@ -32,4 +32,9 @@ public interface TextField
 
     Datatype getDatatype();
     void setDatatype(Datatype datatype);
+
+    /**
+     * Returns a string representation of the value.
+     */
+    String getRawValue();
 }

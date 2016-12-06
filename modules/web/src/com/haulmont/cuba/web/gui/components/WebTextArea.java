@@ -70,6 +70,11 @@ public class WebTextArea extends WebAbstractTextArea<CubaTextArea> implements co
     }
 
     @Override
+    public String getRawValue() {
+        return component.getValue();
+    }
+
+    @Override
     public CaseConversion getCaseConversion() {
         return CaseConversion.valueOf(component.getCaseConversion().name());
     }

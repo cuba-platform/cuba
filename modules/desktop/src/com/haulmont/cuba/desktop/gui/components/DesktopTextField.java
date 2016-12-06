@@ -164,6 +164,11 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
         this.caseConversion = caseConversion;
     }
 
+    @Override
+    public String getRawValue() {
+        return impl.getText();
+    }
+
     protected class FlushableTextField extends JTextField implements Flushable {
 
         @Override

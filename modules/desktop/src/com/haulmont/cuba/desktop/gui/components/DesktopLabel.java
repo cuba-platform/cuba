@@ -31,9 +31,9 @@ import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import org.apache.commons.lang.ObjectUtils;
@@ -270,6 +270,11 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     @Override
     public void setHtmlEnabled(boolean htmlEnabled) {
         this.htmlEnabled = htmlEnabled;
+    }
+
+    @Override
+    public String getRawValue() {
+        return this.labelText;
     }
 
     protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {

@@ -215,4 +215,9 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
     public String getValue() {
         return super.getValue();
     }
+
+    @Override
+    public String getRawValue() {
+        return impl.getText();
+    }
 }

@@ -251,6 +251,11 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
         component.setContentMode(htmlEnabled ? ContentMode.HTML : ContentMode.TEXT);
     }
 
+    @Override
+    public String getRawValue() {
+        return component.getValue();
+    }
+
     protected MetaPropertyPath resolveMetaPropertyPath(MetaClass metaClass, String property) {
         MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
                 .resolveMetaPropertyPath(metaClass, property);

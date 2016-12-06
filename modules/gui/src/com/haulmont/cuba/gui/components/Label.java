@@ -23,4 +23,9 @@ public interface Label
 
     boolean isHtmlEnabled();
     void setHtmlEnabled(boolean htmlEnabled);
+
+    /**
+     * Returns a string representation of the value.
+     */
+    String getRawValue();
 }

@@ -253,6 +253,11 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
     }
 
     @Override
+    public String getRawValue() {
+        return impl.getText();
+    }
+
+    @Override
     public Datatype getDatatype() {
         return datatype;
     }

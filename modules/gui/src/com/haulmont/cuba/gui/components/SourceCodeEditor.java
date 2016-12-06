@@ -92,4 +92,9 @@ public interface SourceCodeEditor extends Field {
     @SuppressWarnings("unchecked")
     @Override
     String getValue();
+
+    /**
+     * Returns a string representation of the value.
+     */
+    String getRawValue();
 }

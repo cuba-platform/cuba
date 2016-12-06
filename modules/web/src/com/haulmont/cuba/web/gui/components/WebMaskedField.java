@@ -69,6 +69,11 @@ public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> im
     }
 
     @Override
+    public String getRawValue() {
+        return component.getValue();
+    }
+
+    @Override
     protected CubaMaskedTextField createTextFieldImpl() {
         return new CubaMaskedTextField();
     }

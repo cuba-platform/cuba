@@ -18,9 +18,9 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.base.Strings;
+import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
-import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import com.haulmont.cuba.web.toolkit.ui.CubaSourceCodeEditor;
 import org.apache.commons.lang.StringUtils;
 import org.vaadin.aceeditor.AceMode;
@@ -196,6 +196,11 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
     public String getValue() {
         String value = super.getValue();
         return Strings.emptyToNull(value);
+    }
+
+    @Override
+    public String getRawValue() {
+        return component.getValue();
     }
 
     protected class SourceCodeEditorSuggester implements org.vaadin.aceeditor.Suggester {

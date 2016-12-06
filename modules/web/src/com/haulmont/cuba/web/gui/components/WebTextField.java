@@ -119,4 +119,9 @@ public class WebTextField extends WebAbstractTextField<CubaTextField> implements
     public void setCursorPosition(int position) {
         component.setCursorPosition(position);
     }
+
+    @Override
+    public String getRawValue() {
+        return component.getValue();
+    }
 }
