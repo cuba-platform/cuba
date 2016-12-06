@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.haulmont.cuba.web.toolkit.ui.client.jqueryfileupload.CubaFileUploadWidget.CUBA_FILEUPLOAD_DROPZONE_CLASS;
 
@@ -49,13 +48,13 @@ public class JQueryFileUploadOverlay {
     protected CubaFileUploadWidget fileUploadWidget;
     protected String uploadUrl;
 
-    protected List<JavaScriptObject> currentXHRs = new ArrayList<>();
+    protected List<JavaScriptObject> currentXHRs = new ArrayList<JavaScriptObject>();
 
     /*
     * Keys   - Drop zones
     * Values - FileUpload elements, which use these dropzones
     */
-    protected static Map<Element, CubaFileUploadWidget> dropZoneFileUploadMap = new HashMap<>();
+    protected static Map<Element, CubaFileUploadWidget> dropZoneFileUploadMap = new HashMap<Element, CubaFileUploadWidget>();
 
     private Element dropZoneElement;
 
@@ -319,9 +318,10 @@ public class JQueryFileUploadOverlay {
         if (windowConnectors == null || windowConnectors.size() == 0)
             return false;
 
-        List<VWindow> windows = windowConnectors.stream()
-                .map(WindowConnector::getWidget)
-                .collect(Collectors.toList());
+        List<VWindow> windows = new ArrayList<VWindow>();
+        for (WindowConnector windowConnector : windowConnectors) {
+            windows.add(windowConnector.getWidget());
+        }
 
         Widget dropZoneTopParent = getWidgetTopParent(dropZoneWidget);
         if (dropZoneTopParent instanceof VWindow) {
