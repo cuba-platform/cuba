@@ -417,8 +417,8 @@ public class EntityLog implements EntityLogAPI {
     protected UUID getValueId(Object value) {
         if (value instanceof EmbeddableEntity) {
             return null;
-        } else if (value instanceof Entity) {
-            return (UUID) ((Entity) value).getId();
+        } else if (value instanceof HasUuid) {
+            return ((HasUuid) value).getUuid();
         } else {
             return null;
         }
