@@ -36,13 +36,13 @@ import java.util.stream.Collectors;
  * INTERNAL.
  * Populates references to entities from different data stores.
  */
-@Component(AlienAttributesLoader.NAME)
+@Component(CrossDataStoreReferenceLoader.NAME)
 @Scope("prototype")
-public class AlienAttributesLoader {
+public class CrossDataStoreReferenceLoader {
 
-    public static final String NAME = "cuba_AlienAttributesLoader";
+    public static final String NAME = "cuba_CrossDataStoreReferenceLoader";
 
-    private Logger log = LoggerFactory.getLogger(AlienAttributesLoader.class);
+    private Logger log = LoggerFactory.getLogger(CrossDataStoreReferenceLoader.class);
 
     @Inject
     private Metadata metadata;
@@ -60,20 +60,20 @@ public class AlienAttributesLoader {
 
     private View view;
 
-    public AlienAttributesLoader(MetaClass metaClass, View view) {
+    public CrossDataStoreReferenceLoader(MetaClass metaClass, View view) {
         Preconditions.checkNotNullArgument(metaClass, "metaClass is null");
         Preconditions.checkNotNullArgument(view, "view is null");
         this.metaClass = metaClass;
         this.view = view;
     }
 
-    public Map<Class<? extends Entity>, List<AlienProperty>> getAlienPropertiesMap() {
-        Map<Class<? extends Entity>, List<AlienProperty>> alienPropertiesMap = new HashMap<>();
-        traverseView(view, alienPropertiesMap, Sets.newIdentityHashSet());
-        return alienPropertiesMap;
+    public Map<Class<? extends Entity>, List<CrossDataStoreProperty>> getCrossPropertiesMap() {
+        Map<Class<? extends Entity>, List<CrossDataStoreProperty>> crossPropertiesMap = new HashMap<>();
+        traverseView(view, crossPropertiesMap, Sets.newIdentityHashSet());
+        return crossPropertiesMap;
     }
 
-    private void traverseView(View view, Map<Class<? extends Entity>, List<AlienProperty>> alienPropertiesMap, Set<View> visited) {
+    private void traverseView(View view, Map<Class<? extends Entity>, List<CrossDataStoreProperty>> crossPropertiesMap, Set<View> visited) {
         if (visited.contains(view))
             return;
         visited.add(view);
@@ -91,41 +91,41 @@ public class AlienAttributesLoader {
                         continue;
                     }
                     if (relatedProperties.size() > 1) {
-                        log.warn("More than 1 related property is defined for attribute {}, skip handling different data store", metaProperty);
+                        log.warn("More than 1 related property is defined for attribute {}, skip handling cross-datastore reference", metaProperty);
                         continue;
                     }
-                    List<AlienProperty> alienProperties = alienPropertiesMap.computeIfAbsent(entityClass, k -> new ArrayList<>());
-                    if (alienProperties.stream().noneMatch(aProp -> aProp.property == metaProperty))
-                        alienProperties.add(new AlienProperty(metaProperty, viewProperty));
+                    List<CrossDataStoreProperty> crossProperties = crossPropertiesMap.computeIfAbsent(entityClass, k -> new ArrayList<>());
+                    if (crossProperties.stream().noneMatch(aProp -> aProp.property == metaProperty))
+                        crossProperties.add(new CrossDataStoreProperty(metaProperty, viewProperty));
                 }
                 View propertyView = viewProperty.getView();
                 if (propertyView != null) {
-                    traverseView(propertyView, alienPropertiesMap, visited);
+                    traverseView(propertyView, crossPropertiesMap, visited);
                 }
             }
         }
     }
 
     public void processEntities(Collection<? extends Entity> entities) {
-        Map<Class<? extends Entity>, List<AlienProperty>> alienPropertiesMap = getAlienPropertiesMap();
-        if (alienPropertiesMap.isEmpty())
+        Map<Class<? extends Entity>, List<CrossDataStoreProperty>> crossPropertiesMap = getCrossPropertiesMap();
+        if (crossPropertiesMap.isEmpty())
             return;
 
-        Set<Entity> affectedEntities = getAffectedEntities(entities, alienPropertiesMap);
+        Set<Entity> affectedEntities = getAffectedEntities(entities, crossPropertiesMap);
         if (affectedEntities.isEmpty())
             return;
 
-        List<EntityAlienProperty> entityAlienPropertyList = new ArrayList<>();
+        List<EntityCrossDataStoreProperty> entityCrossDataStorePropertyList = new ArrayList<>();
         for (Entity affectedEntity : affectedEntities) {
-            for (AlienProperty alienProperty : alienPropertiesMap.get(affectedEntity.getClass())) {
-                entityAlienPropertyList.add(new EntityAlienProperty(affectedEntity, alienProperty));
+            for (CrossDataStoreProperty crossDataStoreProperty : crossPropertiesMap.get(affectedEntity.getClass())) {
+                entityCrossDataStorePropertyList.add(new EntityCrossDataStoreProperty(affectedEntity, crossDataStoreProperty));
             }
         }
-        if (entityAlienPropertyList.size() == 1) {
-            loadOne(entityAlienPropertyList.get(0));
+        if (entityCrossDataStorePropertyList.size() == 1) {
+            loadOne(entityCrossDataStorePropertyList.get(0));
         } else {
-            entityAlienPropertyList.stream()
-                    .collect(Collectors.groupingBy(EntityAlienProperty::getAlienProp))
+            entityCrossDataStorePropertyList.stream()
+                    .collect(Collectors.groupingBy(EntityCrossDataStoreProperty::getCrossProp))
                     .forEach((ap, eapList) ->
                             loadMany(ap, eapList.stream().map(eap -> eap.entity).collect(Collectors.toList()))
                     );
@@ -133,15 +133,15 @@ public class AlienAttributesLoader {
     }
 
     private Set<Entity> getAffectedEntities(Collection<? extends Entity> entities,
-                                            Map<Class<? extends Entity>, List<AlienProperty>> alienPropertiesMap) {
+                                            Map<Class<? extends Entity>, List<CrossDataStoreProperty>> crossPropertiesMap) {
         Set<Entity> resultSet = new HashSet<>();
         for (Entity entity : entities) {
             metadataTools.traverseAttributesByView(view, entity, new EntityAttributeVisitor() {
                 @Override
                 public void visit(Entity entity, MetaProperty property) {
-                    List<AlienProperty> alienProperties = alienPropertiesMap.get(entity.getClass());
-                    if (alienProperties != null) {
-                        alienProperties.stream()
+                    List<CrossDataStoreProperty> crossProperties = crossPropertiesMap.get(entity.getClass());
+                    if (crossProperties != null) {
+                        crossProperties.stream()
                                 .filter(ap -> ap.property == property)
                                 .forEach(ap -> {
                                     if (entity.getValue(ap.relatedPropertyName) != null) {
@@ -160,9 +160,9 @@ public class AlienAttributesLoader {
         return resultSet;
     }
 
-    private void loadOne(EntityAlienProperty entityAlienProperty) {
-        Entity entity = entityAlienProperty.entity;
-        AlienProperty aProp = entityAlienProperty.aProp;
+    private void loadOne(EntityCrossDataStoreProperty entityCrossDataStoreProperty) {
+        Entity entity = entityCrossDataStoreProperty.entity;
+        CrossDataStoreProperty aProp = entityCrossDataStoreProperty.crossProp;
         Object id = entity.getValue(aProp.relatedPropertyName);
 
         LoadContext<Entity> loadContext = new LoadContext<>(aProp.property.getRange().asClass());
@@ -173,12 +173,12 @@ public class AlienAttributesLoader {
         entity.setValue(aProp.property.getName(), relatedEntity);
     }
 
-    private void loadMany(AlienProperty alienProperty, List<Entity> entities) {
-        int offset = 0, limit = serverConfig.getAlienEntityLoadingBatchSize();
+    private void loadMany(CrossDataStoreProperty crossDataStoreProperty, List<Entity> entities) {
+        int offset = 0, limit = serverConfig.getCrossDataStoreReferenceLoadingBatchSize();
         while (true) {
             int end = offset + limit;
             List<Entity> batch = entities.subList(offset, Math.min(end, entities.size()));
-            loadBatch(alienProperty, batch);
+            loadBatch(crossDataStoreProperty, batch);
             if (end >= entities.size())
                 break;
             else
@@ -186,9 +186,9 @@ public class AlienAttributesLoader {
         }
     }
 
-    private void loadBatch(AlienProperty alienProperty, List<Entity> entities) {
+    private void loadBatch(CrossDataStoreProperty crossDataStoreProperty, List<Entity> entities) {
         List<Object> idList = entities.stream()
-                .map(e -> e.getValue(alienProperty.relatedPropertyName))
+                .map(e -> e.getValue(crossDataStoreProperty.relatedPropertyName))
                 .filter(Objects::nonNull)
                 .distinct()
                 .collect(Collectors.toList());
@@ -196,59 +196,59 @@ public class AlienAttributesLoader {
         if (idList.isEmpty())
             return;
 
-        MetaClass alienMetaClass = alienProperty.property.getRange().asClass();
+        MetaClass cdsrMetaClass = crossDataStoreProperty.property.getRange().asClass();
 
         String queryString = String.format(
-                "select e from %s e where e.%s in :idList", alienMetaClass, alienProperty.primaryKeyName);
+                "select e from %s e where e.%s in :idList", cdsrMetaClass, crossDataStoreProperty.primaryKeyName);
 
-        LoadContext<Entity> loadContext = new LoadContext<>(alienMetaClass);
+        LoadContext<Entity> loadContext = new LoadContext<>(cdsrMetaClass);
         loadContext.setQuery(LoadContext.createQuery(queryString).setParameter("idList", idList));
-        loadContext.setView(alienProperty.viewProperty.getView());
+        loadContext.setView(crossDataStoreProperty.viewProperty.getView());
 
-        List<Entity> alienEntities = dataManager.loadList(loadContext);
+        List<Entity> loadedEntities = dataManager.loadList(loadContext);
 
         for (Entity entity : entities) {
-            Object relatedPropertyValue = entity.getValue(alienProperty.relatedPropertyName);
-            alienEntities.stream()
-                    .filter(ae -> {
-                        Object aeId = ae.getId() instanceof IdProxy ? ((IdProxy) ae.getId()).getNN() : ae.getId();
-                        return aeId.equals(relatedPropertyValue);
+            Object relatedPropertyValue = entity.getValue(crossDataStoreProperty.relatedPropertyName);
+            loadedEntities.stream()
+                    .filter(e -> {
+                        Object id = e.getId() instanceof IdProxy ? ((IdProxy) e.getId()).getNN() : e.getId();
+                        return id.equals(relatedPropertyValue);
                     })
                     .findAny()
-                    .ifPresent(ae ->
-                            entity.setValue(alienProperty.property.getName(), ae)
+                    .ifPresent(e ->
+                            entity.setValue(crossDataStoreProperty.property.getName(), e)
                     );
         }
     }
 
-    private static class EntityAlienProperty {
+    private static class EntityCrossDataStoreProperty {
 
         private final Entity entity;
-        public final AlienProperty aProp;
+        public final CrossDataStoreProperty crossProp;
 
-        public EntityAlienProperty(Entity entity, AlienProperty alienProperty) {
+        public EntityCrossDataStoreProperty(Entity entity, CrossDataStoreProperty crossDataStoreProperty) {
             this.entity = entity;
-            this.aProp = alienProperty;
+            this.crossProp = crossDataStoreProperty;
         }
 
-        public AlienProperty getAlienProp() {
-            return aProp;
+        public CrossDataStoreProperty getCrossProp() {
+            return crossProp;
         }
 
         @Override
         public String toString() {
-            return entity + " -> " + aProp;
+            return entity + " -> " + crossProp;
         }
     }
 
-    public class AlienProperty {
+    public class CrossDataStoreProperty {
 
         public final MetaProperty property;
         public final ViewProperty viewProperty;
         public final String relatedPropertyName;
         public final String primaryKeyName;
 
-        public AlienProperty(MetaProperty metaProperty, ViewProperty viewProperty) {
+        public CrossDataStoreProperty(MetaProperty metaProperty, ViewProperty viewProperty) {
             this.property = metaProperty;
             this.viewProperty = viewProperty;
 
@@ -263,7 +263,7 @@ public class AlienAttributesLoader {
 
         @Override
         public String toString() {
-            return "AlienProperty: {" + property + "}";
+            return "CrossDataStoreProperty{" + property + "}";
         }
     }
 }

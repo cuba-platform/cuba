@@ -227,8 +227,8 @@ public interface ServerConfig extends Config {
     /**
      * @return batch size for loading related entities from different data stores
      */
-    @Property("cuba.alienEntityLoadingBatchSize")
+    @Property("cuba.crossDataStoreReferenceLoadingBatchSize")
     @Source(type = SourceType.DATABASE)
     @DefaultInt(50)
-    int getAlienEntityLoadingBatchSize();
+    int getCrossDataStoreReferenceLoadingBatchSize();
 }

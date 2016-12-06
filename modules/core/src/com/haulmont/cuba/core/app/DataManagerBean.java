@@ -63,7 +63,7 @@ public class DataManagerBean implements DataManager {
         DataStore storage = storeFactory.get(storeName);
         E entity = storage.load(context);
         if (entity != null)
-            readReferencesBetweenDataStores(Collections.singletonList(entity), context.getView(), metaClass);
+            readCrossDataStoreReferences(Collections.singletonList(entity), context.getView(), metaClass);
         return entity;
     }
 
@@ -78,7 +78,7 @@ public class DataManagerBean implements DataManager {
         }
         DataStore storage = storeFactory.get(storeName);
         List<E> entities = storage.loadList(context);
-        readReferencesBetweenDataStores(entities, context.getView(), metaClass);
+        readCrossDataStoreReferences(entities, context.getView(), metaClass);
         return entities;
     }
 
@@ -138,7 +138,7 @@ public class DataManagerBean implements DataManager {
             if (storeName == null)
                 continue;
 
-            boolean repeatRequired = writeReferencesBetweenDataStores(entity, context.getCommitInstances());
+            boolean repeatRequired = writeCrossDataStoreReferences(entity, context.getCommitInstances());
             if (repeatRequired) {
                 toRepeat.add(entity);
             }
@@ -267,7 +267,7 @@ public class DataManagerBean implements DataManager {
         }
     }
 
-    protected boolean writeReferencesBetweenDataStores(Entity entity, Collection<Entity> allEntities) {
+    protected boolean writeCrossDataStoreReferences(Entity entity, Collection<Entity> allEntities) {
         if (Stores.getAdditional().isEmpty())
             return false;
 
@@ -319,12 +319,12 @@ public class DataManagerBean implements DataManager {
         return repeatRequired;
     }
 
-    protected void readReferencesBetweenDataStores(Collection<? extends Entity> entities, View view, MetaClass metaClass) {
+    protected void readCrossDataStoreReferences(Collection<? extends Entity> entities, View view, MetaClass metaClass) {
         if (Stores.getAdditional().isEmpty() || entities.isEmpty() || view == null)
             return;
 
-        AlienAttributesLoader alienAttributesLoader = AppBeans.getPrototype(AlienAttributesLoader.NAME, metaClass, view);
-        alienAttributesLoader.processEntities(entities);
+        CrossDataStoreReferenceLoader crossDataStoreReferenceLoader = AppBeans.getPrototype(CrossDataStoreReferenceLoader.NAME, metaClass, view);
+        crossDataStoreReferenceLoader.processEntities(entities);
     }
 
     private class SecureDataManagerInvocationHandler implements InvocationHandler {

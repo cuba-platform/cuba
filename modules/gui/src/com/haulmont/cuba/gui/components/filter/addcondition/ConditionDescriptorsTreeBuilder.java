@@ -62,6 +62,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
     protected MetadataTools metadataTools;
     protected DynamicAttributes dynamicAttributes;
     protected List<String> excludedProperties;
+    private final String storeName;
 
     /**
      * @param filter filter
@@ -76,6 +77,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         dynamicAttributes = AppBeans.get(DynamicAttributes.class);
         filterComponentName = getFilterComponentName();
         excludedProperties = new ArrayList<>();
+        storeName = metadataTools.getStoreName(filter.getDatasource().getMetaClass());
     }
 
     @Override
@@ -177,7 +179,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         }
 
         MetaProperty metaProperty = mpp.getMetaProperty();
-        if (metaProperty.getRange().isClass()) {
+        if (metaProperty.getRange().isClass() && (metadataTools.getCrossDataStoreReferenceIdProperty(storeName, metaProperty) == null)) {
             MetaClass childMetaClass = metaProperty.getRange().asClass();
             for (MetaProperty property : childMetaClass.getProperties()) {
                 if (isPropertyAllowed(property)) {
@@ -253,7 +255,8 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
     protected boolean isPropertyAllowed(MetaProperty property) {
         return security.isEntityAttrPermitted(property.getDomain(), property.getName(), EntityAttrAccess.VIEW)
                 && !metadataTools.isSystemLevel(property)           // exclude system level attributes
-                && metadataTools.isPersistent(property)             // exclude transient properties
+                && (metadataTools.isPersistent(property)            // exclude transient properties
+                    || (metadataTools.getCrossDataStoreReferenceIdProperty(storeName, property) != null))
                 && !defaultExcludedProps.contains(property.getName())
                 && !(byte[].class.equals(property.getJavaType()))
                 && !property.getRange().getCardinality().isMany();  // exclude ToMany

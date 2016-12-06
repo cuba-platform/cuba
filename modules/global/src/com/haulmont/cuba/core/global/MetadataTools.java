@@ -658,6 +658,32 @@ public class MetadataTools {
     }
 
     /**
+     * If the given property is a reference to an entity from different data store, returns the name of a persistent
+     * property which stores the identifier of the related entity.
+     *
+     * @param thisStore     name of a base data store
+     * @param metaProperty  property
+     * @return  name of the ID property or null if the given property is not a cross-datastore reference or it does not
+     * satisfy the convention of declaring related properties for such references
+     */
+    @Nullable
+    public String getCrossDataStoreReferenceIdProperty(String thisStore, MetaProperty metaProperty) {
+        Preconditions.checkNotNullArgument(metaProperty, "metaProperty is null");
+        if (!metaProperty.getRange().isClass())
+            return null;
+
+        String propStore = getStoreName(metaProperty.getRange().asClass());
+        if (Objects.equals(thisStore, propStore))
+            return null;
+
+        List<String> relatedProperties = getRelatedProperties(metaProperty);
+        if (relatedProperties.size() == 1)
+            return relatedProperties.get(0);
+        else
+            return null;
+    }
+
+    /**
      * Returns a {@link MetaPropertyPath} which can include the special MetaProperty for a dynamic attribute.
      *
      * @param metaClass    originating meta-class

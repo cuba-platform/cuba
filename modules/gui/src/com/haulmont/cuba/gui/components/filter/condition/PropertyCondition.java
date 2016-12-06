@@ -17,13 +17,12 @@
 
 package com.haulmont.cuba.gui.components.filter.condition;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.annotations.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.QueryUtils;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.Param;
@@ -35,6 +34,8 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -86,13 +87,33 @@ public class PropertyCondition extends AbstractCondition {
         if (operator == Op.NOT_IN) {
             sb.append("((");
         }
-        sb.append(entityAlias).append(".").append(name);
+        sb.append(entityAlias).append(".");
 
-        if (Param.Type.ENTITY == param.getType()) {
-            Metadata metadata = AppBeans.get(Metadata.class);
+        Metadata metadata = AppBeans.get(Metadata.class);
+        MetadataTools metadataTools = metadata.getTools();
+
+        String nameToUse = name;
+        boolean useCrossDataStoreRefId = false;
+        String thisStore = metadataTools.getStoreName(datasource.getMetaClass());
+        MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(name);
+        if (propertyPath != null) {
+            String refIdProperty = metadataTools.getCrossDataStoreReferenceIdProperty(thisStore, propertyPath.getMetaProperty());
+            if (refIdProperty != null) {
+                useCrossDataStoreRefId = true;
+                int lastdDot = nameToUse.lastIndexOf('.');
+                if (lastdDot == -1) {
+                    nameToUse = refIdProperty;
+                } else {
+                    nameToUse = nameToUse.substring(0, lastdDot + 1) + refIdProperty;
+                }
+            }
+        }
+
+        sb.append(nameToUse);
+
+        if (Param.Type.ENTITY == param.getType() && !useCrossDataStoreRefId) {
             com.haulmont.chile.core.model.MetaClass metaClass = metadata.getClassNN(param.getJavaClass());
-            String primaryKeyName = metadata.getTools().getPrimaryKeyName(metaClass);
-
+            String primaryKeyName = metadataTools.getPrimaryKeyName(metaClass);
             sb.append(".").append(primaryKeyName);
         }
 
@@ -108,7 +129,7 @@ public class PropertyCondition extends AbstractCondition {
             }
 
             if (operator == Op.NOT_IN) {
-                sb.append(") or (").append(entityAlias).append(".").append(name).append(" is null)) ");
+                sb.append(") or (").append(entityAlias).append(".").append(nameToUse).append(" is null)) ");
             }
         }
 
