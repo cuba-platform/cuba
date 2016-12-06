@@ -44,6 +44,7 @@
 @import "components/grouptable/grouptable";
 @import "components/fieldgroup/fieldgroup";
 @import "components/splitpanel/splitpanel";
+@import "components/pivottable/pivottable";
 @import "components/scrollbox/scrollbox";
 @import "components/twincolumn/twincolumn";
 @import "components/flowlayout/flowlayout";
@@ -108,6 +109,7 @@
   @include halo-datefield;
   @include halo-datepicker;
   @include halo-splitpanel;
+  @include halo-pivottable;
   @include halo-scrollbox;
   @include halo-twincolumn;
   @include halo-optiongroup;

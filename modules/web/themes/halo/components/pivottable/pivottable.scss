@@ -1,0 +1,72 @@
+/*
+ * Copyright (c) 2008-2016 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+@mixin halo-pivottable($primary-stylename: c-pivot-table) {
+
+  $background-color: $v-table-background-color or valo-table-background-color();
+  $border-color: $v-table-border-color or first-color(valo-border($color: $background-color, $strength: 0.7));
+
+  .#{$primary-stylename} {
+    @include user-select(text);
+
+    overflow: auto;
+
+    table.pvtTable {
+      font-size: $v-font-size;
+
+      tbody tr th,
+      thead tr th {
+        font-size: $v-table-header-font-size;
+      }
+    }
+
+    table.pvtTable tbody tr td,
+    .pvtUi,
+    .pvtTriangle {
+      color: valo-font-color($v-background-color);
+    }
+
+    table.pvtTable tbody tr td,
+    .pvtFilterBox {
+      background-color: $background-color;
+    }
+
+    .pvtAxisContainer li span.pvtAttr {
+      @include valo-nativeselect-select-style;
+    }
+
+    .pvtAxisContainer, .pvtVals,
+    table.pvtTable thead tr th,
+    table.pvtTable tbody tr th {
+      $bg-lightness: if(color-luminance($background-color) < 10, 4%, -4%);
+      background-color: scale-color($background-color, $lightness: $bg-lightness);
+    }
+
+    .pvtAxisContainer li.pvtPlaceholder,
+    .pvtAxisContainer li span.pvtAttr {
+      -webkit-border-radius: $v-border-radius;
+      -moz-border-radius: $v-border-radius;
+      border-radius: $v-border-radius;
+    }
+
+    table.pvtTable thead tr th,
+    table.pvtTable tbody tr th,
+    table.pvtTable tbody tr td {
+      border-color: $border-color;
+    }
+  }
+}
