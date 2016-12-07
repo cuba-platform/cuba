@@ -396,8 +396,13 @@ public class JQueryFileUploadOverlay {
 
             // find all drop zones and add classname
             for (Map.Entry<Element, CubaFileUploadWidget> entry : dropZoneFileUploadMap.entrySet()) {
+                Element dropZone = entry.getKey();
+                if (isUnderOverlay(dropZone)) {
+                    continue;
+                }
+
                 if (entry.getValue().isEnabled()) {
-                    entry.getKey().addClassName(CUBA_FILEUPLOAD_DROPZONE_CLASS);
+                    dropZone.addClassName(CUBA_FILEUPLOAD_DROPZONE_CLASS);
                 }
             }
         }
