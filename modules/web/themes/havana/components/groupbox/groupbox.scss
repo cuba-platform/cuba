@@ -45,6 +45,8 @@
   .#{$primary-stylename}-captionwrap {
     display: block;
     font-size: 0;
+    height: 20px;
+    width: 100%;
   }
 
   .#{$primary-stylename}-caption-start-deco {
@@ -84,6 +86,8 @@
     height: 20px;
     border: 0;
     padding-top: 10px;
+    min-width: 10px;
+    width: 100%;
 
     div {
       width: 100%;

@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.groupbox;
 
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Unit;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.*;
@@ -38,19 +39,9 @@ public class CubaGroupBoxConnector extends PanelConnector {
     @Override
     public void init() {
         super.init();
-        CubaGroupBoxWidget widget = getWidget();
 
-        widget.expandHandler = new CubaGroupBoxWidget.ExpandHandler() {
-            @Override
-            public void expand() {
-                getRpcProxy(CubaGroupBoxServerRpc.class).expand();
-            }
-
-            @Override
-            public void collapse() {
-                getRpcProxy(CubaGroupBoxServerRpc.class).collapse();
-            }
-        };
+        getWidget().expandHandler = expanded ->
+                getRpcProxy(CubaGroupBoxServerRpc.class).expandStateChanged(expanded);
     }
 
     @Override
@@ -99,34 +90,19 @@ public class CubaGroupBoxConnector extends PanelConnector {
 
     protected void layoutGroupBox() {
         CubaGroupBoxWidget panel = getWidget();
-        boolean bordersVisible = panel.captionStartDeco.getOffsetWidth() > 0 || panel.captionEndDeco.getOffsetWidth() > 0;
+        LayoutManager layoutManager = getLayoutManager();
 
-        Style captionWrapStyle = panel.captionWrap.getStyle();
-        if (bordersVisible) {
-            if (isUndefinedWidth()) {
-                // do not set width: 100% for captionEndDeco in CSS
-                // it breaks layout with width: AUTO
-                captionWrapStyle.setWidth(WidgetUtil.getRequiredWidth(panel.contentNode), Style.Unit.PX);
-            } else {
-                captionWrapStyle.setWidth(100, Style.Unit.PCT);
-            }
+        if (isBordersVisible()) {
+            int captionWidth = layoutManager.getOuterWidth(panel.captionNode);
+            int captionStartWidth = layoutManager.getInnerWidth(panel.captionStartDeco);
+            int totalMargin = captionWidth + captionStartWidth;
 
-            panel.captionEndDeco.getStyle().setWidth(100, Style.Unit.PCT);
-
-            panel.captionNode.getStyle().clearWidth();
-
-            int captionWidth = WidgetUtil.getRequiredWidth(panel.captionNode);
-            int captionStartWidth = WidgetUtil.getRequiredWidth(panel.captionStartDeco);
-
-            // Fix caption width to avoid problems with fractional width of caption text
-            panel.captionNode.getStyle().setWidth(captionWidth, Style.Unit.PX);
-
-            captionWrapStyle.setPaddingLeft(captionWidth + captionStartWidth, Style.Unit.PX);
-            panel.captionStartDeco.getStyle().setMarginLeft(-captionStartWidth - captionWidth, Style.Unit.PX);
+            panel.captionNode.getStyle().setWidth(captionWidth, Unit.PX);
+            panel.captionWrap.getStyle().setPaddingLeft(totalMargin, Unit.PX);
+            panel.captionStartDeco.getStyle().setMarginLeft(0 - totalMargin, Unit.PX);
         }
 
-        LayoutManager layoutManager = getLayoutManager();
-        Profiler.enter("PanelConnector.layout getHeights");
+        Profiler.enter("CubaGroupBoxConnector.layout getHeights");
         // Haulmont API get max height of caption components
         int top = layoutManager.getOuterHeight(panel.captionNode);
         top = Math.max(layoutManager.getOuterHeight(panel.captionStartDeco), top);
@@ -137,7 +113,7 @@ public class CubaGroupBoxConnector extends PanelConnector {
 
         Profiler.enter("PanelConnector.layout modify style");
         Style style = panel.getElement().getStyle();
-        captionWrapStyle.setMarginTop(-top, Style.Unit.PX);
+        panel.captionWrap.getStyle().setMarginTop(-top, Style.Unit.PX);
         panel.bottomDecoration.getStyle().setMarginBottom(-bottom, Style.Unit.PX);
         style.setPaddingTop(top, Style.Unit.PX);
         style.setPaddingBottom(bottom, Style.Unit.PX);
@@ -179,7 +155,13 @@ public class CubaGroupBoxConnector extends PanelConnector {
         widget.setShowAsPanel(getState().showAsPanel);
 
         if (stateChangeEvent.hasPropertyChanged("caption")) {
+            widget.captionNode.getStyle().clearWidth();
             getLayoutManager().setNeedsMeasure(this);
         }
+    }
+
+    protected boolean isBordersVisible() {
+        CubaGroupBoxWidget panel = getWidget();
+        return panel.captionStartDeco.getOffsetWidth() > 0 || panel.captionEndDeco.getOffsetWidth() > 0;
     }
 }

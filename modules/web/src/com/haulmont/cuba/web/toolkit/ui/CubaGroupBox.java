@@ -27,22 +27,14 @@ import com.vaadin.ui.Panel;
 import java.util.Iterator;
 
 public class CubaGroupBox extends Panel implements ComponentContainer {
-    private ExpandChangeHandler expandChangeHandler = null;
+    protected ExpandChangeHandler expandChangeHandler = null;
 
     public CubaGroupBox() {
-        CubaGroupBoxServerRpc rpc = new CubaGroupBoxServerRpc() {
-            @Override
-            public void expand() {
-                setExpanded(true);
+        registerRpc((CubaGroupBoxServerRpc) expanded -> {
+            if (getState().collapsable) {
+                setExpanded(expanded);
             }
-
-            @Override
-            public void collapse() {
-                if (getState().collapsable)
-                    setExpanded(false);
-            }
-        };
-        registerRpc(rpc);
+        });
 
         Layout content = new CubaVerticalActionsLayout();
         setContent(content);

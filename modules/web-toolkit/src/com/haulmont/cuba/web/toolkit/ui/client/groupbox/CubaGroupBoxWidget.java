@@ -31,17 +31,14 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
     public static final String CLASSNAME = "c-groupbox";
 
     protected boolean expanded = true;
-
     protected boolean collapsable = false;
-
     protected boolean showAsPanel = false;
 
-    private boolean enabled = true;
+    protected boolean enabled = true;
 
     protected ExpandHandler expandHandler;
 
     public Element captionWrap;
-
     public Element expander = DOM.createSpan();
 
     public Element captionStartDeco = DOM.createDiv();
@@ -162,11 +159,7 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
         setExpanded(!expanded);
 
         if (collapsable && expandHandler != null) {
-            if (expanded) {
-                expandHandler.expand();
-            } else {
-                expandHandler.collapse();
-            }
+            expandHandler.expandStateChanged(expanded);
         }
         DOM.eventCancelBubble(event, true);
     }
@@ -182,9 +175,7 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
     }
 
     public interface ExpandHandler {
-        void expand();
-
-        void collapse();
+        void expandStateChanged(boolean expanded);
     }
 
     @Override

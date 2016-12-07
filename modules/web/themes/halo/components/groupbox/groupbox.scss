@@ -62,6 +62,8 @@
   .#{$primary-stylename}-captionwrap {
     display: block;
     font-size: 0;
+    height: round(2*$v-unit-size/3 + $v-unit-size/10);
+    width: 100%;
   }
 
   .#{$primary-stylename}-caption-start-deco {
@@ -117,6 +119,8 @@
     height: round(2*$v-unit-size/3 + $v-unit-size/10);
     border: 0;
     padding-top: round($v-unit-size/3);
+    min-width: round($v-unit-size/3);
+    width: 100%;
 
     div {
       width: 100%;
