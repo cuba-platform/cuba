@@ -61,4 +61,8 @@
         padding-left: 0;
     }
   }
+
+  .c-generic-filter .filter-control-no-border {
+    height: $v-unit-size !important; // fix for high dpi
+  }
 }
