@@ -90,4 +90,10 @@ public interface EntityLogAPI {
      * @param enabled entity logging disabled if false, enabled otherwise.
      */
     void processLoggingForCurrentThread(boolean enabled);
+
+    /**
+     * @return whether logging for the current thread is enabled
+     * @see #processLoggingForCurrentThread(boolean)
+     */
+    boolean isLoggingForCurrentThread();
 }

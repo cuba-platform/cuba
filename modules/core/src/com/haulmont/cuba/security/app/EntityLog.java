@@ -69,6 +69,9 @@ public class EntityLog implements EntityLogAPI {
     protected Metadata metadata;
 
     @Inject
+    protected MetadataTools metadataTools;
+
+    @Inject
     protected UserSessionSource userSessionSource;
 
     @Inject
@@ -82,8 +85,13 @@ public class EntityLog implements EntityLogAPI {
     }
 
     @Override
+    public boolean isLoggingForCurrentThread() {
+        return !Boolean.FALSE.equals(entityLogSwitchedOn.get());
+    }
+
+    @Override
     public synchronized boolean isEnabled() {
-        return !Boolean.FALSE.equals(entityLogSwitchedOn.get()) && config.getEnabled();
+        return config.getEnabled() && isLoggingForCurrentThread();
     }
 
     @Override
@@ -278,13 +286,14 @@ public class EntityLog implements EntityLogAPI {
                 return;
             }
 
-            String storeName = metadata.getTools().getStoreName(metadata.getClassNN(entityName));
+            MetaClass metaClass = metadata.getClassNN(entityName);
+            String storeName = metadataTools.getStoreName(metaClass);
             if (Stores.isMain(storeName)) {
-                internalRegisterModify(entity, changes, entityName, attributes);
+                internalRegisterModify(entity, changes, metaClass, storeName, attributes);
             } else {
                 // Create a new transaction in main DB if we are saving an entity from additional data store
                 try (Transaction tx = persistence.createTransaction()) {
-                    internalRegisterModify(entity, changes, entityName, attributes);
+                    internalRegisterModify(entity, changes, metaClass, storeName, attributes);
                     tx.commit();
                 }
             }
@@ -293,7 +302,8 @@ public class EntityLog implements EntityLogAPI {
         }
     }
 
-    protected void internalRegisterModify(Entity entity, @Nullable EntityAttributeChanges changes, String entityName, Set<String> attributes) throws IOException {
+    protected void internalRegisterModify(Entity entity, @Nullable EntityAttributeChanges changes, MetaClass metaClass,
+                                          String storeName, Set<String> attributes) throws IOException {
         Date ts = timeSource.currentTimestamp();
         EntityManager em = persistence.getEntityManager();
 
@@ -308,6 +318,11 @@ public class EntityLog implements EntityLogAPI {
         for (String attr : attributes) {
             if (dirty.contains(attr)) {
                 writeAttribute(properties, entity, attr);
+            } else if (!Stores.getAdditional().isEmpty()) {
+                String idAttr = metadataTools.getCrossDataStoreReferenceIdProperty(storeName, metaClass.getPropertyNN(attr));
+                if (idAttr != null && dirty.contains(idAttr)) {
+                    writeAttribute(properties, entity, attr);
+                }
             }
         }
         if (!properties.isEmpty()) {
@@ -315,7 +330,7 @@ public class EntityLog implements EntityLogAPI {
             item.setEventTs(ts);
             item.setUser(findUser(em));
             item.setType(EntityLogItem.Type.MODIFY);
-            item.setEntity(entityName);
+            item.setEntity(metaClass.getName());
             item.setEntityId(((HasUuid) entity).getUuid());
             item.setChanges(getChanges(properties));
 

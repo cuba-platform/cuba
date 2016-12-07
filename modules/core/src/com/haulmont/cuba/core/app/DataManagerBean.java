@@ -22,6 +22,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.security.app.EntityLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -50,6 +51,9 @@ public class DataManagerBean implements DataManager {
 
     @Inject
     protected StoreFactory storeFactory;
+
+    @Inject
+    protected EntityLog entityLog;
 
     @Nullable
     @Override
@@ -183,18 +187,24 @@ public class DataManagerBean implements DataManager {
         }
 
         if (!toRepeat.isEmpty()) {
-            CommitContext cc = new CommitContext();
-            for (Entity entity : result) {
-                if (toRepeat.contains(entity)) {
-                    cc.addInstanceToCommit(entity, context.getViews().get(entity));
+            boolean logging = entityLog.isLoggingForCurrentThread();
+            entityLog.processLoggingForCurrentThread(false);
+            try {
+                CommitContext cc = new CommitContext();
+                for (Entity entity : result) {
+                    if (toRepeat.contains(entity)) {
+                        cc.addInstanceToCommit(entity, context.getViews().get(entity));
+                    }
                 }
-            }
-            Set<Entity> committedEntities = commit(cc);
-            for (Entity committedEntity : committedEntities) {
-                if (result.contains(committedEntity)) {
-                    result.remove(committedEntity);
-                    result.add(committedEntity);
+                Set<Entity> committedEntities = commit(cc);
+                for (Entity committedEntity : committedEntities) {
+                    if (result.contains(committedEntity)) {
+                        result.remove(committedEntity);
+                        result.add(committedEntity);
+                    }
                 }
+            } finally {
+                entityLog.processLoggingForCurrentThread(logging);
             }
         }
 
