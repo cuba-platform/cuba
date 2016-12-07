@@ -53,6 +53,7 @@
 @import "components/splitpanel/splitpanel";
 @import "components/grouptable/grouptable";
 @import "components/fileupload/fileupload";
+@import "components/pivottable/pivottable";
 @import "components/widgetstree/widgetstree";
 @import "components/pickerfield/pickerfield";
 @import "components/maskedfield/maskedfield";
@@ -120,6 +121,7 @@
   @include havana-popupview;
   @include havana-splitpanel;
   @include havana-gridlayout;
+  @include havana-pivottable;
   @include havana-popupbutton;
   @include havana-contextmenu;
   @include havana-cuba-contextmenu;
