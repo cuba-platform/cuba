@@ -20,6 +20,17 @@ import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * Class that defines parameters for loading values from the database via {@link DataManager#loadValues(ValueLoadContext)}.
+ * <p>Typical usage:
+ * <pre>
+ * ValueLoadContext context = ValueLoadContext.create()
+ *      .setQuery(ValueLoadContext.createQuery("select e.id, e.name from sample$Customer e where e.grade = :grade")
+ *          .setParameter("grade", 1))
+ *      .addProperty("id")
+ *      .addProperty("name");
+ * </pre>
+ */
 public class ValueLoadContext implements DataLoadContext, Serializable {
 
     protected String storeName = Stores.MAIN;
@@ -28,66 +39,117 @@ public class ValueLoadContext implements DataLoadContext, Serializable {
     protected String idName;
     protected List<String> properties = new ArrayList<>();
 
+    /**
+     * Creates an instance of ValueLoadContext
+     */
     public static ValueLoadContext create() {
         return new ValueLoadContext();
     }
 
+    /**
+     * Creates an instance of ValueLoadContext query
+     */
     public static Query createQuery(String queryString) {
         return new Query(queryString);
     }
 
+    /**
+     * @param queryString JPQL query string. Only named parameters are supported.
+     * @return  query definition object
+     */
     @Override
     public Query setQueryString(String queryString) {
         query = new Query(queryString);
         return query;
     }
 
+    /**
+     * @return data store name if set by {@link #setStoreName(String)}
+     */
     public String getStoreName() {
         return storeName;
     }
 
+    /**
+     * Sets a data store name if it is different from the main database.
+     * @return this instance for chaining
+     */
     public ValueLoadContext setStoreName(String storeName) {
         this.storeName = storeName;
         return this;
     }
 
+    /**
+     * Sets query instance
+     * @return this instance for chaining
+     */
     public ValueLoadContext setQuery(Query query) {
         this.query = query;
         return this;
     }
 
+    /**
+     * @return query instance
+     */
     public Query getQuery() {
         return query;
     }
 
+    /**
+     * @param softDeletion whether to use soft deletion when loading entities
+     */
     public ValueLoadContext setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
         return this;
     }
 
+    /**
+     * @return whether to use soft deletion when loading entities
+     */
     public boolean isSoftDeletion() {
         return softDeletion;
     }
 
+    /**
+     * @return name of property that represents an identifier of the returned KeyValueEntity, if set by {@link #setIdName(String)}
+     */
     public String getIdName() {
         return idName;
     }
 
+    /**
+     * Sets name of the property that represents an identifier of the returned KeyValueEntity.
+     */
     public void setIdName(String idName) {
         this.idName = idName;
     }
 
+    /**
+     * Adds a key of a returned key-value pair. The sequence of adding properties must conform to the sequence of
+     * result fields in the query "select" clause.
+     * <p>For example, if the query is <code>select e.id, e.name from sample$Customer</code>
+     * and you executed <code>context.addProperty("customerId").addProperty("customerName")</code>, the returned KeyValueEntity
+     * will contain customer identifiers in "customerId" property and names in "customerName" property.
+     * @return this instance for chaining
+     */
     public ValueLoadContext addProperty(String name) {
         properties.add(name);
         return this;
     }
 
+    /**
+     * The same as invoking {@link #addProperty(String)} multiple times.
+     * @return this instance for chaining
+     */
     public ValueLoadContext setProperties(List<String> properties) {
         this.properties.clear();
         this.properties.addAll(properties);
         return this;
     }
 
+    /**
+     * @return  the list of properties added by {@link #addProperty(String)}
+     */
     public List<String> getProperties() {
         return properties;
     }
@@ -97,6 +159,9 @@ public class ValueLoadContext implements DataLoadContext, Serializable {
         return String.format("ValuesContext{query=%s, softDeletion=%s, keys=%s}", query, softDeletion, properties);
     }
 
+    /**
+     * Class that defines a query to be executed for loading values.
+     */
     public static class Query implements DataLoadContextQuery, Serializable {
 
         private String queryString;

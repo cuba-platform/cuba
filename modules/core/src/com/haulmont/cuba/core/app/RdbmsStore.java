@@ -427,7 +427,7 @@ public class RdbmsStore implements DataStore {
                 query.setMaxResults(contextQuery.getMaxResults());
 
             List resultList = query.getResultList();
-            List<Integer> selectNotPermittedIndexes = getSelectNotPermittedIndexes(queryParser);
+            List<Integer> notPermittedSelectIndexes = getNotPermittedSelectIndexes(queryParser);
             for (Object item : resultList) {
                 KeyValueEntity entity = new KeyValueEntity();
                 entity.setIdName(context.getIdName());
@@ -438,7 +438,7 @@ public class RdbmsStore implements DataStore {
                     for (int i = 0; i < keys.size(); i++) {
                         String key = keys.get(i);
                         if (row.length > i) {
-                            if (selectNotPermittedIndexes.contains(i)) {
+                            if (notPermittedSelectIndexes.contains(i)) {
                                 entity.setValue(key, null);
                             } else {
                                 entity.setValue(key, row[i]);
@@ -446,7 +446,7 @@ public class RdbmsStore implements DataStore {
                         }
                     }
                 } else if (!keys.isEmpty()) {
-                    if (!selectNotPermittedIndexes.isEmpty()) {
+                    if (!notPermittedSelectIndexes.isEmpty()) {
                         entity.setValue(keys.get(0), null);
                     } else {
                         entity.setValue(keys.get(0), item);
@@ -686,7 +686,7 @@ public class RdbmsStore implements DataStore {
             }
             if (security.hasInMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL)) {
                 String msg = String.format("%s is not permitted for %s", ConstraintOperationType.READ, metaClass.getName());
-                if (serverConfig.getConstraintErrorOnLoadValues()) {
+                if (serverConfig.getDisableLoadValuesIfConstraints()) {
                     throw new RowLevelSecurityException(msg, metaClass.getName(), ConstraintOperationType.READ);
                 } else {
                     log.debug(msg);
@@ -702,7 +702,7 @@ public class RdbmsStore implements DataStore {
                 }
                 if (security.hasConstraints(entityMetaClass)) {
                     String msg = String.format("%s is not permitted for %s", ConstraintOperationType.READ, entityName);
-                    if (serverConfig.getConstraintErrorOnLoadValues()) {
+                    if (serverConfig.getDisableLoadValuesIfConstraints()) {
                         throw new RowLevelSecurityException(msg, entityName, ConstraintOperationType.READ);
                     } else {
                         log.debug(msg);
@@ -731,7 +731,7 @@ public class RdbmsStore implements DataStore {
                 || AppContext.getSecurityContextNN().isAuthorizationRequired();
     }
 
-    protected List<Integer> getSelectNotPermittedIndexes(QueryParser queryParser) {
+    protected List<Integer> getNotPermittedSelectIndexes(QueryParser queryParser) {
         List<Integer> indexes = new ArrayList<>();
         if (isAuthorizationRequired()) {
             int index = 0;

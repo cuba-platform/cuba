@@ -68,14 +68,23 @@ public class KeyValueEntity
         return metaClass;
     }
 
+    /**
+     * Sets a meta-class for this entity instance.
+     */
     public void setMetaClass(MetaClass metaClass) {
         this.metaClass = metaClass;
     }
 
+    /**
+     * @return  name of a property that represents this entity id, if set by {@link #setIdName(String)}
+     */
     public String getIdName() {
         return idName;
     }
 
+    /**
+     * Sets the name of a property that represents this entity id.
+     */
     public void setIdName(String idName) {
         this.idName = idName;
     }

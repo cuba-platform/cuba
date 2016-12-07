@@ -57,5 +57,10 @@ public interface DataStore {
      */
     Set<Entity> commit(CommitContext context);
 
+    /**
+     * Loads list of key-value pairs.
+     * @param context   defines a query for scalar values and a list of keys for returned KeyValueEntity
+     * @return list of KeyValueEntity instances
+     */
     List<KeyValueEntity> loadValues(ValueLoadContext context);
 }

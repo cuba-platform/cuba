@@ -16,7 +16,14 @@
 
 package com.haulmont.cuba.core.global;
 
+/**
+ * Base interface for load contexts used in {@link DataManager}.
+ */
 public interface DataLoadContext {
 
+    /**
+     * @param queryString JPQL query string. Only named parameters are supported.
+     * @return  query definition object
+     */
     DataLoadContextQuery setQueryString(String queryString);
 }

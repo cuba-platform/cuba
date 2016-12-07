@@ -162,12 +162,12 @@ public interface ServerConfig extends Config {
     boolean getEntityAttributePermissionChecking();
 
     /**
-     * If set to true and query for loading values doesn't check the security constraints, error should be occurred
+     * If set to true and query loading values is affected by security constraints, an exception is thrown
      */
-    @Property("cuba.constraintErrorOnLoadValues")
+    @Property("cuba.disableLoadValuesIfConstraints")
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
-    boolean getConstraintErrorOnLoadValues();
+    boolean getDisableLoadValuesIfConstraints();
 
     /**
      * <= 16 symbols string, used as key for AES encryption of security token

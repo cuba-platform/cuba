@@ -143,6 +143,11 @@ public interface DataManager {
      */
     void remove(Entity entity);
 
+    /**
+     * Loads list of key-value pairs.
+     * @param context   defines a query for scalar values and a list of keys for returned KeyValueEntity
+     * @return list of KeyValueEntity instances
+     */
     List<KeyValueEntity> loadValues(ValueLoadContext context);
 
     /**

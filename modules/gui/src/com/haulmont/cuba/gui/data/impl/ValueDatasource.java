@@ -19,15 +19,37 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaClass;
 
+/**
+ * Base interface of datasources that work with {@link com.haulmont.cuba.core.entity.KeyValueEntity}.
+ */
 public interface ValueDatasource {
 
+    /**
+     * @return meta-class of entities located in the datasource
+     */
     MetaClass getMetaClass();
 
+    /**
+     * Sets the name of a property that represents the entity id.
+     */
     ValueDatasource setIdName(String name);
 
+    /**
+     * Adds a string property to the meta-class of this datasource.
+     * @return this instance for chaining
+     */
     ValueDatasource addProperty(String name);
 
+    /**
+     * Adds a property of the given Java class to the meta-class of this datasource.
+     * The Java class can be an entity or a datatype.
+     * @return this instance for chaining
+     */
     ValueDatasource addProperty(String name, Class aClass);
 
+    /**
+     * Adds a property of the given datatype to the meta-class of this datasource.
+     * @return this instance for chaining
+     */
     ValueDatasource addProperty(String name, Datatype type);
 }
