@@ -143,7 +143,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
                 }
 
                 if (stream != null) {
-                    log.trace("Loading app properties from {}", str);
+                    log.info("Loading app properties from {}", str);
                     try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
                         properties.load(reader);
                     }
