@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.PopupView;
 import com.vaadin.ui.Label;
 
@@ -43,12 +44,53 @@ public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> 
 
     @Override
     public void setPopupContent(Component popupContent) {
+        if (this.popupContent != null) {
+            if (this.popupContent instanceof BelongToFrame) {
+                ((BelongToFrame) this.popupContent).setFrame(null);
+            } else {
+                detachFromFrame(this.popupContent);
+            }
+            this.popupContent.setParent(null);
+        }
+
         this.popupContent = popupContent;
 
         if (popupContent != null) {
             component.setContent(new PopupContent());
+
+            if (frame != null) {
+                if (popupContent instanceof BelongToFrame
+                        && ((BelongToFrame) popupContent).getFrame() == null) {
+                    ((BelongToFrame) popupContent).setFrame(frame);
+                } else {
+                    attachToFrame(popupContent);
+                }
+            }
+            popupContent.setParent(this);
         } else {
             component.setContent(new EmptyContent());
+        }
+    }
+
+    protected void attachToFrame(Component childComponent) {
+        frame.registerComponent(childComponent);
+    }
+
+    protected void detachFromFrame(Component childComponent) {
+        frame.unregisterComponent(childComponent);
+    }
+
+    @Override
+    public void setFrame(Frame frame) {
+        super.setFrame(frame);
+
+        if (frame != null) {
+            if (popupContent instanceof BelongToFrame
+                    && ((BelongToFrame) popupContent).getFrame() == null) {
+                ((BelongToFrame) popupContent).setFrame(frame);
+            } else {
+                attachToFrame(popupContent);
+            }
         }
     }
 
