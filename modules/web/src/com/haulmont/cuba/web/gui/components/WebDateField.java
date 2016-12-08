@@ -69,7 +69,10 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     protected TimeZones timeZones = AppBeans.get(TimeZones.NAME);
 
     protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
+    protected WeakItemPropertyChangeListener weakItemPropertyChangeListener;
+
     protected Datasource.ItemChangeListener itemChangeListener;
+    protected WeakItemChangeListener weakItemChangeListener;
 
     public WebDateField() {
         innerLayout = new com.vaadin.ui.CssLayout();
@@ -368,63 +371,101 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
     @Override
     public void setDatasource(Datasource datasource, String property) {
-        this.datasource = datasource;
+        if ((datasource == null && property != null) || (datasource != null && property == null))
+            throw new IllegalArgumentException("Datasource and property should be either null or not null at the same time");
 
-        MetaClass metaClass = datasource.getMetaClass();
-        resolveMetaPropertyPath(metaClass, property);
+        if (datasource == this.datasource && ((metaPropertyPath != null && metaPropertyPath.toString().equals(property)) ||
+                (metaPropertyPath == null && property == null)))
+            return;
 
-        if (metaProperty.getRange().isDatatype()
-                && metaProperty.getRange().asDatatype().getName().equals(DateTimeDatatype.NAME)
-                && timeZone == null) {
-            Object ignoreUserTimeZone = metaProperty.getAnnotations().get(IgnoreUserTimeZone.class.getName());
-            if (!Boolean.TRUE.equals(ignoreUserTimeZone)) {
-                timeZone = userSession.getTimeZone();
+        if (this.datasource != null) {
+            metaProperty = null;
+            metaPropertyPath = null;
+
+            component.setPropertyDataSource(null);
+
+            //noinspection unchecked
+            this.datasource.removeItemChangeListener(weakItemChangeListener);
+            weakItemChangeListener = null;
+
+            //noinspection unchecked
+            this.datasource.removeItemPropertyChangeListener(weakItemPropertyChangeListener);
+            weakItemPropertyChangeListener = null;
+
+            this.datasource = null;
+
+            if (itemWrapper != null) {
+                itemWrapper.unsubscribe();
             }
+
+            timeZone = null;
+
+            disableBeanValidator();
         }
 
-        itemChangeListener = e -> {
-            if (updatingInstance) {
-                return;
-            }
-            Date value = getEntityValue(e.getItem());
-            setValueToFields(toUserDate(value));
-            fireValueChanged(value);
-        };
-        //noinspection unchecked
-        datasource.addItemChangeListener(new WeakItemChangeListener(datasource, itemChangeListener));
+        if (datasource != null) {
+            //noinspection unchecked
+            this.datasource = datasource;
 
-        itemPropertyChangeListener = e -> {
-            if (updatingInstance) {
-                return;
-            }
-            if (e.getProperty().equals(metaPropertyPath.toString())) {
-                setValueToFields(toUserDate((Date) e.getValue()));
-                fireValueChanged(e.getValue());
-            }
-        };
-        //noinspection unchecked
-        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
+            MetaClass metaClass = datasource.getMetaClass();
+            resolveMetaPropertyPath(metaClass, property);
 
-        if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
-            if (property.equals(metaPropertyPath.toString())) {
-                Date value = getEntityValue(datasource.getItem());
+            if (metaProperty.getRange().isDatatype()
+                    && metaProperty.getRange().asDatatype().getName().equals(DateTimeDatatype.NAME)
+                    && timeZone == null) {
+                Object ignoreUserTimeZone = metaProperty.getAnnotations().get(IgnoreUserTimeZone.class.getName());
+                if (!Boolean.TRUE.equals(ignoreUserTimeZone)) {
+                    timeZone = userSession.getTimeZone();
+                }
+            }
+
+            itemChangeListener = e -> {
+                if (updatingInstance) {
+                    return;
+                }
+                Date value = getEntityValue(e.getItem());
                 setValueToFields(toUserDate(value));
                 fireValueChanged(value);
+            };
+            weakItemChangeListener = new WeakItemChangeListener(datasource, itemChangeListener);
+            //noinspection unchecked
+            datasource.addItemChangeListener(weakItemChangeListener);
+
+            itemPropertyChangeListener = e -> {
+                if (updatingInstance) {
+                    return;
+                }
+                if (e.getProperty().equals(metaPropertyPath.toString())) {
+                    setValueToFields(toUserDate((Date) e.getValue()));
+                    fireValueChanged(e.getValue());
+                }
+            };
+
+            weakItemPropertyChangeListener = new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener);
+            //noinspection unchecked
+            datasource.addItemPropertyChangeListener(weakItemPropertyChangeListener);
+
+            if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
+                if (property.equals(metaPropertyPath.toString())) {
+                    Date value = getEntityValue(datasource.getItem());
+                    setValueToFields(toUserDate(value));
+                    fireValueChanged(value);
+                }
             }
-        }
 
-        setRequired(metaProperty.isMandatory());
-        if (StringUtils.isEmpty(getRequiredMessage())) {
-            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
-        }
+            setRequired(metaProperty.isMandatory());
+            if (StringUtils.isEmpty(getRequiredMessage())) {
+                MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+                setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
+            }
 
-        if (metaProperty.isReadOnly()) {
-            setEditable(false);
-        }
+            if (metaProperty.isReadOnly()) {
+                setEditable(false);
+            }
 
-        initBeanValidator();
-        setDateRangeByProperty(metaProperty);
+            initBeanValidator();
+            setDateRangeByProperty(metaProperty);
+        }
     }
 
     protected void setDateRangeByProperty(MetaProperty metaProperty) {
