@@ -20,6 +20,7 @@ package com.haulmont.cuba.core.sys.remoting;
 import com.haulmont.cuba.core.global.RemoteException;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 import org.springframework.remoting.support.RemoteInvocationResult;
+import org.springframework.remoting.support.RemoteInvocationUtils;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -43,8 +44,10 @@ public class HttpServiceProxy extends HttpInvokerProxyFactoryBean {
                 Exception exception = ((RemoteException) throwable).getFirstCauseException();
                 // This is a checked exception declared in a service method
                 // or runtime exception supported by client
-                if (exception != null)
+                if (exception != null) {
+                    RemoteInvocationUtils.fillInClientStackTraceIfPossible(exception);
                     throw exception;
+                }
             }
         }
         return super.recreateRemoteInvocationResult(result);
