@@ -99,11 +99,7 @@ public class ScriptScanner {
                 }
             });
 
-
             return results;
-        } catch (FileNotFoundException e) {
-            //just return empty list
-            return Collections.emptyList();
         } catch (IOException e) {
             throw new RuntimeException("An error occurred while loading scripts", e);
         }
@@ -143,10 +139,14 @@ public class ScriptScanner {
     }
 
     protected Map<String, ScriptResource> findResourcesByUrlPattern(ResourcePatternResolver resourceResolver, String urlPattern) throws IOException {
-        return Arrays
-                .stream(resourceResolver.getResources(urlPattern))
-                .map(ScriptResource::new)
-                .collect(Collectors.toMap(ScriptResource::getName, Function.<ScriptResource>identity()));
+        try {
+            return Arrays.stream(resourceResolver.getResources(urlPattern))
+                    .map(ScriptResource::new)
+                    .collect(Collectors.toMap(ScriptResource::getName, Function.identity()));
+        } catch (FileNotFoundException e) {
+            //just return empty map
+            return Collections.emptyMap();
+        }
     }
 
     protected ResourcePatternResolver createAppropriateResourceResolver() {
