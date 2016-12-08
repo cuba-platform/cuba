@@ -292,7 +292,7 @@ public class NonEntityQueryTest {
     @Test
     public void testInMemoryAndSeveralConstraints() throws Exception {
         ConfigStorageService configStorageService = AppBeans.get(ConfigStorageService.class);
-        configStorageService.setDbProperty("cuba.constraintErrorOnLoadValues", "false");
+        configStorageService.setDbProperty("cuba.disableLoadValuesIfConstraints", "false");
 
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
         UserSession userSession = lw.login(USER_NAME_2, passwordEncryption.getPlainHash(USER_PASSWORD), Locale.getDefault());
@@ -324,7 +324,7 @@ public class NonEntityQueryTest {
     @Test
     public void testInMemoryAndSeveralConstraintsWithError() throws Exception {
         ConfigStorageService configStorageService = AppBeans.get(ConfigStorageService.class);
-        configStorageService.setDbProperty("cuba.constraintErrorOnLoadValues", "true");
+        configStorageService.setDbProperty("cuba.disableLoadValuesIfConstraints", "true");
 
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
         UserSession userSession = lw.login(USER_NAME_2, passwordEncryption.getPlainHash(USER_PASSWORD), Locale.getDefault());
