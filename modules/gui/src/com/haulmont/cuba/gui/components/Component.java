@@ -72,15 +72,29 @@ public interface Component {
     /** INTERNAL. Managed by debug Id system. */
     void setDebugId(String id);
 
-    /** Is component in enabled state? */
+    /**
+     * Are the component and its parent enabled?
+     */
     boolean isEnabled();
     /** Set component enabled state */
     void setEnabled(boolean enabled);
 
-    /** Is component visible? */
+    /**
+     * Are the component and its parent visible?
+     */
     boolean isVisible();
     /** Set component visibility */
     void setVisible(boolean visible);
+
+    /**
+     * Is the component visible regardless of the parent?
+     */
+    boolean isVisibleItself();
+
+    /**
+     * Is the component enabled regardless of the parent?
+     */
+    boolean isEnabledItself();
 
     /** Set focus to this component */
     void requestFocus();

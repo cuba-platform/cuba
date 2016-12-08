@@ -209,6 +209,16 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
     }
 
     @Override
+    public boolean isVisibleItself() {
+        return component.isVisible();
+    }
+
+    @Override
+    public boolean isEnabledItself() {
+        return component.isEnabled();
+    }
+
+    @Override
     public String getIcon() {
         return icon;
     }

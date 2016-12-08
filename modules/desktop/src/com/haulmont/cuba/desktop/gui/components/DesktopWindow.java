@@ -1132,6 +1132,16 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
+    public boolean isVisibleItself() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabledItself() {
+        return panel.isEnabled();
+    }
+
+    @Override
     public void requestFocus() {
     }
 

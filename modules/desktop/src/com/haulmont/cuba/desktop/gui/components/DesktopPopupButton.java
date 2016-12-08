@@ -324,6 +324,16 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
         }
 
         @Override
+        public boolean isVisibleItself() {
+            return DesktopPopupButton.this.isVisibleItself();
+        }
+
+        @Override
+        public boolean isEnabledItself() {
+            return action.isEnabled();
+        }
+
+        @Override
         public void requestFocus() {
         }
 

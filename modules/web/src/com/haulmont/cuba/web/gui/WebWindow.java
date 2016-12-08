@@ -887,6 +887,16 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
+    public boolean isVisibleItself() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabledItself() {
+        return component.isEnabled();
+    }
+
+    @Override
     public void requestFocus() {
     }
 

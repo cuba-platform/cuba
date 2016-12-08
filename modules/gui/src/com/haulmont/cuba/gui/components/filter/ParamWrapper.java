@@ -219,6 +219,16 @@ public class ParamWrapper implements Component.HasValue {
     }
 
     @Override
+    public boolean isVisibleItself() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isEnabledItself() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void requestFocus() {
     }
 

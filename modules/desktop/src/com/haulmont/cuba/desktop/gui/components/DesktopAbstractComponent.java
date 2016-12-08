@@ -219,6 +219,16 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     }
 
     @Override
+    public boolean isVisibleItself() {
+        return visible;
+    }
+
+    @Override
+    public boolean isEnabledItself() {
+        return enabled;
+    }
+
+    @Override
     public void requestFocus() {
         SwingUtilities.invokeLater(() ->
                 impl.requestFocus()

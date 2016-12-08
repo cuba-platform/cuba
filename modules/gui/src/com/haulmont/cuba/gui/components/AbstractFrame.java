@@ -139,6 +139,16 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     }
 
     @Override
+    public boolean isVisibleItself() {
+        return frame.isVisibleItself();
+    }
+
+    @Override
+    public boolean isEnabledItself() {
+        return frame.isEnabledItself();
+    }
+
+    @Override
     public void requestFocus() {
         frame.requestFocus();
     }
