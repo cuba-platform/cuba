@@ -1887,7 +1887,7 @@
                     <xs:attribute name="class" type="xs:string"/>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="properties" type="valueDatasourcePropertiesType"/>
+            <xs:element name="properties" minOccurs="0" type="valueDatasourcePropertiesType"/>
         </xs:sequence>
 
         <xs:attribute name="id" type="xs:string"/>
