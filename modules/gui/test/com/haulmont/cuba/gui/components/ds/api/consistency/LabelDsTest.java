@@ -26,7 +26,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 @Ignore
-public class LabelDsTest extends DsApiConsistencyTest {
+public class LabelDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeComponentListener() {

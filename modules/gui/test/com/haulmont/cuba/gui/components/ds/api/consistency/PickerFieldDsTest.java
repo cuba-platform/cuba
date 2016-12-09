@@ -29,7 +29,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @Ignore
-public class PickerFieldDsTest extends DsApiConsistencyTest {
+public class PickerFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeWithComponentListener() {

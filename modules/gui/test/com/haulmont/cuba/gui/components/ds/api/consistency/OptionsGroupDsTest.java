@@ -17,7 +17,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 @Ignore
-public class OptionsGroupDsTest extends DsApiConsistencyTest {
+public class OptionsGroupDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeComponentListener() {

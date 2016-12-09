@@ -25,8 +25,7 @@ import org.junit.Ignore;
 
 import java.util.Locale;
 
-@Ignore
-public abstract class AbstractDatatypeTest extends CubaClientTestCase {
+public class AbstractDatatypeTestCase extends CubaClientTestCase {
 
     protected Locale ruLocale;
     protected Locale enGbLocale;

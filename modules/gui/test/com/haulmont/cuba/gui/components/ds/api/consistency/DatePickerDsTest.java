@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Ignore
-public class DatePickerDsTest extends DsApiConsistencyTest {
+public class DatePickerDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeComponentListener() {

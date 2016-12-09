@@ -18,7 +18,7 @@ import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Ignore
-public class OptionsListDsTest extends DsApiConsistencyTest {
+public class OptionsListDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeComponentListener() {

@@ -27,7 +27,7 @@ import java.util.Locale;
 
 import static junit.framework.Assert.assertEquals;
 
-public class LongDatatypeTest extends AbstractDatatypeTest {
+public class LongDatatypeTest extends AbstractDatatypeTestCase {
 
     private Datatype<Long> longDt;
     private Long long10000 = (long) 10000;

@@ -20,7 +20,7 @@ import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.components.AbstractComponentTest;
+import com.haulmont.cuba.gui.components.AbstractComponentTestCase;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
@@ -35,8 +35,7 @@ import org.junit.Ignore;
 
 import java.util.UUID;
 
-@Ignore
-public abstract class DsApiConsistencyTest extends AbstractComponentTest {
+public class DsApiConsistencyTestCase extends AbstractComponentTestCase {
 
     @Mocked
     PersistenceManagerService persistenceManagerService;

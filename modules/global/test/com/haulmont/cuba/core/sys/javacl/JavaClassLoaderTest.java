@@ -16,8 +16,7 @@
  */
 package com.haulmont.cuba.core.sys.javacl;
 
-import com.haulmont.bali.util.ReflectionHelper;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -25,8 +24,6 @@ import java.lang.reflect.Method;
 import java.util.Date;
 
 public class JavaClassLoaderTest {
-
-
     @Test
     public void testSimple() throws Exception {
         System.out.println(new File(".").getAbsolutePath());
@@ -142,7 +139,6 @@ public class JavaClassLoaderTest {
         File file = new File(path);
         boolean result = file.setLastModified(System.currentTimeMillis());
     }
-
 
     @Test
     public void testTwiceCompilation() throws Exception {

@@ -89,7 +89,6 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
-    apply(plugin: 'checkstyle')
     apply(plugin: 'cuba')
 
     dependencies {
@@ -104,22 +103,6 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
 
     artifacts {
         archives sourceJar
-    }
-
-    String checkstyleConfigDir = "${rootProject.projectDir}/config/checkstyle"
-    checkstyle {
-        configFile = new File("${checkstyleConfigDir}/checkstyle.xml".toString())
-        configProperties = [
-                'checkstyleConfigDir' : checkstyleConfigDir
-        ]
-        reportsDir = new File("${buildDir}/checkstyle".toString())
-    }
-
-    checkstyleMain << {
-        def checkstyleDir = "${project.buildDir}/checkstyle".toString()
-        ant.xslt('in': "$checkstyleDir/main.xml",
-                out: "$checkstyleDir/$project.name-checkstyle.html",
-                style: "$checkstyleConfigDir/checkstyle.xsl")
     }
 
     jar {

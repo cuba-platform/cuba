@@ -20,7 +20,7 @@ package com.haulmont.cuba.gui.autocomplete.impl;
 import com.haulmont.cuba.core.sys.jpql.InferredType;
 import com.haulmont.cuba.gui.components.autocomplete.impl.AliasRemover;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintRequest;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.EnumSet;

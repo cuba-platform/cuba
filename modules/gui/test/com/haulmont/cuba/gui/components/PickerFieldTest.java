@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.Assert.*;
 
 @Ignore
-public abstract class PickerFieldTest extends AbstractComponentTest {
+public class PickerFieldTest extends AbstractComponentTestCase {
 
     @Override
     protected void initExpectations() {

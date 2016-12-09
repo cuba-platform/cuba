@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.Assert.*;
 
 @Ignore
-public abstract class OptionsListTest extends AbstractComponentTest {
+public class OptionsListTest extends AbstractComponentTestCase {
 
     @Mocked
     PersistenceManagerService persistenceManagerService;
