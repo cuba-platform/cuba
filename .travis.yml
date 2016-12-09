@@ -2,8 +2,8 @@ language: java
 jdk: oraclejdk8
 
 before_install:
-  - git clone https://github.com/cuba-platform/cuba-gradle-plugin.git $TRAVIS_BUILD_DIR/cuba-gradle-plugin
-  - (cd $TRAVIS_BUILD_DIR/cuba-gradle-plugin && chmod +x ./gradlew && ./gradlew install)
+  - git clone https://github.com/cuba-platform/cuba-gradle-plugin.git $TRAVIS_BUILD_DIR/../cuba-gradle-plugin
+  - (cd $TRAVIS_BUILD_DIR/../cuba-gradle-plugin && chmod +x ./gradlew && ./gradlew install)
   - chmod +x ./gradlew
   - ./gradlew startDb createTestDb
 
@@ -11,3 +11,8 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
