@@ -110,6 +110,10 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
             attributes("Implementation-Version": cubaVersion)
         }
     }
+
+    test {
+        maxHeapSize = '256m'
+    }
 }
 
 // configure web toolkit module
