@@ -3,9 +3,15 @@ jdk: oraclejdk8
 
 before_install:
   - git clone https://github.com/cuba-platform/cuba-gradle-plugin.git $TRAVIS_BUILD_DIR/../cuba-gradle-plugin
-  - (cd $TRAVIS_BUILD_DIR/../cuba-gradle-plugin && chmod +x ./gradlew && ./gradlew install)
+  - (cd $TRAVIS_BUILD_DIR/../cuba-gradle-plugin && chmod +x ./gradlew && ./gradlew --no-daemon install)
   - chmod +x ./gradlew
-  - ./gradlew startDb createTestDb
+  - ./gradlew --no-daemon startDb createTestDb
+
+install:
+  - ./gradlew --no-daemon assemble
+
+script:
+  - ./gradlew --no-daemon test
 
 cache:
   directories:
