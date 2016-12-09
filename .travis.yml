@@ -11,7 +11,11 @@ install:
   - ./gradlew --no-daemon assemble
 
 script:
-  - ./gradlew --no-daemon test
+  - ./gradlew --no-daemon :cuba-global:test
+  - ./gradlew --no-daemon :cuba-core:test
+  - ./gradlew --no-daemon :cuba-gui:test
+  - ./gradlew --no-daemon :cuba-web:test
+  - ./gradlew --no-daemon :cuba-desktop:test
 
 cache:
   directories:
