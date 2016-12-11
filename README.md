@@ -57,9 +57,7 @@ The platform uses a number of forked third-party libraries. They can be found in
 * [eclipselink](https://github.com/cuba-platform/eclipselink)
 * [vaadin](https://github.com/cuba-platform/vaadin)
 * [vaadin-dragdroplayouts](https://github.com/cuba-platform/vaadin-dragdroplayouts)
-* [vaadin-googlemaps](https://github.com/cuba-platform/vaadin-googlemaps)
 * [vaadin-aceeditor](https://github.com/cuba-platform/vaadin-aceeditor)
 * [swingx-core](https://github.com/cuba-platform/swingx-core)
-* [apache-poi](https://github.com/cuba-platform/apache-poi)
 
 All dependencies are also located in our artifacts repository, so you don't have to build them from sources in order to build and use the platform.
