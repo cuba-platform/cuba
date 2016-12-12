@@ -22,12 +22,13 @@ import com.haulmont.cuba.core.sys.MetadataImpl;
 import com.haulmont.cuba.core.sys.MetadataLoader;
 
 import java.util.List;
+import java.util.Map;
 
 public class TestMetadataClient extends MetadataImpl {
 
-    private List<String> packages;
+    protected Map<String, List<String>> packages;
 
-    public TestMetadataClient(List<String> packages, TestViewRepositoryClient viewRepository) {
+    public TestMetadataClient(Map<String, List<String>> packages, TestViewRepositoryClient viewRepository) {
         this.packages = packages;
 
         this.viewRepository = viewRepository;
@@ -40,8 +41,8 @@ public class TestMetadataClient extends MetadataImpl {
     @Override
     protected void initMetadata() {
         MetadataLoader persistentEntitiesMetadataLoader = new MetadataLoader();
-        for (String p : packages) {
-            persistentEntitiesMetadataLoader.loadModel(p, null);
+        for (Map.Entry<String, List<String>> entry : packages.entrySet()) {
+            persistentEntitiesMetadataLoader.loadModel(entry.getKey(), entry.getValue());
         }
         persistentEntitiesMetadataLoader.postProcess();
 

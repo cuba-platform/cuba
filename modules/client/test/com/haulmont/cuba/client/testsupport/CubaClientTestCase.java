@@ -24,9 +24,22 @@ import com.haulmont.cuba.core.sys.AppContext;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.ClassMetadata;
+import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
+import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
 
+import javax.persistence.Entity;
+import javax.persistence.MappedSuperclass;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Base class for building client-side integration tests.
@@ -34,7 +47,7 @@ import java.util.List;
  */
 public class CubaClientTestCase {
 
-    private List<String> entityPackages = new ArrayList<>();
+    private Map<String, List<String>> entityPackages = new LinkedHashMap<>();
 
     private String viewConfig;
 
@@ -74,6 +87,9 @@ public class CubaClientTestCase {
 
     protected TestBeanValidation beanValidation;
 
+    protected ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+    protected MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(this.resourcePatternResolver);
+
     public CubaClientTestCase() {
         String property = System.getProperty("logback.configurationFile");
         if (StringUtils.isBlank(property)) {
@@ -83,10 +99,42 @@ public class CubaClientTestCase {
 
     /**
      * Add entities package to build metadata from. Should be invoked by concrete test classes in their @Before method.
-     * @param pack  package FQN, e.g. <code>com.haulmont.cuba.core.entity</code>
+     * @param packageName  package FQN, e.g. <code>com.haulmont.cuba.core.entity</code>
      */
-    protected void addEntityPackage(String pack) {
-        entityPackages.add(pack);
+    protected void addEntityPackage(String packageName) {
+        String packagePrefix = packageName.replace(".", "/") + "/**/*.class";
+        String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + packagePrefix;
+        Resource[] resources;
+        try {
+            resources = resourcePatternResolver.getResources(packageSearchPath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        entityPackages.put(packageName, getClasses(resources));
+    }
+
+    protected List<String> getClasses(Resource[] resources) {
+        List<String> classNames = new ArrayList<>();
+
+        for (Resource resource : resources) {
+            if (resource.isReadable()) {
+                MetadataReader metadataReader;
+                try {
+                    metadataReader = metadataReaderFactory.getMetadataReader(resource);
+                } catch (IOException e) {
+                    throw new RuntimeException("Unable to read metadata resource", e);
+                }
+
+                AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
+                if (annotationMetadata.isAnnotated(com.haulmont.chile.core.annotations.MetaClass.class.getName())
+                        || annotationMetadata.isAnnotated(MappedSuperclass.class.getName())
+                        || annotationMetadata.isAnnotated(Entity.class.getName())) {
+                    ClassMetadata classMetadata = metadataReader.getClassMetadata();
+                    classNames.add(classMetadata.getClassName());
+                }
+            }
+        }
+        return classNames;
     }
 
     /**
