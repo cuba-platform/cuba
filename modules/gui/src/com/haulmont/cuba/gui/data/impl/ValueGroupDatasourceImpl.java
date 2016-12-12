@@ -70,8 +70,8 @@ public class ValueGroupDatasourceImpl
         return this;
     }
 
-    public ValueGroupDatasourceImpl addProperty(String name, Datatype type) {
-        delegate.addProperty(name, type);
+    public ValueGroupDatasourceImpl addProperty(String name, Datatype datatype) {
+        delegate.addProperty(name, datatype);
         return this;
     }
 

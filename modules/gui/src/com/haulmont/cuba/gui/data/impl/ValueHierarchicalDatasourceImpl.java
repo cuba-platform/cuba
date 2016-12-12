@@ -70,8 +70,8 @@ public class ValueHierarchicalDatasourceImpl
         return this;
     }
 
-    public ValueHierarchicalDatasourceImpl addProperty(String name, Datatype type) {
-        delegate.addProperty(name, type);
+    public ValueHierarchicalDatasourceImpl addProperty(String name, Datatype datatype) {
+        delegate.addProperty(name, datatype);
         return this;
     }
 

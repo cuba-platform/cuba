@@ -70,8 +70,8 @@ public class ValueCollectionDatasourceImpl
         return this;
     }
 
-    public ValueCollectionDatasourceImpl addProperty(String name, Datatype type) {
-        delegate.addProperty(name, type);
+    public ValueCollectionDatasourceImpl addProperty(String name, Datatype datatype) {
+        delegate.addProperty(name, datatype);
         return this;
     }
 

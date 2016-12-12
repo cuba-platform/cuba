@@ -62,10 +62,10 @@ public class ValueDatasourceDelegate {
         ((KeyValueMetaClass) ds.metaClass).addProperty(new KeyValueMetaProperty(ds.metaClass, name, type));
     }
 
-    public void addProperty(String name, Datatype type) {
+    public void addProperty(String name, Datatype datatype) {
         Preconditions.checkNotNullArgument(name, "name is null");
         Preconditions.checkNotNullArgument(name, "type is null");
-        ((KeyValueMetaClass) ds.metaClass).addProperty(new KeyValueMetaProperty(ds.metaClass, name, type));
+        ((KeyValueMetaClass) ds.metaClass).addProperty(new KeyValueMetaProperty(ds.metaClass, name, datatype));
     }
 
     protected void loadData(Map<String, Object> params) {

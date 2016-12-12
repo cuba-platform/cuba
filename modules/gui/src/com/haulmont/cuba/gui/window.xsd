@@ -51,14 +51,16 @@
             </xs:simpleType>
             <xs:simpleType>
                 <xs:restriction base="xs:string">
-                    <xs:enumeration value="decimal"/>
                     <xs:enumeration value="boolean"/>
                     <xs:enumeration value="byte array"/>
                     <xs:enumeration value="date"/>
+                    <xs:enumeration value="dateTime"/>
+                    <xs:enumeration value="decimal"/>
                     <xs:enumeration value="double"/>
                     <xs:enumeration value="int"/>
                     <xs:enumeration value="long"/>
                     <xs:enumeration value="string"/>
+                    <xs:enumeration value="time"/>
                     <xs:enumeration value="uuid"/>
                 </xs:restriction>
             </xs:simpleType>
@@ -1883,7 +1885,7 @@
             <xs:element name="property" minOccurs="1" maxOccurs="unbounded">
                 <xs:complexType mixed="true">
                     <xs:attribute name="name" type="xs:string" use="required"/>
-                    <xs:attribute name="type" type="datatypeEnum"/>
+                    <xs:attribute name="datatype" type="datatypeEnum"/>
                     <xs:attribute name="class" type="xs:string"/>
                 </xs:complexType>
             </xs:element>

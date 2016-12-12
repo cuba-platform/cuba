@@ -537,7 +537,7 @@ public class DsContextLoader {
                 if (className != null) {
                     datasource.addProperty(name, ReflectionHelper.getClass(className));
                 } else {
-                    String typeName = propEl.attributeValue("type");
+                    String typeName = propEl.attributeValue("datatype");
                     Datatype datatype = typeName == null ? Datatypes.get(StringDatatype.NAME) : Datatypes.get(typeName);
                     datasource.addProperty(name, datatype);
                 }

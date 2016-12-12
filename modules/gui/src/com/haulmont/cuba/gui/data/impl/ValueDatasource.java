@@ -51,5 +51,5 @@ public interface ValueDatasource {
      * Adds a property of the given datatype to the meta-class of this datasource.
      * @return this instance for chaining
      */
-    ValueDatasource addProperty(String name, Datatype type);
+    ValueDatasource addProperty(String name, Datatype datatype);
 }
