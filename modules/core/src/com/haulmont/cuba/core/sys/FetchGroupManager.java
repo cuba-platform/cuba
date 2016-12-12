@@ -217,13 +217,13 @@ public class FetchGroupManager {
                 fetchHints.put(attr, QueryHints.LEFT_FETCH);
             }
 
-            for (FetchGroupField batchField : batchFields) {
-                if (batchField.fetchMode == FetchMode.BATCH || !singleResultExpected || batchFields.size() > 1) {
-                    String attr = alias + "." + batchField.path();
-                    fetchHints.put(attr, QueryHints.BATCH);
-                    hasBatches = true;
-                }
-            }
+//            for (FetchGroupField batchField : batchFields) {
+//                if (batchField.fetchMode == FetchMode.BATCH || !singleResultExpected || batchFields.size() > 1) {
+//                    String attr = alias + "." + batchField.path();
+//                    fetchHints.put(attr, QueryHints.BATCH);
+//                    hasBatches = true;
+//                }
+//            }
         }
 
         if (log.isTraceEnabled())
