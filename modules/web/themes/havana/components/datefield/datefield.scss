@@ -16,20 +16,25 @@
  */
 
 @mixin havana-datefield($primary-stylename: c-datefield) {
-  .#{$primary-stylename}-composition {
-    display: inline-table;
-  }
-
   div.#{$primary-stylename}-layout.v-csslayout {
-    display: table-row;
+    white-space: nowrap;
+    outline: none;
 
     .c-maskedfield {
       margin-left: 5px;
-      display: table-cell;
     }
+  }
 
-    .v-datefield {
-      display: table-cell;
+  div.#{$primary-stylename}-composition.v-has-width {
+    display: inline-table;
+
+    .#{$primary-stylename}-layout {
+      display: table-row;
+
+      .#{$primary-stylename},
+      .c-maskedfield {
+        display: table-cell;
+      }
     }
   }
 
