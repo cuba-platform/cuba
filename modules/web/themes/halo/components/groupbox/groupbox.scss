@@ -180,6 +180,10 @@
     border-bottom: valo-border();
   }
 
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap {
+    height: round($v-unit-size/3) + round($v-unit-size/6);
+  }
+
   .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco div,
   .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco div {
     height: round($v-unit-size/3);
@@ -195,10 +199,7 @@
     padding-top: round($v-unit-size/6);
   }
 
-  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-expander {
-    display: none;
-  }
-
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-expander,
   .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-nocaption {
     display: none;
   }

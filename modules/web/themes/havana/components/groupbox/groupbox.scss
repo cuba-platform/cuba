@@ -145,6 +145,10 @@
     background-color: transparent;
   }
 
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap {
+    height: 7px;
+  }
+
   .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco div,
   .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco div {
     border-color: $cuba-groupbox-nocaption-border-color;
