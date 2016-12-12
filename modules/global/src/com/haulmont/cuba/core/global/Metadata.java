@@ -21,6 +21,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.core.entity.Entity;
 
+import java.util.List;
+
 /**
  * Central interface to provide metadata-related functionality.
  *
@@ -73,4 +75,9 @@ public interface Metadata extends Session {
      * @return              entity instance
      */
     Entity create(String entityName);
+
+    /**
+     * @return list of root packages of all application components and the application itself
+     */
+    List<String> getRootPackages();
 }

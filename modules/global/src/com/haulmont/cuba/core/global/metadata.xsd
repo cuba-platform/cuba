@@ -25,6 +25,7 @@
     <xs:element name="metadata">
         <xs:complexType mixed="true">
             <xs:sequence>
+                <xs:element type="datatypesType" name="datatypes" minOccurs="0" maxOccurs="1"/>
                 <xs:element type="metadataModelType" name="metadata-model" minOccurs="0" maxOccurs="1"/>
                 <xs:element type="annotationsType" name="annotations" minOccurs="0" maxOccurs="1"/>
             </xs:sequence>
@@ -36,6 +37,21 @@
             <xs:element type="metadataModelType" name="metadata-model"/>
             <xs:element type="annotationsType" name="annotations"/>
         </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="datatypesType">
+        <xs:sequence>
+            <xs:element type="datatypeType" name="datatype" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="datatypeType">
+        <xs:attribute type="xs:string" name="class" use="required"/>
+        <xs:attribute type="xs:string" name="format"/>
+        <xs:attribute type="xs:string" name="decimalSeparator"/>
+        <xs:attribute type="xs:string" name="groupingSeparator"/>
+        <xs:attribute type="xs:string" name="javaType"/>
+        <xs:attribute type="xs:string" name="sqlType"/>
     </xs:complexType>
 
     <xs:complexType name="metadataModelType">

@@ -17,10 +17,9 @@
 
 package com.haulmont.cuba.client.testsupport;
 
-import com.haulmont.chile.core.loader.MetadataLoader;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.sys.MetadataImpl;
-import com.haulmont.cuba.core.sys.PersistentEntitiesMetadataLoader;
+import com.haulmont.cuba.core.sys.MetadataLoader;
 
 import java.util.List;
 
@@ -40,7 +39,7 @@ public class TestMetadataClient extends MetadataImpl {
 
     @Override
     protected void initMetadata() {
-        MetadataLoader persistentEntitiesMetadataLoader = new PersistentEntitiesMetadataLoader();
+        MetadataLoader persistentEntitiesMetadataLoader = new MetadataLoader();
         for (String p : packages) {
             persistentEntitiesMetadataLoader.loadModel(p, null);
         }

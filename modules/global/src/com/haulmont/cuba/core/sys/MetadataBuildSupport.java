@@ -18,8 +18,8 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.global.Stores;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -52,13 +52,42 @@ public class MetadataBuildSupport {
         }
     }
 
+    public static class XmlAnnotations {
+        public final String name;
+        public final Map<String, String> annotations = new HashMap<>();
+        public final List<XmlAnnotations> attributeAnnotations = new ArrayList<>();
+
+        public XmlAnnotations(String name) {
+            this.name = name;
+        }
+    }
+
+    public static class XmlFile {
+        public final String name;
+        public final Element root;
+
+        public XmlFile(String name, Element root) {
+            this.name = name;
+            this.root = root;
+        }
+    }
+
     private Logger log = LoggerFactory.getLogger(MetadataBuildSupport.class);
 
     public static final String PERSISTENCE_CONFIG = "cuba.persistenceConfig";
     public static final String METADATA_CONFIG = "cuba.metadataConfig";
 
     @Inject
-    private Resources resources;
+    protected Resources resources;
+
+    public List<XmlFile> init() {
+        List<XmlFile> metadataXmlList = new ArrayList<>();
+        StrTokenizer metadataFilesTokenizer = new StrTokenizer(getMetadataConfig());
+        for (String fileName : metadataFilesTokenizer.getTokenArray()) {
+            metadataXmlList.add(new XmlFile(fileName, readXml(fileName)));
+        }
+        return metadataXmlList;
+    }
 
     /**
      * @param storeName data store name
@@ -88,24 +117,32 @@ public class MetadataBuildSupport {
         return config;
     }
 
-    public Map<String, List<EntityClassInfo>> getEntityPackages() {
+    public List<Element> getDatatypeElements(List<XmlFile> metadataXmlList) {
+        List<Element> list = new ArrayList<>();
+        for (XmlFile xmlFile : metadataXmlList) {
+            Element datatypesEl = xmlFile.root.element("datatypes");
+            if (datatypesEl != null) {
+                list.addAll(Dom4j.elements(datatypesEl, "datatype"));
+            }
+        }
+        return list;
+    }
+
+    public Map<String, List<EntityClassInfo>> getEntityPackages(List<XmlFile> metadataXmlList) {
         Map<String, List<EntityClassInfo>> packages = new LinkedHashMap<>();
 
-        loadFromMetadataConfig(packages);
+        loadFromMetadataConfig(packages, metadataXmlList);
         Stores.getAll().forEach(db -> loadFromPersistenceConfig(packages, db));
 
         return packages;
     }
 
-    protected void loadFromMetadataConfig(Map<String, List<EntityClassInfo>> packages) {
-        StrTokenizer metadataFilesTokenizer = new StrTokenizer(getMetadataConfig());
-        for (String fileName : metadataFilesTokenizer.getTokenArray()) {
-            Element root = readXml(fileName);
-            //noinspection unchecked
-            for (Element element : (List<Element>) root.elements("metadata-model")) {
+    protected void loadFromMetadataConfig(Map<String, List<EntityClassInfo>> packages, List<XmlFile> metadataXmlList) {
+        for (XmlFile xmlFile : metadataXmlList) {
+            for (Element element : Dom4j.elements(xmlFile.root, "metadata-model")) {
                 String rootPackage = element.attributeValue("root-package");
                 if (StringUtils.isBlank(rootPackage))
-                    throw new IllegalStateException("metadata-model/@root-package is empty in " + fileName);
+                    throw new IllegalStateException("metadata-model/@root-package is empty in " + xmlFile.name);
 
                 List<EntityClassInfo> classNames = packages.get(rootPackage);
                 if (classNames == null) {
@@ -152,7 +189,7 @@ public class MetadataBuildSupport {
         }
     }
 
-    public Element readXml(String path) {
+    protected Element readXml(String path) {
         InputStream stream = resources.getResourceAsStream(path);
         try {
             stream = resources.getResourceAsStream(path);
@@ -165,74 +202,29 @@ public class MetadataBuildSupport {
         }
     }
 
-    public List<XmlAnnotations> getEntityAnnotations() {
+    public List<XmlAnnotations> getEntityAnnotations(List<XmlFile> metadataXmlList) {
         List<XmlAnnotations> result = new ArrayList<>();
 
-        String config = getMetadataConfig();
-        StrTokenizer tokenizer = new StrTokenizer(config);
-        for (String fileName : tokenizer.getTokenArray()) {
-            processMetadataXmlFile(result, fileName);
-        }
-
-        return result;
-    }
-
-    protected void processMetadataXmlFile(List<XmlAnnotations> annotations, String path) {
-        Element root = readXml(path);
-
-        for (Element element : Dom4j.elements(root, "include")) {
-            String fileName = element.attributeValue("file");
-            if (!StringUtils.isBlank(fileName)) {
-                processMetadataXmlFile(annotations, fileName);
-            }
-        }
-
-        Element annotationsEl = root.element("annotations");
-        if (annotationsEl != null) {
-            for (Element entityEl : Dom4j.elements(annotationsEl, "entity")) {
-                String className = entityEl.attributeValue("class");
-                XmlAnnotations entityAnnotations = new XmlAnnotations(className);
-                for (Element annotEl : Dom4j.elements(entityEl, "annotation")) {
-                    entityAnnotations.annotations.put(annotEl.attributeValue("name"), annotEl.attributeValue("value"));
-                }
-                for (Element propEl : Dom4j.elements(entityEl, "property")) {
-                    XmlAnnotations attributeAnnotations = new XmlAnnotations(propEl.attributeValue("name"));
-                    for (Element annotEl : Dom4j.elements(propEl, "annotation")) {
-                        attributeAnnotations.annotations.put(annotEl.attributeValue("name"), annotEl.attributeValue("value"));
+        for (XmlFile xmlFile : metadataXmlList) {
+            Element annotationsEl = xmlFile.root.element("annotations");
+            if (annotationsEl != null) {
+                for (Element entityEl : Dom4j.elements(annotationsEl, "entity")) {
+                    String className = entityEl.attributeValue("class");
+                    XmlAnnotations entityAnnotations = new XmlAnnotations(className);
+                    for (Element annotEl : Dom4j.elements(entityEl, "annotation")) {
+                        entityAnnotations.annotations.put(annotEl.attributeValue("name"), annotEl.attributeValue("value"));
                     }
-                    entityAnnotations.attributeAnnotations.add(attributeAnnotations);
-                }
-                annotations.add(entityAnnotations);
-            }
-        }
-    }
-
-    public Set<String> getRootPackages() {
-        Set<String> result = new LinkedHashSet<>();
-        StrTokenizer metadataFilesTokenizer = new StrTokenizer(getMetadataConfig());
-        for (String fileName : metadataFilesTokenizer.getTokenArray()) {
-            Element root = readXml(fileName);
-            //noinspection unchecked
-            for (Element element : (List<Element>) root.elements("metadata-model")) {
-                String rootPackage = element.attributeValue("root-package");
-                if (!StringUtils.isBlank(rootPackage)) {
-                    result.add(rootPackage);
+                    for (Element propEl : Dom4j.elements(entityEl, "property")) {
+                        XmlAnnotations attributeAnnotations = new XmlAnnotations(propEl.attributeValue("name"));
+                        for (Element annotEl : Dom4j.elements(propEl, "annotation")) {
+                            attributeAnnotations.annotations.put(annotEl.attributeValue("name"), annotEl.attributeValue("value"));
+                        }
+                        entityAnnotations.attributeAnnotations.add(attributeAnnotations);
+                    }
+                    result.add(entityAnnotations);
                 }
             }
         }
         return result;
-    }
-
-    public static class XmlAnnotations {
-
-        public final String name;
-
-        public final Map<String, String> annotations = new HashMap<>();
-
-        public final List<XmlAnnotations> attributeAnnotations = new ArrayList<>();
-
-        public XmlAnnotations(String name) {
-            this.name = name;
-        }
     }
 }

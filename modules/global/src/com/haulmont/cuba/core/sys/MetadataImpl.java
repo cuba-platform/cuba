@@ -18,9 +18,11 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.datastruct.Pair;
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.NamePattern;
-import com.haulmont.chile.core.loader.MetadataLoader;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -31,6 +33,7 @@ import com.haulmont.cuba.core.entity.annotation.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.MetadataBuildSupport.EntityClassInfo;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 import org.slf4j.Logger;
@@ -40,6 +43,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -63,7 +67,7 @@ public class MetadataImpl implements Metadata {
     protected MetadataTools tools;
 
     @Inject
-    protected PersistentEntitiesMetadataLoader metadataLoader;
+    protected MetadataLoader metadataLoader;
 
     @Inject
     protected Resources resources;
@@ -73,6 +77,8 @@ public class MetadataImpl implements Metadata {
 
     @Inject
     protected NumberIdSource numberIdSource;
+
+    protected List<String> rootPackages = new ArrayList<>();
 
     private static final Pattern JAVA_CLASS_PATTERN = Pattern.compile("([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*");
 
@@ -200,11 +206,22 @@ public class MetadataImpl implements Metadata {
         return (Entity) __create(metaClass.getJavaClass());
     }
 
+    @Override
+    public List<String> getRootPackages() {
+        return Collections.unmodifiableList(rootPackages);
+    }
+
     protected void initMetadata() {
         log.info("Initializing metadata");
         long startTime = System.currentTimeMillis();
 
-        Map<String, List<EntityClassInfo>> entityPackages = metadataBuildSupport.getEntityPackages();
+        List<MetadataBuildSupport.XmlFile> metadataXmlList = metadataBuildSupport.init();
+
+        initRootPackages(metadataXmlList);
+
+        initDatatypes(metadataBuildSupport.getDatatypeElements(metadataXmlList));
+
+        Map<String, List<EntityClassInfo>> entityPackages = metadataBuildSupport.getEntityPackages(metadataXmlList);
         loadMetadata(metadataLoader, entityPackages);
         metadataLoader.postProcess();
 
@@ -213,7 +230,7 @@ public class MetadataImpl implements Metadata {
         initStoreMetaAnnotations(session, entityPackages);
         initExtensionMetaAnnotations(session);
 
-        List<MetadataBuildSupport.XmlAnnotations> xmlAnnotations = metadataBuildSupport.getEntityAnnotations();
+        List<MetadataBuildSupport.XmlAnnotations> xmlAnnotations = metadataBuildSupport.getEntityAnnotations(metadataXmlList);
         for (MetaClass metaClass : session.getClasses()) {
             initMetaAnnotations(session, metaClass);
             addMetaAnnotationsFromXml(xmlAnnotations, metaClass);
@@ -226,6 +243,36 @@ public class MetadataImpl implements Metadata {
         SessionImpl.setSerializationSupportSession(this.session);
 
         log.info("Metadata initialized in " + (System.currentTimeMillis() - startTime) + "ms");
+    }
+
+    protected void initRootPackages(List<MetadataBuildSupport.XmlFile> metadataXmlList) {
+        for (MetadataBuildSupport.XmlFile xmlFile : metadataXmlList) {
+            for (Element element : Dom4j.elements(xmlFile.root, "metadata-model")) {
+                String rootPackage = element.attributeValue("root-package");
+                if (!StringUtils.isBlank(rootPackage) && !rootPackages.contains(rootPackage)) {
+                    rootPackages.add(rootPackage);
+                }
+            }
+        }
+    }
+
+    protected void initDatatypes(List<Element> datatypeElements) {
+        for (Element datatypeEl : datatypeElements) {
+            String datatypeClassName = datatypeEl.attributeValue("class");
+            try {
+                Datatype datatype;
+                Class<Datatype> datatypeClass = ReflectionHelper.getClass(datatypeClassName);
+                try {
+                    final Constructor<Datatype> constructor = datatypeClass.getConstructor(Element.class);
+                    datatype = constructor.newInstance(datatypeEl);
+                } catch (Throwable e) {
+                    datatype = datatypeClass.newInstance();
+                }
+                Datatypes.register(datatype);
+            } catch (Throwable e) {
+                log.error(String.format("Fail to load datatype '%s'", datatypeClassName), e);
+            }
+        }
     }
 
     protected void replaceExtendedMetaClasses(Session session) {

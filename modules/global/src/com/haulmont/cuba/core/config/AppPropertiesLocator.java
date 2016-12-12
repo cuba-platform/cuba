@@ -25,8 +25,8 @@ import com.haulmont.cuba.core.config.defaults.*;
 import com.haulmont.cuba.core.config.type.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.MetadataBuildSupport;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +48,13 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Bean providing lookup of app properties defined in config interfaces.
+ */
 @Component(AppPropertiesLocator.NAME)
 public class AppPropertiesLocator {
 
-    public static final String NAME = "cuba_RuntimeParamsLocator";
+    public static final String NAME = "cuba_AppPropertiesLocator";
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -61,7 +64,7 @@ public class AppPropertiesLocator {
     protected MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(this.resourcePatternResolver);
 
     @Inject
-    protected MetadataBuildSupport metadataBuildSupport;
+    protected Metadata metadata;
 
     @Inject
     protected Configuration configuration;
@@ -84,7 +87,7 @@ public class AppPropertiesLocator {
                 if (interfacesCache == null) {
                     log.trace("Locating config interfaces");
                     Set<String> cache = new HashSet<>();
-                    for (String rootPackage : metadataBuildSupport.getRootPackages()) {
+                    for (String rootPackage : metadata.getRootPackages()) {
                         String packagePrefix = rootPackage.replace(".", "/") + "/**/*.class";
                         String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + packagePrefix;
                         Resource[] resources;
