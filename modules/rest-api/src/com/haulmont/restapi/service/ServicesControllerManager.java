@@ -23,6 +23,7 @@ import com.google.gson.JsonParser;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
+import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.restapi.common.RestParseUtils;
@@ -153,9 +154,15 @@ public class ServicesControllerManager {
 
         Class<?> methodReturnType = serviceMethod.getReturnType();
         if (Entity.class.isAssignableFrom(methodReturnType)) {
-            return new ServiceCallResult(entitySerializationAPI.toJson((Entity) methodResult), true);
+            String entityJson = entitySerializationAPI.toJson((Entity) methodResult,
+                    null,
+                    EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
+            return new ServiceCallResult(entityJson, true);
         } else if (Collection.class.isAssignableFrom(methodReturnType)) {
-            return new ServiceCallResult(entitySerializationAPI.toJson((Collection<? extends Entity>) methodResult), true);
+            String entitiesJson = entitySerializationAPI.toJson((Collection<? extends Entity>) methodResult,
+                    null,
+                    EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
+            return new ServiceCallResult(entitiesJson, true);
         } else {
             Datatype<?> datatype = Datatypes.get(methodReturnType);
             if (datatype != null) {

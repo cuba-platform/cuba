@@ -28,6 +28,7 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
@@ -224,7 +225,9 @@ public class EntitySerialization implements EntitySerializationAPI {
         }
 
         protected void writeIdField(Entity entity, JsonObject jsonObject) {
-            MetaProperty primaryKeyProperty = metadataTools.getPrimaryKeyProperty(entity.getMetaClass());
+            MetaProperty primaryKeyProperty = entity instanceof AbstractNotPersistentEntity ?
+                    entity.getMetaClass().getProperty("id") :
+                    metadataTools.getPrimaryKeyProperty(entity.getMetaClass());
             if (primaryKeyProperty == null)
                 throw new EntitySerializationException("Primary key property not found for entity " + entity.getMetaClass());
             Datatype idDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
@@ -235,6 +238,7 @@ public class EntitySerialization implements EntitySerializationAPI {
         protected boolean propertyWritingAllowed(MetaProperty metaProperty, Entity entity) {
             return !"id".equals(metaProperty.getName()) &&
                     (DynamicAttributesUtils.isDynamicAttribute(metaProperty) ||
+                            (entity instanceof AbstractNotPersistentEntity)||
                             (metadataTools.isPersistent(metaProperty) && PersistenceHelper.isLoaded(entity, metaProperty.getName())));
         }
 
