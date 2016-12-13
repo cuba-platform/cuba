@@ -52,7 +52,7 @@
             <xs:simpleType>
                 <xs:restriction base="xs:string">
                     <xs:enumeration value="boolean"/>
-                    <xs:enumeration value="byte array"/>
+                    <xs:enumeration value="byteArray"/>
                     <xs:enumeration value="date"/>
                     <xs:enumeration value="dateTime"/>
                     <xs:enumeration value="decimal"/>

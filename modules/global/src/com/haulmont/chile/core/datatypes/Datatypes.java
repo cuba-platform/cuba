@@ -17,6 +17,7 @@
 
 package com.haulmont.chile.core.datatypes;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -67,7 +68,7 @@ public final class Datatypes {
             Document document = reader.read(resource);
             Element element = document.getRootElement();
 
-            List<Element> datatypeElements = element.elements("datatype");
+            List<Element> datatypeElements = Dom4j.elements(element, "datatype");
             for (Element datatypeElement : datatypeElements) {
                 String datatypeClassName = datatypeElement.attributeValue("class");
                 try {

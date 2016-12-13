@@ -26,12 +26,17 @@ import java.text.ParseException;
 import java.util.Locale;
 
 /**
- * Represents a data type of entity property.
+ * Represents a data type of an entity property.
  *
+ * <p>In order to be supported by Studio, an implementation class must have {@code public static final String NAME = "..."}
+ * field defining the datatype name. This name should also be returned by {@link #getName()} method.
  */
 public interface Datatype<T> {
 
-    /** Unique Datatype name */
+    /**
+     * Unique Datatype name.
+     * <p>Define a {@code public static final String NAME = "..."} field and return its value in this method.
+     */
     String getName();
 
     /** Java class representing this Datatype */
@@ -53,13 +58,19 @@ public interface Datatype<T> {
     @Nullable
     T parse(@Nullable String value, Locale locale) throws ParseException;
 
-    /** Reads value from JDBC ResultSet */
+    @Deprecated
     @Nullable
-    T read(ResultSet resultSet, int index) throws SQLException;
+    default T read(ResultSet resultSet, int index) throws SQLException {
+        throw new UnsupportedOperationException("Method is deprecated");
+    }
 
-    /** Write value to the JDBC Statement*/
-    void write(PreparedStatement statement, int index, @Nullable Object value) throws SQLException;
+    @Deprecated
+    default void write(PreparedStatement statement, int index, @Nullable Object value) throws SQLException {
+        throw new UnsupportedOperationException("Method is deprecated");
+    }
 
-    /** Corresponding SQL type */
-    int getSqlType();
+    @Deprecated
+    default int getSqlType() {
+        throw new UnsupportedOperationException("Method is deprecated");
+    }
 }
