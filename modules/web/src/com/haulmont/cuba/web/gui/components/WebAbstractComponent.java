@@ -23,6 +23,8 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.web.AppUI;
 import com.vaadin.server.Sizeable;
+import com.vaadin.server.UserError;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -381,5 +383,24 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
     @Override
     public <X> X unwrapComposition(Class<X> internalCompositionClass) {
         return internalCompositionClass.cast(getComposition());
+    }
+
+    protected boolean hasValidationError() {
+        if (getComposition() instanceof AbstractComponent) {
+            AbstractComponent composition = (AbstractComponent) getComposition();
+            return composition.getComponentError() instanceof UserError;
+        }
+        return false;
+    }
+
+    protected void setValidationError(String errorMessage) {
+        if (getComposition() instanceof AbstractComponent) {
+            AbstractComponent composition = (AbstractComponent) getComposition();
+            if (errorMessage == null) {
+                composition.setComponentError(null);
+            } else {
+                composition.setComponentError(new UserError(errorMessage));
+            }
+        }
     }
 }

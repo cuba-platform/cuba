@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CompositeValidationException extends ValidationException {
     private List<ViolationCause> causes;
@@ -33,5 +34,12 @@ public class CompositeValidationException extends ValidationException {
 
     public interface ViolationCause extends Serializable {
         String getMessage();
+    }
+
+    @Override
+    public String getDetailsMessage() {
+        return causes.stream()
+                .map(ViolationCause::getMessage)
+                .collect(Collectors.joining("\n"));
     }
 }

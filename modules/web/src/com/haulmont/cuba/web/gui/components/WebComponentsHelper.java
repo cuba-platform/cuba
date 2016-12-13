@@ -536,7 +536,7 @@ public class WebComponentsHelper {
     public static void focusProblemComponent(ValidationErrors errors) {
         com.haulmont.cuba.gui.components.Component component = null;
         if (!errors.getAll().isEmpty()) {
-            component = errors.getAll().iterator().next().component;
+            component = errors.getAll().get(0).component;
         }
 
         if (component != null) {

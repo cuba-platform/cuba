@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.components;
 
 /**
  * Exception to be thrown by field validators.
- *
  */
 public class ValidationException extends Exception {
 
@@ -35,5 +34,13 @@ public class ValidationException extends Exception {
 
     public ValidationException(Throwable cause) {
         super(cause);
+    }
+
+    public String getDetailsMessage() {
+        return getLocalizedMessage();
+    }
+
+    public interface HasRelatedComponent {
+        Component getComponent();
     }
 }

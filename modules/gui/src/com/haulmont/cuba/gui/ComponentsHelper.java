@@ -476,8 +476,8 @@ public abstract class ComponentsHelper {
      */
     public static void fillErrorMessages(Component.Validatable component, ValidationException e,
                                          ValidationErrors errors) {
-        if (e instanceof RequiredValueMissingException) {
-            errors.add(((RequiredValueMissingException) e).getComponent(), e.getMessage());
+        if (e instanceof ValidationException.HasRelatedComponent) {
+            errors.add(((ValidationException.HasRelatedComponent) e).getComponent(), e.getMessage());
         } else if (e instanceof CompositeValidationException) {
             for (CompositeValidationException.ViolationCause cause : ((CompositeValidationException) e).getCauses()) {
                 errors.add((Component) component, cause.getMessage());

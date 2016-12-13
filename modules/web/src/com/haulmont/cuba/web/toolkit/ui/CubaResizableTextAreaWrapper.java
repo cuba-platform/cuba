@@ -44,7 +44,6 @@ public class CubaResizableTextAreaWrapper extends CustomField {
         this.textArea = txtArea;
 
         setWidthUndefined();
-        setPrimaryStyleName(getState().primaryStyleName);
 
         setValidationVisible(false);
         setShowBufferedSourceException(false);

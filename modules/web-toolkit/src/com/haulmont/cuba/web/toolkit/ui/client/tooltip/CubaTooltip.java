@@ -38,19 +38,18 @@ import com.vaadin.client.ui.orderedlayout.Slot;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget.TOOLTIP_CLASSNAME;
+
 public class CubaTooltip extends VTooltip {
 
     public static final String REQUIRED_INDICATOR = "v-required-field-indicator";
+    public static final String ERROR_INDICATOR = "v-errorindicator";
 
-    // If required indicators are not visible we show toolip on mouse hover otherwise only by mouse click
+    // If required indicators are not visible we show tooltip on mouse hover otherwise only by mouse click
     protected static Boolean requiredIndicatorVisible = null;
-
-    protected List<String> excludeStyles = new ArrayList<String>();
 
     public CubaTooltip() {
         tooltipEventHandler = new CubaTooltipEventHandler();
-
-        excludeStyles.add(CubaResizableTextAreaWrapperWidget.RESIZE_ELEMENT);
     }
 
     protected void showTooltip(boolean forceShow) {
@@ -61,25 +60,21 @@ public class CubaTooltip extends VTooltip {
             timeout = justClosed ? getQuickOpenDelay() : getOpenDelay();
         }
         if (timeout == 0) {
-            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                @Override
-                public void execute() {
-                    showTooltip();
-                }
-            });
+            Scheduler.get().scheduleDeferred(this::showTooltip);
         } else {
             showTimer.schedule(timeout);
             opening = true;
         }
     }
 
-    public static void checkRequiredInicatorMode() {
+    public static void checkRequiredIndicatorMode() {
         requiredIndicatorVisible = null;
     }
 
     @Override
     public void connectHandlersToWidget(Widget widget) {
         Profiler.enter("VTooltip.connectHandlersToWidget");
+        widget.addDomHandler(tooltipEventHandler, MouseOutEvent.getType());
         widget.addDomHandler(tooltipEventHandler, MouseDownEvent.getType());
         widget.addDomHandler(tooltipEventHandler, KeyDownEvent.getType());
 
@@ -93,11 +88,12 @@ public class CubaTooltip extends VTooltip {
 
     public class CubaTooltipEventHandler extends TooltipEventHandler {
 
-        private ComponentConnector currentConnector = null;
+        protected ComponentConnector currentConnector = null;
 
-        private boolean isTooltipElement(Element element) {
-            return (element.getClassName().equals(REQUIRED_INDICATOR)
-                    || element.getClassName().equals(CubaCaptionWidget.TOOLTIP_CLASSNAME));
+        protected boolean isTooltipElement(Element element) {
+            return (REQUIRED_INDICATOR.equals(element.getClassName())
+                    || TOOLTIP_CLASSNAME.equals(element.getClassName())
+                    || ERROR_INDICATOR.equals(element.getClassName()));
         }
 
         protected void checkRequiredIndicatorVisible() {
@@ -118,12 +114,16 @@ public class CubaTooltip extends VTooltip {
             }
         }
 
+        protected boolean isClassNameExcluded(String className) {
+            return CubaResizableTextAreaWrapperWidget.RESIZE_ELEMENT.equals(className);
+        }
+
         @Override
         protected TooltipInfo getTooltipFor(Element element) {
             checkRequiredIndicatorVisible();
 
             if (!requiredIndicatorVisible) {
-                if (excludeStyles.contains(element.getClassName())) {
+                if (isClassNameExcluded(element.getClassName())) {
                     return null;
                 } else {
                     return super.getTooltipFor(element);
@@ -133,9 +133,9 @@ public class CubaTooltip extends VTooltip {
             if (isTooltipElement(element)) {
                 element = element.getParentElement().cast();
 
-                int index = DOM.getChildIndex(element.getParentElement().<Element>cast(), element);
+                int index = DOM.getChildIndex(element.getParentElement().cast(), element);
                 int indexOfComponent = index == 0 ? index + 1 : index - 1;
-                element = DOM.getChild(element.getParentElement().<Element>cast(), indexOfComponent);
+                element = DOM.getChild(element.getParentElement().cast(), indexOfComponent);
             }
 
             ApplicationConnection ac = getApplicationConnection();
@@ -176,7 +176,8 @@ public class CubaTooltip extends VTooltip {
             checkRequiredIndicatorVisible();
 
             if (requiredIndicatorVisible) {
-                if (isTooltipElement(event.getNativeEvent().getEventTarget().<Element>cast())) {
+                Element element = event.getNativeEvent().getEventTarget().cast();
+                if (isTooltipElement(element)) {
                     closeNow();
                     handleShowHide(event, false);
                 } else {
@@ -249,8 +250,9 @@ public class CubaTooltip extends VTooltip {
 
         protected boolean elementIsIndicator(Element relativeElement) {
             return relativeElement != null
-                    && ("v-required-field-indicator".equals(relativeElement.getClassName())
-                    || "c-tooltip-button".equals(relativeElement.getClassName()));
+                    && (REQUIRED_INDICATOR.equals(relativeElement.getClassName())
+                        || TOOLTIP_CLASSNAME.equals(relativeElement.getClassName())
+                        || ERROR_INDICATOR.equals(relativeElement.getClassName()));
         }
 
         protected boolean hasIndicators(ComponentConnector connector) {
@@ -294,7 +296,8 @@ public class CubaTooltip extends VTooltip {
                     if (caption instanceof CubaCaptionWidget) {
                         CubaCaptionWidget cubaCaptionWidget = (CubaCaptionWidget) caption;
                         if (cubaCaptionWidget.getRequiredIndicatorElement() != null
-                                || cubaCaptionWidget.getTooltipElement() != null) {
+                                || cubaCaptionWidget.getTooltipElement() != null
+                                || cubaCaptionWidget.getErrorIndicatorElement() != null) {
                             return true;
                         }
                     }

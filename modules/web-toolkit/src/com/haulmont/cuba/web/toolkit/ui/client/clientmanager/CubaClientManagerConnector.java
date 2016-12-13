@@ -53,6 +53,6 @@ public class CubaClientManagerConnector extends AbstractExtensionConnector {
     protected void extend(ServerConnector target) {
         // check mode of required indicator icon/hidden
         // performed on page open or full refresh
-        CubaTooltip.checkRequiredInicatorMode();
+        CubaTooltip.checkRequiredIndicatorMode();
     }
 }

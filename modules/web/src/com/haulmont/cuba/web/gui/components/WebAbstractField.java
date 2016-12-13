@@ -30,6 +30,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.components.ValidationFailedException;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.components.validators.BeanValidator;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -250,6 +251,10 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> ex
             prevValue = value;
 
             if (!Objects.equals(oldValue, value)) {
+                if (hasValidationError()) {
+                    setValidationError(null);
+                }
+
                 ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
                 getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
             }
@@ -294,6 +299,10 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> ex
 
     @Override
     public void validate() throws ValidationException {
+        if (hasValidationError()) {
+            setValidationError(null);
+        }
+
         if (!isVisible() || !isEditable() || !isEnabled()) {
             return;
         }
@@ -308,8 +317,14 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> ex
         }
 
         if (validators != null) {
-            for (Field.Validator validator : validators) {
-                validator.validate(value);
+            try {
+                for (Field.Validator validator : validators) {
+                    validator.validate(value);
+                }
+            } catch (ValidationException e) {
+                setValidationError(e.getDetailsMessage());
+
+                throw new ValidationFailedException(e.getDetailsMessage(), this, e);
             }
         }
     }

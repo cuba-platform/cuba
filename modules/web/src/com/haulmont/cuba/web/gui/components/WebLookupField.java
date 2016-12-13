@@ -191,6 +191,10 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
             final Object oldValue = prevValue;
             prevValue = value;
 
+            if (hasValidationError()) {
+                setValidationError(null);
+            }
+
             if (optionsDatasource != null) {
                 //noinspection unchecked
                 optionsDatasource.setItem((Entity) value);

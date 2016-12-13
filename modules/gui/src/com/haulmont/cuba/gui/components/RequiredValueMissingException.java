@@ -17,7 +17,8 @@
 
 package com.haulmont.cuba.gui.components;
 
-public class RequiredValueMissingException extends ValidationException {
+public class RequiredValueMissingException extends ValidationException
+        implements ValidationException.HasRelatedComponent {
 
     private Component component;
 
@@ -33,6 +34,7 @@ public class RequiredValueMissingException extends ValidationException {
         this.component = component;
     }
 
+    @Override
     public Component getComponent() {
         return component;
     }

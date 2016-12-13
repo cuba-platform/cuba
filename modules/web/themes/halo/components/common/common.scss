@@ -20,6 +20,10 @@
     white-space: nowrap;
   }
 
+  .v-errorindicator {
+    display: none;
+  }
+
   @if $v-show-required-indicators == false {
     .v-required-field-indicator,
     .c-tooltip-button {

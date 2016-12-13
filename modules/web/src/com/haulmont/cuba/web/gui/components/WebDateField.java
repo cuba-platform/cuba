@@ -25,7 +25,9 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.TestIdManager;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
@@ -43,7 +45,6 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
 import java.sql.Time;
 import java.util.*;
-import java.util.Calendar;
 
 public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> implements DateField {
 
@@ -506,6 +507,10 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         if (!Objects.equals(oldValue, value)) {
             prevValue = value;
 
+            if (hasValidationError()) {
+                setValidationError(null);
+            }
+
             ValueChangeEvent event = new ValueChangeEvent(this, oldValue, value);
             getEventRouter().fireEvent(ValueChangeListener.class, ValueChangeListener::valueChanged, event);
         }
@@ -569,22 +574,5 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         dateField.setReadOnly(!editable);
 
         component.setCompositionReadOnly(!editable);
-    }
-
-    @Override
-    public void validate() throws ValidationException {
-        if (!isVisible() || !isEditable() || !isEnabled()) {
-            return;
-        }
-
-        if (isRequired() && dateField.getValue() == null) {
-            throw new RequiredValueMissingException(component.getRequiredError(), this);
-        }
-
-        if (validators != null) {
-            for (Field.Validator validator : validators) {
-                validator.validate(getValue());
-            }
-        }
     }
 }

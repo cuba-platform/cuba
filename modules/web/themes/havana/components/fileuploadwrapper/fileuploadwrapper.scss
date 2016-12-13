@@ -16,16 +16,16 @@
  */
 
 @mixin havana-cuba-fileupload-wrapper($primary-stylename: c-fileupload-wrapper) {
-  .fileupload-wrapper-container {
+  .c-fileupload-container {
     height: 25px;
     min-height: 25px;
   }
 
-  .fileupload-wrapper-container > .v-expand > .v-spacing {
+  .c-fileupload-container > .v-expand > .v-spacing {
     width: 5px;
   }
 
-  .v-button-c-fileupload-empty {
+  .c-fileupload-filename.c-fileupload-empty {
     cursor: default;
 
     & .v-button-wrap .v-button-caption {
@@ -34,15 +34,15 @@
     }
   }
 
-  .v-button-c-fileupload-empty.error {
-    cursor: default;
+  .c-fileupload-wrapper-error {
+    .c-fileupload-filename {
+      & > .v-button-wrap .v-button-caption {
+        color: #ed473b !important;
+      }
 
-    & > .v-button-wrap > .v-button-caption {
-      color: #ed473b;
-    }
-
-    &:focus {
-      border: 1px dashed #ed473b;
+      &:focus {
+        border: 1px dashed #ed473b !important;
+      }
     }
   }
 }

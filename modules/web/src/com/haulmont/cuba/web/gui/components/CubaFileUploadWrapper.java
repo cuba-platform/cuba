@@ -20,18 +20,17 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.web.toolkit.ui.UploadComponent;
+import com.vaadin.server.AbstractErrorMessage;
+import com.vaadin.server.CompositeErrorMessage;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 
 import static com.vaadin.ui.themes.BaseTheme.BUTTON_LINK;
 
 public class CubaFileUploadWrapper extends CustomField {
-
     protected static final String FILE_UPLOAD_WRAPPER = "c-fileupload-wrapper";
     protected static final String EMPTY_VALUE_STYLE = "c-fileupload-empty";
-    protected static final String ERROR_STYLE = "error";
-
-    protected Messages messages = AppBeans.get(Messages.NAME);
 
     protected HorizontalLayout container;
     protected Button fileNameButton;
@@ -53,18 +52,21 @@ public class CubaFileUploadWrapper extends CustomField {
 
         container = new HorizontalLayout();
         container.setSpacing(true);
-        container.addStyleName("fileupload-wrapper-container");
+        container.addStyleName("c-fileupload-container");
 
         fileNameButton = new Button();
         fileNameButton.setWidth("100%");
         fileNameButton.addStyleName(BUTTON_LINK);
+        fileNameButton.addStyleName("c-fileupload-filename");
         setFileNameButtonCaption(null);
         container.addComponent(fileNameButton);
         container.setComponentAlignment(fileNameButton, Alignment.MIDDLE_LEFT);
 
         container.addComponent(uploadComponent);
 
+        Messages messages = AppBeans.get(Messages.NAME);
         clearButton = new Button(messages.getMainMessage("FileUploadField.clearButtonCaption"));
+        clearButton.setStyleName("c-fileupload-clear");
         container.addComponent(clearButton);
         setShowClearButton(showClearButton);
 
@@ -170,7 +172,6 @@ public class CubaFileUploadWrapper extends CustomField {
     public void setRequired(boolean required) {
         super.setRequired(required);
 
-        setFileNameButtonCaption(fileName);
         updateButtonsVisibility();
         updateComponentWidth();
     }
@@ -193,10 +194,6 @@ public class CubaFileUploadWrapper extends CustomField {
         }
     }
 
-    /*
-    * File name button
-    * */
-
     public boolean isShowFileName() {
         return showFileName;
     }
@@ -209,24 +206,15 @@ public class CubaFileUploadWrapper extends CustomField {
     }
 
     public void setFileNameButtonCaption(String title) {
-        fileName = title;
+        this.fileName = title;
 
         if (StringUtils.isNotEmpty(title)) {
             fileNameButton.setCaption(title);
             fileNameButton.removeStyleName(EMPTY_VALUE_STYLE);
-
-            if (isRequired()) {
-                fileNameButton.removeStyleName(ERROR_STYLE);
-            }
         } else {
+            Messages messages = AppBeans.get(Messages.NAME);
             fileNameButton.setCaption(messages.getMainMessage("FileUploadField.fileNotSelected"));
             fileNameButton.addStyleName(EMPTY_VALUE_STYLE);
-
-            if (isRequired()) {
-                fileNameButton.addStyleName(ERROR_STYLE);
-            } else {
-                fileNameButton.removeStyleName(ERROR_STYLE);
-            }
         }
     }
 
@@ -237,10 +225,6 @@ public class CubaFileUploadWrapper extends CustomField {
     public void removeFileNameClickListener(Button.ClickListener clickListener) {
         fileNameButton.removeClickListener(clickListener);
     }
-
-    /*
-    * Upload button
-    * */
 
     public void setUploadButtonDescription(String description) {
         uploadButton.setDescription(description);
@@ -265,10 +249,6 @@ public class CubaFileUploadWrapper extends CustomField {
     public String getUploadButtonIcon() {
         return uploadButton.getIcon().toString();
     }
-
-    /*
-    * Clear button
-    * */
 
     public boolean isShowClearButton() {
         return showClearButton;
@@ -311,5 +291,18 @@ public class CubaFileUploadWrapper extends CustomField {
 
     public String getClearButtonDescription() {
         return clearButton.getDescription();
+    }
+
+    @Override
+    public ErrorMessage getErrorMessage() {
+        ErrorMessage superError = super.getErrorMessage();
+        if (!isReadOnly() && isRequired() && isEmpty()) {
+            ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
+                    new com.vaadin.data.Validator.EmptyValueException(getRequiredError()));
+            if (error != null) {
+                return new CompositeErrorMessage(superError, error);
+            }
+        }
+        return superError;
     }
 }

@@ -16,16 +16,16 @@
  */
 
 @mixin halo-cuba-fileupload-wrapper($primary-stylename: c-fileupload-wrapper) {
-  .fileupload-wrapper-container {
+  .c-fileupload-container {
     height: $v-unit-size;
     min-height: $v-unit-size;
   }
 
-  .fileupload-wrapper-container > .v-expand > .v-spacing {
+  .c-fileupload-container > .v-expand > .v-spacing {
     width: $v-layout-spacing-horizontal/2;
   }
 
-  .c-fileupload-empty {
+  .c-fileupload-filename.c-fileupload-empty {
     color: $v-font-color;
     text-decoration: none;
     cursor: default;
@@ -54,12 +54,14 @@
         box-shadow: none;
       }
     }
+  }
 
-    &.error {
-      color: $v-error-indicator-color;
+  .c-fileupload-wrapper-error {
+    .c-fileupload-filename {
+      color: $v-error-indicator-color !important;
 
        &:focus:after {
-         border: 1px dashed $v-error-indicator-color;
+         border: 1px dashed $v-error-indicator-color !important;
        }
     }
   }

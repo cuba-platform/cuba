@@ -12,17 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-@mixin halo-textarea($primary-stylename: v-textarea) {
-  .#{$primary-stylename} {
-    -ms-overflow-y: auto;
-  }
+package com.haulmont.cuba.gui.components;
 
-  .c-resizabletextarea-wrapper-error {
-    .#{$primary-stylename} {
-      @include valo-textfield-error-style;
+public class ValidationFailedException extends ValidationException
+        implements ValidationException.HasRelatedComponent {
+    private Component component;
+
+    public ValidationFailedException(String message, Component component, Exception cause) {
+        super(message, cause);
+
+        this.component = component;
     }
-  }
+
+    @Override
+    public Component getComponent() {
+        return component;
+    }
 }

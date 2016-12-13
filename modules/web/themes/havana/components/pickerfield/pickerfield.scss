@@ -16,6 +16,7 @@
  */
 
 @mixin havana-cuba-pickerfield($primary-stylename: c-pickerfield) {
+  & .v-caption-on-right > .#{$primary-stylename},
   .#{$primary-stylename} {
     display: inline-table;
   }
