@@ -51,6 +51,7 @@
 @import "components/fileupload/fileupload";
 @import "components/pickerfield/pickerfield";
 @import "components/listeditor/listeditor";
+@import "components/dateintervaleditor/dateintervaleditor";
 @import "components/contextmenu/contextmenu";
 @import "components/maskedfield/maskedfield";
 @import "components/multiupload/multiupload";
@@ -135,6 +136,7 @@
   @include halo-cuba-maskedfield;
   @include halo-cuba-pickerfield;
   @include halo-cuba-listeditor;
+  @include halo-cuba-dateintervaleditor;
   @include halo-cuba-contextmenu;
   @include halo-cuba-widgetstree;
   @include halo-cuba-searchselect;

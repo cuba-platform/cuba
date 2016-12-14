@@ -36,6 +36,7 @@ import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.condition.FilterConditionUtils;
+import com.haulmont.cuba.gui.components.filter.dateinterval.DateInIntervalComponent;
 import com.haulmont.cuba.gui.components.listeditor.ListEditorHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -88,6 +89,7 @@ public class Param {
     protected MetaProperty property;
     protected boolean inExpr;
     protected boolean required;
+    protected boolean isDateInterval;
     protected List<String> runtimeEnum;
     protected UUID categoryAttrId;
     protected Component editComponent;
@@ -109,6 +111,7 @@ public class Param {
         private boolean inExpr;
         private boolean required;
         private UUID categoryAttrId;
+        private boolean isDateInterval;
 
         private Builder() {
         }
@@ -165,6 +168,10 @@ public class Param {
         public Param build() {
             return AppBeans.getPrototype(Param.NAME, this);
         }
+
+        public void setIsDateInterval(boolean isDateInterval) {
+            this.isDateInterval = isDateInterval;
+        }
     }
 
     public Param(Builder builder) {
@@ -177,6 +184,7 @@ public class Param {
         inExpr = builder.inExpr;
         required = builder.required;
         categoryAttrId = builder.categoryAttrId;
+        isDateInterval = builder.isDateInterval;
 
         if (DynamicAttributesUtils.isDynamicAttribute(builder.property)) {
             CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(builder.property);
@@ -208,6 +216,14 @@ public class Param {
             type = Type.UNARY;
             this.javaClass = Boolean.class;
         }
+    }
+
+    public boolean isDateInterval() {
+        return isDateInterval;
+    }
+
+    public void setDateInterval(boolean dateInterval) {
+        isDateInterval = dateInterval;
     }
 
     public boolean isInExpr() {
@@ -379,6 +395,7 @@ public class Param {
             case RUNTIME_ENUM:
             case DATATYPE:
             case UNARY:
+                if (isDateInterval) return (String) v;
                 //noinspection unchecked
                 Datatype<Object> datatype = Datatypes.getNN(javaClass);
                 return datatype.format(v);
@@ -427,7 +444,15 @@ public class Param {
 
         switch (type) {
             case DATATYPE:
-                component = createDatatypeField(Datatypes.getNN(javaClass), valueProperty);
+                if (isDateInterval) {
+                    DateInIntervalComponent dateInIntervalComponent = AppBeans.get(DateInIntervalComponent.class);
+                    dateInIntervalComponent.addValueChangeListener(newValue -> {
+                        _setValue(newValue == null ? null : newValue.getDescription(), valueProperty);
+                    });
+                    component = dateInIntervalComponent.createComponent((String) _getValue(valueProperty));
+                } else {
+                    component = createDatatypeField(Datatypes.getNN(javaClass), valueProperty);
+                }
                 break;
             case ENTITY:
                 component = createEntityLookup(valueProperty);
@@ -854,6 +879,9 @@ public class Param {
         paramElem.addAttribute("javaClass", getJavaClass().getName());
         if (runtimeEnum != null) {
             paramElem.addAttribute("categoryAttrId", categoryAttrId.toString());
+        }
+        if (isDateInterval) {
+            paramElem.addAttribute("isDateInterval", "true");
         }
 
         paramElem.setText(formatValue(_getValue(valueProperty)));

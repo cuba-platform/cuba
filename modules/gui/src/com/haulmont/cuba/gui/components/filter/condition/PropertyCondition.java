@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.gui.components.filter.condition;
 
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -26,6 +25,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.Param;
+import com.haulmont.cuba.gui.components.filter.dateinterval.DateIntervalValue;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.operationedit.PropertyOperationEditor;
@@ -34,8 +34,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,23 +54,28 @@ public class PropertyCondition extends AbstractCondition {
         super(element, messagesPack, filterComponentName, datasource);
 
         String text = element.getText();
-        Matcher matcher = PATTERN_NULL.matcher(text);
-        if (!matcher.matches()) {
-            matcher = PATTERN_NOT_IN.matcher(text);
+        if (operator != Op.DATE_INTERVAL) {
+            Matcher matcher = PATTERN_NULL.matcher(text);
             if (!matcher.matches()) {
-                matcher = PATTERN.matcher(text);
+                matcher = PATTERN_NOT_IN.matcher(text);
+                if (!matcher.matches()) {
+                    matcher = PATTERN.matcher(text);
+                }
+                if (!matcher.matches()) {
+                    throw new IllegalStateException("Unable to build condition from: " + text);
+                }
             }
-            if (!matcher.matches()) {
-                throw new IllegalStateException("Unable to build condition from: " + text);
+
+            if (operator == null) {
+                operator = Op.fromJpqlString(matcher.group(2));
             }
-        }
 
-        if (operator == null) {
-            operator = Op.fromJpqlString(matcher.group(2));
+            String prop = matcher.group(1);
+            entityAlias = prop.substring(0, prop.indexOf('.'));
+        } else {
+            entityAlias = "{E}";
+            param.setDateInterval(true);
         }
-
-        String prop = matcher.group(1);
-        entityAlias = prop.substring(0, prop.indexOf('.'));
     }
 
     @SuppressWarnings("unchecked")
@@ -83,11 +86,6 @@ public class PropertyCondition extends AbstractCondition {
 
     @Override
     protected void updateText() {
-        StringBuilder sb = new StringBuilder();
-        if (operator == Op.NOT_IN) {
-            sb.append("((");
-        }
-        sb.append(entityAlias).append(".");
 
         Metadata metadata = AppBeans.get(Metadata.class);
         MetadataTools metadataTools = metadata.getTools();
@@ -109,7 +107,16 @@ public class PropertyCondition extends AbstractCondition {
             }
         }
 
-        sb.append(nameToUse);
+        if (operator == Op.DATE_INTERVAL) {
+            text = dateIntervalConditionToJpql(nameToUse);
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        if (operator == Op.NOT_IN) {
+            sb.append("((");
+        }
+        sb.append(entityAlias).append(".").append(nameToUse);
 
         if (Param.Type.ENTITY == param.getType() && !useCrossDataStoreRefId) {
             com.haulmont.chile.core.model.MetaClass metaClass = metadata.getClassNN(param.getJavaClass());
@@ -138,6 +145,12 @@ public class PropertyCondition extends AbstractCondition {
         }
 
         text = sb.toString();
+    }
+
+    protected String dateIntervalConditionToJpql(String propertyName) {
+        if (param.getValue() == null) return null;
+        DateIntervalValue filterDateIntervalValue = AppBeans.getPrototype(DateIntervalValue.NAME, (String) param.getValue());
+        return filterDateIntervalValue.toJPQL(propertyName);
     }
 
     public String getOperatorType() {
@@ -171,6 +184,10 @@ public class PropertyCondition extends AbstractCondition {
                 unary = false;
                 inExpr = operator.equals(Op.IN) || operator.equals(Op.NOT_IN);
                 Param param = paramBuilder.createParam(this);
+                if (operator == Op.DATE_INTERVAL) {
+                    //each parameter value change must modify the condition text
+                    param.addValueChangeListener((prevValue, value) -> updateText());
+                }
                 setParam(param);
             }
         }

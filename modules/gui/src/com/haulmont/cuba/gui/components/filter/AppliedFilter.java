@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.FilterConditionUtils;
 import com.haulmont.cuba.gui.components.filter.condition.GroupCondition;
+import com.haulmont.cuba.gui.components.filter.dateinterval.DateIntervalValue;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -118,6 +119,11 @@ public class AppliedFilter {
         Object value = param.getValue();
         if (value == null)
             return "";
+
+        if (param.isDateInterval()) {
+            DateIntervalValue dateIntervalValue = AppBeans.getPrototype(DateIntervalValue.NAME, (String) value);
+            return dateIntervalValue.getLocalizedValue();
+        }
 
         if (value instanceof Instance)
             return ((Instance) value).getInstanceName();

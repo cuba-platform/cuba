@@ -161,6 +161,11 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity {
             javaClass = scripting.loadClass(aclass);
         }
 
+        String operatorName = element.attributeValue("operatorType", null);
+        if (operatorName != null) {
+            operator = Op.valueOf(operatorName);
+        }
+
         List<Element> paramElements = Dom4j.elements(element, "param");
         if (!paramElements.isEmpty()) {
             Element paramElem = paramElements.iterator().next();
@@ -178,21 +183,19 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity {
             if (Strings.isNullOrEmpty(paramName)) {
                 paramName = paramBuilder.createParamName(this);
             }
+
             param = paramBuilder.createParam(this);
+            param.setDateInterval(BooleanUtils.toBoolean(paramElem.attributeValue("isDateInterval", "false"), "true", "false"));
             param.parseValue(paramElem.getText());
             param.setDefaultValue(param.getValue());
         }
 
-        String operatorName = element.attributeValue("operatorType", null);
-        if (operatorName != null) {
+        if ("EMPTY".equals(operatorName)) {
             //for backward compatibility with old filters that still use EMPTY operator
-            if ("EMPTY".equals(operatorName)) {
-                operatorName = "NOT_EMPTY";
-                if (BooleanUtils.isTrue((Boolean) param.getValue()))
-                    param.setValue(false);
-                param.setDefaultValue(false);
-            }
-
+            operatorName = "NOT_EMPTY";
+            if (BooleanUtils.isTrue((Boolean) param.getValue()))
+                param.setValue(false);
+            param.setDefaultValue(false);
             operator = Op.valueOf(operatorName);
         }
     }

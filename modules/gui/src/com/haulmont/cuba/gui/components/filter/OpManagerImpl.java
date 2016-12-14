@@ -35,8 +35,10 @@ public class OpManagerImpl implements OpManager {
         if (String.class.equals(javaClass))
             return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY, STARTS_WITH, ENDS_WITH);
 
-        else if (Date.class.isAssignableFrom(javaClass)
-                || Number.class.isAssignableFrom(javaClass))
+        else if (Date.class.isAssignableFrom(javaClass))
+            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY, DATE_INTERVAL);
+
+        else if (Number.class.isAssignableFrom(javaClass))
             return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY);
 
         else if (Boolean.class.equals(javaClass))

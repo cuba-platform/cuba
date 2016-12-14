@@ -20,6 +20,7 @@ package com.haulmont.cuba.gui.components.filter;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
@@ -97,6 +98,12 @@ public class ConditionParamBuilderImpl implements ConditionParamBuilder{
             if (!condition.getUnary())
                 builder.setJavaClass(condition.getJavaClass())
                         .setProperty(metaProperty);
+
+            if (condition.getOperator() == Op.DATE_INTERVAL) {
+                builder.setIsDateInterval(true);
+                builder.setJavaClass(String.class);
+            }
+
             return builder;
         }
     }

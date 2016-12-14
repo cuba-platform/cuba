@@ -33,6 +33,7 @@ public enum Op {
     DOES_NOT_CONTAIN("not like", "contains", false),
     NOT_EMPTY("is not null", "!= null", true),
     STARTS_WITH("like", "startsWith", false),
+    DATE_INTERVAL("", "", false),
     ENDS_WITH("like", "endsWith", false);
 
     private String forJpql;
