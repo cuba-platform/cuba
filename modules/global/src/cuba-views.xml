@@ -209,6 +209,10 @@
         <property name="contentFile" view="_local"/>
     </view>
 
+    <view class="com.haulmont.cuba.core.entity.SendingAttachment" name="sendingAttachment.browse" extends="_local">
+        <property name="updateTs"/>
+    </view>
+
     <view class="com.haulmont.cuba.core.entity.SendingMessage" name="sendingMessage.loadContentText">
         <property name="contentTextFile" view="_local"/>
         <property name="contentText"/>

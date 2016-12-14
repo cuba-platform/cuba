@@ -24,7 +24,7 @@
         <collectionDatasource
                 id="attachmentsDs"
                 class="com.haulmont.cuba.core.entity.SendingAttachment"
-                view="_local">
+                view="sendingAttachment.browse">
             <query>
                 <![CDATA[select sa from sys$SendingAttachment sa where sa.message.id = :param$message]]>
             </query>
