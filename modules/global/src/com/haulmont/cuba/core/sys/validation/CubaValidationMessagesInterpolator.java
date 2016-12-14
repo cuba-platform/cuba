@@ -16,10 +16,10 @@
 
 package com.haulmont.cuba.core.sys.validation;
 
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import org.hibernate.validator.internal.engine.messageinterpolation.InterpolationTerm;
 import org.hibernate.validator.internal.engine.messageinterpolation.InterpolationTermType;
-import org.hibernate.validator.internal.engine.messageinterpolation.parser.MessageDescriptorFormatException;
 import org.hibernate.validator.internal.engine.messageinterpolation.parser.Token;
 import org.hibernate.validator.internal.engine.messageinterpolation.parser.TokenCollector;
 import org.hibernate.validator.internal.engine.messageinterpolation.parser.TokenIterator;
@@ -31,11 +31,11 @@ import javax.validation.MessageInterpolator;
 import javax.validation.ValidationException;
 import java.util.List;
 import java.util.Locale;
-import java.util.MissingResourceException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CubaValidationMessagesInterpolator implements MessageInterpolator {
+    protected static final String DEFAULT_CONSTRAINTS_MESSAGE_PACK = "com.haulmont.cuba.core.global.validation";
 
     private final Logger log = LoggerFactory.getLogger(CubaValidationMessagesInterpolator.class);
 
@@ -43,10 +43,10 @@ public class CubaValidationMessagesInterpolator implements MessageInterpolator {
     protected ExpressionFactory expressionFactory;
     protected Locale locale;
 
-    private static final Pattern LEFT_BRACE = Pattern.compile("\\{", Pattern.LITERAL);
-    private static final Pattern RIGHT_BRACE = Pattern.compile("\\}", Pattern.LITERAL);
-    private static final Pattern SLASH = Pattern.compile("\\\\", Pattern.LITERAL);
-    private static final Pattern DOLLAR = Pattern.compile("\\$", Pattern.LITERAL);
+    protected static final Pattern LEFT_BRACE = Pattern.compile("\\{", Pattern.LITERAL);
+    protected static final Pattern RIGHT_BRACE = Pattern.compile("\\}", Pattern.LITERAL);
+    protected static final Pattern SLASH = Pattern.compile("\\\\", Pattern.LITERAL);
+    protected static final Pattern DOLLAR = Pattern.compile("\\$", Pattern.LITERAL);
 
     public CubaValidationMessagesInterpolator(Messages messages, Locale locale) {
         this.messages = messages;
@@ -72,7 +72,7 @@ public class CubaValidationMessagesInterpolator implements MessageInterpolator {
     }
 
     protected String interpolateMessage(String messageTemplate, Context context, Locale locale) {
-        String resolvedMessage = interpolateMessage(messageTemplate, locale, true);
+        String resolvedMessage = interpolateMessage(messageTemplate, locale);
 
         TokenCollector tokenCollector = new TokenCollector(resolvedMessage, InterpolationTermType.PARAMETER);
         List<Token> tokens = tokenCollector.getTokenList();
@@ -89,12 +89,12 @@ public class CubaValidationMessagesInterpolator implements MessageInterpolator {
         return resolvedMessage;
     }
 
-    protected String interpolateExpression(TokenIterator tokenIterator, Context context, Locale locale)
-            throws MessageDescriptorFormatException {
+    protected String interpolateExpression(TokenIterator tokenIterator, Context context, Locale locale) {
         while (tokenIterator.hasMoreInterpolationTerms()) {
             String term = tokenIterator.nextInterpolationTerm();
 
-            String resolvedExpression = interpolate(context, locale, term);
+            InterpolationTerm expression = new InterpolationTerm(term, locale, expressionFactory);
+            String resolvedExpression = expression.interpolate(context);
             tokenIterator.replaceCurrentInterpolationTerm(resolvedExpression);
         }
         return tokenIterator.getInterpolatedMessage();
@@ -108,35 +108,34 @@ public class CubaValidationMessagesInterpolator implements MessageInterpolator {
         return resolvedMessage;
     }
 
-    protected String interpolate(Context context, Locale locale, String term) {
-        InterpolationTerm expression = new InterpolationTerm(term, locale, expressionFactory);
-        return expression.interpolate(context);
-    }
-
-    protected String interpolateMessage(String message, Locale locale, boolean recursive)
-            throws MessageDescriptorFormatException {
+    protected String interpolateMessage(String message, Locale locale) {
         TokenCollector tokenCollector = new TokenCollector(message, InterpolationTermType.PARAMETER);
         TokenIterator tokenIterator = new TokenIterator(tokenCollector.getTokenList());
         while (tokenIterator.hasMoreInterpolationTerms()) {
             String term = tokenIterator.nextInterpolationTerm();
-            String resolvedParameterValue = resolveParameter(term, locale, recursive);
+            String resolvedParameterValue = resolveParameter(term, locale);
             tokenIterator.replaceCurrentInterpolationTerm(resolvedParameterValue);
         }
         return tokenIterator.getInterpolatedMessage();
     }
 
-    protected String resolveParameter(String parameterName, Locale locale, boolean recursive)
-            throws MessageDescriptorFormatException {
+    protected String resolveParameter(String parameterName, Locale locale) {
         String parameterValue;
+        String messageCode = removeCurlyBraces(parameterName);
         try {
-            String messageCode = removeCurlyBraces(parameterName);
-            parameterValue = messages.getTools().loadString(messageCode, locale);
-
-            if (recursive) {
-                //noinspection ConstantConditions
-                parameterValue = interpolateMessage(parameterValue, locale, recursive);
+            if (messageCode.startsWith("javax.validation.constraints")
+                    || messageCode.startsWith("org.hibernate.validator.constraints")) {
+                parameterValue = messages.getMessage(DEFAULT_CONSTRAINTS_MESSAGE_PACK, messageCode, locale);
+                // try to find tokens recursive
+                parameterValue = interpolateMessage(parameterValue, locale);
+            } else if (messageCode.startsWith(MessageTools.MARK) || messageCode.startsWith(MessageTools.MAIN_MARK)) {
+                parameterValue = messages.getTools().loadString(messageCode, locale);
+                // try to find tokens recursive
+                parameterValue = interpolateMessage(parameterValue, locale);
+            } else {
+                parameterValue = parameterName;
             }
-        } catch (MissingResourceException | UnsupportedOperationException e) {
+        } catch (UnsupportedOperationException e) {
             // return parameter itself
             parameterValue = parameterName;
         }
