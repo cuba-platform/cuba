@@ -41,7 +41,7 @@ public class RestControllerExceptionHandler {
     private final Logger log = LoggerFactory.getLogger(RestControllerExceptionHandler.class);
 
     protected static final Class[] serializableInvalidValueTypes = new Class[]{
-            String.class, Date.class, Number.class, Enum.class
+            String.class, Date.class, Number.class, Enum.class, UUID.class
     };
 
     @ExceptionHandler(RestAPIException.class)
