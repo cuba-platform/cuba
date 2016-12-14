@@ -30,6 +30,7 @@ import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
@@ -39,6 +40,8 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import javax.validation.groups.Default;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -470,7 +473,8 @@ public class CubaAnnotationsLoader {
                 field.getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class);
 
         boolean superMandatory = (metaPropertyAnnotation != null && metaPropertyAnnotation.mandatory())
-                || field.getAnnotation(NotNull.class) != null;
+                || (field.getAnnotation(NotNull.class) != null
+                    && isDefinedForDefaultValidationGroup(field.getAnnotation(NotNull.class)));  // @NotNull without groups
 
         return (columnAnnotation != null && !columnAnnotation.nullable())
                 || (oneToOneAnnotation != null && !oneToOneAnnotation.optional())
@@ -598,45 +602,55 @@ public class CubaAnnotationsLoader {
 
     protected void loadBeanValidationAnnotations(MetaProperty metaProperty, AnnotatedElement annotatedElement) {
         Size size = annotatedElement.getAnnotation(Size.class);
-        if (size != null) {
+        if (size != null && isDefinedForDefaultValidationGroup(size)) {
             metaProperty.getAnnotations().put(Size.class.getName() + VALIDATION_MIN, size.min());
             metaProperty.getAnnotations().put(Size.class.getName() + VALIDATION_MAX, size.max());
         }
 
         Length length = annotatedElement.getAnnotation(Length.class);
-        if (length != null) {
+        if (length != null && isDefinedForDefaultValidationGroup(length)) {
             metaProperty.getAnnotations().put(Length.class.getName() + VALIDATION_MIN, length.min());
             metaProperty.getAnnotations().put(Length.class.getName() + VALIDATION_MAX, length.max());
         }
 
         Min min = annotatedElement.getAnnotation(Min.class);
-        if (min != null) {
+        if (min != null && isDefinedForDefaultValidationGroup(min)) {
             metaProperty.getAnnotations().put(Min.class.getName(), min.value());
         }
 
         Max max = annotatedElement.getAnnotation(Max.class);
-        if (max != null) {
+        if (max != null && isDefinedForDefaultValidationGroup(max)) {
             metaProperty.getAnnotations().put(Max.class.getName(), max.value());
         }
 
         DecimalMin decimalMin = annotatedElement.getAnnotation(DecimalMin.class);
-        if (decimalMin != null) {
+        if (decimalMin != null && isDefinedForDefaultValidationGroup(decimalMin)) {
             metaProperty.getAnnotations().put(DecimalMin.class.getName(), decimalMin.value());
         }
 
         DecimalMax decimalMax = annotatedElement.getAnnotation(DecimalMax.class);
-        if (decimalMax != null) {
+        if (decimalMax != null && isDefinedForDefaultValidationGroup(decimalMax)) {
             metaProperty.getAnnotations().put(DecimalMax.class.getName(), decimalMax.value());
         }
 
         Past past = annotatedElement.getAnnotation(Past.class);
-        if (past != null) {
+        if (past != null && isDefinedForDefaultValidationGroup(past)) {
             metaProperty.getAnnotations().put(Past.class.getName(), true);
         }
 
         Future future = annotatedElement.getAnnotation(Future.class);
-        if (future != null) {
+        if (future != null && isDefinedForDefaultValidationGroup(future)) {
             metaProperty.getAnnotations().put(Future.class.getName(), true);
+        }
+    }
+
+    protected boolean isDefinedForDefaultValidationGroup(Annotation annotation) {
+        try {
+            Method groupsMethod = annotation.getClass().getMethod("groups");
+            Class<?>[] groups = (Class<?>[]) groupsMethod.invoke(annotation);
+            return groups.length == 0 || ArrayUtils.contains(groups, Default.class);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException("Unable to use annotation metadata " + annotation);
         }
     }
 
