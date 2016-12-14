@@ -31,6 +31,10 @@
     font-size: 0;
   }
 
+  .#{$primary-stylename}-spinner {
+    @include valo-spinner;
+  }
+
   .#{$primary-stylename}.#{$primary-stylename}-h1 {
     font-size: $v-font-size--h1;
     line-height: 1.5;

@@ -38,6 +38,17 @@
     }
   }
 
+  .#{$primary-stylename}-composition {
+    &.borderless {
+      .v-datefield,
+      .c-maskedfield,
+      [class*="textfield"],
+      [class*="button"] {
+        @include valo-textfield-borderless-style;
+      }
+    }
+  }
+
   .#{$primary-stylename} {
     $border-width: first-number($v-textfield-border) or 0;
     $padding-width: ceil($v-unit-size/6) + ceil($v-textfield-border-radius/3);

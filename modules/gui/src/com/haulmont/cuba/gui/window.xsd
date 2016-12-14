@@ -340,6 +340,231 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <!-- Stylenames -->
+
+    <xs:complexType name="labelStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="h1"/>
+                    <xs:enumeration value="h2"/>
+                    <xs:enumeration value="h3"/>
+                    <xs:enumeration value="h4"/>
+                    <xs:enumeration value="no-margin"/>
+                    <xs:enumeration value="light"/>
+                    <xs:enumeration value="bold"/>
+                    <xs:enumeration value="colored"/>
+                    <xs:enumeration value="success"/>
+                    <xs:enumeration value="failure"/>
+                    <xs:enumeration value="spinner"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
+    <xs:complexType name="textFieldStyleName">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="borderless"/>
+                    <xs:enumeration value="align-right"/>
+                    <xs:enumeration value="align-center"/>
+                    <xs:enumeration value="inline-icon"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
+    <xs:complexType name="progressBarStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="point"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
+    <xs:complexType name="buttonStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="primary"/>
+                    <xs:enumeration value="friendly"/>
+                    <xs:enumeration value="danger"/>
+                    <xs:enumeration value="quiet"/>
+                    <xs:enumeration value="icon-align-right"/>
+                    <xs:enumeration value="icon-align-top"/>
+                    <xs:enumeration value="icon-only"/>
+                    <xs:enumeration value="borderless"/>
+                    <xs:enumeration value="borderless-colored"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
+    <xs:complexType name="layoutStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="card"/>
+                    <xs:enumeration value="well"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
+    <xs:complexType name="csslayoutStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="card"/>
+                    <xs:enumeration value="well"/>
+                    <xs:enumeration value="v-component-group"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
+    <xs:complexType name="splitStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="large"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
+    <xs:complexType name="tabsheetStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="framed"/>
+                    <xs:enumeration value="padded-tabbar"/>
+                    <xs:enumeration value="centered-tabs"/>
+                    <xs:enumeration value="equal-width-tabs"/>
+                    <xs:enumeration value="compact-tabbar"/>
+                    <xs:enumeration value="icons-on-top"/>
+                    <xs:enumeration value="only-selected-closable"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
+    <xs:complexType name="accordionStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="borderless"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
+    <xs:complexType name="groupBoxStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="borderless"/>
+                    <xs:enumeration value="well"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
+    <xs:complexType name="lookupFieldStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="borderless"/>
+                    <xs:enumeration value="align-right"/>
+                    <xs:enumeration value="align-center"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
+    <xs:complexType name="textAreaStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="borderless"/>
+                    <xs:enumeration value="align-right"/>
+                    <xs:enumeration value="align-center"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
+    <xs:complexType name="dateFieldStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="borderless"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
+    <xs:complexType name="tableStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="no-stripes"/>
+                    <xs:enumeration value="no-vertical-lines"/>
+                    <xs:enumeration value="no-horizontal-lines"/>
+                    <xs:enumeration value="no-header"/>
+                    <xs:enumeration value="borderless"/>
+                    <xs:enumeration value="compact"/>
+                    <xs:enumeration value="small"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
     <!-- Interfaces -->
 
     <xs:attributeGroup name="hasId">
@@ -644,8 +869,9 @@
         </xs:sequence>
 
         <xs:attributeGroup ref="hasDatasource"/>
-        <xs:attribute name="value" type="resourceString"/>
 
+        <xs:attribute name="stylename" type="labelStylename"/>
+        <xs:attribute name="value" type="resourceString"/>
         <xs:attribute name="htmlEnabled" type="xs:boolean"/>
     </xs:complexType>
 
@@ -756,6 +982,7 @@
 
                 <xs:attributeGroup ref="hasDatatype"/>
 
+                <xs:attribute name="stylename" type="textFieldStyleName"/>
                 <xs:attribute name="maxLength" type="xs:int"/>
                 <xs:attribute name="trim" type="xs:boolean"/>
                 <xs:attribute name="inputPrompt" type="resourceString"/>
@@ -770,12 +997,13 @@
             <xs:extension base="baseTextComponent">
                 <xs:attribute name="cols" type="xs:int"/>
                 <xs:attribute name="rows" type="xs:int"/>
-                
+
                 <xs:attribute name="caseConversion" type="caseConversion"/>
 
                 <xs:attributeGroup ref="hasDatatype"/>
                 <xs:attributeGroup ref="hasSettings"/>
 
+                <xs:attribute name="stylename" type="textAreaStylename"/>
                 <xs:attribute name="maxLength" type="xs:int"/>
                 <xs:attribute name="resizable" type="xs:boolean"/>
                 <xs:attribute name="trim" type="xs:boolean"/>
@@ -833,6 +1061,7 @@
                     <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
                 </xs:sequence>
 
+                <xs:attribute name="stylename" type="dateFieldStylename"/>
                 <xs:attribute name="rangeStart" type="xs:string"/>
                 <xs:attribute name="rangeEnd" type="xs:string"/>
 
@@ -883,7 +1112,7 @@
     <xs:complexType name="progressBarComponent">
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
-        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attribute name="stylename" type="progressBarStylename"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasAlign"/>
@@ -900,6 +1129,7 @@
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
 
+                <xs:attribute name="stylename" type="lookupFieldStylename"/>
                 <xs:attribute name="filterMode" type="filterMode"/>
                 <xs:attribute name="nullName" type="xs:string"/>
                 <xs:attribute name="pageLength" type="xs:int"/>
@@ -1095,6 +1325,7 @@
             <xs:extension base="baseComponent"/>
         </xs:complexContent>
 
+        <xs:attribute name="stylename" type="buttonStylename"/>
         <xs:attribute name="action" type="xs:string"/>
         <xs:attribute name="invoke" type="xs:string"/>
 
@@ -1218,6 +1449,7 @@
             <xs:element name="rows" minOccurs="1" type="tableRowsType"/>
         </xs:all>
 
+        <xs:attribute name="stylename" type="tableStylename"/>
         <xs:attributeGroup ref="isTableComponent"/>
     </xs:complexType>
 
@@ -1239,6 +1471,7 @@
 
         <xs:attributeGroup ref="isTableComponent"/>
 
+        <xs:attribute name="stylename" type="tableStylename"/>
         <xs:attribute name="fixedGrouping" type="xs:boolean"/>
     </xs:complexType>
 
@@ -1476,6 +1709,7 @@
 
         <xs:group ref="layoutOrComponent"/>
 
+        <xs:attribute name="stylename" type="layoutStylename"/>
         <xs:attribute name="template" type="xs:string" use="required"/>
     </xs:complexType>
 
@@ -1490,6 +1724,7 @@
 
         <xs:attributeGroup ref="hasSpacingMargin"/>
 
+        <xs:attribute name="stylename" type="layoutStylename"/>
         <xs:attribute name="expand" type="xs:string"/>
     </xs:complexType>
 
@@ -1501,10 +1736,11 @@
 
         <xs:group ref="layoutOrComponent"/>
 
+        <xs:attribute name="stylename" type="layoutStylename"/>
         <xs:attributeGroup ref="hasSpacingMargin"/>
     </xs:complexType>
 
-    <!-- CssLayout -->
+    <!-- CssLa`yout -->
     <xs:complexType name="cssLayout">
         <xs:complexContent>
             <xs:extension base="baseComponent"/>
@@ -1512,6 +1748,7 @@
 
         <xs:group ref="layoutOrComponent"/>
 
+        <xs:attribute name="stylename" type="csslayoutStylename"/>
         <xs:attributeGroup ref="hasResponsive"/>
     </xs:complexType>
 
@@ -1525,6 +1762,7 @@
 
         <xs:attributeGroup ref="hasSpacingMargin"/>
 
+        <xs:attribute name="stylename" type="layoutStylename"/>
         <xs:attribute name="orientation" type="orientation"/>
         <xs:attribute name="scrollBars" type="scrollBars"/>
     </xs:complexType>
@@ -1539,6 +1777,7 @@
             <xs:group ref="layoutOrComponent"/>
         </xs:sequence>
 
+        <xs:attribute name="stylename" type="splitStylename"/>
         <xs:attribute name="orientation" type="orientation"/>
         <xs:attribute name="pos" type="xs:string"/>
         <xs:attribute name="minSplitPosition" type="xs:string"/>
@@ -1552,6 +1791,8 @@
         <xs:complexContent>
             <xs:extension base="baseComponent"/>
         </xs:complexContent>
+
+        <xs:attribute name="stylename" type="tabsheetStylename"/>
 
         <xs:sequence minOccurs="0" maxOccurs="unbounded">
             <xs:element name="tab">
@@ -1580,6 +1821,8 @@
         <xs:complexContent>
             <xs:extension base="baseComponent"/>
         </xs:complexContent>
+
+        <xs:attribute name="stylename" type="accordionStylename"/>
 
         <xs:sequence minOccurs="0" maxOccurs="unbounded">
             <xs:element name="tab">
@@ -1654,6 +1897,7 @@
         <xs:attributeGroup ref="hasSettings"/>
         <xs:attributeGroup ref="hasExpand"/>
 
+        <xs:attribute name="stylename" type="groupBoxStylename"/>
         <xs:attribute name="collapsable" type="xs:boolean"/>
         <xs:attribute name="collapsed" type="xs:boolean"/>
         <xs:attribute name="orientation" type="orientation"/>
@@ -2105,7 +2349,7 @@
                         <xs:attribute name="value" use="required"/>
                     </xs:complexType>
                 </xs:element>
-                
+
                 <xs:element name="dialogMode" minOccurs="0" maxOccurs="1">
                     <xs:complexType>
                         <xs:attribute name="width" type="dialogSize"/>
@@ -2118,7 +2362,7 @@
                         <xs:attribute name="forceDialog" type="xs:boolean"/>
                     </xs:complexType>
                 </xs:element>
-                
+
                 <xs:element name="layout" minOccurs="1" maxOccurs="1">
                     <xs:complexType>
                         <xs:group ref="layoutOrComponent"/>

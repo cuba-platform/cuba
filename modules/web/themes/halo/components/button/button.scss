@@ -58,4 +58,20 @@
     outline: none;
     border-color: $v-link-font-color;
   }
+
+  .#{$primary-stylename}-borderless,
+  .#{$primary-stylename}-borderless-colored {
+    &:focus {
+      &:after {
+        border: 1px solid $v-focus-color;
+      }
+    }
+
+    &:after {
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+  }
 }

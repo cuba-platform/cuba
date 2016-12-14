@@ -25,6 +25,24 @@
     .v-textarea {
       min-height: $v-unit-size;
     }
+
+    &.borderless {
+      .v-textarea {
+        @include valo-textfield-borderless-style;
+      }
+    }
+
+    &.align-right {
+      .v-textarea {
+        text-align: right;
+      }
+    }
+
+    &.align-center {
+      .v-textarea {
+        text-align: center;
+      }
+    }
   }
 
   .#{$primary-stylename}-resize-corner {
