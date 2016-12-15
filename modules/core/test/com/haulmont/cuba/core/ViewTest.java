@@ -16,6 +16,8 @@
  */
 package com.haulmont.cuba.core;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
@@ -23,12 +25,14 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.testmodel.selfinherited.ChildEntity;
 import com.haulmont.cuba.testmodel.selfinherited.RootEntity;
+import com.haulmont.cuba.testmodel.selfinherited.RootEntityDetail;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -49,12 +53,19 @@ public class ViewTest {
     private UUID userId;
     private RootEntity rootEntity;
     private ChildEntity childEntity;
+    private Persistence persistence;
+    private Metadata metadata;
 
     @Before
     public void setUp() throws Exception {
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        context.getLogger("com.haulmont.cuba.core.sys.FetchGroupManager").setLevel(Level.TRACE);
+
+        persistence = cont.persistence();
+        metadata = cont.metadata();
         timeSource = AppBeans.get(TimeSource.NAME);
 
-        Transaction tx = cont.persistence().createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = cont.persistence().getEntityManager();
 
@@ -68,15 +79,25 @@ public class ViewTest {
             user.setGroup(group);
             em.persist(user);
 
-            childEntity = new ChildEntity();
+            childEntity = metadata.create(ChildEntity.class);
             childEntity.setName("childEntityName");
             childEntity.setDescription("childEntityDescription");
             em.persist(childEntity);
 
-            rootEntity = new RootEntity();
+            rootEntity = metadata.create(RootEntity.class);
             rootEntity.setDescription("rootEntityDescription");
             rootEntity.setEntity(childEntity);
             em.persist(rootEntity);
+
+            RootEntityDetail detail1 = metadata.create(RootEntityDetail.class);
+            detail1.setInfo("detail1");
+            detail1.setMaster(childEntity);
+            em.persist(detail1);
+
+            RootEntityDetail detail2 = metadata.create(RootEntityDetail.class);
+            detail2.setInfo("detail2");
+            detail2.setMaster(childEntity);
+            em.persist(detail2);
 
             tx.commit();
         } finally {
@@ -86,7 +107,11 @@ public class ViewTest {
 
     @After
     public void tearDown() throws Exception {
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        context.getLogger("com.haulmont.cuba.core.sys.FetchGroupManager").setLevel(Level.DEBUG);
+
         cont.deleteRecord("SEC_USER", userId);
+        cont.deleteRecord("TEST_ROOT_ENTITY_DETAIL");
         cont.deleteRecord("TEST_CHILD_ENTITY");
         cont.deleteRecord("TEST_ROOT_ENTITY");
     }
@@ -458,5 +483,28 @@ public class ViewTest {
         assertEquals("rootEntityDescription", e.getDescription());
         assertEquals("childEntityDescription", e.getEntity().getDescription());
         assertEquals("childEntityName", e.getEntity().getName());
+    }
+
+    @Test
+    public void testNestedCollectionInJoinedInheritance() throws Exception {
+        View childEntityView = new View(ChildEntity.class, false)
+                .addProperty("description")
+                .addProperty("name")
+                .addProperty("details", new View(RootEntityDetail.class, false)
+                        .addProperty("info"));
+        childEntityView.setLoadPartialEntities(true);
+
+        ChildEntity loaded;
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            TypedQuery<ChildEntity> query = em.createQuery("select e from test$ChildEntity e where e.id = ?1", ChildEntity.class);
+            query.setParameter(1, childEntity.getId());
+            query.setView(childEntityView);
+            loaded = query.getSingleResult();
+            tx.commit();
+        }
+        assertEquals(childEntity, loaded);
+        assertNotNull(loaded.getDetails());
+        assertEquals(2, loaded.getDetails().size());
     }
 }
