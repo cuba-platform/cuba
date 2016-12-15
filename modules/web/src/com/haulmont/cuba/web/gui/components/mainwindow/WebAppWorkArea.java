@@ -30,6 +30,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaSingleModeContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.event.Action;
+import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -199,7 +200,7 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
     protected CubaTabSheet createTabbedModeContainer() {
         CubaTabSheet tabSheet = new CubaTabSheet();
         tabSheet.setDragMode(LayoutDragMode.CLONE);
-        tabSheet.setDropHandler(new DefaultTabSheetDropHandler());
+        tabSheet.setDropHandler(new TabSheetReorderingDropHandler());
         tabSheet.setHeight("100%");
         tabSheet.setStyleName(TABBED_CONTAINER_STYLENAME);
         tabSheet.addStyleName(ValoTheme.TABSHEET_FRAMED);
@@ -267,5 +268,18 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
     @Override
     public State getState() {
         return state;
+    }
+
+    // Allows Tabs reordering, do not support component drop to Tabs panel
+    public static class TabSheetReorderingDropHandler extends DefaultTabSheetDropHandler {
+        @Override
+        protected void handleDropFromAbsoluteParentLayout(DragAndDropEvent event) {
+            // do nothing
+        }
+
+        @Override
+        protected void handleDropFromLayout(DragAndDropEvent event) {
+            // do nothing
+        }
     }
 }
