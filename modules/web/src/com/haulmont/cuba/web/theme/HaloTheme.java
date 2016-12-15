@@ -198,30 +198,15 @@ public class HaloTheme {
     public static final String TABLE_NO_STRIPES = "no-stripes";
 
     /**
-     * See {@link #TABLE_NO_STRIPES}
-     */
-    public static final String TREETABLE_NO_STRIPES = TABLE_NO_STRIPES;
-
-    /**
      * Remove the vertical divider lines between the table columns. Can be combined with any other
      * Table/TreeTable style.
      */
     public static final String TABLE_NO_VERTICAL_LINES = "no-vertical-lines";
 
     /**
-     * See {@link #TABLE_NO_VERTICAL_LINES}
-     */
-    public static final String TREETABLE_NO_VERTICAL_LINES = TABLE_NO_VERTICAL_LINES;
-
-    /**
      * Remove the horizontal divider lines between the table rows. Can be combined with any other Table/TreeTable style.
      */
     public static final String TABLE_NO_HORIZONTAL_LINES = "no-horizontal-lines";
-
-    /**
-     * See {@link #TABLE_NO_HORIZONTAL_LINES}
-     */
-    public static final String TREETABLE_NO_HORIZONTAL_LINES = TABLE_NO_HORIZONTAL_LINES;
 
     /**
      * Hide the table column headers (effectively the same as {@link Table.ColumnHeaderMode#HIDDEN}). Can be combined
@@ -230,19 +215,9 @@ public class HaloTheme {
     public static final String TABLE_NO_HEADER = "no-header";
 
     /**
-     * See {@link #TABLE_NO_HEADER}
-     */
-    public static final String TREETABLE_NO_HEADER = TABLE_NO_HEADER;
-
-    /**
      * Remove the outer border of the table. Can be combined with any other Table/TreeTable style.
      */
     public static final String TABLE_BORDERLESS = "borderless";
-
-    /**
-     * See {@link #TABLE_BORDERLESS}
-     */
-    public static final String TREETABLE_BORDERLESS = TABLE_BORDERLESS;
 
     /**
      * Reduce the white space inside the table cells. Can be combined with any other Table/TreeTable style.
@@ -250,20 +225,10 @@ public class HaloTheme {
     public static final String TABLE_COMPACT = "compact";
 
     /**
-     * See {@link #TABLE_COMPACT}
-     */
-    public static final String TREETABLE_COMPACT = TABLE_COMPACT;
-
-    /**
      * Small font size and reduced the white space inside the table cells. Can be combined with any other
      * Table/TreeTable style.
      */
     public static final String TABLE_SMALL = "small";
-
-    /**
-     * See {@link #TABLE_SMALL}
-     */
-    public static final String TREETABLE_SMALL = TABLE_SMALL;
 
     /**
      * Make the progress bar indicator appear as a dot which progresses over the progress bar track (instead of
