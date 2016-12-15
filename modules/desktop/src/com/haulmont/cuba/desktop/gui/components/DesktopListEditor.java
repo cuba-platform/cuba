@@ -207,12 +207,12 @@ public class DesktopListEditor extends DesktopAbstractField<JPanel> implements L
     }
 
     @Override
-    public boolean isEditable() {
-        return false;
+    public void setEditable(boolean editable) {
+        delegate.setEditable(editable);
     }
 
     @Override
-    public void setEditable(boolean editable) {
-
+    public boolean isEditable() {
+        return delegate.isEditable();
     }
 }

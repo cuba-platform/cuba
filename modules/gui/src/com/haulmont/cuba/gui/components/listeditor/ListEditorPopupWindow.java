@@ -89,6 +89,9 @@ public class ListEditorPopupWindow extends AbstractWindow {
     @WindowParam
     protected Class<? extends Enum> enumClass;
 
+    @WindowParam
+    protected Boolean editable;
+
     @Inject
     protected Metadata metadata;
 
@@ -100,6 +103,12 @@ public class ListEditorPopupWindow extends AbstractWindow {
 
     protected Map<Object, String> valuesMap;
 
+
+    protected Button addBtn;
+
+    @Inject
+    private Action commit;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -109,9 +118,18 @@ public class ListEditorPopupWindow extends AbstractWindow {
                 .setHeight(theme.getInt("cuba.gui.listEditor.popup.dialog.height"))
                 .setResizable(true);
 
+        if (editable == null) editable = true;
+
         initAddComponentLayout();
         initValues();
+
+        if (BooleanUtils.isFalse(editable)) {
+            commit.setEnabled(false);
+            addBtn.setEnabled(false);
+        }
     }
+
+
 
     public List<Object> getValue() {
         return new ArrayList<>(valuesMap.keySet());
@@ -180,7 +198,7 @@ public class ListEditorPopupWindow extends AbstractWindow {
             addItemLayout.expand(componentForAdding);
 
             if (itemType != ListEditor.ItemType.ENTITY) {
-                Button addBtn = componentsFactory.createComponent(Button.class);
+                addBtn = componentsFactory.createComponent(Button.class);
                 addBtn.setAction(new AbstractAction("add") {
                     @Override
                     public void actionPerform(Component component) {
@@ -207,13 +225,15 @@ public class ListEditorPopupWindow extends AbstractWindow {
         TextField textField = componentsFactory.createComponent(TextField.class);
         textField.setDatatype(datatype);
 
-        FilterHelper.ShortcutListener shortcutListener = new FilterHelper.ShortcutListener("add", new KeyCombination(KeyCombination.Key.ENTER)) {
-            @Override
-            public void handleShortcutPressed() {
-                _addValue(textField);
-            }
-        };
-        AppBeans.get(FilterHelper.class).addShortcutListener(textField, shortcutListener);
+        if (!BooleanUtils.isFalse(editable)) {
+            FilterHelper.ShortcutListener shortcutListener = new FilterHelper.ShortcutListener("add", new KeyCombination(KeyCombination.Key.ENTER)) {
+                @Override
+                public void handleShortcutPressed() {
+                    _addValue(textField);
+                }
+            };
+            AppBeans.get(FilterHelper.class).addShortcutListener(textField, shortcutListener);
+        }
         return textField;
     }
 
@@ -313,6 +333,10 @@ public class ListEditorPopupWindow extends AbstractWindow {
             }
         });
         itemLayout.add(delItemBtn);
+
+        if (BooleanUtils.isFalse(editable)) {
+            delItemBtn.setEnabled(false);
+        }
 
         valuesLayout.add(itemLayout);
         valuesMap.put(value, str);

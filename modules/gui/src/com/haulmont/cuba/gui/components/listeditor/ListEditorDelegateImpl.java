@@ -69,6 +69,8 @@ public class ListEditorDelegateImpl implements ListEditorDelegate{
 
     protected boolean displayDescription = true;
 
+    protected boolean editable = true;
+
     @PostConstruct
     public void init() {
         WindowManager windowManager = windowManagerProvider.get();
@@ -99,6 +101,7 @@ public class ListEditorDelegateImpl implements ListEditorDelegate{
                 params.put("entityJoinClause", entityJoinClause);
                 params.put("entityWhereClause", entityWhereClause);
                 params.put("values", getValue());
+                params.put("editable", editable);
                 ListEditorPopupWindow listEditorPopup = (ListEditorPopupWindow) windowManager
                         .openWindow(windowConfig.getWindowInfo("list-editor-popup"), WindowManager.OpenType.DIALOG, params);
                 listEditorPopup.addCloseListener(actionId -> {
@@ -242,6 +245,19 @@ public class ListEditorDelegateImpl implements ListEditorDelegate{
     @Override
     public void setEntityWhereClause(String entityWhereClause) {
         this.entityWhereClause = entityWhereClause;
+    }
+
+    @Override
+    public boolean isEditable() {
+        return editable;
+    }
+
+    @Override
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+        if (clearBtn != null) {
+            clearBtn.setEnabled(editable);
+        }
     }
 
     @Override

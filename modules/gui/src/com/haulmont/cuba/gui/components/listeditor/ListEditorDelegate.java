@@ -74,5 +74,9 @@ public interface ListEditorDelegate {
 
     void setEntityWhereClause(String entityWhereClause);
 
+    boolean isEditable();
+
+    void setEditable(boolean editable);
+
     void setClearButtonVisible(boolean visible);
 }

@@ -180,4 +180,14 @@ public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor
             return List.class;
         }
     }
+
+    @Override
+    public void setEditable(boolean editable) {
+        delegate.setEditable(editable);
+    }
+
+    @Override
+    public boolean isEditable() {
+        return delegate.isEditable();
+    }
 }

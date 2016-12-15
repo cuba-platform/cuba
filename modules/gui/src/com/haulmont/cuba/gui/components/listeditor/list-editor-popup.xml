@@ -25,8 +25,8 @@
         <hbox id="addItemLayout" spacing="true" width="100%"/>
         <scrollBox id="valuesLayout" scrollBars="both"/>
         <hbox id="buttonsPanel" spacing="true">
-            <button id="commit" action="commit"/>
-            <button id="cancel" action="cancel"/>
+            <button id="commitBtn" action="commit"/>
+            <button id="cancelBtn" action="cancel"/>
         </hbox>
     </layout>
 </window>
