@@ -2136,7 +2136,7 @@
             <xs:element name="properties" minOccurs="0" type="valueDatasourcePropertiesType"/>
         </xs:sequence>
 
-        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="idProperty" type="xs:string"/>
     </xs:complexType>
 
     <!-- PropertyDatasource -->

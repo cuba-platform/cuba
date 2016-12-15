@@ -542,11 +542,11 @@ public class DsContextLoader {
                     datasource.addProperty(name, datatype);
                 }
             }
-            String idName = propsEl.attributeValue("id");
-            if (idName != null) {
-                if (datasource.getMetaClass().getProperty(idName) == null)
-                    throw new DevelopmentException(String.format("Property '%s' is not defined", idName));
-                datasource.setIdName(idName);
+            String idProperty = propsEl.attributeValue("idProperty");
+            if (idProperty != null) {
+                if (datasource.getMetaClass().getProperty(idProperty) == null)
+                    throw new DevelopmentException(String.format("Property '%s' is not defined", idProperty));
+                datasource.setIdName(idProperty);
             }
         }
     }
