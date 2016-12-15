@@ -20,13 +20,6 @@
   $comboBoxBorderFocused: 1px solid $cuba-field-focused-border-color;
   $comboBoxBorderReadonly: 1px solid $cuba-field-readonly-border-color;
 
-  // todo artamonov remove after fix #PL-5226
-  .#{$primary-stylename}-suggestmenu {
-    .v-ie9 & {
-      overflow-y: visible !important;
-    }
-  }
-
   .#{$primary-stylename} {
     @include box-defaults;
 

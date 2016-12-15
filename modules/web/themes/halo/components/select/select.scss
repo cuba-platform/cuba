@@ -16,11 +16,10 @@
  */
 
 @mixin halo-filterselect($primary-stylename: v-filterselect) {
-  // todo artamonov remove after fix #PL-5226
-  .#{$primary-stylename}-suggestmenu {
-    .v-ie9 & {
-      overflow-y: visible !important;
-    }
+  // fix scrollbar in suggestion menu
+  .v-ie9 & .#{$primary-stylename}-suggestmenu {
+    padding-left: 4px;
+    padding-right: 4px;
   }
 
   .#{$primary-stylename}.v-readonly {

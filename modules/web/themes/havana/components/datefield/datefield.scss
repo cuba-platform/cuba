@@ -35,6 +35,10 @@
       .c-maskedfield {
         display: table-cell;
       }
+
+      .v-ie9 & .c-maskedfield {
+        float: right;
+      }
     }
   }
 
