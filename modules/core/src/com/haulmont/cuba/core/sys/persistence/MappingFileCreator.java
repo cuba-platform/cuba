@@ -70,9 +70,7 @@ class MappingFileCreator {
             Extends annotation = aClass.getAnnotation(Extends.class);
             if (annotation != null) {
                 Class originalClass = annotation.value();
-                if (!originalClass.isAnnotationPresent(DiscriminatorValue.class)) { // entities with discriminator don't need to be re-mapped
-                    extendedClasses.put(originalClass, aClass);
-                }
+                extendedClasses.put(originalClass, aClass);
             }
         }
 

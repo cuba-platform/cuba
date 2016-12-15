@@ -19,6 +19,7 @@ package com.haulmont.cuba.testmodel.selfinherited;
 import com.haulmont.cuba.core.entity.StandardEntity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @DiscriminatorColumn(name = "entity_type", discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -35,6 +36,9 @@ public class RootEntity extends StandardEntity {
     @JoinColumn(name = "ENTITY_ID")
     protected ChildEntity entity;
 
+    @OneToMany(mappedBy = "master")
+    protected List<RootEntityDetail> details;
+
     public String getDescription() {
         return description;
     }
@@ -49,5 +53,13 @@ public class RootEntity extends StandardEntity {
 
     public void setEntity(ChildEntity entity) {
         this.entity = entity;
+    }
+
+    public List<RootEntityDetail> getDetails() {
+        return details;
+    }
+
+    public void setDetails(List<RootEntityDetail> details) {
+        this.details = details;
     }
 }

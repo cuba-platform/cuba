@@ -262,11 +262,14 @@ public class FetchGroupManager {
                 .ifPresent(inverseProp -> {
                     if (useFetchGroup) {
                         for (FetchGroupField fetchGroupField : fetchGroupFields) {
+                            // compare with original class, because in case of entity extension properties are remapped to extended entities
+                            MetaClass inversePropRangeClass = metadata.getExtendedEntities()
+                                    .getOriginalOrThisMetaClass(inverseProp.getRange().asClass());
                             if (fetchGroupField.metaClass.equals(toManyField.metaClass)
                                     // add only local properties
                                     && !fetchGroupField.metaProperty.getRange().isClass()
                                     // do not add properties from subclasses
-                                    && fetchGroupField.metaProperty.getDomain().equals(inverseProp.getRange().asClass())) {
+                                    && fetchGroupField.metaProperty.getDomain().equals(inversePropRangeClass)) {
                                 String attribute = toManyField.path() + "." + inverseProp.getName() + "." + fetchGroupField.metaProperty.getName();
                                 result.add(attribute);
                             }
