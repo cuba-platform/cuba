@@ -548,7 +548,19 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                                     "Missing component for custom field {}", field.getId());
                         }
                     } else {
+                        //list editor for collection dynamic attribute
                         resultComponent.addCustomField(field, new DynamicAttributeCustomFieldGenerator());
+                        Datasource datasource = field.getDatasource();
+                        if (datasource != null) {
+                            MetaClass metaClass = datasource.getMetaClass();
+                            MetaPropertyPath propertyPath = field.getMetaPropertyPath();
+                            boolean editableFromPermissions = security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString());
+                            if (!editableFromPermissions) {
+                                resultComponent.setEditable(field, false);
+                                boolean visible = security.isEntityAttrReadPermitted(metaClass, propertyPath.toString());
+                                resultComponent.setVisible(field, visible);
+                            }
+                        }
                     }
                 }
             }
