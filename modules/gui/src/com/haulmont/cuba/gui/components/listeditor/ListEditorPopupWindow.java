@@ -191,6 +191,8 @@ public class ListEditorPopupWindow extends AbstractWindow {
             addItemLayout.add(componentForAdding);
             addItemLayout.expand(componentForAdding);
 
+            componentForAdding.setEditable(editable);
+
             if (itemType != ListEditor.ItemType.ENTITY) {
                 Button addBtn = componentsFactory.createComponent(Button.class);
                 addBtn.setAction(new AbstractAction("add") {
@@ -244,13 +246,13 @@ public class ListEditorPopupWindow extends AbstractWindow {
                 PickerField.LookupAction lookupAction = dynamicAttributesGuiTools.createLookupAction(pickerField, entityJoinClause, entityWhereClause);
                 pickerField.addAction(lookupAction);
             } else {
+                pickerField.addLookupAction();
                 if (!Strings.isNullOrEmpty(lookupScreen)) {
                     PickerField.LookupAction lookupAction = (PickerField.LookupAction) pickerField.getAction(PickerField.LookupAction.NAME);
                     if (lookupAction != null) {
                         lookupAction.setLookupScreen(lookupScreen);
                     }
                 }
-                pickerField.addLookupAction();
             }
             componentForEntity = pickerField;
         } else {
