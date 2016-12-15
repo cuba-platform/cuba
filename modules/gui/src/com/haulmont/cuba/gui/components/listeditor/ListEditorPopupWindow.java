@@ -103,9 +103,6 @@ public class ListEditorPopupWindow extends AbstractWindow {
 
     protected Map<Object, String> valuesMap;
 
-
-    protected Button addBtn;
-
     @Inject
     private Action commit;
 
@@ -123,10 +120,7 @@ public class ListEditorPopupWindow extends AbstractWindow {
         initAddComponentLayout();
         initValues();
 
-        if (BooleanUtils.isFalse(editable)) {
-            commit.setEnabled(false);
-            addBtn.setEnabled(false);
-        }
+        commit.setEnabled(editable);
     }
 
 
@@ -198,7 +192,7 @@ public class ListEditorPopupWindow extends AbstractWindow {
             addItemLayout.expand(componentForAdding);
 
             if (itemType != ListEditor.ItemType.ENTITY) {
-                addBtn = componentsFactory.createComponent(Button.class);
+                Button addBtn = componentsFactory.createComponent(Button.class);
                 addBtn.setAction(new AbstractAction("add") {
                     @Override
                     public void actionPerform(Component component) {
@@ -207,6 +201,7 @@ public class ListEditorPopupWindow extends AbstractWindow {
                 });
                 addBtn.setCaption(getMessage("actions.Add"));
                 addItemLayout.add(addBtn);
+                addBtn.setEnabled(editable);
             }
         }
     }
