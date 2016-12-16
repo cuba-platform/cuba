@@ -36,7 +36,6 @@ import java.util.List;
 @Listeners("cuba_UserEntityListener")
 @NamePattern("#getCaption|login,name")
 @TrackEditScreenHistory
-@EnableRestore
 public class User extends StandardEntity {
 
     private static final long serialVersionUID = 5007187642916030394L;

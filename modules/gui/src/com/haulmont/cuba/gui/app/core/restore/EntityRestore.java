@@ -272,9 +272,13 @@ public class EntityRestore extends AbstractWindow {
     protected Map<String, Object> getEntitiesLookupFieldOptions() {
         Map<String, Object> options = new TreeMap<>();
         for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
-            Boolean enableRestore = (Boolean) metaClass.getAnnotations().get(EnableRestore.class.getName());
-            if (BooleanUtils.isTrue(enableRestore)) {
-                options.put(messageTools.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
+            if (SoftDelete.class.isAssignableFrom(metaClass.getJavaClass())) {
+                Boolean enableRestore = (Boolean) metadataTools
+                        .getMetaAnnotationAttributes(metaClass.getAnnotations(), EnableRestore.class)
+                        .get("value");
+                if (enableRestore == null || enableRestore) {
+                    options.put(messageTools.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
+                }
             }
         }
         return options;

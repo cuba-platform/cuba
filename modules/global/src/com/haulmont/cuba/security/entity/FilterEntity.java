@@ -31,7 +31,6 @@ import javax.persistence.*;
 @Table(name = "SEC_FILTER")
 @NamePattern("%s|name")
 @SystemLevel
-@EnableRestore
 public class FilterEntity extends StandardEntity {
 
     @Column(name = "COMPONENT")

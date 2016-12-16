@@ -17,6 +17,7 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
+import com.haulmont.cuba.core.entity.annotation.EnableRestore;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
@@ -32,6 +33,7 @@ import javax.persistence.*;
 @Table(name = "SEC_SEARCH_FOLDER")
 @PrimaryKeyJoinColumn(name = "FOLDER_ID", referencedColumnName = "ID")
 @DiscriminatorValue("S")
+@EnableRestore
 public class SearchFolder extends AbstractSearchFolder {
 
     @ManyToOne(fetch = FetchType.LAZY)

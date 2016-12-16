@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.cuba.core.entity.annotation.EnableRestore;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
@@ -27,6 +28,7 @@ import javax.persistence.Entity;
 @DiscriminatorColumn(name = "FOLDER_TYPE", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("F")
 @SystemLevel
+@EnableRestore(false)
 public class Folder extends StandardEntity {
 
     private static final long serialVersionUID = -2038652558181851215L;

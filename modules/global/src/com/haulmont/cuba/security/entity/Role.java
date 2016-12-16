@@ -36,7 +36,6 @@ import java.util.Set;
 @Table(name = "SEC_ROLE")
 @NamePattern("%s [%s]|locName,name")
 @TrackEditScreenHistory
-@EnableRestore
 public class Role extends StandardEntity {
 
     private static final long serialVersionUID = -4889116218059626402L;
