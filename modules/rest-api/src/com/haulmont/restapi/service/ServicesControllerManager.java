@@ -165,13 +165,16 @@ public class ServicesControllerManager {
                     EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
             return new ServiceCallResult(entityJson, true);
         } else if (Collection.class.isAssignableFrom(methodReturnType)) {
-            //todo MG there may be a collection of POJOs here
-            Collection<? extends Entity> entities = (Collection<? extends Entity>) methodResult;
-            entities.forEach(entity -> restControllerUtils.applyAttributesSecurity(entity));
-            String entitiesJson = entitySerializationAPI.toJson(entities,
-                    null,
-                    EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
-            return new ServiceCallResult(entitiesJson, true);
+            if (isEntitiesCollection((Collection) methodResult)) {
+                Collection<? extends Entity> entities = (Collection<? extends Entity>) methodResult;
+                entities.forEach(entity -> restControllerUtils.applyAttributesSecurity(entity));
+                String entitiesJson = entitySerializationAPI.toJson(entities,
+                        null,
+                        EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
+                return new ServiceCallResult(entitiesJson, true);
+            } else {
+                return new ServiceCallResult(restParseUtils.serialize(methodResult), true);
+            }
         } else {
             Datatype<?> datatype = Datatypes.get(methodReturnType);
             if (datatype != null) {
@@ -180,6 +183,15 @@ public class ServicesControllerManager {
                 return new ServiceCallResult(restParseUtils.serializePOJO(methodResult, methodReturnType), true);
             }
         }
+    }
+
+    protected boolean isEntitiesCollection(Collection collection) {
+        for (Object item : collection) {
+            if (!(item instanceof Entity)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static class ServiceCallResult {

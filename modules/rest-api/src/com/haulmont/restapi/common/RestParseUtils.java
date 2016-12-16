@@ -83,4 +83,9 @@ public class RestParseUtils {
         Gson gson = new Gson();
         return gson.toJson(pojoInstance, clazz);
     }
+
+    public String serialize(Object instance) {
+        Gson gson = new Gson();
+        return gson.toJson(instance);
+    }
 }
