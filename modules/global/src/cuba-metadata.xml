@@ -33,12 +33,4 @@
         <class>com.haulmont.cuba.core.entity.ScreenProfilerEvent</class>
     </metadata-model>
 
-    <!-- Use this element to define or override entity annotations available through MetaClass.getAnnotations()
-    <annotations>
-        <entity class="com.haulmont.cuba.security.entity.Role">
-            <annotation name="com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory" value="true"/>
-            <annotation name="com.haulmont.cuba.core.entity.annotation.EnableRestore" value="true"/>
-        </entity>
-    </annotations>-->
-
 </metadata>
