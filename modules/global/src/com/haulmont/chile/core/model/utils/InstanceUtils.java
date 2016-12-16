@@ -32,6 +32,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -249,7 +250,10 @@ public final class InstanceUtils {
      */
     @Nullable
     public static NamePatternRec parseNamePattern(MetaClass metaClass) {
-        String pattern = (String) metaClass.getAnnotations().get(NamePattern.class.getName());
+        Map attributes = (Map) metaClass.getAnnotations().get(NamePattern.class.getName());
+        if (attributes == null)
+            return null;
+        String pattern = (String) attributes.get("value");
         if (StringUtils.isBlank(pattern))
             return null;
 

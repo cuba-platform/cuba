@@ -12,37 +12,39 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.haulmont.cuba.client.testsupport;
 
-import com.haulmont.cuba.core.global.ExtendedEntities;
-import com.haulmont.cuba.core.sys.MetadataImpl;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.Session;
+import com.haulmont.cuba.core.sys.MetaModelLoader;
 import com.haulmont.cuba.core.sys.MetadataLoader;
 
 import java.util.List;
 import java.util.Map;
 
-public class TestMetadataClient extends MetadataImpl {
+public class TestMetadataLoader extends MetadataLoader {
 
-    protected Map<String, List<String>> packages;
+    private Map<String, List<String>> packages;
 
-    public TestMetadataClient(Map<String, List<String>> packages, TestViewRepositoryClient viewRepository) {
+    public TestMetadataLoader(Map<String, List<String>> packages) {
         this.packages = packages;
-
-        this.viewRepository = viewRepository;
-        viewRepository.setMetadata(this);
-
-        extendedEntities = new ExtendedEntities(this);
-        tools = new TestMetadataTools(this);
     }
 
     @Override
-    protected void initMetadata() {
-        MetadataLoader metadataLoader = new TestMetadataLoader(packages);
-        metadataLoader.loadMetadata();
-        rootPackages = metadataLoader.getRootPackages();
-        this.session = metadataLoader.getSession();
+    protected MetaModelLoader createModelLoader(Session session) {
+        return new MetaModelLoader(session);
+    }
+
+    @Override
+    public void loadMetadata() {
+        for (Map.Entry<String, List<String>> entry : packages.entrySet()) {
+            modelLoader.loadModel(entry.getKey(), entry.getValue());
+        }
+        for (MetaClass metaClass : session.getClasses()) {
+            postProcessClass(metaClass);
+            initMetaAnnotations(metaClass);
+        }
     }
 }

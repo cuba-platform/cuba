@@ -31,8 +31,6 @@ public class Stores {
 
     public static final String MAIN = "_MAIN_";
 
-    public static final String PROP_NAME = "cuba.storeName";
-
     private static final Splitter SPLITTER = Splitter.on(",").omitEmptyStrings().trimResults();
 
     /**

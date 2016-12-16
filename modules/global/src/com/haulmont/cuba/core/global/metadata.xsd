@@ -88,7 +88,40 @@
     </xs:complexType>
 
     <xs:complexType name="annotationType">
+        <xs:sequence>
+            <xs:element type="annotationAttrType" name="attribute" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
         <xs:attribute type="xs:string" name="name" use="required"/>
-        <xs:attribute type="xs:string" name="value" use="required"/>
+        <xs:attribute type="xs:string" name="value"/>
     </xs:complexType>
+
+    <xs:complexType name="annotationAttrType">
+        <xs:attribute type="xs:string" name="name" use="required"/>
+        <xs:attribute type="xs:string" name="value"/>
+        <xs:attribute type="xs:string" name="class"/>
+        <xs:attribute type="datatypeEnum" name="datatype"/>
+    </xs:complexType>
+
+    <xs:simpleType name="datatypeEnum">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="boolean"/>
+                    <xs:enumeration value="byteArray"/>
+                    <xs:enumeration value="date"/>
+                    <xs:enumeration value="dateTime"/>
+                    <xs:enumeration value="decimal"/>
+                    <xs:enumeration value="double"/>
+                    <xs:enumeration value="int"/>
+                    <xs:enumeration value="long"/>
+                    <xs:enumeration value="string"/>
+                    <xs:enumeration value="time"/>
+                    <xs:enumeration value="uuid"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
 </xs:schema>

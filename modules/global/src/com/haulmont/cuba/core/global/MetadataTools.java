@@ -29,7 +29,6 @@ import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.stereotype.Component;
@@ -54,6 +53,24 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 public class MetadataTools {
 
     public static final String NAME = "cuba_MetadataTools";
+
+    public static final String PERSISTENT_ANN_NAME = "cuba.persistent";
+    public static final String PRIMARY_KEY_ANN_NAME = "cuba.primaryKey";
+    public static final String EMBEDDED_ANN_NAME = "cuba.embedded";
+    public static final String TEMPORAL_ANN_NAME = "cuba.temporal";
+    public static final String SYSTEM_ANN_NAME = "cuba.system";
+    public static final String STORE_ANN_NAME = "cuba.storeName";
+
+    public static final List<Class> SYSTEM_INTERFACES = Arrays.asList(
+            Instance.class,
+            Entity.class,
+            BaseGenericIdEntity.class,
+            Versioned.class,
+            Creatable.class,
+            Updatable.class,
+            SoftDelete.class,
+            HasUuid.class
+    );
 
     @Inject
     protected Metadata metadata;
@@ -145,7 +162,7 @@ public class MetadataTools {
      */
     @Nullable
     public String getStoreName(MetaClass metaClass) {
-        String storeName = (String) metaClass.getAnnotations().get(Stores.PROP_NAME);
+        String storeName = (String) metaClass.getAnnotations().get(STORE_ANN_NAME);
         if (storeName == null) {
             return isPersistent(metaClass) ? Stores.MAIN : null;
         } else
@@ -157,13 +174,13 @@ public class MetadataTools {
      */
     @Nullable
     public String getPrimaryKeyName(MetaClass metaClass) {
-        String pkProperty = (String) metaClass.getAnnotations().get("primaryKey");
+        String pkProperty = (String) metaClass.getAnnotations().get(PRIMARY_KEY_ANN_NAME);
         if (pkProperty != null) {
             return pkProperty;
         } else {
             MetaClass ancestor = metaClass.getAncestor();
             while (ancestor != null) {
-                pkProperty = (String) ancestor.getAnnotations().get("primaryKey");
+                pkProperty = (String) ancestor.getAnnotations().get(PRIMARY_KEY_ANN_NAME);
                 if (pkProperty != null)
                     return pkProperty;
                 ancestor = ancestor.getAncestor();
@@ -216,11 +233,11 @@ public class MetadataTools {
     /**
      * Determine whether the given property is system-level. A property is considered system if it is defined not
      * in an entity class but in one of its base interfaces:
-     * {@link Entity}, {@link Creatable}, {@link Updatable}, {@link SoftDelete}, {@link Versioned}
+     * {@link Entity}, {@link Creatable}, {@link Updatable}, {@link SoftDelete}, {@link Versioned}, {@link HasUuid}
      */
     public boolean isSystem(MetaProperty metaProperty) {
         Objects.requireNonNull(metaProperty, "metaProperty is null");
-        return Boolean.TRUE.equals(metaProperty.getAnnotations().get("system"));
+        return Boolean.TRUE.equals(metaProperty.getAnnotations().get(SYSTEM_ANN_NAME));
     }
 
     /**
@@ -242,7 +259,7 @@ public class MetadataTools {
      */
     public boolean isPersistent(MetaProperty metaProperty) {
         Objects.requireNonNull(metaProperty, "metaProperty is null");
-        return Boolean.TRUE.equals(metaProperty.getAnnotations().get("persistent"));
+        return Boolean.TRUE.equals(metaProperty.getAnnotations().get(PERSISTENT_ANN_NAME));
     }
 
     /**
@@ -276,7 +293,7 @@ public class MetadataTools {
      */
     public boolean isEmbedded(MetaProperty metaProperty) {
         Objects.requireNonNull(metaProperty, "metaProperty is null");
-        return Boolean.TRUE.equals(metaProperty.getAnnotations().get("embedded"));
+        return Boolean.TRUE.equals(metaProperty.getAnnotations().get(EMBEDDED_ANN_NAME));
     }
 
     /**
@@ -305,27 +322,8 @@ public class MetadataTools {
      */
     public boolean isSystemLevel(MetaClass metaClass) {
         Objects.requireNonNull(metaClass, "metaClass is null");
-        Boolean systemLevel = (Boolean) metaClass.getAnnotations().get(SystemLevel.class.getName());
-        if (systemLevel == null) {
-            String propagateKey = SystemLevel.class.getName() + SystemLevel.PROPAGATE;
-
-            for (MetaClass aClass : metaClass.getAncestors()) {
-                Boolean propagate = (Boolean) aClass.getAnnotations().get(propagateKey);
-                if (BooleanUtils.isFalse(propagate)) {
-                    // in case of non propagated SystemLevel, get it from original entity
-                    MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
-                    if (originalMetaClass != null) {
-                        systemLevel = (Boolean) originalMetaClass.getAnnotations().get(SystemLevel.class.getName());
-                    }
-                    break;
-                }
-
-                systemLevel = (Boolean) aClass.getAnnotations().get(SystemLevel.class.getName());
-                if (systemLevel != null)
-                    break;
-            }
-        }
-        return systemLevel == null ? false : systemLevel;
+        Map<String, Object> metaAnnotationAttributes = getMetaAnnotationAttributes(metaClass.getAnnotations(), SystemLevel.class);
+        return Boolean.TRUE.equals(metaAnnotationAttributes.get("value"));
     }
 
     /**
@@ -333,8 +331,13 @@ public class MetadataTools {
      */
     public boolean isSystemLevel(MetaProperty metaProperty) {
         Objects.requireNonNull(metaProperty, "metaProperty is null");
-        Boolean systemLevel = (Boolean) metaProperty.getAnnotations().get(SystemLevel.class.getName());
-        return systemLevel == null ? false : systemLevel;
+        Map<String, Object> metaAnnotationAttributes = getMetaAnnotationAttributes(metaProperty.getAnnotations(), SystemLevel.class);
+        return Boolean.TRUE.equals(metaAnnotationAttributes.get("value"));
+    }
+
+    public Map<String, Object> getMetaAnnotationAttributes(Map<String, Object> metaAnnotations, Class metaAnnotationClass) {
+        Map map = (Map) metaAnnotations.get(metaAnnotationClass.getName());
+        return map != null ? map : Collections.emptyMap();
     }
 
     /**
@@ -463,7 +466,7 @@ public class MetadataTools {
     @Nonnull
     public Collection<MetaProperty> getNamePatternProperties(MetaClass metaClass, boolean useOriginal) {
         Collection<MetaProperty> properties = new ArrayList<>();
-        String pattern = (String) metaClass.getAnnotations().get(NamePattern.class.getName());
+        String pattern = (String) getMetaAnnotationAttributes(metaClass.getAnnotations(), NamePattern.class).get("value");
         if (pattern == null && useOriginal) {
             MetaClass original = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
             if (original != null) {

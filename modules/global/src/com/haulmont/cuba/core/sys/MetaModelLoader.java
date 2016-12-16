@@ -26,21 +26,22 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumerationImpl;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.impl.*;
-import com.haulmont.cuba.core.entity.*;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
-import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.config.defaults.Default;
+import com.haulmont.cuba.core.entity.annotation.MetaAnnotation;
+import com.haulmont.cuba.core.global.MetadataTools;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.*;
-import javax.validation.groups.Default;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
@@ -51,31 +52,25 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  * INTERNAL.
  * Loads meta-model from a set of annotated Java classes.
  */
-public class CubaAnnotationsLoader {
+@Component(MetaModelLoader.NAME)
+@Scope("prototype")
+public class MetaModelLoader {
 
-    private static final List<Class> SYSTEM_INTERFACES = Arrays.asList(
-            Instance.class,
-            Entity.class,
-            BaseGenericIdEntity.class,
-            Versioned.class,
-            Creatable.class,
-            Updatable.class,
-            SoftDelete.class,
-            HasUuid.class
-    );
+    public static final String NAME = "cuba_MetaModelLoader";
 
     private static final String VALIDATION_MIN = "_min";
     private static final String VALIDATION_MAX = "_max";
+
     protected Session session;
 
-    private Logger log = LoggerFactory.getLogger(CubaAnnotationsLoader.class);
+    private Logger log = LoggerFactory.getLogger(MetaModelLoader.class);
 
-    public CubaAnnotationsLoader(Session session) {
+    public MetaModelLoader(Session session) {
         this.session = session;
     }
 
-    public void loadPackage(String packageName, List<String> classNames) {
-        Preconditions.checkNotNullArgument(packageName, "packageName is null");
+    public void loadModel(String rootPackage, List<String> classNames) {
+        Preconditions.checkNotNullArgument(rootPackage, "rootPackage is null");
         Preconditions.checkNotNullArgument(classNames, "classNames is null");
 
         List<Class<?>> classes = new ArrayList<>();
@@ -83,19 +78,21 @@ public class CubaAnnotationsLoader {
             try {
                 classes.add(ReflectionHelper.loadClass(className));
             } catch (ClassNotFoundException e) {
-                log.warn("Class {} not found for model {}", className, packageName);
+                log.warn("Class {} not found for model {}", className, rootPackage);
             }
         }
 
         List<RangeInitTask> tasks = new ArrayList<>();
         for (Class<?> aClass : classes) {
-            if (aClass.getName().startsWith(packageName)) {
-                MetadataObjectInfo<MetaClass> info = loadClass(packageName, aClass);
+            if (aClass.getName().startsWith(rootPackage)) {
+                MetadataObjectInfo<MetaClass> info = loadClass(rootPackage, aClass);
                 if (info != null) {
                     tasks.addAll(info.getTasks());
                 } else {
                     log.warn("Class {} is not loaded into metadata", aClass.getName());
                 }
+            } else {
+                log.warn("Class {} is not under root package {} and will not be included to metadata", aClass.getName(), rootPackage);
             }
         }
 
@@ -382,15 +379,15 @@ public class CubaAnnotationsLoader {
         loadPropertyAnnotations(metaProperty, field);
 
         if (isPersistent(field)) {
-            metaProperty.getAnnotations().put("persistent", true);
+            metaProperty.getAnnotations().put(MetadataTools.PERSISTENT_ANN_NAME, true);
 
             if (isPrimaryKey(field)) {
-                metaProperty.getAnnotations().put("primaryKey", true);
-                metaProperty.getDomain().getAnnotations().put("primaryKey", metaProperty.getName());
+                metaProperty.getAnnotations().put(MetadataTools.PRIMARY_KEY_ANN_NAME, true);
+                metaProperty.getDomain().getAnnotations().put(MetadataTools.PRIMARY_KEY_ANN_NAME, metaProperty.getName());
             }
 
             if (isEmbedded(field)) {
-                metaProperty.getAnnotations().put("embedded", true);
+                metaProperty.getAnnotations().put(MetadataTools.EMBEDDED_ANN_NAME, true);
             }
 
             Column column = field.getAnnotation(Column.class);
@@ -402,12 +399,12 @@ public class CubaAnnotationsLoader {
 
         Temporal temporal = field.getAnnotation(Temporal.class);
         if (temporal != null) {
-            metaProperty.getAnnotations().put("temporal", temporal.value());
+            metaProperty.getAnnotations().put(MetadataTools.TEMPORAL_ANN_NAME, temporal.value());
         }
 
-        boolean system = isPrimaryKey(field) || propertyBelongsTo(field, metaProperty, SYSTEM_INTERFACES);
+        boolean system = isPrimaryKey(field) || propertyBelongsTo(field, metaProperty, MetadataTools.SYSTEM_INTERFACES);
         if (system)
-            metaProperty.getAnnotations().put("system", true);
+            metaProperty.getAnnotations().put(MetadataTools.SYSTEM_ANN_NAME, true);
     }
 
     private boolean propertyBelongsTo(Field field, MetaProperty metaProperty, List<Class> systemInterfaces) {
@@ -577,16 +574,27 @@ public class CubaAnnotationsLoader {
     }
 
     protected void loadPropertyAnnotations(MetaProperty metaProperty, AnnotatedElement annotatedElement) {
-        SystemLevel systemLevel = annotatedElement.getAnnotation(SystemLevel.class);
-        if (systemLevel != null) {
-            metaProperty.getAnnotations().put(SystemLevel.class.getName(), systemLevel.value());
-            metaProperty.getAnnotations().put(SystemLevel.class.getName() + SystemLevel.PROPAGATE, systemLevel.propagate());
+        for (Annotation annotation : annotatedElement.getAnnotations()) {
+            MetaAnnotation metaAnnotation = AnnotationUtils.findAnnotation(annotation.getClass(), MetaAnnotation.class);
+            if (metaAnnotation != null) {
+                String name = metaAnnotation.name();
+                if (name.equals(""))
+                    name = annotation.annotationType().getName();
+                Map<String, Object> attributes = new LinkedHashMap<>(AnnotationUtils.getAnnotationAttributes(annotatedElement, annotation));
+                metaProperty.getAnnotations().put(name, attributes);
+            }
         }
 
-        IgnoreUserTimeZone ignoreUserTimeZone = annotatedElement.getAnnotation(IgnoreUserTimeZone.class);
-        if (ignoreUserTimeZone != null) {
-            metaProperty.getAnnotations().put(IgnoreUserTimeZone.class.getName(), ignoreUserTimeZone.value());
-        }
+//        SystemLevel systemLevel = annotatedElement.getAnnotation(SystemLevel.class);
+//        if (systemLevel != null) {
+//            metaProperty.getAnnotations().put(SystemLevel.class.getName(), systemLevel.value());
+//            metaProperty.getAnnotations().put(SystemLevel.class.getName() + SystemLevel.PROPAGATE, systemLevel.propagate());
+//        }
+//
+//        IgnoreUserTimeZone ignoreUserTimeZone = annotatedElement.getAnnotation(IgnoreUserTimeZone.class);
+//        if (ignoreUserTimeZone != null) {
+//            metaProperty.getAnnotations().put(IgnoreUserTimeZone.class.getName(), ignoreUserTimeZone.value());
+//        }
 
         com.haulmont.chile.core.annotations.MetaProperty metaPropertyAnnotation =
                 annotatedElement.getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class);

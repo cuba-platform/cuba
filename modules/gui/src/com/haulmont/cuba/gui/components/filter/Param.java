@@ -574,7 +574,7 @@ public class Param {
     protected Component createDateField(Class javaClass, final ValueProperty valueProperty) {
         if (inExpr) {
             if (property != null) {
-                TemporalType tt = (TemporalType) property.getAnnotations().get("temporal");
+                TemporalType tt = (TemporalType) property.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
                 if (tt == TemporalType.DATE) {
                     javaClass = java.sql.Date.class;
                 }
@@ -593,7 +593,7 @@ public class Param {
         String formatStr;
         boolean dateOnly = false;
         if (property != null) {
-            TemporalType tt = (TemporalType) property.getAnnotations().get("temporal");
+            TemporalType tt = (TemporalType) property.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
             dateOnly = (tt == TemporalType.DATE);
         } else if (javaClass.equals(java.sql.Date.class)) {
             dateOnly = true;

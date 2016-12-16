@@ -458,7 +458,7 @@ public class ExcelExporter {
 
             if (metaPropertyPath != null) {
                 Map<String, Object> annotations = metaPropertyPath.getMetaProperty().getAnnotations();
-                temporalType = (TemporalType) annotations.get("temporal");
+                temporalType = (TemporalType) annotations.get(MetadataTools.TEMPORAL_ANN_NAME);
                 ignoreUserTimeZone = (Boolean) annotations.get(IgnoreUserTimeZone.class.getName());
             }
 

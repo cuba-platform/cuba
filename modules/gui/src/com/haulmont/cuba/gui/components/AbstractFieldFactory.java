@@ -31,6 +31,7 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -259,7 +260,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
             if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
                 tt = TemporalType.DATE;
             } else if (metaProperty.getAnnotations() != null) {
-                tt = (TemporalType) metaProperty.getAnnotations().get("temporal");
+                tt = (TemporalType) metaProperty.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
             }
         }
 

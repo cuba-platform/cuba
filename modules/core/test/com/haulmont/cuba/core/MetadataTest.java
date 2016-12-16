@@ -24,11 +24,9 @@ import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.security.entity.EntityLogItem;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.UserRole;
-import com.haulmont.cuba.security.entity.UserSessionEntity;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.testsupport.TestContainer;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -40,6 +38,13 @@ public class MetadataTest {
 
     @ClassRule
     public static TestContainer cont = TestContainer.Common.INSTANCE;
+
+    private Metadata metadata;
+
+    @Before
+    public void setUp() throws Exception {
+        metadata = cont.metadata();
+    }
 
     @Test
     public void test() {
@@ -81,11 +86,13 @@ public class MetadataTest {
 
     @Test
     public void testSystemLevel() throws Exception {
-        MetadataTools tools = cont.metadata().getTools();
+        MetadataTools tools = metadata.getTools();
 
-        assertTrue(tools.isSystemLevel(cont.metadata().getSession().getClassNN(UserRole.class)));
+        assertTrue(tools.isSystemLevel(metadata.getClassNN(UserRole.class)));
 
-        MetaClass metaClass = cont.metadata().getSession().getClassNN(User.class);
+        MetaClass metaClass = metadata.getClassNN(User.class);
         assertTrue(tools.isSystemLevel(metaClass.getPropertyNN("password")));
+
+        assertTrue(tools.isSystemLevel(metadata.getClassNN(SearchFolder.class)));
     }
 }

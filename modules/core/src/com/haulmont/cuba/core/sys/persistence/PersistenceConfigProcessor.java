@@ -91,7 +91,7 @@ public class PersistenceConfigProcessor {
         }
 
         if (!Stores.isMain(storeName))
-            properties.put(Stores.PROP_NAME, storeName);
+            properties.put(PersistenceImplSupport.PROP_NAME, storeName);
 
         File outFile;
         try {

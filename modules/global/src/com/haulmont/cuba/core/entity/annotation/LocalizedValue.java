@@ -27,6 +27,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
+@MetaAnnotation
 public @interface LocalizedValue {
 
     /**

@@ -28,7 +28,6 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -63,8 +62,8 @@ public class ScreenHistorySupport {
 
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
-            Boolean value = (Boolean) metaClass.getAnnotations().get(TrackEditScreenHistory.class.getName());
-            if (BooleanUtils.isTrue(value)) {
+            Map<String, Object> attributes = metadata.getTools().getMetaAnnotationAttributes(metaClass.getAnnotations(), TrackEditScreenHistory.class);
+            if (Boolean.TRUE.equals(attributes.get("value"))) {
                 screenIds.add(windowConfig.getEditorScreenId(metaClass));
             }
         }

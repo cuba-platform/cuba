@@ -31,7 +31,7 @@ public interface MetadataObject {
     String getName();
 
     /**
-     * MetadataObject annotations. Annotations here are simply name-value pairs, not correlated with Java annotations.
+     * MetadataObject annotations. Annotations here are simply name-value pairs, not directly correlated with Java annotations.
      */
     Map<String, Object> getAnnotations();
 }

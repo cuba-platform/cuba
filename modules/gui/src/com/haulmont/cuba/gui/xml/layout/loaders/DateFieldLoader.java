@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateDatatype;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.DateField;
 import org.apache.commons.lang.StringUtils;
@@ -46,7 +47,7 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
             if (resultComponent.getMetaProperty().getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
                 tt = TemporalType.DATE;
             } else if (resultComponent.getMetaProperty().getAnnotations() != null) {
-                tt = (TemporalType) resultComponent.getMetaProperty().getAnnotations().get("temporal");
+                tt = (TemporalType) resultComponent.getMetaProperty().getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
             }
         }
 

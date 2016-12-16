@@ -166,7 +166,7 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
         // instantiate embedded fields
         Collection<MetaProperty> properties = datasource.getMetaClass().getProperties();
         for (MetaProperty property : properties) {
-            if (!property.isReadOnly() && property.getAnnotations().containsKey("embedded")) {
+            if (!property.isReadOnly() && metadata.getTools().isEmbedded(property)) {
                 if (item.getValue(property.getName()) == null) {
                     Entity defaultEmbeddedInstance = dataservice.newInstance(property.getRange().asClass());
                     item.setValue(property.getName(), defaultEmbeddedInstance);

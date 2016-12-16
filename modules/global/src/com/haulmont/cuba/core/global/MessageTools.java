@@ -25,11 +25,12 @@ import com.haulmont.cuba.core.entity.annotation.LocalizedValue;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -332,15 +333,17 @@ public class MessageTools {
 
         MetaClass metaClass = metadata.getSession().getClassNN(instance.getClass());
         MetaProperty property = metaClass.getPropertyNN(attribute);
-        LocalizedValue annotation = property.getAnnotatedElement().getAnnotation(LocalizedValue.class);
-        if (annotation != null) {
-            if (!StringUtils.isBlank(annotation.messagePack()))
-                return annotation.messagePack();
-            else if (!StringUtils.isBlank(annotation.messagePackExpr())) {
+        Map<String, Object> attributes = metadata.getTools().getMetaAnnotationAttributes(property.getAnnotations(), LocalizedValue.class);
+        String messagePack = (String) attributes.get("messagePack");
+        if (!StringUtils.isBlank(messagePack))
+            return messagePack;
+        else {
+            String messagePackExpr = (String) attributes.get("messagePackExpr");
+            if (!StringUtils.isBlank(messagePackExpr)) {
                 try {
-                    return instance.getValueEx(annotation.messagePackExpr());
+                    return instance.getValueEx(messagePackExpr);
                 } catch (Exception e) {
-                    log.error("Unable to infer message pack from expression: " + annotation.messagePackExpr(), e);
+                    log.error("Unable to infer message pack from expression: " + messagePackExpr, e);
                 }
             }
         }

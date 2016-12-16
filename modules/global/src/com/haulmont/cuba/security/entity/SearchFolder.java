@@ -32,7 +32,6 @@ import javax.persistence.*;
 @Table(name = "SEC_SEARCH_FOLDER")
 @PrimaryKeyJoinColumn(name = "FOLDER_ID", referencedColumnName = "ID")
 @DiscriminatorValue("S")
-@SystemLevel
 public class SearchFolder extends AbstractSearchFolder {
 
     @ManyToOne(fetch = FetchType.LAZY)

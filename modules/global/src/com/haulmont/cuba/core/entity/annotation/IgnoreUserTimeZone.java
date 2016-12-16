@@ -29,6 +29,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
+@MetaAnnotation
 public @interface IgnoreUserTimeZone {
 
     boolean value() default true;

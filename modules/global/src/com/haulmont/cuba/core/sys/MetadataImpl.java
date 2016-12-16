@@ -17,25 +17,13 @@
 
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.bali.datastruct.Pair;
-import com.haulmont.bali.util.Dom4j;
-import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.chile.core.annotations.NamePattern;
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
-import com.haulmont.chile.core.model.impl.*;
+import com.haulmont.chile.core.model.impl.SessionImpl;
 import com.haulmont.cuba.core.entity.*;
-import com.haulmont.cuba.core.entity.annotation.*;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.MetadataBuildSupport.EntityClassInfo;
-import org.apache.commons.lang.StringUtils;
-import org.dom4j.Element;
-import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -43,12 +31,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Component(Metadata.NAME)
 public class MetadataImpl implements Metadata {
@@ -67,20 +52,12 @@ public class MetadataImpl implements Metadata {
     protected MetadataTools tools;
 
     @Inject
-    protected MetadataLoader metadataLoader;
-
-    @Inject
     protected Resources resources;
-
-    @Inject
-    protected MetadataBuildSupport metadataBuildSupport;
 
     @Inject
     protected NumberIdSource numberIdSource;
 
     protected List<String> rootPackages = new ArrayList<>();
-
-    private static final Pattern JAVA_CLASS_PATTERN = Pattern.compile("([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*");
 
     @Override
     public Session getSession() {
@@ -107,15 +84,6 @@ public class MetadataImpl implements Metadata {
     @Override
     public MetadataTools getTools() {
         return tools;
-    }
-
-    protected void loadMetadata(MetadataLoader loader, Map<String, List<EntityClassInfo>> packages) {
-        for (Map.Entry<String, List<EntityClassInfo>> entry : packages.entrySet()) {
-            List<String> classNames = entry.getValue().stream()
-                    .map(entityClassInfo -> entityClassInfo.name)
-                    .collect(Collectors.toList());
-            loader.loadModel(entry.getKey(), classNames);
-        }
     }
 
     protected <T> T __create(Class<T> entityClass) {
@@ -215,283 +183,13 @@ public class MetadataImpl implements Metadata {
         log.info("Initializing metadata");
         long startTime = System.currentTimeMillis();
 
-        List<MetadataBuildSupport.XmlFile> metadataXmlList = metadataBuildSupport.init();
-
-        initRootPackages(metadataXmlList);
-
-        initDatatypes(metadataBuildSupport.getDatatypeElements(metadataXmlList));
-
-        Map<String, List<EntityClassInfo>> entityPackages = metadataBuildSupport.getEntityPackages(metadataXmlList);
-        loadMetadata(metadataLoader, entityPackages);
-        metadataLoader.postProcess();
-
-        Session session = metadataLoader.getSession();
-
-        initStoreMetaAnnotations(session, entityPackages);
-        initExtensionMetaAnnotations(session);
-
-        List<MetadataBuildSupport.XmlAnnotations> xmlAnnotations = metadataBuildSupport.getEntityAnnotations(metadataXmlList);
-        for (MetaClass metaClass : session.getClasses()) {
-            initMetaAnnotations(session, metaClass);
-            addMetaAnnotationsFromXml(xmlAnnotations, metaClass);
-        }
-
-        replaceExtendedMetaClasses(session);
-
-        this.session = new CachingMetadataSession(session);
-
-        SessionImpl.setSerializationSupportSession(this.session);
+        MetadataLoader metadataLoader = AppBeans.getPrototype(MetadataLoader.NAME);
+        metadataLoader.loadMetadata();
+        rootPackages = metadataLoader.getRootPackages();
+        session = new CachingMetadataSession(metadataLoader.getSession());
+        SessionImpl.setSerializationSupportSession(session);
 
         log.info("Metadata initialized in " + (System.currentTimeMillis() - startTime) + "ms");
-    }
-
-    protected void initRootPackages(List<MetadataBuildSupport.XmlFile> metadataXmlList) {
-        for (MetadataBuildSupport.XmlFile xmlFile : metadataXmlList) {
-            for (Element element : Dom4j.elements(xmlFile.root, "metadata-model")) {
-                String rootPackage = element.attributeValue("root-package");
-                if (!StringUtils.isBlank(rootPackage) && !rootPackages.contains(rootPackage)) {
-                    rootPackages.add(rootPackage);
-                }
-            }
-        }
-    }
-
-    protected void initDatatypes(List<Element> datatypeElements) {
-        for (Element datatypeEl : datatypeElements) {
-            String datatypeClassName = datatypeEl.attributeValue("class");
-            try {
-                Datatype datatype;
-                Class<Datatype> datatypeClass = ReflectionHelper.getClass(datatypeClassName);
-                try {
-                    final Constructor<Datatype> constructor = datatypeClass.getConstructor(Element.class);
-                    datatype = constructor.newInstance(datatypeEl);
-                } catch (Throwable e) {
-                    datatype = datatypeClass.newInstance();
-                }
-                Datatypes.register(datatype);
-            } catch (Throwable e) {
-                log.error(String.format("Fail to load datatype '%s'", datatypeClassName), e);
-            }
-        }
-    }
-
-    protected void replaceExtendedMetaClasses(Session session) {
-        StopWatch sw = new Log4JStopWatch("Metadata.replaceExtendedMetaClasses");
-
-        for (MetaModel model : session.getModels()) {
-            MetaModelImpl modelImpl = (MetaModelImpl) model;
-
-            List<Pair<MetaClass, MetaClass>> replaceMap = new ArrayList<>();
-            for (MetaClass metaClass : modelImpl.getClasses()) {
-                MetaClass effectiveMetaClass = session.getClass(extendedEntities.getEffectiveClass(metaClass));
-
-                if (effectiveMetaClass != metaClass) {
-                    replaceMap.add(new Pair<>(metaClass, effectiveMetaClass));
-                }
-
-                for (MetaProperty metaProperty : metaClass.getOwnProperties()) {
-                    MetaPropertyImpl propertyImpl = (MetaPropertyImpl) metaProperty;
-
-                    // replace domain
-                    Class effectiveDomainClass = extendedEntities.getEffectiveClass(metaProperty.getDomain());
-                    MetaClass effectiveDomainMeta = session.getClass(effectiveDomainClass);
-                    if (metaProperty.getDomain() != effectiveDomainMeta) {
-                        propertyImpl.setDomain(effectiveDomainMeta);
-                    }
-
-                    if (metaProperty.getRange().isClass()) {
-                        // replace range class
-                        ClassRange range = (ClassRange) metaProperty.getRange();
-
-                        Class effectiveRangeClass = extendedEntities.getEffectiveClass(range.asClass());
-                        MetaClass effectiveRangeMeta = session.getClass(effectiveRangeClass);
-                        if (effectiveRangeMeta != range.asClass()) {
-                            ClassRange newRange = new ClassRange(effectiveRangeMeta);
-                            newRange.setCardinality(range.getCardinality());
-                            newRange.setOrdered(range.isOrdered());
-
-                            ((MetaPropertyImpl) metaProperty).setRange(newRange);
-                        }
-                    }
-                }
-            }
-
-            for (Pair<MetaClass, MetaClass> replace : replaceMap) {
-                MetaClass replacedMetaClass = replace.getFirst();
-                extendedEntities.registerReplacedMetaClass(replacedMetaClass);
-
-                MetaClassImpl effectiveMetaClass = (MetaClassImpl) replace.getSecond();
-                modelImpl.registerClass(replacedMetaClass.getName(), replacedMetaClass.getJavaClass(), effectiveMetaClass);
-            }
-        }
-
-        sw.stop();
-    }
-
-    protected void initStoreMetaAnnotations(Session session, Map<String, List<EntityClassInfo>> entityPackages) {
-        if (Stores.getAdditional().isEmpty())
-            return;
-
-        Map<String, String> nameToStoreMap = new HashMap<>();
-        for (List<EntityClassInfo> list : entityPackages.values()) {
-            for (EntityClassInfo entityClassInfo : list) {
-                if (nameToStoreMap.containsKey(entityClassInfo.name)) {
-                    throw new IllegalStateException("Entity cannot belong to more than one store: " + entityClassInfo.name);
-                }
-                nameToStoreMap.put(entityClassInfo.name, entityClassInfo.store);
-            }
-        }
-
-        for (MetaClass metaClass : session.getClasses()) {
-            String className = metaClass.getJavaClass().getName();
-            String store = nameToStoreMap.get(className);
-            if (store != null)
-                metaClass.getAnnotations().put(Stores.PROP_NAME, store);
-        }
-    }
-
-    /**
-     * Initialize connections between extended and base entities.
-     *
-     * @param session metadata session which is being initialized
-     */
-    protected void initExtensionMetaAnnotations(Session session) {
-        for (MetaClass metaClass : session.getClasses()) {
-            Class<?> javaClass = metaClass.getJavaClass();
-
-            List<Class> superClasses = new ArrayList<>();
-            Extends extendsAnnotation = javaClass.getAnnotation(Extends.class);
-            while (extendsAnnotation != null) {
-                Class<? extends Entity> superClass = extendsAnnotation.value();
-                superClasses.add(superClass);
-                extendsAnnotation = superClass.getAnnotation(Extends.class);
-            }
-
-            for (Class superClass : superClasses) {
-                metaClass.getAnnotations().put(Extends.class.getName(), superClass);
-
-                MetaClass superMetaClass = session.getClassNN(superClass);
-
-                Class<?> extendedByClass = (Class) superMetaClass.getAnnotations().get(ExtendedBy.class.getName());
-                if (extendedByClass != null && !javaClass.equals(extendedByClass)) {
-                    if (javaClass.isAssignableFrom(extendedByClass))
-                        continue;
-                    else if (!extendedByClass.isAssignableFrom(javaClass))
-                        throw new IllegalStateException(superClass + " is already extended by " + extendedByClass);
-                }
-
-                superMetaClass.getAnnotations().put(ExtendedBy.class.getName(), javaClass);
-            }
-        }
-    }
-
-    /**
-     * Initialize entity annotations from class-level Java annotations.
-     * <p>Can be overridden in application projects to handle application-specific annotations.</p>
-     *
-     * @param session   metadata session which is being initialized
-     * @param metaClass MetaClass instance to assign annotations
-     */
-    protected void initMetaAnnotations(Session session, MetaClass metaClass) {
-        addMetaAnnotation(metaClass, NamePattern.class.getName(),
-                new AnnotationValue() {
-                    @Override
-                    public Object get(Class<?> javaClass) {
-                        NamePattern annotation = javaClass.getAnnotation(NamePattern.class);
-                        return annotation == null ? null : annotation.value();
-                    }
-                }
-        );
-
-        addMetaAnnotation(metaClass, EnableRestore.class.getName(),
-                new AnnotationValue() {
-                    @Override
-                    public Object get(Class<?> javaClass) {
-                        EnableRestore annotation = javaClass.getAnnotation(EnableRestore.class);
-                        return annotation == null ? null : annotation.value();
-                    }
-                }
-        );
-
-        addMetaAnnotation(metaClass, TrackEditScreenHistory.class.getName(),
-                new AnnotationValue() {
-                    @Override
-                    public Object get(Class<?> javaClass) {
-                        TrackEditScreenHistory annotation = javaClass.getAnnotation(TrackEditScreenHistory.class);
-                        return annotation == null ? null : annotation.value();
-                    }
-                }
-        );
-
-        // @SystemLevel is not propagated down to the hierarchy
-        Class<?> javaClass = metaClass.getJavaClass();
-        SystemLevel annotation = javaClass.getAnnotation(SystemLevel.class);
-        if (annotation != null) {
-            metaClass.getAnnotations().put(SystemLevel.class.getName(), annotation.value());
-            metaClass.getAnnotations().put(SystemLevel.class.getName() + SystemLevel.PROPAGATE, annotation.propagate());
-        }
-    }
-
-    /**
-     * Add a meta-annotation from class annotation.
-     *
-     * @param metaClass       entity's meta-class
-     * @param name            meta-annotation name
-     * @param annotationValue annotation value extractor instance
-     */
-    protected void addMetaAnnotation(MetaClass metaClass, String name, AnnotationValue annotationValue) {
-        Object value = annotationValue.get(metaClass.getJavaClass());
-        if (value == null) {
-            for (MetaClass ancestor : metaClass.getAncestors()) {
-                value = annotationValue.get(ancestor.getJavaClass());
-                if (value != null)
-                    break;
-            }
-        }
-        if (value != null) {
-            metaClass.getAnnotations().put(name, value);
-        }
-    }
-
-    /**
-     * Initialize entity annotations from definition in <code>metadata.xml</code>.
-     * <p>Can be overridden in application projects to handle application-specific annotations.</p>
-     *
-     * @param xmlAnnotations map of class name to annotations map
-     * @param metaClass      MetaClass instance to assign annotations
-     */
-    protected void addMetaAnnotationsFromXml(List<MetadataBuildSupport.XmlAnnotations> xmlAnnotations, MetaClass metaClass) {
-        for (MetadataBuildSupport.XmlAnnotations xmlAnnotation : xmlAnnotations) {
-            if (xmlAnnotation.name.equals(metaClass.getJavaClass().getName())) {
-                for (Map.Entry<String, String> annEntry : xmlAnnotation.annotations.entrySet()) {
-                    metaClass.getAnnotations().put(annEntry.getKey(), inferMetaAnnotationType(annEntry.getValue()));
-                }
-                for (MetadataBuildSupport.XmlAnnotations attributeAnnotation : xmlAnnotation.attributeAnnotations) {
-                    MetaProperty property = metaClass.getPropertyNN(attributeAnnotation.name);
-                    for (Map.Entry<String, String> entry : attributeAnnotation.annotations.entrySet()) {
-                        property.getAnnotations().put(entry.getKey(), inferMetaAnnotationType(entry.getValue()));
-                    }
-                }
-                break;
-            }
-        }
-    }
-
-    protected Object inferMetaAnnotationType(String str) {
-        Object val;
-        if (str != null && (str.equalsIgnoreCase("true") || str.equalsIgnoreCase("false")))
-            val = Boolean.valueOf(str);
-        else if (str != null && JAVA_CLASS_PATTERN.matcher(str).matches()) {
-            try {
-                val = ReflectionHelper.loadClass(str);
-            } catch (ClassNotFoundException e) {
-                val = str;
-            }
-        } else if (!"".equals(str) && StringUtils.isNumeric(str)) {
-            val = Integer.valueOf(str);
-        } else
-            val = str;
-        return val;
     }
 
     @Override
@@ -529,14 +227,5 @@ public class MetadataImpl implements Metadata {
     @Override
     public Collection<MetaClass> getClasses() {
         return getSession().getClasses();
-    }
-
-    /**
-     * Annotation value extractor.
-     * <p/> Implementations are supposed to be passed to {@link #addMetaAnnotation(MetaClass, String, AnnotationValue)}
-     * method.
-     */
-    protected interface AnnotationValue {
-        Object get(Class<?> javaClass);
     }
 }

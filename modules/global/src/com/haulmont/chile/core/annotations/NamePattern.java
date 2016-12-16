@@ -16,6 +16,8 @@
  */
 package com.haulmont.chile.core.annotations;
 
+import com.haulmont.cuba.core.entity.annotation.MetaAnnotation;
+
 import java.lang.annotation.Target;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -51,6 +53,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Target({java.lang.annotation.ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
+@MetaAnnotation
 public @interface NamePattern {
     String value();
 }

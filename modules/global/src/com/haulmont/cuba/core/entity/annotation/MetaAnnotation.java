@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.haulmont.cuba.core.entity.annotation;
@@ -23,14 +22,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that annotated entity/field is low-level and should not be available for end-user in various entity/field lists.<br/>
- * For field indicates that attribute should not be available for dynamic filters in UI.
+ * Marks an annotation as being a meta-annotation for entity classes and attributes.
  *
+ * <p>Meta-annotations are automatically processed by metadata loader and are available via
+ * {@code MetaClass.getAnnotations()} or {@code MetaProperty.getAnnotations()}. They can be also added or overridden in
+ * {@code metadata.xml}.
  */
-@Target({ElementType.TYPE, ElementType.FIELD})
+@Target({ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@MetaAnnotation
-public @interface SystemLevel {
+public @interface MetaAnnotation {
 
-    boolean value() default true;
+    String name() default "";
 }

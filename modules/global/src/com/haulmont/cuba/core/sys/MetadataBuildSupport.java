@@ -18,6 +18,8 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.Stores;
 import org.apache.commons.io.IOUtils;
@@ -32,7 +34,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Component("cuba_MetadataBuildSupport")
 public class MetadataBuildSupport {
@@ -52,13 +56,22 @@ public class MetadataBuildSupport {
         }
     }
 
+    public static class XmlAnnotation {
+        public final Object value;
+        public final Map<String, Object> attributes = new HashMap<>();
+
+        public XmlAnnotation(Object value) {
+            this.value = value;
+        }
+    }
+
     public static class XmlAnnotations {
-        public final String name;
-        public final Map<String, String> annotations = new HashMap<>();
+        public final String entityClass;
+        public final Map<String, XmlAnnotation> annotations = new HashMap<>();
         public final List<XmlAnnotations> attributeAnnotations = new ArrayList<>();
 
-        public XmlAnnotations(String name) {
-            this.name = name;
+        public XmlAnnotations(String entityClass) {
+            this.entityClass = entityClass;
         }
     }
 
@@ -79,6 +92,8 @@ public class MetadataBuildSupport {
 
     @Inject
     protected Resources resources;
+
+    private static final Pattern JAVA_CLASS_PATTERN = Pattern.compile("([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*");
 
     public List<XmlFile> init() {
         List<XmlFile> metadataXmlList = new ArrayList<>();
@@ -212,12 +227,24 @@ public class MetadataBuildSupport {
                     String className = entityEl.attributeValue("class");
                     XmlAnnotations entityAnnotations = new XmlAnnotations(className);
                     for (Element annotEl : Dom4j.elements(entityEl, "annotation")) {
-                        entityAnnotations.annotations.put(annotEl.attributeValue("name"), annotEl.attributeValue("value"));
+                        XmlAnnotation xmlAnnotation = new XmlAnnotation(inferMetaAnnotationType(annotEl.attributeValue("value")));
+                        for (Element attrEl : Dom4j.elements(annotEl, "attribute")) {
+                            Object value = getXmlAnnotationAttributeValue(attrEl.attributeValue("value"),
+                                    attrEl.attributeValue("class"), attrEl.attributeValue("datatype"));
+                            xmlAnnotation.attributes.put(attrEl.attributeValue("name"), value);
+                        }
+                        entityAnnotations.annotations.put(annotEl.attributeValue("name"), xmlAnnotation);
                     }
                     for (Element propEl : Dom4j.elements(entityEl, "property")) {
                         XmlAnnotations attributeAnnotations = new XmlAnnotations(propEl.attributeValue("name"));
                         for (Element annotEl : Dom4j.elements(propEl, "annotation")) {
-                            attributeAnnotations.annotations.put(annotEl.attributeValue("name"), annotEl.attributeValue("value"));
+                            XmlAnnotation xmlAnnotation = new XmlAnnotation(inferMetaAnnotationType(annotEl.attributeValue("value")));
+                            for (Element attributeEl : Dom4j.elements(annotEl, "attribute")) {
+                                Object value = getXmlAnnotationAttributeValue(attributeEl.attributeValue("value"),
+                                        attributeEl.attributeValue("class"), attributeEl.attributeValue("datatype"));
+                                xmlAnnotation.attributes.put(attributeEl.attributeValue("name"), value);
+                            }
+                            attributeAnnotations.annotations.put(annotEl.attributeValue("name"), xmlAnnotation);
                         }
                         entityAnnotations.attributeAnnotations.add(attributeAnnotations);
                     }
@@ -226,5 +253,42 @@ public class MetadataBuildSupport {
             }
         }
         return result;
+    }
+
+    private Object getXmlAnnotationAttributeValue(String value, String className, String datatypeName) {
+        if (className == null && datatypeName == null)
+            return inferMetaAnnotationType(value);
+        if (className != null) {
+            Class aClass = ReflectionHelper.getClass(className);
+            if (aClass.isEnum()) {
+                //noinspection unchecked
+                return Enum.valueOf(aClass, value);
+            } else {
+                throw new UnsupportedOperationException("Class " + className + "  is not Enum");
+            }
+        } else {
+            try {
+                return Datatypes.get(datatypeName).parse(value);
+            } catch (ParseException e) {
+                throw new RuntimeException("Unable to parse XML meta-annotation value", e);
+            }
+        }
+    }
+
+    protected Object inferMetaAnnotationType(String str) {
+        Object val;
+        if (str != null && (str.equalsIgnoreCase("true") || str.equalsIgnoreCase("false")))
+            val = Boolean.valueOf(str);
+        else if (str != null && JAVA_CLASS_PATTERN.matcher(str).matches()) {
+            try {
+                val = ReflectionHelper.loadClass(str);
+            } catch (ClassNotFoundException e) {
+                val = str;
+            }
+        } else if (!"".equals(str) && StringUtils.isNumeric(str)) {
+            val = Integer.valueOf(str);
+        } else
+            val = str;
+        return val;
     }
 }

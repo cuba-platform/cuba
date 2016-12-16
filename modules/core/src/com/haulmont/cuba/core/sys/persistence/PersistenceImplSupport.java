@@ -64,6 +64,8 @@ public class PersistenceImplSupport implements ApplicationContextAware {
 
     public static final String RESOURCE_HOLDER_KEY = ContainerResourceHolder.class.getName();
 
+    public static final String PROP_NAME = "cuba.storeName";
+
     @Inject
     protected Persistence persistence;
 
@@ -130,7 +132,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
     }
 
     public String getStorageName(Session session) {
-        String storeName = (String) session.getProperty(Stores.PROP_NAME);
+        String storeName = (String) session.getProperty(PROP_NAME);
         return Strings.isNullOrEmpty(storeName) ? Stores.MAIN : storeName;
     }
 
