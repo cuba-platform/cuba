@@ -79,6 +79,7 @@ public class QueriesControllerManager {
             ctx.setView(view);
         }
         List<Entity> entities = dataManager.loadList(ctx);
+        entities.forEach(entity -> restControllerUtils.applyAttributesSecurity(entity));
 
         List<EntitySerializationOption> serializationOptions = new ArrayList<>();
         serializationOptions.add(EntitySerializationOption.SERIALIZE_INSTANCE_NAME);

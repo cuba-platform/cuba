@@ -102,6 +102,8 @@ public class EntitiesControllerManager {
         serializationOptions.add(EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
         if (BooleanUtils.isTrue(returnNulls)) serializationOptions.add(EntitySerializationOption.SERIALIZE_NULLS);
 
+        restControllerUtils.applyAttributesSecurity(entity);
+
         return entitySerializationAPI.toJson(entity, null, serializationOptions.toArray(new EntitySerializationOption[0]));
 
     }
@@ -147,6 +149,7 @@ public class EntitiesControllerManager {
         ctx.setLoadDynamicAttributes(BooleanUtils.isTrue(dynamicAttributes));
 
         List<Entity> entities = dataManager.loadList(ctx);
+        entities.forEach(entity -> restControllerUtils.applyAttributesSecurity(entity));
 
         List<EntitySerializationOption> serializationOptions = new ArrayList<>();
         serializationOptions.add(EntitySerializationOption.SERIALIZE_INSTANCE_NAME);

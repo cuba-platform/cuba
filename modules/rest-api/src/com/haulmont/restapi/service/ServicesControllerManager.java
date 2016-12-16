@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.common.RestParseUtils;
 import com.haulmont.restapi.config.RestServicesConfiguration;
 import com.haulmont.restapi.exception.RestAPIException;
@@ -59,6 +60,9 @@ public class ServicesControllerManager {
 
     @Inject
     protected RestParseUtils restParseUtils;
+
+    @Inject
+    protected RestControllerUtils restControllerUtils;
 
     protected Logger log = LoggerFactory.getLogger(ServicesControllerManager.class);
 
@@ -154,12 +158,17 @@ public class ServicesControllerManager {
 
         Class<?> methodReturnType = serviceMethod.getReturnType();
         if (Entity.class.isAssignableFrom(methodReturnType)) {
-            String entityJson = entitySerializationAPI.toJson((Entity) methodResult,
+            Entity entity = (Entity) methodResult;
+            restControllerUtils.applyAttributesSecurity(entity);
+            String entityJson = entitySerializationAPI.toJson(entity,
                     null,
                     EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
             return new ServiceCallResult(entityJson, true);
         } else if (Collection.class.isAssignableFrom(methodReturnType)) {
-            String entitiesJson = entitySerializationAPI.toJson((Collection<? extends Entity>) methodResult,
+            //todo MG there may be a collection of POJOs here
+            Collection<? extends Entity> entities = (Collection<? extends Entity>) methodResult;
+            entities.forEach(entity -> restControllerUtils.applyAttributesSecurity(entity));
+            String entitiesJson = entitySerializationAPI.toJson(entities,
                     null,
                     EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
             return new ServiceCallResult(entitiesJson, true);

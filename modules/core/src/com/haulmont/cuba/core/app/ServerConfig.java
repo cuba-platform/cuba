@@ -158,7 +158,7 @@ public interface ServerConfig extends Config {
      */
     @Property("cuba.entityAttributePermissionChecking")
     @Source(type = SourceType.DATABASE)
-    @DefaultBoolean(true)
+    @DefaultBoolean(false)
     boolean getEntityAttributePermissionChecking();
 
     /**
