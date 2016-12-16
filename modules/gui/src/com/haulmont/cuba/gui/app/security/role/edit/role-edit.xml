@@ -35,24 +35,24 @@
                     <columns count="6"/>
                     <rows>
                         <row id="gridRowUp">
-                            <label value="msg://name" align="MIDDLE_LEFT"/>
+                            <label value="msg://com.haulmont.cuba.security.entity/Role.name" align="MIDDLE_LEFT"/>
                             <textField id="name" datasource="roleDs" property="name" width="${width}" required="true"
                                        requiredMessage="msg://nameMsg"/>
 
-                            <label value="msg://roleType" align="MIDDLE_LEFT"/>
+                            <label value="msg://com.haulmont.cuba.security.entity/Role.type" align="MIDDLE_LEFT"/>
                             <lookupField id="typeLookup" datasource="roleDs" property="type"
                                          required="true" width="theme://cuba.gui.role-edit.typeLookup.width"/>
 
-                            <label value="msg://description" align="MIDDLE_LEFT"/>
+                            <label value="msg://com.haulmont.cuba.security.entity/Role.description" align="MIDDLE_LEFT"/>
                             <textArea id="description" datasource="roleDs" property="description"
                                       rowspan="2"
                                       height="100%" width="theme://cuba.gui.role-edit.description.width"/>
                         </row>
                         <row id="gridRowDown">
-                            <label value="msg://locName" align="MIDDLE_LEFT"/>
+                            <label value="msg://com.haulmont.cuba.security.entity/Role.locName" align="MIDDLE_LEFT"/>
                             <textField id="locName" datasource="roleDs" property="locName" width="${width}"/>
 
-                            <label value="msg://defaultRole" align="MIDDLE_LEFT"/>
+                            <label value="msg://com.haulmont.cuba.security.entity/Role.defaultRole" align="MIDDLE_LEFT"/>
                             <checkBox id="defaultRole" datasource="roleDs" property="defaultRole" align="MIDDLE_LEFT"/>
 
                             <label value=""/>  <!-- spaceholder for desktop -->
