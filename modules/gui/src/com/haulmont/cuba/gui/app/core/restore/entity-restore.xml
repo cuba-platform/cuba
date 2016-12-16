@@ -23,6 +23,7 @@
 
     <layout spacing="true" expand="tablePanel">
         <hbox spacing="true">
+            <label value="msg://entityType" align="MIDDLE_LEFT"/>
             <lookupField id="entities" width="theme://cuba.gui.entity-restore.entities.width" required="true"/>
         </hbox>
 
