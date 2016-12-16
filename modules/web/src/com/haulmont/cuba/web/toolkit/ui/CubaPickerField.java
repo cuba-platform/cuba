@@ -22,9 +22,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.Action;
-import com.vaadin.server.AbstractErrorMessage;
-import com.vaadin.server.CompositeErrorMessage;
-import com.vaadin.server.ErrorMessage;
+import com.vaadin.server.*;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 
@@ -38,6 +36,10 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
 
     protected List<Button> buttons = new ArrayList<>();
     protected CubaCssActionsLayout container;
+
+    // CAUTION used only for IE 9 layout, is null for another browsers
+    // Fixes PL-8205
+    protected CssLayout ie9InputWrapper = null;
 
     protected boolean useCustomField = false;
     protected boolean fieldReadOnly = true;
@@ -77,8 +79,26 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         container = new CubaCssActionsLayout();
         container.setStyleName("c-pickerfield-layout");
 
-        field.setWidth("100%");
-        container.addComponent(field);
+        field.setWidth(100, Unit.PERCENTAGE);
+
+        Page current = Page.getCurrent();
+        if (current != null) {
+            WebBrowser browser = current.getWebBrowser();
+            if (browser != null
+                    && browser.isIE()
+                    && browser.getBrowserMajorVersion() <= 9) {
+                ie9InputWrapper = new CssLayout();
+                ie9InputWrapper.setWidth(100, Unit.PERCENTAGE);
+                ie9InputWrapper.setPrimaryStyleName("ie9-input-wrap");
+                ie9InputWrapper.addComponent(field);
+
+                container.addComponent(ie9InputWrapper);
+            } else {
+                container.addComponent(field);
+            }
+        } else {
+            container.addComponent(field);
+        }
 
         if (App.isBound()) {
             ThemeConstants theme = App.getInstance().getThemeConstants();
@@ -146,9 +166,15 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
             if (width < 0) {
                 container.setWidthUndefined();
                 field.setWidthUndefined();
+                if (ie9InputWrapper != null) {
+                    ie9InputWrapper.setWidthUndefined();
+                }
             } else {
                 container.setWidth(100, Unit.PERCENTAGE);
                 field.setWidth(100, Unit.PERCENTAGE);
+                if (ie9InputWrapper != null) {
+                    ie9InputWrapper.setWidth(100, Unit.PERCENTAGE);
+                }
             }
         }
     }
@@ -161,9 +187,15 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
             if (height < 0) {
                 container.setHeightUndefined();
                 field.setHeightUndefined();
+                if (ie9InputWrapper != null) {
+                    ie9InputWrapper.setHeightUndefined();
+                }
             } else {
                 container.setHeight(100, Unit.PERCENTAGE);
                 field.setHeight(100, Unit.PERCENTAGE);
+                if (ie9InputWrapper != null) {
+                    ie9InputWrapper.setHeight(100, Unit.PERCENTAGE);
+                }
             }
         }
     }

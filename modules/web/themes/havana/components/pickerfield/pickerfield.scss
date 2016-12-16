@@ -26,8 +26,7 @@
     display: table-row;
   }
 
-  .#{$primary-stylename}-layout > .v-filterselect,
-  .v-textfield.#{$primary-stylename}-text {
+  .#{$primary-stylename}-layout > * {
     display: table-cell;
   }
 
