@@ -30,6 +30,8 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.annotation.Lookup;
+import com.haulmont.cuba.core.entity.annotation.LookupType;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
@@ -716,7 +718,15 @@ public class Param {
 
         ThemeConstants theme = AppBeans.get(ThemeConstantsManager.class).getConstants();
         PersistenceManagerService persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
-        boolean useLookupScreen = persistenceManager.useLookupScreen(metaClass.getName());
+
+        LookupType type = null;
+        if (property.getRange().isClass()) {
+            type = (LookupType) metadata.getTools()
+                    .getMetaAnnotationAttributes(property.getAnnotations(), Lookup.class)
+                    .get("type");
+        }
+        boolean useLookupScreen = type != null ?
+                type == LookupType.SCREEN : persistenceManager.useLookupScreen(metaClass.getName());
 
         if (useLookupScreen) {
             if (inExpr) {
