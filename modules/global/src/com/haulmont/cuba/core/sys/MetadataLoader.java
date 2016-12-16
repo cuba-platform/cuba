@@ -385,9 +385,8 @@ public class MetadataLoader {
         for (Annotation annotation : metaClass.getJavaClass().getAnnotations()) {
             MetaAnnotation metaAnnotation = AnnotationUtils.findAnnotation(annotation.getClass(), MetaAnnotation.class);
             if (metaAnnotation != null) {
-                String name = metaAnnotation.name();
-                if (name.equals(""))
-                    name = annotation.annotationType().getName();
+                String name = annotation.annotationType().getName();
+
                 Map<String, Object> attributes = new LinkedHashMap<>(AnnotationUtils.getAnnotationAttributes(metaClass.getJavaClass(), annotation));
                 metaClass.getAnnotations().put(name, attributes);
 

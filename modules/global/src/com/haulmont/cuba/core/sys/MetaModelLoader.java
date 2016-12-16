@@ -577,24 +577,10 @@ public class MetaModelLoader {
         for (Annotation annotation : annotatedElement.getAnnotations()) {
             MetaAnnotation metaAnnotation = AnnotationUtils.findAnnotation(annotation.getClass(), MetaAnnotation.class);
             if (metaAnnotation != null) {
-                String name = metaAnnotation.name();
-                if (name.equals(""))
-                    name = annotation.annotationType().getName();
                 Map<String, Object> attributes = new LinkedHashMap<>(AnnotationUtils.getAnnotationAttributes(annotatedElement, annotation));
-                metaProperty.getAnnotations().put(name, attributes);
+                metaProperty.getAnnotations().put(annotation.annotationType().getName(), attributes);
             }
         }
-
-//        SystemLevel systemLevel = annotatedElement.getAnnotation(SystemLevel.class);
-//        if (systemLevel != null) {
-//            metaProperty.getAnnotations().put(SystemLevel.class.getName(), systemLevel.value());
-//            metaProperty.getAnnotations().put(SystemLevel.class.getName() + SystemLevel.PROPAGATE, systemLevel.propagate());
-//        }
-//
-//        IgnoreUserTimeZone ignoreUserTimeZone = annotatedElement.getAnnotation(IgnoreUserTimeZone.class);
-//        if (ignoreUserTimeZone != null) {
-//            metaProperty.getAnnotations().put(IgnoreUserTimeZone.class.getName(), ignoreUserTimeZone.value());
-//        }
 
         com.haulmont.chile.core.annotations.MetaProperty metaPropertyAnnotation =
                 annotatedElement.getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class);
