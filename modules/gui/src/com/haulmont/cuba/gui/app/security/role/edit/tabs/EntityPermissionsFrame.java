@@ -293,6 +293,22 @@ public class EntityPermissionsFrame extends AbstractFrame {
     }
 
     protected void initCheckBoxesControls() {
+        initOperationControls();
+
+        attachAllCheckBoxListener(allAllowCheck, PermissionVariant.ALLOWED);
+        attachAllCheckBoxListener(allDenyCheck, PermissionVariant.DISALLOWED);
+
+        for (EntityOperationControl control : operationControls) {
+            // Allow checkbox
+            attachCheckBoxListener(control.getAllowChecker(), control.getMetaProperty(), control.getOperation(),
+                    PermissionVariant.ALLOWED);
+            // Deny checkbox
+            attachCheckBoxListener(control.getDenyChecker(), control.getMetaProperty(), control.getOperation(),
+                    PermissionVariant.DISALLOWED);
+        }
+    }
+
+    private void initOperationControls() {
         operationControls = new EntityOperationControl[]{
                 new EntityOperationControl(EntityOp.CREATE, "createPermissionVariant", "createOpLabel",
                         "createAllowCheck", "createDenyCheck") {
@@ -313,18 +329,6 @@ public class EntityPermissionsFrame extends AbstractFrame {
                     }
                 }
         };
-
-        attachAllCheckBoxListener(allAllowCheck, PermissionVariant.ALLOWED);
-        attachAllCheckBoxListener(allDenyCheck, PermissionVariant.DISALLOWED);
-
-        for (EntityOperationControl control : operationControls) {
-            // Allow checkbox
-            attachCheckBoxListener(control.getAllowChecker(), control.getMetaProperty(), control.getOperation(),
-                    PermissionVariant.ALLOWED);
-            // Deny checkbox
-            attachCheckBoxListener(control.getDenyChecker(), control.getMetaProperty(), control.getOperation(),
-                    PermissionVariant.DISALLOWED);
-        }
     }
 
     /**
