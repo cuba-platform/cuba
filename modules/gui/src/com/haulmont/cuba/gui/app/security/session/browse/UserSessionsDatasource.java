@@ -27,10 +27,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public class UserSessionsDatasource extends GroupDatasourceImpl<UserSessionEntity, UUID> {
 
-    private Date updateTs;
+    protected Date updateTs;
+
+    protected Predicate<UserSessionEntity> sessionFilter = e -> true;
 
     @Override
     protected void loadData(Map<String, Object> params) {
@@ -41,6 +44,10 @@ public class UserSessionsDatasource extends GroupDatasourceImpl<UserSessionEntit
         UserSessionService uss = AppBeans.get(UserSessionService.NAME);
         Collection<UserSessionEntity> userSessionList = uss.getUserSessionInfo();
         for (UserSessionEntity entity : userSessionList) {
+            if (!sessionFilter.test(entity)) {
+                continue;
+            }
+
             Object userLoginObj = params.get("userLogin");
             if (userLoginObj != null && (entity.getLogin() == null || !entity.getLogin().toLowerCase().contains(userLoginObj.toString())))
                 continue;
@@ -59,5 +66,9 @@ public class UserSessionsDatasource extends GroupDatasourceImpl<UserSessionEntit
 
     public Date getUpdateTs() {
         return updateTs;
+    }
+
+    public void setSessionFilter(Predicate<UserSessionEntity> sessionFilter) {
+        this.sessionFilter = sessionFilter;
     }
 }
