@@ -424,6 +424,7 @@
                 <xs:restriction base="xs:string">
                     <xs:enumeration value="card"/>
                     <xs:enumeration value="well"/>
+                    <xs:enumeration value="v-panel-caption"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
@@ -439,6 +440,7 @@
                     <xs:enumeration value="card"/>
                     <xs:enumeration value="well"/>
                     <xs:enumeration value="v-component-group"/>
+                    <xs:enumeration value="v-panel-caption"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
@@ -504,6 +506,36 @@
     </xs:complexType>
 
     <xs:complexType name="lookupFieldStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="borderless"/>
+                    <xs:enumeration value="align-right"/>
+                    <xs:enumeration value="align-center"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
+    <xs:complexType name="pickerFieldStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="borderless"/>
+                    <xs:enumeration value="align-right"/>
+                    <xs:enumeration value="align-center"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
+    <xs:complexType name="lookupPickerFieldStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -1176,6 +1208,7 @@
                 <xs:attributeGroup ref="hasCaptionSource"/>
 
                 <xs:attribute name="metaClass" type="xs:string"/>
+                <xs:attribute name="stylename" type="pickerFieldStylename"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1189,6 +1222,7 @@
                     <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
                 </xs:sequence>
 
+                <xs:attribute name="stylename" type="lookupPickerFieldStylename"/>
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attribute name="refreshOptionsOnLookupClose" type="xs:boolean"/>
@@ -1740,7 +1774,7 @@
         <xs:attributeGroup ref="hasSpacingMargin"/>
     </xs:complexType>
 
-    <!-- CssLa`yout -->
+    <!-- CssLayout -->
     <xs:complexType name="cssLayout">
         <xs:complexContent>
             <xs:extension base="baseComponent"/>

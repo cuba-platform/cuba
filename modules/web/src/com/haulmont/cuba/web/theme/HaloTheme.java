@@ -179,18 +179,27 @@ public class HaloTheme {
 
     /**
      * Removes the border and background from the combo box. Can be combined with any other ComboBox style.
+     *
+     * This style can also be used for {@link com.haulmont.cuba.gui.components.PickerField} and
+     * {@link com.haulmont.cuba.gui.components.LookupPickerField}
      */
-    public static final String LOOKUP_FIELD_BORDERLESS = "borderless";
+    public static final String LOOKUPFIELD_BORDERLESS = "borderless";
 
     /**
      * Align the text inside the combo box to the right. Can be combined with any other TextField style.
+     *
+     * This style can also be used for {@link com.haulmont.cuba.gui.components.PickerField} and
+     * {@link com.haulmont.cuba.gui.components.LookupPickerField}
      */
-    public static final String LOOKUP_FIELD_ALIGN_RIGHT = "align-right";
+    public static final String LOOKUPFIELD_ALIGN_RIGHT = "align-right";
 
     /**
      * Align the text inside the combo box to center. Can be combined with any other TextField style.
+     *
+     * This style can also be used for {@link com.haulmont.cuba.gui.components.PickerField} and
+     * {@link com.haulmont.cuba.gui.components.LookupPickerField}
      */
-    public static final String LOOKUP_FIELD_ALIGN_CENTER = "align-center";
+    public static final String LOOKUPFIELD_ALIGN_CENTER = "align-center";
 
     /**
      * Remove the alternating row colors. Can be combined with any other Table/TreeTable style.
@@ -296,21 +305,20 @@ public class HaloTheme {
     public static final String GROUPBOX_PANEL_BORDERLESS = "borderless";
 
     /**
-     * Inset GroupBox style. Can be combined with any other GroupBox style.
-     * <p>
-     * Notice that you should enable flag "showAsPanel".
+     * Make any layout inside of another layout with {@link #LAYOUT_CARD} or {@link #LAYOUT_WELL} stylename looks like
+     * caption of parent layout.
      */
-    public static final String GROUPBOX_PANEL_WELL = "well";
+    public static final String LAYOUT_HEADER = "v-panel-caption";
 
     /**
      * Make a layout look like a card. Add an additional <code>v-panel-caption</code> style name to any layout
-     * inside the card layout.
+     * inside the card layout to make it look like a layout header.
      */
     public static final String LAYOUT_CARD = "card";
 
     /**
      * Inset layout style. Add an additional <code>v-panel-caption</code> style name to any layout inside
-     * the card layout.
+     * the card layout to make it look like a layout header.
      */
     public static final String LAYOUT_WELL = "well";
 

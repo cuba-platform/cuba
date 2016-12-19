@@ -166,4 +166,21 @@
       color: mix($v-textfield-background-color, valo-font-color($v-textfield-background-color));
     }
   }
+
+  .#{$primary-stylename}-borderless {
+    .v-filterselect-input,
+    .v-filterselect-button,
+    .v-textfield,
+    .v-button {
+      @include valo-textfield-borderless-style;
+    }
+  }
+
+  .#{$primary-stylename}-align-right input {
+    text-align: right;
+  }
+
+  .#{$primary-stylename}-align-center input {
+    text-align: center;
+  }
 }
