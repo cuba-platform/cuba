@@ -58,6 +58,22 @@ public class UserSessions implements UserSessionsAPI {
             this.lastSentTs = now;
         }
 
+        public UserSession getSession() {
+            return session;
+        }
+
+        public long getSince() {
+            return since;
+        }
+
+        public long getLastUsedTs() {
+            return lastUsedTs;
+        }
+
+        public long getLastSentTs() {
+            return lastSentTs;
+        }
+
         @Override
         public String toString() {
             return String.format("%s, since: %s, lastUsed: %s",
