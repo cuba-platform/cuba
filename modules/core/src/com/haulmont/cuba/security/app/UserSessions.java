@@ -67,23 +67,23 @@ public class UserSessions implements UserSessionsAPI {
 
     private Logger log = LoggerFactory.getLogger(UserSessions.class);
 
-    private Map<UUID, UserSessionInfo> cache = new ConcurrentHashMap<>();
+    protected Map<UUID, UserSessionInfo> cache = new ConcurrentHashMap<>();
 
-    private volatile int expirationTimeout = 1800;
+    protected volatile int expirationTimeout = 1800;
 
-    private volatile int sendTimeout = 10;
+    protected volatile int sendTimeout = 10;
 
-    private ClusterManagerAPI clusterManager;
+    protected ClusterManagerAPI clusterManager;
 
-    private UserSession NO_USER_SESSION;
+    protected UserSession NO_USER_SESSION;
 
-    private ServerConfig serverConfig;
-
-    @Inject
-    private TimeSource timeSource;
+    protected ServerConfig serverConfig;
 
     @Inject
-    private Metadata metadata;
+    protected TimeSource timeSource;
+
+    @Inject
+    protected Metadata metadata;
 
     public UserSessions() {
         User noUser = new User();
