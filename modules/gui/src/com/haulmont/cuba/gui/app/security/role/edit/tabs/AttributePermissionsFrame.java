@@ -177,6 +177,10 @@ public class AttributePermissionsFrame extends AbstractFrame {
             return hideCheckBox;
         }
 
+        public String getAttributeName() {
+            return attributeName;
+        }
+
         protected void updateCheckers(AttributePermissionVariant permissionVariant) {
             modifyCheckBox.setValue(permissionVariant == AttributePermissionVariant.MODIFY);
             readOnlyCheckBox.setValue(permissionVariant == AttributePermissionVariant.READ_ONLY);
