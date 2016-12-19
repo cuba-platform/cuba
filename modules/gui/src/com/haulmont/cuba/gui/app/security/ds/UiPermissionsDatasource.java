@@ -30,7 +30,7 @@ import java.util.UUID;
 
 public class UiPermissionsDatasource extends GroupDatasourceImpl<UiPermissionTarget, String> {
 
-    private CollectionDatasource<Permission, UUID> permissionDs;
+    protected CollectionDatasource<Permission, UUID> permissionDs;
 
     @Override
     public boolean isModified() {

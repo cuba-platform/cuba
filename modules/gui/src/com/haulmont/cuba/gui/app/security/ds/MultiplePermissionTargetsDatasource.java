@@ -36,11 +36,11 @@ import java.util.UUID;
 
 public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImpl<MultiplePermissionTarget, String> {
 
-    private List<MultiplePermissionTarget> targets;
+    protected List<MultiplePermissionTarget> targets;
 
-    private Predicate<MultiplePermissionTarget> permissionsFilter;
+    protected Predicate<MultiplePermissionTarget> permissionsFilter;
 
-    private CollectionDatasource<Permission, UUID> permissionDs;
+    protected CollectionDatasource<Permission, UUID> permissionDs;
 
     @Override
     public boolean isModified() {
