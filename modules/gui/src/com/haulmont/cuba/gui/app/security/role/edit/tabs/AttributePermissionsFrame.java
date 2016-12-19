@@ -390,6 +390,14 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
         compileDefaultControls(editGrid);
 
+        initPermissionControls(item, editGrid);
+
+        editGridContainer.add(editGrid);
+
+        applyPermissions(hasPermissionsToModifyPermission);
+    }
+
+    private void initPermissionControls(MultiplePermissionTarget item, GridLayout editGrid) {
         int i = 0;
         for (AttributeTarget target : item.getPermissions()) {
             AttributePermissionControl control = new AttributePermissionControl(item, target.getId());
@@ -407,10 +415,6 @@ public class AttributePermissionsFrame extends AbstractFrame {
             permissionControls.add(control);
             i++;
         }
-
-        editGridContainer.add(editGrid);
-
-        applyPermissions(hasPermissionsToModifyPermission);
     }
 
     protected void compileDefaultControls(GridLayout editGrid) {
