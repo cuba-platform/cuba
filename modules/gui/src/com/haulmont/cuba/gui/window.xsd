@@ -360,6 +360,7 @@
                     <xs:enumeration value="success"/>
                     <xs:enumeration value="failure"/>
                     <xs:enumeration value="spinner"/>
+                    <xs:enumeration value="dropzone-description"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
@@ -425,6 +426,22 @@
                     <xs:enumeration value="card"/>
                     <xs:enumeration value="well"/>
                     <xs:enumeration value="v-panel-caption"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:complexType>
+
+    <xs:complexType name="boxLayoutStyleName">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="card"/>
+                    <xs:enumeration value="well"/>
+                    <xs:enumeration value="v-panel-caption"/>
+                    <xs:enumeration value="dropzone-container"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
@@ -1758,7 +1775,7 @@
 
         <xs:attributeGroup ref="hasSpacingMargin"/>
 
-        <xs:attribute name="stylename" type="layoutStylename"/>
+        <xs:attribute name="stylename" type="boxLayoutStyleName"/>
         <xs:attribute name="expand" type="xs:string"/>
     </xs:complexType>
 

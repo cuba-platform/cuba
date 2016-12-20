@@ -340,4 +340,16 @@ public class HaloTheme {
      * </pre>
      */
     public static final String CSSLAYOUT_COMPONENT_GROUP = "v-component-group";
+
+    /**
+     * Add this style name to a {@link com.haulmont.cuba.gui.components.VBoxLayout} or
+     * a {@link com.haulmont.cuba.gui.components.HBoxLayout} to mark this layout as dropzone.
+     */
+    public static final String FILEUPLOADFIELD_DROPZONE_CONTAINER = "dropzone-container";
+
+    /**
+     * Add this style name to a {@link com.haulmont.cuba.gui.components.Label} to mark this component as dropzone
+     * description.
+     */
+    public static final String FILEUPLOADFIELD_DROPZONE_DESCRIPTION = "dropzone-description";
 }

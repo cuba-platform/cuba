@@ -166,4 +166,16 @@
       opacity: 0.4;
     }
   }
+
+  .v-slot-c-dropzone-description {
+    border: 2px dashed #cccccc;
+  }
+
+  .c-fileupload-dropzone:after {
+    visibility: hidden;
+  }
+
+  .c-dropzone-container.c-fileupload-dropzone .c-dropzone-description {
+    border: none;
+  }
 }
