@@ -182,9 +182,15 @@ public class AttributePermissionsFrame extends AbstractFrame {
         }
 
         protected void updateCheckers(AttributePermissionVariant permissionVariant) {
-            modifyCheckBox.setValue(permissionVariant == AttributePermissionVariant.MODIFY);
-            readOnlyCheckBox.setValue(permissionVariant == AttributePermissionVariant.READ_ONLY);
-            hideCheckBox.setValue(permissionVariant == AttributePermissionVariant.HIDE);
+            if (modifyCheckBox.isEditable()) {
+                modifyCheckBox.setValue(permissionVariant == AttributePermissionVariant.MODIFY);
+            }
+            if (readOnlyCheckBox.isEditable()) {
+                readOnlyCheckBox.setValue(permissionVariant == AttributePermissionVariant.READ_ONLY);
+            }
+            if (hideCheckBox.isEditable()) {
+                hideCheckBox.setValue(permissionVariant == AttributePermissionVariant.HIDE);
+            }
         }
 
         protected void attachListener(CheckBox checkBox, final AttributePermissionVariant activeVariant) {
