@@ -23,6 +23,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.AggregationInfo;
@@ -424,6 +425,10 @@ public class ExcelExporter {
             childCountValue = " (" + groupChildCount + ")";
         }
 
+        if (cellValue instanceof IdProxy) {
+            cellValue = ((IdProxy) cellValue).get();
+        }
+
         if (cellValue instanceof Number) {
             Number n = (Number) cellValue;
             final Datatype datatype = Datatypes.getNN(n.getClass());
@@ -527,7 +532,8 @@ public class ExcelExporter {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else {
-            String str = sizersIndex == 0 ? createSpaceString(level) + cellValue.toString() : cellValue.toString();
+            String strValue = cellValue == null ? "" : cellValue.toString();
+            String str = sizersIndex == 0 ? createSpaceString(level) + strValue : strValue;
             str = str + childCountValue;
             cell.setCellValue(new HSSFRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
