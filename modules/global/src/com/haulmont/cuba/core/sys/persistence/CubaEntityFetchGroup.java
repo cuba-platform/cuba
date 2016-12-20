@@ -48,15 +48,15 @@ public class CubaEntityFetchGroup extends EntityFetchGroup {
 
     @Override
     public String onUnfetchedAttribute(FetchGroupTracker entity, String attributeName) {
-//        if (entity instanceof BaseGenericIdEntity) {
-//            String[] inaccessible = BaseEntityInternalAccess.getInaccessibleAttributes((BaseGenericIdEntity) entity);
-//            if (inaccessible != null) {
-//                for (String inaccessibleAttribute : inaccessible) {
-//                    if (attributeName.equals(inaccessibleAttribute))
-//                        return null;
-//                }
-//            }
-//        }
+        if (entity instanceof BaseGenericIdEntity) {
+            String[] inaccessible = BaseEntityInternalAccess.getInaccessibleAttributes((BaseGenericIdEntity) entity);
+            if (inaccessible != null) {
+                for (String inaccessibleAttribute : inaccessible) {
+                    if (attributeName.equals(inaccessibleAttribute))
+                        return null;
+                }
+            }
+        }
 
         return wrappedFetchGroup.onUnfetchedAttribute(entity, attributeName);
     }
