@@ -507,6 +507,12 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
 
                 loader.loadComponent();
 
+                WebAbstractComponent contentComponent = (WebAbstractComponent) lazyContent;
+
+                contentComponent.setIcon(null);
+                contentComponent.setCaption(null);
+                contentComponent.setDescription(null);
+
                 Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(WebTabSheet.this);
                 if (window != null) {
                     com.haulmont.cuba.gui.ComponentsHelper.walkComponents(
