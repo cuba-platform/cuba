@@ -103,6 +103,14 @@ public interface UserManagementService {
     String generateRememberMeToken(UUID userId);
 
     /**
+     * Get names of session attributes defined for the given group and all its parent groups.
+     *
+     * @param groupId   Group identifier
+     * @return  list of session attribute names
+     */
+    List<String> getSessionAttributeNames(UUID groupId);
+
+    /**
      * Load current user's time zone settings.
      */
     UserTimeZone loadOwnTimeZone();
