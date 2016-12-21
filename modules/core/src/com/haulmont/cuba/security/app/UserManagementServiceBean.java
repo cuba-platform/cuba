@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.EmailerAPI;
@@ -87,9 +88,13 @@ public class UserManagementServiceBean implements UserManagementService {
     protected Messages messages;
 
     protected void checkUpdatePermission(Class entityClass) {
+        checkPermission(entityClass, EntityOp.UPDATE);
+    }
+
+    protected void checkPermission(Class entityClass, EntityOp op) {
         MetaClass metaClass = metadata.getClassNN(entityClass);
 
-        if (!security.isEntityOpPermitted(metaClass, EntityOp.UPDATE)) {
+        if (!security.isEntityOpPermitted(metaClass, op)) {
             throw new AccessDeniedException(PermissionType.ENTITY_OP, metaClass.getName());
         }
     }
@@ -296,6 +301,32 @@ public class UserManagementServiceBean implements UserManagementService {
         }
 
         return token;
+    }
+
+    @Override
+    public List<String> getSessionAttributeNames(UUID groupId) {
+        Preconditions.checkNotNullArgument(groupId, "groupId is null");
+        checkPermission(SessionAttribute.class, EntityOp.READ);
+        checkUpdatePermission(Group.class);
+        checkUpdatePermission(Constraint.class);
+
+        Set<String> attributes = new HashSet<>();
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+
+            Query query = em.createQuery("select a.name from sec$SessionAttribute a where a.group.id = ?1");
+            query.setParameter(1, groupId);
+            //noinspection unchecked
+            attributes.addAll(query.getResultList());
+
+            query = em.createQuery("select a.name from sec$GroupHierarchy h join h.parent.sessionAttributes a where h.group.id = ?1");
+            query.setParameter(1, groupId);
+            //noinspection unchecked
+            attributes.addAll(query.getResultList());
+
+            tx.commit();
+        }
+        return new ArrayList<>(attributes);
     }
 
     @Override

@@ -39,6 +39,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.Constraint;
 import com.haulmont.cuba.security.entity.ConstraintCheckType;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
@@ -47,14 +48,11 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 
-public class ConstraintEditor extends AbstractEditor {
+public class ConstraintEditor extends AbstractEditor<Constraint> {
 
     @Inject
     protected LookupField entityName;
@@ -69,34 +67,34 @@ public class ConstraintEditor extends AbstractEditor {
     protected SourceCodeEditor groovyScript;
 
     @Inject
-    private Label groovyScriptLabel;
+    protected Label groovyScriptLabel;
 
     @Inject
-    private Label joinClauseLabel;
+    protected Label joinClauseLabel;
 
     @Inject
-    private Label whereClauseLabel;
+    protected Label whereClauseLabel;
 
     @Inject
-    private LinkButton whereClauseHelp;
+    protected LinkButton whereClauseHelp;
 
     @Inject
-    private LinkButton joinClauseHelp;
+    protected LinkButton joinClauseHelp;
 
     @Inject
-    private LinkButton groovyScriptHelp;
+    protected LinkButton groovyScriptHelp;
 
     @Inject
-    private TextField code;
+    protected TextField code;
 
     @Inject
-    private Label codeLabel;
+    protected Label codeLabel;
 
     @Inject
-    private LookupField operationType;
+    protected LookupField operationType;
 
     @Inject
-    private Datasource<Constraint> constraint;
+    protected Datasource<Constraint> constraint;
 
     @Inject
     protected Metadata metadata;
@@ -114,9 +112,14 @@ public class ConstraintEditor extends AbstractEditor {
     protected WindowConfig windowConfig;
 
     @Inject
-    private LookupField type;
+    protected LookupField type;
+
+    @Inject
+    protected UserManagementService userManagementService;
 
     protected Map<Object, String> entities;
+
+    protected static final String SESSION_PREFIX = "session$";
 
     @Override
     public void postInit() {
@@ -144,7 +147,7 @@ public class ConstraintEditor extends AbstractEditor {
         });
     }
 
-    private void setupVisibility() {
+    protected void setupVisibility() {
         Constraint item = (Constraint) getItem();
         asList(groovyScript, groovyScriptLabel, groovyScriptHelp)
                 .forEach(component -> component.setVisible(item.getCheckType().memory()));
@@ -214,13 +217,29 @@ public class ConstraintEditor extends AbstractEditor {
     }
 
     protected void addSpecificSuggestions(SourceCodeEditor sender, String text, int cursorPosition, List<Suggestion> suggestions) {
-        if (cursorPosition >= 1 && ":".equals(text.substring(cursorPosition - 1, cursorPosition))) {
-            suggestions.add(new Suggestion(sender.getAutoCompleteSupport(), "session$userLogin", "session$userLogin",
-                    "", cursorPosition, cursorPosition));
-            suggestions.add(new Suggestion(sender.getAutoCompleteSupport(), "session$userId", "session$userId",
-                    "", cursorPosition, cursorPosition));
-            suggestions.add(new Suggestion(sender.getAutoCompleteSupport(), "session$userGroupId", "session$userGroupId",
-                    "", cursorPosition, cursorPosition));
+        if (cursorPosition <= 0)
+            return;
+        int colonIdx = text.substring(0, cursorPosition).lastIndexOf(":");
+        if (colonIdx < 0)
+            return;
+
+        List<String> strings = new ArrayList<>();
+        strings.add(SESSION_PREFIX + "userGroupId");
+        strings.add(SESSION_PREFIX + "userId");
+        strings.add(SESSION_PREFIX + "userLogin");
+        if (PersistenceHelper.isLoaded(getItem(), "group") && getItem().getGroup() != null) {
+            List<String> attributeNames = userManagementService.getSessionAttributeNames(getItem().getGroup().getId());
+            for (String name : attributeNames) {
+                strings.add(SESSION_PREFIX + name);
+            }
+        }
+        Collections.sort(strings);
+
+        String entered = text.substring(colonIdx + 1, cursorPosition);
+        for (String string : strings) {
+            if (string.startsWith(entered)) {
+                suggestions.add(new Suggestion(sender.getAutoCompleteSupport(), string, string.substring(entered.length()), "", cursorPosition, cursorPosition));
+            }
         }
     }
 
