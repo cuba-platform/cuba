@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.global.filter;
 
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.entity.Entity;
 
 import static java.lang.String.format;
@@ -53,6 +54,10 @@ public class SecurityJpqlGenerator extends AbstractJpqlGenerator {
                 || Boolean.class.isAssignableFrom(javaClass)
                 || operator == Op.IN || operator == Op.NOT_IN) {
             return value;
+        } else if (EnumClass.class.isAssignableFrom(javaClass)) {
+            Enum enumValue = Enum.valueOf(javaClass, value);
+            Object enumId = ((EnumClass) enumValue).getId();
+            return (enumId instanceof Number) ? enumId.toString() : "'" + enumId + "'";
         } else {
             if (operator == Op.CONTAINS || operator == Op.DOES_NOT_CONTAIN) {
                 return "'%" + value + "%'";
