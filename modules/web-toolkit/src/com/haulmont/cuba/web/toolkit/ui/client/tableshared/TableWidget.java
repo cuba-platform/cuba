@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.toolkit.ui.client.tablesort;
+package com.haulmont.cuba.web.toolkit.ui.client.tableshared;
 
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VScrollTable;
 
-public interface EnhancedCubaTableWidget {
+import java.util.List;
+
+public interface TableWidget extends HasEnabled, ShortcutActionHandler.ShortcutActionHandlerOwner {
+    boolean isCustomColumn(int colIndex);
+
+    boolean isGenericRow(Widget rowWidget);
+
+    String[] getVisibleColOrder();
+
+    HasWidgets getRenderedRowByKey(String key);
 
     String getSortDescendingLabel();
     String getSortAscendingLabel();
@@ -32,4 +44,18 @@ public interface EnhancedCubaTableWidget {
     String getPaintableId();
 
     VScrollTable.RowRequestHandler getRowRequestHandler();
+
+    VScrollTable.TableHead getHead();
+
+    String getStylePrimaryName();
+
+    String getColKeyByIndex(int index);
+
+    int getColWidth(String colKey);
+
+    void setColWidth(int colIndex, int w, boolean isDefinedWidth);
+
+    boolean isTextSelectionEnabled();
+
+    List<Widget> getRenderedRows();
 }

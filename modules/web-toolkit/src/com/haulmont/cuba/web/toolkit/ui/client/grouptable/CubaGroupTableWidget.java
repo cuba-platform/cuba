@@ -49,7 +49,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
     }
 
     @Override
-    protected void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
+    public void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
         if (GROUP_DIVIDER_COLUMN_KEY.equals(visibleColOrder[colIndex])) {
             w = 0;
             isDefinedWidth = true;
@@ -260,7 +260,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
     @Override
     protected TableAggregationRow createAggregationRow() {
-        return new TableAggregationRow(getAggregatableTable()) {
+        return new TableAggregationRow(this) {
             @Override
             protected boolean addSpecificCell(String columnId, int colIndex) {
                 if (GROUP_DIVIDER_COLUMN_KEY.equals(columnId)) {
@@ -301,12 +301,12 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
     }
 
     @Override
-    protected boolean isGenericRow(Widget rowWidget) {
+    public boolean isGenericRow(Widget rowWidget) {
         return super.isGenericRow(rowWidget) && !(rowWidget instanceof CubaGroupTableBody.CubaGroupTableGroupRow);
     }
 
     @Override
-    protected boolean isCustomColumn(int colIndex) {
+    public boolean isCustomColumn(int colIndex) {
         return GROUP_DIVIDER_COLUMN_KEY.equals(getColKeyByIndex(colIndex));
     }
 

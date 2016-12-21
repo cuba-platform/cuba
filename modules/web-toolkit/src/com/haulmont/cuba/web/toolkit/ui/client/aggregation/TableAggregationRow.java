@@ -20,22 +20,23 @@ package com.haulmont.cuba.web.toolkit.ui.client.aggregation;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
+import com.haulmont.cuba.web.toolkit.ui.client.tableshared.TableWidget;
 import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.ui.VScrollTable;
 
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 /**
  * Special aggregation row for {@link com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget} and
  * {@link com.haulmont.cuba.web.toolkit.ui.client.treetable.CubaTreeTableWidget}
- *
  */
 public class TableAggregationRow extends Panel {
 
@@ -44,20 +45,20 @@ public class TableAggregationRow extends Panel {
     protected char[] aligns;
     protected Element tr;
 
-    protected AggregatableTable tableWidget;
+    protected TableWidget tableWidget;
 
-    public TableAggregationRow(AggregatableTable tableWidget) {
+    public TableAggregationRow(TableWidget tableWidget) {
         this.tableWidget = tableWidget;
 
         setElement(Document.get().createDivElement());
 
         getElement().setClassName(tableWidget.getStylePrimaryName() + "-arow");
-        getElement().getStyle().setOverflow(Style.Overflow.HIDDEN);
+        getElement().getStyle().setOverflow(Overflow.HIDDEN);
     }
 
     @Override
     public Iterator<Widget> iterator() {
-        return new LinkedList<Widget>().iterator();
+        return Collections.<Widget>emptyList().iterator();
     }
 
     @Override

@@ -24,6 +24,8 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.toolkit.ui.CubaTable;
 import com.haulmont.cuba.web.toolkit.ui.client.profiler.ScreenClientProfiler;
+import com.haulmont.cuba.web.toolkit.ui.client.tableshared.CubaTableShortcutActionHandler;
+import com.haulmont.cuba.web.toolkit.ui.client.tableshared.TableCellClickListener;
 import com.vaadin.client.*;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.VScrollTable;
@@ -46,15 +48,15 @@ public class CubaScrollTableConnector extends TableConnector {
         registerRpc(CubaTableClientRpc.class, new CubaTableClientRpc() {
             @Override
             public void hidePresentationsPopup() {
-                if (getWidget().presentationsEditorPopup != null) {
-                    getWidget().presentationsEditorPopup.hide();
+                if (getWidget()._delegate.presentationsEditorPopup != null) {
+                    getWidget()._delegate.presentationsEditorPopup.hide();
                 }
             }
 
             @Override
             public void hideContextMenuPopup() {
-                if (getWidget().customContextMenuPopup != null) {
-                    getWidget().customContextMenuPopup.hide();
+                if (getWidget()._delegate.customContextMenuPopup != null) {
+                    getWidget()._delegate.customContextMenuPopup.hide();
                 }
             }
 
@@ -85,14 +87,14 @@ public class CubaScrollTableConnector extends TableConnector {
         super.onStateChanged(stateChangeEvent);
 
         if (stateChangeEvent.hasPropertyChanged("textSelectionEnabled")) {
-            getWidget().textSelectionEnabled = getState().textSelectionEnabled;
+            getWidget()._delegate.textSelectionEnabled = getState().textSelectionEnabled;
 
             if (getWidget().getTotalRows() > 0) {
                 getWidget().updateTextSelection();
             }
         }
         if (stateChangeEvent.hasPropertyChanged("contextMenuEnabled")) {
-            getWidget().contextMenuEnabled = getState().contextMenuEnabled;
+            getWidget()._delegate.contextMenuEnabled = getState().contextMenuEnabled;
         }
         if (stateChangeEvent.hasPropertyChanged("presentations")) {
             if (getState().presentations != null) {
@@ -105,40 +107,40 @@ public class CubaScrollTableConnector extends TableConnector {
         if (stateChangeEvent.hasPropertyChanged("contextMenu")) {
             if (getState().contextMenu != null) {
                 ComponentConnector contextMenu = (ComponentConnector) getState().contextMenu;
-                getWidget().customContextMenu = contextMenu.getWidget();
+                getWidget()._delegate.customContextMenu = contextMenu.getWidget();
             } else {
-                getWidget().customContextMenu = null;
+                getWidget()._delegate.customContextMenu = null;
             }
         }
         if (stateChangeEvent.hasPropertyChanged("multiLineCells")) {
-            getWidget().multiLineCells = getState().multiLineCells;
+            getWidget()._delegate.multiLineCells = getState().multiLineCells;
         }
         if (stateChangeEvent.hasPropertyChanged("clickableColumnKeys")) {
             if (getState().clickableColumnKeys != null) {
-                getWidget().clickableColumns = new HashSet<String>(Arrays.asList(getState().clickableColumnKeys));
+                getWidget()._delegate.clickableColumns = new HashSet<String>(Arrays.asList(getState().clickableColumnKeys));
             } else {
-                getWidget().clickableColumns = null;
+                getWidget()._delegate.clickableColumns = null;
             }
         }
         if (stateChangeEvent.hasPropertyChanged("customPopup")) {
             if (getState().customPopup != null) {
                 ComponentConnector customPopup = (ComponentConnector) getState().customPopup;
-                getWidget().customPopupWidget = customPopup.getWidget();
+                getWidget()._delegate.customPopupWidget = customPopup.getWidget();
             } else {
-                getWidget().customPopupWidget = null;
+                getWidget()._delegate.customPopupWidget = null;
             }
         }
         if (stateChangeEvent.hasPropertyChanged("customPopupAutoClose")) {
-            getWidget().customPopupAutoClose = getState().customPopupAutoClose;
+            getWidget()._delegate.customPopupAutoClose = getState().customPopupAutoClose;
         }
         if (stateChangeEvent.hasPropertyChanged("tableSortResetLabel")) {
-            getWidget().tableSortResetLabel = getState().tableSortResetLabel;
+            getWidget()._delegate.tableSortResetLabel = getState().tableSortResetLabel;
         }
         if (stateChangeEvent.hasPropertyChanged("tableSortAscendingLabel")) {
-            getWidget().tableSortAscendingLabel = getState().tableSortAscendingLabel;
+            getWidget()._delegate.tableSortAscendingLabel = getState().tableSortAscendingLabel;
         }
         if (stateChangeEvent.hasPropertyChanged("tableSortDescendingLabel")) {
-            getWidget().tableSortDescendingLabel = getState().tableSortDescendingLabel;
+            getWidget()._delegate.tableSortDescendingLabel = getState().tableSortDescendingLabel;
         }
     }
 
@@ -229,7 +231,7 @@ public class CubaScrollTableConnector extends TableConnector {
     protected void init() {
         super.init();
 
-        getWidget().cellClickListener = new TableCellClickListener() {
+        getWidget()._delegate.cellClickListener = new TableCellClickListener() {
             @Override
             public void onClick(String columnKey, int rowKey) {
                 getRpcProxy(CubaTableServerRpc.class).onClick(columnKey, String.valueOf(rowKey));

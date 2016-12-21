@@ -12,30 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.haulmont.cuba.web.toolkit.ui.client.aggregation;
+package com.haulmont.cuba.web.toolkit.ui.client.tableshared;
 
-import com.vaadin.client.ui.VScrollTable;
-
-/**
- * VScrollTable API wrapper for {@link TableAggregationRow}
- *
- */
-public interface AggregatableTable {
-
-    VScrollTable.TableHead getHead();
-
-    String getStylePrimaryName();
-
-    String[] getVisibleColOrder();
-
-    String getColKeyByIndex(int index);
-
-    int getColWidth(String colKey);
-
-    void setColWidth(int colIndex, int w, boolean isDefinedWidth);
-
-    boolean isTextSelectionEnabled();
+public interface TableCellClickListener {
+    void onClick(String columnKey, int rowKey);
 }

@@ -35,18 +35,6 @@
     border-right: first-number($v-border) solid $border-color;
   }
 
-  .#{$primary-stylename}-header-cell.#{$primary-stylename}-header-sortable {
-    overflow: hidden;
-  }
-
-  .#{$primary-stylename}-header-cell .#{$primary-stylename}-caption-container {
-      overflow: visible;
-  }
-
-  .#{$primary-stylename}-header-cell:hover .#{$primary-stylename}-caption-container {
-      overflow: hidden;
-  }
-
   .#{$primary-stylename}-arow-row {
     @include box-defaults;
 
@@ -198,19 +186,9 @@
     @include transition(none);
   }
 
-  .#{$primary-stylename}-header-cell .#{$primary-stylename}-sort-indicator:before {
-    font-family: FontAwesome;
-    content: "\f0dc";
-    margin-left: $v-unit-size/3*2;
-  }
-
   .#{$primary-stylename}-header-cell-asc .#{$primary-stylename}-sort-indicator,
   .#{$primary-stylename}-header-cell-desc .#{$primary-stylename}-sort-indicator {
     cursor: pointer;
-  }
-
-  .#{$primary-stylename}-header-cell .#{$primary-stylename}-sort-indicator {
-    display: none;
   }
 
   .#{$primary-stylename}-header-cell.#{$primary-stylename}-header-sortable .#{$primary-stylename}-sort-indicator {
@@ -224,14 +202,6 @@
     cursor: pointer;
   }
 
-  .#{$primary-stylename}-header-sortable:hover .#{$primary-stylename}-sort-indicator {
-    opacity: 1;
-  }
-
-  .#{$primary-stylename}-header-sortable:not(:hover) .#{$primary-stylename}-resizer {
-    margin-left: -$v-table-resizer-width !important;
-  }
-
   .c-table-contextmenu {
     @include valo-selection-overlay-style;
   }
@@ -243,10 +213,6 @@
 
   .c-table-contextmenu .c-table-contextmenu-item:hover {
     @include valo-selection-item-selected-style;
-  }
-
-  .#{$primary-stylename} .c-sort-indicator-visible {
-    opacity: 1;
   }
 
   .c-table-composition.has-top-panel {

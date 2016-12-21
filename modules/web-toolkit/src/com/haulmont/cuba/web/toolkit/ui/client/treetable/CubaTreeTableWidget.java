@@ -18,71 +18,39 @@
 package com.haulmont.cuba.web.toolkit.ui.client.treetable;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.event.dom.client.*;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
-import com.haulmont.cuba.web.toolkit.ui.client.aggregation.AggregatableTable;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.profiler.ScreenClientProfiler;
-import com.haulmont.cuba.web.toolkit.ui.client.table.TableCellClickListener;
-import com.haulmont.cuba.web.toolkit.ui.client.tablesort.EnhancedCubaTableWidget;
-import com.haulmont.cuba.web.toolkit.ui.client.tablesort.TableCustomSortDelegate;
-import com.vaadin.client.*;
-import com.vaadin.client.Focusable;
+import com.haulmont.cuba.web.toolkit.ui.client.tableshared.TableWidget;
+import com.haulmont.cuba.web.toolkit.ui.client.tableshared.TableWidgetDelegate;
+import com.vaadin.client.BrowserInfo;
+import com.vaadin.client.ComputedStyle;
+import com.vaadin.client.UIDL;
+import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.Set;
+import java.util.List;
 
 import static com.haulmont.cuba.web.toolkit.ui.client.Tools.isAnyModifierKeyPressed;
-import static com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget.CUBA_TABLE_CLICKABLE_CELL_STYLE;
-import static com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget.CUBA_TABLE_CLICKABLE_TEXT_STYLE;
+import static com.haulmont.cuba.web.toolkit.ui.client.tableshared.TableWidgetDelegate.*;
 
-public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled, EnhancedCubaTableWidget {
+public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
 
-    protected static final String WIDGET_CELL_CLASSNAME = "widget-container";
-
-    protected boolean textSelectionEnabled = false;
-    protected boolean contextMenuEnabled = true;
-
-    protected VOverlay presentationsEditorPopup;
-    protected VOverlay customContextMenuPopup;
-
-    protected ShortcutActionHandler shortcutHandler;
-
-    protected Widget presentationsMenu;
-    protected Widget customContextMenu;
-
-    protected boolean multiLineCells = false;
-
-    protected TableAggregationRow aggregationRow;
-
-    protected Set<String> clickableColumns;
-    protected TableCellClickListener cellClickListener;
-
-    protected VOverlay customPopupOverlay;
-    protected Widget customPopupWidget;
-    protected boolean customPopupAutoClose = false;
-    protected int lastClickClientX;
-    protected int lastClickClientY;
-    protected String profilerMarker;
-
-    protected String tableSortResetLabel;
-    protected String tableSortAscendingLabel;
-    protected String tableSortDescendingLabel;
-    protected TableCustomSortDelegate customSortDelegate;
+    public TableWidgetDelegate _delegate = new TableWidgetDelegate(this, this);
 
     protected CubaTreeTableWidget() {
         // handle shortcuts
@@ -92,47 +60,24 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
         rowRequestHandler = new RowRequestHandler() {
             @Override
             protected void updateVariables() {
-                client.updateVariable(paintableId, "profilerMarker", profilerMarker, false);
-                profilerMarker = null;
+                client.updateVariable(paintableId, "profilerMarker", _delegate.profilerMarker, false);
+                _delegate.profilerMarker = null;
             }
         };
-
-        customSortDelegate = new TableCustomSortDelegate(this);
     }
 
     @Override
     public void scheduleLayoutForChildWidgets() {
-        if (scrollBody != null) {
-            // Fix for #VAADIN-12970, relayout cell widgets
-            // Haulmont API
-            ComponentConnector connector = Util.findConnectorFor(this);
-            // may be null if we switch tabs fast
-            if (connector != null) {
-                LayoutManager lm = connector.getLayoutManager();
-
-                for (Widget w : scrollBody) {
-                    HasWidgets row = (HasWidgets) w;
-                    for (Widget child : row) {
-                        ComponentConnector childConnector = Util.findConnectorFor(child);
-                        if (childConnector != null && childConnector.getConnectorId() != null) {
-                            if (childConnector instanceof ManagedLayout
-                                    || childConnector instanceof AbstractLayoutConnector) {
-                                lm.setNeedsMeasure(childConnector);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        _delegate.scheduleLayoutForChildWidgets();
     }
 
     @Override
     public boolean handleBodyContextMenu(int left, int top) {
-        if (contextMenuEnabled) {
-            if (customContextMenu == null) {
+        if (_delegate.contextMenuEnabled) {
+            if (_delegate.customContextMenu == null) {
                 return super.handleBodyContextMenu(left, top);
             } else if (enabled && !selectedRowKeys.isEmpty()) {
-                showContextMenuPopup(left, top);
+                _delegate.showContextMenuPopup(left, top);
 
                 return true;
             }
@@ -184,8 +129,8 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
         super.onBrowserEvent(event);
 
         final int type = DOM.eventGetType(event);
-        if (type == Event.ONKEYDOWN && shortcutHandler != null) {
-            shortcutHandler.handleKeyboardEvent(event);
+        if (type == Event.ONKEYDOWN && _delegate.shortcutHandler != null) {
+            _delegate.shortcutHandler.handleKeyboardEvent(event);
         }
     }
 
@@ -193,22 +138,22 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
     protected void onDetach() {
         super.onDetach();
 
-        if (presentationsEditorPopup != null) {
-            presentationsEditorPopup.hide();
+        if (_delegate.presentationsEditorPopup != null) {
+            _delegate.presentationsEditorPopup.hide();
         }
 
-        if (customContextMenuPopup != null) {
-            customContextMenuPopup.hide();
+        if (_delegate.customContextMenuPopup != null) {
+            _delegate.customContextMenuPopup.hide();
         }
     }
 
     public void setShortcutActionHandler(ShortcutActionHandler handler) {
-        this.shortcutHandler = handler;
+        _delegate.shortcutHandler = handler;
     }
 
     @Override
     public ShortcutActionHandler getShortcutActionHandler() {
-        return shortcutHandler;
+        return _delegate.shortcutHandler;
     }
 
     @Override
@@ -228,18 +173,48 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
     }
 
     @Override
-    protected void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
+    public TableHead getHead() {
+        return tHead;
+    }
+
+    @Override
+    public String[] getVisibleColOrder() {
+        return visibleColOrder;
+    }
+
+    @Override
+    public String getColKeyByIndex(int index) {
+        return super.getColKeyByIndex(index);
+    }
+
+    @Override
+    public int getColWidth(String colKey) {
+        return super.getColWidth(colKey);
+    }
+
+    @Override
+    public void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
         super.setColWidth(colIndex, w, isDefinedWidth);
 
-        if (aggregationRow != null && aggregationRow.isInitialized()) {
-            aggregationRow.setCellWidth(colIndex, w);
+        if (_delegate.aggregationRow != null && _delegate.aggregationRow.isInitialized()) {
+            _delegate.aggregationRow.setCellWidth(colIndex, w);
         }
     }
 
     @Override
+    public boolean isTextSelectionEnabled() {
+        return _delegate.textSelectionEnabled;
+    }
+
+    @Override
+    public List<Widget> getRenderedRows() {
+        return ((CubaTreeTableBody) scrollBody).getRenderedRows();
+    }
+
+    @Override
     public int getAdditionalRowsHeight() {
-        if (aggregationRow != null) {
-            return aggregationRow.getOffsetHeight();
+        if (_delegate.aggregationRow != null) {
+            return _delegate.aggregationRow.getOffsetHeight();
         }
         return 0;
     }
@@ -250,7 +225,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
     }
 
     public void setPresentationsMenu(Widget presentationsMenu) {
-        if (this.presentationsMenu != presentationsMenu) {
+        if (_delegate.presentationsMenu != presentationsMenu) {
             Style presentationsIconStyle = ((CubaTreeTableTableHead) tHead).presentationsEditIcon.getElement().getStyle();
             if (presentationsMenu == null) {
                 presentationsIconStyle.setDisplay(Style.Display.NONE);
@@ -258,59 +233,24 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
                 presentationsIconStyle.setDisplay(Style.Display.BLOCK);
             }
         }
-        this.presentationsMenu = presentationsMenu;
+        _delegate.presentationsMenu = presentationsMenu;
     }
 
     public void updateTextSelection() {
-        Tools.textSelectionEnable(scrollBody.getElement(), textSelectionEnabled);
+        Tools.textSelectionEnable(scrollBody.getElement(), _delegate.textSelectionEnabled);
     }
 
     protected void updateAggregationRow(UIDL uidl) {
-        if (aggregationRow == null) {
-            aggregationRow = createAggregationRow();
-            insert(aggregationRow, getWidgetIndex(scrollBodyPanel));
+        if (_delegate.aggregationRow == null) {
+            _delegate.aggregationRow = createAggregationRow();
+            insert(_delegate.aggregationRow, getWidgetIndex(scrollBodyPanel));
         }
-        aggregationRow.updateFromUIDL(uidl);
-        aggregationRow.setHorizontalScrollPosition(scrollLeft);
+        _delegate.aggregationRow.updateFromUIDL(uidl);
+        _delegate.aggregationRow.setHorizontalScrollPosition(scrollLeft);
     }
 
     protected TableAggregationRow createAggregationRow() {
-        return new TableAggregationRow(new AggregatableTable() {
-            @Override
-            public TableHead getHead() {
-                return tHead;
-            }
-
-            @Override
-            public String getStylePrimaryName() {
-                return CubaTreeTableWidget.this.getStylePrimaryName();
-            }
-
-            @Override
-            public String[] getVisibleColOrder() {
-                return visibleColOrder;
-            }
-
-            @Override
-            public String getColKeyByIndex(int index) {
-                return CubaTreeTableWidget.this.getColKeyByIndex(index);
-            }
-
-            @Override
-            public int getColWidth(String colKey) {
-                return CubaTreeTableWidget.this.getColWidth(colKey);
-            }
-
-            @Override
-            public void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
-                CubaTreeTableWidget.this.setColWidth(colIndex, w, isDefinedWidth);
-            }
-
-            @Override
-            public boolean isTextSelectionEnabled() {
-                return textSelectionEnabled;
-            }
-        });
+        return new TableAggregationRow(this);
     }
 
     @Override
@@ -321,8 +261,8 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
         super.onScroll(event);
 
-        if (aggregationRow != null) {
-            aggregationRow.setHorizontalScrollPosition(scrollLeft);
+        if (_delegate.aggregationRow != null) {
+            _delegate.aggregationRow.setHorizontalScrollPosition(scrollLeft);
         }
     }
 
@@ -340,32 +280,22 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
     @Override
     public String getSortDescendingLabel() {
-        return tableSortDescendingLabel;
+        return _delegate.tableSortDescendingLabel;
     }
 
     @Override
     public String getSortAscendingLabel() {
-        return tableSortAscendingLabel;
+        return _delegate.tableSortAscendingLabel;
     }
 
     @Override
     public String getSortResetLabel() {
-        return tableSortResetLabel;
-    }
-
-    @Override
-    public ApplicationConnection getClient() {
-        return client;
+        return _delegate.tableSortResetLabel;
     }
 
     @Override
     public Widget getOwner() {
         return CubaTreeTableWidget.this;
-    }
-
-    @Override
-    public String getPaintableId() {
-        return paintableId;
     }
 
     @Override
@@ -384,23 +314,16 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
     @Override
     protected void reassignHeaderCellWidth(int colIndex, HeaderCell hcell, int minWidth) {
-        for (Widget rowWidget : ((CubaTreeTableWidget.CubaTreeTableBody) scrollBody).getRenderedRows()) {
-            if (isGenericRow(rowWidget)) {
-                VScrollTableBody.VScrollTableRow row = (VScrollTableBody.VScrollTableRow) rowWidget;
-
-                double realColWidth = row.getRealCellWidth(colIndex);
-                if (realColWidth > 0) {
-                    if (realColWidth > minWidth) {
-                        hcell.setWidth(realColWidth + "px");
-                    }
-
-                    break;
-                }
-            }
-        }
+        _delegate.reassignHeaderCellWidth(colIndex, hcell, minWidth);
     }
 
-    protected boolean isGenericRow(Widget rowWidget) {
+    @Override
+    public boolean isCustomColumn(int colIndex) {
+        return false;
+    }
+
+    @Override
+    public boolean isGenericRow(Widget rowWidget) {
         return rowWidget instanceof VScrollTableBody.VScrollTableRow;
     }
 
@@ -436,22 +359,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
         public void onBrowserEvent(Event event) {
             super.onBrowserEvent(event);
 
-            if (event.getEventTarget().cast() == presentationsEditIcon.getElement() && isEnabled()) {
-                presentationsEditorPopup = new VOverlay();
-                presentationsEditorPopup.setStyleName("c-table-prefs-editor");
-                presentationsEditorPopup.setOwner(CubaTreeTableWidget.this);
-                presentationsEditorPopup.setWidget(presentationsMenu);
-
-                presentationsEditorPopup.addCloseHandler(new CloseHandler<PopupPanel>() {
-                    @Override
-                    public void onClose(CloseEvent<PopupPanel> event) {
-                        presentationsEditorPopup = null;
-                    }
-                });
-
-                presentationsEditorPopup.setAutoHideEnabled(true);
-                presentationsEditorPopup.showRelativeTo(presentationsEditIcon);
-            }
+            _delegate.showPresentationEditorPopup(event, presentationsEditIcon);
         }
 
         @Override
@@ -462,32 +370,28 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
     protected class CubaTreeTableHeaderCell extends HeaderCell {
 
-        protected Element sortIndicator;
-
         protected int sortClickCounter = 0;
 
         public CubaTreeTableHeaderCell(String colId, String headerText) {
             super(colId, headerText);
 
-            sortIndicator = td.getChild(1).cast();
-            DOM.sinkEvents(sortIndicator, Event.ONCLICK);
+            Element sortIndicator = td.getChild(1).cast();
+            DOM.sinkEvents(sortIndicator, Event.ONCONTEXTMENU | DOM.getEventsSunk(sortIndicator));
+            Element captionContainer = td.getChild(2).cast();
+            DOM.sinkEvents(captionContainer, Event.ONCONTEXTMENU | DOM.getEventsSunk(captionContainer));
         }
 
         @Override
         public void onBrowserEvent(Event event) {
             super.onBrowserEvent(event);
 
-            if (isEnabled() && event.getTypeInt() == Event.ONMOUSEDOWN) {
-                if (event.getEventTarget().cast() == sortIndicator) {
-                    customSortDelegate.showSortMenu(sortIndicator, cid);
+            if (isEnabled() && event.getTypeInt() == Event.ONCONTEXTMENU) {
+                if (getStyleName().contains("-header-sortable")) {
+                    _delegate.showSortMenu(td, cid);
                 }
-            }
-        }
 
-        @Override
-        protected void handleCaptionEvent(Event event) {
-            if (event.getEventTarget().cast() != sortIndicator) {
-                super.handleCaptionEvent(event);
+                event.preventDefault();
+                event.stopPropagation();
             }
         }
 
@@ -674,11 +578,11 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
                             String columnKey = tHead.getHeaderCell(childIndex).getColKey();
                             if (columnKey != null) {
                                 WidgetUtil.TextRectangle rect = WidgetUtil.getBoundingClientRect(eventTarget);
-                                lastClickClientX = (int) Math.ceil(rect.getLeft());
-                                lastClickClientY = (int) Math.ceil(rect.getBottom());
+                                _delegate.lastClickClientX = (int) Math.ceil(rect.getLeft());
+                                _delegate.lastClickClientY = (int) Math.ceil(rect.getBottom());
 
-                                if (cellClickListener != null) {
-                                    cellClickListener.onClick(columnKey, rowKey);
+                                if (_delegate.cellClickListener != null) {
+                                    _delegate.cellClickListener.onClick(columnKey, rowKey);
 
                                     event.preventDefault();
                                     event.stopPropagation();
@@ -751,9 +655,9 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
                 super.initCellWithText(text, align, style, textIsHTML, sorted, description, td);
 
                 Element tdElement = td.cast();
-                Tools.textSelectionEnable(tdElement, textSelectionEnabled);
+                Tools.textSelectionEnable(tdElement, _delegate.textSelectionEnabled);
 
-                if (clickableColumns != null && clickableColumns.contains(currentColumnKey)) {
+                if (_delegate.clickableColumns != null && _delegate.clickableColumns.contains(currentColumnKey)) {
                     Element wrapperElement = tdElement.getFirstChildElement();
                     final Element clickableSpan = DOM.createSpan().cast();
                     clickableSpan.setClassName(CUBA_TABLE_CLICKABLE_CELL_STYLE);
@@ -764,7 +668,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
                     DOM.appendChild(wrapperElement, clickableSpan);
                 }
 
-                if (multiLineCells) {
+                if (_delegate.multiLineCells) {
                     Style wrapperStyle = tdElement.getFirstChildElement().getStyle();
                     wrapperStyle.setWhiteSpace(Style.WhiteSpace.PRE_LINE);
                 }
@@ -772,7 +676,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
             @Override
             public void showContextMenu(Event event) {
-                if (contextMenuEnabled && enabled && (customContextMenu != null || actionKeys != null)) {
+                if (_delegate.contextMenuEnabled && enabled && (_delegate.customContextMenu != null || actionKeys != null)) {
                     // Show context menu if there are registered action handlers
                     int left = WidgetUtil.getTouchOrMouseClientX(event)
                             + Window.getScrollLeft();
@@ -787,8 +691,8 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
             @Override
             public void showContextMenu(int left, int top) {
-                if (customContextMenu != null) {
-                    showContextMenuPopup(left, top);
+                if (_delegate.customContextMenu != null) {
+                    _delegate.showContextMenuPopup(left, top);
                 } else {
                     super.showContextMenu(left, top);
                 }
@@ -845,7 +749,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
             @Override
             protected boolean hasContextMenuActions() {
-                if (contextMenuEnabled && customContextMenu != null) {
+                if (_delegate.contextMenuEnabled && _delegate.customContextMenu != null) {
                     return true;
                 }
 
@@ -855,7 +759,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
         @Override
         public void renderInitialRows(UIDL rowData, int firstIndex, int rows) {
-            profilerMarker = ScreenClientProfiler.getInstance().getProfilerMarker();
+            _delegate.profilerMarker = ScreenClientProfiler.getInstance().getProfilerMarker();
             super.renderInitialRows(rowData, firstIndex, rows);
         }
 
@@ -864,92 +768,12 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
         }
     }
 
-    protected void showContextMenuPopup(int left, int top) {
-        if (customContextMenu instanceof HasWidgets) {
-            if (!((HasWidgets) customContextMenu).iterator().hasNext()) {
-                // there are no actions to show
-                return;
-            }
-        }
-
-        customContextMenuPopup = Tools.createCubaTableContextMenu();
-        customContextMenuPopup.setOwner(this);
-        customContextMenuPopup.setWidget(customContextMenu);
-
-        customContextMenuPopup.addCloseHandler(new CloseHandler<PopupPanel>() {
-            @Override
-            public void onClose(CloseEvent<PopupPanel> event) {
-                customContextMenuPopup = null;
-            }
-        });
-
-        Tools.showPopup(customContextMenuPopup, left, top);
-    }
-
     public void requestFocus(final String itemKey, final String columnKey) {
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-                try {
-                    setFocus(itemKey, columnKey);
-                } catch (Exception e) {
-                    VConsole.error(e);
-                }
-            }
-        });
-    }
-
-    protected void setFocus(String itemKey, String columnKey) {
-        CubaTreeTableBody.CubaTreeTableRow row =
-                (CubaTreeTableBody.CubaTreeTableRow) getRenderedRowByKey(itemKey);
-
-        for (Widget childWidget : row.getChildWidgets()) {
-            int columnIndex = Arrays.asList(visibleColOrder).indexOf(columnKey);
-            if (row.getElement().getChild(columnIndex).getFirstChild() == childWidget.getElement().getParentNode()) {
-                focusWidget(childWidget);
-            }
-        }
-    }
-
-    protected boolean focusWidget(Widget widget) {
-        if (widget instanceof Focusable) {
-            ((Focusable) widget).focus();
-            return true;
-        } else if (widget instanceof com.google.gwt.user.client.ui.Focusable) {
-            ((com.google.gwt.user.client.ui.Focusable) widget).setFocus(true);
-            return true;
-        } else if (widget instanceof HasWidgets) {
-            for (Widget childWidget : (HasWidgets) widget) {
-                if (focusWidget(childWidget)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        _delegate.requestFocus(itemKey, columnKey);
     }
 
     public void showCustomPopup() {
-        if (customPopupWidget != null) {
-            if (customPopupWidget instanceof HasWidgets) {
-                if (!((HasWidgets) customPopupWidget).iterator().hasNext()) {
-                    // there are no component to show
-                    return;
-                }
-            }
-
-            customPopupOverlay = Tools.createCubaTablePopup(customPopupAutoClose);
-            customPopupOverlay.setOwner(this);
-            customPopupOverlay.setWidget(customPopupWidget);
-
-            customPopupOverlay.addCloseHandler(new CloseHandler<PopupPanel>() {
-                @Override
-                public void onClose(CloseEvent<PopupPanel> event) {
-                    customPopupOverlay = null;
-                }
-            });
-
-            Tools.showPopup(customPopupOverlay, lastClickClientX, lastClickClientY);
-        }
+        _delegate.showCustomPopup();
     }
 
     @Override
