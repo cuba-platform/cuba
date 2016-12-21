@@ -34,6 +34,7 @@ public class CubaComboBox extends ComboBox implements Action.Container {
      * painting and handling as well.
      */
     protected ActionManager shortcutsManager;
+    protected OptionIconProvider optionIconProvider;
 
     public CubaComboBox() {
         setValidationVisible(false);
@@ -123,6 +124,29 @@ public class CubaComboBox extends ComboBox implements Action.Container {
     }
 
     @Override
+    public Resource getItemIcon(Object itemId) {
+        if (optionIconProvider != null) {
+            Resource itemIcon = optionIconProvider.getItemIcon(itemId);
+            if (itemIcon != null) {
+                return itemIcon;
+            }
+        }
+
+        return super.getItemIcon(itemId);
+    }
+
+    public OptionIconProvider getOptionIconProvider() {
+        return optionIconProvider;
+    }
+
+    public void setOptionIconProvider(OptionIconProvider optionIconProvider) {
+        if (this.optionIconProvider != optionIconProvider) {
+            this.optionIconProvider = optionIconProvider;
+            markAsDirty();
+        }
+    }
+
+    @Override
     protected ActionManager getActionManager() {
         if (shortcutsManager == null) {
             shortcutsManager = new ActionManager(this);
@@ -158,5 +182,10 @@ public class CubaComboBox extends ComboBox implements Action.Container {
     @Override
     public void removeActionHandler(Action.Handler actionHandler) {
         getActionManager().removeActionHandler(actionHandler);
+    }
+
+    public interface OptionIconProvider {
+
+        Resource getItemIcon(Object item);
     }
 }

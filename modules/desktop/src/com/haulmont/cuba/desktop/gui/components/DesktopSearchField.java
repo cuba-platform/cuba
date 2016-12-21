@@ -97,6 +97,9 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     };
     protected String inputPrompt;
 
+    // just stub
+    protected OptionIconProvider optionIconProvider;
+
     public DesktopSearchField() {
         composition = new JPanel();
         composition.setLayout(new BorderLayout());
@@ -460,6 +463,19 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     @Override
     public boolean isNullOptionVisible() {
         return nullOptionVisible;
+    }
+
+    public void setOptionIconProvider(OptionIconProvider<?> optionIconProvider) {
+        this.optionIconProvider = optionIconProvider;
+    }
+
+    @Override
+    public <T> void setOptionIconProvider(Class<T> optionClass, OptionIconProvider<T> optionIconProvider) {
+        this.optionIconProvider = optionIconProvider;
+    }
+
+    public OptionIconProvider<?> getOptionIconProvider() {
+        return optionIconProvider;
     }
 
     @Override

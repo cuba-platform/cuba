@@ -79,6 +79,26 @@ public interface LookupField extends OptionsField, Component.HasInputPrompt {
      */
     boolean isNullOptionVisible();
 
+    /**
+     * Set the icon provider for the LookupField.
+     *
+     * @param optionIconProvider provider which provides icons for options
+     */
+    void setOptionIconProvider(OptionIconProvider<?> optionIconProvider);
+
+    /**
+     * Set the icon provider for LookupField.
+     *
+     * @param optionClass        class of the option
+     * @param optionIconProvider provider which provides icons for options
+     */
+    <T> void setOptionIconProvider(Class<T> optionClass, OptionIconProvider<T> optionIconProvider);
+
+    /**
+     * @return icon provider of the LookupField.
+     */
+    OptionIconProvider<?> getOptionIconProvider();
+
     enum FilterMode {
         NO,
         STARTS_WITH,
@@ -94,5 +114,19 @@ public interface LookupField extends OptionsField, Component.HasInputPrompt {
          * @param caption value entered by user
          */
         void addNewOption(String caption);
+    }
+
+    /**
+     * Allows to set icons for particular elements in the options list.
+     */
+    interface OptionIconProvider<T> {
+
+        /**
+         * Called when component paints its content.
+         *
+         * @param item item from options list, options map or enum options
+         * @return icon name or null to show no icon
+         */
+        String getItemIcon(T item);
     }
 }

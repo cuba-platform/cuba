@@ -41,6 +41,7 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.ErrorMessage;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -64,6 +65,7 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     protected Messages messages = AppBeans.get(Messages.NAME);
 
     protected boolean nullOptionVisible = true;
+    protected OptionIconProvider optionIconProvider;
 
     public WebLookupField() {
         createComponent();
@@ -405,6 +407,42 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     @Override
     public boolean isNullOptionVisible() {
         return nullOptionVisible;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setOptionIconProvider(OptionIconProvider<?> optionIconProvider) {
+        setOptionIconProvider(Object.class, (OptionIconProvider) optionIconProvider);
+    }
+
+    @Override
+    public <T> void setOptionIconProvider(Class<T> optionClass, OptionIconProvider<T> optionIconProvider) {
+        if (this.optionIconProvider != optionIconProvider) {
+            // noinspection unchecked
+            this.optionIconProvider = optionIconProvider;
+
+            if (optionIconProvider == null) {
+                component.setOptionIconProvider(null);
+            } else {
+                component.setOptionIconProvider(itemId -> {
+                    T typedItem = optionClass.cast(itemId);
+
+                    String resourceId;
+                    try {
+                        // noinspection unchecked
+                        resourceId = optionIconProvider.getItemIcon(typedItem);
+                    } catch (Exception e) {
+                        LoggerFactory.getLogger(WebLookupField.class).warn("Error invoking OptionIconProvider getItemIcon method", e);
+                        return null;
+                    }
+
+                    return WebComponentsHelper.getIcon(resourceId);
+                });
+            }
+        }
+    }
+
+    public OptionIconProvider<?> getOptionIconProvider() {
+        return optionIconProvider;
     }
 
     @Override

@@ -93,6 +93,9 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     protected boolean nullOptionVisible = true;
     private ArrowDownActionHandler arrowDownActionHandler;
 
+    // just stub
+    protected OptionIconProvider optionIconProvider;
+
     public DesktopSuggestionField() {
         composition = new JPanel();
         composition.setLayout(new BorderLayout());
@@ -541,6 +544,19 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     @Override
     public boolean isNullOptionVisible() {
         return nullOptionVisible;
+    }
+
+    public void setOptionIconProvider(OptionIconProvider<?> optionIconProvider) {
+        this.optionIconProvider = optionIconProvider;
+    }
+
+    @Override
+    public <T> void setOptionIconProvider(Class<T> optionClass, OptionIconProvider<T> optionIconProvider) {
+        this.optionIconProvider = optionIconProvider;
+    }
+
+    public OptionIconProvider<?> getOptionIconProvider() {
+        return optionIconProvider;
     }
 
     @Override
