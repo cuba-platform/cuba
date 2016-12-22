@@ -21,10 +21,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Calendar;
-import com.haulmont.cuba.gui.components.calendar.CalendarEventProvider;
-import com.haulmont.cuba.gui.components.calendar.EntityCalendarEvent;
-import com.haulmont.cuba.gui.components.calendar.EntityCalendarEventProvider;
-import com.haulmont.cuba.gui.components.calendar.ListCalendarEventProvider;
+import com.haulmont.cuba.gui.components.calendar.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import com.haulmont.cuba.web.gui.components.calendar.CalendarEventProviderWrapper;
@@ -48,6 +45,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     protected List<CalendarForwardClickListener> forwardClickListeners;
     protected List<CalendarBackwardClickListener> backwardClickListeners;
     protected List<CalendarEventMoveListener> eventMoveListeners;
+    protected List<CalendarRangeSelectListener> rangeSelectListeners;
 
     public WebCalendar() {
         component = createComponent();
@@ -109,6 +107,19 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
             }
         });
 
+        component.setHandler(new CalendarComponentEvents.RangeSelectHandler() {
+            @Override
+            public void rangeSelect(CalendarComponentEvents.RangeSelectEvent event) {
+                if (rangeSelectListeners != null) {
+                    for (CalendarRangeSelectListener calendarRangeSelectListener : rangeSelectListeners) {
+                        calendarRangeSelectListener.rangeSelect(new CalendarRangeSelectEvent(WebCalendar.this,
+                                event.getStart(),
+                                event.getEnd()));
+                    }
+                }
+            }
+        });
+
         component.setHandler(new CalendarComponentEvents.EventClickHandler() {
             @Override
             public void eventClick(CalendarComponentEvents.EventClick event) {
@@ -122,10 +133,11 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
                                     .getEntity();
                         }
 
+                        CalendarEvent calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
                         for (CalendarEventClickListener calendarEventClickListener : eventClickListeners) {
                             calendarEventClickListener.eventClick(new CalendarEventClickEvent(
                                     WebCalendar.this,
-                                    ((CalendarEventWrapper) calendarEvent).getCalendarEvent(),
+                                    calendarEventWrapper,
                                     entity
                             ));
                         }
@@ -361,7 +373,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     @Override
     public void removeDateClickListener(CalendarDateClickListener listener) {
-        if (!dateClickListeners.isEmpty()) {
+        if (dateClickListeners != null) {
             dateClickListeners.remove(listener);
         }
     }
@@ -395,7 +407,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     @Override
     public void removeEventResizeListener(CalendarEventResizeListener listener) {
-        if (!eventResizeListeners.isEmpty()) {
+        if (eventResizeListeners != null) {
             eventResizeListeners.remove(listener);
         }
     }
@@ -429,7 +441,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     @Override
     public void removeWeekClickListener(CalendarWeekClickListener listener) {
-        if (!weekClickListeners.isEmpty()) {
+        if (weekClickListeners != null) {
             weekClickListeners.remove(listener);
         }
     }
@@ -446,7 +458,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     @Override
     public void removeForwardClickListener(CalendarForwardClickListener listener) {
-        if (!forwardClickListeners.isEmpty()) {
+        if (forwardClickListeners != null) {
             forwardClickListeners.remove(listener);
         }
     }
@@ -463,8 +475,25 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     @Override
     public void removeBackwardClickListener(CalendarBackwardClickListener listener) {
-        if (!backwardClickListeners.isEmpty()) {
+        if (backwardClickListeners != null) {
             backwardClickListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void addRangeSelectListener(CalendarRangeSelectListener listener) {
+        if (rangeSelectListeners == null) {
+            rangeSelectListeners = new ArrayList<>();
+        }
+        if (!rangeSelectListeners.contains(listener)) {
+            rangeSelectListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeRangeSelectListener(CalendarRangeSelectListener listener) {
+        if (rangeSelectListeners != null) {
+            rangeSelectListeners.remove(listener);
         }
     }
 
