@@ -13,6 +13,7 @@ info:
     * Execution of predefined JPQL queries
     * Execution of services methods
     * Getting metadata (entities, views, enumerations, datatypes)
+    * Getting localized messages
     * Getting current user permissions (access to entities, attributes, specific permissions)
     * Getting current user information (name, language, time zone, etc.)
     * Working with files
@@ -448,6 +449,8 @@ tags:
     description: Current user permissions
   - name: Metadata
     description: Entities metadata
+  - name: Localization
+    description: Localized messages
   - name: UserInfo
     description: User information
   - name: Documentation
@@ -1066,6 +1069,42 @@ paths:
             type: array
             items:
               $ref: '#/definitions/datatype'
+
+############################### Localization #######################################
+  /localization/entities:
+    get:
+      tags:
+        - Localization
+      summary: Get localized messages for all entities and their attributes
+      description: |
+        Method gets localized messages for all entities and their attributes. It returns a JSON object that represents
+        a map of localized messages. The key is entity or entity property name, the value is localized message.
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+
+  /localization/entities/{entityName}:
+    get:
+      tags:
+        - Localization
+      summary: Get localized messages for entity and its attributes
+      description: |
+        Method gets localized messages for entity and its attributes. It returns a JSON object that represents
+        a map of localized messages. The key is entity or entity property name, the value is localized message.
+      parameters:
+        - $ref: '#/parameters/entityNameParam'
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+        404:
+          description: |
+            MetaClass not found
+          schema:
+            $ref: '#/definitions/error'
 
 ############################### Permissions ####################################
   /permissions:
