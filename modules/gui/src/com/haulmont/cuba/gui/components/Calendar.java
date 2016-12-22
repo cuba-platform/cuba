@@ -23,7 +23,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import javax.annotation.Nullable;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 
 public interface Calendar extends Component.BelongToFrame, Component.HasCaption, Component.HasIcon {
@@ -146,6 +145,9 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
 
     void addBackwardClickListener(CalendarBackwardClickListener listener);
     void removeBackwardClickListener(CalendarBackwardClickListener listener);
+
+    void addRangeSelectListener(CalendarRangeSelectListener listener);
+    void removeRangeSelectListener(CalendarRangeSelectListener listener);
 
     enum TimeFormat {
         FORMAT_12H, FORMAT_24H
@@ -348,6 +350,37 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
 
         public int getYear() {
             return year;
+        }
+    }
+
+    /**
+     * Time range mouse select listener.
+     */
+    interface CalendarRangeSelectListener {
+        void rangeSelect(CalendarRangeSelectEvent event);
+    }
+
+    class CalendarRangeSelectEvent {
+        protected Calendar calendar;
+        protected Date start;
+        protected Date end;
+
+        public CalendarRangeSelectEvent(Calendar calendar, Date start, Date end) {
+            this.calendar = calendar;
+            this.start = start;
+            this.end = end;
+        }
+
+        public Calendar getCalendar() {
+            return calendar;
+        }
+
+        public Date getStart() {
+            return start;
+        }
+
+        public Date getEnd() {
+            return end;
         }
     }
 }
