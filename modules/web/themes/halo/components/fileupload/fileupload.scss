@@ -167,7 +167,7 @@
     }
   }
 
-  .v-slot-c-dropzone-description {
+  .v-slot-dropzone-description {
     border: 2px dashed #cccccc;
   }
 
@@ -175,7 +175,7 @@
     visibility: hidden;
   }
 
-  .c-dropzone-container.c-fileupload-dropzone .c-dropzone-description {
+  .dropzone-container.c-fileupload-dropzone .dropzone-description {
     border: none;
   }
 }
