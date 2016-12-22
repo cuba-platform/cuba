@@ -391,7 +391,11 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
                 double realColWidth = row.getRealCellWidth(colIndex);
                 if (realColWidth > 0) {
                     if (realColWidth > minWidth) {
-                        hcell.setWidth(realColWidth + "px");
+                        Style hStyle = hcell.getElement().getStyle();
+
+                        hStyle.setProperty("width", realColWidth + "px");
+                        hStyle.setProperty("min-width", realColWidth + "px");
+                        hStyle.setProperty("max-width", realColWidth + "px");
                     }
 
                     break;
@@ -462,32 +466,28 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
     protected class CubaTreeTableHeaderCell extends HeaderCell {
 
-        protected Element sortIndicator;
-
         protected int sortClickCounter = 0;
 
         public CubaTreeTableHeaderCell(String colId, String headerText) {
             super(colId, headerText);
 
-            sortIndicator = td.getChild(1).cast();
-            DOM.sinkEvents(sortIndicator, Event.ONCLICK);
+            Element sortIndicator = td.getChild(1).cast();
+            DOM.sinkEvents(sortIndicator, Event.ONCONTEXTMENU | DOM.getEventsSunk(sortIndicator));
+            Element captionContainer = td.getChild(2).cast();
+            DOM.sinkEvents(captionContainer, Event.ONCONTEXTMENU | DOM.getEventsSunk(captionContainer));
         }
 
         @Override
         public void onBrowserEvent(Event event) {
             super.onBrowserEvent(event);
 
-            if (isEnabled() && event.getTypeInt() == Event.ONMOUSEDOWN) {
-                if (event.getEventTarget().cast() == sortIndicator) {
-                    customSortDelegate.showSortMenu(sortIndicator, cid);
+            if (isEnabled() && event.getTypeInt() == Event.ONCONTEXTMENU) {
+                if (getStyleName().contains("-header-sortable")) {
+                    customSortDelegate.showSortMenu(td, cid);
                 }
-            }
-        }
 
-        @Override
-        protected void handleCaptionEvent(Event event) {
-            if (event.getEventTarget().cast() != sortIndicator) {
-                super.handleCaptionEvent(event);
+                event.preventDefault();
+                event.stopPropagation();
             }
         }
 

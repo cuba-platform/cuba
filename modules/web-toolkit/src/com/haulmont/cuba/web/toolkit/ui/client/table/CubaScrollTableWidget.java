@@ -261,7 +261,11 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                 double realColWidth = row.getRealCellWidth(colIndex);
                 if (realColWidth > 0) {
                     if (realColWidth > minWidth) {
-                        hcell.setWidth(realColWidth + "px");
+                        Style hStyle = hcell.getElement().getStyle();
+
+                        hStyle.setProperty("width", realColWidth + "px");
+                        hStyle.setProperty("min-width", realColWidth + "px");
+                        hStyle.setProperty("max-width", realColWidth + "px");
                     }
 
                     break;
@@ -478,25 +482,28 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
     protected class CubaScrollTableHeaderCell extends HeaderCell {
 
-        protected Element sortIndicator;
-
         protected int sortClickCounter = 0;
 
         public CubaScrollTableHeaderCell(String colId, String headerText) {
             super(colId, headerText);
 
-            sortIndicator = td.getChild(1).cast();
-            DOM.sinkEvents(sortIndicator, Event.ONCLICK);
+            Element sortIndicator = td.getChild(1).cast();
+            DOM.sinkEvents(sortIndicator, Event.ONCONTEXTMENU | DOM.getEventsSunk(sortIndicator));
+            Element captionContainer = td.getChild(2).cast();
+            DOM.sinkEvents(captionContainer, Event.ONCONTEXTMENU | DOM.getEventsSunk(captionContainer));
         }
 
         @Override
         public void onBrowserEvent(Event event) {
             super.onBrowserEvent(event);
 
-            if (isEnabled() && event.getTypeInt() == Event.ONMOUSEDOWN) {
-                if (event.getEventTarget().cast() == sortIndicator) {
-                    customSortDelegate.showSortMenu(sortIndicator, cid);
+            if (isEnabled() && event.getTypeInt() == Event.ONCONTEXTMENU) {
+                if (getStyleName().contains("-header-sortable")) {
+                    customSortDelegate.showSortMenu(td, cid);
                 }
+
+                event.preventDefault();
+                event.stopPropagation();
             }
         }
 
@@ -507,13 +514,6 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             }
 
             super.setText(headerText);
-        }
-
-        @Override
-        protected void handleCaptionEvent(Event event) {
-            if (event.getEventTarget().cast() != sortIndicator) {
-                super.handleCaptionEvent(event);
-            }
         }
 
         @Override
@@ -581,15 +581,6 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                 rowRequestHandler.cancel(); // instead of waiting
                 rowRequestHandler.run(); // run immediately
             }
-        }
-
-        @Override
-        public void resizeCaptionContainer(int rightSpacing) {
-            if (!td.getClassName().contains("-asc") && !td.getClassName().contains("-desc")) {
-                ComputedStyle computedStyle = new ComputedStyle(sortIndicator);
-                rightSpacing += (int) Math.ceil(computedStyle.getWidth());
-            }
-            super.resizeCaptionContainer(rightSpacing);
         }
     }
 
