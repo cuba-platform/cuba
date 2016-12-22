@@ -116,6 +116,15 @@
       border: 1px solid $cuba-field-border-color;
     }
 
+    .#{$primary-stylename}.v-has-width {
+      & > .#{$primary-stylename}-body-wrapper,
+      & > .#{$primary-stylename}-header-wrap,
+      & > .#{$primary-stylename}-footer-wrap {
+        width: 100% !important;
+        @include box-defaults;
+      }
+    }
+
     .#{$primary-stylename}-body {
       background: #fff;
     }
