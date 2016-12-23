@@ -344,7 +344,7 @@ definitions:
               type: string
               example: 10
               description: enum id - the value that is stored in the database
-            description:
+            caption:
               type: string
               description: localized enum value
               example: Active

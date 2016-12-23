@@ -19,11 +19,11 @@ package com.haulmont.restapi.data;
 public class EnumValueInfo {
     public String name;
     public Object id;
-    public String description;
+    public String caption;
 
-    public EnumValueInfo(String name, Object id, String description) {
+    public EnumValueInfo(String name, Object id, String caption) {
         this.name = name;
         this.id = id;
-        this.description = description;
+        this.caption = caption;
     }
 }
