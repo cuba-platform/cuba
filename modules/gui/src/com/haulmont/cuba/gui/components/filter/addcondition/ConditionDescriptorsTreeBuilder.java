@@ -135,7 +135,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
                 continue;
             }
             MetaProperty metaProperty = propertyPath.getMetaProperty();
-            if (isPropertyAllowed(metaProperty) && !excludedProperties.contains(metaProperty.getName())) {
+            if (isPropertyAllowed(datasource.getMetaClass(), metaProperty) && !excludedProperties.contains(metaProperty.getName())) {
                 Node<AbstractConditionDescriptor> node = new Node<>(propertyDescriptor);
                 propertyHeaderNode.addChild(node);
 
@@ -182,7 +182,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         if (metaProperty.getRange().isClass() && (metadataTools.getCrossDataStoreReferenceIdProperty(storeName, metaProperty) == null)) {
             MetaClass childMetaClass = metaProperty.getRange().asClass();
             for (MetaProperty property : childMetaClass.getProperties()) {
-                if (isPropertyAllowed(property)) {
+                if (isPropertyAllowed(filterMetaClass, property)) {
                     String propertyPath = mpp.toString() + "." + property.getName();
                     if (excludedProperties.contains(propertyPath))
                         continue;
@@ -230,8 +230,9 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         List<String> includedProps = new ArrayList<>();
         Pattern inclPattern = Pattern.compile(includeRe.replace(" ", ""));
 
-        for (MetaProperty property : filter.getDatasource().getMetaClass().getProperties()) {
-            if (!isPropertyAllowed(property)) continue;
+        MetaClass metaClass = filter.getDatasource().getMetaClass();
+        for (MetaProperty property : metaClass.getProperties()) {
+            if (!isPropertyAllowed(metaClass, property)) continue;
 
             if (inclPattern.matcher(property.getName()).matches()) {
                 includedProps.add(property.getName());
@@ -252,8 +253,8 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         }
     }
 
-    protected boolean isPropertyAllowed(MetaProperty property) {
-        return security.isEntityAttrPermitted(property.getDomain(), property.getName(), EntityAttrAccess.VIEW)
+    protected boolean isPropertyAllowed(MetaClass metaClass, MetaProperty property) {
+        return security.isEntityAttrPermitted(metaClass, property.getName(), EntityAttrAccess.VIEW)
                 && !metadataTools.isSystemLevel(property)           // exclude system level attributes
                 && (metadataTools.isPersistent(property)            // exclude transient properties
                     || (metadataTools.getCrossDataStoreReferenceIdProperty(storeName, property) != null))
