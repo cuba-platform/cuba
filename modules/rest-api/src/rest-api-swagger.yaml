@@ -449,7 +449,7 @@ tags:
     description: Current user permissions
   - name: Metadata
     description: Entities metadata
-  - name: Localization
+  - name: Messages
     description: Localized messages
   - name: UserInfo
     description: User information
@@ -1070,11 +1070,11 @@ paths:
             items:
               $ref: '#/definitions/datatype'
 
-############################### Localization #######################################
-  /localization/entities:
+############################### Messages #######################################
+  /messages/entities:
     get:
       tags:
-        - Localization
+        - Messages
       summary: Get localized messages for all entities and their attributes
       description: |
         Method gets localized messages for all entities and their attributes. It returns a JSON object that represents
@@ -1085,16 +1085,56 @@ paths:
           schema:
             type: object
 
-  /localization/entities/{entityName}:
+  /messages/entities/{entityName}:
     get:
       tags:
-        - Localization
+        - Messages
       summary: Get localized messages for entity and its attributes
       description: |
         Method gets localized messages for entity and its attributes. It returns a JSON object that represents
         a map of localized messages. The key is entity or entity property name, the value is localized message.
       parameters:
         - $ref: '#/parameters/entityNameParam'
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+        404:
+          description: |
+            MetaClass not found
+          schema:
+            $ref: '#/definitions/error'
+
+  /messages/enums:
+    get:
+      tags:
+        - Messages
+      summary: Get localized messages for all enums and their valus
+      description: |
+        Method gets localized messages for all enums and their valus. It returns a JSON object that represents
+        a map of localized messages. The key is enum or its value, the value is localized message.
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+
+  /messages/enums/{enumName}:
+    get:
+      tags:
+        - Messages
+      summary: Get localized messages for enum and its values
+      description: |
+        Method gets localized messages for enum and its values. It returns a JSON object that represents
+        a map of localized messages. The key is enum or its value, the value is localized message.
+      parameters:
+        - name: enumName
+          in: path
+          type: string
+          required: true
+          description: Full enum class name (including package)
+          default: ""
       responses:
         200:
           description: Success

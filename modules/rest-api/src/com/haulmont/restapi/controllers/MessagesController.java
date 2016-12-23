@@ -16,7 +16,7 @@
 
 package com.haulmont.restapi.controllers;
 
-import com.haulmont.restapi.service.LocalizationControllerManager;
+import com.haulmont.restapi.service.MessagesControllerManager;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,19 +30,29 @@ import java.util.Map;
  * Controller that returns localized messages
  */
 @RestController
-@RequestMapping(value = "/v2/localization", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class LocalizationController {
+@RequestMapping(value = "/v2/messages", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+public class MessagesController {
 
     @Inject
-    protected LocalizationControllerManager localizationControllerManager;
+    protected MessagesControllerManager messagesControllerManager;
 
     @GetMapping("/entities/{entityName}")
     public Map<String, String> getLocalizationForEntity(@PathVariable String entityName) {
-        return localizationControllerManager.getLocalizationForEntity(entityName);
+        return messagesControllerManager.getLocalizationForEntity(entityName);
     }
 
     @GetMapping("/entities")
     public Map<String, String> getLocalizationForAllEntities() {
-        return localizationControllerManager.getLocalizationForAllEntities();
+        return messagesControllerManager.getLocalizationForAllEntities();
+    }
+
+    @GetMapping("/enums/{enumClassName:.+}")
+    public Map<String, String> getLocalizationForEnum(@PathVariable String enumClassName) {
+        return messagesControllerManager.getLocalizationForEnum(enumClassName);
+    }
+
+    @GetMapping("/enums")
+    public Map<String, String> getLocalizationForAllEnums() {
+        return messagesControllerManager.getLocalizationForAllEnums();
     }
 }
