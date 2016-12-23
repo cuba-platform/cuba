@@ -17,6 +17,9 @@
 package com.haulmont.restapi.auth;
 
 import com.google.common.base.Strings;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.core.sys.UserInvocationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -26,19 +29,35 @@ import org.springframework.security.oauth2.provider.authentication.OAuth2Authent
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Locale;
+import java.util.UUID;
 
 /**
- * Filter logs all REST API methods access.
+ * The last filter in the security filters chain. It does the following:
+ *
+ * <ul>
+ *     <li>logs all REST API methods access</li>
+ *     <li>parses the request locale and sets it to the {@link UserInvocationContext}</li>
+ * </ul>
  */
-public class CubaRestLoggingFilter implements Filter {
+public class CubaRestLastSecurityFilter implements Filter {
 
-    private Logger log = LoggerFactory.getLogger(CubaRestLoggingFilter.class);
+    private Logger log = LoggerFactory.getLogger(CubaRestLastSecurityFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {}
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        logRequest(request);
+        parseRequestLocale(request);
+        chain.doFilter(request, response);
+    }
+
+    /**
+     * Method logs REST API method invocation
+     */
+    protected void logRequest(ServletRequest request) {
         if (log.isDebugEnabled()) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null) {
@@ -56,7 +75,21 @@ public class CubaRestLoggingFilter implements Filter {
                         request.getRemoteAddr());
             }
         }
-        chain.doFilter(request, response);
+    }
+
+    /**
+     * Method parses the request locale and sets it to the {@link UserInvocationContext}
+     */
+    protected void parseRequestLocale(ServletRequest request) {
+        //the value is taken from the 'Accept-Language' http header
+        Locale locale = request.getLocale();
+        SecurityContext securityContext = AppContext.getSecurityContext();
+        if (securityContext != null) {
+            UUID sessionId = securityContext.getSessionId();
+            if (sessionId != null) {
+                UserInvocationContext.setRequestScopeInfo(sessionId, locale, null, null, null);
+            }
+        }
     }
 
     protected String getRequestURL(HttpServletRequest request) {
