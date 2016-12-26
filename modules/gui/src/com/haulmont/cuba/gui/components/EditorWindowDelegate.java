@@ -47,7 +47,6 @@ import java.util.Set;
 
 public class EditorWindowDelegate extends WindowDelegate {
 
-    protected Entity item;
     protected boolean justLocked;
     protected boolean commitActionPerformed;
     protected boolean commitAndCloseButtonExists;
@@ -130,7 +129,7 @@ public class EditorWindowDelegate extends WindowDelegate {
     }
 
     public Entity getItem() {
-        return item;
+        return getDatasource().getItem();
     }
 
     @SuppressWarnings("unchecked")
@@ -183,7 +182,6 @@ public class EditorWindowDelegate extends WindowDelegate {
             }
         }
 
-        this.item = item;
         ds.setItem(item);
         ((DatasourceImplementation) ds).setModified(false);
 
@@ -266,15 +264,9 @@ public class EditorWindowDelegate extends WindowDelegate {
         final DsContext context = window.getDsContext();
         if (context != null) {
             committed = context.commit();
-            item = getDatasource().getItem();
         } else {
-            if (item instanceof Datasource) {
-                final Datasource ds = (Datasource) item;
-                ds.commit();
-            } else {
-                DataSupplier supplier = getDataService();
-                item = supplier.commit(item);
-            }
+            DataSupplier supplier = getDataService();
+            supplier.commit(getItem());
             committed = true;
         }
 
