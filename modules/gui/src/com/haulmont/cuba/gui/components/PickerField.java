@@ -35,7 +35,6 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
@@ -53,22 +52,18 @@ import java.util.Map;
  * @see ClearAction
  *
  * @see LookupPickerField
- *
  */
 public interface PickerField extends Field, Component.ActionsHolder {
 
     String NAME = "pickerField";
 
     CaptionMode getCaptionMode();
-
     void setCaptionMode(CaptionMode captionMode);
 
     String getCaptionProperty();
-
     void setCaptionProperty(String captionProperty);
 
     MetaClass getMetaClass();
-
     void setMetaClass(MetaClass metaClass);
 
     /**
@@ -302,60 +297,19 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
                 Window lookupWindow = wm.openLookup(
                         windowConfig.getWindowInfo(windowAlias),
-                        new Window.Lookup.Handler() {
-                            @Override
-                            public void handleLookup(Collection items) {
-                                if (!items.isEmpty()) {
-                                    final Entity item = (Entity) items.iterator().next();
-                                    Object oldValue = pickerField.getValue();
-
-                                    if (pickerField instanceof LookupField) {
-                                        LookupField lookupField = (LookupField) pickerField;
-
-                                        CollectionDatasource optionsDatasource = lookupField.getOptionsDatasource();
-                                        if (optionsDatasource != null) {
-                                            if (optionsDatasource.containsItem(item.getId())) {
-                                                optionsDatasource.updateItem(item);
-                                            }
-
-                                            if (lookupField instanceof LookupPickerField) {
-                                                LookupPickerField lookupPickerField = (LookupPickerField) lookupField;
-                                                if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
-                                                    optionsDatasource.refresh();
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    Entity newValue = transformValueFromLookupWindow(item);
-
-                                    // we need to reset value and assign it again if entity has same id
-                                    if (oldValue != item && ObjectUtils.equals(oldValue, newValue)) {
-                                        pickerField.setValue(null);
-                                    }
-
-                                    pickerField.setValue(newValue);
-
-                                    afterSelect(items);
-                                    if (afterLookupSelectionHandler != null) {
-                                        afterLookupSelectionHandler.onSelect(items);
-                                    }
-                                }
-                            }
-                        },
+                        this::handleLookupWindowSelection,
                         openType,
                         screenParams != null ? screenParams : Collections.emptyMap()
                 );
                 lookupWindow.addCloseListener(actionId -> {
-                    if (pickerField instanceof LookupField) {
-                        LookupField lookupField = (LookupField) pickerField;
+                    // if value is selected then options datasource is refreshed in select handler
+                    if (!Window.Lookup.SELECT_ACTION_ID.equals(actionId)
+                            && pickerField instanceof LookupField) {
+                        LookupPickerField lookupPickerField = (LookupPickerField) pickerField;
 
-                        CollectionDatasource optionsDatasource = lookupField.getOptionsDatasource();
-                        if (optionsDatasource != null && lookupField instanceof LookupPickerField) {
-                            LookupPickerField lookupPickerField = (LookupPickerField) lookupField;
-                            if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
-                                optionsDatasource.refresh();
-                            }
+                        CollectionDatasource optionsDatasource = lookupPickerField.getOptionsDatasource();
+                        if (optionsDatasource != null && lookupPickerField.isRefreshOptionsOnLookupClose()) {
+                            optionsDatasource.refresh();
                         }
                     }
 
@@ -371,7 +325,41 @@ public interface PickerField extends Field, Component.ActionsHolder {
             }
         }
 
-        protected void afterLookupWindowOpened(Window lookupWindow) {}
+        protected void handleLookupWindowSelection(Collection items) {
+            if (items.isEmpty()) {
+                return;
+            }
+
+            Entity item = (Entity) items.iterator().next();
+            Entity newValue = transformValueFromLookupWindow(item);
+
+            if (pickerField instanceof LookupPickerField) {
+                LookupPickerField lookupPickerField = (LookupPickerField) pickerField;
+
+                CollectionDatasource optionsDatasource = lookupPickerField.getOptionsDatasource();
+                if (optionsDatasource != null) {
+                    //noinspection unchecked
+                    if (optionsDatasource.containsItem(newValue.getId())) {
+                        //noinspection unchecked
+                        optionsDatasource.updateItem(newValue);
+                    }
+
+                    if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
+                        optionsDatasource.refresh();
+                    }
+                }
+            }
+
+            pickerField.setValue(newValue);
+
+            afterSelect(items);
+            if (afterLookupSelectionHandler != null) {
+                afterLookupSelectionHandler.onSelect(items);
+            }
+        }
+
+        protected void afterLookupWindowOpened(Window lookupWindow) {
+        }
 
         /**
          * Hook to be implemented in subclasses. Called by the action for new value selected from Lookup window.
@@ -596,18 +584,20 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 LookupField lookupPickerField = ((LookupField) pickerField);
 
                 CollectionDatasource optionsDatasource = lookupPickerField.getOptionsDatasource();
+                //noinspection unchecked
                 if (optionsDatasource != null && optionsDatasource.containsItem(item.getId())) {
+                    //noinspection unchecked
                     optionsDatasource.updateItem(item);
                 }
             }
 
             if (pickerField.getDatasource() != null) {
                 boolean modified = pickerField.getDatasource().isModified();
-                pickerField.setValue(null);
+
                 pickerField.setValue(item);
+
                 ((DatasourceImplementation) pickerField.getDatasource()).setModified(modified);
             } else {
-                pickerField.setValue(null);
                 pickerField.setValue(item);
             }
         }

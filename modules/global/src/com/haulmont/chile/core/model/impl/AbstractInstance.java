@@ -22,7 +22,6 @@ import com.haulmont.chile.core.common.compatibility.InstancePropertyChangeListen
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.model.utils.MethodsCache;
-import org.apache.commons.lang.ObjectUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -33,13 +32,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractInstance implements Instance {
 
+    protected static final int PROPERTY_CHANGE_LISTENERS_INITIAL_CAPACITY = 4;
+
     protected transient Collection<WeakReference<PropertyChangeListener>> __propertyChangeListeners;
 
     private static transient Map<Class, MethodsCache> methodCacheMap = new ConcurrentHashMap<>();
 
     protected void propertyChanged(String s, Object prev, Object curr) {
         if (__propertyChangeListeners != null) {
-            for (WeakReference<PropertyChangeListener> reference : new ArrayList<>(__propertyChangeListeners)) {
+            for (Object referenceObject : __propertyChangeListeners.toArray()) {
+                @SuppressWarnings("unchecked")
+                WeakReference<PropertyChangeListener> reference = (WeakReference<PropertyChangeListener>) referenceObject;
+
                 PropertyChangeListener listener = reference.get();
                 if (listener == null) {
                     __propertyChangeListeners.remove(reference);
@@ -68,7 +72,7 @@ public abstract class AbstractInstance implements Instance {
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         if (__propertyChangeListeners == null) {
-            __propertyChangeListeners = new ArrayList<>();
+            __propertyChangeListeners = new ArrayList<>(PROPERTY_CHANGE_LISTENERS_INITIAL_CAPACITY);
         }
         __propertyChangeListeners.add(new WeakReference<>(listener));
     }
@@ -116,21 +120,24 @@ public abstract class AbstractInstance implements Instance {
     /**
      * Set value to property in instance
      *
-     * @param name          property name
-     * @param value         value
+     * @deprecated For internal use only. Parameter checkEquals now does not affect logic. Use {@link #setValue(String, Object)}
+     *
+     * @param name        property name
+     * @param value       value
      * @param checkEquals check equals for previous and new value.
      *                    If flag is true and objects equals, then setter will not be invoked
      */
+    @Deprecated
     public void setValue(String name, Object value, boolean checkEquals) {
         Object oldValue = getValue(name);
-        if ((!checkEquals) || (!ObjectUtils.equals(oldValue, value))) {
+        if ((!checkEquals) || (!InstanceUtils.propertyValueEquals(oldValue, value))) {
             getMethodsCache().invokeSetter(this, name, value);
         }
     }
 
     @Override
     public <T> T getValueEx(String name) {
-        return InstanceUtils.<T>getValueEx(this, name);
+        return InstanceUtils.getValueEx(this, name);
     }
 
     @Override

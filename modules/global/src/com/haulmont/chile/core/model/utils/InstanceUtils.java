@@ -20,6 +20,7 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Messages;
@@ -39,7 +40,6 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * Utility class to work with {@link Instance}s.
- *
  */
 public final class InstanceUtils {
 
@@ -59,7 +59,7 @@ public final class InstanceUtils {
      * @return value path as array
      */
     public static String[] parseValuePath(String path) {
-        List<String> elements = new ArrayList<>();
+        List<String> elements = new ArrayList<>(4);
 
         int bracketCount = 0;
 
@@ -288,5 +288,22 @@ public final class InstanceUtils {
             this.format = format;
             this.methodName = methodName;
         }
+    }
+
+    /**
+     * Used by {@link AbstractInstance} to check whether property value has been changed.
+     *
+     * @param a an object
+     * @param b  an object
+     * @return true if a equals to b, but in case of a is {@link AbstractInstance} returns true only if a are the same instance as b
+     */
+    public static boolean propertyValueEquals(Object a, Object b) {
+        if (a == b) {
+            return true;
+        }
+        if (a instanceof AbstractInstance) {
+            return false;
+        }
+        return a != null && a.equals(b);
     }
 }

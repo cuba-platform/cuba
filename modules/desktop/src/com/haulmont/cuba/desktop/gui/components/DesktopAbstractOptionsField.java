@@ -38,7 +38,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
@@ -229,7 +228,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     protected void fireChangeListeners(Object newValue) {
         Object oldValue = prevValue;
         prevValue = newValue;
-        if (!ObjectUtils.equals(oldValue, newValue)) {
+        if (!InstanceUtils.propertyValueEquals(oldValue, newValue)) {
             fireValueChanged(oldValue, newValue);
         }
     }
@@ -301,7 +300,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     public void setValue(Object value) {
         DesktopBackgroundWorker.checkSwingUIAccess();
 
-        if (!ObjectUtils.equals(prevValue, value)) {
+        if (!InstanceUtils.propertyValueEquals(prevValue, value)) {
             updateInstance(value);
             updateComponent(value);
             fireChangeListeners(value);
@@ -368,7 +367,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         public boolean equals(Object obj) {
             if (obj instanceof DesktopAbstractOptionsField.EntityWrapper) {
                 DesktopAbstractOptionsField.EntityWrapper that = (EntityWrapper) obj;
-                return ObjectUtils.equals(this.entity, that.entity);
+                return InstanceUtils.propertyValueEquals(this.entity, that.entity);
             }
             return super.equals(obj);
         }
@@ -453,7 +452,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         public boolean equals(Object obj) {
             if (obj instanceof DesktopAbstractOptionsField.ObjectWrapper) {
                 DesktopAbstractOptionsField.ObjectWrapper anotherWrapper = (DesktopAbstractOptionsField.ObjectWrapper) obj;
-                return ObjectUtils.equals(this.obj, anotherWrapper.obj);
+                return InstanceUtils.propertyValueEquals(this.obj, anotherWrapper.obj);
             }
             return false;
         }

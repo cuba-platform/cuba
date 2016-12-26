@@ -25,6 +25,9 @@ import java.util.function.BiConsumer;
  */
 @NotThreadSafe
 public final class EventRouter {
+    protected static final int EVENTS_MAP_EXPECTED_MAX_SIZE = 4;
+    protected static final int EVENTS_LIST_INITIAL_CAPACITY = 2;
+
     // Map with listener classes and listener lists
     // Lists are created on demand
     private Map<Class, List<Object>> events = null;
@@ -45,10 +48,11 @@ public final class EventRouter {
 
     public <L> void addListener(Class<L> listenerClass, L listener) {
         if (events == null) {
-            events = new IdentityHashMap<>();
+            events = new IdentityHashMap<>(EVENTS_MAP_EXPECTED_MAX_SIZE);
         }
 
-        List<Object> listeners = events.computeIfAbsent(listenerClass, clazz -> new ArrayList<>());
+        List<Object> listeners = events.computeIfAbsent(listenerClass,
+                clazz -> new ArrayList<>(EVENTS_LIST_INITIAL_CAPACITY));
         if (!listeners.contains(listener)) {
             listeners.add(listener);
         }

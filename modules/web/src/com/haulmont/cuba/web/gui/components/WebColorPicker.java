@@ -57,11 +57,6 @@ public class WebColorPicker extends WebAbstractField<CubaColorPicker> implements
     }
 
     @Override
-    public Datasource getDatasource() {
-        return datasource;
-    }
-
-    @Override
     public void setSwatchesVisible(boolean value) {
         component.setSwatchesVisible(value);
     }

@@ -231,7 +231,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
             }
         }
 
-        if (!ObjectUtils.equals(prevValue, value)) {
+        if (!InstanceUtils.propertyValueEquals(prevValue, value)) {
             updateInstance(value);
             updateComponent(value);
             fireChangeListeners(value);
@@ -244,7 +244,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
         if (updatingInstance)
             return;
 
-        if (ObjectUtils.equals(prevValue, value))
+        if (InstanceUtils.propertyValueEquals(prevValue, value))
             return;
 
         updatingInstance = true;
@@ -344,7 +344,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
     }
 
     protected void fireChangeListeners(Object newValue) {
-        if (!ObjectUtils.equals(prevValue, newValue)) {
+        if (!InstanceUtils.propertyValueEquals(prevValue, newValue)) {
             Object oldValue = prevValue;
 
             prevValue = newValue;

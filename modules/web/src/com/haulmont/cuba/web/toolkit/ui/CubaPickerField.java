@@ -24,17 +24,18 @@ import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.Action;
 import com.vaadin.server.*;
 import com.vaadin.ui.*;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class CubaPickerField extends com.vaadin.ui.CustomField implements Action.Container {
+
     protected Field field;
     protected Converter captionFormatter;
 
-    protected List<Button> buttons = new ArrayList<>();
+    protected List<Button> buttons = new ArrayList<>(4);
     protected CubaCssActionsLayout container;
 
     // CAUTION used only for IE 9 layout, is null for another browsers
@@ -244,7 +245,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         field.addValueChangeListener((ValueChangeListener) event -> {
             String text = (String) event.getProperty().getValue();
 
-            if (!suppressTextChangeListener && !StringUtils.equals(getStringRepresentation(), text)) {
+            if (!suppressTextChangeListener && !Objects.equals(getStringRepresentation(), text)) {
                 suppressTextChangeListener = true;
 
                 listener.actionPerformed(text, getValue());
@@ -314,5 +315,12 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     @Override
     public int getTabIndex() {
         return field.getTabIndex();
+    }
+
+    @Override
+    protected boolean fieldValueEquals(Object value1, Object value2) {
+        // only if instance the same,
+        // we can set instance of entity with the same id but different property values
+        return value1 == value2;
     }
 }

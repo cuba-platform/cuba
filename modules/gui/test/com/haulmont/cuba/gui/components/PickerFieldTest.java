@@ -18,6 +18,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
@@ -212,5 +213,31 @@ public class PickerFieldTest extends AbstractComponentTestCase {
         assertEquals(g2, component.getValue());
 
         assertEquals(3, counter.get());
+        component.removeValueChangeListener(listener3);
+
+        component.setValue(g);
+        Group gCopy = (Group) SerializationSupport.deserialize(SerializationSupport.serialize(g));
+
+        Component.ValueChangeListener listener4 = e -> {
+            assertEquals(g, e.getPrevValue());
+            assertEquals(gCopy, e.getValue());
+
+            counter.addAndGet(1);
+        };
+        component.addValueChangeListener(listener4);
+        component.setValue(gCopy);
+        assertEquals(4, counter.get());
+        component.removeValueChangeListener(listener4);
+
+        Component.ValueChangeListener listener5 = e -> {
+            assertEquals(g, e.getPrevValue());
+            assertEquals(gCopy, e.getValue());
+
+            counter.addAndGet(1);
+        };
+        component.addValueChangeListener(listener5);
+        testDs.getItem().setGroup(g);
+        assertEquals(5, counter.get());
+        component.removeValueChangeListener(listener5);
     }
 }

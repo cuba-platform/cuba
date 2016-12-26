@@ -20,6 +20,7 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
@@ -40,11 +41,16 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import org.apache.commons.lang.StringUtils;
 
 import javax.validation.metadata.BeanDescriptor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
 public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> extends WebAbstractComponent<T> implements Field {
+
+    protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 4;
 
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
@@ -250,7 +256,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> ex
             final Object oldValue = prevValue;
             prevValue = value;
 
-            if (!Objects.equals(oldValue, value)) {
+            if (!InstanceUtils.propertyValueEquals(oldValue, value)) {
                 if (hasValidationError()) {
                     setValidationError(null);
                 }
@@ -264,7 +270,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> ex
     @Override
     public void addValidator(Field.Validator validator) {
         if (validators == null) {
-            validators = new ArrayList<>();
+            validators = new ArrayList<>(VALIDATORS_LIST_INITIAL_CAPACITY);
         }
         if (!validators.contains(validator)) {
             validators.add(validator);
