@@ -261,7 +261,7 @@ public class ListEditorPopupWindow extends AbstractWindow {
             if (!Strings.isNullOrEmpty(entityJoinClause) || !Strings.isNullOrEmpty(entityWhereClause)) {
                 optionsDs = dynamicAttributesGuiTools.createOptionsDatasourceForLookup(metaClass, entityJoinClause, entityWhereClause);
             } else {
-                optionsDs = new DsBuilder()
+                optionsDs = DsBuilder.create()
                         .setMetaClass(metaClass)
                         .setViewName(View.MINIMAL)
                         .buildCollectionDatasource();

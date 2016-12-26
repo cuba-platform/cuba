@@ -240,7 +240,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                         if (lookup != null && lookup) {
                             pickerField = componentsFactory.createComponent(LookupPickerField.class);
 
-                            CollectionDatasource optionsDs = new DsBuilder(datasource.getDsContext())
+                            CollectionDatasource optionsDs = DsBuilder.create(datasource.getDsContext())
                                     .setMetaClass(metaProperty.getRange().asClass())
                                     .setViewName(View.MINIMAL)
                                     .buildCollectionDatasource();

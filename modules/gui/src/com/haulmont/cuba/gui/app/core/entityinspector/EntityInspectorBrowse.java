@@ -234,7 +234,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
             ((DsContextImplementation) getDsContext()).unregister(entitiesDs);
         }
 
-        entitiesDs = new DsBuilder(getDsContext())
+        entitiesDs = DsBuilder.create(getDsContext())
                 .setId("entitiesDs")
                 .setMetaClass(meta)
                 .setView(createView(meta))

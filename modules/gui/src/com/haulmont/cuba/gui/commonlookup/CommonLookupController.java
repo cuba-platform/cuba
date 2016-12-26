@@ -76,7 +76,7 @@ public class CommonLookupController extends AbstractLookup {
     }
 
     protected void initDatasource() {
-        entitiesDs = new DsBuilder(getDsContext())
+        entitiesDs = DsBuilder.create(getDsContext())
                 .setId("entitiesDs")
                 .setMetaClass(metaClass)
                 .setView(view)

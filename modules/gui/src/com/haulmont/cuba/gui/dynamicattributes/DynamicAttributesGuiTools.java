@@ -227,7 +227,7 @@ public class DynamicAttributesGuiTools {
      * the options datasource
      */
     public CollectionDatasource createOptionsDatasourceForLookup(MetaClass metaClass, String joinClause, String whereClause) {
-        CollectionDatasource optionsDatasource = new DsBuilder()
+        CollectionDatasource optionsDatasource = DsBuilder.create()
                 .setMetaClass(metaClass)
                 .setViewName(View.MINIMAL)
                 .buildCollectionDatasource();

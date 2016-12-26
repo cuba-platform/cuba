@@ -81,7 +81,7 @@ public class DsContextLoader {
             context.setParent(parent);
         }
 
-        builder = new DsBuilder(context);
+        builder = DsBuilder.create(context);
 
         //noinspection unchecked
         List<Element> elements = element.elements("datasource");

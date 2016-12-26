@@ -147,7 +147,7 @@ public class EntityRestore extends AbstractWindow {
                     ((DsContextImplementation) dsContext).unregister(entitiesDs);
                 }
 
-                entitiesDs = new DsBuilder(dsContext)
+                entitiesDs = DsBuilder.create(dsContext)
                         .setId("entitiesDs")
                         .setMetaClass(metaClass)
                         .setView(buildView(metaClass, metaProperties))

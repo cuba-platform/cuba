@@ -778,7 +778,7 @@ public class Param {
     }
 
     protected CollectionDatasource<Entity<Object>, Object> createOptionsDataSource(MetaClass metaClass) {
-        CollectionDatasource<Entity<Object>, Object> ds = new DsBuilder(datasource.getDsContext())
+        CollectionDatasource ds = DsBuilder.create(datasource.getDsContext())
                 .setMetaClass(metaClass)
                 .setViewName(entityView)
                 .buildCollectionDatasource();

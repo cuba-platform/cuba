@@ -326,7 +326,7 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
                 } else {
                     transformer.addWhere(constraint.getWhereClause());
                 }
-                CollectionDatasource datasource = new DsBuilder()
+                CollectionDatasource datasource = DsBuilder.create()
                         .setMetaClass(metadata.getSession().getClassNN(entityName))
                         .setMaxResults(0)
                         .buildCollectionDatasource();

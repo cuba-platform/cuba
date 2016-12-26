@@ -257,7 +257,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         Datasource fieldDatasource = fieldDatasources.get(item);
 
         if (fieldDatasource == null) {
-            fieldDatasource = new DsBuilder()
+            fieldDatasource = DsBuilder.create()
                     .setAllowCommit(false)
                     .setMetaClass(datasource.getMetaClass())
                     .setRefreshMode(CollectionDatasource.RefreshMode.NEVER)

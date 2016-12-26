@@ -23,17 +23,19 @@ import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.data.impl.*;
 import org.apache.commons.lang.ObjectUtils;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 
 /**
  * Datasources builder.
- * <p/>
+ * <p>
  * Use setters to provide parameters and then invoke one of the build* methods to obtain the datasource implementation.<br>
- * <p/>
+ * <p>
  * Sample usage:
  * <pre>
- * CollectionDatasource usersDs = new DsBuilder(getDsContext())
+ * CollectionDatasource usersDs = DsBuilder.create(getDsContext())
  *               .setMetaClass(metaClass)
  *               .setId("usersDs")
  *               .setViewName(View.MINIMAL)
@@ -41,14 +43,20 @@ import javax.annotation.Nullable;
  *
  * If you set <code>master</code> and <code>property</code> properties you will get a <code>PropertyDatasource</code>
  * implementation.
- *
+ * <p>
+ * In order to provide your own implementations of standard datasources, create a subclass, override corresponding
+ * {@code createXYZDatasource()} methods and register the subclass in {@code spring.xml}, for example:
+ * <pre>
+ *     &lt;bean id="cuba_DsBuilder" class="com.company.sample.gui.MyDsBuilder" scope="prototype"/&gt;
+ * </pre>
  */
+@Component(DsBuilder.NAME)
+@Scope("prototype")
 public class DsBuilder {
 
+    public static final String NAME = "cuba_DsBuilder";
+
     private DataSupplier dataSupplier;
-    private Metadata metadata;
-    private ViewRepository viewRepository;
-    private PersistenceManagerService persistenceManager;
 
     private DsContext dsContext;
 
@@ -78,10 +86,32 @@ public class DsBuilder {
 
     private boolean allowCommit = true;
 
+    /**
+     * Creates DsBuilder for building datasources not belonging to a {@link DsContext}.
+     */
+    public static DsBuilder create() {
+        return AppBeans.getPrototype(NAME);
+    }
+
+    /**
+     * Creates DsBuilder for building datasources for the given {@link DsContext}.
+     *
+     * @param dsContext context instance or null
+     */
+    public static DsBuilder create(@Nullable DsContext dsContext) {
+        return AppBeans.getPrototype(NAME, dsContext);
+    }
+
+    /**
+     * INTERNAL
+     */
     public DsBuilder() {
         this(null);
     }
 
+    /**
+     * INTERNAL
+     */
     public DsBuilder(DsContext dsContext) {
         this.dsContext = dsContext;
         this.id = "ds";
@@ -90,10 +120,66 @@ public class DsBuilder {
             this.dataSupplier = dsContext.getDataSupplier();
         else
             this.dataSupplier = new GenericDataSupplier();
+    }
 
-        this.metadata = AppBeans.get(Metadata.NAME);
-        this.viewRepository = metadata.getViewRepository();
-        this.persistenceManager = AppBeans.get(PersistenceManagerClient.NAME);
+    protected Datasource createDatasource() {
+        return new DatasourceImpl();
+    }
+
+    protected NestedDatasource createPropertyDatasource() {
+        return new PropertyDatasourceImpl();
+    }
+
+    protected NestedDatasource createEmbeddedDatasource() {
+        return new EmbeddedDatasourceImpl();
+    }
+
+    protected CollectionDatasource createCollectionDatasource() {
+        return new CollectionDatasourceImpl();
+    }
+
+    protected CollectionDatasource createCollectionPropertyDatasource() {
+        return new CollectionPropertyDatasourceImpl();
+    }
+
+    protected GroupDatasource createGroupDatasource() {
+        return new GroupDatasourceImpl();
+    }
+
+    protected GroupDatasource createGroupPropertyDatasource() {
+        return new GroupPropertyDatasourceImpl();
+    }
+
+    protected HierarchicalDatasource createHierarchicalDatasource() {
+        return new HierarchicalDatasourceImpl();
+    }
+
+    protected HierarchicalDatasource createHierarchicalPropertyDatasource() {
+        return new HierarchicalPropertyDatasourceImpl();
+    }
+
+    protected ValueCollectionDatasourceImpl createValueCollectionDatasource() {
+        return new ValueCollectionDatasourceImpl();
+    }
+
+    protected ValueGroupDatasourceImpl createValueGroupDatasource() {
+        return new ValueGroupDatasourceImpl();
+    }
+
+    protected ValueHierarchicalDatasourceImpl createValueHierarchicalDatasource() {
+        return new ValueHierarchicalDatasourceImpl();
+    }
+
+    protected PersistenceManagerService getPersistenceManager() {
+        return AppBeans.get(PersistenceManagerClient.NAME);
+    }
+
+    protected ViewRepository getViewRepository() {
+        return AppBeans.get(ViewRepository.NAME);
+    }
+
+    protected Metadata getMetadata() {
+        return AppBeans.get(Metadata.NAME);
     }
 
     public DsContext getDsContext() {
@@ -251,10 +337,10 @@ public class DsBuilder {
 
     protected void init() {
         if (metaClass == null && javaClass != null) {
-            metaClass = metadata.getSession().getClass(javaClass);
+            metaClass = getMetadata().getSession().getClass(javaClass);
         }
         if (view == null && viewName != null) {
-            view = viewRepository.getView(metaClass, viewName);
+            view = getViewRepository().getView(metaClass, viewName);
         }
     }
 
@@ -264,7 +350,7 @@ public class DsBuilder {
         try {
             if (master == null && property == null) {
                 if (dsClass == null) {
-                    datasource = new DatasourceImpl();
+                    datasource = createDatasource();
                 } else {
                     datasource = (Datasource) dsClass.newInstance();
                 }
@@ -278,7 +364,7 @@ public class DsBuilder {
                     isEmbedded = metadataTools.isEmbedded(metaProperty);
                 }
                 if (dsClass == null) {
-                    datasource = isEmbedded ? new EmbeddedDatasourceImpl() : new PropertyDatasourceImpl();
+                    datasource = isEmbedded ? createEmbeddedDatasource() : createPropertyDatasource();
                 } else {
                     datasource = (Datasource) dsClass.newInstance();
                 }
@@ -310,7 +396,7 @@ public class DsBuilder {
         try {
             if (master == null && property == null) {
                 if (dsClass == null) {
-                    datasource = new CollectionDatasourceImpl();
+                    datasource = createCollectionDatasource();
                 } else {
                     datasource = (CollectionDatasource) dsClass.newInstance();
                 }
@@ -318,12 +404,12 @@ public class DsBuilder {
                 if (maxResults > 0)
                     datasource.setMaxResults(maxResults);
                 else if (metaClass != null)
-                    datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
+                    datasource.setMaxResults(getPersistenceManager().getMaxFetchUI(metaClass.getName()));
                 if (datasource instanceof AbstractCollectionDatasource)
                     ((AbstractCollectionDatasource) datasource).setRefreshMode(refreshMode);
             } else {
                 if (dsClass == null) {
-                    datasource = new CollectionPropertyDatasourceImpl();
+                    datasource = createCollectionPropertyDatasource();
                 } else {
                     datasource = (CollectionDatasource) dsClass.newInstance();
                 }
@@ -357,7 +443,7 @@ public class DsBuilder {
         try {
             if (master == null && property == null) {
                 if (dsClass == null) {
-                    datasource = new HierarchicalDatasourceImpl();
+                    datasource = createHierarchicalDatasource();
                 } else {
                     datasource = (HierarchicalDatasource) dsClass.newInstance();
                 }
@@ -365,12 +451,12 @@ public class DsBuilder {
                 if (maxResults > 0)
                     datasource.setMaxResults(maxResults);
                 else if (metaClass != null)
-                    datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
+                    datasource.setMaxResults(getPersistenceManager().getMaxFetchUI(metaClass.getName()));
                 if (datasource instanceof AbstractCollectionDatasource)
                     ((AbstractCollectionDatasource) datasource).setRefreshMode(refreshMode);
             } else {
                 if (dsClass == null) {
-                    datasource = new HierarchicalPropertyDatasourceImpl();
+                    datasource = createHierarchicalPropertyDatasource();
                 } else {
                     datasource = (HierarchicalDatasource) dsClass.newInstance();
                 }
@@ -404,7 +490,7 @@ public class DsBuilder {
         try {
             if (master == null && property == null) {
                 if (dsClass == null) {
-                    datasource = new GroupDatasourceImpl();
+                    datasource = createGroupDatasource();
                 } else {
                     datasource = (GroupDatasource) dsClass.newInstance();
                 }
@@ -412,12 +498,12 @@ public class DsBuilder {
                 if (maxResults > 0)
                     datasource.setMaxResults(maxResults);
                 else if (metaClass != null)
-                    datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
+                    datasource.setMaxResults(getPersistenceManager().getMaxFetchUI(metaClass.getName()));
                 if (datasource instanceof AbstractCollectionDatasource)
                     ((AbstractCollectionDatasource) datasource).setRefreshMode(refreshMode);
             } else {
                 if (dsClass == null) {
-                    datasource = new GroupPropertyDatasourceImpl();
+                    datasource = createGroupPropertyDatasource();
                 } else {
                     datasource = (GroupDatasource) dsClass.newInstance();
                 }
@@ -442,7 +528,7 @@ public class DsBuilder {
     }
 
     public ValueCollectionDatasourceImpl buildValuesCollectionDatasource() {
-        ValueCollectionDatasourceImpl datasource = new ValueCollectionDatasourceImpl();
+        ValueCollectionDatasourceImpl datasource = createValueCollectionDatasource();
         datasource.setup(dsContext, dataSupplier, id, metaClass, null);
         if (maxResults > 0)
             datasource.setMaxResults(maxResults);
@@ -452,7 +538,7 @@ public class DsBuilder {
     }
 
     public ValueGroupDatasourceImpl buildValuesGroupDatasource() {
-        ValueGroupDatasourceImpl datasource = new ValueGroupDatasourceImpl();
+        ValueGroupDatasourceImpl datasource = createValueGroupDatasource();
         datasource.setup(dsContext, dataSupplier, id, metaClass, null);
         if (maxResults > 0)
             datasource.setMaxResults(maxResults);
@@ -462,7 +548,7 @@ public class DsBuilder {
     }
 
     public ValueHierarchicalDatasourceImpl buildValuesHierarchicalDatasourceImpl() {
-        ValueHierarchicalDatasourceImpl datasource = new ValueHierarchicalDatasourceImpl();
+        ValueHierarchicalDatasourceImpl datasource = createValueHierarchicalDatasource();
         datasource.setup(dsContext, dataSupplier, id, metaClass, null);
         if (maxResults > 0)
             datasource.setMaxResults(maxResults);
