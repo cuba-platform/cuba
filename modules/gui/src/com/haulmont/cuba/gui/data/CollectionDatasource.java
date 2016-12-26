@@ -398,11 +398,11 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     }
 
     class CollectionChangeEvent<T extends Entity<K>, K> {
-        private final CollectionDatasource ds;
+        private final CollectionDatasource<T, K> ds;
         private final Operation operation;
         private final List<T> items;
 
-        public CollectionChangeEvent(CollectionDatasource ds, Operation operation, List<T> items) {
+        public CollectionChangeEvent(CollectionDatasource<T, K> ds, Operation operation, List<T> items) {
             this.ds = ds;
             this.operation = operation;
             this.items = items;

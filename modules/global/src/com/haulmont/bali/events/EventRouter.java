@@ -16,6 +16,8 @@
 
 package com.haulmont.bali.events;
 
+import com.haulmont.bali.util.Preconditions;
+
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -47,6 +49,8 @@ public final class EventRouter {
     }
 
     public <L> void addListener(Class<L> listenerClass, L listener) {
+        Preconditions.checkNotNullArgument(listener, "listener cannot be null");
+
         if (events == null) {
             events = new IdentityHashMap<>(EVENTS_MAP_EXPECTED_MAX_SIZE);
         }

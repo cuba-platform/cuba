@@ -28,7 +28,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.ui.AbstractOrderedLayout;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 
 import javax.annotation.Nonnull;
@@ -45,8 +44,6 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     protected Map<String, Component> componentByIds = new HashMap<>();
 
     protected Orientation orientation = Orientation.VERTICAL;
-
-    protected List<ExpandedStateChangeListener> expandedStateChangeListeners;
 
     protected boolean settingsEnabled = true;
 
@@ -271,29 +268,17 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
     @Override
     public void addExpandedStateChangeListener(ExpandedStateChangeListener listener) {
-        if (expandedStateChangeListeners == null) {
-            expandedStateChangeListeners = new ArrayList<>();
-        }
-        if (!expandedStateChangeListeners.contains(listener)) {
-            expandedStateChangeListeners.add(listener);
-        }
+        getEventRouter().addListener(ExpandedStateChangeListener.class, listener);
     }
 
     @Override
     public void removeExpandedStateChangeListener(ExpandedStateChangeListener listener) {
-        if (expandedStateChangeListeners != null) {
-            expandedStateChangeListeners.remove(listener);
-        }
+        getEventRouter().removeListener(ExpandedStateChangeListener.class, listener);
     }
 
     protected void fireExpandStateChange(boolean expanded) {
-        if (expandedStateChangeListeners != null && !expandedStateChangeListeners.isEmpty()) {
-            ExpandedStateChangeEvent event = new ExpandedStateChangeEvent(this, expanded);
-
-            for (ExpandedStateChangeListener listener : expandedStateChangeListeners) {
-                listener.expandedStateChanged(event);
-            }
-        }
+        ExpandedStateChangeEvent event = new ExpandedStateChangeEvent(this, expanded);
+        getEventRouter().fireEvent(ExpandedStateChangeListener.class, ExpandedStateChangeListener::expandedStateChanged, event);
     }
 
     @Override
@@ -367,7 +352,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
     @Override
     public void setOrientation(Orientation orientation) {
-        if (!ObjectUtils.equals(orientation, this.orientation)) {
+        if (this.orientation != orientation) {
             if (!ownComponents.isEmpty()) {
                 throw new IllegalStateException("Unable to change groupBox orientation after adding components to it");
             }

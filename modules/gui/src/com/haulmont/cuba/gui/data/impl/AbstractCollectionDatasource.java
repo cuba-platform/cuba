@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.google.common.base.Joiner;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -69,8 +68,6 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     protected List<T> lastCollectionChangeItems;
     protected RefreshMode refreshMode = RefreshMode.ALWAYS;
     protected UserSession userSession = AppBeans.<UserSessionSource>get(UserSessionSource.NAME).getUserSession();
-
-    protected List<CollectionChangeListener<T, K>> collectionChangeListeners;
 
     @Override
     public T getItemNN(K id) {
@@ -367,13 +364,9 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             return;
         }
 
-        if (collectionChangeListeners != null && !collectionChangeListeners.isEmpty()) {
-            CollectionChangeEvent<T, K> event = new CollectionChangeEvent<>(this, operation, items);
-
-            for (CollectionChangeListener<T, K> listener : new ArrayList<>(collectionChangeListeners)) {
-                listener.collectionChanged(event);
-            }
-        }
+        CollectionChangeEvent<T, K> collectionChangeEvent = new CollectionChangeEvent<>(this, operation, items);
+        //noinspection unchecked
+        getEventRouter().fireEvent(CollectionChangeListener.class, CollectionChangeListener::collectionChanged, collectionChangeEvent);
     }
 
     protected Map<String, Object> getTemplateParams(Map<String, Object> customParams) {
@@ -687,21 +680,12 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     @Override
     public void addCollectionChangeListener(CollectionChangeListener<T, K> listener) {
-        Preconditions.checkNotNullArgument(listener, "listener cannot be null");
-
-        if (collectionChangeListeners == null) {
-            collectionChangeListeners = new ArrayList<>();
-        }
-        if (!collectionChangeListeners.contains(listener)) {
-            collectionChangeListeners.add(listener);
-        }
+        getEventRouter().addListener(CollectionChangeListener.class, listener);
     }
 
     @Override
     public void removeCollectionChangeListener(CollectionChangeListener<T, K> listener) {
-        if (collectionChangeListeners != null) {
-            collectionChangeListeners.remove(listener);
-        }
+        getEventRouter().removeListener(CollectionChangeListener.class, listener);
     }
 
     @Override

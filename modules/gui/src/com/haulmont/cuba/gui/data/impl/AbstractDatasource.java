@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.haulmont.bali.events.EventRouter;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
@@ -31,10 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 public abstract class AbstractDatasource<T extends Entity> implements Datasource<T>, DatasourceImplementation<T> {
 
@@ -49,9 +48,7 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
 
     protected BackgroundWorker backgroundWorker = AppBeans.get(BackgroundWorker.NAME);
 
-    protected List<ItemChangeListener<T>> itemChangeListeners; // lazily initialized list
-    protected List<ItemPropertyChangeListener<T>> itemPropertyChangeListeners; // lazily initialized list
-    protected List<StateChangeListener<T>> stateChangeListeners; // lazily initialized list
+    private EventRouter eventRouter;
 
     protected Collection<Entity> itemsToCreate = new HashSet<>();
     protected Collection<Entity> itemsToUpdate = new HashSet<>();
@@ -61,6 +58,19 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
     protected boolean listenersEnabled = true;
 
     protected boolean loadDynamicAttributes;
+
+    /**
+     * Use EventRouter for listeners instead of fields with listeners List.
+     *
+     * @return lazily initialized {@link EventRouter} instance.
+     * @see EventRouter
+     */
+    protected EventRouter getEventRouter() {
+        if (eventRouter == null) {
+            eventRouter = new EventRouter();
+        }
+        return eventRouter;
+    }
 
     @Override
     public void setup(DsContext dsContext, DataSupplier dataSupplier, String id,
@@ -205,59 +215,32 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
 
     @Override
     public void addItemChangeListener(ItemChangeListener<T> listener) {
-        Preconditions.checkNotNullArgument(listener, "listener cannot be null");
-
-        if (itemChangeListeners == null) {
-            itemChangeListeners = new ArrayList<>();
-        }
-        if (!itemChangeListeners.contains(listener)) {
-            itemChangeListeners.add(listener);
-        }
+        getEventRouter().addListener(ItemChangeListener.class, listener);
     }
 
     @Override
     public void removeItemChangeListener(ItemChangeListener<T> listener) {
-        if (itemChangeListeners != null) {
-            itemChangeListeners.remove(listener);
-        }
+        getEventRouter().removeListener(ItemChangeListener.class, listener);
     }
 
     @Override
     public void addItemPropertyChangeListener(ItemPropertyChangeListener<T> listener) {
-        Preconditions.checkNotNullArgument(listener, "listener cannot be null");
-
-        if (itemPropertyChangeListeners == null) {
-            itemPropertyChangeListeners = new ArrayList<>();
-        }
-        if (!itemPropertyChangeListeners.contains(listener)) {
-            itemPropertyChangeListeners.add(listener);
-        }
+        getEventRouter().addListener(ItemPropertyChangeListener.class, listener);
     }
 
     @Override
     public void removeItemPropertyChangeListener(ItemPropertyChangeListener<T> listener) {
-        if (itemPropertyChangeListeners != null) {
-            itemPropertyChangeListeners.remove(listener);
-        }
+        getEventRouter().removeListener(ItemPropertyChangeListener.class, listener);
     }
 
     @Override
     public void addStateChangeListener(StateChangeListener<T> listener) {
-        Preconditions.checkNotNullArgument(listener, "listener cannot be null");
-
-        if (stateChangeListeners == null) {
-            stateChangeListeners = new ArrayList<>();
-        }
-        if (!stateChangeListeners.contains(listener)) {
-            stateChangeListeners.add(listener);
-        }
+        getEventRouter().addListener(StateChangeListener.class, listener);
     }
 
     @Override
     public void removeStateChangeListener(StateChangeListener<T> listener) {
-        if (stateChangeListeners != null) {
-            stateChangeListeners.remove(listener);
-        }
+        getEventRouter().removeListener(StateChangeListener.class, listener);
     }
 
     @Override
@@ -294,23 +277,15 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
     }
 
     protected void fireItemChanged(T prevItem) {
-        if (itemChangeListeners != null && !itemChangeListeners.isEmpty()) {
-            ItemChangeEvent<T> itemChangeEvent = new ItemChangeEvent<>(this, prevItem, getItem());
-
-            for (ItemChangeListener<T> listener : new ArrayList<>(itemChangeListeners)) {
-                listener.itemChanged(itemChangeEvent);
-            }
-        }
+        ItemChangeEvent<T> itemChangeEvent = new ItemChangeEvent<>(this, prevItem, getItem());
+        //noinspection unchecked
+        getEventRouter().fireEvent(ItemChangeListener.class, ItemChangeListener::itemChanged, itemChangeEvent);
     }
 
+    @SuppressWarnings("unchecked")
     protected void fireStateChanged(State prevStatus) {
-        if (stateChangeListeners != null && !stateChangeListeners.isEmpty()) {
-            StateChangeEvent<T> stateChangeEvent = new StateChangeEvent<>(this, prevStatus, getState());
-
-            for (StateChangeListener<T> listener : new ArrayList<>(stateChangeListeners)) {
-                listener.stateChanged(stateChangeEvent);
-            }
-        }
+        StateChangeEvent<T> stateChangeEvent = new StateChangeEvent<>(this, prevStatus, getState());
+        getEventRouter().fireEvent(StateChangeListener.class, StateChangeListener::stateChanged, stateChangeEvent);
     }
 
     protected class ItemListener implements Instance.PropertyChangeListener {
@@ -326,15 +301,10 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
 
             modified((T) e.getItem());
 
-            if (itemPropertyChangeListeners != null && !itemPropertyChangeListeners.isEmpty()) {
-                AbstractDatasource<T> ds = AbstractDatasource.this;
-                ItemPropertyChangeEvent<T> itemPropertyChangeEvent =
-                        new ItemPropertyChangeEvent<>(ds, (T) e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue());
-
-                for (ItemPropertyChangeListener<T> listener : new ArrayList<>(itemPropertyChangeListeners)) {
-                    listener.itemPropertyChanged(itemPropertyChangeEvent);
-                }
-            }
+            ItemPropertyChangeEvent<T> itemPropertyChangeEvent = new ItemPropertyChangeEvent<>(AbstractDatasource.this,
+                    (T) e.getItem(), e.getProperty(), e.getPrevValue(), e.getValue());
+            getEventRouter().fireEvent(ItemPropertyChangeListener.class, ItemPropertyChangeListener::itemPropertyChanged,
+                    itemPropertyChangeEvent);
         }
     }
 

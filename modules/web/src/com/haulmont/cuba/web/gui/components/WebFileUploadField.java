@@ -41,8 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -51,7 +49,7 @@ import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 
 public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWrapper> implements FileUploadField {
 
-    protected Logger log = LoggerFactory.getLogger(WebFileUploadField.class);
+    private final Logger log = LoggerFactory.getLogger(WebFileUploadField.class);
 
     protected FileUploadingAPI fileUploading;
     protected ExportDisplay exportDisplay;
@@ -74,14 +72,6 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     * or changed property in the datasource
     */
     protected boolean internalValueChangedOnUpload = false;
-
-    protected List<FileUploadStartListener> fileUploadStartListeners;     // lazily initialized list
-    protected List<FileUploadFinishListener> fileUploadFinishListeners;   // lazily initialized list
-    protected List<FileUploadErrorListener> fileUploadErrorListeners;     // lazily initialized list
-    protected List<FileUploadSucceedListener> fileUploadSucceedListeners; // lazily initialized list
-
-    protected List<BeforeValueClearListener> beforeValueClearListeners; // lazily initialized list
-    protected List<AfterValueClearListener> afterValueClearListeners; // lazily initialized list
 
     public WebFileUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
@@ -135,26 +125,16 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     }
 
     protected void clearButtonClicked(Button.ClickEvent clickEvent) {
-        boolean preventClearAction = false;
-        if (beforeValueClearListeners != null) {
-            BeforeValueClearEvent beforeValueClearEvent = new BeforeValueClearEvent(this);
-            for (BeforeValueClearListener listener : new ArrayList<>(beforeValueClearListeners)) {
-                listener.beforeValueClearPerformed(beforeValueClearEvent);
-            }
-            preventClearAction = beforeValueClearEvent.isClearPrevented();
-        }
+        BeforeValueClearEvent beforeValueClearEvent = new BeforeValueClearEvent(this);
+        getEventRouter().fireEvent(BeforeValueClearListener.class, BeforeValueClearListener::beforeValueClearPerformed, beforeValueClearEvent);
 
-        if (!preventClearAction) {
+        if (!beforeValueClearEvent.isClearPrevented()) {
             setValue(null);
             fileName = null;
         }
 
-        if (afterValueClearListeners != null) {
-            AfterValueClearEvent afterValueClearEvent = new AfterValueClearEvent(this, !preventClearAction);
-            for (AfterValueClearListener listener : new ArrayList<>(afterValueClearListeners)) {
-                listener.afterValueClearPerformed(afterValueClearEvent);
-            }
-        }
+        AfterValueClearEvent afterValueClearEvent = new AfterValueClearEvent(this, !beforeValueClearEvent.isClearPrevented());
+        getEventRouter().fireEvent(AfterValueClearListener.class, AfterValueClearListener::afterValueClearPerformed, afterValueClearEvent);
     }
 
     protected void saveFile(FileDescriptor fileDescriptor) {
@@ -444,107 +424,63 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     }
 
     protected void fireFileUploadStart(String fileName, long contentLength) {
-        if (fileUploadStartListeners != null && !fileUploadStartListeners.isEmpty()) {
-            FileUploadStartEvent e = new FileUploadStartEvent(fileName, contentLength);
-            for (FileUploadStartListener listener : new ArrayList<>(fileUploadStartListeners)) {
-                listener.fileUploadStart(e);
-            }
-        }
+        FileUploadStartEvent e = new FileUploadStartEvent(fileName, contentLength);
+        getEventRouter().fireEvent(FileUploadStartListener.class, FileUploadStartListener::fileUploadStart, e);
     }
 
     protected void fireFileUploadFinish(String fileName, long contentLength) {
-        if (fileUploadFinishListeners != null && !fileUploadFinishListeners.isEmpty()) {
-            FileUploadFinishEvent e = new FileUploadFinishEvent(fileName, contentLength);
-            for (FileUploadFinishListener listener : new ArrayList<>(fileUploadFinishListeners)) {
-                listener.fileUploadFinish(e);
-            }
-        }
+        FileUploadFinishEvent e = new FileUploadFinishEvent(fileName, contentLength);
+        getEventRouter().fireEvent(FileUploadFinishListener.class, FileUploadFinishListener::fileUploadFinish, e);
     }
 
     protected void fireFileUploadError(String fileName, long contentLength, Exception cause) {
-        if (fileUploadErrorListeners != null && !fileUploadErrorListeners.isEmpty()) {
-            FileUploadErrorEvent e = new FileUploadErrorEvent(fileName, contentLength, cause);
-            for (FileUploadErrorListener listener : new ArrayList<>(fileUploadErrorListeners)) {
-                listener.fileUploadError(e);
-            }
-        }
+        FileUploadErrorEvent e = new FileUploadErrorEvent(fileName, contentLength, cause);
+        getEventRouter().fireEvent(FileUploadErrorListener.class, FileUploadErrorListener::fileUploadError, e);
     }
 
     protected void fireFileUploadSucceed(String fileName, long contentLength) {
-        if (fileUploadSucceedListeners != null && !fileUploadSucceedListeners.isEmpty()) {
-            FileUploadSucceedEvent e = new FileUploadSucceedEvent(fileName, contentLength);
-            for (FileUploadSucceedListener listener : new ArrayList<>(fileUploadSucceedListeners)) {
-                listener.fileUploadSucceed(e);
-            }
-        }
+        FileUploadSucceedEvent e = new FileUploadSucceedEvent(fileName, contentLength);
+        getEventRouter().fireEvent(FileUploadSucceedListener.class, FileUploadSucceedListener::fileUploadSucceed, e);
     }
 
     @Override
     public void addFileUploadStartListener(FileUploadStartListener listener) {
-        if (fileUploadStartListeners == null) {
-            fileUploadStartListeners = new ArrayList<>();
-        }
-        if (!fileUploadStartListeners.contains(listener)) {
-            fileUploadStartListeners.add(listener);
-        }
+        getEventRouter().addListener(FileUploadStartListener.class, listener);
     }
 
     @Override
     public void removeFileUploadStartListener(FileUploadStartListener listener) {
-        if (fileUploadStartListeners != null) {
-            fileUploadStartListeners.remove(listener);
-        }
+        getEventRouter().removeListener(FileUploadStartListener.class, listener);
     }
 
     @Override
     public void addFileUploadFinishListener(FileUploadFinishListener listener) {
-        if (fileUploadFinishListeners == null) {
-            fileUploadFinishListeners = new ArrayList<>();
-        }
-        if (!fileUploadFinishListeners.contains(listener)) {
-            fileUploadFinishListeners.add(listener);
-        }
+        getEventRouter().addListener(FileUploadFinishListener.class, listener);
     }
 
     @Override
     public void removeFileUploadFinishListener(FileUploadFinishListener listener) {
-        if (fileUploadFinishListeners != null) {
-            fileUploadFinishListeners.remove(listener);
-        }
+        getEventRouter().removeListener(FileUploadFinishListener.class, listener);
     }
 
     @Override
     public void addFileUploadErrorListener(FileUploadErrorListener listener) {
-        if (fileUploadErrorListeners == null) {
-            fileUploadErrorListeners = new ArrayList<>();
-        }
-        if (!fileUploadErrorListeners.isEmpty()) {
-            fileUploadErrorListeners.add(listener);
-        }
+        getEventRouter().addListener(FileUploadErrorListener.class, listener);
     }
 
     @Override
     public void removeFileUploadErrorListener(FileUploadErrorListener listener) {
-        if (fileUploadErrorListeners != null) {
-            fileUploadErrorListeners.remove(listener);
-        }
+        getEventRouter().removeListener(FileUploadErrorListener.class, listener);
     }
 
     @Override
     public void addFileUploadSucceedListener(FileUploadSucceedListener listener) {
-        if (fileUploadSucceedListeners == null) {
-            fileUploadSucceedListeners = new ArrayList<>();
-        }
-        if (!fileUploadSucceedListeners.contains(listener)) {
-            fileUploadSucceedListeners.add(listener);
-        }
+        getEventRouter().addListener(FileUploadSucceedListener.class, listener);
     }
 
     @Override
     public void removeFileUploadSucceedListener(FileUploadSucceedListener listener) {
-        if (fileUploadSucceedListeners != null) {
-            fileUploadSucceedListeners.remove(listener);
-        }
+        getEventRouter().removeListener(FileUploadSucceedListener.class, listener);
     }
 
     @Override
@@ -637,10 +573,6 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
         }
     }
 
-    /*
-    * Clear button
-    * */
-
     @Override
     public void setShowClearButton(boolean showClearButton) {
         component.setShowClearButton(showClearButton);
@@ -683,41 +615,23 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
 
     @Override
     public void addBeforeValueClearListener(BeforeValueClearListener listener) {
-        if (beforeValueClearListeners == null) {
-            beforeValueClearListeners = new ArrayList<>();
-        }
-        if (!beforeValueClearListeners.contains(listener)) {
-            beforeValueClearListeners.add(listener);
-        }
+        getEventRouter().addListener(BeforeValueClearListener.class, listener);
     }
 
     @Override
     public void removeBeforeValueClearListener(BeforeValueClearListener listener) {
-        if (beforeValueClearListeners != null) {
-            beforeValueClearListeners.remove(listener);
-        }
+        getEventRouter().removeListener(BeforeValueClearListener.class, listener);
     }
 
     @Override
     public void addAfterValueClearListener(AfterValueClearListener listener) {
-        if (afterValueClearListeners == null) {
-            afterValueClearListeners = new ArrayList<>();
-        }
-        if (!afterValueClearListeners.contains(listener)) {
-            afterValueClearListeners.add(listener);
-        }
+        getEventRouter().addListener(AfterValueClearListener.class, listener);
     }
 
     @Override
     public void removeAfterValueClearListener(AfterValueClearListener listener) {
-        if (afterValueClearListeners != null) {
-            afterValueClearListeners.remove(listener);
-        }
+        getEventRouter().removeListener(AfterValueClearListener.class, listener);
     }
-
-    /*
-    * Upload button
-    * */
 
     @Override
     public void setUploadButtonCaption(String caption) {
