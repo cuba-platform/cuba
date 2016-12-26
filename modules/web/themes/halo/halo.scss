@@ -59,6 +59,7 @@
 @import "components/optionlist/optionlist";
 @import "components/widgetstree/widgetstree";
 @import "components/popupbutton/popupbutton";
+@import "components/popupview/popupview";
 @import "components/progressbar/progressbar";
 @import "components/richtextarea/richtextarea";
 @import "components/notification/notification";
@@ -116,6 +117,7 @@
   @include halo-optiongroup;
   @include halo-optionlist;
   @include halo-popupbutton;
+  @include halo-popupview;
   @include halo-filterselect;
   @include halo-notification;
   @include halo-richtextarea;

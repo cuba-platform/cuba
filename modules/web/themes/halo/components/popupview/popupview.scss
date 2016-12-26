@@ -15,22 +15,13 @@
  *
  */
 
-@mixin havana-popupview($primary-stylename: v-popupview) {
-  .#{$primary-stylename}-popup {
-    border: 1px solid #babfc0;
-    border-bottom: 1px solid #dee2e3;
-    background: #fff;
-    overflow: auto;
-    padding: 3px;
-  }
-
-  .#{$primary-stylename} {
-    font-family: $cuba-havana-fonts;
-    font-size: 12px;
-    cursor: pointer;
-  }
-
+@mixin halo-popupview($primary-stylename: v-popupview) {
   .v-caption-popupview-icon-on-left {
-    display: inline-block !important;
+    display: inline-block;
+    color: $v-link-font-color;
+  }
+
+  .#{$primary-stylename}-popupview-icon-on-left {
+    margin-left: round($v-unit-size/5);
   }
 }

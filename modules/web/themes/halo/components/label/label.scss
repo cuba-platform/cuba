@@ -105,6 +105,6 @@
   }
 
   .#{$primary-stylename}-c-label-caption-on-left {
-    margin-left: ceil($v-font-size/2.4);
+    margin-left: round($v-unit-size/5);
   }
 }

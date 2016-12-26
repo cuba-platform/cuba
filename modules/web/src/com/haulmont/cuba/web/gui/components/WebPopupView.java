@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.PopupView;
 import com.vaadin.ui.Label;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -182,6 +183,32 @@ public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> 
         @Override
         public final String getMinimizedValueAsHTML() {
             return minimizedValue;
+        }
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        super.setCaption(caption);
+        setIconStyle();
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        super.setIcon(icon);
+        setIconStyle();
+    }
+
+    @Override
+    public void setStyleName(String name) {
+        super.setStyleName(name);
+        setIconStyle();
+    }
+
+    protected void setIconStyle() {
+        if (StringUtils.isNotEmpty(getIcon()) && StringUtils.isEmpty(getCaption())) {
+            getComposition().addStyleName("popupview-icon-on-left");
+        } else {
+            getComposition().removeStyleName("popupview-icon-on-left");
         }
     }
 }
