@@ -58,6 +58,7 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
         loadTimeFormat(resultComponent, element);
         loadEndDate(resultComponent, element);
         loadStartDate(resultComponent, element);
+        loadNavigationButtonsVisible(resultComponent, element);
     }
 
     protected void loadDatasource(Calendar component, Element element) {
@@ -104,6 +105,13 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
                     eventProvider.setAllDayProperty(allDayProperty);
                 }
             }
+        }
+    }
+
+    protected void loadNavigationButtonsVisible(Calendar resultComponent, Element element) {
+        String navigationButtonsVisible = element.attributeValue("navigationButtonsVisible");
+        if (StringUtils.isNotEmpty(navigationButtonsVisible)) {
+            resultComponent.setNavigationButtonsVisible(Boolean.parseBoolean(navigationButtonsVisible));
         }
     }
 

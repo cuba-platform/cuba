@@ -77,6 +77,7 @@
 @import "components/draganddrop/draganddrop";
 @import "components/fileuploadwrapper/fileuploadwrapper";
 @import "components/scrollbox/scrollbox";
+@import "components/calendar/calendar";
 
 // Application specific
 @import "app/app-window";
@@ -139,6 +140,7 @@
   @include havana-contextmenu-addon;
   @include havana-draganddrop;
   @include havana-scrollbox;
+  @include havana-calendar;
 
   @include havana-cuba-groupbox;
   @include havana-cuba-tokenlist;

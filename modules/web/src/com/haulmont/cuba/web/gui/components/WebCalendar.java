@@ -49,6 +49,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     protected List<CalendarBackwardClickListener> backwardClickListeners;
     protected List<CalendarEventMoveListener> eventMoveListeners;
     protected List<CalendarRangeSelectListener> rangeSelectListeners;
+    protected boolean navigationButtonsVisible = false;
 
     public WebCalendar() {
         component = createComponent();
@@ -228,6 +229,8 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
                 }
             }
         });
+
+        setNavigationButtonsStyle(navigationButtonsVisible);
     }
 
     protected CubaCalendar createComponent() {
@@ -503,5 +506,30 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     @Override
     public CalendarEventProvider getEventProvider() {
         return ((CalendarEventProviderWrapper) component.getEventProvider()).getCalendarEventProvider();
+    }
+
+    @Override
+    public void setStyleName(String name) {
+        super.setStyleName(name);
+        setNavigationButtonsStyle(navigationButtonsVisible);
+    }
+
+    @Override
+    public void setNavigationButtonsVisible(boolean value) {
+        navigationButtonsVisible = value;
+        setNavigationButtonsStyle(value);
+    }
+
+    @Override
+    public boolean isNavigationButtonsVisible() {
+        return navigationButtonsVisible;
+    }
+
+    protected void setNavigationButtonsStyle(boolean value) {
+        if (!value) {
+            addStyleName("navbuttons-disabled");
+        } else {
+            removeStyleName("navbuttons-disabled");
+        }
     }
 }

@@ -124,6 +124,15 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
      */
     CalendarEventProvider getEventProvider();
 
+    /**
+     * Set visibility for the backward and forward buttons.
+     */
+    void setNavigationButtonsVisible(boolean value);
+    /**
+     * @return backward and forward buttons visibility.
+     */
+    boolean isNavigationButtonsVisible();
+
 
     void addDateClickListener(CalendarDateClickListener listener);
     void removeDateClickListener(CalendarDateClickListener listener);

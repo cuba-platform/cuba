@@ -22,4 +22,9 @@
   .#{$primary-stylename}-bottom-spacer-empty {
     margin-bottom: 0;
   }
+
+  .#{$primary-stylename}.navbuttons-disabled .#{$primary-stylename}-back,
+  .#{$primary-stylename}.navbuttons-disabled .#{$primary-stylename}-next {
+    display: none;
+  }
 }
