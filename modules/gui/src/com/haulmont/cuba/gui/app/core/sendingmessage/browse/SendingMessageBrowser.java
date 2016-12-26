@@ -36,6 +36,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
@@ -95,10 +96,11 @@ public class SendingMessageBrowser extends AbstractWindow {
                 showAsHtmlButton.setAction(new AbstractAction("") {
                     @Override
                     public void actionPerform(Component component) {
-                        ByteArrayDataProvider dataProvider = new ByteArrayDataProvider(
-                                ((String)contentTextArea.getValue()).getBytes(StandardCharsets.UTF_8));
-
-                        exportDisplay.show(dataProvider, "email-preview.html", ExportFormat.HTML);
+                        String textAreaValue = contentTextArea.getValue();
+                        if (textAreaValue != null) {
+                            ByteArrayDataProvider dataProvider = new ByteArrayDataProvider(textAreaValue.getBytes(StandardCharsets.UTF_8));
+                            exportDisplay.show(dataProvider, "email-preview.html", ExportFormat.HTML);
+                        }
                     }
                 });
                 showAsHtmlButton.setEnabled(false);
@@ -121,7 +123,7 @@ public class SendingMessageBrowser extends AbstractWindow {
             contentText = emailService.loadContentText(item);
         }
 
-        if (contentText != null) {
+        if (StringUtils.isNotEmpty(contentText)) {
             showAsHtmlButton.setEnabled(true);
         } else {
             showAsHtmlButton.setEnabled(false);
