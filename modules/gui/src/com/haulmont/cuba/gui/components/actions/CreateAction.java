@@ -239,10 +239,10 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
                     Entity editedItem = window.getItem();
                     if (editedItem != null) {
                         if (parentDs == null) {
-                            boolean modified = datasource.isModified();
-                            datasource.addItem(editedItem);
-                            ((DatasourceImplementation) datasource).setModified(modified);
+                            //noinspection unchecked
+                            datasource.includeItem(editedItem);
                         }
+                        //noinspection unchecked
                         target.setSelected(editedItem);
                         afterCommit(editedItem);
                         if (afterCommitHandler != null) {
