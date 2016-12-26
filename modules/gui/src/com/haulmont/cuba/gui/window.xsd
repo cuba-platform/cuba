@@ -754,6 +754,7 @@
         <xs:attribute name="startDate" type="xs:string"/>
         <xs:attribute name="endDate" type="xs:string"/>
         <xs:attribute name="timeFormat" type="calendarTimeFormat"/>
+        <xs:attribute name="navigationButtonsVisible" type="xs:boolean"/>
 
         <xs:attribute name="startDateProperty" type="xs:string"/>
         <xs:attribute name="endDateProperty" type="xs:string"/>
