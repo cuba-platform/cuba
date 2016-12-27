@@ -138,4 +138,15 @@ public class CubaSourceCodeEditorWidget extends AceEditorWidget {
     protected native int getRendererPrintMarginColumn(GwtAceEditor editor) /*-{
         return editor.renderer.getPrintMarginColumn();
     }-*/;
+
+    public void resetEditHistory() {
+        resetEditHistory(editor);
+    }
+
+    public final native void resetEditHistory(GwtAceEditor editor) /*-{
+        setTimeout(function() {
+            var undoManager = editor.getSession().getUndoManager();
+            undoManager.reset();
+        }, 0);
+    }-*/;
 }

@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.web.toolkit.ui.client.sourcecodeeditor.CubaSourceCodeEditorClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.sourcecodeeditor.CubaSourceCodeEditorState;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
@@ -89,5 +90,9 @@ public class CubaSourceCodeEditor extends AceEditor {
         if (getPrintMarginColumn() != printMarginColumn) {
             getState().printMarginColumn = printMarginColumn;
         }
+    }
+
+    public void resetEditHistory() {
+        getRpcProxy(CubaSourceCodeEditorClientRpc.class).resetEditHistory();
     }
 }

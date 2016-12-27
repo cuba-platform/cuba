@@ -220,4 +220,8 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
     public String getRawValue() {
         return impl.getText();
     }
+
+    @Override
+    public void resetEditHistory() {
+    }
 }

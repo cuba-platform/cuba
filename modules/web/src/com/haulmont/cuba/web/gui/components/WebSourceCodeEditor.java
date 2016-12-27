@@ -121,6 +121,11 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
     }
 
     @Override
+    public void resetEditHistory() {
+        component.resetEditHistory();
+    }
+
+    @Override
     public Suggester getSuggester() {
         return suggester;
     }

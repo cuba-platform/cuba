@@ -97,4 +97,9 @@ public interface SourceCodeEditor extends Field {
      * Returns a string representation of the value.
      */
     String getRawValue();
+
+    /**
+     * Reset the stack of undo/redo redo operations.
+     */
+    void resetEditHistory();
 }

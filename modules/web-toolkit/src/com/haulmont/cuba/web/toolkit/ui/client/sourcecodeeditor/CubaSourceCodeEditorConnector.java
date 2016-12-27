@@ -27,6 +27,16 @@ import org.vaadin.aceeditor.client.AceEditorWidget;
 
 @Connect(CubaSourceCodeEditor.class)
 public class CubaSourceCodeEditorConnector extends AceEditorConnector {
+    private boolean resetEditHistory = false;
+
+    public CubaSourceCodeEditorConnector() {
+        registerRpc(CubaSourceCodeEditorClientRpc.class, new CubaSourceCodeEditorClientRpc() {
+            @Override
+            public void resetEditHistory() {
+                getWidget().resetEditHistory();
+            }
+        });
+    };
 
     @Override
     protected Widget createWidget() {
