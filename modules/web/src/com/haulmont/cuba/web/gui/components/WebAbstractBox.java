@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
@@ -32,8 +33,7 @@ import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAl
 
 public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> implements BoxLayout {
 
-    protected Collection<Component> ownComponents = new LinkedHashSet<>();
-    protected Map<String, Component> componentByIds = new HashMap<>();
+    protected List<Component> ownComponents = new ArrayList<>();
 
     @Override
     public void add(Component childComponent) {
@@ -59,10 +59,6 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
         component.addComponent(vComponent, index);
         component.setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
 
-        if (childComponent.getId() != null) {
-            componentByIds.put(childComponent.getId(), childComponent);
-        }
-
         if (frame != null) {
             if (childComponent instanceof BelongToFrame
                     && ((BelongToFrame) childComponent).getFrame() == null) {
@@ -75,11 +71,7 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
         if (index == ownComponents.size()) {
             ownComponents.add(childComponent);
         } else {
-            List<Component> componentsTempList = new ArrayList<>(ownComponents);
-            componentsTempList.add(index, childComponent);
-
-            ownComponents.clear();
-            ownComponents.addAll(componentsTempList);
+            ownComponents.add(index, childComponent);
         }
 
         childComponent.setParent(this);
@@ -97,9 +89,6 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
     @Override
     public void remove(Component childComponent) {
         component.removeComponent(WebComponentsHelper.getComposition(childComponent));
-        if (childComponent.getId() != null) {
-            componentByIds.remove(childComponent.getId());
-        }
         ownComponents.remove(childComponent);
 
         childComponent.setParent(null);
@@ -108,9 +97,8 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
     @Override
     public void removeAll() {
         component.removeAllComponents();
-        componentByIds.clear();
 
-        List<Component> components = new ArrayList<>(ownComponents);
+        Component[] components = ownComponents.toArray(new Component[ownComponents.size()]);
         ownComponents.clear();
 
         for (Component childComponent : components) {
@@ -134,7 +122,12 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
 
     @Override
     public Component getOwnComponent(String id) {
-        return componentByIds.get(id);
+        Preconditions.checkNotNullArgument(id);
+
+        return ownComponents.stream()
+                .filter(component -> Objects.equals(id, component.getId()))
+                .findFirst()
+                .orElse(null);
     }
 
     @Nullable

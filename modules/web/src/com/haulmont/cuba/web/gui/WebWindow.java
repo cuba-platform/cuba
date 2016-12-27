@@ -70,12 +70,13 @@ public class WebWindow implements Window, Component.Wrapper,
                                   Component.SecuredActionsHolder, Component.HasIcon {
 
     private static final Logger log = LoggerFactory.getLogger(WebWindow.class);
+
     protected static final String C_WINDOW_LAYOUT = "c-window-layout";
 
     protected String id;
     protected String debugId;
 
-    protected Collection<Component> ownComponents = new LinkedHashSet<>();
+    protected List<Component> ownComponents = new ArrayList<>();
     protected Map<String, Component> allComponents = new HashMap<>();
 
     protected List<CloseListener> listeners = null; // lazy initialized listeners list
@@ -92,6 +93,7 @@ public class WebWindow implements Window, Component.Wrapper,
     protected DsContext dsContext;
     protected WindowContext context;
 
+    protected String icon;
     protected String caption;
     protected String description;
 
@@ -107,12 +109,10 @@ public class WebWindow implements Window, Component.Wrapper,
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
-    protected Configuration configuration = AppBeans.get(Configuration.NAME);
     protected Messages messages = AppBeans.get(Messages.NAME);
 
     protected boolean disposed = false;
     protected DialogOptions dialogOptions = new WebDialogOptions();
-    protected String icon;
 
     public WebWindow() {
         component = createLayout();
@@ -764,11 +764,7 @@ public class WebWindow implements Window, Component.Wrapper,
         if (index == ownComponents.size()) {
             ownComponents.add(childComponent);
         } else {
-            List<Component> componentsTempList = new ArrayList<>(ownComponents);
-            componentsTempList.add(index, childComponent);
-
-            ownComponents.clear();
-            ownComponents.addAll(componentsTempList);
+            ownComponents.add(index, childComponent);
         }
 
         childComponent.setParent(this);
@@ -796,7 +792,7 @@ public class WebWindow implements Window, Component.Wrapper,
             }
         }
 
-        List<Component> childComponents = new ArrayList<>(ownComponents);
+        Component[] childComponents = ownComponents.toArray(new Component[ownComponents.size()]);
         ownComponents.clear();
 
         for (Component ownComponent : childComponents) {
@@ -1036,6 +1032,7 @@ public class WebWindow implements Window, Component.Wrapper,
             return true;
         }
 
+        Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 
         if (!forceClose && isModified()) {
@@ -1256,6 +1253,7 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     protected String formatTabCaption(final String caption, final String description) {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
         WebConfig webConfig = configuration.getConfig(WebConfig.class);
         String tabCaption = formatTabDescription(caption, description);
 

@@ -22,10 +22,7 @@ import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.components.Action;
 import org.apache.commons.lang.ObjectUtils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
@@ -34,8 +31,7 @@ import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
  * windows.
  */
 public class WebFrameActionsHolder {
-
-    protected List<Action> actionList = new LinkedList<>();
+    protected List<Action> actionList = new ArrayList<>(4);
     protected BiMap<com.vaadin.event.Action, Action> actions = HashBiMap.create();
 
     public void addAction(Action action) {

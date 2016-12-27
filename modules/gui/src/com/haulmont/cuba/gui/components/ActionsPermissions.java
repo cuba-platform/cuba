@@ -17,14 +17,14 @@
 
 package com.haulmont.cuba.gui.components;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ActionsPermissions {
-
     private Component.SecuredActionsHolder actionsHolder;
 
-    private HashSet<String> disabledActionsIds;
-    private HashSet<String> hiddenActionsIds;
+    private List<String> disabledActionsIds;
+    private List<String> hiddenActionsIds;
 
     public ActionsPermissions(Component.SecuredActionsHolder actionsHolder) {
         this.actionsHolder = actionsHolder;
@@ -32,9 +32,11 @@ public class ActionsPermissions {
 
     public void addDisabledActionPermission(String actionId) {
         if (disabledActionsIds == null) {
-            disabledActionsIds = new HashSet<>();
+            disabledActionsIds = new ArrayList<>(4);
         }
-        disabledActionsIds.add(actionId);
+        if (!disabledActionsIds.contains(actionId)) {
+            disabledActionsIds.add(actionId);
+        }
 
         Action action = actionsHolder.getAction(actionId);
         if (action instanceof Action.UiPermissionAware) {
@@ -44,10 +46,11 @@ public class ActionsPermissions {
 
     public void addHiddenActionPermission(String actionId) {
         if (hiddenActionsIds == null) {
-            hiddenActionsIds = new HashSet<>();
+            hiddenActionsIds = new ArrayList<>(4);
         }
-
-        hiddenActionsIds.add(actionId);
+        if (!hiddenActionsIds.contains(actionId)) {
+            hiddenActionsIds.add(actionId);
+        }
         Action action = actionsHolder.getAction(actionId);
         if (action instanceof Action.UiPermissionAware) {
             ((Action.UiPermissionAware) action).setVisibleByUiPermissions(false);

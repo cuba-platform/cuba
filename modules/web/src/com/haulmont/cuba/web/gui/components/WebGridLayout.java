@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
@@ -31,10 +32,7 @@ import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAl
 
 public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implements GridLayout {
 
-    protected String id;
-
-    protected Map<String, Component> componentByIds = new HashMap<>();
-    protected Collection<Component> ownComponents = new LinkedHashSet<>();
+    protected List<Component> ownComponents = new ArrayList<>();
 
     public WebGridLayout() {
         component = new CubaGridLayout();
@@ -50,10 +48,6 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
 
         component.addComponent(vComponent);
         component.setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
-
-        if (component.getId() != null) {
-            componentByIds.put(childComponent.getId(), childComponent);
-        }
 
         if (frame != null) {
             if (childComponent instanceof BelongToFrame
@@ -105,10 +99,6 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
         component.addComponent(vComponent, col, row, col2, row2);
         component.setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
 
-        if (childComponent.getId() != null) {
-            componentByIds.put(childComponent.getId(), childComponent);
-        }
-
         if (frame != null) {
             if (childComponent instanceof BelongToFrame
                     && ((BelongToFrame) childComponent).getFrame() == null) {
@@ -146,9 +136,6 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
     @Override
     public void remove(Component childComponent) {
         component.removeComponent(WebComponentsHelper.getComposition(childComponent));
-        if (childComponent.getId() != null) {
-            componentByIds.remove(childComponent.getId());
-        }
         ownComponents.remove(childComponent);
 
         childComponent.setParent(null);
@@ -157,9 +144,8 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
     @Override
     public void removeAll() {
         component.removeAllComponents();
-        componentByIds.clear();
 
-        List<Component> components = new ArrayList<>(ownComponents);
+        Component[] components = ownComponents.toArray(new Component[ownComponents.size()]);
         ownComponents.clear();
 
         for (Component childComponent : components) {
@@ -183,7 +169,12 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
 
     @Override
     public Component getOwnComponent(String id) {
-        return componentByIds.get(id);
+        Preconditions.checkNotNullArgument(id);
+
+        return ownComponents.stream()
+                .filter(component -> Objects.equals(id, component.getId()))
+                .findFirst()
+                .orElse(null);
     }
 
     @Nullable
