@@ -20,6 +20,7 @@ import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
 import com.haulmont.cuba.core.entity.Entity;
@@ -62,6 +63,9 @@ public class QueriesControllerManager {
 
     @Inject
     protected RestControllerUtils restControllerUtils;
+
+    @Inject
+    protected PersistenceManagerClient persistenceManagerClient;
 
     public String executeQuery(String entityName,
                                String queryName,
@@ -122,6 +126,8 @@ public class QueriesControllerManager {
 
         if (limit != null) {
             query.setMaxResults(limit);
+        } else {
+            query.setMaxResults(persistenceManagerClient.getMaxFetchUI(entityName));
         }
         if (offset != null) {
             query.setFirstResult(offset);

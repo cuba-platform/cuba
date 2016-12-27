@@ -19,6 +19,7 @@ package com.haulmont.restapi.service;
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.importexport.EntityImportException;
 import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
@@ -75,6 +76,9 @@ public class EntitiesControllerManager {
 
     @Inject
     protected RestControllerUtils restControllerUtils;
+
+    @Inject
+    protected PersistenceManagerClient persistenceManagerClient;
 
     public String loadEntity(String entityName,
                              String entityId,
@@ -133,6 +137,8 @@ public class EntitiesControllerManager {
         LoadContext.Query query = new LoadContext.Query(queryString);
         if (limit != null) {
             query.setMaxResults(limit);
+        } else {
+            query.setMaxResults(persistenceManagerClient.getMaxFetchUI(entityName));
         }
         if (offset != null) {
             query.setFirstResult(offset);
