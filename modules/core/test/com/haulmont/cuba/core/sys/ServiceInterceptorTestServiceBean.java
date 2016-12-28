@@ -20,10 +20,7 @@ import com.haulmont.cuba.core.app.TestingService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 @Service("cuba_ServiceInterceptorTestService")
 public class ServiceInterceptorTestServiceBean implements ServiceInterceptorTestService {
@@ -65,15 +62,7 @@ public class ServiceInterceptorTestServiceBean implements ServiceInterceptorTest
 
     @Override
     public String executeWithExceptionNewThread() throws TestingService.TestException {
-        SecurityContext securityContext = AppContext.getSecurityContextNN();
-        Future<String> future = executor.submit(() -> {
-            AppContext.setSecurityContext(securityContext);
-            try {
-                return executeWithException();
-            } finally {
-                AppContext.setSecurityContext(null);
-            }
-        });
+        Future<String> future = executor.submit(new SecurityContextAwareCallable<>(this::executeWithException));
         try {
             return future.get();
         } catch (InterruptedException e) {

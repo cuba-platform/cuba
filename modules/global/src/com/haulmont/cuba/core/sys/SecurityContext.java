@@ -25,7 +25,7 @@ import java.util.UUID;
 /**
  * Holds information about the current user session.
  *
- * <p/>Instances of this class are normally set in {@link AppContext} by the framework, but also have to be
+ * <p>Instances of this class are normally set in {@link AppContext} by the framework, but also have to be
  * passed to it in case of manually running new threads. Here is the sample code for an asynchronous execution:
  * <pre>
  *     final SecurityContext securityContext = AppContext.getSecurityContext();
@@ -35,6 +35,20 @@ import java.util.UUID;
  *             // business logic here
  *         }
  *     });
+ * </pre>
+ * <p> The same can be done using {@link SecurityContextAwareRunnable} or {@link SecurityContextAwareCallable}
+ * wrappers, for example:
+ * <pre>
+ *     executor.submit(new SecurityContextAwareRunnable<>(() -> {
+ *         // business logic here
+ *     }));
+ * </pre>
+ * or
+ * <pre>
+ *     Future&lt;String&gt; future = executor.submit(new SecurityContextAwareCallable<>(() -> {
+ *         // business logic here
+ *         return some_string;
+ *     }));
  * </pre>
  *
  */
