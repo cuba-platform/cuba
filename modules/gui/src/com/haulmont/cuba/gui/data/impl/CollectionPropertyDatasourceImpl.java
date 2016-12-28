@@ -75,9 +75,9 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         cascadeProperty = metadata.getTools().isCascade(metaProperty);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void initParentDsListeners() {
-        //noinspection unchecked
         masterDs.addItemChangeListener(e -> {
             log.trace("itemChanged: prevItem={}, item={}", e.getPrevItem(), e.getItem());
 
@@ -98,14 +98,12 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
         });
 
-        //noinspection unchecked
         masterDs.addStateChangeListener(e -> {
             fireStateChanged(e.getPrevState());
 
             fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
         });
 
-        //noinspection unchecked
         masterDs.addItemPropertyChangeListener(e -> {
             if (e.getProperty().equals(metaProperty.getName()) && !ObjectUtils.equals(e.getPrevValue(), e.getValue())) {
                 log.trace("master valueChanged: prop={}, prevValue={}, value={}", e.getProperty(), e.getPrevValue(), e.getValue());
@@ -135,7 +133,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public T getItem(K id) {
         backgroundWorker.checkUIAccess();
 
-        Collection<T> collection = __getCollection();
+        Collection<T> collection = getCollection();
         if (collection != null) {
             for (T t : collection) {
                 if (t.getId().equals(id)) {
@@ -165,7 +163,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (masterDs.getState() == State.NOT_INITIALIZED) {
             return Collections.emptyList();
         } else {
-            Collection<T> items = __getCollection();
+            Collection<T> items = getCollection();
             if (items == null)
                 return Collections.emptyList();
             else {
@@ -185,7 +183,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (masterDs.getState() == State.NOT_INITIALIZED) {
             return Collections.emptyList();
         } else {
-            Collection<T> items = __getCollection();
+            Collection<T> items = getCollection();
             if (items == null) {
                 return Collections.emptyList();
             }
@@ -221,6 +219,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 }
                 this.item = item;
 
+                //noinspection unchecked
                 fireItemChanged((T) prevItem);
             }
         }
@@ -240,12 +239,12 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (masterDs.getState() == State.NOT_INITIALIZED) {
             return 0;
         } else {
-            final Collection<T> collection = __getCollection();
+            final Collection<T> collection = getCollection();
             return collection == null ? 0 : collection.size();
         }
     }
 
-    protected Collection<T> __getCollection() {
+    protected Collection<T> getCollection() {
         Security security = AppBeans.get(Security.NAME);
 
         MetaClass parentMetaClass = masterDs.getMetaClass();
@@ -256,6 +255,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             return new ArrayList<>(); // Don't use Collections.emptyList() to avoid confusing UnsupportedOperationExceptions
         } else {
             final Instance master = masterDs.getItem();
+            //noinspection unchecked
             return master == null ? null : (Collection<T>) master.getValue(metaProperty.getName());
         }
     }
@@ -279,7 +279,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     @Override
     public void addItem(T item) {
         internalAddItem(item, () -> {
-            __getCollection().add(item);
+            getCollection().add(item);
         });
     }
 
@@ -292,20 +292,21 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     }
 
+    @SuppressWarnings("unchecked")
     protected void internalAddItem(T item, Runnable addToCollection) {
         backgroundWorker.checkUIAccess();
 
         checkState();
         checkPermission();
 
-        if (__getCollection() == null) {
+        if (getCollection() == null) {
             if (masterDs.getItem() == null) {
                 // Last chance to find and set a master item
                 MetaProperty inverseProp = metaProperty.getInverse();
                 if (inverseProp != null) {
                     Entity probableMasterItem = item.getValue(inverseProp.getName());
                     if (probableMasterItem != null) {
-                        Collection<Entity> masterCollection = ((CollectionPropertyDatasourceImpl) masterDs).__getCollection();
+                        Collection<Entity> masterCollection = ((CollectionPropertyDatasourceImpl) masterDs).getCollection();
                         for (Entity masterCollectionItem : masterCollection) {
                             if (masterCollectionItem.equals(probableMasterItem)) {
                                 masterDs.setItem(masterCollectionItem);
@@ -349,8 +350,9 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         fireCollectionChanged(Operation.ADD, Collections.singletonList(item));
     }
 
+    @SuppressWarnings("unchecked")
     protected void addToCollectionFirst(T item) {
-        Collection<T> collection = __getCollection();
+        Collection<T> collection = getCollection();
         if (collection instanceof List) {
             ((List) collection).add(0, item);
         } else if (collection instanceof LinkedHashSet) {
@@ -368,7 +370,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
      * @return true if the collection already contains the instance
      */
     protected boolean containsObjectInstance(T instance) {
-        Collection<T> collection = __getCollection();
+        Collection<T> collection = getCollection();
         if (collection != null) {
             for (T item : collection) {
                 if (instance == item)
@@ -402,7 +404,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         checkState();
         checkPermission();
 
-        Collection<T> collection = __getCollection();
+        Collection<T> collection = getCollection();
         if (collection != null) {
             if (this.item != null && this.item.equals(item)) {
                 setItem(null);
@@ -414,6 +416,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             modified = true;
             if (cascadeProperty) {
                 final Entity parentItem = masterDs.getItem();
+                //noinspection unchecked
                 ((DatasourceImplementation) masterDs).modified(parentItem);
             } else {
                 deleted(item);
@@ -430,7 +433,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         checkState();
         checkPermission();
 
-        Collection<T> collection = __getCollection();
+        Collection<T> collection = getCollection();
         if (collection != null) {
             if (this.item != null && this.item.equals(item)) {
                 setItem(null);
@@ -457,7 +460,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     @Override
     public void includeItem(T item) {
         internalIncludeItem(item, () -> {
-            __getCollection().add(item);
+            getCollection().add(item);
         });
     }
 
@@ -474,7 +477,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         checkState();
         checkPermission();
 
-        if (__getCollection() == null) {
+        if (getCollection() == null) {
             initCollection();
         }
 
@@ -502,7 +505,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         backgroundWorker.checkUIAccess();
 
         checkState();
-        Collection<T> collection = __getCollection();
+        Collection<T> collection = getCollection();
         if (collection != null) {
             Collection<T> collectionItems = new ArrayList<>(collection);
             doNotModify = true;
@@ -540,7 +543,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void modifyItem(T item) {
-        Collection<T> collection = __getCollection();
+        Collection<T> collection = getCollection();
         if (collection != null) {
             for (T t : collection) {
                 if (t.equals(item)) {
@@ -549,6 +552,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                     modified = true;
                     if (cascadeProperty) {
                         final Entity parentItem = masterDs.getItem();
+                        //noinspection unchecked
                         ((DatasourceImplementation) masterDs).modified(parentItem);
                     } else {
                         modified(t);
@@ -563,7 +567,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public void updateItem(T item) {
         backgroundWorker.checkUIAccess();
 
-        Collection<T> collection = __getCollection();
+        Collection<T> collection = getCollection();
         if (collection != null) {
             // this method must not change the "modified" state by contract
             boolean saveModified = modified;
@@ -590,7 +594,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @SuppressWarnings("unchecked")
     public void replaceItem(T item) {
-        Collection<T> collection = __getCollection();
+        Collection<T> collection = getCollection();
         if (collection != null) {
             for (T t : collection) {
                 if (t.equals(item)) {
@@ -629,7 +633,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public boolean containsItem(K itemId) {
-        Collection<T> collection = __getCollection();
+        Collection<T> collection = getCollection();
         if (collection == null) {
             return false;
         }
@@ -737,12 +741,13 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void committed(Set<Entity> entities) {
         if (!State.VALID.equals(masterDs.getState()))
             return;
 
-        Collection<T> collection = __getCollection();
+        Collection<T> collection = getCollection();
         if (collection != null) {
             for (T item : new ArrayList<>(collection)) {
                 for (Entity entity : entities) {
@@ -800,7 +805,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
         if (lastCollectionChangeOperation != null) {
             fireCollectionChanged(lastCollectionChangeOperation,
-                    lastCollectionChangeItems != null ? lastCollectionChangeItems : Collections.<T>emptyList());
+                    lastCollectionChangeItems != null ? lastCollectionChangeItems : Collections.emptyList());
         }
 
         lastCollectionChangeOperation = null;
@@ -836,7 +841,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             this.sortInfos = sortInfos;
             doSort();
 
-            fireCollectionChanged(Operation.REFRESH, Collections.<T>emptyList());
+            fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
         }
     }
 
@@ -846,7 +851,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected void doSort() {
-        Collection<T> collection = __getCollection();
+        Collection<T> collection = getCollection();
         if (collection == null)
             return;
 
@@ -864,7 +869,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public K firstItemId() {
-        Collection<T> collection = __getCollection();
+        Collection<T> collection = getCollection();
         if (collection != null && !collection.isEmpty()) {
             T first = Iterables.getFirst(collection, null);
             return first == null ? null : first.getId();
@@ -874,7 +879,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public K lastItemId() {
-        Collection<T> collection = __getCollection();
+        Collection<T> collection = getCollection();
         if (collection != null && !collection.isEmpty()) {
             return Iterables.getLast(collection).getId();
         }
@@ -884,7 +889,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     @Override
     public K nextItemId(K itemId) {
         if (itemId == null) return null;
-        Collection<T> collection = __getCollection();
+        Collection<T> collection = getCollection();
         if ((collection != null) && !collection.isEmpty() && !itemId.equals(lastItemId())) {
             List<T> list = new ArrayList<>(collection);
             T currentItem = getItem(itemId);
@@ -896,7 +901,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     @Override
     public K prevItemId(K itemId) {
         if (itemId == null) return null;
-        Collection<T> collection = __getCollection();
+        Collection<T> collection = getCollection();
         if ((collection != null) && !collection.isEmpty() && !itemId.equals(firstItemId())) {
             List<T> list = new ArrayList<>(collection);
             T currentItem = getItem(itemId);
