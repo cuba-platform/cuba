@@ -16,6 +16,8 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.datastruct.Node;
+import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -36,6 +38,7 @@ import com.vaadin.data.Item;
 import com.vaadin.server.Resource;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTable, E> implements TreeTable<E> {
 
@@ -94,7 +97,90 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
 
     @Override
     public void expandAll() {
-        component.expandAllItems();
+        HierarchicalDatasource datasource = getDatasource();
+        if (datasource != null) {
+            Object nullParentItemId = new Object();
+
+            Map<Object, Object> parentsMapping = getParentsMapping(datasource, nullParentItemId);
+
+            Tree<Object> itemIdsTree = toItemIdsTree(parentsMapping, nullParentItemId);
+
+            List<Object> preOrder = toContainerPreOrder(itemIdsTree);
+            List<Object> openItems = getItemIdsWithChildren(parentsMapping, nullParentItemId);
+            List<Object> collapsedItemIds = getCollapsedItemIds();
+
+            component.expandAllHierarchical(collapsedItemIds, preOrder, openItems);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Map<Object, Object> getParentsMapping(HierarchicalDatasource ds, Object nullParentItemId) {
+        Map<Object, Object> parentsMapping = new LinkedHashMap<>();
+
+        Collection<Object> itemIds = ds.getItemIds();
+
+        for (Object itemId : itemIds) {
+            Object parentId = ds.getParent(itemId);
+
+            if (itemIds.contains(parentId)) {
+                parentsMapping.put(itemId, parentId);
+            } else {
+                parentsMapping.put(itemId, nullParentItemId);
+            }
+        }
+
+        return parentsMapping;
+    }
+
+    protected List<Object> getItemIdsWithChildren(Map<Object, Object> parentsMapping, Object nullParentItemId) {
+        Set<Object> parents = new LinkedHashSet<>(parentsMapping.values());
+        parents.remove(nullParentItemId);
+        return new ArrayList<>(parents);
+    }
+
+    protected Tree<Object> toItemIdsTree(Map<Object, Object> parentsMapping, Object nullParentItemId) {
+        Map<Object, Node<Object>> nodeMapping = new LinkedHashMap<>();
+
+        for (Object itemId : parentsMapping.keySet()) {
+            Node<Object> node = new Node<>(itemId);
+            nodeMapping.put(itemId, node);
+        }
+
+        List<Node<Object>> roots = new ArrayList<>();
+
+        for (Map.Entry<Object, Object> entry : parentsMapping.entrySet()) {
+            Object itemId = entry.getKey();
+            Object parentId = entry.getValue();
+
+            Node<Object> itemNode = nodeMapping.get(itemId);
+
+            if (parentId == nullParentItemId) {
+                roots.add(itemNode);
+            } else {
+                Node<Object> parentNode = nodeMapping.get(parentId);
+                parentNode.addChild(itemNode);
+            }
+        }
+
+        return new Tree<>(roots);
+    }
+
+    protected List<Object> toContainerPreOrder(Tree<Object> itemIdsTree) {
+        return itemIdsTree.toList().stream()
+                .map(objectNode -> objectNode.data)
+                .collect(Collectors.toList());
+    }
+
+    protected List<Object> getCollapsedItemIds() {
+        if (datasource == null) {
+            return Collections.emptyList();
+        }
+
+        @SuppressWarnings("unchecked")
+        Collection<Object> itemIds = getDatasource().getItemIds();
+        return itemIds.stream()
+                .filter(itemId -> component.isCollapsed(itemId))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -106,7 +192,7 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
 
     @Override
     public void collapseAll() {
-        component.collapseAll();
+        component.collapseAllHierarchical();
     }
 
     @Override

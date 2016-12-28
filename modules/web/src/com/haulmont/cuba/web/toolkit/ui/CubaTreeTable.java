@@ -858,4 +858,44 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
 
         super.paintContent(target);
     }
+
+    public void expandAllHierarchical(List<Object> collapsedItemIds, List<Object> preOrder, List<Object> openItems) {
+        if (getContainerStrategy() instanceof HierarchicalStrategy) {
+            HierarchicalStrategy hierarchicalStrategy = (HierarchicalStrategy) getContainerStrategy();
+            hierarchicalStrategy.setOpenItems(openItems);
+            hierarchicalStrategy.setPreOrder(preOrder);
+
+            for (Object itemId : collapsedItemIds) {
+                fireExpandEvent(itemId);
+            }
+
+            setCurrentPageFirstItemIndex(getCurrentPageFirstItemIndex(), false);
+
+            refreshRowCache();
+        } else {
+            expandAll();
+        }
+    }
+
+    public void collapseAllHierarchical() {
+        if (getContainerStrategy() instanceof HierarchicalStrategy) {
+            HierarchicalStrategy hierarchicalStrategy = (HierarchicalStrategy) getContainerStrategy();
+            Set<Object> openItems = hierarchicalStrategy.getOpenItems();
+
+            hierarchicalStrategy.setOpenItems(Collections.emptyList());
+            hierarchicalStrategy.setPreOrder(null);
+            // trigger preorder update
+            hierarchicalStrategy.getItemIds();
+
+            for (Object itemId : openItems) {
+                fireCollapseEvent(itemId);
+            }
+
+            setCurrentPageFirstItemIndex(getCurrentPageFirstItemIndex(), false);
+
+            refreshRowCache();
+        } else {
+            collapseAll();
+        }
+    }
 }
