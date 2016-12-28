@@ -20,6 +20,10 @@
     @include box-defaults;
   }
 
+  .#{$primary-stylename}.v-readonly {
+    overflow: auto;
+  }
+
   .#{$primary-stylename} .gwt-HTML.v-scrollable {
     font-size: $v-font-size;
   }
