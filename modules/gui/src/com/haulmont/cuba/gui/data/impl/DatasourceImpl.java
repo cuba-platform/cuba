@@ -79,6 +79,7 @@ public class DatasourceImpl<T extends Entity> extends AbstractDatasource<T> impl
         this.dataSupplier = dataservice;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void commit() {
         backgroundWorker.checkUIAccess();
@@ -104,7 +105,10 @@ public class DatasourceImpl<T extends Entity> extends AbstractDatasource<T> impl
                 if (ds.containsItem(item.getId())) {
                     ds.modifyItem(item);
                 } else {
-                    ds.addItem(item);
+                    if (ds instanceof CollectionDatasource.Ordered)
+                        ((CollectionDatasource.Ordered) ds).addItemFirst(item);
+                    else
+                        ds.addItem(item);
                     ds.setItem(item); // This is necessary for nested property datasources to work correctly
                 }
             } else {

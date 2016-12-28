@@ -319,11 +319,27 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void addItem(T item) {
+        internalAddItem(item, () -> {
+            data.put(item.getId(), item);
+        });
+    }
+
+    @Override
+    public void addItemFirst(T item) {
+        internalAddItem(item, () -> {
+            LinkedMap tmpMap = (LinkedMap) data.clone();
+            data.clear();
+            data.put(item.getId(), item);
+            data.putAll(tmpMap);
+        });
+    }
+
+    protected void internalAddItem(T item, Runnable addToData) {
         backgroundWorker.checkUIAccess();
 
         checkStateBeforeAdd();
 
-        data.put(item.getId(), item);
+        addToData.run();
         attachListener(item);
 
         modified(item);
@@ -351,11 +367,27 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void includeItem(T item) {
+        internalIncludeItem(item, () -> {
+            data.put(item.getId(), item);
+        });
+    }
+
+    @Override
+    public void includeItemFirst(T item) {
+        internalIncludeItem(item, () -> {
+            LinkedMap tmpMap = (LinkedMap) data.clone();
+            data.clear();
+            data.put(item.getId(), item);
+            data.putAll(tmpMap);
+        });
+    }
+
+    protected void internalIncludeItem(T item, Runnable addToData) {
         backgroundWorker.checkUIAccess();
 
         checkStateBeforeAdd();
 
-        data.put(item.getId(), item);
+        addToData.run();
         attachListener(item);
 
         fireCollectionChanged(Operation.ADD, Collections.singletonList(item));

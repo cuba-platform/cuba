@@ -260,6 +260,16 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
 
         boolean isFirstId(K itemId);
         boolean isLastId(K itemId);
+
+        /**
+         * Add an item to the collection to the first position. The datasource becomes modified.
+         */
+        void addItemFirst(T item);
+
+        /**
+         * Include an item into the collection to the first position. The datasource "modified" state doesn't change.
+         */
+        void includeItemFirst(T item);
     }
 
     /**

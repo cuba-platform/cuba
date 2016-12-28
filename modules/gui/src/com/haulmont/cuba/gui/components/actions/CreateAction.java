@@ -227,6 +227,7 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
         internalOpenEditor(datasource, item, parentDs, params);
     }
 
+    @SuppressWarnings("unchecked")
     protected void internalOpenEditor(CollectionDatasource datasource, Entity newItem, Datasource parentDs, Map<String, Object> params) {
         Window.Editor window = target.getFrame().openEditor(getWindowId(), newItem, getOpenType(), params, parentDs);
 
@@ -239,10 +240,11 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
                     Entity editedItem = window.getItem();
                     if (editedItem != null) {
                         if (parentDs == null) {
-                            //noinspection unchecked
-                            datasource.includeItem(editedItem);
+                            if (datasource instanceof CollectionDatasource.Ordered)
+                                ((CollectionDatasource.Ordered) datasource).includeItemFirst(editedItem);
+                            else
+                                datasource.includeItem(editedItem);
                         }
-                        //noinspection unchecked
                         target.setSelected(editedItem);
                         afterCommit(editedItem);
                         if (afterCommitHandler != null) {

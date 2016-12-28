@@ -278,6 +278,21 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void addItem(T item) {
+        internalAddItem(item, () -> {
+            __getCollection().add(item);
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void addItemFirst(T item) {
+        internalAddItem(item, () -> {
+            addToCollectionFirst(item);
+        });
+
+    }
+
+    protected void internalAddItem(T item, Runnable addToCollection) {
         backgroundWorker.checkUIAccess();
 
         checkState();
@@ -309,7 +324,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
         // Don't add the same object instance twice (this is possible when committing nested datasources)
         if (!containsObjectInstance(item))
-            __getCollection().add(item);
+            addToCollection.run();
+
         attachListener(item);
 
         if (ObjectUtils.equals(this.item, item)) {
@@ -331,6 +347,20 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         }
 
         fireCollectionChanged(Operation.ADD, Collections.singletonList(item));
+    }
+
+    protected void addToCollectionFirst(T item) {
+        Collection<T> collection = __getCollection();
+        if (collection instanceof List) {
+            ((List) collection).add(0, item);
+        } else if (collection instanceof LinkedHashSet) {
+            LinkedHashSet tmpSet = (LinkedHashSet) ((LinkedHashSet) collection).clone();
+            collection.clear();
+            ((LinkedHashSet) collection).add(item);
+            ((LinkedHashSet) collection).addAll(tmpSet);
+        } else {
+            collection.add(item);
+        }
     }
 
     /**
@@ -426,6 +456,19 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void includeItem(T item) {
+        internalIncludeItem(item, () -> {
+            __getCollection().add(item);
+        });
+    }
+
+    @Override
+    public void includeItemFirst(T item) {
+        internalIncludeItem(item, () -> {
+            addToCollectionFirst(item);
+        });
+    }
+
+    protected void internalIncludeItem(T item, Runnable addToCollection) {
         backgroundWorker.checkUIAccess();
 
         checkState();
@@ -439,7 +482,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         try {
             // Don't add the same object instance twice
             if (!containsObjectInstance(item))
-                __getCollection().add(item);
+                addToCollection.run();
 
             MetaProperty inverseProperty = metaProperty.getInverse();
             if (inverseProperty != null)
