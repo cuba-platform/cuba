@@ -30,6 +30,23 @@
     padding-bottom: 0;
   }
 
+  .#{$primary-stylename}.v-readonly.v-button {
+    background: none;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .#{$primary-stylename}.v-readonly.v-button:focus:after {
+    box-shadow: none;
+    background: none;
+    border-color: transparent;
+  }
+
+  .#{$primary-stylename}.v-readonly.v-button:active:after,
+  .#{$primary-stylename}.v-readonly.v-button:hover:after {
+    background: none;
+  }
+
   .#{$primary-stylename}-popup .v-window-footer {
     padding-bottom: 0;
   }

@@ -78,6 +78,7 @@
 @import "components/fileuploadwrapper/fileuploadwrapper";
 @import "components/scrollbox/scrollbox";
 @import "components/calendar/calendar";
+@import "components/colorpicker/colorpicker";
 
 // Application specific
 @import "app/app-window";
@@ -141,6 +142,7 @@
   @include havana-draganddrop;
   @include havana-scrollbox;
   @include havana-calendar;
+  @include havana-colorpicker;
 
   @include havana-cuba-groupbox;
   @include havana-cuba-tokenlist;
