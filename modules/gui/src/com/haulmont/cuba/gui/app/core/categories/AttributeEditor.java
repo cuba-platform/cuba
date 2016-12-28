@@ -399,6 +399,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             } else {
                 attributeFieldGroup.setVisible("screen", true);
             }
+
+            getDialogOptions().center();
         }
 
         if (attribute.getDataType() == PropertyType.DATE) {
