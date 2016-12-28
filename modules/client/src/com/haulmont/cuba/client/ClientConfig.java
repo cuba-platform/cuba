@@ -353,4 +353,13 @@ public interface ClientConfig extends Config {
     int getDynamicAttributesTableColumnMaxTextLength();
     void setDynamicAttributesTableColumnMaxTextLength(int maxTextLength);
 
+    /**
+     * Defines default behaviour of {@code CreateAction}: whether it will add a new item to the beginning or to the
+     * end of datasource's collection. Affects only standalone datasources, for nested datasources new items are always
+     * added to the end.
+     */
+    @Property("cuba.gui.createActionAddsFirst")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(true)
+    boolean getCreateActionAddsFirst();
 }

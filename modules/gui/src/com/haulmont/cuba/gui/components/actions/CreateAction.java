@@ -25,7 +25,6 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -49,6 +48,7 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
     protected String windowId;
     protected Map<String, Object> windowParams;
     protected Map<String, Object> initialValues;
+    protected boolean addFirst = true;
 
     protected Metadata metadata = AppBeans.get(Metadata.NAME);
     protected Security security = AppBeans.get(Security.NAME);
@@ -112,6 +112,8 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         setShortcut(clientConfig.getTableInsertShortcut());
+
+        this.addFirst = clientConfig.getCreateActionAddsFirst();
     }
 
     /**
@@ -240,7 +242,7 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
                     Entity editedItem = window.getItem();
                     if (editedItem != null) {
                         if (parentDs == null) {
-                            if (datasource instanceof CollectionDatasource.Ordered)
+                            if (addFirst && datasource instanceof CollectionDatasource.Ordered)
                                 ((CollectionDatasource.Ordered) datasource).includeItemFirst(editedItem);
                             else
                                 datasource.includeItem(editedItem);
@@ -326,6 +328,25 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
     public void setInitialValues(Map<String, Object> initialValues) {
         this.initialValues = initialValues;
     }
+
+    /**
+     * @return whether this action will add a new instance to the beginning of the datasource's collection.
+     * Affects only standalone datasources, for nested datasources new items are always added to the end.
+     */
+    public boolean isAddFirst() {
+        return addFirst;
+    }
+
+    /**
+     * Whether this action will add a new instance to the beginning of the datasource's collection.
+     * Affects only standalone datasources, for nested datasources new items are always added to the end.
+     *
+     * @see ClientConfig#getCreateActionAddsFirst()
+     */
+    public void setAddFirst(boolean addFirst) {
+        this.addFirst = addFirst;
+    }
+
 
     /**
      * Hook invoked after the editor was committed and closed

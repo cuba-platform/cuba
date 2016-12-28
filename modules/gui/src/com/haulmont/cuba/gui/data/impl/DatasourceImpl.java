@@ -105,10 +105,7 @@ public class DatasourceImpl<T extends Entity> extends AbstractDatasource<T> impl
                 if (ds.containsItem(item.getId())) {
                     ds.modifyItem(item);
                 } else {
-                    if (ds instanceof CollectionDatasource.Ordered)
-                        ((CollectionDatasource.Ordered) ds).addItemFirst(item);
-                    else
-                        ds.addItem(item);
+                    ds.addItem(item);
                     ds.setItem(item); // This is necessary for nested property datasources to work correctly
                 }
             } else {
