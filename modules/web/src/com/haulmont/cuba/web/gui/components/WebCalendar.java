@@ -29,9 +29,7 @@ import com.haulmont.cuba.web.gui.components.calendar.CalendarEventWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaCalendar;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 
 public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements Calendar {
@@ -41,14 +39,6 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     protected final String TIME_FORMAT_24H = "24H";
 
     protected CalendarEventProvider calendarEventProvider;
-    protected List<CalendarDateClickListener> dateClickListeners;
-    protected List<CalendarWeekClickListener> weekClickListeners;
-    protected List<CalendarEventClickListener> eventClickListeners;
-    protected List<CalendarEventResizeListener> eventResizeListeners;
-    protected List<CalendarForwardClickListener> forwardClickListeners;
-    protected List<CalendarBackwardClickListener> backwardClickListeners;
-    protected List<CalendarEventMoveListener> eventMoveListeners;
-    protected List<CalendarRangeSelectListener> rangeSelectListeners;
     protected boolean navigationButtonsVisible = false;
 
     public WebCalendar() {
@@ -99,137 +89,6 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
         calendarEventProvider.setCalendar(this);
 
         component.setEventProvider(new CalendarEventProviderWrapper(calendarEventProvider));
-
-        component.setHandler(new CalendarComponentEvents.DateClickHandler() {
-            @Override
-            public void dateClick(CalendarComponentEvents.DateClickEvent event) {
-                if (dateClickListeners != null) {
-                    for (CalendarDateClickListener calendarDateClickListener : dateClickListeners) {
-                        calendarDateClickListener.dateClick(new CalendarDateClickEvent(WebCalendar.this, event.getDate()));
-                    }
-                }
-            }
-        });
-
-        component.setHandler(new CalendarComponentEvents.RangeSelectHandler() {
-            @Override
-            public void rangeSelect(CalendarComponentEvents.RangeSelectEvent event) {
-                if (rangeSelectListeners != null) {
-                    for (CalendarRangeSelectListener calendarRangeSelectListener : rangeSelectListeners) {
-                        calendarRangeSelectListener.rangeSelect(new CalendarRangeSelectEvent(WebCalendar.this,
-                                event.getStart(),
-                                event.getEnd()));
-                    }
-                }
-            }
-        });
-
-        component.setHandler(new CalendarComponentEvents.EventClickHandler() {
-            @Override
-            public void eventClick(CalendarComponentEvents.EventClick event) {
-                if (eventClickListeners != null) {
-                    com.vaadin.ui.components.calendar.event.CalendarEvent calendarEvent = event.getCalendarEvent();
-                    if (calendarEvent instanceof CalendarEventWrapper) {
-                        Entity entity = null;
-                        if (((CalendarEventWrapper) calendarEvent).getCalendarEvent() instanceof EntityCalendarEvent) {
-                            entity = ((EntityCalendarEvent) ((CalendarEventWrapper) calendarEvent)
-                                    .getCalendarEvent())
-                                    .getEntity();
-                        }
-
-                        CalendarEvent calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
-                        for (CalendarEventClickListener calendarEventClickListener : eventClickListeners) {
-                            calendarEventClickListener.eventClick(new CalendarEventClickEvent(
-                                    WebCalendar.this,
-                                    calendarEventWrapper,
-                                    entity
-                            ));
-                        }
-                    }
-                }
-            }
-        });
-
-        component.setHandler(new CalendarComponentEvents.WeekClickHandler() {
-            @Override
-            public void weekClick(CalendarComponentEvents.WeekClick event) {
-                if (weekClickListeners != null) {
-                    for (CalendarWeekClickListener calendarWeekClickListener : weekClickListeners) {
-                        calendarWeekClickListener.weekClick(new CalendarWeekClickEvent(
-                                WebCalendar.this,
-                                event.getWeek(),
-                                event.getYear()
-                        ));
-                    }
-                }
-            }
-        });
-
-        component.setHandler(new CalendarComponentEvents.EventResizeHandler() {
-            @Override
-            public void eventResize(CalendarComponentEvents.EventResize event) {
-                if (eventResizeListeners != null) {
-                    com.vaadin.ui.components.calendar.event.CalendarEvent calendarEvent = event.getCalendarEvent();
-                    if (calendarEvent instanceof CalendarEventWrapper) {
-                        Entity entity = null;
-                        if (((CalendarEventWrapper) calendarEvent).getCalendarEvent() instanceof EntityCalendarEvent) {
-                            entity = ((EntityCalendarEvent) ((CalendarEventWrapper) calendarEvent)
-                                    .getCalendarEvent())
-                                    .getEntity();
-                        }
-
-                        for (CalendarEventResizeListener calendarEventResizeListener : eventResizeListeners) {
-                            calendarEventResizeListener.eventResize(new CalendarEventResizeEvent(
-                                    WebCalendar.this,
-                                    ((CalendarEventWrapper) calendarEvent).getCalendarEvent(),
-                                    event.getNewStart(),
-                                    event.getNewEnd(),
-                                    entity
-                            ));
-                        }
-                    }
-                }
-            }
-        });
-
-        component.setHandler(new CalendarComponentEvents.ForwardHandler() {
-            @Override
-            public void forward(CalendarComponentEvents.ForwardEvent event) {
-                if (forwardClickListeners != null) {
-                    for (CalendarForwardClickListener calendarForwardClickListener : forwardClickListeners) {
-                        calendarForwardClickListener.forwardClick(new CalendarForwardClickEvent(WebCalendar.this));
-                    }
-                }
-            }
-        });
-
-        component.setHandler(new CalendarComponentEvents.BackwardHandler() {
-            @Override
-            public void backward(CalendarComponentEvents.BackwardEvent event) {
-                if (backwardClickListeners != null) {
-                    for (CalendarBackwardClickListener calendarBackwardClickListener : backwardClickListeners) {
-                        calendarBackwardClickListener.backwardClick(new CalendarBackwardClickEvent(WebCalendar.this));
-                    }
-                }
-            }
-        });
-
-        component.setHandler(new CalendarComponentEvents.EventMoveHandler() {
-            @Override
-            public void eventMove(CalendarComponentEvents.MoveEvent event) {
-                if (eventMoveListeners != null) {
-                    com.vaadin.ui.components.calendar.event.CalendarEvent calendarEvent = event.getCalendarEvent();
-                    for (CalendarEventMoveListener calendarEventMoveListener : eventMoveListeners) {
-                        calendarEventMoveListener.eventMove(new CalendarEventMoveEvent(
-                                WebCalendar.this,
-                                ((CalendarEventWrapper) calendarEvent).getCalendarEvent(),
-                                event.getNewStart()
-                        ));
-                    }
-                }
-            }
-        });
-
         setNavigationButtonsStyle(navigationButtonsVisible);
     }
 
@@ -369,137 +228,254 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     @Override
     public void addDateClickListener(CalendarDateClickListener listener) {
-        if (dateClickListeners == null) {
-            dateClickListeners = new ArrayList<>();
-        }
-        if (!dateClickListeners.contains(listener)) {
-            dateClickListeners.add(listener);
+        if (listener != null) {
+            getEventRouter().addListener(CalendarDateClickListener.class, listener);
+
+            component.setHandler(new CalendarComponentEvents.DateClickHandler() {
+                @Override
+                public void dateClick(CalendarComponentEvents.DateClickEvent event) {
+                    if (getEventRouter().hasListeners(CalendarDateClickListener.class)) {
+                        getEventRouter().fireEvent(
+                                CalendarDateClickListener.class,
+                                CalendarDateClickListener::dateClick,
+                                new CalendarDateClickEvent(WebCalendar.this, event.getDate())
+                        );
+                    }
+                }
+            });
         }
     }
 
     @Override
     public void removeDateClickListener(CalendarDateClickListener listener) {
-        if (dateClickListeners != null) {
-            dateClickListeners.remove(listener);
+        getEventRouter().removeListener(CalendarDateClickListener.class, listener);
+
+        if (getEventRouter().hasListeners(CalendarDateClickListener.class)) {
+            component.setHandler((CalendarComponentEvents.DateClickHandler) null);
         }
     }
 
     @Override
     public void addEventClickListener(CalendarEventClickListener listener) {
-        if (eventClickListeners == null) {
-            eventClickListeners = new ArrayList<>();
-        }
-        if (!eventClickListeners.contains(listener)) {
-            eventClickListeners.add(listener);
+        if (listener != null) {
+            getEventRouter().addListener(CalendarEventClickListener.class, listener);
+
+            component.setHandler(new CalendarComponentEvents.EventClickHandler() {
+                @Override
+                public void eventClick(CalendarComponentEvents.EventClick event) {
+                    com.vaadin.ui.components.calendar.event.CalendarEvent calendarEvent = event.getCalendarEvent();
+                    if (calendarEvent instanceof CalendarEventWrapper) {
+                        Entity entity = null;
+                        if (((CalendarEventWrapper) calendarEvent).getCalendarEvent() instanceof EntityCalendarEvent) {
+                            entity = ((EntityCalendarEvent) ((CalendarEventWrapper) calendarEvent)
+                                    .getCalendarEvent())
+                                    .getEntity();
+                        }
+
+                        CalendarEvent calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
+                        getEventRouter().fireEvent(
+                                CalendarEventClickListener.class,
+                                CalendarEventClickListener::eventClick,
+                                new CalendarEventClickEvent(
+                                        WebCalendar.this,
+                                        calendarEventWrapper,
+                                        entity)
+                        );
+                    }
+                }
+            });
         }
     }
 
     @Override
     public void removeEventClickListener(CalendarEventClickListener listener) {
-        if (!eventClickListeners.isEmpty()) {
-            eventClickListeners.remove(listener);
+        getEventRouter().removeListener(CalendarEventClickListener.class, listener);
+
+        if (getEventRouter().hasListeners(CalendarEventClickListener.class)) {
+            component.setHandler((CalendarComponentEvents.EventClickHandler) null);
         }
     }
 
     @Override
     public void addEventResizeListener(CalendarEventResizeListener listener) {
-        if (eventResizeListeners == null) {
-            eventResizeListeners = new ArrayList<>();
-        }
-        if (!eventResizeListeners.contains(listener)) {
-            eventResizeListeners.add(listener);
+        if (listener != null) {
+            getEventRouter().addListener(CalendarEventResizeListener.class, listener);
+
+            component.setHandler(new CalendarComponentEvents.EventResizeHandler() {
+                @Override
+                public void eventResize(CalendarComponentEvents.EventResize event) {
+                    com.vaadin.ui.components.calendar.event.CalendarEvent calendarEvent = event.getCalendarEvent();
+                    if (calendarEvent instanceof CalendarEventWrapper) {
+                        Entity entity = null;
+                        if (((CalendarEventWrapper) calendarEvent).getCalendarEvent() instanceof EntityCalendarEvent) {
+                            entity = ((EntityCalendarEvent) ((CalendarEventWrapper) calendarEvent)
+                                    .getCalendarEvent())
+                                    .getEntity();
+                        }
+
+                        getEventRouter().fireEvent(
+                                CalendarEventResizeListener.class,
+                                CalendarEventResizeListener::eventResize,
+                                new CalendarEventResizeEvent(
+                                        WebCalendar.this,
+                                        ((CalendarEventWrapper) calendarEvent).getCalendarEvent(),
+                                        event.getNewStart(),
+                                        event.getNewEnd(),
+                                        entity)
+                        );
+                    }
+                }
+            });
         }
     }
 
     @Override
     public void removeEventResizeListener(CalendarEventResizeListener listener) {
-        if (eventResizeListeners != null) {
-            eventResizeListeners.remove(listener);
+        getEventRouter().removeListener(CalendarEventResizeListener.class, listener);
+
+        if (getEventRouter().hasListeners(CalendarEventResizeListener.class)) {
+            component.setHandler((CalendarComponentEvents.EventResizeHandler) null);
         }
     }
 
     @Override
     public void addEventMoveListener(CalendarEventMoveListener listener) {
-        if (eventMoveListeners == null) {
-            eventMoveListeners = new ArrayList<>();
-        }
-        if (!eventMoveListeners.contains(listener)) {
-            eventMoveListeners.add(listener);
+        if (listener != null) {
+            getEventRouter().addListener(CalendarEventMoveListener.class, listener);
+
+            component.setHandler(new CalendarComponentEvents.EventMoveHandler() {
+                @Override
+                public void eventMove(CalendarComponentEvents.MoveEvent event) {
+                    com.vaadin.ui.components.calendar.event.CalendarEvent calendarEvent = event.getCalendarEvent();
+                    getEventRouter().fireEvent(CalendarEventMoveListener.class, CalendarEventMoveListener::eventMove, new CalendarEventMoveEvent(
+                            WebCalendar.this,
+                            ((CalendarEventWrapper) calendarEvent).getCalendarEvent(),
+                            event.getNewStart()
+                    ));
+                }
+            });
         }
     }
 
     @Override
     public void removeEventMoveListener(CalendarEventMoveListener listener) {
-        if (!eventMoveListeners.contains(listener)) {
-            eventMoveListeners.remove(listener);
+        getEventRouter().removeListener(CalendarEventMoveListener.class, listener);
+
+        if (getEventRouter().hasListeners(CalendarEventMoveListener.class)) {
+            component.setHandler((CalendarComponentEvents.EventMoveHandler) null);
         }
     }
 
     @Override
     public void addWeekClickListener(CalendarWeekClickListener listener) {
-        if (weekClickListeners == null) {
-            weekClickListeners = new ArrayList<>();
-        }
-        if (!weekClickListeners.contains(listener)) {
-            weekClickListeners.add(listener);
+        if (listener != null) {
+            getEventRouter().addListener(CalendarWeekClickListener.class, listener);
+
+            component.setHandler(new CalendarComponentEvents.WeekClickHandler() {
+                @Override
+                public void weekClick(CalendarComponentEvents.WeekClick event) {
+                    getEventRouter().fireEvent(
+                            CalendarWeekClickListener.class,
+                            CalendarWeekClickListener::weekClick,
+                            new CalendarWeekClickEvent(
+                                    WebCalendar.this,
+                                    event.getWeek(),
+                                    event.getYear())
+                    );
+                }
+            });
         }
     }
 
     @Override
     public void removeWeekClickListener(CalendarWeekClickListener listener) {
-        if (weekClickListeners != null) {
-            weekClickListeners.remove(listener);
+        getEventRouter().removeListener(CalendarWeekClickListener.class, listener);
+
+        if (getEventRouter().hasListeners(CalendarWeekClickListener.class)) {
+            component.setHandler((CalendarComponentEvents.WeekClickHandler) null);
         }
     }
 
     @Override
     public void addForwardClickListener(CalendarForwardClickListener listener) {
-        if (forwardClickListeners == null) {
-            forwardClickListeners = new ArrayList<>();
-        }
-        if (!forwardClickListeners.contains(listener)) {
-            forwardClickListeners.add(listener);
+        if (listener != null) {
+            getEventRouter().addListener(CalendarForwardClickListener.class, listener);
+
+            component.setHandler(new CalendarComponentEvents.ForwardHandler() {
+                @Override
+                public void forward(CalendarComponentEvents.ForwardEvent event) {
+                    getEventRouter().fireEvent(
+                            CalendarForwardClickListener.class,
+                            CalendarForwardClickListener::forwardClick,
+                            new CalendarForwardClickEvent(WebCalendar.this)
+                    );
+                }
+            });
         }
     }
 
     @Override
     public void removeForwardClickListener(CalendarForwardClickListener listener) {
-        if (forwardClickListeners != null) {
-            forwardClickListeners.remove(listener);
+        getEventRouter().removeListener(CalendarForwardClickListener.class, listener);
+
+        if (getEventRouter().hasListeners(CalendarForwardClickListener.class)) {
+            component.setHandler((CalendarComponentEvents.ForwardHandler) null);
         }
     }
 
     @Override
     public void addBackwardClickListener(CalendarBackwardClickListener listener) {
-        if (backwardClickListeners == null) {
-            backwardClickListeners = new ArrayList<>();
-        }
-        if (!backwardClickListeners.contains(listener)) {
-            backwardClickListeners.add(listener);
+        if (listener != null) {
+            getEventRouter().addListener(CalendarBackwardClickListener.class, listener);
+
+            component.setHandler(new CalendarComponentEvents.BackwardHandler() {
+                @Override
+                public void backward(CalendarComponentEvents.BackwardEvent event) {
+                    getEventRouter().fireEvent(
+                            CalendarBackwardClickListener.class,
+                            CalendarBackwardClickListener::backwardClick,
+                            new CalendarBackwardClickEvent(WebCalendar.this)
+                    );
+                }
+            });
         }
     }
 
     @Override
     public void removeBackwardClickListener(CalendarBackwardClickListener listener) {
-        if (backwardClickListeners != null) {
-            backwardClickListeners.remove(listener);
+        getEventRouter().removeListener(CalendarBackwardClickListener.class, listener);
+
+        if (getEventRouter().hasListeners(CalendarBackwardClickListener.class)) {
+            component.setHandler((CalendarComponentEvents.BackwardHandler) null);
         }
     }
 
     @Override
     public void addRangeSelectListener(CalendarRangeSelectListener listener) {
-        if (rangeSelectListeners == null) {
-            rangeSelectListeners = new ArrayList<>();
-        }
-        if (!rangeSelectListeners.contains(listener)) {
-            rangeSelectListeners.add(listener);
+        if (listener != null) {
+            getEventRouter().addListener(CalendarRangeSelectListener.class, listener);
+
+            component.setHandler(new CalendarComponentEvents.RangeSelectHandler() {
+                @Override
+                public void rangeSelect(CalendarComponentEvents.RangeSelectEvent event) {
+                    getEventRouter().fireEvent(
+                            CalendarRangeSelectListener.class,
+                            CalendarRangeSelectListener::rangeSelect,
+                            new CalendarRangeSelectEvent(WebCalendar.this,
+                                    event.getStart(),
+                                    event.getEnd())
+                    );
+                }
+            });
         }
     }
 
     @Override
     public void removeRangeSelectListener(CalendarRangeSelectListener listener) {
-        if (rangeSelectListeners != null) {
-            rangeSelectListeners.remove(listener);
+        getEventRouter().removeListener(CalendarRangeSelectListener.class, listener);
+
+        if (getEventRouter().hasListeners(CalendarRangeSelectListener.class)) {
+            component.setHandler((CalendarComponentEvents.RangeSelectHandler) null);
         }
     }
 
