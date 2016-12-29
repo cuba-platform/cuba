@@ -63,9 +63,16 @@ public final class EventRouter {
     }
 
     public <L> void removeListener(Class<L> listenerClass, L listener) {
+        Preconditions.checkNotNullArgument(listener, "listener cannot be null");
+
         if (events != null) {
-            events.getOrDefault(listenerClass, Collections.emptyList())
-                    .remove(listener);
+            List<Object> listenersList = events.get(listenerClass);
+            if (listenersList != null) {
+                listenersList.remove(listener);
+                if (listenersList.isEmpty()) {
+                    events.remove(listenerClass);
+                }
+            }
         }
     }
 
