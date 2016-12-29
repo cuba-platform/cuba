@@ -20,6 +20,7 @@ package com.haulmont.cuba.core;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
+import com.haulmont.cuba.testsupport.TestSupport;
 import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public class TypedNativeQueryTest {
 
@@ -142,5 +144,22 @@ public class TypedNativeQueryTest {
             tx.end();
         }
         // gets persisted without error
+    }
+
+    @Test
+    public void testAssigningView() throws Exception {
+        String nativeQuery = "select ID, CREATE_TS, CREATED_BY, UPDATE_TS, UPDATED_BY, VERSION, NAME from SEC_GROUP where ID = ?";
+
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            EntityManager em = cont.persistence().getEntityManager();
+            TypedQuery<Group> q = em.createNativeQuery(nativeQuery, Group.class);
+            q.setParameter(1, TestSupport.COMPANY_GROUP_ID.toString());
+            try {
+                q.setView(Group.class, "group.browse");
+                fail();
+            } catch (UnsupportedOperationException e) {
+                // ok
+            }
+        }
     }
 }

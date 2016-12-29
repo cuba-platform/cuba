@@ -491,6 +491,8 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     @Override
     public TypedQuery<T> setView(View view) {
+        if (isNative)
+            throw new UnsupportedOperationException("Views are not supported for native queries");
         checkState();
         views.clear();
         views.add(view);
@@ -514,6 +516,8 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     @Override
     public TypedQuery<T> addView(View view) {
+        if (isNative)
+            throw new UnsupportedOperationException("Views are not supported for native queries");
         checkState();
         views.add(view);
         return this;
