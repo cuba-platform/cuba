@@ -25,6 +25,6 @@ public class IntegerListStringify extends TypeStringify {
     @SuppressWarnings("unchecked")
     @Override
     public String stringify(Object value) {
-        return ((List<Integer>) value).stream().map(String::valueOf).collect(Collectors.joining("|"));
+        return ((List<Integer>) value).stream().map(String::valueOf).collect(Collectors.joining(" "));
     }
 }
