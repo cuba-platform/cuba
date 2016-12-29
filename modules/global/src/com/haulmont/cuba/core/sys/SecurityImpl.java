@@ -21,8 +21,6 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
@@ -209,19 +207,20 @@ public class SecurityImpl implements Security {
         String metaClassName = entity.getMetaClass().getName();
         String groovyScript = constraint.getGroovyScript();
         if (constraint.getCheckType().memory() && StringUtils.isNotBlank(groovyScript)) {
-            Map<String, Object> params = new HashMap<>();
-            params.put("theEntity", metadataTools.deepCopy(entity));//copy to avoid implicit modification
-            params.put("value", new MethodClosure(this, "getParameterValue"));
-            params.put("userSession", userSessionSource.getUserSession());
+            Map<String, Object> context = new HashMap<>();
+            context.put("__entity__", metadataTools.deepCopy(entity)); // copy to avoid implicit modification
+            context.put("parse", new MethodClosure(this, "parseValue"));
+            context.put("userSession", userSessionSource.getUserSession());
+            fillGroovyConstraintsContext(context);
             try {
-                Object o = scripting.evaluateGroovy(groovyScript.replace("{E}", "theEntity"), params);
+                Object o = scripting.evaluateGroovy(groovyScript.replace("{E}", "__entity__"), context);
                 if (Boolean.FALSE.equals(o)) {
                     log.trace("Entity does not match security constraint. Entity class [{}]. Entity [{}]. Constraint [{}].",
                             metaClassName, entity.getId(), constraint.getCheckType());
                     return false;
                 }
             } catch (Exception e) {
-                log.error("An error occurred while applying constraint's groovy script. The entity has been filtered." +
+                log.error("An error occurred while applying constraint's Groovy script. The entity has been filtered out." +
                           "Entity class [{}]. Entity [{}].", metaClassName, entity.getId(), e);
                 return false;
             }
@@ -229,29 +228,23 @@ public class SecurityImpl implements Security {
         return true;
     }
 
+    /**
+     * Override if you need specific context variables in Groovy constraints.
+     *
+     * @param context    passed to Groovy evaluator
+     */
+    protected void fillGroovyConstraintsContext(Map<String, Object> context) {
+    }
+
     @SuppressWarnings("unused")
-    protected Object getParameterValue(Class clazz, String parameterValue) {
+    protected Object parseValue(Class<?> clazz, String string) {
         try {
-            if (String.class.isAssignableFrom(clazz)) {
-                return parameterValue;
-            } else if (Entity.class.isAssignableFrom(clazz)) {
-                UUID uuid = UUID.fromString(parameterValue);
-                Object entity = metadata.create(clazz);
-                if (entity instanceof BaseUuidEntity) {
-                    ((BaseUuidEntity) entity).setId(uuid);
-                } else {
-                    ((BaseGenericIdEntity) entity).setValue("uuid", uuid);
-                }
-
-                return entity;
-            }
-
             Datatype datatype = Datatypes.get(clazz);
-            return datatype != null ? datatype.parse(parameterValue) : parameterValue;
+            return datatype != null ? datatype.parse(string) : string;
         } catch (ParseException e) {
-            log.error("Could not parse a value from constraint. Class [{}], value [{}].", clazz, parameterValue, e);
-            throw new RowLevelSecurityException(format("Could not parse a value from constraint. Class [%s], value [%s]. " +
-                    "Please see the logs.", clazz, parameterValue), null);
+            log.error("Could not parse a value in constraint. Class [{}], value [{}].", clazz, string, e);
+            throw new RowLevelSecurityException(format("Could not parse a value in constraint. Class [%s], value [%s]. " +
+                    "See the log for details.", clazz, string), null);
         }
     }
 }
