@@ -106,7 +106,7 @@ public class UserSessions implements UserSessionsAPI {
         noUser.setLogin("server");
         NO_USER_SESSION = new UserSession(
                 UUID.fromString("a66abe96-3b9d-11e2-9db2-3860770d7eaf"), noUser,
-                Collections.emptyList(), Locale.getDefault(), true) {
+                Collections.emptyList(), Locale.ENGLISH, true) {
             @Override
             public UUID getId() {
                 return AppContext.NO_USER_CONTEXT.getSessionId();
