@@ -212,6 +212,7 @@ public class SecurityImpl implements Security {
             Map<String, Object> params = new HashMap<>();
             params.put("theEntity", metadataTools.deepCopy(entity));//copy to avoid implicit modification
             params.put("value", new MethodClosure(this, "getParameterValue"));
+            params.put("userSession", userSessionSource.getUserSession());
             try {
                 Object o = scripting.evaluateGroovy(groovyScript.replace("{E}", "theEntity"), params);
                 if (Boolean.FALSE.equals(o)) {
