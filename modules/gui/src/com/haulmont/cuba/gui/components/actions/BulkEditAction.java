@@ -24,10 +24,22 @@ import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import org.springframework.context.annotation.Scope;
 
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Action used in {@link BulkEditor} visual component.
+ * <p>
+ * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+ * for example:
+ * <pre>
+ * &lt;bean id="cuba_BulkEditAction" class="com.company.sample.gui.MyBulkEditAction" scope="prototype"/&gt;
+ * </pre>
+ */
+@org.springframework.stereotype.Component("cuba_BulkEditAction")
+@Scope("prototype")
 public class BulkEditAction extends ItemTrackingAction implements Action.HasBeforeActionPerformedHandler  {
 
     protected OpenType openType = OpenType.DIALOG;
@@ -36,6 +48,14 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
     protected List<Field.Validator> modelValidators;
 
     protected BeforeActionPerformedHandler beforeActionPerformedHandler;
+
+    /**
+     * Creates an action with default id.
+     * @param target    component containing this action
+     */
+    public static BulkEditAction create(ListComponent target) {
+        return AppBeans.getPrototype("cuba_BulkEditAction", target);
+    }
 
     public BulkEditAction(ListComponent target) {
         super(target, "bulkEdit");

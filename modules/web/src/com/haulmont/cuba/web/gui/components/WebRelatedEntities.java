@@ -150,7 +150,7 @@ public class WebRelatedEntities extends WebPopupButton implements RelatedEntitie
         WindowInfo defaultScreen = screensHelper.getDefaultBrowseScreen(metaProperty.getRange().asClass());
         if (defaultScreen != null
                 || (propertyOption != null && StringUtils.isNotEmpty(propertyOption.getScreen()))) {
-            RelatedAction relatedAction = new RelatedAction("related" + actionOrder.size(), listComponent, metaClass, metaProperty);
+            RelatedAction relatedAction = RelatedAction.create("related" + actionOrder.size(), listComponent, metaClass, metaProperty);
             relatedAction.setOpenType(openType);
 
             if (defaultScreen != null) {

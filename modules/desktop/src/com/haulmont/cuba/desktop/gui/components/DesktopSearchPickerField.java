@@ -53,21 +53,21 @@ public class DesktopSearchPickerField extends DesktopSearchField implements Sear
 
     @Override
     public PickerField.LookupAction addLookupAction() {
-        PickerField.LookupAction action = new PickerField.LookupAction(this);
+        PickerField.LookupAction action = PickerField.LookupAction.create(this);
         addAction(action);
         return action;
     }
 
     @Override
     public PickerField.ClearAction addClearAction() {
-        PickerField.ClearAction action = new PickerField.ClearAction(this);
+        PickerField.ClearAction action = PickerField.ClearAction.create(this);
         addAction(action);
         return action;
     }
 
     @Override
     public PickerField.OpenAction addOpenAction() {
-        PickerField.OpenAction action = new PickerField.OpenAction(this);
+        PickerField.OpenAction action = PickerField.OpenAction.create(this);
         addAction(action);
         return action;
     }

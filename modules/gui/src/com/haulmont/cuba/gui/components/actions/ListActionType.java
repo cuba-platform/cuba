@@ -29,42 +29,42 @@ public enum ListActionType {
     CREATE("create") {
         @Override
         public Action createAction(ListComponent holder) {
-            return new CreateAction(holder);
+            return CreateAction.create(holder);
         }
     },
 
     EDIT("edit") {
         @Override
         public Action createAction(ListComponent holder) {
-            return new EditAction(holder);
+            return EditAction.create(holder);
         }
     },
 
     REMOVE("remove") {
         @Override
         public Action createAction(ListComponent holder) {
-            return new RemoveAction(holder);
+            return RemoveAction.create(holder);
         }
     },
 
     REFRESH("refresh") {
         @Override
         public Action createAction(ListComponent holder) {
-            return new RefreshAction(holder);
+            return RefreshAction.create(holder);
         }
     },
 
     ADD("add") {
         @Override
         public Action createAction(ListComponent holder) {
-            return new AddAction(holder);
+            return AddAction.create(holder);
         }
     },
 
     EXCLUDE("exclude") {
         @Override
         public Action createAction(ListComponent holder) {
-            return new ExcludeAction(holder);
+            return ExcludeAction.create(holder);
         }
     },
 
@@ -72,7 +72,7 @@ public enum ListActionType {
         @Override
         public Action createAction(ListComponent holder) {
             if (holder instanceof Table)
-                return new ExcelAction((Table) holder);
+                return ExcelAction.create(holder);
             else
                 throw new IllegalArgumentException("Only Table can contain EXCEL action");
         }

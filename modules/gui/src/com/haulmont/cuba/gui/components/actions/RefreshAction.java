@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import org.springframework.context.annotation.Scope;
 
 import java.util.Map;
 
@@ -28,7 +29,16 @@ import java.util.Map;
  * Standard list action to refresh a list of entities.
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor or setting properties.
+ * <p>
+ * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+ * for example:
+ * <pre>
+ * &lt;bean id="cuba_RefreshAction" class="com.company.sample.gui.MyRefreshAction" scope="prototype"/&gt;
+ * </pre>
+ * Also, use {@code create()} static methods instead of constructors when creating the action programmatically.
  */
+@org.springframework.stereotype.Component("cuba_RefreshAction")
+@Scope("prototype")
 public class RefreshAction extends BaseAction {
 
     public static final String ACTION_ID = ListActionType.REFRESH.getId();
@@ -39,6 +49,22 @@ public class RefreshAction extends BaseAction {
 
     protected Runnable beforeRefreshHandler;
     protected Runnable afterRefreshHandler;
+
+    /**
+     * Creates an action with default id.
+     * @param target    component containing this action
+     */
+    public static RefreshAction create(ListComponent target) {
+        return AppBeans.getPrototype("cuba_RefreshAction", target);
+    }
+
+    /**
+     * Creates an action with the given id.
+     * @param target    component containing this action
+     */
+    public static RefreshAction create(ListComponent target, String id) {
+        return AppBeans.getPrototype("cuba_RefreshAction", target, id);
+    }
 
     /**
      * The simplest constructor. The action has default name.

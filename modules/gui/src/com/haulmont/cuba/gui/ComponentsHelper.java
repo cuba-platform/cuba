@@ -441,16 +441,16 @@ public abstract class ComponentsHelper {
      */
     public static void createActions(ListComponent owner, EnumSet<ListActionType> actions) {
         if (actions.contains(ListActionType.CREATE))
-            owner.addAction(new CreateAction(owner));
+            owner.addAction(CreateAction.create(owner));
 
         if (actions.contains(ListActionType.EDIT))
-            owner.addAction(new EditAction(owner));
+            owner.addAction(EditAction.create(owner));
 
         if (actions.contains(ListActionType.REMOVE))
-            owner.addAction(new RemoveAction(owner));
+            owner.addAction(RemoveAction.create(owner));
 
         if (actions.contains(ListActionType.REFRESH))
-            owner.addAction(new RefreshAction(owner));
+            owner.addAction(RefreshAction.create(owner));
     }
 
     /**

@@ -37,6 +37,7 @@ import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -124,21 +125,21 @@ public interface PickerField extends Field, Component.ActionsHolder {
         LOOKUP("lookup") {
             @Override
             public Action createAction(PickerField pickerField) {
-                return new LookupAction(pickerField);
+                return LookupAction.create(pickerField);
             }
         },
 
         CLEAR("clear") {
             @Override
             public Action createAction(PickerField pickerField) {
-                return new ClearAction(pickerField);
+                return ClearAction.create(pickerField);
             }
         },
 
         OPEN("open") {
             @Override
             public Action createAction(PickerField pickerField) {
-                return new OpenAction(pickerField);
+                return OpenAction.create(pickerField);
             }
         };
 
@@ -176,7 +177,16 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
     /**
      * Action to select an entity instance through the entity lookup screen.
+     * <p>
+     * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+     * for example:
+     * <pre>
+     * &lt;bean id="cuba_LookupAction" class="com.company.sample.gui.MyLookupAction" scope="prototype"/&gt;
+     * </pre>
+     * Also, use {@code create()} static methods instead of constructors when creating the action programmatically.
      */
+    @org.springframework.stereotype.Component("cuba_LookupAction")
+    @Scope("prototype")
     class LookupAction extends StandardAction {
 
         public static final String NAME = ActionType.LOOKUP.getId();
@@ -190,6 +200,10 @@ public interface PickerField extends Field, Component.ActionsHolder {
         protected AfterLookupSelectionHandler afterLookupSelectionHandler;
 
         protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+
+        public static LookupAction create(PickerField pickerField) {
+            return AppBeans.getPrototype("cuba_LookupAction", pickerField);
+        }
 
         public LookupAction(PickerField pickerField) {
             super(NAME, pickerField);
@@ -397,10 +411,23 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
     /**
      * Action to clear the PickerField content.
+     * <p>
+     * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+     * for example:
+     * <pre>
+     * &lt;bean id="cuba_ClearAction" class="com.company.sample.gui.MyClearAction" scope="prototype"/&gt;
+     * </pre>
+     * Also, use {@code create()} static methods instead of constructors when creating the action programmatically.
      */
+    @org.springframework.stereotype.Component("cuba_ClearAction")
+    @Scope("prototype")
     class ClearAction extends StandardAction {
 
         public static final String NAME = ActionType.CLEAR.getId();
+
+        public static ClearAction create(PickerField pickerField) {
+            return AppBeans.getPrototype("cuba_ClearAction", pickerField);
+        }
 
         public ClearAction(PickerField pickerField) {
             super(NAME, pickerField);
@@ -427,7 +454,16 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
     /**
      * Action to open an edit screen for entity instance which is currently set in the PickerField.
+     * <p>
+     * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+     * for example:
+     * <pre>
+     * &lt;bean id="cuba_OpenAction" class="com.company.sample.gui.MyOpenAction" scope="prototype"/&gt;
+     * </pre>
+     * Also, use {@code create()} static methods instead of constructors when creating the action programmatically.
      */
+    @org.springframework.stereotype.Component("cuba_OpenAction")
+    @Scope("prototype")
     class OpenAction extends StandardAction {
 
         public static final String NAME = ActionType.OPEN.getId();
@@ -438,6 +474,10 @@ public interface PickerField extends Field, Component.ActionsHolder {
         protected Map<String, Object> editScreenParams;
 
         protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+
+        public static OpenAction create(PickerField pickerField) {
+            return AppBeans.getPrototype("cuba_OpenAction", pickerField);
+        }
 
         public OpenAction(PickerField pickerField) {
             super(NAME, pickerField);

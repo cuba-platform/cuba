@@ -53,21 +53,21 @@ public class DesktopSuggestionPickerField extends DesktopSuggestionField impleme
 
     @Override
     public LookupAction addLookupAction() {
-        LookupAction action = new LookupAction(this);
+        LookupAction action = LookupAction.create(this);
         addAction(action);
         return action;
     }
 
     @Override
     public ClearAction addClearAction() {
-        ClearAction action = new ClearAction(this);
+        ClearAction action = ClearAction.create(this);
         addAction(action);
         return action;
     }
 
     @Override
     public OpenAction addOpenAction() {
-        OpenAction action = new OpenAction(this);
+        OpenAction action = OpenAction.create(this);
         addAction(action);
         return action;
     }

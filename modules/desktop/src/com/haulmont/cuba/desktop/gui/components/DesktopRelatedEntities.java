@@ -148,7 +148,7 @@ public class DesktopRelatedEntities extends DesktopPopupButton implements Relate
         if (defaultScreen != null
                 || (propertyOption != null && StringUtils.isNotEmpty(propertyOption.getScreen()))) {
             RelatedAction relatedAction =
-                    new RelatedAction("related" + actionList.size(), listComponent, metaClass, metaProperty);
+                    RelatedAction.create("related" + actionList.size(), listComponent, metaClass, metaProperty);
             relatedAction.setOpenType(openType);
 
             if (defaultScreen != null) {

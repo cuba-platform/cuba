@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import org.springframework.context.annotation.Scope;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -40,7 +41,16 @@ import java.util.Map;
  * Standard list action adding an entity instance to list from a lookup screen.
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor or setting properties.
+ * <p>
+ * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+ * for example:
+ * <pre>
+ * &lt;bean id="cuba_AddAction" class="com.company.sample.gui.MyAddAction" scope="prototype"/&gt;
+ * </pre>
+ * Also, use {@code create()} static methods instead of constructors when creating the action programmatically.
  */
+@org.springframework.stereotype.Component("cuba_AddAction")
+@Scope("prototype")
 public class AddAction extends BaseAction implements Action.HasOpenType, Action.HasBeforeActionPerformedHandler  {
 
     public static final String ACTION_ID = ListActionType.ADD.getId();
@@ -54,6 +64,46 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
     protected Security security = AppBeans.get(Security.NAME);
 
     protected BeforeActionPerformedHandler beforeActionPerformedHandler;
+
+    /**
+     * Creates an action with default id, opening the lookup screen in THIS tab.
+     * @param target    component containing this action
+     */
+    public static AddAction create(ListComponent target) {
+        return AppBeans.getPrototype("cuba_AddAction", target);
+    }
+
+    /**
+     * Creates an action with default id, opening the lookup screen in THIS tab.
+     * @param target    component containing this action
+     * @param handler   lookup handler. If null, an instance of {@link DefaultHandler} will be used.
+     */
+    public static AddAction create(ListComponent target, @Nullable Window.Lookup.Handler handler) {
+        return AppBeans.getPrototype("cuba_AddAction", target, handler);
+    }
+
+    /**
+     * Creates an action with default id, opening the lookup screen in THIS tab.
+     * @param target    component containing this action
+     * @param handler   lookup handler. If null, an instance of {@link DefaultHandler} will be used.
+     * @param openType  how to open the editor screen
+     */
+    public static AddAction create(ListComponent target, @Nullable Window.Lookup.Handler handler,
+                                   WindowManager.OpenType openType) {
+        return AppBeans.getPrototype("cuba_AddAction", target, handler, openType);
+    }
+
+    /**
+     * Creates an action with the given id.
+     * @param target    component containing this action
+     * @param handler   lookup handler. If null, an instance of {@link DefaultHandler} will be used.
+     * @param openType  how to open the editor screen
+     * @param id        action's name
+     */
+    public static AddAction create(ListComponent target, @Nullable Window.Lookup.Handler handler,
+                                   WindowManager.OpenType openType, String id) {
+        return AppBeans.getPrototype("cuba_AddAction", target, handler, openType, id);
+    }
 
     /**
      * The simplest constructor. The action has default name and opens the lookup screen in THIS tab.

@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.components.Frame.MessageType;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import org.springframework.context.annotation.Scope;
 
 import static com.haulmont.cuba.gui.export.ExcelExporter.ExportMode;
 
@@ -31,7 +32,16 @@ import static com.haulmont.cuba.gui.export.ExcelExporter.ExportMode;
  * Standard table action to export the list of entities to XLS.
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor or setting properties.
+ * <p>
+ * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+ * for example:
+ * <pre>
+ * &lt;bean id="cuba_ExcelAction" class="com.company.sample.gui.MyExcelAction" scope="prototype"/&gt;
+ * </pre>
+ * Also, use {@code create()} static methods instead of constructors when creating the action programmatically.
  */
+@org.springframework.stereotype.Component("cuba_ExcelAction")
+@Scope("prototype")
 public class ExcelAction extends BaseAction implements Action.HasBeforeActionPerformedHandler {
 
     public static final String ACTION_ID = ListActionType.EXCEL.getId();
@@ -40,6 +50,33 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
     protected final ExportDisplay display;
 
     protected BeforeActionPerformedHandler beforeActionPerformedHandler;
+
+    /**
+     * Creates an action with default id.
+     * @param target    component containing this action
+     */
+    public static ExcelAction create(ListComponent target) {
+        return AppBeans.getPrototype("cuba_ExcelAction", target);
+    }
+
+    /**
+     * Creates an action with default id.
+     * @param target    component containing this action
+     * @param display   ExportDisplay implementation
+     */
+    public static ExcelAction create(ListComponent target, ExportDisplay display) {
+        return AppBeans.getPrototype("cuba_ExcelAction", target, display);
+    }
+
+    /**
+     * Creates an action with the given id.
+     * @param target    component containing this action
+     * @param display   ExportDisplay implementation
+     * @param id            action's name
+     */
+    public static ExcelAction create(ListComponent target, ExportDisplay display, String id) {
+        return AppBeans.getPrototype("cuba_ExcelAction", target, display, id);
+    }
 
     /**
      * The simplest constructor. The action uses default name and other parameters.

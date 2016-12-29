@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
+import org.springframework.context.annotation.Scope;
 
 import java.util.Set;
 
@@ -40,7 +41,16 @@ import java.util.Set;
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor, setting properties, or overriding
  * method {@link #afterRemove(java.util.Set)} )}
+ * <p>
+ * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+ * for example:
+ * <pre>
+ * &lt;bean id="cuba_RemoveAction" class="com.company.sample.gui.MyRemoveAction" scope="prototype"/&gt;
+ * </pre>
+ * Also, use {@code create()} static methods instead of constructors when creating the action programmatically.
  */
+@org.springframework.stereotype.Component("cuba_RemoveAction")
+@Scope("prototype")
 public class RemoveAction extends ItemTrackingAction implements Action.HasBeforeActionPerformedHandler {
 
     public static final String ACTION_ID = ListActionType.REMOVE.getId();
@@ -62,6 +72,33 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
          * @param removedItems  set of removed instances
          */
         void handle(Set removedItems);
+    }
+
+    /**
+     * Creates an action with default id. Autocommit is set to true.
+     * @param target    component containing this action
+     */
+    public static RemoveAction create(ListComponent target) {
+        return AppBeans.getPrototype("cuba_RemoveAction", target);
+    }
+
+    /**
+     * Creates an action with default id.
+     * @param target    component containing this action
+     * @param autocommit    whether to commit datasource immediately
+     */
+    public static RemoveAction create(ListComponent target, boolean autocommit) {
+        return AppBeans.getPrototype("cuba_RemoveAction", target, autocommit);
+    }
+
+    /**
+     * Creates an action with the given id.
+     * @param target    component containing this action
+     * @param autocommit    whether to commit datasource immediately
+     * @param id            action's identifier
+     */
+    public static RemoveAction create(ListComponent target, boolean autocommit, String id) {
+        return AppBeans.getPrototype("cuba_RemoveAction", target, autocommit, id);
     }
 
     /**

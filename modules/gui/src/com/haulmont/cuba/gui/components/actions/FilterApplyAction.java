@@ -21,11 +21,9 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 
 /**
- * List action to apply current filter by refreshing the underlying datasource.
- * <p>
- * Action's behaviour can be customized by providing arguments to constructor or setting properties.
- *
+ * DEPRECATED. List action to apply current filter by refreshing the underlying datasource.
  */
+@Deprecated
 public class FilterApplyAction extends AbstractAction {
 
     public static final String ACTION_ID = "apply";

@@ -30,17 +30,56 @@ import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import org.springframework.context.annotation.Scope;
 
 import java.util.Set;
 
 /**
  * The <code>RemoveAction</code> variant that excludes instances from the list, but doesn't delete them from DB.
+ * <p>
+ * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+ * for example:
+ * <pre>
+ * &lt;bean id="cuba_ExcludeAction" class="com.company.sample.gui.MyExcludeAction" scope="prototype"/&gt;
+ * </pre>
+ * Also, use {@code create()} static methods instead of constructors when creating the action programmatically.
  */
+@org.springframework.stereotype.Component("cuba_ExcludeAction")
+@Scope("prototype")
 public class ExcludeAction extends RemoveAction {
 
     public static final String ACTION_ID = ListActionType.EXCLUDE.getId();
 
     protected Metadata metadata;
+
+    /**
+     * Creates an action with default id. Autocommit and Confirm properties are set to false.
+     * @param target    component containing this action
+     */
+    public static ExcludeAction create(ListComponent target) {
+        return AppBeans.getPrototype("cuba_ExcludeAction", target);
+    }
+
+    /**
+     * Creates an action with default id.
+     * @param target    component containing this action
+     * @param autocommit    whether to commit datasource immediately
+     * @param confirm       whether to show the confirmation dialog to user
+     */
+    public static ExcludeAction create(ListComponent target, boolean autocommit, boolean confirm) {
+        return AppBeans.getPrototype("cuba_ExcludeAction", target, autocommit, confirm);
+    }
+
+    /**
+     * Creates an action with the given id.
+     * @param target    component containing this action
+     * @param autocommit    whether to commit datasource immediately
+     * @param confirm       whether to show the confirmation dialog to user
+     * @param id            action's name
+     */
+    public static ExcludeAction create(ListComponent target, boolean autocommit, boolean confirm, String id) {
+        return AppBeans.getPrototype("cuba_ExcludeAction", target, autocommit, confirm, id);
+    }
 
     /**
      * The simplest constructor. Autocommit and Confirm properties are set to false, the action has default name.

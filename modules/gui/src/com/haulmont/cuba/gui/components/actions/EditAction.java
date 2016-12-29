@@ -33,6 +33,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.EntityOp;
+import org.springframework.context.annotation.Scope;
 
 import java.util.Collections;
 import java.util.Map;
@@ -43,7 +44,16 @@ import java.util.Set;
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor, setting properties, or overriding
  * methods {@link #afterCommit(com.haulmont.cuba.core.entity.Entity)}, {@link #afterWindowClosed(com.haulmont.cuba.gui.components.Window)}
+ * <p>
+ * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+ * for example:
+ * <pre>
+ * &lt;bean id="cuba_EditAction" class="com.company.sample.gui.MyEditAction" scope="prototype"/&gt;
+ * </pre>
+ * Also, use {@code create()} static methods instead of constructors when creating the action programmatically.
  */
+@org.springframework.stereotype.Component("cuba_EditAction")
+@Scope("prototype")
 public class EditAction extends ItemTrackingAction implements Action.HasOpenType, Action.HasBeforeActionPerformedHandler {
 
     public static final String ACTION_ID = ListActionType.EDIT.getId();
@@ -77,6 +87,33 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
          * @param closeActionId ID of action caused the screen closing
          */
         void handle(Window window, String closeActionId);
+    }
+
+    /**
+     * Creates an action with default id, opening the edit screen in THIS tab.
+     * @param target    component containing this action
+     */
+    public static EditAction create(ListComponent target) {
+        return AppBeans.getPrototype("cuba_EditAction", target);
+    }
+
+    /**
+     * Creates an action with default id.
+     * @param target    component containing this action
+     * @param openType  how to open the editor screen
+     */
+    public static EditAction create(ListComponent target, WindowManager.OpenType openType) {
+        return AppBeans.getPrototype("cuba_EditAction", target, openType);
+    }
+
+    /**
+     * Creates an action with the given id.
+     * @param target    component containing this action
+     * @param openType  how to open the editor screen
+     * @param id        action name
+     */
+    public static EditAction create(ListComponent target, WindowManager.OpenType openType, String id) {
+        return AppBeans.getPrototype("cuba_EditAction", target, openType, id);
     }
 
     /**

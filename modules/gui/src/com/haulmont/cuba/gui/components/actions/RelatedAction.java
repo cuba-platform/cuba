@@ -46,11 +46,23 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.context.annotation.Scope;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Action used in {@link RelatedEntities} visual component.
+ * <p>
+ * In order to provide your own implementation globally, create a subclass and register it in {@code web-spring.xml},
+ * for example:
+ * <pre>
+ * &lt;bean id="cuba_RelatedAction" class="com.company.sample.gui.MyRelatedAction" scope="prototype"/&gt;
+ * </pre>
+ */
+@org.springframework.stereotype.Component("cuba_RelatedAction")
+@Scope("prototype")
 public class RelatedAction extends BaseAction implements Action.HasBeforeActionPerformedHandler {
 
     public static final String ACTION_ID = "related";
@@ -69,6 +81,14 @@ public class RelatedAction extends BaseAction implements Action.HasBeforeActionP
     protected RelatedEntitiesService relatedEntitiesService = AppBeans.get(RelatedEntitiesService.NAME);
 
     protected BeforeActionPerformedHandler beforeActionPerformedHandler;
+
+    /**
+     * Creates an action with the given id.
+     * @param target    component containing this action
+     */
+    public static RelatedAction create(String id, ListComponent target, MetaClass metaClass, MetaProperty metaProperty) {
+        return AppBeans.getPrototype("cuba_RelatedAction", id, target, metaClass, metaProperty);
+    }
 
     public RelatedAction(String id, ListComponent target, MetaClass metaClass, MetaProperty metaProperty) {
         super(id);

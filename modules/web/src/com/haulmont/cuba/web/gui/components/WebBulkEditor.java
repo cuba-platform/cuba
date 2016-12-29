@@ -77,7 +77,7 @@ public class WebBulkEditor extends WebButton implements BulkEditor {
             boolean enabled = isEnabled();
             boolean visible = isVisible();
 
-            bulkEditAction = new BulkEditAction(listComponent);
+            bulkEditAction = BulkEditAction.create(listComponent);
             setAction(bulkEditAction);
 
             if (openType != null) {
