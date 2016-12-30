@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupPickerField;
@@ -46,9 +47,13 @@ public class LookupPickerFieldLoader extends LookupFieldLoader {
         }
 
         loadActions(lookupPickerField, element);
+
         if (lookupPickerField.getActions().isEmpty()) {
-            lookupPickerField.addLookupAction();
-            lookupPickerField.addOpenAction();
+            boolean actionsByMetaAnnotations = ComponentsHelper.createActionsByMetaAnnotations(lookupPickerField);
+            if (!actionsByMetaAnnotations) {
+                lookupPickerField.addLookupAction();
+                lookupPickerField.addOpenAction();
+            }
         }
 
         String refreshOptionsOnLookupClose = element.attributeValue("refreshOptionsOnLookupClose");

@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
@@ -50,8 +51,11 @@ public class PickerFieldLoader extends AbstractFieldLoader<PickerField> {
 
         loadActions(resultComponent, element);
         if (resultComponent.getActions().isEmpty()) {
-            resultComponent.addLookupAction();
-            resultComponent.addClearAction();
+            boolean actionsByMetaAnnotations = ComponentsHelper.createActionsByMetaAnnotations(resultComponent);
+            if (!actionsByMetaAnnotations) {
+                resultComponent.addLookupAction();
+                resultComponent.addClearAction();
+            }
         }
     }
 

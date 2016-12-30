@@ -34,9 +34,11 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Component("cuba_MetadataBuildSupport")
 public class MetadataBuildSupport {
@@ -229,8 +231,7 @@ public class MetadataBuildSupport {
                     for (Element annotEl : Dom4j.elements(entityEl, "annotation")) {
                         XmlAnnotation xmlAnnotation = new XmlAnnotation(inferMetaAnnotationType(annotEl.attributeValue("value")));
                         for (Element attrEl : Dom4j.elements(annotEl, "attribute")) {
-                            Object value = getXmlAnnotationAttributeValue(attrEl.attributeValue("value"),
-                                    attrEl.attributeValue("class"), attrEl.attributeValue("datatype"));
+                            Object value = getXmlAnnotationAttributeValue(attrEl);
                             xmlAnnotation.attributes.put(attrEl.attributeValue("name"), value);
                         }
                         entityAnnotations.annotations.put(annotEl.attributeValue("name"), xmlAnnotation);
@@ -239,10 +240,9 @@ public class MetadataBuildSupport {
                         XmlAnnotations attributeAnnotations = new XmlAnnotations(propEl.attributeValue("name"));
                         for (Element annotEl : Dom4j.elements(propEl, "annotation")) {
                             XmlAnnotation xmlAnnotation = new XmlAnnotation(inferMetaAnnotationType(annotEl.attributeValue("value")));
-                            for (Element attributeEl : Dom4j.elements(annotEl, "attribute")) {
-                                Object value = getXmlAnnotationAttributeValue(attributeEl.attributeValue("value"),
-                                        attributeEl.attributeValue("class"), attributeEl.attributeValue("datatype"));
-                                xmlAnnotation.attributes.put(attributeEl.attributeValue("name"), value);
+                            for (Element attrEl : Dom4j.elements(annotEl, "attribute")) {
+                                Object value = getXmlAnnotationAttributeValue(attrEl);
+                                xmlAnnotation.attributes.put(attrEl.attributeValue("name"), value);
                             }
                             attributeAnnotations.annotations.put(annotEl.attributeValue("name"), xmlAnnotation);
                         }
@@ -253,6 +253,30 @@ public class MetadataBuildSupport {
             }
         }
         return result;
+    }
+
+    private Object getXmlAnnotationAttributeValue(Element attributeEl) {
+        String value = attributeEl.attributeValue("value");
+        String className = attributeEl.attributeValue("class");
+        String datatypeName = attributeEl.attributeValue("datatype");
+
+        List<Element> values = Dom4j.elements(attributeEl, "value");
+        if (StringUtils.isNotBlank(value)) {
+            if (!values.isEmpty())
+                throw new IllegalStateException("Both 'value' attribute and 'value' element(s) are specified for attribute " + attributeEl.attributeValue("name"));
+            return getXmlAnnotationAttributeValue(value, className, datatypeName);
+        }
+        if (!values.isEmpty()) {
+            Object val0 = getXmlAnnotationAttributeValue(values.get(0).getTextTrim(), className, datatypeName);
+            Object array = Array.newInstance(val0.getClass(), values.size());
+            Array.set(array, 0, val0);
+            for (int i = 1; i < values.size(); i++) {
+                Object val = getXmlAnnotationAttributeValue(values.get(i).getTextTrim(), className, datatypeName);
+                Array.set(array, i, val);
+            }
+            return array;
+        }
+        return null;
     }
 
     private Object getXmlAnnotationAttributeValue(String value, String className, String datatypeName) {

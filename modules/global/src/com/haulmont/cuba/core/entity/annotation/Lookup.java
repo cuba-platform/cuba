@@ -30,4 +30,11 @@ import java.lang.annotation.Target;
 public @interface Lookup {
 
     LookupType type();
+
+    /**
+     * Optional list of standard picker actions. See {@code PickerField.ActionType}.
+     * For example:
+     * <pre>@Lookup(type = LookupType.DROPDOWN, actions = {"lookup", "open"})</pre>
+     */
+    String[] actions() default {};
 }

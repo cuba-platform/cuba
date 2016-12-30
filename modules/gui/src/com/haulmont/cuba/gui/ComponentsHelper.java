@@ -16,12 +16,17 @@
  */
 package com.haulmont.cuba.gui;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.MetadataObject;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.annotation.Lookup;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.*;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
@@ -556,5 +561,31 @@ public abstract class ComponentsHelper {
             }
         }
         return oldIndex;
+    }
+
+    /**
+     * INTERNAL.
+     * Adds actions specified in {@link Lookup} annotation on entity attribute to the given PickerField.
+     */
+    public static boolean createActionsByMetaAnnotations(PickerField pickerField) {
+        MetaPropertyPath mpp = pickerField.getMetaPropertyPath();
+        if (mpp == null)
+            return false;
+
+        String[] actions = (String[]) AppBeans.get(MetadataTools.class)
+                .getMetaAnnotationAttributes(mpp.getMetaProperty().getAnnotations(), Lookup.class)
+                .get("actions");
+        if (actions.length > 0) {
+            for (String actionId : actions) {
+                for (PickerField.ActionType actionType : PickerField.ActionType.values()) {
+                    if (actionType.getId().equals(actionId.trim())) {
+                        pickerField.addAction(actionType.createAction(pickerField));
+                        break;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

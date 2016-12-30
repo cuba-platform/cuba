@@ -53,6 +53,8 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 
     protected ComponentsFactory componentsFactory = AppConfig.getFactory();
 
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+
     @Override
     public Component createField(Datasource datasource, String property, Element xmlDescriptor) {
         MetaClass metaClass = datasource.getMetaClass();
@@ -345,7 +347,10 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                     DynamicAttributesMetaProperty dynamicAttributesMetaProperty = (DynamicAttributesMetaProperty) mpp.getMetaProperty();
                     dynamicAttributesGuiTools.initEntityPickerField(pickerField, dynamicAttributesMetaProperty.getAttribute());
                 }
-                pickerField.addClearAction();
+                boolean actionsByMetaAnnotations = ComponentsHelper.createActionsByMetaAnnotations(pickerField);
+                if (!actionsByMetaAnnotations) {
+                    pickerField.addClearAction();
+                }
             } else {
                 LookupPickerField lookupPickerField = componentsFactory.createComponent(LookupPickerField.class);
                 lookupPickerField.setDatasource(datasource, property);
@@ -353,7 +358,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 
                 pickerField = lookupPickerField;
 
-                pickerField.removeAction(PickerField.LookupAction.NAME);
+                ComponentsHelper.createActionsByMetaAnnotations(pickerField);
             }
 
             if (xmlDescriptor != null) {

@@ -100,6 +100,9 @@
         <xs:attribute type="xs:string" name="value"/>
         <xs:attribute type="xs:string" name="class"/>
         <xs:attribute type="datatypeEnum" name="datatype"/>
+        <xs:sequence>
+            <xs:element type="xs:string" name="value" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
     </xs:complexType>
 
     <xs:simpleType name="datatypeEnum">
