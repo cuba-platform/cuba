@@ -17,6 +17,10 @@
 package com.haulmont.restapi.auth;
 
 import com.google.common.base.Strings;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.core.sys.UserInvocationContext;
@@ -30,6 +34,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -81,8 +86,19 @@ public class CubaRestLastSecurityFilter implements Filter {
      * Method parses the request locale and sets it to the {@link UserInvocationContext}
      */
     protected void parseRequestLocale(ServletRequest request) {
-        //the value is taken from the 'Accept-Language' http header
-        Locale locale = request.getLocale();
+        //Take the locale value either from the 'Accept-Language' http header or take the default one
+        Locale locale = null;
+        if (!Strings.isNullOrEmpty(((HttpServletRequest)request).getHeader("Accept-Language"))) {
+            Locale requestLocale = request.getLocale();
+            Map<String, Locale> availableLocales = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getAvailableLocales();
+            if (availableLocales.values().contains(requestLocale)) {
+                locale = requestLocale;
+            }
+        }
+        if (locale == null) {
+            MessageTools messageTools = AppBeans.get(MessageTools.class);
+            locale = messageTools.getDefaultLocale();
+        }
         SecurityContext securityContext = AppContext.getSecurityContext();
         if (securityContext != null) {
             UUID sessionId = securityContext.getSessionId();
