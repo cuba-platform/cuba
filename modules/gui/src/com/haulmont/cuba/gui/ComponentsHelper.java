@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui;
 
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -575,7 +573,7 @@ public abstract class ComponentsHelper {
         String[] actions = (String[]) AppBeans.get(MetadataTools.class)
                 .getMetaAnnotationAttributes(mpp.getMetaProperty().getAnnotations(), Lookup.class)
                 .get("actions");
-        if (actions.length > 0) {
+        if (actions != null && actions.length > 0) {
             for (String actionId : actions) {
                 for (PickerField.ActionType actionType : PickerField.ActionType.values()) {
                     if (actionType.getId().equals(actionId.trim())) {
