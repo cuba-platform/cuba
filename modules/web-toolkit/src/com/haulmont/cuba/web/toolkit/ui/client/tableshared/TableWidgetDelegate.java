@@ -136,8 +136,8 @@ public class TableWidgetDelegate {
                         Style hStyle = hcell.getElement().getStyle();
 
                         hStyle.setProperty("width", realColWidth + "px");
-                        hStyle.setProperty("min-width", realColWidth + "px");
-                        hStyle.setProperty("max-width", realColWidth + "px");
+                        hStyle.setProperty("minWidth", realColWidth + "px");
+                        hStyle.setProperty("maxWidth", realColWidth + "px");
                     }
 
                     break;
