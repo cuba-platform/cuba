@@ -16,6 +16,8 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.annotations.MetaClass;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
@@ -24,6 +26,7 @@ import javax.persistence.MappedSuperclass;
  * Base class for persistent entities with Integer identifier.
  */
 @MappedSuperclass
+@MetaClass(name = "sys$BaseIntegerIdEntity")
 public abstract class BaseIntegerIdEntity extends BaseGenericIdEntity<Integer> {
 
     private static final long serialVersionUID = 1748237513475338490L;

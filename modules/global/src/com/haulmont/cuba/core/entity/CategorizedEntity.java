@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
 
@@ -30,6 +31,7 @@ import javax.persistence.MappedSuperclass;
  *
  */
 @MappedSuperclass
+@MetaClass(name = "sys$CategorizedEntity")
 public abstract class CategorizedEntity extends BaseUuidEntity implements Categorized {
 
     private static final long serialVersionUID = -4359158051274491070L;

@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.cuba.core.global.UuidProvider;
 
 import javax.persistence.Column;
@@ -29,6 +30,7 @@ import java.util.UUID;
  * Inherit from it if you need an entity without optimistic locking, create, update and soft deletion info.
  */
 @MappedSuperclass
+@MetaClass(name = "sys$BaseUuidEntity")
 public abstract class BaseUuidEntity extends BaseGenericIdEntity<UUID> implements HasUuid {
 
     private static final long serialVersionUID = -2217624132287086972L;

@@ -50,6 +50,7 @@ import java.util.UUID;
  * </p>
  */
 @MappedSuperclass
+@com.haulmont.chile.core.annotations.MetaClass(name = "sys$BaseGenericIdEntity")
 public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements Entity<T> {
 
     private static final long serialVersionUID = -8400641366148656528L;

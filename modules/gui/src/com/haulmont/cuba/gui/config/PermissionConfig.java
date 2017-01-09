@@ -42,6 +42,7 @@ import org.springframework.core.io.Resource;
 
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
+import javax.persistence.MappedSuperclass;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -158,8 +159,8 @@ public class PermissionConfig {
 
                 for (MetaClass metaClass : classList) {
                     String name = metaClass.getName();
-                    // Filter base entity classes
-                    if (name.contains("$")) {
+                    // Filter base classes
+                    if (!metaClass.getJavaClass().isAnnotationPresent(MappedSuperclass.class)) {
                         // Skip classes that have extensions
                         if (metadata.getExtendedEntities().getExtendedClass(metaClass) != null) {
                             continue;

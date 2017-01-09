@@ -15,12 +15,15 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.annotations.MetaClass;
+
 import javax.persistence.*;
 
 /**
  * Base class for persistent entities with Identity identifier.
  */
 @MappedSuperclass
+@MetaClass(name = "sys$BaseIdentityIdEntity")
 public abstract class BaseIdentityIdEntity extends BaseDbGeneratedIdEntity {
 
     private static final long serialVersionUID = 3083677558630811496L;

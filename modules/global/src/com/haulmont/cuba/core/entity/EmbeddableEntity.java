@@ -28,6 +28,7 @@ import javax.persistence.MappedSuperclass;
  *
  */
 @MappedSuperclass
+@com.haulmont.chile.core.annotations.MetaClass(name = "sys$EmbeddableEntity")
 public abstract class EmbeddableEntity extends AbstractInstance implements Entity<Object> {
 
     private static final long serialVersionUID = 266201862280559076L;

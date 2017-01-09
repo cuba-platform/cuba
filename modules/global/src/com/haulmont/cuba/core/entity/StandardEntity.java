@@ -16,6 +16,8 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.annotations.MetaClass;
+
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Column;
 import javax.persistence.Version;
@@ -26,6 +28,7 @@ import java.util.Date;
  * <p/>Optimistically locked, implements Updatable and SoftDelete.
  */
 @MappedSuperclass
+@MetaClass(name = "sys$StandardEntity")
 public class StandardEntity extends BaseUuidEntity implements Versioned, Creatable, Updatable, SoftDelete {
     private static final long serialVersionUID = 5642226839555253331L;
 
