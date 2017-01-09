@@ -21,10 +21,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.listener.TestDetachAttachListener;
-import com.haulmont.cuba.core.listener.TestListener;
-import com.haulmont.cuba.core.listener.TestListenerBean;
-import com.haulmont.cuba.core.listener.TestUserEntityListener;
+import com.haulmont.cuba.core.listener.*;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
@@ -280,5 +277,31 @@ public class EntityListenerTest {
         assertEquals(2, TestUserEntityListener.events.size());
         assertTrue(TestUserEntityListener.events.get(0).contains("onBeforeDelete"));
         assertTrue(TestUserEntityListener.events.get(1).contains("onAfterDelete"));
+    }
+
+    @Test
+    public void testExceptionInListener() throws Exception {
+        Server server;
+        try (Transaction tx = persistence.createTransaction()) {
+            server = metadata.create(Server.class);
+            server.setName("localhost");
+            persistence.getEntityManager().persist(server);
+            tx.commit();
+        }
+        entityListenerManager.addListener(Server.class, TestListenerThrowing.class);
+        try {
+            try (Transaction tx = persistence.createTransaction()) {
+                Server s = persistence.getEntityManager().find(Server.class, server.getId());
+                s.setName("changed");
+                tx.commit();
+                fail();
+            } catch (Exception e) {
+                assertTrue(e instanceof IllegalStateException);
+                assertEquals("test exception", e.getMessage());
+            }
+        } finally {
+            entityListenerManager.removeListener(Server.class, TestListenerThrowing.class);
+            cont.deleteRecord(server);
+        }
     }
 }

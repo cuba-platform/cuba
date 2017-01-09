@@ -94,12 +94,8 @@ public class TransactionImpl implements Transaction {
         if (committed)
             return;
 
-        try {
-            tm.commit(ts);
-            committed = true;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        tm.commit(ts);
+        committed = true;
     }
 
     @Override
@@ -107,15 +103,10 @@ public class TransactionImpl implements Transaction {
         if (committed)
             return;
 
-        try {
-            tm.commit(ts);
+        tm.commit(ts);
 
-            ts = tm.getTransaction(td);
-            TransactionSynchronizationManager.registerSynchronization(persistence.createSynchronization(storeName));
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        ts = tm.getTransaction(td);
+        TransactionSynchronizationManager.registerSynchronization(persistence.createSynchronization(storeName));
     }
 
     @Override
