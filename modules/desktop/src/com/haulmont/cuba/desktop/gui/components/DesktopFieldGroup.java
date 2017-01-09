@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -29,6 +30,8 @@ import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.desktop.sys.vcl.ToolTipButton;
+import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
+import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -39,6 +42,7 @@ import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
@@ -46,7 +50,8 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implements FieldGroup, AutoExpanding {
+public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
+        implements FieldGroup, AutoExpanding, Component.UiPermissionAware {
 
     protected MigLayout layout;
     protected Datasource datasource;
@@ -999,6 +1004,50 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
         if (fieldLabels.containsKey(field)) {
             fieldLabels.get(field).setVisible(child.isComponentVisible());
+        }
+    }
+
+    @Override
+    public void applyPermission(UiPermissionDescriptor permissionDescriptor) {
+        Preconditions.checkNotNullArgument(permissionDescriptor);
+
+        final Logger log = LoggerFactory.getLogger(DesktopFieldGroup.class);
+
+        final String subComponentId = permissionDescriptor.getSubComponentId();
+        final UiPermissionValue permissionValue = permissionDescriptor.getPermissionValue();
+        final String screenId = permissionDescriptor.getScreenId();
+
+        if (subComponentId != null) {
+            final FieldGroup.FieldConfig field = getField(subComponentId);
+            if (field != null) {
+                if (permissionValue == UiPermissionValue.HIDE) {
+                    setVisible(field, false);
+                } else if (permissionValue == UiPermissionValue.READ_ONLY) {
+                    setEditable(field, false);
+                }
+            } else {
+                log.info(String.format("Couldn't find component %s in window %s", subComponentId, screenId));
+            }
+        } else {
+            final String actionHolderComponentId = permissionDescriptor.getActionHolderComponentId();
+            final Component fieldComponent = getFieldComponent(actionHolderComponentId);
+            if (fieldComponent != null) {
+                final String actionId = permissionDescriptor.getActionId();
+                if (fieldComponent instanceof Component.SecuredActionsHolder) {
+                    ActionsPermissions permissions =
+                            ((Component.SecuredActionsHolder) fieldComponent).getActionsPermissions();
+                    if (permissionValue == UiPermissionValue.HIDE) {
+                        permissions.addHiddenActionPermission(actionId);
+                    } else if (permissionValue == UiPermissionValue.READ_ONLY) {
+                        permissions.addDisabledActionPermission(actionId);
+                    }
+                } else {
+                    log.warn(String.format("Couldn't apply permission on action %s for component %s in window %s",
+                            actionId, actionHolderComponentId, screenId));
+                }
+            } else {
+                log.info(String.format("Couldn't find component %s in window %s", actionHolderComponentId, screenId));
+            }
         }
     }
 

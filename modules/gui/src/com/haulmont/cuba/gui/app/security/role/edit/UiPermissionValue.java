@@ -36,4 +36,13 @@ public enum UiPermissionValue {
     public int getValue() {
         return value;
     }
+
+    public static UiPermissionValue fromId(int id) {
+        for (UiPermissionValue uiPermissionValue : values()) {
+            if (id == uiPermissionValue.value)
+                return uiPermissionValue;
+        }
+
+        return null;
+    }
 }
