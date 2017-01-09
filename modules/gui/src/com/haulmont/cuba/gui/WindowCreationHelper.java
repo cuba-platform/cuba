@@ -23,16 +23,20 @@ import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
+import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.ActionsPermissions;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.io.InputStream;
@@ -119,7 +123,6 @@ public final class WindowCreationHelper {
         }
     }
 
-    // custom process for tabsheet & fieldgroup
     private static void applyCompositeComponentPermission(Window window, String screenId,
                                                           Integer permissionValue, String componentId) {
         final Matcher matcher = INNER_COMPONENT_PATTERN.matcher(componentId);
@@ -127,60 +130,30 @@ public final class WindowCreationHelper {
             final String customComponentId = matcher.group(1);
             final String subComponentId = matcher.group(2);
             final Component compositeComponent = window.getComponent(customComponentId);
-            if (compositeComponent != null) {
-                if (compositeComponent instanceof TabSheet) {
-                    final TabSheet tabsheet = (TabSheet) compositeComponent;
-                    final TabSheet.Tab tab = tabsheet.getTab(subComponentId);
-                    if (tab != null) {
-                        if (permissionValue == UiPermissionValue.HIDE.getValue()) {
-                            tab.setVisible(false);
-                        } else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
-                            tab.setEnabled(false);
-                        }
-                    } else {
-                        log.info(String.format("Couldn't find component %s in window %s", componentId, screenId));
-                    }
-                } else if (compositeComponent instanceof FieldGroup) {
-                    FieldGroup fieldGroup = (FieldGroup) compositeComponent;
 
-                    if (!subComponentId.contains("<")) {
-                        final FieldGroup.FieldConfig field = fieldGroup.getField(subComponentId);
-                        if (field != null) {
-                            if (permissionValue == UiPermissionValue.HIDE.getValue()) {
-                                fieldGroup.setVisible(field, false);
-                            } else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
-                                fieldGroup.setEditable(field, false);
-                            }
-                        } else {
-                            log.info(String.format("Couldn't find component %s in window %s", componentId, screenId));
-                        }
-                    } else {
+            if (compositeComponent != null) {
+                if (compositeComponent instanceof Component.UiPermissionAware) {
+                    Component.UiPermissionAware uiPermissionAwareComponent = (Component.UiPermissionAware) compositeComponent;
+                    UiPermissionValue uiPermissionValue = UiPermissionValue.fromId(permissionValue);
+
+                    UiPermissionDescriptor permissionDescriptor;
+                    if (subComponentId.contains("<")) {
                         final Matcher actionMatcher = COMPONENT_ACTION_PATTERN.matcher(subComponentId);
                         if (actionMatcher.find()) {
-                            final String subFieldComponentId = actionMatcher.group(1);
+                            final String actionHolderComponentId = actionMatcher.group(1);
                             final String actionId = actionMatcher.group(2);
 
-                            final Component fieldComponent = fieldGroup.getFieldComponent(subFieldComponentId);
-                            if (fieldComponent != null) {
-                                if (fieldComponent instanceof Component.SecuredActionsHolder) {
-                                    ActionsPermissions permissions =
-                                            ((Component.SecuredActionsHolder) fieldComponent).getActionsPermissions();
-                                    if (permissionValue == UiPermissionValue.HIDE.getValue()) {
-                                        permissions.addHiddenActionPermission(actionId);
-                                    } else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
-                                        permissions.addDisabledActionPermission(actionId);
-                                    }
-                                } else {
-                                    log.warn(String.format("Couldn't apply permission on action %s for component %s in window %s",
-                                            actionId, subFieldComponentId, screenId));
-                                }
-                            } else {
-                                log.info(String.format("Couldn't find component %s in window %s", componentId, screenId));
-                            }
+                            permissionDescriptor = new UiPermissionDescriptor(uiPermissionValue, screenId,
+                                    actionHolderComponentId, actionId);
                         } else {
-                            log.warn(String.format("Incorrect permission definition for component %s in window %s", componentId, screenId));
+                            log.warn(String.format("Incorrect permission definition for component %s in window %s", subComponentId, screenId));
+                            return;
                         }
+                    } else {
+                        permissionDescriptor = new UiPermissionDescriptor(uiPermissionValue, screenId, subComponentId);
                     }
+
+                    uiPermissionAwareComponent.applyPermission(permissionDescriptor);
                 }
             } else {
                 log.info(String.format("Couldn't find component %s in window %s", componentId, screenId));

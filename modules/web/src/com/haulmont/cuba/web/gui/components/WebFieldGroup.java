@@ -16,11 +16,14 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.TestIdManager;
+import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
+import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -35,11 +38,12 @@ import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
 import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup> implements FieldGroup {
+public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup> implements FieldGroup, Component.UiPermissionAware {
 
     protected Map<String, FieldConfig> fields = new LinkedHashMap<>();
     protected Map<FieldConfig, Integer> fieldsColumn = new HashMap<>();
@@ -82,7 +86,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup> implemen
                 super.addCustomField(propertyId, fieldGenerator, col, colFields.indexOf(fieldConf));
             }
         };
-        component.setLayout(new CubaFieldGroupLayout());
         fieldFactory = createFieldFactory();
     }
 
@@ -984,6 +987,50 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroup> implemen
             return StringUtils.isBlank((String) value);
         } else {
             return value == null;
+        }
+    }
+
+    @Override
+    public void applyPermission(UiPermissionDescriptor permissionDescriptor) {
+        Preconditions.checkNotNullArgument(permissionDescriptor);
+
+        final Logger log = LoggerFactory.getLogger(WebFieldGroup.class);
+
+        final String subComponentId = permissionDescriptor.getSubComponentId();
+        final UiPermissionValue permissionValue = permissionDescriptor.getPermissionValue();
+        final String screenId = permissionDescriptor.getScreenId();
+
+        if (subComponentId != null) {
+            final FieldGroup.FieldConfig field = getField(subComponentId);
+            if (field != null) {
+                if (permissionValue == UiPermissionValue.HIDE) {
+                    setVisible(field, false);
+                } else if (permissionValue == UiPermissionValue.READ_ONLY) {
+                    setEditable(field, false);
+                }
+            } else {
+                log.info(String.format("Couldn't find component %s in window %s", subComponentId, screenId));
+            }
+        } else {
+            final String actionHolderComponentId = permissionDescriptor.getActionHolderComponentId();
+            final Component fieldComponent = getFieldComponent(actionHolderComponentId);
+            if (fieldComponent != null) {
+                final String actionId = permissionDescriptor.getActionId();
+                if (fieldComponent instanceof Component.SecuredActionsHolder) {
+                    ActionsPermissions permissions =
+                            ((Component.SecuredActionsHolder) fieldComponent).getActionsPermissions();
+                    if (permissionValue == UiPermissionValue.HIDE) {
+                        permissions.addHiddenActionPermission(actionId);
+                    } else if (permissionValue == UiPermissionValue.READ_ONLY) {
+                        permissions.addDisabledActionPermission(actionId);
+                    }
+                } else {
+                    log.warn(String.format("Couldn't apply permission on action %s for component %s in window %s",
+                            actionId, actionHolderComponentId, screenId));
+                }
+            } else {
+                log.info(String.format("Couldn't find component %s in window %s", actionHolderComponentId, screenId));
+            }
         }
     }
 

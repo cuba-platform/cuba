@@ -17,12 +17,15 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DetachedFrame;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.sys.ButtonTabComponent;
 import com.haulmont.cuba.desktop.sys.vcl.JTabbedPaneExt;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
+import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.TabSheet;
@@ -32,6 +35,7 @@ import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
@@ -43,7 +47,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.*;
 
-public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> implements TabSheet, DesktopContainer, AutoExpanding {
+public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
+        implements TabSheet, DesktopContainer, AutoExpanding, Component.UiPermissionAware {
     protected Map<Component, String> components = new HashMap<>();
 
     protected List<TabImpl> tabs = new ArrayList<>();
@@ -376,6 +381,25 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
         if (!componentTabChangeListenerInitialized) {
             implTabSheetChangeListeners.add(new ComponentTabChangeListener());
             componentTabChangeListenerInitialized = true;
+        }
+    }
+
+    @Override
+    public void applyPermission(UiPermissionDescriptor permissionDescriptor) {
+        Preconditions.checkNotNullArgument(permissionDescriptor);
+
+        final String subComponentId = permissionDescriptor.getSubComponentId();
+        final TabSheet.Tab tab = getTab(subComponentId);
+        if (tab != null) {
+            UiPermissionValue permissionValue = permissionDescriptor.getPermissionValue();
+            if (permissionValue == UiPermissionValue.HIDE) {
+                tab.setVisible(false);
+            } else if (permissionValue == UiPermissionValue.READ_ONLY) {
+                tab.setEnabled(false);
+            }
+        } else {
+            LoggerFactory.getLogger(DesktopTabSheet.class).info(String.format("Couldn't find component %s in window %s",
+                    subComponentId, permissionDescriptor.getScreenId()));
         }
     }
 

@@ -16,9 +16,12 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
+import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
+import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
@@ -36,7 +39,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements TabSheet {
+public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements TabSheet, Component.UiPermissionAware {
 
     protected boolean postInitTaskAdded;
     protected boolean componentTabChangeListenerInitialized;
@@ -108,6 +111,25 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     @Override
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
+    }
+
+    @Override
+    public void applyPermission(UiPermissionDescriptor permissionDescriptor) {
+        Preconditions.checkNotNullArgument(permissionDescriptor);
+
+        final String subComponentId = permissionDescriptor.getSubComponentId();
+        final TabSheet.Tab tab = getTab(subComponentId);
+        if (tab != null) {
+            UiPermissionValue permissionValue = permissionDescriptor.getPermissionValue();
+            if (permissionValue == UiPermissionValue.HIDE) {
+                tab.setVisible(false);
+            } else if (permissionValue == UiPermissionValue.READ_ONLY) {
+                tab.setEnabled(false);
+            }
+        } else {
+            LoggerFactory.getLogger(WebTabSheet.class).info(String.format("Couldn't find component %s in window %s",
+                    subComponentId, permissionDescriptor.getScreenId()));
+        }
     }
 
     protected class Tab implements TabSheet.Tab {

@@ -17,8 +17,11 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
+import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
+import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.Accordion;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
@@ -38,7 +41,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements Accordion {
+public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements Accordion, Component.UiPermissionAware {
     protected boolean postInitTaskAdded;
     protected boolean componentTabChangeListenerInitialized;
 
@@ -108,6 +111,25 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
     @Override
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
+    }
+
+    @Override
+    public void applyPermission(UiPermissionDescriptor permissionDescriptor) {
+        Preconditions.checkNotNullArgument(permissionDescriptor);
+
+        final String subComponentId = permissionDescriptor.getSubComponentId();
+        final Accordion.Tab tab = getTab(subComponentId);
+        if (tab != null) {
+            UiPermissionValue permissionValue = permissionDescriptor.getPermissionValue();
+            if (permissionValue == UiPermissionValue.HIDE) {
+                tab.setVisible(false);
+            } else if (permissionValue == UiPermissionValue.READ_ONLY) {
+                tab.setEnabled(false);
+            }
+        } else {
+            LoggerFactory.getLogger(WebAccordion.class).info(String.format("Couldn't find component %s in window %s",
+                    subComponentId, permissionDescriptor.getScreenId()));
+        }
     }
 
     protected class Tab implements Accordion.Tab {

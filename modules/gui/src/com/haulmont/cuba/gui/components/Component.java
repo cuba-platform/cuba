@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import org.dom4j.Element;
@@ -543,5 +544,20 @@ public interface Component {
          * @param inputPrompt input prompt
          */
         void setInputPrompt(String inputPrompt);
+    }
+
+    /**
+     * State of subcomponents can be managed by UI permissions.
+     */
+    interface UiPermissionAware {
+
+        /**
+         * Change state of subcomponent according to the {@code permissionValue}.
+         *
+         * @param permissionDescriptor descriptor which contains id of subcomponent and UI permission value
+         *                             which will be applied to this subcomponent or ids of subcomponent and its action
+         *                             and UI permission value which will be applied to subcomponent's action
+         */
+        void applyPermission(UiPermissionDescriptor permissionDescriptor);
     }
 }
