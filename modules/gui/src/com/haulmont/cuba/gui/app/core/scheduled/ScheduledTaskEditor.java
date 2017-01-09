@@ -110,6 +110,11 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     @Inject
     protected BoxLayout methodNameHbox;
 
+    @Inject
+    private CheckBox logStartField;
+    @Inject
+    private CheckBox logFinishField;
+
     //List holds an information about methods of selected bean
     protected List<MethodInfo> availableMethods = new ArrayList<>();
 
@@ -195,6 +200,15 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
         });
 
         userNameField.setOptionsList(service.getAvailableUsers());
+
+        logFinishField.addValueChangeListener(e -> {
+            if (Boolean.TRUE.equals(e.getValue())) {
+                logStartField.setValue(true);
+                logStartField.setEditable(false);
+            } else {
+                logStartField.setEditable(true);
+            }
+        });
     }
 
     protected void setSchedulingTypeField(SchedulingType value) {
