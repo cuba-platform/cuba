@@ -33,10 +33,10 @@ public class CubaSourceCodeEditorConnector extends AceEditorConnector {
         registerRpc(CubaSourceCodeEditorClientRpc.class, new CubaSourceCodeEditorClientRpc() {
             @Override
             public void resetEditHistory() {
-                getWidget().resetEditHistory();
+                resetEditHistory = true;
             }
         });
-    };
+    }
 
     @Override
     protected Widget createWidget() {
@@ -45,6 +45,16 @@ public class CubaSourceCodeEditorConnector extends AceEditorConnector {
         widget.addSelectionChangeListener(this);
         widget.setFocusChangeListener(this);
         return widget;
+    }
+
+    @Override
+    protected void sendToServer(SendCond send, boolean immediately) {
+        super.sendToServer(send, immediately);
+
+        if (send == SendCond.NO && resetEditHistory) {
+            getWidget().resetEditHistory();
+            resetEditHistory = false;
+        }
     }
 
     @Override
@@ -66,6 +76,10 @@ public class CubaSourceCodeEditorConnector extends AceEditorConnector {
         }
         if (stateChangeEvent.hasPropertyChanged("printMarginColumn")) {
             getWidget().setPrintMarginColumn(getState().printMarginColumn);
+        }
+
+        if (stateChangeEvent.isInitialStateChange()) {
+            getWidget().resetEditHistory();
         }
     }
 }
