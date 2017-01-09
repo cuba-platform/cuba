@@ -16,8 +16,6 @@
 
 package com.haulmont.cuba.web.theme;
 
-import com.vaadin.ui.Table;
-
 public class HaloTheme {
 
     /**
@@ -80,7 +78,7 @@ public class HaloTheme {
      *
      * <pre>
      * Label spinner = new Label();
-     * spinner.addStyleName(ValoTheme.LABEL_SPINNER);
+     * spinner.addStyleName(HaloTheme.LABEL_SPINNER);
      * </pre>
      */
     public static final String LABEL_SPINNER = "spinner";
@@ -106,7 +104,7 @@ public class HaloTheme {
     public static final String BUTTON_DANGER = "danger";
 
     /**
-     * "Quiet" button, which looks like {@link com.vaadin.ui.themes.ValoTheme#BUTTON_BORDERLESS} until you
+     * "Quiet" button, which looks like {@link HaloTheme#BUTTON_BORDERLESS} until you
      * hover over it with the mouse. Can be combined with any other Button
      * style.
      */
@@ -178,7 +176,7 @@ public class HaloTheme {
     public static final String DATEFIELD_BORDERLESS = "borderless";
 
     /**
-     * Removes the border and background from the combo box. Can be combined with any other ComboBox style.
+     * Removes the border and background from the LookupField. Can be combined with any other LookupField style.
      *
      * This style can also be used for {@link com.haulmont.cuba.gui.components.PickerField} and
      * {@link com.haulmont.cuba.gui.components.LookupPickerField}
@@ -186,7 +184,7 @@ public class HaloTheme {
     public static final String LOOKUPFIELD_BORDERLESS = "borderless";
 
     /**
-     * Align the text inside the combo box to the right. Can be combined with any other TextField style.
+     * Align the text inside the LookupField to the right. Can be combined with any other TextField style.
      *
      * This style can also be used for {@link com.haulmont.cuba.gui.components.PickerField} and
      * {@link com.haulmont.cuba.gui.components.LookupPickerField}
@@ -194,7 +192,7 @@ public class HaloTheme {
     public static final String LOOKUPFIELD_ALIGN_RIGHT = "align-right";
 
     /**
-     * Align the text inside the combo box to center. Can be combined with any other TextField style.
+     * Align the text inside the LookupField to center. Can be combined with any other TextField style.
      *
      * This style can also be used for {@link com.haulmont.cuba.gui.components.PickerField} and
      * {@link com.haulmont.cuba.gui.components.LookupPickerField}
@@ -218,8 +216,13 @@ public class HaloTheme {
     public static final String TABLE_NO_HORIZONTAL_LINES = "no-horizontal-lines";
 
     /**
-     * Hide the table column headers (effectively the same as {@link Table.ColumnHeaderMode#HIDDEN}). Can be combined
-     * with any other Table/TreeTable style.
+     * Hide the table column headers (effectively the same as:
+     * <pre>
+     * Table table = componentsFactory.createComponent(Table.class);
+     * table.setColumnHeaderVisible(false);
+     * </pre>
+     *
+     * Can be combined with any other Table/TreeTable style.
      */
     public static final String TABLE_NO_HEADER = "no-header";
 
@@ -269,7 +272,7 @@ public class HaloTheme {
     public static final String TABSHEET_PADDED_TABBAR = "padded-tabbar";
 
     /**
-     * Give equal amount of space to all tabs in the tab bar (.i.e expand ratio == 1 for all tabs). The tab captions
+     * Give equal amount of space to all tabs in the tab bar (i.e. expand ratio == 1 for all tabs). The tab captions
      * will be truncated if they do not fit in to the tab. Tab scrolling will be disabled when this style is applied
      * (all tabs will be visible at the same time). Can be combined with any other TabSheet style.
      */
@@ -330,13 +333,13 @@ public class HaloTheme {
      * <p>
      * <pre>
      * CssLayout group = new CssLayout();
-     * group.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
+     * group.addStyleName(HaloTheme.CSSLAYOUT_COMPONENT_GROUP);
      *
      * TextField field = new TextField();
-     * group.addComponent(field);
+     * group.add(field);
      *
      * Button button = new Button(&quot;Action&quot;);
-     * group.addComponent(button);
+     * group.add(button);
      * </pre>
      */
     public static final String CSSLAYOUT_COMPONENT_GROUP = "v-component-group";
