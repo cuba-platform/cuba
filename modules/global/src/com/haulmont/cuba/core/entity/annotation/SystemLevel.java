@@ -33,4 +33,9 @@ import java.lang.annotation.Target;
 public @interface SystemLevel {
 
     boolean value() default true;
+
+    /**
+     * Set to false if you don't want this annotation to be set on subclasses.
+     */
+    boolean propagateToSubclasses() default true;
 }

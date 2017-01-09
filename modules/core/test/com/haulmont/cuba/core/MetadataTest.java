@@ -20,11 +20,13 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.utils.PrintUtils;
+import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.testmodel.TestTransientEntity;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -89,6 +91,9 @@ public class MetadataTest {
         MetadataTools tools = metadata.getTools();
 
         assertTrue(tools.isSystemLevel(metadata.getClassNN(UserRole.class)));
+
+        assertTrue(tools.isSystemLevel(metadata.getClassNN(AbstractNotPersistentEntity.class)));
+        assertFalse(tools.isSystemLevel(metadata.getClassNN(TestTransientEntity.class)));
 
         MetaClass metaClass = metadata.getClassNN(User.class);
         assertTrue(tools.isSystemLevel(metaClass.getPropertyNN("password")));

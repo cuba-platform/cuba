@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UuidProvider;
@@ -32,7 +33,8 @@ import java.util.UUID;
  * Base class for not persistent entities.
  *
  */
-@com.haulmont.chile.core.annotations.MetaClass(name = "AbstractNotPersistentEntity")
+@com.haulmont.chile.core.annotations.MetaClass(name = "sys$AbstractNotPersistentEntity")
+@SystemLevel(propagateToSubclasses = false)
 public abstract class AbstractNotPersistentEntity
         extends AbstractInstance
         implements Entity<UUID>, HasUuid, CubaEnhancingDisabled {

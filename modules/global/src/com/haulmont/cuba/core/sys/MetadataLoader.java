@@ -390,10 +390,13 @@ public class MetadataLoader {
                 Map<String, Object> attributes = new LinkedHashMap<>(AnnotationUtils.getAnnotationAttributes(metaClass.getJavaClass(), annotation));
                 metaClass.getAnnotations().put(name, attributes);
 
-                for (MetaClass descMetaClass : metaClass.getDescendants()) {
-                    Annotation descAnnotation = descMetaClass.getJavaClass().getAnnotation(annotation.annotationType());
-                    if (descAnnotation == null) {
-                        descMetaClass.getAnnotations().put(name, attributes);
+                Object propagateToSubclasses = attributes.get("propagateToSubclasses");
+                if (propagateToSubclasses == null || Boolean.TRUE.equals(propagateToSubclasses)) {
+                    for (MetaClass descMetaClass : metaClass.getDescendants()) {
+                        Annotation descAnnotation = descMetaClass.getJavaClass().getAnnotation(annotation.annotationType());
+                        if (descAnnotation == null) {
+                            descMetaClass.getAnnotations().put(name, attributes);
+                        }
                     }
                 }
             }
