@@ -83,10 +83,6 @@ public abstract class AbstractBeansMetadata {
 
                 Class<?> targetClass = bean instanceof TargetClassAware ? ((TargetClassAware) bean).getTargetClass() : bean.getClass();
 
-                Service serviceAnn = targetClass.getAnnotation(Service.class);
-                if (serviceAnn != null)
-                    return methods;
-
                 for (Method method : aClass.getMethods()) {
                     if (isMethodAvailable(method)) {
                         Method targetClassMethod = targetClass.getMethod(method.getName(), method.getParameterTypes());
