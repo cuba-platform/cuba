@@ -20,6 +20,7 @@ package com.haulmont.cuba.gui.app.core.entitylog;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.EntityLogService;
 import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -312,9 +313,14 @@ public class EntityLogBrowser extends AbstractWindow {
                 enabledAttr = item.getAttributes();
             for (MetaProperty property : metaProperties) {
                 if (!systemAttrsList.contains(property.getName())) {
+                    Range range = property.getRange();
+                    if (range.isClass() && !HasUuid.class.isAssignableFrom(range.asClass().getJavaClass())) {
+                        continue;
+                    }
                     CheckBox checkBox = factory.createComponent(CheckBox.class);
-                    if ((enabledAttr != null) && isEntityHaveAtrribute(property.getName(), enabledAttr))
+                    if (enabledAttr != null && isEntityHaveAtrribute(property.getName(), enabledAttr)) {
                         checkBox.setValue(true);
+                    }
                     checkBox.setId(property.getName());
                     checkBox.setCaption(property.getName());
                     checkBox.setEditable(setEditableCheckboxes);
