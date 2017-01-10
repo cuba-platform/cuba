@@ -165,7 +165,7 @@ public class InMemoryConstraintTest {
             DataManager dataManager = AppBeans.get(DataManager.NAME);
             dataManager = dataManager.secure();
             LoadContext loadContext = new LoadContext(User.class).setView(View.LOCAL);
-            loadContext.setQuery(new LoadContext.Query("select u from sec$User u order by u.login asc"));
+            loadContext.setQuery(new LoadContext.Query("select u from sec$User u where (u.login like 'user%' or u.login like 'constraintUser%') order by u.login asc"));
             loadContext.getQuery().setMaxResults(30);
             loadContext.getQuery().setFirstResult(0);
             List resultList = dataManager.loadList(loadContext);
@@ -190,12 +190,12 @@ public class InMemoryConstraintTest {
             DataManager dataManager = AppBeans.get(DataManager.NAME);
             dataManager = dataManager.secure();
             LoadContext loadContext = new LoadContext(User.class).setView(View.LOCAL);
-            loadContext.setQuery(new LoadContext.Query("select u from sec$User u order by u.login asc"));
+            loadContext.setQuery(new LoadContext.Query("select u from sec$User u where (u.login like 'user%' or u.login like 'constraintUser%') order by u.login asc"));
             loadContext.getQuery().setMaxResults(30);
             loadContext.getQuery().setFirstResult(0);
             List resultList = dataManager.loadList(loadContext);
-            assertEquals(10, resultList.size());
-            assertEquals(10, dataManager.getCount(loadContext));
+            assertEquals(9, resultList.size());
+            assertEquals(9, dataManager.getCount(loadContext));
         } finally {
             ((TestUserSessionSource) uss).setUserSession(savedUserSession);
         }
@@ -216,19 +216,18 @@ public class InMemoryConstraintTest {
             DataManager dataManager = AppBeans.get(DataManager.NAME);
             dataManager = dataManager.secure();
             LoadContext loadContext = new LoadContext(User.class).setView(View.LOCAL);
-            loadContext.setQuery(new LoadContext.Query("select u from sec$User u order by u.login desc"));
+            loadContext.setQuery(new LoadContext.Query("select u from sec$User u where (u.login like 'user%' or u.login like 'constraintUser%') order by u.login desc"));
             loadContext.getQuery().setMaxResults(30);
             loadContext.getQuery().setFirstResult(0);
             List resultList = dataManager.loadList(loadContext);
-            assertEquals(10, resultList.size());
-            assertEquals(10, dataManager.getCount(loadContext));
+            assertEquals(9, resultList.size());
+            assertEquals(9, dataManager.getCount(loadContext));
         } finally {
             ((TestUserSessionSource) uss).setUserSession(savedUserSession);
         }
     }
 
     @Test
-    @Ignore
     public void testConstraintsOnMoreThanOnePage() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
@@ -242,7 +241,7 @@ public class InMemoryConstraintTest {
             DataManager dataManager = AppBeans.get(DataManager.NAME);
             dataManager = dataManager.secure();
             LoadContext loadContext = new LoadContext(User.class).setView(View.LOCAL);
-            loadContext.setQuery(new LoadContext.Query("select u from sec$User u order by u.login desc"));
+            loadContext.setQuery(new LoadContext.Query("select u from sec$User u where (u.login like 'user%' or u.login like 'constraintUser%') order by u.login desc"));
             loadContext.getQuery().setMaxResults(30);
             loadContext.getQuery().setFirstResult(0);
             List resultList = dataManager.loadList(loadContext);
@@ -254,7 +253,6 @@ public class InMemoryConstraintTest {
     }
 
     @Test
-    @Ignore
     public void testLoadingLastPage() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
@@ -268,7 +266,7 @@ public class InMemoryConstraintTest {
             DataManager dataManager = AppBeans.get(DataManager.NAME);
             dataManager = dataManager.secure();
             LoadContext loadContext = new LoadContext(User.class).setView(View.LOCAL);
-            loadContext.setQuery(new LoadContext.Query("select u from sec$User u order by u.login desc"));
+            loadContext.setQuery(new LoadContext.Query("select u from sec$User u where (u.login like 'user%' or u.login like 'constraintUser%') order by u.login desc"));
             loadContext.getQuery().setMaxResults(30);
             loadContext.getQuery().setFirstResult(30);
             List<User> resultList = dataManager.loadList(loadContext);
