@@ -67,6 +67,10 @@
     }
   }
 
+  .c-app-workarea-single .v-button.c-closetab-button {
+    float: right;
+  }
+
   .v-button.c-closetab-button:hover {
     .v-button-wrap {
       background: transparent none;
