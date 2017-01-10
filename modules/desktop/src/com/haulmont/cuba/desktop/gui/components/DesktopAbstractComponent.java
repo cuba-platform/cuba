@@ -64,6 +64,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     protected boolean visible = true;
     protected boolean enabled = true;
+    protected boolean responsive = false;
 
     protected boolean parentEnabled = true;
 
@@ -180,6 +181,16 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
         this.enabled = enabled;
 
         updateEnabled();
+    }
+
+    @Override
+    public boolean isResponsive() {
+        return responsive;
+    }
+
+    @Override
+    public void setResponsive(boolean responsive) {
+        this.responsive = responsive;
     }
 
     protected void updateEnabled() {

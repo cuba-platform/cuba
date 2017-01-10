@@ -88,6 +88,16 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
         assignAutoDebugId();
     }
 
+    @Override
+    public boolean isResponsive() {
+        return component.isResponsive();
+    }
+
+    @Override
+    public void setResponsive(boolean responsive) {
+        component.setResponsive(responsive);
+    }
+
     public void assignAutoDebugId() {
         AppUI ui = AppUI.getCurrent();
         if (ui != null && ui.isTestMode()) {

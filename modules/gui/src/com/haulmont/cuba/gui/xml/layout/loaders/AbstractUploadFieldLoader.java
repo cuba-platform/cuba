@@ -49,6 +49,7 @@ public abstract class AbstractUploadFieldLoader<T extends UploadField> extends A
         loadPermittedExtensions(resultComponent, element);
 
         loadDropZone(resultComponent, element);
+        loadResponsive(resultComponent, element);
 
         String fileSizeLimit = element.attributeValue("fileSizeLimit");
         if (StringUtils.isNotEmpty(fileSizeLimit)) {

@@ -20,12 +20,4 @@ package com.haulmont.cuba.gui.components;
 public interface CssLayout extends Component.OrderedContainer, Component.BelongToFrame, Component.HasCaption, Component.HasIcon {
 
     String NAME = "cssLayout";
-
-    boolean isResponsive();
-
-    /**
-     * Set layout component to be responsive by width and height.
-     * "width-range" and "height-range" are set in scss theme files.
-     */
-    void setResponsive(boolean responsive);
 }

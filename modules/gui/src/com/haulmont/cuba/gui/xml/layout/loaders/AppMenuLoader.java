@@ -39,5 +39,6 @@ public class AppMenuLoader extends AbstractComponentLoader<AppMenu> {
 
         loadWidth(resultComponent, element);
         loadHeight(resultComponent, element);
+        loadResponsive(resultComponent, element);
     }
 }

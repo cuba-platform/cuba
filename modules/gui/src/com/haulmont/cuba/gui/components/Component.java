@@ -81,6 +81,18 @@ public interface Component {
     void setEnabled(boolean enabled);
 
     /**
+     * Is the component responsive?
+     */
+    boolean isResponsive();
+    /**
+     * Set component to be responsive by width and height.
+     *
+     * If responsive flag is true then you can use conditional CSS rules that respond to size changes in the browser.
+     * You can set specific rules using "width-range" or "height-range" properties in CSS files.
+     */
+    void setResponsive(boolean responsive);
+
+    /**
      * Are the component and its parent visible?
      */
     boolean isVisible();

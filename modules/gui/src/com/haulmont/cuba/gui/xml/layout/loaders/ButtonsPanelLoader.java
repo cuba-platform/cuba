@@ -60,6 +60,7 @@ public class ButtonsPanelLoader extends ContainerLoader<ButtonsPanel> {
         loadIcon(resultComponent, element);
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
+        loadResponsive(resultComponent, element);
 
         if (!element.elements().isEmpty()) {
             loadSubComponents();

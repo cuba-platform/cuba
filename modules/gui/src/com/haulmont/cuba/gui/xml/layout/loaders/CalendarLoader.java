@@ -58,6 +58,7 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
         loadTimeFormat(resultComponent, element);
         loadEndDate(resultComponent, element);
         loadStartDate(resultComponent, element);
+        loadResponsive(resultComponent, element);
         loadNavigationButtonsVisible(resultComponent, element);
     }
 

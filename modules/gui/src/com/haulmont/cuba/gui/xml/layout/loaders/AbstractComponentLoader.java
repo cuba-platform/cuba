@@ -152,6 +152,13 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
     }
 
+    protected void loadResponsive(Component component, Element element) {
+        String responsive = element.attributeValue("responsive");
+        if (StringUtils.isNotEmpty(responsive)) {
+            component.setResponsive(Boolean.parseBoolean(responsive));
+        }
+    }
+
     protected void assignXmlDescriptor(Component component, Element element) {
         if (component instanceof Component.HasXmlDescriptor) {
             ((Component.HasXmlDescriptor) component).setXmlDescriptor(element);

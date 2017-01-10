@@ -873,6 +873,21 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
+    public boolean isResponsive() {
+        if (component instanceof AbstractComponent) {
+            return ((AbstractComponent) component).isResponsive();
+        }
+        return false;
+    }
+
+    @Override
+    public void setResponsive(boolean responsive) {
+        if (component instanceof AbstractComponent) {
+            ((AbstractComponent) component).setResponsive(responsive);
+        }
+    }
+
+    @Override
     public boolean isVisible() {
         return true;
     }

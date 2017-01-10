@@ -727,6 +727,15 @@ public interface Table<E extends Entity>
         }
 
         @Override
+        public boolean isResponsive() {
+            return false;
+        }
+
+        @Override
+        public void setResponsive(boolean responsive) {
+        }
+
+        @Override
         public boolean isVisible() {
             return true;
         }

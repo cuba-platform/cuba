@@ -48,6 +48,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         loadHeight(resultComponent, element);
         loadWidth(resultComponent, element);
         loadAlign(resultComponent, element);
+        loadResponsive(resultComponent, element);
     }
 
     protected void loadRequired(Field component, Element element) {

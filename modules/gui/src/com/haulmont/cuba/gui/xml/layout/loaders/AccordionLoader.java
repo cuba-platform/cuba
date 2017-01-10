@@ -75,6 +75,7 @@ public class AccordionLoader extends ContainerLoader<Accordion> {
         loadIcon(resultComponent, element);
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
+        loadResponsive(resultComponent, element);
 
         @SuppressWarnings("unchecked")
         List<Element> tabElements = element.elements("tab");

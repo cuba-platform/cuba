@@ -697,6 +697,10 @@
         <xs:attribute name="enable" type="xs:boolean"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="hasResponsiveProp">
+        <xs:attribute name="responsive" type="xs:boolean"/>
+    </xs:attributeGroup>
+
     <xs:attributeGroup name="hasDatasource">
         <xs:attribute name="datasource" type="xs:string"/>
         <xs:attribute name="property" type="xs:string"/>
@@ -983,6 +987,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasResponsiveProp"/>
     </xs:complexType>
 
     <!-- BaseField -->

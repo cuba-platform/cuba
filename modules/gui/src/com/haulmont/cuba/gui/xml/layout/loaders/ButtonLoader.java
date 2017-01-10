@@ -76,6 +76,7 @@ public class ButtonLoader extends AbstractComponentLoader<Button> {
 
         loadFocusable(resultComponent, element);
         loadDisableOnClick(resultComponent, element);
+        loadResponsive(resultComponent, element);
     }
 
     protected void loadDisableOnClick(Button component, Element element) {

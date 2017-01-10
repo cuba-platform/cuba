@@ -199,6 +199,16 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     }
 
     @Override
+    public boolean isResponsive() {
+        return frame.isResponsive();
+    }
+
+    @Override
+    public void setResponsive(boolean responsive) {
+        frame.setResponsive(responsive);
+    }
+
+    @Override
     public void setCaption(String caption) {
         frame.setCaption(caption);
     }

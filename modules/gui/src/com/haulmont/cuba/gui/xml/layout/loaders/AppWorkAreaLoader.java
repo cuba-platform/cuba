@@ -51,6 +51,7 @@ public class AppWorkAreaLoader extends ContainerLoader<AppWorkArea> {
 
         loadWidth(resultComponent, element);
         loadHeight(resultComponent, element);
+        loadResponsive(resultComponent, element);
 
         initialLayoutLoader.loadComponent();
     }
