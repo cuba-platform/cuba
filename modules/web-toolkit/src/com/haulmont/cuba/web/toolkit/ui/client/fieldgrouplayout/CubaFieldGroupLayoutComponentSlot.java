@@ -367,11 +367,8 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
 
         if (captionWidget.getTooltipElement() != null) {
             captionWidget.getTooltipElement().removeFromParent();
-
-            if (!(getWidget() instanceof VCheckBox)) {
-                tooltipElement = captionWidget.getTooltipElement();
-                rightCaption.appendChild(tooltipElement);
-            }
+            tooltipElement = captionWidget.getTooltipElement();
+            rightCaption.appendChild(tooltipElement);
         } else if (tooltipElement != null) {
             tooltipElement.removeFromParent();
             tooltipElement = null;
