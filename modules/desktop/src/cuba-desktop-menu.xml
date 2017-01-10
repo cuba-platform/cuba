@@ -22,7 +22,7 @@
         <item id="sec$User.browse"/>
         <item id="sec$Group.browse"/>
         <item id="sec$Role.browse"/>
-        <item id="-"/>
+        <separator/>
         <item id="sec$UserSessionEntity.browse"/>
         <item id="sys$LockInfo.browse"/>
         <item id="sys$FileDescriptor.browse"/>
