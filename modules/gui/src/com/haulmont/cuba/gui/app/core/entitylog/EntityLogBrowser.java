@@ -21,6 +21,7 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.EntityLogService;
+import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
@@ -268,8 +269,10 @@ public class EntityLogBrowser extends AbstractWindow {
                 MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
                 String originalName = originalMetaClass == null ? metaClass.getName() : originalMetaClass.getName();
                 Class javaClass = metaClass.getJavaClass();
-                String caption = messages.getMessage(javaClass, javaClass.getSimpleName()) + " (" + metaClass.getName() + ")";
-                options.put(caption, originalName);
+                if (HasUuid.class.isAssignableFrom(javaClass)) {
+                    String caption = messages.getMessage(javaClass, javaClass.getSimpleName()) + " (" + metaClass.getName() + ")";
+                    options.put(caption, originalName);
+                }
             }
         }
         return options;
