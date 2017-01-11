@@ -1347,7 +1347,7 @@
         </xs:complexContent>
 
         <xs:attribute name="src" type="xs:string"/>
-        <xs:attribute name="relativeSrc " type="xs:string"/>
+        <xs:attribute name="relativeSrc" type="xs:string"/>
         <xs:attribute name="type" type="embeddedType"/>
     </xs:complexType>
 
