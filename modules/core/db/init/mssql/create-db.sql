@@ -718,7 +718,7 @@ create table SYS_CATEGORY(
     --
     NAME varchar(255) not null,
     SPECIAL varchar(50),
-    ENTITY_TYPE varchar(30) not null,
+    ENTITY_TYPE varchar(100) not null,
     IS_DEFAULT tinyint,
     DISCRIMINATOR integer,
     --
