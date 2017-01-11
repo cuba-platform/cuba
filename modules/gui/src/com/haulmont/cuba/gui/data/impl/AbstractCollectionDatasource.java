@@ -39,6 +39,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -622,9 +623,11 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
                     MetaPropertyPath relPropertyPath = propertyPath.getMetaProperties()[0].getDomain().getPropertyPath(Joiner.on(".").join(ppCopy));
                     String[] sortPropertiesForRelProperty = getSortPropertiesForPersistentAttribute(relPropertyPath);
-                    Collections.addAll(sortPropertiesList, sortPropertiesForRelProperty);
+                    if (sortPropertiesForRelProperty != null)
+                        Collections.addAll(sortPropertiesList, sortPropertiesForRelProperty);
                 }
-                sortProperties = sortPropertiesList.toArray(new String[sortPropertiesList.size()]);
+                if (!sortPropertiesList.isEmpty())
+                    sortProperties = sortPropertiesList.toArray(new String[sortPropertiesList.size()]);
             }
         }
 
@@ -636,6 +639,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
+    @Nullable
     protected String[] getSortPropertiesForPersistentAttribute(MetaPropertyPath propertyPath) {
         String[] sortProperties = null;
         if (!propertyPath.getMetaProperty().getRange().isClass()) {
