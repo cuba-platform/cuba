@@ -195,7 +195,11 @@ public class EntitySerialization implements EntitySerializationAPI {
                     jsonObject.addProperty(ENTITY_NAME_PROP, metaClass.getName());
                 }
                 if (serializeInstanceName) {
-                    jsonObject.addProperty(INSTANCE_NAME_PROP, entity.getInstanceName());
+                    String instanceName = null;
+                    try {
+                        instanceName = entity.getInstanceName();
+                    } catch (Exception ignored) {}
+                    jsonObject.addProperty(INSTANCE_NAME_PROP, instanceName);
                 }
                 writeIdField(entity, jsonObject);
                 if (compactRepeatedEntities) {
