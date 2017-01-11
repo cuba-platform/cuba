@@ -25,7 +25,9 @@ import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.UuidConverter;
+import org.apache.commons.lang.BooleanUtils;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -56,6 +58,8 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
     public void preLogin(SessionEvent event) {
 
         Session session = event.getSession();
+        setPrintInnerJoinOnClause(session);
+
         Map<Class, ClassDescriptor> descriptorMap = session.getDescriptors();
 
         for (Map.Entry<Class, ClassDescriptor> entry : descriptorMap.entrySet()) {
@@ -151,5 +155,11 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
             field.setType(String.class);
         }
         field.setColumnDefinition("UUID");
+    }
+
+    private void setPrintInnerJoinOnClause(Session session) {
+        boolean printInnerJoinOnClause = BooleanUtils.toBoolean(
+                AppContext.getProperty("cuba.printInnerJoinOnClause"));
+        session.getPlatform().setPrintInnerJoinInWhereClause(!printInnerJoinOnClause);
     }
 }
