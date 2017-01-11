@@ -48,6 +48,11 @@ public class EmbeddedLoader extends AbstractComponentLoader<Embedded> {
             resultComponent.setType(type);
         }
 
+        String relativeSrc = element.attributeValue("relativeSrc");
+        if (StringUtils.isNotEmpty(relativeSrc)) {
+            resultComponent.setRelativeSource(relativeSrc);
+        }
+
         String srcAttr = element.attributeValue("src");
         if (srcAttr != null) {
             if (srcAttr.startsWith(URL_PREFIX)) {
