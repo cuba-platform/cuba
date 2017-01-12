@@ -54,10 +54,16 @@ public class EntityRestoreServiceBean implements EntityRestoreService {
             if (!(entity instanceof SoftDelete))
                 continue;
 
-            Transaction tx = persistence.createTransaction();
+            String storeName = metadata.getTools().getStoreName(metadata.getClassNN(entity.getClass()));
+            if (storeName == null) {
+                log.warn("Unable to restore entity {}: cannot determine data store", entity);
+                continue;
+            }
+
+            Transaction tx = persistence.createTransaction(storeName);
             try {
-                persistence.getEntityManager().setSoftDeletion(false);
-                restoreEntity(entity);
+                persistence.getEntityManager(storeName).setSoftDeletion(false);
+                restoreEntity(entity, storeName);
                 tx.commit();
             } finally {
                 tx.end();
@@ -65,20 +71,20 @@ public class EntityRestoreServiceBean implements EntityRestoreService {
         }
     }
 
-    protected void restoreEntity(Entity entity) {
-        EntityManager em = persistence.getEntityManager();
+    protected void restoreEntity(Entity entity, String storeName) {
+        EntityManager em = persistence.getEntityManager(storeName);
         Entity reloadedEntity = em.find(entity.getClass(), entity.getId());
         if (reloadedEntity != null && ((SoftDelete) reloadedEntity).isDeleted()) {
             log.info("Restoring deleted entity " + entity);
             Date deleteTs = ((SoftDelete) reloadedEntity).getDeleteTs();
             ((SoftDelete) reloadedEntity).setDeleteTs(null);
             em.merge(reloadedEntity);
-            restoreDetails(reloadedEntity, deleteTs);
+            restoreDetails(reloadedEntity, deleteTs, storeName);
         }
     }
 
-    protected void restoreDetails(Entity entity, Date deleteTs) {
-        EntityManager em = persistence.getEntityManager();
+    protected void restoreDetails(Entity entity, Date deleteTs, String storeName) {
+        EntityManager em = persistence.getEntityManager(storeName);
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
 
         List<MetaProperty> properties = new ArrayList<>();
@@ -88,6 +94,10 @@ public class EntityRestoreServiceBean implements EntityRestoreService {
             DeletePolicy deletePolicy = annotation.value();
             if (deletePolicy == DeletePolicy.CASCADE) {
                 MetaClass detailMetaClass = property.getRange().asClass();
+                if (!storeName.equals(metadata.getTools().getStoreName(detailMetaClass))) {
+                    log.debug("Cannot restore " + property.getRange().asClass() + " because it is from different data store");
+                    continue;
+                }
                 if (!SoftDelete.class.isAssignableFrom(detailMetaClass.getJavaClass())) {
                     log.debug("Cannot restore " + property.getRange().asClass() + " because it is hard deleted");
                     continue;
@@ -107,7 +117,7 @@ public class EntityRestoreServiceBean implements EntityRestoreService {
                 List<Entity> list = query.getResultList();
                 for (Entity detailEntity : list) {
                     if (entity instanceof SoftDelete) {
-                        restoreEntity(detailEntity);
+                        restoreEntity(detailEntity, storeName);
                     }
                 }
             }
@@ -120,6 +130,10 @@ public class EntityRestoreServiceBean implements EntityRestoreService {
             DeletePolicy deletePolicy = annotation.value();
             if (deletePolicy == DeletePolicy.CASCADE) {
                 MetaClass detailMetaClass = property.getDomain();
+                if (!storeName.equals(metadata.getTools().getStoreName(detailMetaClass))) {
+                    log.debug("Cannot restore " + property.getRange().asClass() + " because it is from different data store");
+                    continue;
+                }
                 if (!SoftDelete.class.isAssignableFrom(detailMetaClass.getJavaClass())) {
                     log.debug("Cannot restore " + property.getRange().asClass() + " because it is hard deleted");
                     continue;
@@ -140,7 +154,7 @@ public class EntityRestoreServiceBean implements EntityRestoreService {
                     List<Entity> list = query.getResultList();
                     for (Entity detailEntity : list) {
                         if (entity instanceof SoftDelete) {
-                            restoreEntity(detailEntity);
+                            restoreEntity(detailEntity, storeName);
                         }
                     }
                 }
