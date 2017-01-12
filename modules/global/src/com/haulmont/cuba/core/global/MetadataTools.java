@@ -200,6 +200,14 @@ public class MetadataTools {
     }
 
     /**
+     * @return true if passed MetaClass has a composite primary key
+     */
+    public boolean hasCompositePrimaryKey(MetaClass metaClass) {
+        MetaProperty primaryKeyProperty = getPrimaryKeyProperty(metaClass);
+        return primaryKeyProperty != null && primaryKeyProperty.getAnnotatedElement().isAnnotationPresent(EmbeddedId.class);
+    }
+
+    /**
      * @return true if the first MetaClass is equal or an ancestor of the second.
      */
     public boolean isAssignableFrom(MetaClass metaClass, MetaClass other) {
