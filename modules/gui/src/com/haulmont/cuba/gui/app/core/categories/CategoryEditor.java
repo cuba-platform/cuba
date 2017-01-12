@@ -18,6 +18,7 @@
 package com.haulmont.cuba.gui.app.core.categories;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.AbstractEditor;
@@ -61,7 +62,10 @@ public class CategoryEditor extends AbstractEditor<Category> {
 
         Map<String, Object> options = new TreeMap<>();//the map sorts meta classes by the string key
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
-            options.put(messageTools.getDetailedEntityCaption(metaClass), metaClass);
+            String storeName = metadata.getTools().getStoreName(metaClass);
+            if (BaseUuidEntity.class.isAssignableFrom(metaClass.getJavaClass()) && Stores.isMain(storeName)) {
+                options.put(messageTools.getDetailedEntityCaption(metaClass), metaClass);
+            }
         }
         entityType.setOptionsMap(options);
 
