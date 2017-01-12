@@ -158,8 +158,8 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
     }
 
     private void setPrintInnerJoinOnClause(Session session) {
-        boolean printInnerJoinOnClause = BooleanUtils.toBoolean(
-                AppContext.getProperty("cuba.printInnerJoinOnClause"));
-        session.getPlatform().setPrintInnerJoinInWhereClause(!printInnerJoinOnClause);
+        boolean useInnerJoinOnClause = BooleanUtils.toBoolean(
+                AppContext.getProperty("cuba.useInnerJoinOnClause"));
+        session.getPlatform().setPrintInnerJoinInWhereClause(!useInnerJoinOnClause);
     }
 }
