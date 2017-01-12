@@ -1320,7 +1320,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         return FtsConfigHelper.getEnabled()
                 && ftsFilterHelper != null
                 && datasource != null
-                && ftsFilterHelper.isEntityIndexed(datasource.getMetaClass().getName());
+                && ftsFilterHelper.isEntityIndexed(datasource.getMetaClass().getName())
+                && Stores.isMain(metadata.getTools().getStoreName(datasource.getMetaClass()));
     }
 
     @Override
