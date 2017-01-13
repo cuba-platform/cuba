@@ -289,6 +289,7 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
 
         FilterEditor filterEditor = (FilterEditor) windowManagerProvider.get().openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
         filterEditor.addCloseListener(actionId -> {
+            if (!COMMIT_ACTION_ID.equals(actionId)) return;
             FilterParser filterParser1 = AppBeans.get(FilterParser.class);
             //todo eude rename com.haulmont.cuba.gui.components.filter.FilterParser
             filterEntity.setXml(filterParser1.getXml(filterEditor.getConditions(), Param.ValueProperty.DEFAULT_VALUE));
