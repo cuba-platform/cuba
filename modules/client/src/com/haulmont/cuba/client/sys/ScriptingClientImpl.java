@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.AbstractScripting;
+import com.haulmont.cuba.core.sys.SpringBeanLoader;
 import com.haulmont.cuba.core.sys.javacl.JavaClassLoader;
 
 import org.springframework.stereotype.Component;
@@ -32,8 +33,8 @@ public class ScriptingClientImpl extends AbstractScripting {
     private String[] scriptEngineRoots;
 
     @Inject
-    public ScriptingClientImpl(JavaClassLoader javaClassLoader, Configuration configuration) {
-        super(javaClassLoader, configuration);
+    public ScriptingClientImpl(JavaClassLoader javaClassLoader, Configuration configuration, SpringBeanLoader springBeanLoader) {
+        super(javaClassLoader, configuration, springBeanLoader);
         scriptEngineRoots = new String[] {
                 configuration.getConfig(GlobalConfig.class).getConfDir()
         };

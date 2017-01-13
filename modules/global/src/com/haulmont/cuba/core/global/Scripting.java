@@ -112,7 +112,14 @@ public interface Scripting {
     Class<?> loadClassNN(String name);
 
     /**
+     * Remove compiled class from cache
+     * @return true if class removed from cache
+     */
+    boolean removeClass(String name);
+
+    /**
      * Clears compiled classes cache
      */
     void clearCache();
+
 }

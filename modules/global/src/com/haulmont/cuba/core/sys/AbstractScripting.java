@@ -30,8 +30,6 @@ import groovy.util.ResourceConnector;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
@@ -39,6 +37,8 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +46,7 @@ import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -58,23 +59,21 @@ public abstract class AbstractScripting implements Scripting {
 
     private static final Pattern IMPORT_PATTERN = Pattern.compile("\\bimport\\b\\s+");
     private static final Pattern PACKAGE_PATTERN = Pattern.compile("\\bpackage\\b\\s+.+");
-
-    private JavaClassLoader javaClassLoader;
-
+    protected JavaClassLoader javaClassLoader;
+    protected SpringBeanLoader springBeanLoader;
     protected String groovyClassPath;
 
     protected Set<String> imports = new HashSet<>();
 
     protected volatile GroovyScriptEngine gse;
-
-    protected volatile GroovyClassLoader gcl;
-
+    protected volatile CubaGroovyClassLoader gcl;
     protected GenericKeyedObjectPool<String, Script> pool;
 
     protected GlobalConfig globalConfig;
 
-    public AbstractScripting(JavaClassLoader javaClassLoader, Configuration configuration) {
+    public AbstractScripting(JavaClassLoader javaClassLoader, Configuration configuration, SpringBeanLoader springBeanLoader) {
         this.javaClassLoader = javaClassLoader;
+        this.springBeanLoader = springBeanLoader;
         globalConfig = configuration.getConfig(GlobalConfig.class);
         groovyClassPath = globalConfig.getConfDir() + File.pathSeparator;
 
@@ -109,7 +108,7 @@ public abstract class AbstractScripting implements Scripting {
         return gse;
     }
 
-    protected GroovyClassLoader getGroovyClassLoader() {
+    protected CubaGroovyClassLoader getGroovyClassLoader() {
         if (gcl == null) {
             synchronized (this) {
                 if (gcl == null) {
@@ -147,10 +146,9 @@ public abstract class AbstractScripting implements Scripting {
                                 Matcher packageMatcher = PACKAGE_PATTERN.matcher(key);
                                 if (packageMatcher.find()) {
                                     StringBuffer s = new StringBuffer();
-                                    packageMatcher.appendReplacement(s, "$0\n"+sb);
+                                    packageMatcher.appendReplacement(s, "$0\n" + sb);
                                     result = packageMatcher.appendTail(s).toString();
-                                }
-                                else {
+                                } else {
                                     result = sb.append(key).toString();
                                 }
                             }
@@ -280,6 +278,11 @@ public abstract class AbstractScripting implements Scripting {
     }
 
     @Override
+    public boolean removeClass(String name) {
+        return getGroovyClassLoader().removeClass(name) || javaClassLoader.removeClass(name);
+    }
+
+    @Override
     public void clearCache() {
         getGroovyClassLoader().clearCache();
         javaClassLoader.clearCache();
@@ -313,7 +316,7 @@ public abstract class AbstractScripting implements Scripting {
             // First workaround for invocation from GroovyScriptEngine.isSourceNewer()
             for (String path : rootPath) {
                 String substrResourceName = resourceName.substring(1);
-                path = path.replace('\\','/');
+                path = path.replace('\\', '/');
                 if (substrResourceName.startsWith(path))
                     resourceName = substrResourceName;
                 if (resourceName.startsWith(path)) {
@@ -406,6 +409,12 @@ public abstract class AbstractScripting implements Scripting {
             super(AbstractScripting.this.javaClassLoader, cc);
         }
 
+        public boolean removeClass(String className) {
+            Class clazz = getClassCacheEntry(className);
+            removeClassCacheEntry(className);
+            return clazz != null;
+        }
+
         // This overridden method is almost identical to super, but prefers Groovy source over parent classloader class
         @Override
         public Class loadClass(String name, boolean lookupScriptFiles, boolean preferClassOverScript, boolean resolve) throws ClassNotFoundException, CompilationFailedException {
@@ -440,6 +449,7 @@ public abstract class AbstractScripting implements Scripting {
                         removeClassCacheEntry(name);
                     } else {
                         setClassCacheEntry(cls);
+                        springBeanLoader.updateContext(Collections.singletonList(cls));
                     }
                 }
             }

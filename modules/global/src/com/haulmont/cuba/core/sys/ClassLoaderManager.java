@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2017 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,11 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.haulmont.cuba.core.sys.javacl;
+package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.sys.javacl.JavaClassLoader;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import org.springframework.stereotype.Component;
@@ -27,12 +28,14 @@ import static java.lang.String.format;
 @Component("cuba_ClassLoaderManager")
 public class ClassLoaderManager implements ClassLoaderManagerMBean {
     @Inject
+    protected Scripting scripting;
+    @Inject
     protected JavaClassLoader javaClassLoader;
 
     @Override
     public String loadClass(String className) {
         try {
-            Class<?> aClass = javaClassLoader.loadClass(className);
+            Class<?> aClass = scripting.loadClassNN(className);
             return format("Loaded %s", aClass.toString());
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
@@ -42,13 +45,8 @@ public class ClassLoaderManager implements ClassLoaderManagerMBean {
     @Override
     public String removeClass(String className) {
         try {
-            TimestampClass removed = javaClassLoader.compiled.remove(className);
-            if (removed != null) {
-                for (String dependent : removed.dependent) {
-                    removeClass(dependent);
-                }
-            }
-            return removed != null ? format("Removed %s", removed.clazz.toString()) : "No such class in cache";
+            boolean removed = scripting.removeClass(className);
+            return removed ? format("Removed %s", className) : "No such class in cache";
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
         }
@@ -57,7 +55,7 @@ public class ClassLoaderManager implements ClassLoaderManagerMBean {
     @Override
     public String reloadClass(String className) {
         try {
-            removeClass(className);
+            javaClassLoader.removeClass(className);
             return loadClass(className);
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
@@ -67,11 +65,9 @@ public class ClassLoaderManager implements ClassLoaderManagerMBean {
     @Override
     public String getClassDependencies(String className) {
         try {
-            TimestampClass timestampClass = javaClassLoader.compiled.get(className);
-            if (timestampClass != null) {
-                return format("Dependencies \n%s\nDependent \n%s", timestampClass.dependencies, timestampClass.dependent);
+            if (javaClassLoader.isLoadedClass(className)) {
+                return format("Dependencies \n%s\nDependent \n%s", javaClassLoader.getClassDependencies(className), javaClassLoader.getClassDependent(className));
             }
-
             return "No such class in cache";
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
@@ -81,7 +77,7 @@ public class ClassLoaderManager implements ClassLoaderManagerMBean {
     @Override
     public String clearCache() {
         try {
-            javaClassLoader.clearCache();
+            scripting.clearCache();
             return "Done";
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);

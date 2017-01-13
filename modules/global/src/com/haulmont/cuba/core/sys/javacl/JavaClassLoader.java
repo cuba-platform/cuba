@@ -21,26 +21,14 @@ import com.google.common.collect.Multimap;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.sys.CubaClassPathXmlApplicationContext;
+import com.haulmont.cuba.core.sys.SpringBeanLoader;
 import com.haulmont.cuba.core.sys.javacl.compiler.CharSequenceCompiler;
 import org.apache.commons.lang.StringUtils;
 import org.perf4j.log4j.Log4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
@@ -55,7 +43,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Component("cuba_JavaClassLoader")
-public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware, ApplicationContextAware {
+public class JavaClassLoader extends URLClassLoader {
     private static final String JAVA_CLASSPATH = System.getProperty("java.class.path");
     private static final String PATH_SEPARATOR = System.getProperty("path.separator");
     private static final String JAR_EXT = ".jar";
@@ -73,11 +61,10 @@ public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware,
     protected final ProxyClassLoader proxyClassLoader;
     protected final SourceProvider sourceProvider;
 
-    protected CubaClassPathXmlApplicationContext applicationContext;
-    protected DefaultListableBeanFactory beanFactory;
-
     @Inject
-    private TimeSource timeSource;
+    protected TimeSource timeSource;
+    @Inject
+    protected SpringBeanLoader springBeanLoader;
 
     @Inject
     public JavaClassLoader(Configuration configuration) {
@@ -105,21 +92,6 @@ public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware,
         this.sourceProvider = new SourceProvider(rootDir);
     }
 
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        if (beanFactory instanceof DefaultListableBeanFactory) {
-            this.beanFactory = (DefaultListableBeanFactory) beanFactory;
-        }
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        if (applicationContext instanceof CubaClassPathXmlApplicationContext) {
-//            ((DefaultResourceLoader) applicationContext).setClassLoader(this);
-            this.applicationContext = (CubaClassPathXmlApplicationContext) applicationContext;
-        }
-    }
-
     public void clearCache() {
         compiled.clear();
     }
@@ -141,7 +113,7 @@ public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware,
             CompilationScope compilationScope = new CompilationScope(this, containerClassName);
             if (!compilationScope.compilationNeeded()) {
                 TimestampClass timestampClass = getTimestampClass(fullClassName);
-                if (timestampClass==null) {
+                if (timestampClass == null) {
                     throw new ClassNotFoundException(fullClassName);
                 }
                 return timestampClass.clazz;
@@ -172,7 +144,7 @@ public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware,
 
                 clazz = compiledClasses.get(fullClassName);
 
-                updateSpringContext(compiledClasses.values());
+                springBeanLoader.updateContext(compiledClasses.values());
 
                 return clazz;
             } catch (Exception e) {
@@ -187,49 +159,34 @@ public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware,
         }
     }
 
-    private void updateSpringContext(Collection<Class> classes) {
-        if (beanFactory != null) {
-            boolean needToRefreshRemotingContext = false;
-            for (Class clazz : classes) {
-                Service serviceAnnotation = (Service) clazz.getAnnotation(Service.class);
-                ManagedBean managedBeanAnnotation = (ManagedBean) clazz.getAnnotation(ManagedBean.class);
-                Component componentAnnotation = (Component) clazz.getAnnotation(Component.class);
-                Controller controllerAnnotation = (Controller) clazz.getAnnotation(Controller.class);
-
-                String beanName = null;
-                if (serviceAnnotation != null) {
-                    beanName = serviceAnnotation.value();
-                } else if (managedBeanAnnotation != null) {
-                    beanName = managedBeanAnnotation.value();
-                } else if (componentAnnotation != null) {
-                    beanName = componentAnnotation.value();
-                } else if (controllerAnnotation != null) {
-                    beanName = controllerAnnotation.value();
-                }
-
-                if (StringUtils.isNotBlank(beanName)) {
-                    GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-                    beanDefinition.setBeanClass(clazz);
-                    Scope scope = (Scope) clazz.getAnnotation(Scope.class);
-                    if (scope != null) {
-                       beanDefinition.setScope(scope.value());
-                    }
-
-                    beanFactory.registerBeanDefinition(beanName, beanDefinition);
-                }
-
-                if (StringUtils.isNotBlank(beanName)) {
-                    needToRefreshRemotingContext = true;
-                }
-            }
-
-            if (needToRefreshRemotingContext) {
-                ApplicationContext remotingContext = RemotingContextHolder.getRemotingApplicationContext();
-                if (remotingContext != null && remotingContext instanceof ConfigurableApplicationContext) {
-                    ((ConfigurableApplicationContext) remotingContext).refresh();
-                }
+    public boolean removeClass(String className) {
+        TimestampClass removed = compiled.remove(className);
+        if (removed != null) {
+            for (String dependent : removed.dependent) {
+                removeClass(dependent);
             }
         }
+        return removed != null;
+    }
+
+    public boolean isLoadedClass(String className) {
+        return compiled.containsKey(className);
+    }
+
+    public Collection<String> getClassDependencies(String className) {
+        TimestampClass timestampClass = compiled.get(className);
+        if (timestampClass != null) {
+            return timestampClass.dependencies;
+        }
+        return Collections.emptyList();
+    }
+
+    public Collection<String> getClassDependent(String className) {
+        TimestampClass timestampClass = compiled.get(className);
+        if (timestampClass != null) {
+            return timestampClass.dependent;
+        }
+        return Collections.emptyList();
     }
 
     @Override

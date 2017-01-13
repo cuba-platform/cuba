@@ -32,8 +32,8 @@ public class ScriptingImpl extends AbstractScripting {
     private String[] scriptEngineRoots;
 
     @Inject
-    public ScriptingImpl(JavaClassLoader javaClassLoader, Configuration configuration) {
-        super(javaClassLoader, configuration);
+    public ScriptingImpl(JavaClassLoader javaClassLoader, Configuration configuration, SpringBeanLoader springBeanLoader) {
+        super(javaClassLoader, configuration, springBeanLoader);
         scriptEngineRoots = new String[] {
                 configuration.getConfig(GlobalConfig.class).getConfDir(),
                 configuration.getConfig(ServerConfig.class).getDbDir()
