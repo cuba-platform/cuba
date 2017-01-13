@@ -79,13 +79,14 @@ public class JavaClassLoader extends URLClassLoader {
     }
 
     //Please use this constructor only in tests
-    JavaClassLoader(ClassLoader parent, String rootDir, String cubaClassPath) {
+    JavaClassLoader(ClassLoader parent, String rootDir, String cubaClassPath, SpringBeanLoader springBeanLoader) {
         super(new URL[0], parent);
 
         Preconditions.checkNotNull(rootDir);
         Preconditions.checkNotNull(cubaClassPath);
 
         this.proxyClassLoader = new ProxyClassLoader(parent, compiled);
+        this.springBeanLoader = springBeanLoader;
         this.rootDir = rootDir;
         this.cubaClassPath = cubaClassPath;
         this.classPath = buildClasspath();

@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.sys.javacl;
 
+import com.haulmont.cuba.core.sys.SpringBeanLoader;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,7 +29,7 @@ public class JavaClassLoaderTest {
     public void testSimple() throws Exception {
         System.out.println(new File(".").getAbsolutePath());
 
-        JavaClassLoader javaClassLoader = new JavaClassLoader(Thread.currentThread().getContextClassLoader(), "./test-data/javacl-sources/", "") {
+        JavaClassLoader javaClassLoader = new JavaClassLoader(Thread.currentThread().getContextClassLoader(), "./test-data/javacl-sources/", "", new SpringBeanLoader()) {
             @Override
             protected Date getCurrentTimestamp() {
                 return new Date();
@@ -48,7 +49,7 @@ public class JavaClassLoaderTest {
     public void testDependencies() throws Exception {
         System.out.println(new File(".").getAbsolutePath());
 
-        JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "") {
+        JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "", new SpringBeanLoader()) {
             @Override
             protected Date getCurrentTimestamp() {
                 return new Date();
@@ -79,7 +80,7 @@ public class JavaClassLoaderTest {
 
     @Test
     public void testDependent() throws Exception {
-        JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "") {
+        JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "", new SpringBeanLoader()) {
             @Override
             protected Date getCurrentTimestamp() {
                 return new Date();
@@ -112,7 +113,7 @@ public class JavaClassLoaderTest {
 
     @Test
     public void testLinkageError() throws Exception {
-        JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "") {
+        JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "", new SpringBeanLoader()) {
             @Override
             protected Date getCurrentTimestamp() {
                 return new Date();
@@ -142,7 +143,7 @@ public class JavaClassLoaderTest {
 
     @Test
     public void testTwiceCompilation() throws Exception {
-        JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "") {
+        JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "", new SpringBeanLoader()) {
             @Override
             protected Date getCurrentTimestamp() {
                 return new Date();
@@ -169,7 +170,7 @@ public class JavaClassLoaderTest {
 
     @Test
     public void testInnerClasses() throws Exception {
-        JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "") {
+        JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "", new SpringBeanLoader()) {
             @Override
             protected Date getCurrentTimestamp() {
                 return new Date();
@@ -195,7 +196,7 @@ public class JavaClassLoaderTest {
     public void testCompanion() throws Exception {
         System.out.println(new File(".").getAbsolutePath());
 
-        JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "") {
+        JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "", new SpringBeanLoader()) {
             @Override
             protected Date getCurrentTimestamp() {
                 return new Date();
