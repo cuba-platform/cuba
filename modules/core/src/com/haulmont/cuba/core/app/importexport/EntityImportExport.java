@@ -19,7 +19,6 @@ package com.haulmont.cuba.core.app.importexport;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.*;
@@ -33,7 +32,6 @@ import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.sys.SecurityTokenManager;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -155,57 +153,67 @@ public class EntityImportExport implements EntityImportExportAPI {
     @Override
     public Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView view) {
         Collection<Entity> result = new ArrayList<>();
-        Map<Object, Entity> entitiesToCreate = new HashMap<>();
-        Set<Entity> entitiesToRemove = new HashSet<>();
-        List<ReferenceInfo> referenceInfoList = new ArrayList<>();
-        Map<Object, Entity> loadedEntities = new HashMap<>();
+        Map<String, List<Entity>> entitiesByStore = new LinkedHashMap<>();
+        for (Entity entity : entities) {
+            String storeName = metadata.getTools().getStoreName(entity.getMetaClass());
+            List<Entity> list = entitiesByStore.computeIfAbsent(storeName, k -> new ArrayList<>());
+            list.add(entity);
+        }
 
-        try (Transaction tx = persistence.getTransaction()) {
+        for (String storeName : entitiesByStore.keySet()) {
+            Map<Object, Entity> entitiesToCreate = new HashMap<>();
+            Set<Entity> entitiesToRemove = new HashSet<>();
+            List<ReferenceInfo> referenceInfoList = new ArrayList<>();
+            Map<Object, Entity> loadedEntities = new HashMap<>();
 
-            //import is performed in two steps. We have to do so, because imported entity may have a reference to
-            //some next imported entity.
-            //1. entities that should be created processed first, fields that should be references to existing entities
-            //are stored in the referenceInfoList variable
-            for (Entity entity : entities) {
-                importEntity(entity, view, entitiesToCreate, entitiesToRemove, referenceInfoList);
-            }
+            try (Transaction tx = persistence.getTransaction(storeName)) {
 
-            //2. references to existing entities are processed
-            for (ReferenceInfo referenceInfo : referenceInfoList) {
-                processReferenceInfo(referenceInfo, entitiesToCreate, loadedEntities);
-            }
+                //import is performed in two steps. We have to do so, because imported entity may have a reference to
+                //some next imported entity.
+                //1. entities that should be created processed first, fields that should be references to existing entities
+                //are stored in the referenceInfoList variable
+                for (Entity entity : entities) {
+                    importEntity(entity, view, storeName, entitiesToCreate, entitiesToRemove, referenceInfoList);
+                }
 
-            EntityManager em = persistence.getEntityManager();
-            for (Entity entity : entitiesToCreate.values()) {
-                if (PersistenceHelper.isNew(entity)) {
-                    em.persist(entity);
-                    result.add(entity);
-                } else {
-                    if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
-                        ((SoftDelete) entity).setDeleteTs(null);
+                //2. references to existing entities are processed
+                for (ReferenceInfo referenceInfo : referenceInfoList) {
+                    processReferenceInfo(referenceInfo, storeName, entitiesToCreate, loadedEntities);
+                }
+
+                EntityManager em = persistence.getEntityManager(storeName);
+                for (Entity entity : entitiesToCreate.values()) {
+                    if (PersistenceHelper.isNew(entity)) {
+                        em.persist(entity);
+                        result.add(entity);
+                    } else {
+                        if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
+                            ((SoftDelete) entity).setDeleteTs(null);
+                        }
+                        Entity merged = em.merge(entity);
+                        result.add(merged);
                     }
-                    Entity merged = em.merge(entity);
-                    result.add(merged);
+
+                    if (entityHasDynamicAttributes(entity)) {
+                        dynamicAttributesManagerAPI.storeDynamicAttributes((BaseGenericIdEntity) entity);
+                    }
                 }
 
-                if (entityHasDynamicAttributes(entity)) {
-                    dynamicAttributesManagerAPI.storeDynamicAttributes((BaseGenericIdEntity) entity);
-                }
+                entitiesToRemove.forEach(em::remove);
+
+                tx.commit();
             }
-
-            entitiesToRemove.forEach(em::remove);
-
-            tx.commit();
         }
         return result;
     }
 
     protected Entity importEntity(Entity srcEntity,
                                   EntityImportView view,
+                                  String storeName,
                                   Map<Object, Entity> entitiesToCreate,
                                   Set<Entity> entitiesToRemove,
                                   Collection<ReferenceInfo> referenceInfoList) {
-        EntityManager em = persistence.getEntityManager();
+        EntityManager em = persistence.getEntityManager(storeName);
         //set softDeletion to false because we can import deleted entity, so we'll restore it and update
         em.setSoftDeletion(false);
         Entity dstEntity = em.reload(srcEntity);
@@ -228,13 +236,13 @@ public class EntityImportExport implements EntityImportExportAPI {
             } else if (metaProperty.getRange().isClass()) {
                 if (metadata.getTools().isEmbedded(metaProperty)) {
                     if (viewProperty.getView() != null) {
-                        Entity embeddedEntity = importEmbeddedAttribute(srcEntity, dstEntity, viewProperty, entitiesToCreate, entitiesToRemove, referenceInfoList);
+                        Entity embeddedEntity = importEmbeddedAttribute(srcEntity, dstEntity, viewProperty, storeName, entitiesToCreate, entitiesToRemove, referenceInfoList);
                         dstEntity.setValue(viewProperty.getName(), embeddedEntity);
                     }
                 } else if (metaProperty.getRange().getCardinality().isMany()) {
-                    importCollectionAttribute(srcEntity, dstEntity, viewProperty, entitiesToCreate, entitiesToRemove, referenceInfoList);
+                    importCollectionAttribute(srcEntity, dstEntity, viewProperty, storeName, entitiesToCreate, entitiesToRemove, referenceInfoList);
                 } else {
-                    importReference(srcEntity, dstEntity, viewProperty, entitiesToCreate, entitiesToRemove, referenceInfoList);
+                    importReference(srcEntity, dstEntity, viewProperty, storeName, entitiesToCreate, entitiesToRemove, referenceInfoList);
                 }
             }
         }
@@ -253,6 +261,7 @@ public class EntityImportExport implements EntityImportExportAPI {
     protected Entity importEmbeddedAttribute(Entity srcEntity,
                                              Entity dstEntity,
                                              EntityImportViewProperty viewProperty,
+                                             String storeName,
                                              Map<Object, Entity> entitiesToCreate,
                                              Set<Entity> entitiesToRemove,
                                              Collection<ReferenceInfo> referenceInfoList) {
@@ -273,9 +282,9 @@ public class EntityImportExport implements EntityImportExportAPI {
                 dstEmbeddedEntity.setValue(vp.getName(), srcEmbeddedEntity.getValue(vp.getName()));
             } else if (mp.getRange().isClass()) {
                 if (mp.getRange().getCardinality().isMany()) {
-                    importCollectionAttribute(srcEmbeddedEntity, dstEmbeddedEntity, vp, entitiesToCreate, entitiesToRemove, referenceInfoList);
+                    importCollectionAttribute(srcEmbeddedEntity, dstEmbeddedEntity, vp, storeName, entitiesToCreate, entitiesToRemove, referenceInfoList);
                 } else {
-                    importReference(srcEmbeddedEntity, dstEmbeddedEntity, vp, entitiesToCreate, entitiesToRemove, referenceInfoList);
+                    importReference(srcEmbeddedEntity, dstEmbeddedEntity, vp, storeName, entitiesToCreate, entitiesToRemove, referenceInfoList);
                 }
             }
         }
@@ -287,6 +296,7 @@ public class EntityImportExport implements EntityImportExportAPI {
     protected void importReference(Entity srcEntity,
                                    Entity dstEntity,
                                    EntityImportViewProperty viewProperty,
+                                   String storeName,
                                    Map<Object, Entity> entitiesToCreate,
                                    Set<Entity> entitiesToRemove, Collection<ReferenceInfo> referenceInfoList) {
         Entity srcPropertyValue = srcEntity.<Entity>getValue(viewProperty.getName());
@@ -294,7 +304,7 @@ public class EntityImportExport implements EntityImportExportAPI {
             ReferenceInfo referenceInfo = new ReferenceInfo(dstEntity, viewProperty.getName(), srcPropertyValue, viewProperty.getReferenceImportBehaviour());
             referenceInfoList.add(referenceInfo);
         } else {
-            Entity dstPropertyValue = importEntity(srcPropertyValue, viewProperty.getView(), entitiesToCreate, entitiesToRemove, referenceInfoList);
+            Entity dstPropertyValue = importEntity(srcPropertyValue, viewProperty.getView(), storeName, entitiesToCreate, entitiesToRemove, referenceInfoList);
             dstEntity.setValue(viewProperty.getName(), dstPropertyValue);
         }
     }
@@ -302,6 +312,7 @@ public class EntityImportExport implements EntityImportExportAPI {
     protected void importCollectionAttribute(Entity srcEntity,
                                              Entity dstEntity,
                                              EntityImportViewProperty viewProperty,
+                                             String storeName,
                                              Map<Object, Entity> entitiesToCreate,
                                              Set<Entity> entitiesToRemove,
                                              Collection<ReferenceInfo> referenceInfoList) {
@@ -349,7 +360,7 @@ public class EntityImportExport implements EntityImportExportAPI {
                 referenceInfoList.add(referenceInfo);
             } else {
                 //create new referenced entity
-                Entity dstChildEntity = importEntity(srcChildEntity, viewProperty.getView(), entitiesToCreate, entitiesToRemove, referenceInfoList);
+                Entity dstChildEntity = importEntity(srcChildEntity, viewProperty.getView(), storeName, entitiesToCreate, entitiesToRemove, referenceInfoList);
                 if (inverseMetaProperty != null) {
                     dstChildEntity.setValue(inverseMetaProperty.getName(), dstEntity);
                 }
@@ -372,7 +383,7 @@ public class EntityImportExport implements EntityImportExportAPI {
         dstEntity.setValue(viewProperty.getName(), collection);
     }
 
-    protected void processReferenceInfo(ReferenceInfo referenceInfo, Map<Object, Entity> entitiesToCreate, Map<Object, Entity> loadedEntities) {
+    protected void processReferenceInfo(ReferenceInfo referenceInfo, String store, Map<Object, Entity> entitiesToCreate, Map<Object, Entity> loadedEntities) {
         Entity entity = referenceInfo.getEntity();
 
         String propertyName = referenceInfo.getPropertyName();
@@ -399,7 +410,7 @@ public class EntityImportExport implements EntityImportExportAPI {
                 } else if (entitiesToCreate.get(childEntity.getId()) != null) {
                     collection.add(entitiesToCreate.get(childEntity.getId()));
                 } else {
-                    EntityManager em = persistence.getEntityManager();
+                    EntityManager em = persistence.getEntityManager(store);
                     Entity loadedReference = em.reload(childEntity);
                     if (loadedReference == null) {
                         if (referenceInfo.getImportBehaviour() == ReferenceImportBehaviour.ERROR_ON_MISSING) {
@@ -424,7 +435,7 @@ public class EntityImportExport implements EntityImportExportAPI {
             } else if (entitiesToCreate.get(propertyValue.getId()) != null) {
                 entity.setValue(propertyName, entitiesToCreate.get(propertyValue.getId()));
             } else {
-                EntityManager em = persistence.getEntityManager();
+                EntityManager em = persistence.getEntityManager(store);
                 Entity loadedReference = em.find(propertyValue.getClass(), propertyValue.getId());
                 if (loadedReference == null) {
                     if (referenceInfo.getImportBehaviour() == ReferenceImportBehaviour.ERROR_ON_MISSING) {
