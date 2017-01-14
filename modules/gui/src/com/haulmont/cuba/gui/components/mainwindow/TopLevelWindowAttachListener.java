@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2008-2016 Haulmont.
+/*
+ * Copyright (c) 2008-2017 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,10 @@
  * limitations under the License.
  */
 
-@mixin halo-scrollbox($primary-stylename: c-scrollbox) {
-  .#{$primary-stylename} {
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-    background: transparent;
-  }
+package com.haulmont.cuba.gui.components.mainwindow;
 
-  .#{$primary-stylename} > .v-panel-captionwrap {
-    display: none;
-  }
+import com.haulmont.cuba.gui.components.Window;
 
-  .#{$primary-stylename} > .v-panel-content {
-    border: 0;
-  }
-
-  .#{$primary-stylename} > .v-panel-deco {
-    display: none;
-  }
-
-  .v-scrollable > .#{$primary-stylename} {
-    overflow: auto;
-  }
+public interface TopLevelWindowAttachListener {
+    void topLevelWindowAttached(Window.TopLevelWindow window);
 }

@@ -70,6 +70,7 @@
 @import "components/sourcecodeeditor/sourcecodeeditor";
 @import "components/resizabletextarea/resizabletextarea";
 @import "components/draganddrop/draganddrop";
+@import "components/sidemenu/sidemenu";
 @import "components/fileuploadwrapper/fileuploadwrapper";
 
 // Application specific
@@ -142,6 +143,7 @@
   @include halo-cuba-contextmenu;
   @include halo-cuba-widgetstree;
   @include halo-cuba-searchselect;
+  @include halo-cuba-sidemenu;
   @include halo-cuba-multiupload;
   @include halo-cuba-entitylinkfield;
   @include halo-cuba-fieldgrouplayout;

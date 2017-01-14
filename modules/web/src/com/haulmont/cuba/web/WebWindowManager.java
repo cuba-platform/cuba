@@ -34,9 +34,9 @@ import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.Component.BelongToFrame;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
+import com.haulmont.cuba.gui.components.mainwindow.TopLevelWindowAttachListener;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -1495,9 +1495,8 @@ public class WebWindowManager extends WindowManager {
 
         // load menu
         ComponentsHelper.walkComponents(windowImpl, component -> {
-            if (component instanceof AppMenu) {
-                ((AppMenu) component).loadMenu();
-                return true;
+            if (component instanceof TopLevelWindowAttachListener) {
+                ((TopLevelWindowAttachListener) component).topLevelWindowAttached(topLevelWindow);
             }
 
             return false;

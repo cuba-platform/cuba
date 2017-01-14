@@ -426,6 +426,8 @@
                     <xs:enumeration value="card"/>
                     <xs:enumeration value="well"/>
                     <xs:enumeration value="v-panel-caption"/>
+                    <xs:enumeration value="c-sidemenu-title"/>
+                    <xs:enumeration value="c-sidemenu-panel"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
@@ -442,6 +444,8 @@
                     <xs:enumeration value="well"/>
                     <xs:enumeration value="v-panel-caption"/>
                     <xs:enumeration value="dropzone-container"/>
+                    <xs:enumeration value="c-sidemenu-title"/>
+                    <xs:enumeration value="c-sidemenu-panel"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
@@ -458,6 +462,8 @@
                     <xs:enumeration value="well"/>
                     <xs:enumeration value="v-component-group"/>
                     <xs:enumeration value="v-panel-caption"/>
+                    <xs:enumeration value="c-sidemenu-title"/>
+                    <xs:enumeration value="c-sidemenu-panel"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>

@@ -1,0 +1,144 @@
+/*
+ * Copyright (c) 2008-2016 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+@mixin halo-cuba-sidemenu($primary-stylename: c-sidemenu) {
+  .#{$primary-stylename}-user {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    color: valo-font-color($valo-menu-background-color, 0.33);
+
+    &:hover {
+      color: valo-font-color($valo-menu-background-color, 1);
+    }
+  }
+
+  .#{$primary-stylename}-panel {
+    @include valo-menu-style;
+
+    .#{$primary-stylename} {
+      background: transparent;
+      background-image: none;
+    }
+  }
+
+  .#{$primary-stylename}-title {
+    @include valo-menu-title-style;
+
+    text-align: center;
+    width: 100%;
+
+    .v-label {
+      font-size: $v-font-size--h2;
+    }
+  }
+
+  .#{$primary-stylename} {
+    outline: 0;
+
+    @include valo-menu-style;
+
+    font-size: $v-font-size;
+  }
+
+  .#{$primary-stylename}.v-has-height {
+    overflow-y: auto;
+  }
+
+  .#{$primary-stylename}-item {
+    @include valo-menu-item-style;
+
+    .#{$primary-stylename}-item-caption {
+      width: 100%;
+    }
+
+    .#{$primary-stylename}-item-badge {
+      position: absolute;
+      right: round($v-unit-size/2);
+      top: ($v-unit-size - round($v-font-size * 0.9) - round($v-unit-size/9) * 2) / 2;
+    }
+
+    .v-icon {
+      font-size: 1.2em;
+    }
+  }
+
+  .#{$primary-stylename}-item-focused  {
+    color: valo-font-color($valo-menu-background-color, 1);
+  }
+
+  .#{$primary-stylename}-item-selected {
+    $bg: $valo-menu-background-color;
+    $active-color: $v-selection-color;
+
+    color: valo-font-color($bg, 1);
+    background: if(is-dark-color($bg), darken($bg, 3%), lighten($bg, 5%));
+
+    .v-icon {
+      color: $active-color;
+    }
+
+    .#{$primary-stylename}-item-badge {
+      @include valo-badge-style($states: active, $active-color: $active-color);
+    }
+  }
+
+  .#{$primary-stylename}-item-header {
+    @include valo-menu-subtitle-style;
+
+    margin-left: 0;
+
+    .#{$primary-stylename}-item-badge {
+      background: transparent;
+    }
+  }
+
+  .#{$primary-stylename}-item-wrap {
+    cursor: pointer;
+    display: block;
+    line-height: $v-unit-size;
+
+    .v-icon {
+      margin-right: round($v-unit-size / 2);
+      min-width: 1em;
+    }
+  }
+
+  .#{$primary-stylename}-submenu {
+    overflow:hidden;
+    max-height:0;
+    opacity: 0;
+
+    .#{$primary-stylename}-item-header {
+      padding-left: 0;
+      margin-left: round($v-unit-size / 2);
+    }
+
+    .#{$primary-stylename}-submenu .#{$primary-stylename}-item {
+      padding-left: round($v-unit-size / 2) * 2;
+    }
+  }
+
+  .#{$primary-stylename}-submenu-open {
+    max-height: 2000px;
+    opacity: 1;
+
+    @if $v-animations-enabled {
+      @include transition (max-height 900ms ease-in-out);
+    }
+  }
+}

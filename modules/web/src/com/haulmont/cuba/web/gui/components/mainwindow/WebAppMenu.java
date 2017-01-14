@@ -18,12 +18,15 @@
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
 import com.haulmont.bali.util.StringHelper;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
+import com.haulmont.cuba.gui.components.mainwindow.TopLevelWindowAttachListener;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.sys.MenuBuilder;
 import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
 
-public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements AppMenu {
+public class WebAppMenu extends WebAbstractComponent<CubaMenuBar>
+        implements AppMenu, TopLevelWindowAttachListener {
 
     public static final String MENU_STYLENAME = "c-main-menu";
 
@@ -48,5 +51,10 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
     public void loadMenu() {
         MenuBuilder menuBuilder = new MenuBuilder(this);
         menuBuilder.build();
+    }
+
+    @Override
+    public void topLevelWindowAttached(Window.TopLevelWindow window) {
+        loadMenu();
     }
 }

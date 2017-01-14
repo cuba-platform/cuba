@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.*;
-import com.haulmont.cuba.web.gui.components.WebListEditor;
 import com.haulmont.cuba.web.gui.components.mainwindow.*;
 
 import java.util.Map;
@@ -112,6 +111,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(FoldersPane.NAME, WebFoldersPane.class);
         classes.put(FtsField.NAME, WebFtsField.class);
         classes.put(TimeZoneIndicator.NAME, WebTimeZoneIndicator.class);
+        classes.put(SideMenu.NAME, WebSideMenu.class);
     }
 
     /**

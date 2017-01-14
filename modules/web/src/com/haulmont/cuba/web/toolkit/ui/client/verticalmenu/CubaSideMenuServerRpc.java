@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2008-2016 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,27 +14,10 @@
  * limitations under the License.
  */
 
-@mixin halo-scrollbox($primary-stylename: c-scrollbox) {
-  .#{$primary-stylename} {
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-    background: transparent;
-  }
+package com.haulmont.cuba.web.toolkit.ui.client.verticalmenu;
 
-  .#{$primary-stylename} > .v-panel-captionwrap {
-    display: none;
-  }
+import com.vaadin.shared.communication.ServerRpc;
 
-  .#{$primary-stylename} > .v-panel-content {
-    border: 0;
-  }
-
-  .#{$primary-stylename} > .v-panel-deco {
-    display: none;
-  }
-
-  .v-scrollable > .#{$primary-stylename} {
-    overflow: auto;
-  }
+public interface CubaSideMenuServerRpc extends ServerRpc {
+    void menuItemTriggered(String itemId);
 }

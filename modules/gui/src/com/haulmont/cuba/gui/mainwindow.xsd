@@ -70,6 +70,18 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="sideMenu">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="baseMainElement">
+
+                </xs:extension>
+            </xs:complexContent>
+
+            <xs:attribute name="selectOnClick" type="xs:boolean"/>
+        </xs:complexType>
+    </xs:element>
+
     <xs:complexType name="initialLayout">
         <xs:sequence>
             <xs:choice minOccurs="0" maxOccurs="unbounded">

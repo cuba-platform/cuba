@@ -326,6 +326,16 @@ public class HaloTheme {
     public static final String LAYOUT_WELL = "well";
 
     /**
+     * Side menu panel style. Used with {@link com.haulmont.cuba.gui.components.mainwindow.SideMenu}.
+     */
+    public static final String LAYOUT_SIDE_MENU_PANEL = "c-sidemenu-panel";
+
+    /**
+     * Side menu header style. Used with {@link com.haulmont.cuba.gui.components.mainwindow.SideMenu}.
+     */
+    public static final String LAYOUT_SIDE_MENU_TITLE = "c-sidemenu-title";
+
+    /**
      * Add this style name to a CssLayout to create a grouped set of components, i.e. a row of components
      * which are joined seamlessly together.
      * <p>

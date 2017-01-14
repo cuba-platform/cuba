@@ -122,6 +122,7 @@ public class LayoutLoaderConfig {
         config.register(FoldersPane.NAME, FoldersPaneLoader.class);
         config.register(FtsField.NAME, FtsFieldLoader.class);
         config.register(TimeZoneIndicator.NAME, TimeZoneIndicatorLoader.class);
+        config.register(SideMenu.NAME, SideMenuLoader.class);
     }
 
     public static void registerLoader(String tagName, Class<? extends ComponentLoader> aClass) {

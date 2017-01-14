@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2008-2016 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,27 +14,15 @@
  * limitations under the License.
  */
 
-@mixin halo-scrollbox($primary-stylename: c-scrollbox) {
-  .#{$primary-stylename} {
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-    background: transparent;
-  }
+package com.haulmont.cuba.web.toolkit.ui.client.verticalmenu;
 
-  .#{$primary-stylename} > .v-panel-captionwrap {
-    display: none;
-  }
+import com.vaadin.shared.ui.TabIndexState;
+import elemental.json.JsonArray;
 
-  .#{$primary-stylename} > .v-panel-content {
-    border: 0;
-  }
+public class CubaSideMenuState extends TabIndexState {
+    {
+        primaryStyleName = "c-sidemenu";
+    }
 
-  .#{$primary-stylename} > .v-panel-deco {
-    display: none;
-  }
-
-  .v-scrollable > .#{$primary-stylename} {
-    overflow: auto;
-  }
+    public boolean selectOnClick = false;
 }
