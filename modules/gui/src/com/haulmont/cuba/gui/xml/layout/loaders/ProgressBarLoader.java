@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.ProgressBar;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -37,6 +36,10 @@ public class ProgressBarLoader extends AbstractComponentLoader<ProgressBar> {
         loadVisible(resultComponent, element);
         loadEditable(resultComponent, element);
         loadEnable(resultComponent, element);
+
+        loadIcon(resultComponent, element);
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
 
         loadStyleName(resultComponent, element);
 

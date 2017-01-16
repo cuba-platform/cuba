@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.components.mainwindow;
 
 import com.haulmont.cuba.gui.components.Component;
 
-public interface TimeZoneIndicator extends Component.BelongToFrame {
+public interface TimeZoneIndicator extends Component.BelongToFrame, Component.HasIcon, Component.HasCaption {
 
     String NAME = "timeZoneIndicator";
 }

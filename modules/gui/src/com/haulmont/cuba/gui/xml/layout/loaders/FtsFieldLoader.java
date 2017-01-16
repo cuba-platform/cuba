@@ -34,6 +34,10 @@ public class FtsFieldLoader extends AbstractComponentLoader<FtsField> {
         loadStyleName(resultComponent, element);
         loadAlign(resultComponent, element);
 
+        loadIcon(resultComponent, element);
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
+
         loadWidth(resultComponent, element);
         loadHeight(resultComponent, element);
 

@@ -52,6 +52,9 @@
 
     <xs:complexType name="baseMainElement">
         <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="icon" type="xs:string"/>
+        <xs:attribute name="caption" type="xs:string"/>
+        <xs:attribute name="description" type="xs:string"/>
         <xs:attribute name="width" type="componentSize"/>
         <xs:attribute name="height" type="componentSize"/>
         <xs:attribute name="align" type="align"/>

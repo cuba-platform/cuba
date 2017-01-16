@@ -1171,12 +1171,11 @@
 
     <!-- Progress bar -->
     <xs:complexType name="progressBarComponent">
-        <xs:attributeGroup ref="hasId"/>
-        <xs:attributeGroup ref="hasSize"/>
+        <xs:complexContent>
+            <xs:extension base="baseComponent"/>
+        </xs:complexContent>
+
         <xs:attribute name="stylename" type="progressBarStylename"/>
-        <xs:attributeGroup ref="hasVisibility"/>
-        <xs:attributeGroup ref="hasEnableProp"/>
-        <xs:attributeGroup ref="hasAlign"/>
         <xs:attribute name="indeterminate" type="xs:string"/>
     </xs:complexType>
 

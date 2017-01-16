@@ -19,8 +19,8 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.gui.components.ProgressBar;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
+import com.haulmont.cuba.gui.data.ValueListener;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
@@ -35,6 +35,7 @@ public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> i
     protected boolean editable = true;
     protected List<ValueChangeListener> valueChangeListeners = new ArrayList<>();
     protected Object prevValue;
+    protected String caption;
 
     private static final int WHOLE_PROGRESS = 100;
 
@@ -128,5 +129,25 @@ public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> i
 
     protected float convertValueFromSwing(int progress) {
         return (float) progress / (float) WHOLE_PROGRESS;
+    }
+
+    @Override
+    public String getCaption() {
+        return caption;
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    @Override
+    public String getDescription() {
+        return impl.getToolTipText();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        impl.setToolTipText(description);
     }
 }

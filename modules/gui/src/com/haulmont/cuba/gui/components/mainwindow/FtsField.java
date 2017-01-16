@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.components.mainwindow;
 
 import com.haulmont.cuba.gui.components.Component;
 
-public interface FtsField extends Component.BelongToFrame {
+public interface FtsField extends Component.BelongToFrame, Component.HasIcon, Component.HasCaption {
 
     String NAME = "ftsField";
 }
