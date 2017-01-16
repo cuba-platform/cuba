@@ -123,6 +123,11 @@ parameters:
     in: query
     description: Specifies whether null fields will be written to the result JSON
     type: boolean
+  returnCountParam:
+    name: returnCount
+    in: query
+    description: Specifies whether the total count of entities should be returned in the 'X-Total-Count' header
+    type: boolean
   dynamicAttributesParam:
     name: dynamicAttributes
     in: query
@@ -574,6 +579,7 @@ paths:
           type: string
           default: ""
         - $ref: '#/parameters/returnNullsParam'
+        - $ref: '#/parameters/returnCountParam'
         - $ref: '#/parameters/dynamicAttributesParam'
 
       responses:
@@ -746,6 +752,7 @@ paths:
           other than it is defined in the REST queries configuration file.
         type: string
       - $ref: '#/parameters/returnNullsParam'
+      - $ref: '#/parameters/returnCountParam'
       - $ref: '#/parameters/dynamicAttributesParam'
     get:
       tags:
@@ -860,6 +867,8 @@ paths:
           description: |
             JSON object that contains fields with parameter values. Parameter names are defined in services configuration
             on the middleware. An entity, entities collection or POJO can be passed as a parameter.
+            If the parameter is entities collection then each entity in the passed JSON array must include the '_entityName'
+            field with the meta class name as a value.
       responses:
         200:
           description: |

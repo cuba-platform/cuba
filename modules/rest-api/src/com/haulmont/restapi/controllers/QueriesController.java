@@ -18,7 +18,10 @@ package com.haulmont.restapi.controllers;
 
 import com.haulmont.restapi.config.RestQueriesConfiguration;
 import com.haulmont.restapi.service.QueriesControllerManager;
+import org.apache.commons.lang.BooleanUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -37,15 +40,22 @@ public class QueriesController {
     protected QueriesControllerManager queriesControllerManager;
 
     @GetMapping("/{entityName}/{queryName}")
-    public String executeQuery(@PathVariable String entityName,
+    public ResponseEntity<String> executeQuery(@PathVariable String entityName,
                                @PathVariable String queryName,
                                @RequestParam(required = false) Integer limit,
                                @RequestParam(required = false) Integer offset,
                                @RequestParam(required = false) String view,
                                @RequestParam(required = false) Boolean returnNulls,
                                @RequestParam(required = false) Boolean dynamicAttributes,
-                               @RequestParam Map<String, String> params) throws ClassNotFoundException, ParseException {
-        return queriesControllerManager.executeQuery(entityName, queryName, limit, offset, view, returnNulls, dynamicAttributes, params);
+                               @RequestParam(required = false) Boolean returnCount,
+                               @RequestParam Map<String, String> params) {
+        String resultJson = queriesControllerManager.executeQuery(entityName, queryName, limit, offset, view, returnNulls, dynamicAttributes, params);
+        ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(HttpStatus.OK);
+        if (BooleanUtils.isTrue(returnCount)) {
+            String count = queriesControllerManager.getCount(entityName, RestQueriesConfiguration.ALL_ENTITIES_QUERY_NAME, params);
+            responseBuilder.header("X-Total-Count", count);
+        }
+        return responseBuilder.body(resultJson);
     }
 
     @GetMapping(value = "/{entityName}/{queryName}/count", produces = "text/plain;charset=UTF-8")

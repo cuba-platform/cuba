@@ -74,8 +74,13 @@ public class QueriesControllerManager {
                                @Nullable String view,
                                @Nullable Boolean returnNulls,
                                @Nullable Boolean dynamicAttributes,
-                               Map<String, String> params) throws ClassNotFoundException, ParseException {
-        LoadContext<Entity> ctx = createQueryLoadContext(entityName, queryName, limit, offset, params);
+                               Map<String, String> params) {
+        LoadContext<Entity> ctx;
+        try {
+            ctx = createQueryLoadContext(entityName, queryName, limit, offset, params);
+        } catch (ClassNotFoundException | ParseException e) {
+            throw new RestAPIException("Error on executing the query", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
         ctx.setLoadDynamicAttributes(BooleanUtils.isTrue(dynamicAttributes));
 
         //override default view defined in queries config
@@ -94,8 +99,13 @@ public class QueriesControllerManager {
 
     public String getCount(String entityName,
                            String queryName,
-                           Map<String, String> params) throws ClassNotFoundException, ParseException {
-        LoadContext<Entity> ctx = createQueryLoadContext(entityName, queryName, null, null, params);
+                           Map<String, String> params) {
+        LoadContext<Entity> ctx;
+        try {
+            ctx = createQueryLoadContext(entityName, queryName, null, null, params);
+        } catch (ClassNotFoundException | ParseException e) {
+            throw new RestAPIException("Error on executing the query", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
         long count = dataManager.getCount(ctx);
         return String.valueOf(count);
     }

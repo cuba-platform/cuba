@@ -63,7 +63,7 @@ public class RestQueriesConfiguration {
 
     protected List<QueryInfo> queries = new ArrayList<>();
 
-    protected String ALL_ENTITIES_QUERY_NAME = "all";
+    public static final String ALL_ENTITIES_QUERY_NAME = "all";
 
     /**
      * Returns a query description with the given name for the given entity.

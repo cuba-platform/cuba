@@ -16,8 +16,11 @@
 
 package com.haulmont.restapi.controllers;
 
+import com.haulmont.restapi.config.RestQueriesConfiguration;
 import com.haulmont.restapi.data.CreatedEntityInfo;
 import com.haulmont.restapi.service.EntitiesControllerManager;
+import com.haulmont.restapi.service.QueriesControllerManager;
+import org.apache.commons.lang.BooleanUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,6 +31,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.util.HashMap;
 
 /**
  * Controller that performs CRUD entity operations
@@ -39,6 +44,9 @@ public class EntitiesController {
     @Inject
     protected EntitiesControllerManager entitiesControllerManager;
 
+    @Inject
+    protected QueriesControllerManager queriesControllerManager;
+
     @GetMapping("/{entityName}/{entityId}")
     public String loadEntity(@PathVariable String entityName,
                              @PathVariable String entityId,
@@ -49,14 +57,21 @@ public class EntitiesController {
     }
 
     @GetMapping("/{entityName}")
-    public String loadEntitiesList(@PathVariable String entityName,
+    public ResponseEntity<String> loadEntitiesList(@PathVariable String entityName,
                                    @RequestParam(required = false) String view,
                                    @RequestParam(required = false) Integer limit,
                                    @RequestParam(required = false) Integer offset,
                                    @RequestParam(required = false) String sort,
                                    @RequestParam(required = false) Boolean returnNulls,
+                                   @RequestParam(required = false) Boolean returnCount,
                                    @RequestParam(required = false) Boolean dynamicAttributes) {
-        return entitiesControllerManager.loadEntitiesList(entityName, view, limit, offset, sort, returnNulls, dynamicAttributes);
+        String resultJson = entitiesControllerManager.loadEntitiesList(entityName, view, limit, offset, sort, returnNulls, dynamicAttributes);
+        ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(HttpStatus.OK);
+        if (BooleanUtils.isTrue(returnCount)) {
+            String count = queriesControllerManager.getCount(entityName, RestQueriesConfiguration.ALL_ENTITIES_QUERY_NAME, new HashMap<>());
+            responseBuilder.header("X-Total-Count", count);
+        }
+        return responseBuilder.body(resultJson);
     }
 
     @PostMapping("/{entityName}")
