@@ -255,6 +255,7 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
     protected class ButtonStub implements Button {
 
         protected Action action;
+        protected boolean responsive = false;
 
         public ButtonStub(Action action) {
             this.action = action;
@@ -285,6 +286,16 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
 
         @Override
         public void setId(String id) {
+        }
+
+        @Override
+        public boolean isResponsive() {
+            return responsive;
+        }
+
+        @Override
+        public void setResponsive(boolean responsive) {
+            this.responsive = responsive;
         }
 
         @Override

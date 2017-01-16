@@ -82,6 +82,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     protected Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
 
     protected boolean disposed = false;
+    protected boolean responsive = false;
 
     protected BoxLayoutAdapter layoutAdapter;
     protected JPanel panel;
@@ -294,6 +295,16 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public Settings getSettings() {
         return delegate.getSettings();
+    }
+
+    @Override
+    public boolean isResponsive() {
+        return responsive;
+    }
+
+    @Override
+    public void setResponsive(boolean responsive) {
+        this.responsive = responsive;
     }
 
     @Override
