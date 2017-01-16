@@ -38,6 +38,7 @@
 @import "components/tooltip/tooltip";
 @import "components/caption/caption";
 @import "components/menubar/menubar";
+@import "components/datagrid/datagrid";
 @import "components/checkbox/checkbox";
 @import "components/tabsheet/tabsheet";
 @import "components/accordion/accordion";
@@ -117,6 +118,7 @@
   @include havana-checkbox;
   @include havana-tabsheet;
   @include havana-accordion;
+  @include havana-datagrid;
   @include havana-textarea;
   @include havana-treetable;
   @include havana-textfield;

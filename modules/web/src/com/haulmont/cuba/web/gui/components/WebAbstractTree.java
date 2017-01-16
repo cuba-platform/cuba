@@ -254,6 +254,16 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     }
 
     @Override
+    public void setMultiSelect(boolean multiselect) {
+        super.setMultiSelect(multiselect);
+    }
+
+    @Override
+    public void refresh() {
+        datasource.refresh();
+    }
+
+    @Override
     public void setStyleProvider(@Nullable Tree.StyleProvider<? super E> styleProvider) {
         if (styleProvider != null) {
             if (this.styleProviders == null) {

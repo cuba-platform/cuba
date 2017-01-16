@@ -97,4 +97,12 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
      * @return Enter key press action.
      */
     Action getEnterPressAction();
+
+    void setMultiSelect(boolean multiselect);
+
+    /**
+     * @deprecated refresh datasource instead
+     */
+    @Deprecated
+    void refresh();
 }

@@ -88,6 +88,7 @@ public class LayoutLoaderConfig {
         config.register(Table.NAME, TableLoader.class);
         config.register(TreeTable.NAME, TreeTableLoader.class);
         config.register(GroupTable.NAME, GroupTableLoader.class);
+        config.register(DataGrid.NAME, DataGridLoader.class);
 
         config.register(Calendar.NAME, CalendarLoader.class);
 

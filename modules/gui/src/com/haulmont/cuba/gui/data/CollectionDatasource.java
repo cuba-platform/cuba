@@ -272,6 +272,15 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
         void includeItemFirst(T item);
     }
 
+    interface Indexed<T extends Entity<K>, K> extends Ordered<T, K> {
+        int indexOfId(K itemId);
+
+        @Nullable
+        K getIdByIndex(int index);
+
+        List<K> getItemIds(int startIndex, int numberOfItems);
+    }
+
     /**
      * Ordered CollectionDatasource supporting order change.
      * @param <T> type of entity

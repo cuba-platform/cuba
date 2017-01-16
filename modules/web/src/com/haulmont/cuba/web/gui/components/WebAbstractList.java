@@ -42,8 +42,7 @@ public abstract class WebAbstractList<T extends AbstractSelect, E extends Entity
         return component.isMultiSelect();
     }
 
-    @Override
-    public void setMultiSelect(boolean multiselect) {
+    protected void setMultiSelect(boolean multiselect) {
         component.setMultiSelect(multiselect);
     }
 
@@ -116,11 +115,6 @@ public abstract class WebAbstractList<T extends AbstractSelect, E extends Entity
         } else {
             component.setValue(itemIds.size() > 0 ? itemIds.iterator().next() : null);
         }
-    }
-
-    @Override
-    public void refresh() {
-        datasource.refresh();
     }
 
     @Override

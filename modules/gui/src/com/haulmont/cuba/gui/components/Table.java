@@ -30,7 +30,8 @@ import java.util.Map;
 public interface Table<E extends Entity>
         extends
             ListComponent<E>, Component.Editable, Component.HasSettings,
-            Component.HasButtonsPanel, Component.HasPresentations, Component.HasCaption, Component.HasIcon {
+            Component.HasButtonsPanel, Component.HasPresentations, Component.HasCaption,
+            Component.HasIcon, Component.HasRowsCount {
 
     enum ColumnAlignment {
         LEFT,
@@ -177,9 +178,6 @@ public interface Table<E extends Entity>
 
     void selectAll();
 
-    RowsCount getRowsCount();
-    void setRowsCount(RowsCount rowsCount);
-
     boolean isMultiLineCells();
     void setMultiLineCells(boolean multiLineCells);
 
@@ -193,6 +191,14 @@ public interface Table<E extends Entity>
      */
     void setRowHeaderWidth(int width);
     int getRowHeaderWidth();
+
+    void setMultiSelect(boolean multiselect);
+
+    /**
+     * @deprecated refresh datasource instead
+     */
+    @Deprecated
+    void refresh();
 
     /**
      * Repaint UI representation of the table (columns, generated columns) without refreshing the table data

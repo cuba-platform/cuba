@@ -1789,6 +1789,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         setColumnWidth(column, width);
     }
 
+    @Override
+    public void refresh() {
+        datasource.refresh();
+    }
+
     /**
      * {@inheritDoc}
      */

@@ -34,6 +34,7 @@
 @import "components/menubar/menubar";
 @import "components/calendar/calendar";
 @import "components/checkbox/checkbox";
+@import "components/datagrid/datagrid";
 @import "components/groupbox/groupbox";
 @import "components/tabsheet/tabsheet";
 @import "components/textfield/textfield";
@@ -108,6 +109,7 @@
   @include halo-menubar;
   @include halo-calendar;
   @include halo-checkbox;
+  @include halo-datagrid;
   @include halo-tabsheet;
   @include halo-datefield;
   @include halo-datepicker;

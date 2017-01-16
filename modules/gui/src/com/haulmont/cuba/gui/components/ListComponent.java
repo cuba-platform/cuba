@@ -26,7 +26,6 @@ import java.util.Collection;
 public interface ListComponent<E extends Entity> extends Component, Component.BelongToFrame, Component.ActionsHolder {
 
     boolean isMultiSelect();
-    void setMultiSelect(boolean multiselect);
 
     @Nullable
     E getSingleSelected();
@@ -53,6 +52,4 @@ public interface ListComponent<E extends Entity> extends Component, Component.Be
         @Nullable
         String getItemIcon(E entity);
     }
-
-    void refresh();
 }

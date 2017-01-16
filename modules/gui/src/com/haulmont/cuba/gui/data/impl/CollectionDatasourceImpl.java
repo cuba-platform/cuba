@@ -50,6 +50,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         extends
             AbstractCollectionDatasource<T, K>
         implements
+            CollectionDatasource.Indexed<T, K>,
             CollectionDatasource.Sortable<T, K>,
             CollectionDatasource.Aggregatable<T, K>,
             CollectionDatasource.Suspendable<T, K>,
@@ -266,6 +267,25 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         for (T t : list) {
             data.put(t.getId(), t);
         }
+    }
+
+    @Override
+    public int indexOfId(Object itemId) {
+        return data.indexOf(itemId);
+    }
+
+    @Override
+    public K getIdByIndex(int index) {
+        if (!data.isEmpty()) {
+            return (K) data.getValue(index);
+        }
+        return null;
+    }
+
+    @Override
+    public List<K> getItemIds(int startIndex, int numberOfItems) {
+        //noinspection unchecked
+        return data.asList().subList(startIndex, startIndex + numberOfItems);
     }
 
     @Override

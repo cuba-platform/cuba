@@ -42,6 +42,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             PropertyDatasourceImpl<T>
         implements
             CollectionDatasource<T, K>,
+            CollectionDatasource.Indexed<T, K>,
             CollectionDatasource.Sortable<T, K>,
             CollectionDatasource.Aggregatable<T, K> {
 
@@ -865,6 +866,32 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
         boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
         return new EntityComparator<>(propertyPath, asc);
+    }
+
+    @Override
+    public int indexOfId(K itemId) {
+        if (itemId == null) return -1;
+        Collection<T> collection = getCollection();
+        if ((collection != null) && !collection.isEmpty() && !itemId.equals(lastItemId())) {
+            List<T> list = new ArrayList<>(collection);
+            T currentItem = getItem(itemId);
+            return list.indexOf(currentItem);
+        }
+        return -1;
+    }
+
+    @Override
+    public K getIdByIndex(int index) {
+        Collection<T> collection = getCollection();
+        if ((collection != null) && !collection.isEmpty()) {
+            Iterables.get(collection, index).getId();
+        }
+        return null;
+    }
+
+    @Override
+    public List<K> getItemIds(int startIndex, int numberOfItems) {
+        return ((List<K>) getItemIds()).subList(startIndex, startIndex + numberOfItems);
     }
 
     @Override
