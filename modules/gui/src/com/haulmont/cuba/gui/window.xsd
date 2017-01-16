@@ -860,24 +860,6 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="dataGridColumnsList">
-        <xs:sequence>
-            <xs:element name="column" minOccurs="1" maxOccurs="unbounded" type="dataGridColumnComponent"/>
-        </xs:sequence>
-    </xs:complexType>
-
-    <xs:complexType name="accessControlAccessType" mixed="true">
-        <xs:sequence>
-            <xs:element name="param" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType mixed="true">
-                    <xs:attribute name="name" use="required"/>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-        <xs:attribute name="script" type="xs:string"/>
-        <xs:attribute name="property" type="xs:string"/>
-    </xs:complexType>
-
     <xs:complexType name="companionType">
         <xs:attribute name="class" type="xs:string" use="required"/>
     </xs:complexType>
@@ -2064,20 +2046,6 @@
         <xs:attribute name="fieldWidth" type="xs:string"/>
     </xs:complexType>
 
-    <!-- AccessControl -->
-    <xs:complexType name="accessControlContainer">
-        <xs:sequence>
-            <xs:element name="visible" minOccurs="0" maxOccurs="1" type="accessControlAccessType"/>
-            <xs:element name="editable" minOccurs="0" maxOccurs="1" type="accessControlAccessType"/>
-            <xs:group ref="layoutOrComponent" minOccurs="0"/>
-        </xs:sequence>
-
-        <xs:attributeGroup ref="hasId"/>
-
-        <xs:attribute name="data" type="xs:string"/>
-        <xs:attribute name="param" type="xs:string"/>
-    </xs:complexType>
-
     <xs:complexType name="relatedComponent">
         <xs:complexContent>
             <xs:extension base="baseComponent"/>
@@ -2332,8 +2300,6 @@
                 <xs:element name="frame" type="frameContainer"/>
 
                 <xs:element name="runtimeProperties" type="runtimePropertiesContainer"/>
-
-                <xs:element name="accessControl" type="accessControlContainer"/>
             </xs:choice>
         </xs:sequence>
     </xs:group>
