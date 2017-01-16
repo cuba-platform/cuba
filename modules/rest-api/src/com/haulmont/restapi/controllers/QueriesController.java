@@ -52,7 +52,7 @@ public class QueriesController {
         String resultJson = queriesControllerManager.executeQuery(entityName, queryName, limit, offset, view, returnNulls, dynamicAttributes, params);
         ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(HttpStatus.OK);
         if (BooleanUtils.isTrue(returnCount)) {
-            String count = queriesControllerManager.getCount(entityName, RestQueriesConfiguration.ALL_ENTITIES_QUERY_NAME, params);
+            String count = queriesControllerManager.getCount(entityName, queryName, params);
             responseBuilder.header("X-Total-Count", count);
         }
         return responseBuilder.body(resultJson);
