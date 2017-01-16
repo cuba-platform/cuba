@@ -79,4 +79,13 @@ public class CubaMenuBarWidget extends VMenuBar {
         }
         return itemHTML.toString();
     }
+
+    @Override
+    protected void showChildMenuAt(CustomMenuItem item, int top, int left) {
+        super.showChildMenuAt(item, top, left);
+
+        if (popup != null) {
+            popup.addStyleName("c-main-menu-popup");
+        }
+    }
 }

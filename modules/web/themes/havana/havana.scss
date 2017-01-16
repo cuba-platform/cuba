@@ -82,6 +82,7 @@
 
 // Application specific
 @import "app/app-window";
+@import "app/app-menu";
 @import "app/login-window";
 @import "app/logger-level";
 @import "app/breadcrumbs";
@@ -138,7 +139,7 @@
   @include havana-loadingindicator;
   @include havana-sourcecodeeditor;
   @include havana-progressindicator;
-  @include havana-contextmenu-addon;
+  @include havana-vaadin-contextmenu-addon;
   @include havana-draganddrop;
   @include havana-scrollbox;
   @include havana-calendar;
@@ -161,6 +162,7 @@
   @include havana-cuba-fileupload-wrapper;
 
   @include cuba-login-window;
+  @include cuba-menubar;
   @include cuba-application-window;
   @include cuba-logger-level;
   @include cuba-generic-filter;

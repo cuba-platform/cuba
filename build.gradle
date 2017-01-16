@@ -472,8 +472,8 @@ configure(webModule) {
         /* Vaadin addons */
         compile(bom['com.haulmont.thirdparty:popupbutton'])
         compile(bom['org.vaadin.addons:aceeditor'])
-        compile(bom['org.vaadin.addons:contextmenu'])
         compile(bom['org.vaadin.addons:dragdroplayouts'])
+        compile(bom['com.vaadin.addon:vaadin-context-menu'])
 
         provided(bom['org.apache.tomcat:tomcat-servlet-api'])
 

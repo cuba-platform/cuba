@@ -58,26 +58,14 @@
   }
 }
 
-// styles for context-menu add-on
-@mixin halo-contextmenu-addon($primary-stylename: v-context-menu) {
-  .#{$primary-stylename}-container {
-    @include valo-selection-overlay-style;
+@mixin halo-vaadin-contextmenu-addon($primary-stylename: c-cm-item) {
+
+  .v-menubar-submenu .#{$primary-stylename}.v-menubar-menuitem {
+    padding-right: $v-selection-item-padding-horizontal*2;
+    padding-left: $v-selection-item-padding-horizontal;
   }
 
-  .#{$primary-stylename}-item-basic {
-    @include box-defaults;
-    @include valo-button-borderless-style;
-    @include valo-selection-item-style;
-    height: $v-selection-item-height;
-    cursor: pointer;
-
-    text-decoration: none;
-    text-align: left;
-
-    &:focus {
-      @include valo-selection-item-selected-style;
-    }
-
-    outline: 0;
+  .#{$primary-stylename}.v-menubar-menuitem-selected:active {
+    @include opacity(.7);
   }
 }

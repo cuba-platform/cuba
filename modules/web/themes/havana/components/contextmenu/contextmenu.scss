@@ -119,38 +119,26 @@
   }
 }
 
-// styles for context-menu add-on
-@mixin havana-contextmenu-addon($primary-stylename: v-context-menu) {
-  .#{$primary-stylename}-container {
-    font-family: $cuba-havana-fonts;
-    font-size: 0;
+@mixin havana-vaadin-contextmenu-addon($primary-stylename: c-cm-item) {
+  .v-menubar-popup {
+    box-shadow: none;
+  }
 
-    color: $cuba-contextmenu-font-color;
-
+  .v-menubar-submenu {
     background: $cuba-contextmenu-background-color;
     border: 1px solid $cuba-field-focused-border-color;
+    padding: 3px;
 
-    .popupContent {
-      padding: 3px;
+    .#{$primary-stylename}.v-menubar-menuitem .v-menubar-menuitem-caption {
+      text-shadow: none;
+      color: $cuba-contextmenu-font-color;
+      padding: 2px 8px;
+      border-left-width: 0;
     }
-  }
 
-  .#{$primary-stylename}-item-basic {
-    @include box-defaults;
-    cursor: pointer;
-    font-size: 12px;
-
-    border: 1px solid transparent;
-    padding: 3px 7px;
-
-    &:focus {
-      outline: 0;
+    .#{$primary-stylename}.v-menubar-menuitem-selected .v-menubar-menuitem-caption {
       background: $cuba-field-selection-color;
-      color: white;
+      color: #fff;
     }
-  }
-
-  .#{$primary-stylename}-item-basic-text {
-    @include box-defaults;
   }
 }

@@ -32,9 +32,11 @@ import com.haulmont.cuba.gui.components.mainwindow.FtsField;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalSplitPanel;
+import com.vaadin.addon.contextmenu.ContextMenu;
+import com.vaadin.addon.contextmenu.MenuItem;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.lang.StringUtils;
-import org.vaadin.peter.contextmenu.ContextMenu;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -82,11 +84,9 @@ public class AppMainWindow extends AbstractMainWindow {
 
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         if (clientConfig.getLayoutAnalyzerEnabled()) {
-            ContextMenu contextMenu = new ContextMenu();
-            contextMenu.setOpenAutomatically(true);
+            ContextMenu contextMenu = new ContextMenu(titleBar.unwrap(AbstractComponent.class), false);
             contextMenu.setAsContextMenuOf(logoImage.unwrap(com.vaadin.ui.AbstractComponent.class));
-            ContextMenu.ContextMenuItem analyzeLayout = contextMenu.addItem(messages.getMainMessage("actions.analyzeLayout"));
-            analyzeLayout.addItemClickListener(event -> {
+            MenuItem menuItem = contextMenu.addItem(messages.getMainMessage("actions.analyzeLayout"), c -> {
                 LayoutAnalyzer analyzer = new LayoutAnalyzer();
                 List<LayoutTip> tipsList = analyzer.analyze(this);
 
@@ -96,6 +96,7 @@ public class AppMainWindow extends AbstractMainWindow {
                     openWindow("layoutAnalyzer", OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
                 }
             });
+            menuItem.setStyleName("c-cm-item");
         }
 
         if (webConfig.getUseInverseHeader()) {

@@ -50,7 +50,7 @@
     }
   }
 
-  .v-menubar-submenu {
+  .c-main-menu.v-menubar-submenu {
     display: table;
     overflow: hidden;
     white-space: nowrap;
@@ -139,7 +139,7 @@
     }
   }
 
-  .v-menubar-submenu-has-icons .v-menubar-menuitem {
+  .c-main-menu.v-menubar-submenu-has-icons .v-menubar-menuitem {
     .v-icon {
       margin-left: -$v-font-size--h1;
       margin-right: 0;
