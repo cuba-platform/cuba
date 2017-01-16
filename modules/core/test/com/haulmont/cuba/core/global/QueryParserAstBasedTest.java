@@ -67,6 +67,26 @@ public class QueryParserAstBasedTest {
         } catch (JpqlSyntaxException e) {
             //OK
         }
+
+        try {
+            QueryParserAstBased parser = new QueryParserAstBased(model,
+                    "select u from sec$GroupHierarchy where u.createdBy = 'createdBy'"
+            );
+            parser.getEntityAlias();
+            fail();
+        } catch (JpqlSyntaxException e) {
+            //OK
+        }
+
+//        try {
+//            QueryParserAstBased parser = new QueryParserAstBased(model,
+//                    "select u from sec$GroupHierarchy u where u.createdBy != 'createdBy'"
+//            );
+//            parser.getEntityAlias();
+//            fail();
+//        } catch (JpqlSyntaxException e) {
+//            //OK
+//        }
     }
 
     @Test

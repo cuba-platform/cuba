@@ -23371,4 +23371,8 @@ public class JPA2Parser extends Parser {
 	public void emitErrorMessage(String msg) {
 		//do nothing
 	}
+
+	protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow) throws RecognitionException {
+		throw new MismatchedTokenException(ttype, input);
+	}
 }

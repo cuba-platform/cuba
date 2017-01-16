@@ -66,11 +66,6 @@ public class IdentificationVariableNode extends BaseCustomNode {
             return;
         }
 
-        if (children == null) {
-            invalidIdVarNodes.add(new ErrorRec(this, "Null children"));
-            return;
-        }
-
         if (children.size() != 1) {
             invalidIdVarNodes.add(new ErrorRec(this, "Number of children not equals 1"));
             return;
