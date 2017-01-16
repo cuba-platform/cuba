@@ -27,9 +27,15 @@ public class JpqlSyntaxException extends RuntimeException {
     public JpqlSyntaxException() {
     }
 
+    public JpqlSyntaxException(String message) {
+        this(message, null);
+    }
+
     public JpqlSyntaxException(String message, List<ErrorRec> errorRecs) {
         super(message);
-        this.errorRecs = new ArrayList<>(errorRecs);
+        if (errorRecs != null) {
+            this.errorRecs = new ArrayList<>(errorRecs);
+        }
     }
 
     public List<ErrorRec> getErrorRecs() {

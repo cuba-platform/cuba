@@ -4614,4 +4614,9 @@ public class JPA2Lexer extends Lexer {
 		}
 	}
 
+	@Override
+	public void emitErrorMessage(String msg) {
+		throw new JPA2RecognitionException(msg);
+	}
+
 }

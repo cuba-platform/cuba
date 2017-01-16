@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.QueryTransformer;
 import com.haulmont.cuba.core.sys.PerformanceLog;
 import com.haulmont.cuba.core.sys.jpql.*;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
+import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2RecognitionException;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.JoinVariableNode;
@@ -33,6 +34,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+
+import static java.lang.String.format;
 
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Component(QueryTransformer.NAME)
@@ -57,6 +60,8 @@ public class QueryTransformerAstBased implements QueryTransformer {
                 queryTreeTransformer.prepare(model, query);
             } catch (RecognitionException e) {
                 throw new RuntimeException("Internal error while init queryTreeTransformer",e);
+            } catch (JPA2RecognitionException e) {
+                throw new JpqlSyntaxException(format("Errors found for input jpql:[%s]\n%s", StringUtils.strip(query), e.getMessage()));
             }
             List<ErrorRec> errors = new ArrayList<>(queryTreeTransformer.getInvalidIdVarNodes());
             if (!errors.isEmpty()) {

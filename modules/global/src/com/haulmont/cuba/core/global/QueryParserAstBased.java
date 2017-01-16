@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.cuba.core.sys.PerformanceLog;
 import com.haulmont.cuba.core.sys.jpql.*;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
+import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2RecognitionException;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.transform.ParameterCounter;
@@ -77,6 +78,8 @@ public class QueryParserAstBased implements QueryParser {
                 queryTreeAnalyzer.prepare(model, query);
             } catch (RecognitionException e) {
                 throw new RuntimeException("Internal error while init queryTreeAnalyzer", e);
+            } catch (JPA2RecognitionException e) {
+                throw new JpqlSyntaxException(format("Errors found for input jpql:[%s]\n%s", StringUtils.strip(query), e.getMessage()));
             }
             List<ErrorRec> errors = new ArrayList<>(queryTreeAnalyzer.getInvalidIdVarNodes());
             if (!errors.isEmpty()) {
