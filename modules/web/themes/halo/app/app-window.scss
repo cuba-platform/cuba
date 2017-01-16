@@ -125,4 +125,12 @@
       margin-top: -1 * $v-unit-size;
     }
   }
+
+  .c-welcome-text,
+  .v-label.c-welcome-text {
+    $base-color: scale-color($v-app-background-color, $lightness: if(color-luminance($v-app-background-color) < 10, 15%, -70%));
+    color: valo-font-color($base-color, 0.5);
+    font-weight: 900;
+    font-size: $v-font-size--h1 * 1.5;
+  }
 }

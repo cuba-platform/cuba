@@ -34,11 +34,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class CubaSideMenuWidget extends FocusableFlowPanel
-        implements KeyPressHandler, KeyDownHandler, FocusHandler, HasEnabled {
+        implements KeyPressHandler, KeyDownHandler, FocusHandler, HasEnabled, BlurHandler {
 
     protected static final String CLASS_NAME = "c-sidemenu";
 
     protected boolean enabled = true;
+    protected boolean focused = true;
 
     protected MenuItemWidget focusedItem;
     protected MenuItemWidget selectedItem;
@@ -55,6 +56,7 @@ public class CubaSideMenuWidget extends FocusableFlowPanel
 
         // Navigation is only handled by the root bar
         addFocusHandler(this);
+        addBlurHandler(this);
 
         /*
          * Firefox auto-repeat works correctly only if we use a key press
@@ -109,7 +111,9 @@ public class CubaSideMenuWidget extends FocusableFlowPanel
                     }
                     break;
                 case Event.ONMOUSEOUT:
-                    setFocusedItem(null);
+                    if (!focused) {
+                        setFocusedItem(null);
+                    }
                     break;
             }
         }
@@ -124,6 +128,15 @@ public class CubaSideMenuWidget extends FocusableFlowPanel
                 setFocusedItem((MenuItemWidget) getWidget(0));
             }
         }
+
+        this.focused = true;
+    }
+
+    @Override
+    public void onBlur(BlurEvent event) {
+        setFocusedItem(null);
+
+        this.focused = false;
     }
 
     @Override

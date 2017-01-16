@@ -27,12 +27,25 @@
     }
   }
 
+  .#{$primary-stylename}-layout .c-main-tabsheet > .v-tabsheet-tabcontainer {
+    border: 0;
+  }
+
   .#{$primary-stylename}-panel {
     @include valo-menu-style;
 
     .#{$primary-stylename} {
       background: transparent;
       background-image: none;
+    }
+
+    .c-newwindow-button,
+    .c-logout-button {
+      color: valo-font-color($valo-menu-background-color, 0.5);
+
+      &:hover {
+        color: valo-font-color($valo-menu-background-color, 1);
+      }
     }
   }
 
@@ -74,26 +87,6 @@
 
     .v-icon {
       font-size: 1.2em;
-    }
-  }
-
-  .#{$primary-stylename}-item-focused  {
-    color: valo-font-color($valo-menu-background-color, 1);
-  }
-
-  .#{$primary-stylename}-item-selected {
-    $bg: $valo-menu-background-color;
-    $active-color: $v-selection-color;
-
-    color: valo-font-color($bg, 1);
-    background: if(is-dark-color($bg), darken($bg, 3%), lighten($bg, 5%));
-
-    .v-icon {
-      color: $active-color;
-    }
-
-    .#{$primary-stylename}-item-badge {
-      @include valo-badge-style($states: active, $active-color: $active-color);
     }
   }
 
@@ -139,6 +132,26 @@
 
     @if $v-animations-enabled {
       @include transition (max-height 900ms ease-in-out);
+    }
+  }
+
+  .#{$primary-stylename}-item-focused {
+    color: valo-font-color($valo-menu-background-color, 1);
+  }
+
+  .#{$primary-stylename}-item-selected {
+    $bg: $valo-menu-background-color;
+    $active-color: $v-selection-color;
+
+    color: valo-font-color($bg, 1);
+    background: if(is-dark-color($bg), darken($bg, 3%), lighten($bg, 5%));
+
+    .v-icon {
+      color: $active-color;
+    }
+
+    .#{$primary-stylename}-item-badge {
+      @include valo-badge-style($states: active, $active-color: $active-color);
     }
   }
 }
