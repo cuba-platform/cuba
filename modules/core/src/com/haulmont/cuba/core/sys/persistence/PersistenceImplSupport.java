@@ -298,7 +298,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                         AttributeChangeListener changeListener =
                                 (AttributeChangeListener) ((ChangeTracker) entity)._persistence_getPropertyChangeListener();
                         if (changeListener != null && changeListener.hasChanges())
-                            log.warn("Changed instance " + entity + " in read-only transaction");
+                            throw new IllegalStateException("Changed instance " + entity + " in read-only transaction");
                     }
 
                     // if cache is enabled, the entity can have EntityFetchGroup instead of CubaEntityFetchGroup

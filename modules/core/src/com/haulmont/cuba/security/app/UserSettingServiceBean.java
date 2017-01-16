@@ -56,6 +56,7 @@ public class UserSettingServiceBean implements UserSettingService {
         try (Transaction tx = persistence.createTransaction(new TransactionParams().setReadOnly(true))) {
             UserSetting us = findUserSettings(clientType, name);
             value = us == null ? null : us.getValue();
+            tx.commit();
         }
         return value;
     }

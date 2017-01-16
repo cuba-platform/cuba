@@ -322,7 +322,7 @@ public class TransactionTest {
             tx.commit();
         }
 
-        // read-only transaction still commits data (but prints warning in log)
+        // read-only transaction cannot be committed if it contains changed entities
         UUID id = persistence.callInTransaction(em -> {
             Server server = new Server();
             server.setName("localhost");
@@ -334,13 +334,12 @@ public class TransactionTest {
             query.setParameter(1, id);
             Server server = query.getSingleResult();
             server.setName("changed");
-            tx.commit();
-        }
-        try (Transaction tx = persistence.createTransaction()) {
-            Server server = persistence.getEntityManager().find(Server.class, id);
-            assertNotNull(server);
-            assertEquals("changed", server.getName());
-            tx.commit();
+            try {
+                tx.commit();
+                fail();
+            } catch (IllegalStateException e) {
+                // ok
+            }
         }
     }
 

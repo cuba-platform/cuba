@@ -142,7 +142,7 @@ public class RdbmsStore implements DataStore {
                         collectEntityClassesWithDynamicAttributes(context.getView()));
             }
 
-            commitLoadTransaction(tx);
+            tx.commit();
         }
 
         if (result != null) {
@@ -200,7 +200,7 @@ public class RdbmsStore implements DataStore {
                         collectEntityClassesWithDynamicAttributes(context.getView()));
             }
 
-            commitLoadTransaction(tx);
+            tx.commit();
         }
 
         if (needToApplyConstraints(context)) {
@@ -253,7 +253,7 @@ public class RdbmsStore implements DataStore {
 
                 resultList = getResultList(context, query, ensureDistinct);
 
-                commitLoadTransaction(tx);
+                tx.commit();
             }
             return resultList.size();
         } else {
@@ -271,7 +271,7 @@ public class RdbmsStore implements DataStore {
                 Query query = createQuery(em, context);
                 result = (Number) query.getSingleResult();
 
-                commitLoadTransaction(tx);
+                tx.commit();
             }
 
             return result.longValue();
@@ -455,7 +455,7 @@ public class RdbmsStore implements DataStore {
                 }
             }
 
-            commitLoadTransaction(tx);
+            tx.commit();
         }
 
         return entities;
@@ -862,10 +862,5 @@ public class RdbmsStore implements DataStore {
             txParams.setReadOnly(true);
         }
         return persistence.createTransaction(storeName, txParams);
-    }
-
-    protected void commitLoadTransaction(Transaction tx) {
-        if (!serverConfig.getUseReadOnlyTransactionForLoad())
-            tx.commit();
     }
 }
