@@ -77,10 +77,21 @@ public interface DataGrid<E extends Entity>
      * Adds the given column to DataGrid.
      *
      * @param column the column to add
+     * @see #addColumn(Column, int)
      * @see #addColumn(String, MetaPropertyPath)
+     * @see #addColumn(String, MetaPropertyPath, int)
      */
     void addColumn(Column column);
 
+    /**
+     * Adds the given column at the specified index to DataGrid.
+     *
+     * @param column the column to add
+     * @param index  index of a new column
+     * @see #addColumn(Column)
+     * @see #addColumn(String, MetaPropertyPath)
+     * @see #addColumn(String, MetaPropertyPath, int)
+     */
     void addColumn(Column column, int index);
 
     /**
@@ -91,9 +102,24 @@ public interface DataGrid<E extends Entity>
      *                     to a property from certain MetaClass
      * @return the newly created column
      * @see #addColumn(Column)
+     * @see #addColumn(Column, int)
+     * @see #addColumn(String, MetaPropertyPath, int)
      */
     Column addColumn(String id, MetaPropertyPath propertyPath);
 
+    /**
+     * Creates new column with given Id and property at the specified index,
+     * then adds this column to DataGrid.
+     *
+     * @param id           the column Id
+     * @param propertyPath the instance of {@link MetaPropertyPath} representing a relative path
+     *                     to a property from certain MetaClass
+     * @param index        index of a new column
+     * @return the newly created column
+     * @see #addColumn(Column)
+     * @see #addColumn(Column, int)
+     * @see #addColumn(String, MetaPropertyPath)
+     */
     Column addColumn(String id, MetaPropertyPath propertyPath, int index);
 
     /**
