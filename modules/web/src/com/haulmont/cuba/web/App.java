@@ -533,4 +533,42 @@ public abstract class App {
     protected void clearSettingsCache() {
         ((WebSettingsClient) settingsClient).clearCache();
     }
+
+    /**
+     * Try to perform logout. If there are unsaved changes in opened windows then logout will not be performed and
+     * unsaved changes dialog will appear.
+     */
+    public void logout() {
+        logout(null);
+    }
+
+    /**
+     * Try to perform logout. If there are unsaved changes in opened windows then logout will not be performed and
+     * unsaved changes dialog will appear.
+     *
+     * @param runWhenLoggedOut runnable that will be invoked if user decides to logout
+     */
+    public void logout(@Nullable Runnable runWhenLoggedOut) {
+        Window.TopLevelWindow topLevelWindow = getTopLevelWindow();
+        if (topLevelWindow != null) {
+            topLevelWindow.saveSettings();
+
+            WebWindowManager wm = (WebWindowManager) topLevelWindow.getWindowManager();
+            wm.checkModificationsAndCloseAll(() -> {
+                Connection connection = getConnection();
+                connection.logout();
+
+                if (runWhenLoggedOut != null) {
+                    runWhenLoggedOut.run();
+                }
+            });
+        } else {
+            Connection connection = getConnection();
+            connection.logout();
+
+            if (runWhenLoggedOut != null) {
+                runWhenLoggedOut.run();
+            }
+        }
+    }
 }

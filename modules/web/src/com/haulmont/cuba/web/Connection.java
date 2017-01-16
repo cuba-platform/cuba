@@ -62,8 +62,6 @@ public interface Connection {
 
     /**
      * Log out of the system.
-     * Returns URL to which the user will be redirected after logout.
-     * @return redirection URL
      */
     void logout();
 

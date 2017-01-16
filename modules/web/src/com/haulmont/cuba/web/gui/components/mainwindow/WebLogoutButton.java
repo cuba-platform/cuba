@@ -18,14 +18,10 @@
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
 import com.haulmont.bali.util.StringHelper;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.LogoutButton;
-import com.haulmont.cuba.web.Connection;
-import com.haulmont.cuba.web.WebWindowManager;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
-import com.vaadin.ui.Button;
 
 public class WebLogoutButton extends WebAbstractComponent<CubaButton> implements LogoutButton {
 
@@ -34,25 +30,15 @@ public class WebLogoutButton extends WebAbstractComponent<CubaButton> implements
     public WebLogoutButton() {
         component = new CubaButton();
         component.addStyleName(LOGOUT_BUTTON_STYLENAME);
-        component.addClickListener((Button.ClickListener) event ->
-                logout()
-        );
-        component.setDescription(null);
+        component.addClickListener(event -> logout());
     }
 
     protected void logout() {
-        Window window = ComponentsHelper.getWindow(this);
-        if (window == null) {
-            throw new IllegalStateException("Unable to find Frame for logout button");
+        AppUI ui = ((AppUI) component.getUI());
+        if (ui == null) {
+            throw new IllegalStateException("Logout button is not attached to UI");
         }
-
-        window.saveSettings();
-
-        final WebWindowManager wm = (WebWindowManager) window.getWindowManager();
-        wm.checkModificationsAndCloseAll(() -> {
-            Connection connection = wm.getApp().getConnection();
-            connection.logout();
-        });
+        ui.getApp().logout();
     }
 
     @Override
