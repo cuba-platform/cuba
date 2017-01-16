@@ -106,6 +106,29 @@ public class PersistenceTools {
     }
 
     /**
+     * Returns true if the given entity has dirty attributes (changed since the last load from the database).
+     * <p> If the entity is new, returns true.
+     * <p> If the entity is not persistent or not in the Managed state, returns false.
+     *
+     * @param entity    entity instance
+     *
+     * @see #getDirtyFields(Entity)
+     * @see #isDirty(Entity, String...)
+     */
+    public boolean isDirty(Entity entity) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+
+        if (!(entity instanceof ChangeTracker) || !PersistenceHelper.isManaged(entity))
+            return false;
+
+        if (PersistenceHelper.isNew(entity))
+            return true;
+
+        AttributeChangeListener attributeChangeListener = (AttributeChangeListener) ((ChangeTracker) entity)._persistence_getPropertyChangeListener();
+        return attributeChangeListener != null && attributeChangeListener.hasChanges();
+    }
+
+    /**
      * Returns true if at least one of the given attributes is dirty (i.e. changed since the last load from the database).
      * <p> If the entity is new, always returns true.
      * <p> If the entity is not persistent or not in the Managed state, always returns false.

@@ -176,6 +176,8 @@ public class PersistenceTest {
             assertNotNull(server);
             server.setData("testData");
 
+            assertTrue(persistenceTools.isDirty(server));
+
             Set<String> dirtyFields = persistenceTools.getDirtyFields(server);
             assertTrue(dirtyFields.contains("data"));
             assertTrue(persistenceTools.isDirty(server, "data"));

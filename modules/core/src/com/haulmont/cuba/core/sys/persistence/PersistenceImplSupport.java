@@ -282,15 +282,25 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         @Override
         public void beforeCommit(boolean readOnly) {
             if (log.isTraceEnabled())
-                log.trace("ContainerResourceSynchronization.beforeCommit: instances = " + container.getAllInstances());
+                log.trace("ContainerResourceSynchronization.beforeCommit: instances=" + container.getAllInstances() + ", readOnly=" + readOnly);
 
-            traverseEntities(container, new OnCommitEntityVisitor(container.getStorageName()));
+            if (!readOnly) {
+                traverseEntities(container, new OnCommitEntityVisitor(container.getStorageName()));
+            }
 
             Collection<Entity> instances = container.getAllInstances();
             Set<String> typeNames = new HashSet<>();
             for (Object instance : instances) {
                 if (instance instanceof Entity) {
                     Entity entity = (Entity) instance;
+
+                    if (readOnly) {
+                        AttributeChangeListener changeListener =
+                                (AttributeChangeListener) ((ChangeTracker) entity)._persistence_getPropertyChangeListener();
+                        if (changeListener != null && changeListener.hasChanges())
+                            log.warn("Changed instance " + entity + " in read-only transaction");
+                    }
+
                     // if cache is enabled, the entity can have EntityFetchGroup instead of CubaEntityFetchGroup
                     if (instance instanceof FetchGroupTracker) {
                         FetchGroupTracker fetchGroupTracker = (FetchGroupTracker) entity;
@@ -307,12 +317,14 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                 }
             }
 
-            Collection<Entity> allInstances = container.getAllInstances();
-            for (BeforeCommitTransactionListener transactionListener : beforeCommitTxListeners) {
-                transactionListener.beforeCommit(persistence.getEntityManager(container.getStorageName()), allInstances);
-            }
+            if (!readOnly) {
+                Collection<Entity> allInstances = container.getAllInstances();
+                for (BeforeCommitTransactionListener transactionListener : beforeCommitTxListeners) {
+                    transactionListener.beforeCommit(persistence.getEntityManager(container.getStorageName()), allInstances);
+                }
 
-            queryCacheManager.invalidate(typeNames, true);
+                queryCacheManager.invalidate(typeNames, true);
+            }
         }
 
         @Override

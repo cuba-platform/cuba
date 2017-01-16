@@ -53,15 +53,9 @@ public class UserSettingServiceBean implements UserSettingService {
     @Override
     public String loadSetting(ClientType clientType, String name) {
         String value;
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction(new TransactionParams().setReadOnly(true))) {
             UserSetting us = findUserSettings(clientType, name);
-
             value = us == null ? null : us.getValue();
-
-            tx.commit();
-        } finally {
-            tx.end();
         }
         return value;
     }
@@ -73,8 +67,7 @@ public class UserSettingServiceBean implements UserSettingService {
 
     @Override
     public void saveSetting(ClientType clientType, String name, String value) {
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
 
             UserSetting us = findUserSettings(clientType, name);
@@ -89,26 +82,19 @@ public class UserSettingServiceBean implements UserSettingService {
             } else {
                 us.setValue(value);
             }
-
             tx.commit();
-        } finally {
-            tx.end();
         }
     }
 
     @Override
     public void deleteSettings(ClientType clientType, String name) {
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             UserSetting us = findUserSettings(clientType, name);
             EntityManager em = persistence.getEntityManager();
             if(us!=null){
                 em.remove(us);
             }
-
             tx.commit();
-        } finally {
-            tx.end();
         }
     }
 
@@ -125,8 +111,7 @@ public class UserSettingServiceBean implements UserSettingService {
         copyUserFolders(fromUser, toUser, presentationsMap);
         Map<UUID, FilterEntity> filtersMap = copyFilters(fromUser, toUser);
 
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
 
             Query deleteSettingsQuery = em.createQuery("delete from sec$UserSetting s where s.user.id = ?1");
@@ -179,8 +164,6 @@ public class UserSettingServiceBean implements UserSettingService {
             }
 
             tx.commit();
-        } finally {
-            tx.end();
         }
     }
 
@@ -200,8 +183,7 @@ public class UserSettingServiceBean implements UserSettingService {
 
     protected Map<UUID, Presentation> copyPresentations(User fromUser, User toUser) {
         Map<UUID, Presentation> presentationMap = new HashMap<>();
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
             Query delete = em.createQuery("delete from sec$Presentation p where p.user.id=?1");
             delete.setParameter(1, toUser);
@@ -221,16 +203,12 @@ public class UserSettingServiceBean implements UserSettingService {
             }
             tx.commit();
             return presentationMap;
-
-        } finally {
-            tx.end();
         }
     }
 
 
     protected void copyUserFolders(User fromUser, User toUser, Map<UUID, Presentation> presentationsMap) {
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(SearchFolder.class);
             EntityManager em = persistence.getEntityManager();
             Query deleteSettingsQuery = em.createQuery("delete from " + effectiveMetaClass.getName() + " s where s.user.id = ?1");
@@ -244,8 +222,6 @@ public class UserSettingServiceBean implements UserSettingService {
                 copyFolder(searchFolder, toUser, copiedFolders, presentationsMap);
             }
             tx.commit();
-        } finally {
-            tx.end();
         }
     }
 
@@ -305,8 +281,7 @@ public class UserSettingServiceBean implements UserSettingService {
 
     protected Map<UUID, FilterEntity> copyFilters(User fromUser, User toUser) {
         Map<UUID, FilterEntity> filtersMap = new HashMap<>();
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class);
 
             EntityManager em = persistence.getEntityManager();
@@ -329,8 +304,6 @@ public class UserSettingServiceBean implements UserSettingService {
             }
             tx.commit();
             return filtersMap;
-        } finally {
-            tx.end();
         }
     }
 }

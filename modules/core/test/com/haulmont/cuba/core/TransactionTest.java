@@ -18,7 +18,9 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.entity.Server;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
+import com.haulmont.cuba.testsupport.TestSupport;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -35,8 +37,12 @@ public class TransactionTest {
 
     private static final String TEST_EXCEPTION_MSG = "test exception";
 
+    private Persistence persistence;
+
     @Before
     public void setUp() throws Exception {
+        persistence = cont.persistence();
+
         QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         runner.update("delete from SYS_SERVER");
     }
@@ -305,6 +311,37 @@ public class TransactionTest {
             server.setRunning(false);
         });
 
+    }
+
+    @Test
+    public void testReadOnly() throws Exception {
+        try (Transaction tx = persistence.createTransaction(new TransactionParams().setReadOnly(true))) {
+            TypedQuery<User> query = persistence.getEntityManager().createQuery("select u from sec$User u where u.id = ?1", User.class);
+            query.setParameter(1, TestSupport.ADMIN_USER_ID);
+            User result = query.getSingleResult();
+            tx.commit();
+        }
+
+        // read-only transaction still commits data (but prints warning in log)
+        UUID id = persistence.callInTransaction(em -> {
+            Server server = new Server();
+            server.setName("localhost");
+            em.persist(server);
+            return server.getId();
+        });
+        try (Transaction tx = persistence.createTransaction(new TransactionParams().setReadOnly(true))) {
+            TypedQuery<Server> query = persistence.getEntityManager().createQuery("select e from sys$Server e where e.id = ?1", Server.class);
+            query.setParameter(1, id);
+            Server server = query.getSingleResult();
+            server.setName("changed");
+            tx.commit();
+        }
+        try (Transaction tx = persistence.createTransaction()) {
+            Server server = persistence.getEntityManager().find(Server.class, id);
+            assertNotNull(server);
+            assertEquals("changed", server.getName());
+            tx.commit();
+        }
     }
 
     private void throwException() {

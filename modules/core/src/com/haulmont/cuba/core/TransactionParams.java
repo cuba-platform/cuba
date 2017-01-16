@@ -18,12 +18,12 @@
 package com.haulmont.cuba.core;
 
 /**
- * Encapsulates a new transaction parameters.
- *
+ * Defines parameters of a new transaction.
 */
 public class TransactionParams {
 
     private int timeout;
+    private boolean readOnly;
 
     /**
      * @param timeout Database query timeout in seconds. 0 means undefined.
@@ -39,5 +39,21 @@ public class TransactionParams {
      */
     public int getTimeout() {
         return timeout;
+    }
+
+    /**
+     * Indicates that the transaction is read-only and performance optimization can be applied. Default is false.
+     */
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    /**
+     * Indicates that the transaction will be read-only and performance optimization can be applied. Default is false.
+     * @return this instance for chaining
+     */
+    public TransactionParams setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+        return this;
     }
 }

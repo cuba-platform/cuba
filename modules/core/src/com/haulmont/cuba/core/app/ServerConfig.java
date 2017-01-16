@@ -231,4 +231,12 @@ public interface ServerConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultInt(50)
     int getCrossDataStoreReferenceLoadingBatchSize();
+
+    /**
+     * @return use read-only transactions in {@code DataManager} load operations and do not commit them
+     */
+    @Property("cuba.useReadOnlyTransactionForLoad")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(true)
+    boolean getUseReadOnlyTransactionForLoad();
 }

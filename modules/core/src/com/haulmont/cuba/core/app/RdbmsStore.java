@@ -112,7 +112,7 @@ public class RdbmsStore implements DataStore {
         }
 
         E result = null;
-        try (Transaction tx = persistence.createTransaction(storeName)) {
+        try (Transaction tx = createLoadTransaction()) {
             final EntityManager em = persistence.getEntityManager(storeName);
 
             if (!context.isSoftDeletion())
@@ -142,7 +142,7 @@ public class RdbmsStore implements DataStore {
                         collectEntityClassesWithDynamicAttributes(context.getView()));
             }
 
-            tx.commit();
+            commitLoadTransaction(tx);
         }
 
         if (result != null) {
@@ -175,14 +175,14 @@ public class RdbmsStore implements DataStore {
         queryResultsManager.savePreviousQueryResults(context);
 
         List<E> resultList;
-        try (Transaction tx = persistence.createTransaction(storeName)) {
+        try (Transaction tx = createLoadTransaction()) {
             EntityManager em = persistence.getEntityManager(storeName);
             em.setSoftDeletion(context.isSoftDeletion());
             persistence.getEntityManagerContext(storeName).setDbHints(context.getDbHints());
 
             boolean ensureDistinct = false;
             if (serverConfig.getInMemoryDistinct() && context.getQuery() != null) {
-                QueryTransformer transformer = queryTransformerFactory.createTransformer(
+                QueryTransformer transformer = queryTransformerFactory.transformer(
                         context.getQuery().getQueryString());
                 ensureDistinct = transformer.removeDistinct();
                 if (ensureDistinct) {
@@ -200,7 +200,7 @@ public class RdbmsStore implements DataStore {
                         collectEntityClassesWithDynamicAttributes(context.getView()));
             }
 
-            tx.commit();
+            commitLoadTransaction(tx);
         }
 
         if (needToApplyConstraints(context)) {
@@ -231,7 +231,7 @@ public class RdbmsStore implements DataStore {
         if (security.hasInMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL)) {
             context = context.copy();
             List resultList;
-            try (Transaction tx = persistence.createTransaction(storeName)) {
+            try (Transaction tx = createLoadTransaction()) {
                 EntityManager em = persistence.getEntityManager(storeName);
                 em.setSoftDeletion(context.isSoftDeletion());
                 persistence.getEntityManagerContext(storeName).setDbHints(context.getDbHints());
@@ -252,7 +252,8 @@ public class RdbmsStore implements DataStore {
                 query.setView(createRestrictedView(context));
 
                 resultList = getResultList(context, query, ensureDistinct);
-                tx.commit();
+
+                commitLoadTransaction(tx);
             }
             return resultList.size();
         } else {
@@ -262,7 +263,7 @@ public class RdbmsStore implements DataStore {
             context.getQuery().setQueryString(transformer.getResult());
 
             Number result;
-            try (Transaction tx = persistence.createTransaction(storeName)) {
+            try (Transaction tx = createLoadTransaction()) {
                 EntityManager em = persistence.getEntityManager(storeName);
                 em.setSoftDeletion(context.isSoftDeletion());
                 persistence.getEntityManagerContext(storeName).setDbHints(context.getDbHints());
@@ -270,7 +271,7 @@ public class RdbmsStore implements DataStore {
                 Query query = createQuery(em, context);
                 result = (Number) query.getSingleResult();
 
-                tx.commit();
+                commitLoadTransaction(tx);
             }
 
             return result.longValue();
@@ -411,7 +412,7 @@ public class RdbmsStore implements DataStore {
 
         List<KeyValueEntity> entities = new ArrayList<>();
 
-        try (Transaction tx = persistence.createTransaction(storeName)) {
+        try (Transaction tx = createLoadTransaction()) {
             EntityManager em = persistence.getEntityManager(storeName);
             em.setSoftDeletion(context.isSoftDeletion());
 
@@ -454,7 +455,7 @@ public class RdbmsStore implements DataStore {
                 }
             }
 
-            tx.commit();
+            commitLoadTransaction(tx);
         }
 
         return entities;
@@ -853,5 +854,18 @@ public class RdbmsStore implements DataStore {
             }
         }
         return classes;
+    }
+
+    protected Transaction createLoadTransaction() {
+        TransactionParams txParams = new TransactionParams();
+        if (serverConfig.getUseReadOnlyTransactionForLoad()) {
+            txParams.setReadOnly(true);
+        }
+        return persistence.createTransaction(storeName, txParams);
+    }
+
+    protected void commitLoadTransaction(Transaction tx) {
+        if (!serverConfig.getUseReadOnlyTransactionForLoad())
+            tx.commit();
     }
 }

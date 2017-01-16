@@ -51,6 +51,8 @@ public class TransactionImpl implements Transaction {
         if (params != null) {
             if (params.getTimeout() != 0)
                 td.setTimeout(params.getTimeout());
+            if (params.isReadOnly())
+                td.setReadOnly(true);
         }
 
         ts = tm.getTransaction(td);
