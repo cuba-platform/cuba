@@ -177,6 +177,10 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
     }
 
     protected List<Suggestion> requestHint(SourceCodeEditor sender, String text, int cursorPosition) {
+        if (entityName.getValue() == null) {
+            return Collections.emptyList();
+        }
+
         String joinStr = joinClause.getValue();
         String whereStr = whereClause.getValue();
 
