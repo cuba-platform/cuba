@@ -17,6 +17,8 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.QueryUtils;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchField;
@@ -43,6 +45,8 @@ public class WebSearchField extends WebLookupField implements SearchField {
     protected Frame.NotificationType defaultNotificationType = Frame.NotificationType.TRAY;
 
     protected SearchNotifications searchNotifications = new SearchNotifications() {
+        protected Messages messages = AppBeans.get(Messages.NAME);
+
         @Override
         public void notFoundSuggestions(String filterString) {
             String message = messages.formatMessage("com.haulmont.cuba.gui", "searchSelect.notFound", filterString);

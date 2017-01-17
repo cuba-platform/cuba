@@ -18,13 +18,13 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.vaadin.data.Property;
-import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -48,16 +48,16 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
         super.createComponent();
 
         // delegate error indication
-        this.componentErrorHandler = new ComponentErrorHandler() {
-            @Override
-            public boolean handleError(ErrorMessage message) {
-                if (message instanceof UserError)
-                    return false;
-
-                pickerField.component.setComponentError(message);
-                return true;
+        this.componentErrorHandler = message -> {
+            if (message instanceof UserError) {
+                return false;
             }
+
+            pickerField.component.setComponentError(message);
+            return true;
         };
+
+        component.setCustomValueEquals(InstanceUtils::propertyValueEquals);
 
         final ComboBox selectComponent = component;
         final WebPickerField.Picker picker = new WebPickerField.Picker(this, component) {

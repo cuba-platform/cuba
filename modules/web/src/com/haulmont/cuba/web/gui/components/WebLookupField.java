@@ -62,8 +62,6 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
     protected ComponentErrorHandler componentErrorHandler;
 
-    protected Messages messages = AppBeans.get(Messages.NAME);
-
     protected boolean nullOptionVisible = true;
     protected OptionIconProvider optionIconProvider;
 
@@ -813,6 +811,8 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     }
 
     protected class NullOptionItem implements Item {
+        protected Messages messages = AppBeans.get(Messages.NAME);
+
         @Override
         public Property getItemProperty(Object id) {
             return null;
