@@ -17,11 +17,11 @@
 package com.haulmont.cuba.gui.xml;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.Datasource;
-import org.apache.commons.lang.reflect.MethodUtils;
 
 import java.lang.reflect.Method;
 
@@ -47,6 +47,8 @@ public class DeclarativeFieldGenerator implements FieldGroup.CustomFieldGenerato
         Class<? extends Frame> cCls = controller.getClass();
         Method exactMethod = getAccessibleMethod(cCls, methodName, new Class[]{Datasource.class, String.class});
         if (exactMethod != null) {
+            checkGeneratorMethodResultType(exactMethod, frame);
+
             try {
                 return (Component) exactMethod.invoke(controller, datasource, propertyId);
             } catch (Exception e) {
@@ -56,6 +58,8 @@ public class DeclarativeFieldGenerator implements FieldGroup.CustomFieldGenerato
 
         Method dsMethod = getAccessibleMethod(cCls, methodName, new Class[]{Datasource.class});
         if (dsMethod != null) {
+            checkGeneratorMethodResultType(dsMethod, frame);
+
             try {
                 return (Component) dsMethod.invoke(controller, datasource);
             } catch (Exception e) {
@@ -65,6 +69,8 @@ public class DeclarativeFieldGenerator implements FieldGroup.CustomFieldGenerato
 
         Method parameterLessMethod = getAccessibleMethod(cCls, methodName, new Class[]{});
         if (parameterLessMethod != null) {
+            checkGeneratorMethodResultType(parameterLessMethod, frame);
+
             try {
                 return (Component) parameterLessMethod.invoke(controller);
             } catch (Exception e) {
@@ -76,5 +82,12 @@ public class DeclarativeFieldGenerator implements FieldGroup.CustomFieldGenerato
 
         throw new IllegalStateException(
                 String.format("No suitable method named %s for column generator of table %s", methodName, fieldGroupId));
+    }
+
+    protected void checkGeneratorMethodResultType(Method method, Frame frame) {
+        if (!Component.class.isAssignableFrom(method.getReturnType())) {
+            throw new GuiDevelopmentException(String.format("Method '%s' returns incorrect type", methodName),
+                    frame.getId());
+        }
     }
 }
