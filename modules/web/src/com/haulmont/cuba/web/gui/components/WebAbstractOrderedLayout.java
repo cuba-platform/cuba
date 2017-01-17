@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
@@ -30,8 +31,7 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
         extends WebAbstractComponent<T>
         implements Component.OrderedContainer, Component.BelongToFrame, Component.HasCaption, Component.HasIcon {
 
-    protected Collection<Component> ownComponents = new LinkedHashSet<>();
-    protected Map<String, Component> componentByIds = new HashMap<>();
+    protected List<Component> ownComponents = new ArrayList<>();
 
     @Override
     public void add(Component childComponent) {
@@ -55,10 +55,6 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
 
         com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
         component.addComponent(vComponent, index);
-
-        if (childComponent.getId() != null) {
-            componentByIds.put(childComponent.getId(), childComponent);
-        }
 
         if (frame != null) {
             if (childComponent instanceof BelongToFrame
@@ -90,9 +86,6 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
     @Override
     public void remove(Component childComponent) {
         component.removeComponent(WebComponentsHelper.getComposition(childComponent));
-        if (childComponent.getId() != null) {
-            componentByIds.remove(childComponent.getId());
-        }
         ownComponents.remove(childComponent);
 
         childComponent.setParent(null);
@@ -101,7 +94,6 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
     @Override
     public void removeAll() {
         component.removeAllComponents();
-        componentByIds.clear();
 
         List<Component> components = new ArrayList<>(ownComponents);
         ownComponents.clear();
@@ -128,7 +120,12 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
     @Nullable
     @Override
     public Component getOwnComponent(String id) {
-        return componentByIds.get(id);
+        Preconditions.checkNotNullArgument(id);
+
+        return ownComponents.stream()
+                .filter(component -> Objects.equals(id, component.getId()))
+                .findFirst()
+                .orElse(null);
     }
 
     @Nullable
@@ -156,7 +153,6 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
     }
-
 
     @Override
     public String getCaption() {
