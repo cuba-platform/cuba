@@ -21,18 +21,7 @@ import com.haulmont.cuba.gui.components.CssLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaCssLayout;
 
 public class WebCssLayout extends WebAbstractOrderedLayout<CubaCssLayout> implements CssLayout {
-
     public WebCssLayout() {
         component = new CubaCssLayout();
-    }
-
-    @Override
-    public boolean isResponsive(){
-        return component.isResponsive();
-    }
-
-    @Override
-    public void setResponsive(boolean responsive) {
-        component.setResponsive(responsive);
     }
 }
