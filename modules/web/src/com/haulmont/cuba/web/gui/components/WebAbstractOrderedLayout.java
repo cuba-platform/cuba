@@ -21,6 +21,7 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.ui.AbstractComponent;
 
 import javax.annotation.Nonnull;
@@ -29,9 +30,10 @@ import java.util.*;
 
 public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
         extends WebAbstractComponent<T>
-        implements Component.OrderedContainer, Component.BelongToFrame, Component.HasCaption, Component.HasIcon {
+        implements Component.OrderedContainer, Component.BelongToFrame, Component.HasCaption, Component.HasIcon, Component.LayoutClickNotifier {
 
-    protected List<Component> ownComponents = new ArrayList<>();
+    protected Collection<Component> ownComponents = new LinkedHashSet<>();
+    protected LayoutEvents.LayoutClickListener layoutClickListener;
 
     @Override
     public void add(Component childComponent) {
@@ -173,6 +175,39 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
     public void setDescription(String description) {
         if (getComposition() instanceof AbstractComponent) {
             ((AbstractComponent) getComposition()).setDescription(description);
+        }
+    }
+
+    @Override
+    public void addLayoutClickListener(LayoutClickListener listener) {
+        getEventRouter().addListener(LayoutClickListener.class, listener);
+        if (layoutClickListener == null) {
+            layoutClickListener = (LayoutEvents.LayoutClickListener) event -> {
+                Component childComponent = findChildComponent(WebAbstractOrderedLayout.this, event.getChildComponent());
+                LayoutClickEvent layoutClickEvent = new LayoutClickEvent(WebAbstractOrderedLayout.this, childComponent);
+
+                getEventRouter().fireEvent(LayoutClickListener.class, LayoutClickListener::layoutClick, layoutClickEvent);
+            };
+            component.addLayoutClickListener(layoutClickListener);
+        }
+    }
+
+    protected Component findChildComponent(Container layout, com.vaadin.ui.Component clickedComponent) {
+        for (Component component : layout.getComponents()) {
+            if (WebComponentsHelper.unwrap(component) == clickedComponent) {
+                return component;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void removeLayoutClickListener(LayoutClickListener listener) {
+        getEventRouter().removeListener(LayoutClickListener.class, listener);
+
+        if (!getEventRouter().hasListeners(LayoutClickListener.class)) {
+            component.removeLayoutClickListener(layoutClickListener);
+            layoutClickListener = null;
         }
     }
 }

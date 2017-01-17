@@ -24,6 +24,7 @@ import org.dom4j.Element;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.EventObject;
 
 /**
  * Root of the GenericUI components hierarchy
@@ -304,6 +305,37 @@ public interface Component {
         String getDescription();
         void setDescription(String description);
     }
+
+    /**
+     * Layout having a mouse click listener
+     */
+    interface LayoutClickNotifier {
+        void addLayoutClickListener(LayoutClickListener listener);
+        void removeLayoutClickListener(LayoutClickListener listener);
+    }
+
+    interface LayoutClickListener {
+        void layoutClick(LayoutClickEvent event);
+    }
+
+    class LayoutClickEvent extends EventObject {
+        private final Component childComponent;
+
+        public LayoutClickEvent(Container clickedComponent, Component childComponent) {
+            super(clickedComponent);
+            this.childComponent = childComponent;
+        }
+
+        @Override
+        public Container getSource() {
+            return (Container) super.getSource();
+        }
+
+        public Component getChildComponent() {
+            return childComponent;
+        }
+    }
+
 
     /**
      * Object having a border

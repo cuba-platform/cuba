@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractOrderedLayout;
@@ -31,9 +32,11 @@ import java.util.*;
 
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
 
-public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> implements BoxLayout {
+public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> implements BoxLayout,
+        Component.LayoutClickNotifier {
 
     protected List<Component> ownComponents = new ArrayList<>();
+    protected LayoutEvents.LayoutClickListener layoutClickListener;
 
     @Override
     public void add(Component childComponent) {
@@ -217,6 +220,39 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
     public void setDescription(String description) {
         if (getComposition() instanceof AbstractComponent) {
             ((AbstractComponent) getComposition()).setDescription(description);
+        }
+    }
+
+    @Override
+    public void addLayoutClickListener(LayoutClickListener listener) {
+        getEventRouter().addListener(LayoutClickListener.class, listener);
+        if (layoutClickListener == null) {
+            layoutClickListener = (LayoutEvents.LayoutClickListener) event -> {
+                Component childComponent = findChildComponent(WebAbstractBox.this, event.getChildComponent());
+                LayoutClickEvent layoutClickEvent = new LayoutClickEvent(WebAbstractBox.this, childComponent);
+
+                getEventRouter().fireEvent(LayoutClickListener.class, LayoutClickListener::layoutClick, layoutClickEvent);
+            };
+            component.addLayoutClickListener(layoutClickListener);
+        }
+    }
+
+    protected Component findChildComponent(BoxLayout layout, com.vaadin.ui.Component clickedComponent) {
+        for (Component component : layout.getComponents()) {
+            if (WebComponentsHelper.unwrap(component) == clickedComponent) {
+                return component;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void removeLayoutClickListener(LayoutClickListener listener) {
+        getEventRouter().removeListener(LayoutClickListener.class, listener);
+
+        if (!getEventRouter().hasListeners(LayoutClickListener.class)) {
+            component.removeLayoutClickListener(layoutClickListener);
+            layoutClickListener = null;
         }
     }
 }

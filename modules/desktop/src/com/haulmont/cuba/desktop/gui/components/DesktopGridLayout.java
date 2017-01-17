@@ -410,4 +410,12 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
     public void setDescription(String description) {
         impl.setToolTipText(description);
     }
+
+    @Override
+    public void addLayoutClickListener(LayoutClickListener listener) {
+    }
+
+    @Override
+    public void removeLayoutClickListener(LayoutClickListener listener) {
+    }
 }
