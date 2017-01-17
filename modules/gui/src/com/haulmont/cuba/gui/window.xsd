@@ -860,6 +860,12 @@
         </xs:sequence>
     </xs:complexType>
 
+    <xs:complexType name="dataGridColumnsList">
+        <xs:sequence>
+            <xs:element name="column" minOccurs="1" maxOccurs="unbounded" type="dataGridColumnComponent"/>
+        </xs:sequence>
+    </xs:complexType>
+
     <xs:complexType name="companionType">
         <xs:attribute name="class" type="xs:string" use="required"/>
     </xs:complexType>
