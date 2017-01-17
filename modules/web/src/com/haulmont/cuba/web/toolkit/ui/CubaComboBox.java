@@ -26,6 +26,7 @@ import com.vaadin.server.*;
 import com.vaadin.ui.ComboBox;
 
 import java.util.Map;
+import java.util.function.BiFunction;
 
 public class CubaComboBox extends ComboBox implements Action.Container {
 
@@ -35,6 +36,8 @@ public class CubaComboBox extends ComboBox implements Action.Container {
      */
     protected ActionManager shortcutsManager;
     protected OptionIconProvider optionIconProvider;
+
+    protected BiFunction<Object, Object, Boolean> customValueEquals;
 
     public CubaComboBox() {
         setValidationVisible(false);
@@ -182,6 +185,27 @@ public class CubaComboBox extends ComboBox implements Action.Container {
     @Override
     public void removeActionHandler(Action.Handler actionHandler) {
         getActionManager().removeActionHandler(actionHandler);
+    }
+
+    @Override
+    protected boolean fieldValueEquals(Object value1, Object value2) {
+        if (customValueEquals != null) {
+            Boolean equals = customValueEquals.apply(value1, value2);
+            if (equals != null) {
+                return equals;
+            }
+        }
+        // only if instance the same,
+        // we can set instance of entity with the same id but different property values
+        return super.fieldValueEquals(value1, value2);
+    }
+
+    public BiFunction<Object, Object, Boolean> getCustomValueEquals() {
+        return customValueEquals;
+    }
+
+    public void setCustomValueEquals(BiFunction<Object, Object, Boolean> customValueEquals) {
+        this.customValueEquals = customValueEquals;
     }
 
     public interface OptionIconProvider {
