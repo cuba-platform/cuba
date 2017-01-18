@@ -104,8 +104,7 @@ public class CommonLookupController extends AbstractLookup {
         entitiesTable.setId("table");
         entitiesTable.setDatasource(entitiesDs);
         entitiesTable.setMultiSelect(true);
-        entitiesTable.setWidth("100%");
-        entitiesTable.setHeight("100%");
+        entitiesTable.setSizeFull();
 
         RowsCount rowsCount = componentsFactory.createComponent(RowsCount.class);
         rowsCount.setDatasource(entitiesDs);

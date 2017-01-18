@@ -38,7 +38,6 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -188,8 +187,8 @@ public class EntityRestore extends AbstractWindow {
                 filter.setUseMaxResults(true);
                 filter.setDatasource(entitiesDs);
 
-                entitiesTable.setWidth("100%");
-                entitiesTable.setHeight("100%");
+                entitiesTable.setSizeFull();
+
                 entitiesTable.setMultiSelect(true);
                 entitiesTable.addAction(new ItemTrackingAction("restore") {
                     @Override

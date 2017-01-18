@@ -27,7 +27,6 @@ import java.util.Collection;
 
 /**
  * Root of the GenericUI components hierarchy
- *
  */
 public interface Component {
 
@@ -121,6 +120,16 @@ public interface Component {
     /** Set component height in {@link #getHeightUnits()} */
     void setHeight(String height);
 
+    /** Set component height to {@link #AUTO_SIZE} */
+    default void setHeightAuto() {
+        setHeight(AUTO_SIZE);
+    }
+
+    /** Set component height to 100% */
+    default void setHeightFull() {
+        setHeight("100%");
+    }
+
     /** Get component width in {@link #getWidthUnits()} */
     float getWidth();
 
@@ -129,6 +138,28 @@ public interface Component {
 
     /** Set component width in {@link #getWidthUnits()} */
     void setWidth(String width);
+
+    /** Set component width to {@link #AUTO_SIZE} */
+    default void setWidthAuto() {
+        setWidth(AUTO_SIZE);
+    }
+
+    /** Set component width to 100% */
+    default void setWidthFull() {
+        setWidth("100%");
+    }
+
+    /** Set component width and height to 100% */
+    default void setSizeFull() {
+        setWidth("100%");
+        setHeight("100%");
+    }
+
+    /** Set component width and height to {@link #AUTO_SIZE} */
+    default void setSizeAuto() {
+        setWidth(AUTO_SIZE);
+        setHeight(AUTO_SIZE);
+    }
 
     Alignment getAlignment();
     void setAlignment(Alignment alignment);

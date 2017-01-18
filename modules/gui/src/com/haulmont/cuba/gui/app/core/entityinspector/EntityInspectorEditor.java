@@ -233,8 +233,8 @@ public class EntityInspectorEditor extends AbstractWindow {
             runtimePropertiesFrame.setMessagesPack("com.haulmont.cuba.gui.app.core.entityinspector");
             runtimePropertiesFrame.setCategoryFieldVisible(false);
 
-            runtimePropertiesFrame.setHeight(Component.AUTO_SIZE);
-            runtimePropertiesFrame.setWidth("100%");
+            runtimePropertiesFrame.setHeightAuto();
+            runtimePropertiesFrame.setWidthFull();
 
             runtimePane.add(runtimePropertiesFrame);
         }
