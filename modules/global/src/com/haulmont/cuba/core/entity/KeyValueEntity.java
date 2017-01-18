@@ -19,10 +19,10 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.core.sys.CubaEnhancingDisabled;
-import org.apache.commons.lang.ObjectUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -98,7 +98,7 @@ public class KeyValueEntity
     @Override
     public void setValue(String name, Object value, boolean checkEquals) {
         Object oldValue = getValue(name);
-        if ((!checkEquals) || (!ObjectUtils.equals(oldValue, value))) {
+        if ((!checkEquals) || (!InstanceUtils.propertyValueEquals(oldValue, value))) {
             properties.put(name, value);
             propertyChanged(name, oldValue, value);
         }

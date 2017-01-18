@@ -19,13 +19,13 @@ package com.haulmont.cuba.core.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.core.sys.CubaEnhanced;
 import com.haulmont.cuba.core.sys.CubaEnhancingDisabled;
-import org.apache.commons.lang.ObjectUtils;
 
 import java.util.UUID;
 
@@ -78,7 +78,7 @@ public abstract class AbstractNotPersistentEntity
     @Override
     public void setValue(String property, Object obj, boolean checkEquals) {
         Object oldValue = getValue(property);
-        if ((!checkEquals) || (!ObjectUtils.equals(oldValue, obj))) {
+        if ((!checkEquals) || (!InstanceUtils.propertyValueEquals(oldValue, obj))) {
             getMethodsCache().invokeSetter(this, property, obj);
             if (!(this instanceof CubaEnhanced)) {
                 propertyChanged(property, oldValue, obj);
