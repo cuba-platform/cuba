@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -212,7 +213,7 @@ public class MessageTools {
     /**
      * Get localized name of an entity property. Messages pack must be located in the same package as entity.
      * @param property  MetaProperty
-     * @return          localized name
+     * @return localized name
      */
     public String getPropertyCaption(MetaProperty property) {
         Class<?> declaringClass = property.getDeclaringClass();
@@ -248,19 +249,56 @@ public class MessageTools {
      */
     @Deprecated
     public String getDefaultRequiredMessage(MetaProperty metaProperty) {
+        String notNullMessage = getNotNullMessage(metaProperty);
+        if (notNullMessage != null) {
+            return notNullMessage;
+        }
+
         return messages.formatMessage(messages.getMainMessagePack(),
                 "validation.required.defaultMsg", getPropertyCaption(metaProperty));
     }
 
     /**
      * Get default required message for specified property of MetaClass.
+     *
      * @param metaClass     MetaClass containing the property
      * @param propertyName  property's name
-     * @return              default required message for specified property of MetaClass
+     * @return default required message for specified property of MetaClass
      */
     public String getDefaultRequiredMessage(MetaClass metaClass, String propertyName) {
+        MetaPropertyPath propertyPath = metaClass.getPropertyPath(propertyName);
+        if (propertyPath != null) {
+            String notNullMessage = getNotNullMessage(propertyPath.getMetaProperty());
+            if (notNullMessage != null) {
+                return notNullMessage;
+            }
+        }
+
         return messages.formatMessage(messages.getMainMessagePack(),
                 "validation.required.defaultMsg", getPropertyCaption(metaClass, propertyName));
+    }
+
+    /**
+     * Get default required message for specified property of MetaClass if it has {@link NotNull} annotation.
+     *
+     * @param metaProperty MetaProperty
+     * @return localized not null message
+     */
+    protected String getNotNullMessage(MetaProperty metaProperty) {
+        String notNullMessage = (String) metaProperty.getAnnotations()
+                .get(NotNull.class.getName() + "_notnull_message");
+        if (notNullMessage != null
+                && !"{javax.validation.constraints.NotNull.message}".equals(notNullMessage)) {
+            if (notNullMessage.startsWith("{") && notNullMessage.endsWith("}")) {
+                notNullMessage = notNullMessage.substring(1, notNullMessage.length() - 1);
+                if (notNullMessage.startsWith(MAIN_MARK) || notNullMessage.startsWith(MARK)) {
+                    return loadString(notNullMessage);
+                }
+            }
+            // return as is, parameters and value interpolation are not supported
+            return notNullMessage;
+        }
+        return null;
     }
 
     /**

@@ -52,7 +52,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -65,7 +64,7 @@ public class MetadataLoader {
 
     public static final String NAME = "cuba_MetadataLoader";
 
-    private Logger log = LoggerFactory.getLogger(MetadataLoader.class);
+    private final Logger log = LoggerFactory.getLogger(MetadataLoader.class);
 
     @Inject
     protected MetadataBuildSupport metadataBuildSupport;
@@ -159,7 +158,7 @@ public class MetadataLoader {
                 }
                 Datatypes.register(datatype);
             } catch (Throwable e) {
-                log.error(String.format("Fail to load datatype '%s'", datatypeClassName), e);
+                log.error("Fail to load datatype '{}'", datatypeClassName, e);
             }
         }
     }
