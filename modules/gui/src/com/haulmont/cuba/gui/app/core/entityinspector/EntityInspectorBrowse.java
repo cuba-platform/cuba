@@ -247,8 +247,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
         entitiesTable.setDatasource(entitiesDs);
 
         tableBox.add(entitiesTable);
-        entitiesTable.setWidth("100%");
-        entitiesTable.setHeight("100%");
+
+        entitiesTable.setSizeFull();
 
         createButtonsPanel(entitiesTable);
 

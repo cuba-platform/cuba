@@ -138,8 +138,7 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         this.initialLayout = initialLayout;
 
         initialLayout.setParent(this);
-        initialLayout.setHeight("100%");
-        initialLayout.setWidth("100%");
+        initialLayout.setSizeFull();
 
         Component vInitialLayout = WebComponentsHelper.getComposition(initialLayout);
         vInitialLayout.addStyleName(INITIAL_LAYOUT_STYLENAME);

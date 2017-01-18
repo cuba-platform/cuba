@@ -75,7 +75,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
-import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
 import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE_PX;
 import static com.haulmont.cuba.gui.components.Frame.MessageType;
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
@@ -716,14 +715,14 @@ public class WebWindowManager extends WindowManager {
             // resizable by default, but may be overridden in dialog params
             vWindow.setResizable(BooleanUtils.isNotFalse(openType.getResizable()));
 
-            window.setHeight("100%");
+            window.setHeightFull();
         } else {
             if (openType.getWidth() == null) {
                 vWindow.setWidth(theme.getInt("cuba.web.WebWindowManager.dialog.width"), Unit.PIXELS);
             } else if (openType.getWidth() == AUTO_SIZE_PX) {
                 vWindow.setWidthUndefined();
                 layout.setWidthUndefined();
-                window.setWidth(AUTO_SIZE);
+                window.setWidthAuto();
             } else {
                 vWindow.setWidth(openType.getWidth().floatValue(), Unit.PIXELS);
             }
@@ -731,9 +730,9 @@ public class WebWindowManager extends WindowManager {
             if (openType.getHeight() != null && openType.getHeight() != AUTO_SIZE_PX) {
                 vWindow.setHeight(openType.getHeight().floatValue(), Unit.PIXELS);
                 layout.setHeight("100%");
-                window.setHeight("100%");
+                window.setHeightFull();
             } else {
-                window.setHeight(AUTO_SIZE);
+                window.setHeightAuto();
             }
 
             // non resizable by default
