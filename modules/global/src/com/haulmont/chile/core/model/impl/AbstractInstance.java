@@ -120,14 +120,13 @@ public abstract class AbstractInstance implements Instance {
     /**
      * Set value to property in instance
      *
-     * @deprecated For internal use only. Parameter checkEquals now does not affect logic. Use {@link #setValue(String, Object)}
+     * For internal use only. Use {@link #setValue(String, Object)}
      *
      * @param name        property name
      * @param value       value
      * @param checkEquals check equals for previous and new value.
      *                    If flag is true and objects equals, then setter will not be invoked
      */
-    @Deprecated
     public void setValue(String name, Object value, boolean checkEquals) {
         Object oldValue = getValue(name);
         if ((!checkEquals) || (!InstanceUtils.propertyValueEquals(oldValue, value))) {
