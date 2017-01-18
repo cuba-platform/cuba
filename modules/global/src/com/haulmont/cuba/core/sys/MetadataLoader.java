@@ -310,7 +310,7 @@ public class MetadataLoader {
                 //noinspection unchecked
                 ((Map) annValue).putAll(xmlAnn.attributes);
             } else {
-                log.warn("Meta-annotation {} has value {} and cannot be re-assigned by annotation attributes");
+                log.warn("Meta-annotation {} has value {} and cannot be re-assigned by annotation attributes", annName, annValue);
             }
         }
     }
