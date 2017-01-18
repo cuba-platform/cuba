@@ -18,7 +18,6 @@
 package com.haulmont.cuba.core.sys;
 
 import com.google.common.base.Joiner;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.datatypes.Datatype;
@@ -46,6 +45,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
@@ -58,8 +58,10 @@ public class MetaModelLoader {
 
     public static final String NAME = "cuba_MetaModelLoader";
 
-    private static final String VALIDATION_MIN = "_min";
-    private static final String VALIDATION_MAX = "_max";
+    protected static final String VALIDATION_MIN = "_min";
+    protected static final String VALIDATION_MAX = "_max";
+
+    protected static final String VALIDATION_NOTNULL_MESSAGE = "_notnull_message";
 
     protected Session session;
 
@@ -70,8 +72,8 @@ public class MetaModelLoader {
     }
 
     public void loadModel(String rootPackage, List<String> classNames) {
-        Preconditions.checkNotNullArgument(rootPackage, "rootPackage is null");
-        Preconditions.checkNotNullArgument(classNames, "classNames is null");
+        checkNotNullArgument(rootPackage, "rootPackage is null");
+        checkNotNullArgument(classNames, "classNames is null");
 
         List<Class<?>> classes = new ArrayList<>();
         for (String className : classNames) {
@@ -595,6 +597,11 @@ public class MetaModelLoader {
     }
 
     protected void loadBeanValidationAnnotations(MetaProperty metaProperty, AnnotatedElement annotatedElement) {
+        NotNull notNull = annotatedElement.getAnnotation(NotNull.class);
+        if (notNull != null && isDefinedForDefaultValidationGroup(notNull)) {
+            metaProperty.getAnnotations().put(NotNull.class.getName() + VALIDATION_NOTNULL_MESSAGE, notNull.message());
+        }
+
         Size size = annotatedElement.getAnnotation(Size.class);
         if (size != null && isDefinedForDefaultValidationGroup(size)) {
             metaProperty.getAnnotations().put(Size.class.getName() + VALIDATION_MIN, size.min());
