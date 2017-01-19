@@ -230,8 +230,8 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
 
         if (layoutClickListener == null) {
             layoutClickListener = (LayoutEvents.LayoutClickListener) event -> {
-                Component childComponent = findChildComponent(WebGridLayout.this, event.getChildComponent());
-                LayoutClickEvent layoutClickEvent = new LayoutClickEvent(WebGridLayout.this, childComponent);
+                Component childComponent = findChildComponent(this, event.getChildComponent());
+                LayoutClickEvent layoutClickEvent = new LayoutClickEvent(this, childComponent);
 
                 getEventRouter().fireEvent(LayoutClickListener.class, LayoutClickListener::layoutClick, layoutClickEvent);
             };
@@ -241,7 +241,7 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
 
     protected Component findChildComponent(GridLayout layout, com.vaadin.ui.Component clickedComponent) {
         for (Component component : layout.getComponents()) {
-            if (WebComponentsHelper.unwrap(component) == clickedComponent) {
+            if (WebComponentsHelper.getComposition(component) == clickedComponent) {
                 return component;
             }
         }
