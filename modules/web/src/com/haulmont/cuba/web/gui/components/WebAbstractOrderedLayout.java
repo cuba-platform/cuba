@@ -157,16 +157,6 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
     }
 
     @Override
-    public String getCaption() {
-        return getComposition().getCaption();
-    }
-
-    @Override
-    public void setCaption(String caption) {
-        getComposition().setCaption(caption);
-    }
-
-    @Override
     public String getDescription() {
         return getComposition().getDescription();
     }
