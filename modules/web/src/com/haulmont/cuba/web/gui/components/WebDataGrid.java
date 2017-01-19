@@ -101,7 +101,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     protected boolean settingsEnabled = true;
     protected boolean sortable = true;
-    protected boolean columnsHidingAllowed = true;
+    protected boolean columnsCollapsingAllowed = true;
 
     protected Action itemClickAction;
     protected Action enterPressAction;
@@ -122,7 +122,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     protected CollectionDatasource.CollectionChangeListener collectionChangeSelectionListener;
     protected CollectionDsActionsNotifier collectionDsActionsNotifier;
 
-    protected Grid.ColumnVisibilityChangeListener columnVisibilityChangeListener;
+    protected Grid.ColumnVisibilityChangeListener columnCollapsingChangeListener;
     protected Grid.ColumnResizeListener columnResizeListener;
     protected com.vaadin.event.SelectionEvent.SelectionListener selectionListener;
     protected com.vaadin.event.SortEvent.SortListener sortListener;
@@ -247,7 +247,9 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         });
         component.addColumnReorderListener(e -> {
             if (e.isUserOriginated()) {
-                columnsOrder = getColumnsOrderInternal();
+                // Grid doesn't know about columns hidden by security permissions,
+                // so we need to return them back to they previous positions
+                columnsOrder = restoreColumnsOrder(getColumnsOrderInternal());
 
                 if (getEventRouter().hasListeners(ColumnReorderListener.class)) {
                     ColumnReorderEvent event = new ColumnReorderEvent(WebDataGrid.this);
@@ -289,11 +291,26 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     protected List<Column> getColumnsOrderInternal() {
         List<Grid.Column> columnsOrder = component.getColumns();
-        List<Column> columns = new ArrayList<>(columnsOrder.size());
-        for (Grid.Column gridColumn : columnsOrder) {
-            columns.add(getColumnByGridColumn(gridColumn));
-        }
-        return columns;
+        return columnsOrder.stream()
+                .map(this::getColumnByGridColumn)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Inserts columns hidden by security permissions (or with visible = false,
+     * which means that where is no Grid.Column associated with DatGrid.Column)
+     * into a list of visible columns, passed as a parameter, in they original positions.
+     *
+     * @param visibleColumns the list of DataGrid columns,
+     *                       not hidden by security permissions
+     * @return a list of all columns in DataGrid
+     */
+    protected List<Column> restoreColumnsOrder(List<Column> visibleColumns) {
+        List<Column> newColumnsOrder = new ArrayList<>(visibleColumns);
+        columnsOrder.stream()
+                .filter(column -> !visibleColumns.contains(column))
+                .forEach(column -> newColumnsOrder.add(columnsOrder.indexOf(column), column));
+        return newColumnsOrder;
     }
 
     protected void initContextMenu() {
@@ -314,9 +331,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     protected void refreshActionsState() {
-        for (Action action : getActions()) {
-            action.refreshState();
-        }
+        getActions().forEach(Action::refreshState);
     }
 
     protected void handleDoubleClickAction() {
@@ -380,7 +395,9 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     @Override
     public List<Column> getVisibleColumns() {
-        return columnsOrder.stream().filter(column -> !column.isHidden()).collect(Collectors.toList());
+        return columnsOrder.stream()
+                .filter(Column::isVisible)
+                .collect(Collectors.toList());
     }
 
     @Nullable
@@ -425,11 +442,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     protected void addColumnInternal(ColumnImpl column, int index) {
-        if (column.getPropertyPath() != null) {
-            getContainerDataSource().addContainerProperty(column.getPropertyPath(), column.getType(), null);
-        } else {
-            containerWrapper.addGeneratedProperty(column.getId(), createDefaultPropertyValueGenerator(column));
-        }
+        addContainerProperty(column);
 
         columns.put(column.getId(), column);
         columnsOrder.add(index, column);
@@ -449,6 +462,14 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
 
         component.setColumnOrder(getColumnPropertyIds());
+    }
+
+    protected void addContainerProperty(ColumnImpl column) {
+        if (column.getPropertyPath() != null) {
+            getContainerDataSource().addContainerProperty(column.getPropertyPath(), column.getType(), null);
+        } else {
+            containerWrapper.addGeneratedProperty(column.getId(), createDefaultPropertyValueGenerator(column));
+        }
     }
 
     protected PropertyValueGenerator createDefaultPropertyValueGenerator(final Column column) {
@@ -480,7 +501,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     protected void setupGridColumnProperties(Grid.Column gridColumn, Column column) {
         gridColumn.setHeaderCaption(column.getCaption());
-        gridColumn.setHidingToggleCaption(column.getHidingToggleCaption());
+        gridColumn.setHidingToggleCaption(column.getCollapsingToggleCaption());
         if (column.isWidthAuto()) {
             gridColumn.setWidthUndefined();
         } else {
@@ -489,8 +510,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         gridColumn.setExpandRatio(column.getExpandRatio());
         gridColumn.setMinimumWidth(column.getMinimumWidth());
         gridColumn.setMaximumWidth(column.getMaximumWidth());
-        gridColumn.setHidden(column.isHidden());
-        gridColumn.setHidable(column.isHidable() && column.getOwner().isColumnsHidingAllowed());
+        gridColumn.setHidden(column.isCollapsed());
+        gridColumn.setHidable(column.isCollapsible() && column.getOwner().isColumnsCollapsingAllowed());
         gridColumn.setResizable(column.isResizable());
 
         // FIXME: gg, workaround to prevent exception from GridColumn while Grid is using default IndexedContainer
@@ -508,7 +529,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
     }
 
-    protected static void applyDefaultRenderer(Grid.Column gridColumn, @Nullable MetaPropertyPath property) {
+    protected void applyDefaultRenderer(Grid.Column gridColumn, @Nullable MetaPropertyPath property) {
         if (property != null) {
             MetaProperty metaProperty = property.getMetaProperty();
             switch (metaProperty.getType()) {
@@ -540,17 +561,21 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             return;
         }
 
-        if (column.getPropertyPath() != null) {
-            getContainerDataSource().removeContainerProperty(column.getPropertyPath());
-        } else {
-            containerWrapper.removeGeneratedProperty(column.getId());
-        }
+        removeContainerProperty(column);
 
         columns.remove(column.getId());
         columnsOrder.remove(column);
 
         column.setOwner(null);
         ((ColumnImpl) column).setGridColumn(null);
+    }
+
+    protected void removeContainerProperty(Column column) {
+        if (column.getPropertyPath() != null) {
+            getContainerDataSource().removeContainerProperty(column.getPropertyPath());
+        } else {
+            containerWrapper.removeGeneratedProperty(column.getId());
+        }
     }
 
     @Override
@@ -572,38 +597,11 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                     "com.haulmont.cuba.gui.data.CollectionDatasource.Indexed");
         }
 
-        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-
-        final Collection<Column> columns;
-        if (this.columns.isEmpty()) {
-            MetaClass metaClass = datasource.getMetaClass();
-            Collection<MetaPropertyPath> paths = datasource.getView() != null ?
-                    // if a view is specified - use view properties
-                    metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass()) :
-                    // otherwise use all properties from meta-class
-                    metadataTools.getPropertyPaths(datasource.getMetaClass());
-            for (MetaPropertyPath metaPropertyPath : paths) {
-                MetaProperty property = metaPropertyPath.getMetaProperty();
-                if (!property.getRange().getCardinality().isMany() && !metadataTools.isSystem(property)
-                        && security.isEntityAttrReadPermitted(metaClass, metaPropertyPath.toString())) {
-                    String propertyName = property.getName();
-
-                    ColumnImpl column = new ColumnImpl(propertyName, metaPropertyPath, this);
-
-                    MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(metaPropertyPath);
-
-                    column.setCaption(messageTools.getPropertyCaption(propertyMetaClass, propertyName));
-
-                    Element element = DocumentHelper.createElement("column");
-                    column.setXmlDescriptor(element);
-
-                    addColumn(column);
-                }
-            }
-        }
-        columns = this.columns.values();
+        addInitialColumns(datasource);
 
         this.datasource = datasource;
+
+        List<Column> visibleColumnsOrder = getInitialVisibleColumns();
 
         component.removeAllColumns();
         final IndexedCollectionDsWrapper containerDatasource =
@@ -613,13 +611,87 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
         createStubsForGeneratedColumns();
 
-        for (Column column : columns) {
+        // mark columns hidden by security permissions as visible = false
+        // and remove Grid.Column to prevent its property changing
+        columnsOrder.stream()
+                .filter(column -> !visibleColumnsOrder.contains(column))
+                .forEach(column -> {
+                    ColumnImpl columnImpl = (ColumnImpl) column;
+                    columnImpl.setVisible(false);
+                    columnImpl.setGridColumn(null);
+                });
+
+        for (Column column : visibleColumnsOrder) {
             Grid.Column gridColumn = component.getColumn(((ColumnImpl) column).getColumnPropertyId());
             setupGridColumnProperties(gridColumn, column);
         }
 
         component.setColumnOrder(getColumnPropertyIds());
 
+        initShowInfoAction(datasource);
+
+        if (rowsCount != null) {
+            rowsCount.setDatasource(datasource);
+        }
+
+        initCollectionChangeSelectionListener(datasource);
+
+        //noinspection unchecked
+        collectionDsActionsNotifier = new CollectionDsActionsNotifier(this);
+        collectionDsActionsNotifier.bind(datasource);
+
+        refreshActionsState();
+
+        if (!canBeSorted(datasource)) {
+            setSortable(false);
+        }
+
+        assignAutoDebugId();
+    }
+
+    protected void addInitialColumns(CollectionDatasource datasource) {
+        if (this.columns.isEmpty()) {
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            MetaClass metaClass = datasource.getMetaClass();
+            Collection<MetaPropertyPath> paths = datasource.getView() != null ?
+                    // if a view is specified - use view properties
+                    metadataTools.getViewPropertyPaths(datasource.getView(), metaClass) :
+                    // otherwise use all properties from meta-class
+                    metadataTools.getPropertyPaths(metaClass);
+            for (MetaPropertyPath metaPropertyPath : paths) {
+                MetaProperty property = metaPropertyPath.getMetaProperty();
+                if (!property.getRange().getCardinality().isMany() && !metadataTools.isSystem(property)) {
+                    String propertyName = property.getName();
+                    ColumnImpl column = new ColumnImpl(propertyName, metaPropertyPath, this);
+                    MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(metaPropertyPath);
+                    column.setCaption(messageTools.getPropertyCaption(propertyMetaClass, propertyName));
+
+                    Element element = DocumentHelper.createElement("column");
+                    column.setXmlDescriptor(element);
+
+                    addColumn(column);
+                }
+            }
+        }
+    }
+
+    protected Object[] getColumnPropertyIds() {
+        return columnsOrder.stream()
+                .filter(Column::isVisible)
+                .map(column -> ((ColumnImpl) column).getColumnPropertyId())
+                .collect(Collectors.toList())
+                .toArray();
+    }
+
+    protected void createStubsForGeneratedColumns() {
+        for (Column column : columnsOrder) {
+            if (column.getPropertyPath() == null) {
+                containerWrapper.addGeneratedProperty(column.getId(), createDefaultPropertyValueGenerator(column));
+            }
+        }
+    }
+
+    protected void initShowInfoAction(CollectionDatasource datasource) {
         if (security.isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
             ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
             if (action == null) {
@@ -628,11 +700,9 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             }
             action.setDatasource(datasource);
         }
+    }
 
-        if (rowsCount != null) {
-            rowsCount.setDatasource(datasource);
-        }
-
+    protected void initCollectionChangeSelectionListener(CollectionDatasource datasource) {
         collectionChangeSelectionListener = e -> {
             // #PL-2035, reload selection from ds
             Collection<Object> selectedItemIds = component.getSelectedRows();
@@ -641,8 +711,9 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             }
 
             //noinspection unchecked
-            Set<Object> newSelection = selectedItemIds.stream().filter(entityId ->
-                    e.getDs().containsItem(entityId)).collect(Collectors.toSet());
+            Set<Object> newSelection = selectedItemIds.stream()
+                    .filter(entityId -> e.getDs().containsItem(entityId))
+                    .collect(Collectors.toSet());
 
             if (e.getDs().getState() == Datasource.State.VALID && e.getDs().getItem() != null) {
                 newSelection.add(e.getDs().getItem().getId());
@@ -658,33 +729,6 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         //noinspection unchecked
         datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource,
                 collectionChangeSelectionListener));
-
-        //noinspection unchecked
-        collectionDsActionsNotifier = new CollectionDsActionsNotifier(this);
-        collectionDsActionsNotifier.bind(datasource);
-
-        for (Action action : getActions()) {
-            action.refreshState();
-        }
-
-        if (!canBeSorted(datasource)) {
-            setSortable(false);
-        }
-
-        assignAutoDebugId();
-    }
-
-    protected Object[] getColumnPropertyIds() {
-        return columnsOrder.stream()
-                .map(column -> ((ColumnImpl) column).getColumnPropertyId()).collect(Collectors.toList()).toArray();
-    }
-
-    protected void createStubsForGeneratedColumns() {
-        for (Column column : columnsOrder) {
-            if (column.getPropertyPath() == null) {
-                containerWrapper.addGeneratedProperty(column.getId(), createDefaultPropertyValueGenerator(column));
-            }
-        }
     }
 
     @Override
@@ -731,15 +775,15 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     @Override
-    public boolean isColumnsHidingAllowed() {
-        return columnsHidingAllowed;
+    public boolean isColumnsCollapsingAllowed() {
+        return columnsCollapsingAllowed;
     }
 
     @Override
-    public void setColumnsHidingAllowed(boolean columnsHidingAllowed) {
-        this.columnsHidingAllowed = columnsHidingAllowed;
+    public void setColumnsCollapsingAllowed(boolean columnsCollapsingAllowed) {
+        this.columnsCollapsingAllowed = columnsCollapsingAllowed;
         for (Column column : getColumns()) {
-            ((ColumnImpl) column).updateHidable();
+            ((ColumnImpl) column).updateCollapsible();
         }
     }
 
@@ -971,7 +1015,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     @Override
     public void removeAllActions() {
-        for (Action action : new ArrayList<>(actionList)) {
+        for (Action action : actionList.toArray(new Action[actionList.size()])) {
             removeAction(action);
         }
     }
@@ -1014,16 +1058,27 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                 : new DataGridDsWrapper(datasource, columns);
     }
 
-    protected List<MetaPropertyPath> getPropertyColumns() {
-        List<MetaPropertyPath> result = new ArrayList<>();
+    protected List<Column> getInitialVisibleColumns() {
+        MetaClass metaClass = datasource.getMetaClass();
+        return columnsOrder.stream()
+                .filter(column -> {
+                    MetaPropertyPath propertyPath = column.getPropertyPath();
+                    return propertyPath == null
+                            || security.isEntityAttrReadPermitted(metaClass, propertyPath.toString());
+                })
+                .collect(Collectors.toList());
+    }
 
-        for (Column column : columnsOrder) {
-            MetaPropertyPath propertyPath = column.getPropertyPath();
-            if (propertyPath != null) {
-                result.add(propertyPath);
-            }
-        }
-        return result;
+    protected List<MetaPropertyPath> getPropertyColumns() {
+        MetaClass metaClass = datasource.getMetaClass();
+        return columnsOrder.stream()
+                .filter(column -> {
+                    MetaPropertyPath propertyPath = column.getPropertyPath();
+                    return propertyPath != null
+                            && security.isEntityAttrReadPermitted(metaClass, propertyPath.toString());
+                })
+                .map(Column::getPropertyPath)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -1127,9 +1182,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     public void setStyleName(String name) {
         super.setStyleName(name);
 
-        for (String internalStyle : internalStyles) {
-            componentComposition.addStyleName(internalStyle);
-        }
+        internalStyles.forEach(internalStyle ->
+                componentComposition.addStyleName(internalStyle));
     }
 
     @Override
@@ -1268,11 +1322,14 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
         final Element columnsElem = element.element("columns");
         if (columnsElem != null) {
-            List<Column> modelColumns = getColumnsOrderInternal();
-            List<String> modelIds = modelColumns.stream().map(String::valueOf).collect(Collectors.toList());
+            List<Column> modelColumns = getVisibleColumns();
+            List<String> modelIds = modelColumns.stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.toList());
 
-            List<String> loadedIds = Dom4j.elements(columnsElem, "columns")
-                    .stream().map(colElem -> colElem.attributeValue("id")).collect(Collectors.toList());
+            List<String> loadedIds = Dom4j.elements(columnsElem, "columns").stream()
+                    .map(colElem -> colElem.attributeValue("id"))
+                    .collect(Collectors.toList());
 
             if (CollectionUtils.isEqualCollection(modelIds, loadedIds)) {
                 applyColumnSettings(element, modelColumns);
@@ -1298,9 +1355,9 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                         column.setWidthAuto();
                     }
 
-                    String hidden = colElem.attributeValue("hidden");
-                    if (hidden != null && component.isColumnReorderingAllowed()) {
-                        column.setHidden(Boolean.parseBoolean(hidden));
+                    String collapsed = colElem.attributeValue("collapsed");
+                    if (collapsed != null && component.isColumnReorderingAllowed()) {
+                        column.setCollapsed(Boolean.parseBoolean(collapsed));
                     }
 
                     break;
@@ -1317,14 +1374,15 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
         // if the data grid contains only one column, always show it
         if (newColumns.size() == 1) {
-            newColumns.get(0).setHidden(false);
+            newColumns.get(0).setCollapsed(false);
         }
 
-        List<Object> properties = new ArrayList<>();
-        for (Column column : newColumns) {
-            properties.add(((ColumnImpl) column).getColumnPropertyId());
-        }
-        columnsOrder = newColumns;
+        List<Object> properties = newColumns.stream()
+                .map(column -> ((ColumnImpl) column).getColumnPropertyId())
+                .collect(Collectors.toList());
+        // We don't save settings for columns hidden by security permissions,
+        // so we need to return them back to they initial positions
+        columnsOrder = restoreColumnsOrder(newColumns);
         component.setColumnOrder(properties.toArray());
 
         if (isSortable()) {
@@ -1335,13 +1393,11 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                 MetaPropertyPath sortProperty = datasource.getMetaClass().getPropertyPath(sortPropertyName);
                 if (properties.contains(sortProperty) && sortProperty != null) {
 
-                    List<com.vaadin.data.sort.SortOrder> sortOrders = new ArrayList<>();
-
                     String sortDirection = columnsElem.attributeValue("sortDirection");
                     if (StringUtils.isNotEmpty(sortDirection)) {
-                        sortOrders.add(new com.vaadin.data.sort.SortOrder(sortProperty,
-                                com.vaadin.shared.data.sort.SortDirection.valueOf(sortDirection)));
-
+                        List<com.vaadin.data.sort.SortOrder> sortOrders = Collections.singletonList(
+                                new com.vaadin.data.sort.SortOrder(sortProperty,
+                                        com.vaadin.shared.data.sort.SortDirection.valueOf(sortDirection)));
                         component.setSortOrder(sortOrders);
                     }
                 }
@@ -1361,7 +1417,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
         columnsElem = element.addElement("columns");
 
-        for (Column column : columnsOrder) {
+        List<Column> visibleColumns = getVisibleColumns();
+        for (Column column : visibleColumns) {
             Element colElem = columnsElem.addElement("columns");
             colElem.addAttribute("id", column.toString());
 
@@ -1370,7 +1427,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                 colElem.addAttribute("width", String.valueOf(width));
             }
 
-            colElem.addAttribute("hidden", Boolean.toString(column.isHidden()));
+            colElem.addAttribute("collapsed", Boolean.toString(column.isCollapsed()));
         }
 
         List<com.vaadin.data.sort.SortOrder> sortOrders = component.getSortOrder();
@@ -1458,29 +1515,29 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     @Override
-    public void addColumnVisibilityChangeListener(ColumnVisibilityChangeListener listener) {
-        getEventRouter().addListener(ColumnVisibilityChangeListener.class, listener);
+    public void addColumnCollapsingChangeListener(ColumnCollapsingChangeListener listener) {
+        getEventRouter().addListener(ColumnCollapsingChangeListener.class, listener);
 
-        if (columnVisibilityChangeListener == null) {
-            columnVisibilityChangeListener = (Grid.ColumnVisibilityChangeListener) e -> {
+        if (columnCollapsingChangeListener == null) {
+            columnCollapsingChangeListener = (Grid.ColumnVisibilityChangeListener) e -> {
                 if (e.isUserOriginated()) {
-                    ColumnVisibilityChangeEvent event = new ColumnVisibilityChangeEvent(WebDataGrid.this,
+                    ColumnCollapsingChangeEvent event = new ColumnCollapsingChangeEvent(WebDataGrid.this,
                             getColumnByGridColumn(e.getColumn()), e.isHidden());
-                    getEventRouter().fireEvent(ColumnVisibilityChangeListener.class,
-                            ColumnVisibilityChangeListener::columnVisibilityChanged, event);
+                    getEventRouter().fireEvent(ColumnCollapsingChangeListener.class,
+                            ColumnCollapsingChangeListener::columnCollapsingChanged, event);
                 }
             };
-            component.addColumnVisibilityChangeListener(columnVisibilityChangeListener);
+            component.addColumnVisibilityChangeListener(columnCollapsingChangeListener);
         }
     }
 
     @Override
-    public void removeColumnVisibilityChangeListener(ColumnVisibilityChangeListener listener) {
-        getEventRouter().removeListener(ColumnVisibilityChangeListener.class, listener);
+    public void removeColumnCollapsingChangeListener(ColumnCollapsingChangeListener listener) {
+        getEventRouter().removeListener(ColumnCollapsingChangeListener.class, listener);
 
-        if (!getEventRouter().hasListeners(ColumnVisibilityChangeListener.class)) {
-            component.removeColumnVisibilityChangeListener(columnVisibilityChangeListener);
-            columnVisibilityChangeListener = null;
+        if (!getEventRouter().hasListeners(ColumnCollapsingChangeListener.class)) {
+            component.removeColumnVisibilityChangeListener(columnCollapsingChangeListener);
+            columnCollapsingChangeListener = null;
         }
     }
 
@@ -1630,12 +1687,10 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     protected List<E> getItemsByIds(Set itemIds) {
-        List<E> items = new ArrayList<>();
-        for (Object itemId : itemIds) {
-            //noinspection unchecked
-            items.add((E) datasource.getItem(itemId));
-        }
-        return items;
+        //noinspection unchecked
+        return (List<E>) itemIds.stream()
+                .map(itemId -> datasource.getItem(itemId))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -1705,9 +1760,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             if (columns.isEmpty()) {
                 super.createProperties(view, metaClass);
             } else {
-                for (Map.Entry<String, Column> entry : columns.entrySet()) {
-                    properties.add(entry.getValue().getPropertyPath());
-                }
+                columns.values().forEach(column ->
+                        properties.add(column.getPropertyPath()));
             }
         }
     }
@@ -1726,9 +1780,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             if (columns.isEmpty()) {
                 super.createProperties(view, metaClass);
             } else {
-                for (Map.Entry<String, Column> entry : columns.entrySet()) {
-                    properties.add(entry.getValue().getPropertyPath());
-                }
+                columns.values().forEach(column ->
+                        properties.add(column.getPropertyPath()));
             }
         }
 
@@ -1779,13 +1832,14 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         protected MetaPropertyPath propertyPath;
 
         protected String caption;
-        protected String hidingToggleCaption;
+        protected String collapsingToggleCaption;
         protected double width;
         protected double minWidth;
         protected double maxWidth;
         protected int expandRatio;
-        protected boolean hidden;
-        protected boolean hidable;
+        protected boolean collapsed;
+        protected boolean visible;
+        protected boolean collapsible;
         protected boolean sortable;
         protected boolean resizable;
         protected Formatter formatter;
@@ -1793,10 +1847,10 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         protected Class type;
         protected Element element;
 
-        protected DataGrid owner;
+        protected WebDataGrid owner;
         protected Grid.Column gridColumn;
 
-        public ColumnImpl(String id, @Nullable MetaPropertyPath propertyPath, DataGrid owner) {
+        public ColumnImpl(String id, @Nullable MetaPropertyPath propertyPath, WebDataGrid owner) {
             this.id = id;
             this.propertyPath = propertyPath;
             this.type = propertyPath != null ? propertyPath.getRangeJavaClass() : String.class;
@@ -1811,8 +1865,10 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             // but require special handling to enable sorting.
             // for now sorting for generated properties is disabled
             sortable = propertyPath != null && owner.isSortable();
-            hidable = owner.isColumnsHidingAllowed();
-            hidden = false;
+            collapsible = owner.isColumnsCollapsingAllowed();
+            collapsed = false;
+
+            visible = true;
 
             width = -1;
             maxWidth = -1;
@@ -1858,18 +1914,18 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
 
         @Override
-        public String getHidingToggleCaption() {
+        public String getCollapsingToggleCaption() {
             if (gridColumn != null) {
                 return gridColumn.getHidingToggleCaption();
             }
-            return hidingToggleCaption;
+            return collapsingToggleCaption;
         }
 
         @Override
-        public void setHidingToggleCaption(String hidingToggleCaption) {
-            this.hidingToggleCaption = hidingToggleCaption;
+        public void setCollapsingToggleCaption(String collapsingToggleCaption) {
+            this.collapsingToggleCaption = collapsingToggleCaption;
             if (gridColumn != null) {
-                gridColumn.setHidingToggleCaption(hidingToggleCaption);
+                gridColumn.setHidingToggleCaption(collapsingToggleCaption);
             }
         }
 
@@ -1961,38 +2017,65 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
 
         @Override
-        public boolean isHidden() {
+        public boolean isVisible() {
+            return visible;
+        }
+
+        @Override
+        public void setVisible(boolean visible) {
+            if (this.visible != visible) {
+                this.visible = visible;
+
+                if (visible) {
+                    owner.addContainerProperty(this);
+
+                    Grid grid = (Grid) owner.getComponent();
+                    Grid.Column gridColumn = grid.getColumn(getColumnPropertyId());
+                    if (gridColumn != null) {
+                        owner.setupGridColumnProperties(gridColumn, this);
+                    }
+
+                    grid.setColumnOrder(owner.getColumnPropertyIds());
+                } else {
+                    owner.removeContainerProperty(this);
+                    setGridColumn(null);
+                }
+            }
+        }
+
+        @Override
+        public boolean isCollapsed() {
             if (gridColumn != null) {
                 return gridColumn.isHidden();
             }
-            return hidden;
+            return collapsed;
         }
 
         @Override
-        public void setHidden(boolean hidden) {
-            this.hidden = hidden;
+        public void setCollapsed(boolean collapsed) {
+            this.collapsed = collapsed;
             if (gridColumn != null) {
-                gridColumn.setHidden(hidden);
+                gridColumn.setHidden(collapsed);
             }
         }
 
         @Override
-        public boolean isHidable() {
+        public boolean isCollapsible() {
             if (gridColumn != null) {
                 return gridColumn.isHidable();
             }
-            return hidable;
+            return collapsible;
         }
 
         @Override
-        public void setHidable(boolean hidable) {
-            this.hidable = hidable;
-            updateHidable();
+        public void setCollapsible(boolean collapsible) {
+            this.collapsible = collapsible;
+            updateCollapsible();
         }
 
-        public void updateHidable() {
+        public void updateCollapsible() {
             if (gridColumn != null) {
-                gridColumn.setHidable(hidable && owner.isColumnsHidingAllowed());
+                gridColumn.setHidable(collapsible && owner.isColumnsCollapsingAllowed());
             }
         }
 
@@ -2053,7 +2136,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                         gridColumn.setConverter(new FormatterBasedConverter(formatter));
                     }
                 } else {
-                    WebDataGrid.applyDefaultRenderer(gridColumn, propertyPath);
+                    owner.applyDefaultRenderer(gridColumn, propertyPath);
                 }
             }
         }
@@ -2089,7 +2172,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
         @Override
         public void setOwner(DataGrid owner) {
-            this.owner = owner;
+            this.owner = (WebDataGrid) owner;
         }
 
         @Override

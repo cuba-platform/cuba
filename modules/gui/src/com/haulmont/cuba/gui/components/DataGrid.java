@@ -45,10 +45,9 @@ public interface DataGrid<E extends Entity>
     List<Column> getColumns();
 
     /**
-     * Returns a copy of currently visible columns in their current visual
-     * order in this DataGrid.
+     * Returns a copy of columns not hidden by security permissions.
      *
-     * @return copy of current visible columns
+     * @return copy of columns not hidden by security permissions
      * @see #getColumns()
      */
     List<Column> getVisibleColumns();
@@ -238,7 +237,7 @@ public interface DataGrid<E extends Entity>
      * still be frozen if it's in use. -1 means that not even the selection
      * column is frozen.
      * <p>
-     * <em>NOTE:</em> this count includes {@link Column#isHidden() hidden
+     * <em>NOTE:</em> this count includes {@link Column#isCollapsed() hidden
      * columns} in the count.
      *
      * @return the number of frozen columns
@@ -274,18 +273,19 @@ public interface DataGrid<E extends Entity>
     void setSortable(boolean sortable);
 
     /**
-     * @return {@code true} if individual column hidable attribute
+     * @return {@code true} if individual column collapsible attribute
      * can be set to {@code true}, {@code false} otherwise
      */
-    boolean isColumnsHidingAllowed();
+    boolean isColumnsCollapsingAllowed();
 
     /**
-     * Defines if hidable attribute can be changed for individual column or not. Default value is {@code true}.
+     * Defines if collapsible attribute can be changed for individual column or not.
+     * Default value is {@code true}.
      *
-     * @param columnsHidingAllowed {@code true} if individual column hidable attribute
-     *                             can be set to {@code true}, {@code false} otherwise
+     * @param columnsCollapsingAllowed {@code true} if individual column collapsible attribute
+     *                                 can be set to {@code true}, {@code false} otherwise
      */
-    void setColumnsHidingAllowed(boolean columnsHidingAllowed);
+    void setColumnsCollapsingAllowed(boolean columnsCollapsingAllowed);
 
     /**
      * Repaint UI representation of the DataGrid without refreshing the table data.
@@ -489,69 +489,69 @@ public interface DataGrid<E extends Entity>
     }
 
     /**
-     * An event listener for column visibility change events in the DataGrid.
+     * An event listener for column collapsing change events in the DataGrid.
      */
-    interface ColumnVisibilityChangeListener {
+    interface ColumnCollapsingChangeListener {
         /**
          * Called when a column has become hidden or unhidden.
          *
          * @param event an event providing more information
          */
-        void columnVisibilityChanged(ColumnVisibilityChangeEvent event);
+        void columnCollapsingChanged(ColumnCollapsingChangeEvent event);
     }
 
     /**
-     * An event that is fired when a column's visibility changes.
+     * An event that is fired when a column's collapsing changes.
      */
-    class ColumnVisibilityChangeEvent extends AbstractDataGridEvent {
+    class ColumnCollapsingChangeEvent extends AbstractDataGridEvent {
         protected final Column column;
-        protected final boolean hidden;
+        protected final boolean collapsed;
 
         /**
          * Constructor for a column visibility change event.
          *
          * @param component the DataGrid from which this event originates
          * @param column    the column that changed its visibility
-         * @param hidden    {@code true} if the column was hidden,
+         * @param collapsed {@code true} if the column was collapsed,
          *                  {@code false} if it became visible
          */
-        public ColumnVisibilityChangeEvent(DataGrid component, Column column, boolean hidden) {
+        public ColumnCollapsingChangeEvent(DataGrid component, Column column, boolean collapsed) {
             super(component);
             this.column = column;
-            this.hidden = hidden;
+            this.collapsed = collapsed;
         }
 
         /**
          * Gets the column that became hidden or visible.
          *
          * @return the column that became hidden or visible.
-         * @see Column#isHidden()
+         * @see Column#isCollapsed()
          */
         public Column getColumn() {
             return column;
         }
 
         /**
-         * @return {@code true} if the column was hidden {@code false} if it was set visible
+         * @return {@code true} if the column was collapsed, {@code false} if it was set visible
          */
-        public boolean isHidden() {
-            return hidden;
+        public boolean isCollapsed() {
+            return collapsed;
         }
     }
 
     /**
-     * Registers a new column visibility change listener
+     * Registers a new column collapsing change listener
      *
      * @param listener the listener to register
      */
-    void addColumnVisibilityChangeListener(ColumnVisibilityChangeListener listener);
+    void addColumnCollapsingChangeListener(ColumnCollapsingChangeListener listener);
 
     /**
-     * Removes a previously registered column visibility change listener
+     * Removes a previously registered column collapsing change listener
      *
      * @param listener the listener to remove
      */
-    void removeColumnVisibilityChangeListener(ColumnVisibilityChangeListener listener);
+    void removeColumnCollapsingChangeListener(ColumnCollapsingChangeListener listener);
 
     /**
      * An event listener for column reorder events in the DataGrid.
@@ -1088,7 +1088,7 @@ public interface DataGrid<E extends Entity>
         /**
          * Sets the caption of the header. This caption is also used as the
          * hiding toggle caption, unless it is explicitly set via
-         * {@link #setHidingToggleCaption(String)}.
+         * {@link #setCollapsingToggleCaption(String)}.
          *
          * @param caption the text to show in the caption
          */
@@ -1097,12 +1097,12 @@ public interface DataGrid<E extends Entity>
         /**
          * @return the caption for the hiding toggle for this column
          */
-        String getHidingToggleCaption();
+        String getCollapsingToggleCaption();
 
         /**
          * Sets the caption of the hiding toggle for this column. Shown in the
          * toggle for this column in the DataGrid's sidebar when the column is
-         * {@link #isHidable() hidable}.
+         * {@link #isCollapsible() hidable}.
          * <p>
          * The default value is <code>null</code>, and in that case the column's
          * {@link #getCaption() header caption} is used.
@@ -1110,9 +1110,9 @@ public interface DataGrid<E extends Entity>
          * <em>NOTE:</em> setting this to empty string might cause the hiding
          * toggle to not render correctly.
          *
-         * @param hidingToggleCaption the text to show in the column hiding toggle
+         * @param collapsingToggleCaption the text to show in the column hiding toggle
          */
-        void setHidingToggleCaption(String hidingToggleCaption);
+        void setCollapsingToggleCaption(String collapsingToggleCaption);
 
         /**
          * @return the width in pixels of the column
@@ -1219,39 +1219,53 @@ public interface DataGrid<E extends Entity>
         void setMaximumWidth(double pixels);
 
         /**
+         * @return {@code false} if the column is currently hidden by security permissions,
+         *         {@code true} otherwise
+         */
+        boolean isVisible();
+
+        /**
+         * Hides or shows the column according to security permissions.
+         * Invisible column doesn't send any data to client side.
+         *
+         * @param visible {@code false} to hide the column, {@code true} to show
+         */
+        void setVisible(boolean visible);
+
+        /**
          * @return {@code true} if the column is currently hidden, {@code false} otherwise
          */
-        boolean isHidden();
+        boolean isCollapsed();
 
         /**
          * Hides or shows the column. By default columns are visible before
          * explicitly hiding them.
          *
-         * @param hidden {@code true} to hide the column, {@code false} to show
+         * @param collapsed {@code true} to hide the column, {@code false} to show
          */
-        void setHidden(boolean hidden);
+        void setCollapsed(boolean collapsed);
 
         /**
          * Returns whether this column can be hidden by the user. Default is {@code true}.
          * <p>
          * <em>Note:</em> the column can be programmatically hidden using
-         * {@link #setHidden(boolean)} regardless of the returned value.
+         * {@link #setCollapsed(boolean)} regardless of the returned value.
          *
          * @return {@code true} if the user can hide the column, {@code false} if not
-         * @see DataGrid#isColumnsHidingAllowed()
-         * @see DataGrid#setColumnsHidingAllowed(boolean)
+         * @see DataGrid#isColumnsCollapsingAllowed()
+         * @see DataGrid#setColumnsCollapsingAllowed(boolean)
          */
-        boolean isHidable();
+        boolean isCollapsible();
 
         /**
          * Sets whether this column can be hidden by the user. Hidable columns
          * can be hidden and shown via the sidebar menu.
          *
-         * @param hidable {@code true} if the column may be hidden by the user via UI interaction
-         * @see DataGrid#isColumnsHidingAllowed()
-         * @see DataGrid#setColumnsHidingAllowed(boolean)
+         * @param collapsible {@code true} if the column may be hidden by the user via UI interaction
+         * @see DataGrid#isColumnsCollapsingAllowed()
+         * @see DataGrid#setColumnsCollapsingAllowed(boolean)
          */
-        void setHidable(boolean hidable);
+        void setCollapsible(boolean collapsible);
 
         /**
          * Returns whether the user can sort the grid by this column.

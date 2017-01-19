@@ -141,9 +141,9 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
     }
 
     protected void loadColumnsHidingAllowed(DataGrid component, Element element) {
-        String columnsHidingAllowed = element.attributeValue("columnsHidingAllowed");
-        if (StringUtils.isNotEmpty(columnsHidingAllowed)) {
-            component.setColumnsHidingAllowed(Boolean.parseBoolean(columnsHidingAllowed));
+        String columnsCollapsingAllowed = element.attributeValue("columnsCollapsingAllowed");
+        if (StringUtils.isNotEmpty(columnsCollapsingAllowed)) {
+            component.setColumnsCollapsingAllowed(Boolean.parseBoolean(columnsCollapsingAllowed));
         }
     }
 
@@ -224,19 +224,19 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
             column.setExpandRatio(Integer.valueOf(expandRatio));
         }
 
-        String collapsed = element.attributeValue("hidden");
+        String collapsed = element.attributeValue("collapsed");
         if (StringUtils.isNotEmpty(collapsed)) {
-            column.setHidden(Boolean.parseBoolean(collapsed));
+            column.setCollapsed(Boolean.parseBoolean(collapsed));
         }
 
-        String hidable = element.attributeValue("hidable");
-        if (StringUtils.isNotEmpty(hidable)) {
-            column.setHidable(Boolean.parseBoolean(hidable));
+        String collapsible = element.attributeValue("collapsible");
+        if (StringUtils.isNotEmpty(collapsible)) {
+            column.setCollapsible(Boolean.parseBoolean(collapsible));
         }
 
-        String hidingToggleCaption = element.attributeValue("hidingToggleCaption");
-        if (StringUtils.isNotEmpty(hidingToggleCaption)) {
-            column.setHidingToggleCaption(hidingToggleCaption);
+        String collapsingToggleCaption = element.attributeValue("collapsingToggleCaption");
+        if (StringUtils.isNotEmpty(collapsingToggleCaption)) {
+            column.setCollapsingToggleCaption(collapsingToggleCaption);
         }
 
         String sortable = element.attributeValue("sortable");
