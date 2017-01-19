@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
@@ -34,13 +35,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.haulmont.cuba.web.toolkit.ui.CubaSearchSelect.C_SEARCHSELECT_STYLENAME;
+
 public class WebSearchField extends WebLookupField implements SearchField {
 
     protected int minSearchStringLength = 0;
     protected Mode mode = Mode.CASE_SENSITIVE;
     protected boolean escapeValueForLike = false;
-
-    protected String styleName;
 
     protected Frame.NotificationType defaultNotificationType = Frame.NotificationType.TRAY;
 
@@ -141,15 +142,14 @@ public class WebSearchField extends WebLookupField implements SearchField {
 
     @Override
     public void setStyleName(String styleName) {
-        if (StringUtils.isNotEmpty(this.styleName)) {
-            getComposition().removeStyleName(this.styleName);
-        }
+        super.setStyleName(styleName);
 
-        this.styleName = styleName;
+        component.addStyleName(C_SEARCHSELECT_STYLENAME);
+    }
 
-        if (StringUtils.isNotEmpty(styleName)) {
-            getComposition().addStyleName(styleName);
-        }
+    @Override
+    public String getStyleName() {
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_SEARCHSELECT_STYLENAME, ""));
     }
 
     @Override

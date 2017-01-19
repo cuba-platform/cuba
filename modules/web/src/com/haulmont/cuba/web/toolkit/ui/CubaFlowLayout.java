@@ -24,8 +24,10 @@ import com.vaadin.ui.Layout;
 
 public class CubaFlowLayout extends CssLayout implements Layout.MarginHandler, Layout.SpacingHandler {
 
+    public static final String C_FLOWLAYOUT_STYLENAME = "c-flowlayout";
+
     public CubaFlowLayout() {
-        setStyleName("c-flowlayout");
+        setStyleName(C_FLOWLAYOUT_STYLENAME);
     }
 
     @Override

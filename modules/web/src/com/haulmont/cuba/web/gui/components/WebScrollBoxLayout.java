@@ -28,7 +28,6 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractOrderedLayout;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -46,8 +45,6 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel>
 
     protected Orientation orientation = Orientation.VERTICAL;
     protected ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
-
-    protected String styleName;
 
     public WebScrollBoxLayout() {
         component = new CubaScrollBoxPanel();
@@ -144,20 +141,14 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel>
 
     @Override
     public void setStyleName(String styleName) {
-        if (StringUtils.isNotEmpty(this.styleName)) {
-            getComposition().removeStyleName(this.styleName);
-        }
+        super.setStyleName(styleName);
 
-        this.styleName = styleName;
-
-        if (StringUtils.isNotEmpty(styleName)) {
-            getComposition().addStyleName(styleName);
-        }
+        component.addStyleName(C_SCROLLBOX);
     }
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(styleName.replace(C_SCROLLBOX, ""));
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_SCROLLBOX, ""));
     }
 
     @Override

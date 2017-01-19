@@ -68,7 +68,7 @@ import static com.haulmont.cuba.gui.components.Window.COMMIT_ACTION_ID;
 public class CubaFoldersPane extends VerticalLayout {
 
     private static final long serialVersionUID = 6666603397626574763L;
-    protected static final String C_FOLDERS_PANE = "c-folders-pane";
+    public static final String C_FOLDERS_PANE = "c-folders-pane";
 
     protected boolean visible;
 
