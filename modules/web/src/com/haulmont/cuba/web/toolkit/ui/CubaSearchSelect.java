@@ -25,13 +25,15 @@ import java.util.Map;
 
 public class CubaSearchSelect extends CubaComboBox {
 
+    public static final String C_SEARCHSELECT_STYLENAME = "c-searchselect";
+
     protected FilterHandler filterHandler = null;
     protected boolean repaintOptions = false;
 
     public CubaSearchSelect() {
         super.setFilteringMode(FilteringMode.OFF);
 
-        setStyleName("c-searchselect");
+        setStyleName(C_SEARCHSELECT_STYLENAME);
     }
 
     @Override

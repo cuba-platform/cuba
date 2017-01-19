@@ -17,14 +17,14 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.web.app.folders.CubaFoldersPane;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
-import org.apache.commons.lang.StringUtils;
+
+import static com.haulmont.cuba.web.app.folders.CubaFoldersPane.C_FOLDERS_PANE;
 
 public class WebFoldersPane extends WebAbstractComponent<CubaFoldersPane> implements FoldersPane {
-
-    protected String styleName;
 
     public WebFoldersPane() {
         component = createComponent();
@@ -36,15 +36,14 @@ public class WebFoldersPane extends WebAbstractComponent<CubaFoldersPane> implem
 
     @Override
     public void setStyleName(String styleName) {
-        if (StringUtils.isNotEmpty(this.styleName)) {
-            getComposition().removeStyleName(this.styleName);
-        }
+        super.setStyleName(styleName);
 
-        this.styleName = styleName;
+        component.addStyleName(C_FOLDERS_PANE);
+    }
 
-        if (StringUtils.isNotEmpty(styleName)) {
-            getComposition().addStyleName(styleName);
-        }
+    @Override
+    public String getStyleName() {
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_FOLDERS_PANE, ""));
     }
 
     @Override

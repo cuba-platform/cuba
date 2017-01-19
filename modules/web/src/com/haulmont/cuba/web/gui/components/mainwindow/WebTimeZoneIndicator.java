@@ -24,14 +24,12 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.mainwindow.TimeZoneIndicator;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.vaadin.ui.Label;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.TimeZone;
 
 public class WebTimeZoneIndicator extends WebAbstractComponent<Label> implements TimeZoneIndicator {
 
     protected static final String C_USER_TIMEZONE_LABEL = "c-user-timezone-label";
-    protected String styleName;
 
     public WebTimeZoneIndicator() {
         component = new Label();
@@ -51,14 +49,8 @@ public class WebTimeZoneIndicator extends WebAbstractComponent<Label> implements
 
     @Override
     public void setStyleName(String styleName) {
-        if (StringUtils.isNotEmpty(this.styleName)) {
-            getComposition().removeStyleName(this.styleName);
-        }
+        super.setStyleName(styleName);
 
-        this.styleName = styleName;
-
-        if (StringUtils.isNotEmpty(styleName)) {
-            getComposition().addStyleName(styleName);
-        }
+        component.addStyleName(C_USER_TIMEZONE_LABEL);
     }
 }
