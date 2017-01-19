@@ -1559,9 +1559,9 @@
 
         <xs:attribute name="caption" type="resourceString"/>
         <xs:attribute name="expandRatio" type="xs:integer"/>
-        <xs:attribute name="hidable" type="xs:boolean"/>
-        <xs:attribute name="hidden" type="xs:boolean"/>
-        <xs:attribute name="hidingToggleCaption" type="resourceString"/>
+        <xs:attribute name="collapsible" type="xs:boolean"/>
+        <xs:attribute name="collapsed" type="xs:boolean"/>
+        <xs:attribute name="collapsingToggleCaption" type="resourceString"/>
         <xs:attribute name="resizable" type="xs:boolean"/>
         <xs:attribute name="sortable" type="xs:boolean"/>
 
@@ -1585,7 +1585,7 @@
             <xs:element name="columns" minOccurs="1" maxOccurs="1" type="dataGridColumnsList"/>
         </xs:all>
 
-        <xs:attribute name="columnsHidingAllowed" type="xs:boolean"/>
+        <xs:attribute name="columnsCollapsingAllowed" type="xs:boolean"/>
         <xs:attribute name="columnResizeMode" type="dataGridColumnResizeMode"/>
         <xs:attribute name="datasource" type="xs:string"/>
         <xs:attribute name="frozenColumnCount" type="xs:integer"/>
