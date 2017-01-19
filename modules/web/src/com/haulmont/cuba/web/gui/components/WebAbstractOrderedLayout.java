@@ -173,8 +173,8 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
         getEventRouter().addListener(LayoutClickListener.class, listener);
         if (layoutClickListener == null) {
             layoutClickListener = (LayoutEvents.LayoutClickListener) event -> {
-                Component childComponent = findChildComponent(WebAbstractOrderedLayout.this, event.getChildComponent());
-                LayoutClickEvent layoutClickEvent = new LayoutClickEvent(WebAbstractOrderedLayout.this, childComponent);
+                Component childComponent = findChildComponent(this, event.getChildComponent());
+                LayoutClickEvent layoutClickEvent = new LayoutClickEvent(this, childComponent);
 
                 getEventRouter().fireEvent(LayoutClickListener.class, LayoutClickListener::layoutClick, layoutClickEvent);
             };
@@ -184,7 +184,7 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
 
     protected Component findChildComponent(Container layout, com.vaadin.ui.Component clickedComponent) {
         for (Component component : layout.getComponents()) {
-            if (WebComponentsHelper.unwrap(component) == clickedComponent) {
+            if (WebComponentsHelper.getComposition(component) == clickedComponent) {
                 return component;
             }
         }

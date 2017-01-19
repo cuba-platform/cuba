@@ -218,8 +218,8 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
         getEventRouter().addListener(LayoutClickListener.class, listener);
         if (layoutClickListener == null) {
             layoutClickListener = (LayoutEvents.LayoutClickListener) event -> {
-                Component childComponent = findChildComponent(WebAbstractBox.this, event.getChildComponent());
-                LayoutClickEvent layoutClickEvent = new LayoutClickEvent(WebAbstractBox.this, childComponent);
+                Component childComponent = findChildComponent(this, event.getChildComponent());
+                LayoutClickEvent layoutClickEvent = new LayoutClickEvent(this, childComponent);
 
                 getEventRouter().fireEvent(LayoutClickListener.class, LayoutClickListener::layoutClick, layoutClickEvent);
             };
@@ -229,7 +229,7 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
 
     protected Component findChildComponent(BoxLayout layout, com.vaadin.ui.Component clickedComponent) {
         for (Component component : layout.getComponents()) {
-            if (WebComponentsHelper.unwrap(component) == clickedComponent) {
+            if (WebComponentsHelper.getComposition(component) == clickedComponent) {
                 return component;
             }
         }
