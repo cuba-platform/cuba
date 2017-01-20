@@ -133,4 +133,11 @@
     font-weight: 900;
     font-size: $v-font-size--h1 * 1.5;
   }
+
+  .c-userindicator .v-label {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: right;
+  }
 }
