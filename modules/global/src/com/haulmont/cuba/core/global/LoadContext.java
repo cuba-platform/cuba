@@ -311,8 +311,9 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
         /**
          * @param queryString JPQL query string. Only named parameters are supported.
          */
-        public void setQueryString(String queryString) {
+        public Query setQueryString(String queryString) {
             this.queryString = queryString;
+            return this;
         }
 
         /**
@@ -409,6 +410,28 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
             query.maxResults = maxResults;
             query.cacheable = cacheable;
             return query;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Query query = (Query) o;
+
+            if (firstResult != query.firstResult) return false;
+            if (maxResults != query.maxResults) return false;
+            if (!parameters.equals(query.parameters)) return false;
+            return queryString.equals(query.queryString);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = parameters.hashCode();
+            result = 31 * result + queryString.hashCode();
+            result = 31 * result + firstResult;
+            result = 31 * result + maxResults;
+            return result;
         }
 
         @Override
