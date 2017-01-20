@@ -19,7 +19,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -45,7 +44,9 @@ import com.haulmont.cuba.web.toolkit.ui.CubaGrid;
 import com.haulmont.cuba.web.toolkit.ui.CubaGridContextMenu;
 import com.haulmont.cuba.web.toolkit.ui.CubaMultiSelectionModel;
 import com.haulmont.cuba.web.toolkit.ui.CubaSingleSelectionModel;
-import com.haulmont.cuba.web.toolkit.ui.converters.*;
+import com.haulmont.cuba.web.toolkit.ui.converters.FormatterBasedConverter;
+import com.haulmont.cuba.web.toolkit.ui.converters.StringToObjectConverter;
+import com.haulmont.cuba.web.toolkit.ui.converters.YesNoIconConverter;
 import com.vaadin.addon.contextmenu.GridContextMenu;
 import com.vaadin.addon.contextmenu.GridContextMenu.GridContextMenuOpenListener;
 import com.vaadin.addon.contextmenu.Menu;
@@ -529,29 +530,19 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
     }
 
-    protected void applyDefaultRenderer(Grid.Column gridColumn, @Nullable MetaPropertyPath property) {
-        if (property != null) {
-            MetaProperty metaProperty = property.getMetaProperty();
-            switch (metaProperty.getType()) {
-                case ASSOCIATION:
-                    gridColumn.setConverter(new StringToEntityConverter());
-                    break;
-                case DATATYPE:
-                    Datatype datatype = metaProperty.getRange().asDatatype();
-                    if (datatype instanceof BooleanDatatype) {
-                        gridColumn.setRenderer(new HtmlRenderer(), new YesNoIconConverter());
-                    } else {
-                        gridColumn.setConverter(new StringToDatatypeConverter(datatype));
-                    }
-                    break;
-                case ENUM:
-                    //noinspection unchecked
-                    gridColumn.setConverter(new StringToEnumConverter((Class<Enum>) metaProperty.getJavaType()));
-                    break;
-                default:
-                    gridColumn.setConverter(new StringToDatatypeConverter(Datatypes.getNN(String.class)));
-                    break;
+    protected void applyDefaultRenderer(Grid.Column gridColumn, @Nullable MetaPropertyPath propertyPath) {
+        if (propertyPath != null) {
+            MetaProperty metaProperty = propertyPath.getMetaProperty();
+
+            if (metaProperty.getRange().isDatatype()) {
+                Datatype datatype = metaProperty.getRange().asDatatype();
+                if (datatype instanceof BooleanDatatype) {
+                    gridColumn.setRenderer(new HtmlRenderer(), new YesNoIconConverter());
+                    return;
+                }
             }
+
+            gridColumn.setConverter(new StringToObjectConverter(metaProperty));
         }
     }
 
