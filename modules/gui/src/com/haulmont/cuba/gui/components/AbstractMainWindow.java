@@ -17,9 +17,14 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.FtsConfigHelper;
+import com.haulmont.cuba.gui.components.dev.LayoutAnalyzerContextMenuProvider;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
+import com.haulmont.cuba.gui.components.mainwindow.FtsField;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 
@@ -60,5 +65,23 @@ public class AbstractMainWindow extends AbstractTopLevelWindow implements Window
 
     public void setFoldersPane(FoldersPane foldersPane) {
         this.foldersPane = foldersPane;
+    }
+
+    protected void initLogoImage(Embedded logoImage) {
+        String logoImagePath = messages.getMainMessage("application.logoImage");
+        if (StringUtils.isNotBlank(logoImagePath) && !"application.logoImage".equals(logoImagePath)) {
+            logoImage.setSource("theme://" + logoImagePath);
+        }
+    }
+
+    protected void initFtsField(FtsField ftsField) {
+        if (!FtsConfigHelper.getEnabled()) {
+            ftsField.setVisible(false);
+        }
+    }
+
+    protected void initLayoutAnalyzerContextMenu(Component contextMenuTarget) {
+        LayoutAnalyzerContextMenuProvider laContextMenuProvider = AppBeans.get(LayoutAnalyzerContextMenuProvider.NAME);
+        laContextMenuProvider.initContextMenu(this, contextMenuTarget);
     }
 }

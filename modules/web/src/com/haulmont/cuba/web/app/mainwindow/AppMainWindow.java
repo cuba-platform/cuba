@@ -17,13 +17,6 @@
 
 package com.haulmont.cuba.web.app.mainwindow;
 
-import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.FtsConfigHelper;
-import com.haulmont.cuba.gui.WindowManager.OpenType;
-import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
-import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
@@ -32,14 +25,9 @@ import com.haulmont.cuba.gui.components.mainwindow.FtsField;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalSplitPanel;
-import com.vaadin.addon.contextmenu.ContextMenu;
-import com.vaadin.addon.contextmenu.MenuItem;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.ui.AbstractComponent;
-import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
-import java.util.List;
 import java.util.Map;
 
 public class AppMainWindow extends AbstractMainWindow {
@@ -68,43 +56,18 @@ public class AppMainWindow extends AbstractMainWindow {
     @Inject
     protected WebConfig webConfig;
 
-    @Inject
-    protected Configuration configuration;
-
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
         mainMenu.requestFocus();
 
-        String logoImagePath = messages.getMainMessage("application.logoImage");
-        if (StringUtils.isNotBlank(logoImagePath) && !"application.logoImage".equals(logoImagePath)) {
-            logoImage.setSource("theme://" + logoImagePath);
-        }
-
-        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-        if (clientConfig.getLayoutAnalyzerEnabled()) {
-            ContextMenu contextMenu = new ContextMenu(titleBar.unwrap(AbstractComponent.class), false);
-            contextMenu.setAsContextMenuOf(logoImage.unwrap(com.vaadin.ui.AbstractComponent.class));
-            MenuItem menuItem = contextMenu.addItem(messages.getMainMessage("actions.analyzeLayout"), c -> {
-                LayoutAnalyzer analyzer = new LayoutAnalyzer();
-                List<LayoutTip> tipsList = analyzer.analyze(this);
-
-                if (tipsList.isEmpty()) {
-                    showNotification("No layout problems found", NotificationType.HUMANIZED);
-                } else {
-                    openWindow("layoutAnalyzer", OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
-                }
-            });
-            menuItem.setStyleName("c-cm-item");
-        }
+        initLogoImage(logoImage);
+        initLayoutAnalyzerContextMenu(logoImage);
+        initFtsField(ftsField);
 
         if (webConfig.getUseInverseHeader()) {
             titleBar.setStyleName("c-app-menubar c-inverse-header");
-        }
-
-        if (!FtsConfigHelper.getEnabled()) {
-            ftsField.setVisible(false);
         }
 
         if (webConfig.getFoldersPaneEnabled()) {
