@@ -17,9 +17,15 @@
 
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzerWindow"
-        caption="msg://caption">
+        caption="msg://caption"
+        focusComponent="closeBtn">
+
     <layout expand="analyzeResultBox" spacing="true">
-        <textArea id="analyzeResultBox" width="100%"/>
-        <button caption="msg://actions.Close" icon="icons/ok.png" invoke="closeWindow"/>
+        <textArea id="analyzeResultBox"
+                  width="100%"/>
+        <button id="closeBtn"
+                caption="msg://actions.Close"
+                icon="icons/ok.png"
+                invoke="closeWindow"/>
     </layout>
 </window>

@@ -30,8 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 public class LayoutAnalyzerWindow extends AbstractWindow {
-
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(LayoutAnalyzerWindow.class);
 
     @Inject
     protected ThemeConstants themeConstants;
@@ -53,16 +52,16 @@ public class LayoutAnalyzerWindow extends AbstractWindow {
 
         StringBuilder analysisText = new StringBuilder();
         for (LayoutTip tip : tipsList) {
-            analysisText.append("[").append(tip.errorType.name()).append("] ")
+            analysisText.append("[")
+                    .append(tip.errorType.name()).append("] ")
                     .append(tip.componentPath).append("\n")
                     .append(tip.message).append("\n\n");
         }
         String analysisLog = analysisText.toString().trim();
 
-        log.info("Analyze layout\n" + analysisLog);
+        log.info("Analyze layout\n{}", analysisLog);
 
         analyzeResultBox.setValue(analysisLog);
-
         analyzeResultBox.setEditable(false);
     }
 
