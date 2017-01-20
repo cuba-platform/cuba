@@ -313,6 +313,25 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
             public void setOrder(Order order) {
                 this.order = order;
             }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+
+                SortInfo<?> sortInfo = (SortInfo<?>) o;
+
+                if (propertyPath != null ? !propertyPath.equals(sortInfo.propertyPath) : sortInfo.propertyPath != null)
+                    return false;
+                return order == sortInfo.order;
+            }
+
+            @Override
+            public int hashCode() {
+                int result = propertyPath != null ? propertyPath.hashCode() : 0;
+                result = 31 * result + (order != null ? order.hashCode() : 0);
+                return result;
+            }
         }
 
         /**
