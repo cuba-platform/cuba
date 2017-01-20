@@ -59,7 +59,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     protected LinkedMap data = new LinkedMap();
 
-    private boolean inRefresh;
+    protected boolean inRefresh;
 
     private AggregatableDelegate<K> aggregatableDelegate = new AggregatableDelegate<K>() {
         @Override
