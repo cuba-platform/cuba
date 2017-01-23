@@ -47,6 +47,10 @@
         color: valo-font-color($valo-menu-background-color, 1);
       }
     }
+
+    .c-app-icon {
+      height: 64px;
+    }
   }
 
   .#{$primary-stylename}-title {
