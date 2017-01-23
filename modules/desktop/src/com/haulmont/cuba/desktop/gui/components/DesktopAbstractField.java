@@ -165,7 +165,7 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
             javax.validation.Validator validator = beanValidation.getValidator();
             BeanDescriptor beanDescriptor = validator.getConstraintsForClass(enclosingJavaClass);
 
-            if (beanDescriptor.hasConstraints()) {
+            if (beanDescriptor.isBeanConstrained()) {
                 addValidator(new BeanValidator(enclosingJavaClass, metaProperty.getName()));
             }
         }

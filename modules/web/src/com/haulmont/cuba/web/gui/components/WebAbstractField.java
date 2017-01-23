@@ -152,7 +152,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> ex
             javax.validation.Validator validator = beanValidation.getValidator();
             BeanDescriptor beanDescriptor = validator.getConstraintsForClass(enclosingJavaClass);
 
-            if (beanDescriptor.hasConstraints()) {
+            if (beanDescriptor.isBeanConstrained()) {
                 addValidator(new BeanValidator(enclosingJavaClass, metaProperty.getName()));
             }
         }
@@ -160,7 +160,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> ex
 
     protected void disableBeanValidator() {
         if (validators != null) {
-            for (Validator validator : new ArrayList<>(validators)) {
+            for (Validator validator : validators.toArray(new Validator[validators.size()])) {
                 if (validator instanceof BeanValidator) {
                     validators.remove(validator);
                 }
