@@ -22,34 +22,27 @@ import com.haulmont.cuba.gui.components.ResizableTextArea;
 import com.haulmont.cuba.gui.components.compatibility.ResizeListenerWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaResizableTextAreaWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaTextArea;
+import com.vaadin.event.FieldEvents;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Component;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> implements ResizableTextArea {
 
     protected Datatype datatype;
 
-    protected List<ResizeListener> resizeListeners;
-
     protected CubaResizableTextAreaWrapper wrapper;
     protected boolean settingsEnabled = true;
+
+    protected FieldEvents.TextChangeListener textChangeListener;
 
     public WebResizableTextArea() {
         wrapper = new CubaResizableTextAreaWrapper(component);
         wrapper.addResizeListener((oldWidth, oldHeight, width, height) -> {
-            if (resizeListeners != null && !resizeListeners.isEmpty()) {
-                ResizeEvent e = new ResizeEvent(this, oldWidth, width, oldHeight, height);
-
-                for (ResizeListener resizeListener : resizeListeners) {
-                    resizeListener.sizeChanged(e);
-                }
-            }
+            ResizeEvent e = new ResizeEvent(this, oldWidth, width, oldHeight, height);
+            getEventRouter().fireEvent(ResizeListener.class, ResizeListener::sizeChanged, e);
         });
 
         component.addValueChangeListener(event -> wrapper.markAsDirty());
@@ -156,19 +149,12 @@ public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> impl
 
     @Override
     public void addResizeListener(ResizeListener resizeListener) {
-        if (resizeListeners == null) {
-            resizeListeners = new ArrayList<>();
-        }
-        if (!resizeListeners.contains(resizeListener)) {
-            resizeListeners.add(resizeListener);
-        }
+        getEventRouter().addListener(ResizeListener.class, resizeListener);
     }
 
     @Override
     public void removeResizeListener(ResizeListener resizeListener) {
-        if (resizeListeners != null) {
-            resizeListeners.remove(resizeListener);
-        }
+        getEventRouter().removeListener(ResizeListener.class, resizeListener);
     }
 
     @Override
@@ -262,5 +248,59 @@ public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> impl
         com.haulmont.cuba.web.toolkit.ui.CaseConversion widgetCaseConversion =
                 com.haulmont.cuba.web.toolkit.ui.CaseConversion.valueOf(caseConversion.name());
         component.setCaseConversion(widgetCaseConversion);
+    }
+
+    @Override
+    public void selectAll() {
+        component.selectAll();
+    }
+
+    @Override
+    public void setSelectionRange(int pos, int length) {
+        component.setSelectionRange(pos, length);
+    }
+
+    @Override
+    public void addTextChangeListener(TextChangeListener listener) {
+        getEventRouter().addListener(TextChangeListener.class, listener);
+
+        if (textChangeListener == null) {
+            textChangeListener = (FieldEvents.TextChangeListener) e -> {
+                TextChangeEvent event = new TextChangeEvent(this, e.getText(), e.getCursorPosition());
+
+                getEventRouter().fireEvent(TextChangeListener.class, TextChangeListener::textChange, event);
+            };
+            component.addTextChangeListener(textChangeListener);
+        }
+    }
+
+    @Override
+    public void removeTextChangeListener(TextChangeListener listener) {
+        getEventRouter().removeListener(TextChangeListener.class, listener);
+
+        if (textChangeListener != null && !getEventRouter().hasListeners(TextChangeListener.class)) {
+            component.removeTextChangeListener(textChangeListener);
+            textChangeListener = null;
+        }
+    }
+
+    @Override
+    public void setTextChangeTimeout(int timeout) {
+        component.setTextChangeTimeout(timeout);
+    }
+
+    @Override
+    public int getTextChangeTimeout() {
+        return component.getTextChangeTimeout();
+    }
+
+    @Override
+    public TextChangeEventMode getTextChangeEventMode() {
+        return WebWrapperUtils.toTextChangeEventMode(component.getTextChangeEventMode());
+    }
+
+    @Override
+    public void setTextChangeEventMode(TextChangeEventMode mode) {
+        component.setTextChangeEventMode(WebWrapperUtils.toVaadinTextChangeEventMode(mode));
     }
 }

@@ -40,6 +40,10 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
     protected String inputPrompt;
     // just stub
     protected CaseConversion caseConversion;
+    // just stub
+    protected int textChangeTimeout = 0;
+    // just stub
+    protected TextChangeEventMode textChangeEventMode = TextChangeEventMode.LAZY;
 
     public DesktopTextArea() {
         setRows(5);
@@ -236,6 +240,44 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
     @Override
     public void setCaseConversion(CaseConversion caseConversion) {
         this.caseConversion = caseConversion;
+    }
+
+    @Override
+    public void selectAll() {
+        impl.selectAll();
+    }
+
+    @Override
+    public void setSelectionRange(int pos, int length) {
+        impl.select(pos, pos + length);
+    }
+
+    @Override
+    public void addTextChangeListener(TextChangeListener listener) {
+    }
+
+    @Override
+    public void removeTextChangeListener(TextChangeListener listener) {
+    }
+
+    @Override
+    public void setTextChangeTimeout(int timeout) {
+        this.textChangeTimeout = timeout;
+    }
+
+    @Override
+    public int getTextChangeTimeout() {
+        return textChangeTimeout;
+    }
+
+    @Override
+    public TextChangeEventMode getTextChangeEventMode() {
+        return textChangeEventMode;
+    }
+
+    @Override
+    public void setTextChangeEventMode(TextChangeEventMode mode) {
+        this.textChangeEventMode = mode;
     }
 
     protected class TextAreaFlushableField extends JTextArea implements Flushable {

@@ -39,6 +39,7 @@ public class TextFieldLoader extends AbstractTextFieldLoader<TextField> {
 
         loadInputPrompt(resultComponent, element);
         loadCaseConversion(resultComponent, element);
+        loadTextChangeEventProperties(resultComponent, element);
     }
 
     @Override

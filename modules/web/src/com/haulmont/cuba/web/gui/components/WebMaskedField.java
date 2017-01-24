@@ -17,16 +17,10 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.MaskedField;
 import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
 
 public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> implements MaskedField {
-
-    protected String inputPrompt;
-    // just stub
-    protected CaseConversion caseConversion;
 
     @Override
     public void setMask(String mask) {
@@ -59,16 +53,6 @@ public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> im
     }
 
     @Override
-    public Datatype getDatatype() {
-        return null;
-    }
-
-    @Override
-    public void setDatatype(Datatype datatype) {
-        //Do nothing
-    }
-
-    @Override
     public String getRawValue() {
         return component.getValue();
     }
@@ -79,56 +63,17 @@ public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> im
     }
 
     @Override
-    public Formatter getFormatter() {
-        return null;
-    }
-
-    @Override
-    public void setFormatter(Formatter formatter) {
-    }
-
-    @Override
-    public int getMaxLength() {
-        return 0;
-    }
-
-    @Override
-    public void setMaxLength(int value) {
-        //do nothing
-    }
-
-    @Override
-    public boolean isTrimming() {
-        return false;
-    }
-
-    @Override
-    public void setTrimming(boolean trimming) {
-        //do nothing
-    }
-
-    @Override
-    public String getInputPrompt() {
-        return inputPrompt;
-    }
-
-    @Override
-    public void setInputPrompt(String inputPrompt) {
-        this.inputPrompt = inputPrompt;
-    }
-
-    @Override
     public void setCursorPosition(int position) {
         component.setCursorPosition(position);
     }
 
     @Override
-    public CaseConversion getCaseConversion() {
-        return caseConversion;
+    public void selectAll() {
+        component.selectAll();
     }
 
     @Override
-    public void setCaseConversion(CaseConversion caseConversion) {
-        this.caseConversion = caseConversion;
+    public void setSelectionRange(int pos, int length) {
+        component.setSelectionRange(pos, length);
     }
 }

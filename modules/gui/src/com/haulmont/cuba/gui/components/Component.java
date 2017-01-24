@@ -336,7 +336,6 @@ public interface Component {
         }
     }
 
-
     /**
      * Object having a border
      */

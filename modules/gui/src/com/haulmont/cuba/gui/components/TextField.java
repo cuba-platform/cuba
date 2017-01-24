@@ -23,6 +23,8 @@ public interface TextField
             TextInputField,
             TextInputField.MaxLengthLimited,
             TextInputField.TrimSupported,
+            TextInputField.TextSelectionSupported,
+            TextInputField.TextChangeNotifier,
             TextInputField.CursorPositionSupported,
             TextInputField.CaseConversionSupported,
             Component.HasFormatter,
