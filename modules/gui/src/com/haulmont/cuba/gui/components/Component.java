@@ -307,23 +307,33 @@ public interface Component {
     }
 
     /**
-     * Layout having a mouse click listener
+     * Layout having a mouse click listener.
      */
     interface LayoutClickNotifier {
         void addLayoutClickListener(LayoutClickListener listener);
         void removeLayoutClickListener(LayoutClickListener listener);
     }
 
+    /**
+     * Listener fired when user clicks inside the layout at any place.
+     */
     interface LayoutClickListener {
         void layoutClick(LayoutClickEvent event);
     }
 
+    /**
+     * Describes layout click event.
+     * Event contains a data about layout, nested component and mouse event.
+     */
     class LayoutClickEvent extends EventObject {
         private final Component childComponent;
+        private final MouseEventDetails mouseEventDetails;
 
-        public LayoutClickEvent(Container clickedComponent, Component childComponent) {
-            super(clickedComponent);
+        public LayoutClickEvent(Container layout,
+                                Component childComponent, MouseEventDetails mouseEventDetails) {
+            super(layout);
             this.childComponent = childComponent;
+            this.mouseEventDetails = mouseEventDetails;
         }
 
         @Override
@@ -333,6 +343,10 @@ public interface Component {
 
         public Component getChildComponent() {
             return childComponent;
+        }
+
+        public MouseEventDetails getMouseEventDetails() {
+            return mouseEventDetails;
         }
     }
 
