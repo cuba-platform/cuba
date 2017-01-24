@@ -523,6 +523,8 @@ OF SUCH DAMAGE.
         </item>
 
         <item name="EclipseLink" web="http://www.eclipse.org/eclipselink" license="epl-1.0" fork="true"/>
+
+        <item name="Hibernate Validator" web="http://hibernate.org/validator" license="apache-2.0"/>
     </items>
 
     <licenses>
