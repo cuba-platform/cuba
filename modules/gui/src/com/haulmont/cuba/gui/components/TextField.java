@@ -25,6 +25,7 @@ public interface TextField
             TextInputField.TrimSupported,
             TextInputField.TextSelectionSupported,
             TextInputField.TextChangeNotifier,
+            TextInputField.EnterPressNotifier,
             TextInputField.CursorPositionSupported,
             TextInputField.CaseConversionSupported,
             Component.HasFormatter,

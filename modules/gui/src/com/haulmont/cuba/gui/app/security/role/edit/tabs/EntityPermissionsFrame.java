@@ -43,7 +43,6 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
     public interface Companion {
         void initPermissionColoredColumns(Table<OperationPermissionTarget> entityPermissionsTable);
-        void initTextFieldFilter(TextField entityFilter, Runnable runnable);
     }
 
     @Inject
@@ -200,7 +199,8 @@ public class EntityPermissionsFrame extends AbstractFrame {
         entityPermissionsDs.refresh();
 
         companion.initPermissionColoredColumns(entityPermissionsTable);
-        companion.initTextFieldFilter(entityFilter, this::applyFilter);
+
+        entityFilter.addEnterPressListener(e -> applyFilter());
 
         entityTargetsDs.addItemChangeListener(e -> {
             if (!selectedEntityPanel.isVisible() && (e.getItem() != null)) {

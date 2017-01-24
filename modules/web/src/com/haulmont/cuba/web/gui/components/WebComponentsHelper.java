@@ -523,6 +523,7 @@ public class WebComponentsHelper {
         fontIcons.put(name, font);
     }
 
+    @Deprecated
     public static void addEnterShortcut(TextField textField, final Runnable runnable) {
         CubaTextField cubaTextField = (CubaTextField) WebComponentsHelper.unwrap(textField);
         cubaTextField.addShortcutListener(new ShortcutListener("", ShortcutAction.KeyCode.ENTER, KeyCombination.Modifier.codes()) {

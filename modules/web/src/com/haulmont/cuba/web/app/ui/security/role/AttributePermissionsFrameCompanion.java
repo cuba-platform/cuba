@@ -24,9 +24,6 @@ import com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget;
 import com.haulmont.cuba.gui.app.security.role.edit.tabs.AttributePermissionsFrame;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
 
 import java.util.Iterator;
 import java.util.List;
@@ -41,8 +38,7 @@ public class AttributePermissionsFrameCompanion implements AttributePermissionsF
                 return null;
 
             Label label = AppConfig.getFactory().createComponent(Label.class);
-
-            WebComponentsUtils.allowHtmlContent(label);
+            label.setHtmlEnabled(true);
 
             int i = 0;
             StringBuilder builder = new StringBuilder();
@@ -67,10 +63,5 @@ public class AttributePermissionsFrameCompanion implements AttributePermissionsF
 
             return label;
         });
-    }
-
-    @Override
-    public void initTextFieldFilter(TextField entityFilter, Runnable runnable) {
-        WebComponentsHelper.addEnterShortcut(entityFilter, runnable);
     }
 }

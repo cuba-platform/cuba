@@ -23,22 +23,25 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.ComboBox;
 
 public class WebComponentsUtils {
-
+    @Deprecated
     public static void allowHtmlContent(Label label) {
         com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
         vLabel.setContentMode(ContentMode.HTML);
     }
 
+    @Deprecated
     public static void disallowHtmlContent(Label label) {
         com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
         vLabel.setContentMode(ContentMode.TEXT);
     }
 
+    @Deprecated
     public static void allowNullSelection(LookupField lookupField) {
         ComboBox vCombobox = (ComboBox) WebComponentsHelper.unwrap(lookupField);
         vCombobox.setNullSelectionAllowed(true);
     }
 
+    @Deprecated
     public static void disallowNullSelection(LookupField lookupField) {
         ComboBox vCombobox = (ComboBox) WebComponentsHelper.unwrap(lookupField);
         vCombobox.setNullSelectionAllowed(false);

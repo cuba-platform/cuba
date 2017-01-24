@@ -35,7 +35,8 @@ public interface MaskedField
         extends
             TextInputField,
             TextInputField.TextSelectionSupported,
-            TextInputField.CursorPositionSupported {
+            TextInputField.CursorPositionSupported,
+            TextInputField.EnterPressNotifier {
 
     String NAME = "maskedField";
 

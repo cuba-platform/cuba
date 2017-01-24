@@ -53,6 +53,8 @@ public class ControlLoggerWindow extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
+        super.init(params);
+
         getDialogOptions()
                 .setWidth(themeConstants.getInt("cuba.web.ControlLoggerWindow.width"))
                 .setHeight(themeConstants.getInt("cuba.web.ControlLoggerWindow.height"))
@@ -61,7 +63,7 @@ public class ControlLoggerWindow extends AbstractWindow {
         loggersMap = (Map<String, Level>) params.get("loggersMap");
         fillLoggerGrid();
 
-        WebComponentsHelper.addEnterShortcut(newLoggerTextField, this::filterLogger);
+        newLoggerTextField.addEnterPressListener(e -> filterLogger());
     }
 
     protected void fillLoggerGrid() {

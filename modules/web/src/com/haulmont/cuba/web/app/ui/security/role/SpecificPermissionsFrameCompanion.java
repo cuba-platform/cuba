@@ -24,7 +24,6 @@ import com.haulmont.cuba.gui.app.security.role.edit.tabs.SpecificPermissionsFram
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
 
 import javax.inject.Inject;
 
@@ -44,7 +43,7 @@ public class SpecificPermissionsFrameCompanion implements SpecificPermissionsFra
                 return null;
 
             Label label = componentsFactory.createComponent(Label.class);
-            WebComponentsUtils.allowHtmlContent(label);
+            label.setHtmlEnabled(true);
             String labelValue = "<span class=\"role-permission-" + permissionVariant.getColor() + "\">" +
                     messages.getMessage(permissionVariant) + "</span>";
             label.setValue(labelValue);

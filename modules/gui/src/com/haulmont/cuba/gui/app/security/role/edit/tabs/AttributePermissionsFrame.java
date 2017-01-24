@@ -43,8 +43,6 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
     public interface Companion {
         void initPermissionColoredColumn(Table<MultiplePermissionTarget> propertyPermissionsTable);
-
-        void initTextFieldFilter(TextField entityFilter, Runnable runnable);
     }
 
     @Inject
@@ -276,7 +274,8 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
         // client specific code
         companion.initPermissionColoredColumn(propertyPermissionsTable);
-        companion.initTextFieldFilter(entityFilter, this::applyFilter);
+
+        entityFilter.addEnterPressListener(e -> applyFilter());
 
         attributeTargetsDs.addItemChangeListener(e -> {
             MultiplePermissionTarget item = e.getItem();

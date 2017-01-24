@@ -22,6 +22,8 @@ import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.web.toolkit.ui.CubaTextField;
 import com.vaadin.event.FieldEvents;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 
 public class WebTextField extends WebAbstractTextField<CubaTextField> implements TextField {
 
@@ -30,6 +32,7 @@ public class WebTextField extends WebAbstractTextField<CubaTextField> implements
 
     protected boolean trimming = true;
     protected FieldEvents.TextChangeListener textChangeListener;
+    protected ShortcutListener enterShortcutListener;
 
     public WebTextField() {
     }
@@ -179,5 +182,30 @@ public class WebTextField extends WebAbstractTextField<CubaTextField> implements
     @Override
     public void setTextChangeEventMode(TextChangeEventMode mode) {
         component.setTextChangeEventMode(WebWrapperUtils.toVaadinTextChangeEventMode(mode));
+    }
+
+    @Override
+    public void addEnterPressListener(EnterPressListener listener) {
+        getEventRouter().addListener(EnterPressListener.class, listener);
+
+        if (enterShortcutListener == null) {
+            enterShortcutListener = new ShortcutListener("", ShortcutAction.KeyCode.ENTER, null) {
+                @Override
+                public void handleAction(Object sender, Object target) {
+                    EnterPressEvent event = new EnterPressEvent(WebTextField.this);
+                    getEventRouter().fireEvent(EnterPressListener.class, EnterPressListener::enterPressed, event);
+                }
+            };
+            component.addShortcutListener(enterShortcutListener);
+        }
+    }
+
+    @Override
+    public void removeEnterPressListener(EnterPressListener listener) {
+        getEventRouter().removeListener(EnterPressListener.class, listener);
+
+        if (enterShortcutListener != null && !getEventRouter().hasListeners(EnterPressListener.class)) {
+            component.removeShortcutListener(enterShortcutListener);
+        }
     }
 }

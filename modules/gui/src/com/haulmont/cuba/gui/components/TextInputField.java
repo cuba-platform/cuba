@@ -33,13 +33,11 @@ public interface TextInputField extends Field {
 
     interface TrimSupported extends TextInputField {
         boolean isTrimming();
-
         void setTrimming(boolean trimming);
     }
 
     interface MaxLengthLimited extends TextInputField {
         int getMaxLength();
-
         void setMaxLength(int value);
     }
 
@@ -57,7 +55,6 @@ public interface TextInputField extends Field {
          * @return conversion mode or null if automatic conversion is disabled
          */
         CaseConversion getCaseConversion();
-
         /**
          * Disable automatic case conversion or enable with chosen mode
          */
@@ -168,5 +165,28 @@ public interface TextInputField extends Field {
          * This is the default mode.
          */
         LAZY
+    }
+
+    interface EnterPressNotifier extends TextInputField {
+        void addEnterPressListener(EnterPressListener listener);
+        void removeEnterPressListener(EnterPressListener listener);
+    }
+
+    interface EnterPressListener {
+        void enterPressed(EnterPressEvent e);
+    }
+
+    /**
+     * EnterPressEvents are fired when the user presses Enter while editing the text content of a field.
+     */
+    class EnterPressEvent extends EventObject {
+        public EnterPressEvent(TextInputField source) {
+            super(source);
+        }
+
+        @Override
+        public TextInputField getSource() {
+            return (TextInputField) super.getSource();
+        }
     }
 }

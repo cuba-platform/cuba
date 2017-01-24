@@ -19,6 +19,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.cuba.desktop.sys.validation.ValidationAwareAction;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
@@ -28,6 +29,8 @@ import org.jdesktop.swingx.prompt.PromptSupport;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> implements TextField {
 
@@ -38,6 +41,10 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     protected int textChangeTimeout;
     // just stub
     protected TextChangeEventMode textChangeEventMode = TextChangeEventMode.LAZY;
+
+    protected java.util.List<EnterPressListener> enterPressListeners = new ArrayList<>();
+
+    protected boolean enterPressInitialized = false;
 
     @Override
     protected JTextField createTextComponentImpl() {
@@ -211,6 +218,34 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     public void setTextChangeEventMode(TextChangeEventMode mode) {
         Preconditions.checkNotNullArgument(mode);
         this.textChangeEventMode = mode;
+    }
+
+    @Override
+    public void addEnterPressListener(EnterPressListener listener) {
+        Preconditions.checkNotNullArgument(listener);
+
+        if (!enterPressListeners.contains(listener)) {
+            enterPressListeners.add(listener);
+        }
+
+        if (!enterPressInitialized) {
+            impl.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
+            impl.getActionMap().put("enter", new ValidationAwareAction() {
+                @Override
+                public void actionPerformedAfterValidation(ActionEvent e) {
+                    EnterPressEvent event = new EnterPressEvent(DesktopTextField.this);
+                    for (EnterPressListener enterPressListener : new ArrayList<>(enterPressListeners)) {
+                        enterPressListener.enterPressed(event);
+                    }
+                }
+            });
+            enterPressInitialized = true;
+        }
+    }
+
+    @Override
+    public void removeEnterPressListener(EnterPressListener listener) {
+        enterPressListeners.remove(listener);
     }
 
     protected class FlushableTextField extends JTextField implements Flushable {
