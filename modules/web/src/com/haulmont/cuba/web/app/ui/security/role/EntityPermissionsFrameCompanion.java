@@ -23,21 +23,16 @@ import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 import com.haulmont.cuba.gui.app.security.role.edit.tabs.EntityPermissionsFrame;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
 
 import javax.inject.Inject;
 
 public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.Companion {
-
     @Inject
     protected Messages messages;
 
     @Inject
     protected ComponentsFactory componentsFactory;
-
 
     @Override
     public void initPermissionColoredColumns(Table<OperationPermissionTarget> entityPermissionsTable) {
@@ -45,11 +40,6 @@ public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.C
         addGeneratedColumnByOperation(entityPermissionsTable, "readPermissionVariant");
         addGeneratedColumnByOperation(entityPermissionsTable, "updatePermissionVariant");
         addGeneratedColumnByOperation(entityPermissionsTable, "deletePermissionVariant");
-    }
-
-    @Override
-    public void initTextFieldFilter(TextField entityFilter, final Runnable runnable) {
-        WebComponentsHelper.addEnterShortcut(entityFilter, runnable);
     }
 
     protected void addGeneratedColumnByOperation(Table<OperationPermissionTarget> entityPermissionsTable, final String propertyName) {
@@ -64,7 +54,7 @@ public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.C
                 messages.getMessage(permissionVariant) + "</span>";
 
         Label label = componentsFactory.createComponent(Label.class);
-        WebComponentsUtils.allowHtmlContent(label);
+        label.setHtmlEnabled(true);
         label.setValue(labelValue);
 
         return label;

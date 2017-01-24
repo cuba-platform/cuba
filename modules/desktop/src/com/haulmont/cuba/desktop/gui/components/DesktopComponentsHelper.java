@@ -377,6 +377,7 @@ public class DesktopComponentsHelper {
         }
     }
 
+    @Deprecated
     public static void addEnterShortcut(com.haulmont.cuba.gui.components.TextField textField, final Runnable runnable) {
         JTextField impl = (JTextField) DesktopComponentsHelper.unwrap(textField);
 

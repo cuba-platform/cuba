@@ -24,7 +24,6 @@ import com.haulmont.cuba.gui.app.security.role.edit.tabs.ScreenPermissionsFrame;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
 
 import javax.inject.Inject;
 
@@ -47,7 +46,7 @@ public class ScreenPermissionsFrameCompanion implements ScreenPermissionsFrame.C
                     messages.getMessage(permissionVariant) + "</span>";
 
             Label label = componentsFactory.createComponent(Label.class);
-            WebComponentsUtils.allowHtmlContent(label);
+            label.setHtmlEnabled(true);
             label.setValue(labelValue);
 
             return label;

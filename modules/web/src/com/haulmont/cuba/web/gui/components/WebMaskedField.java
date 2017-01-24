@@ -19,8 +19,12 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.MaskedField;
 import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 
 public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> implements MaskedField {
+
+    protected ShortcutListener enterShortcutListener;
 
     @Override
     public void setMask(String mask) {
@@ -75,5 +79,30 @@ public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> im
     @Override
     public void setSelectionRange(int pos, int length) {
         component.setSelectionRange(pos, length);
+    }
+
+    @Override
+    public void addEnterPressListener(EnterPressListener listener) {
+        getEventRouter().addListener(EnterPressListener.class, listener);
+
+        if (enterShortcutListener == null) {
+            enterShortcutListener = new ShortcutListener("enter", ShortcutAction.KeyCode.ENTER, null) {
+                @Override
+                public void handleAction(Object sender, Object target) {
+                    EnterPressEvent event = new EnterPressEvent(WebMaskedField.this);
+                    getEventRouter().fireEvent(EnterPressListener.class, EnterPressListener::enterPressed, event);
+                }
+            };
+            component.addShortcutListener(enterShortcutListener);
+        }
+    }
+
+    @Override
+    public void removeEnterPressListener(EnterPressListener listener) {
+        getEventRouter().removeListener(EnterPressListener.class, listener);
+
+        if (enterShortcutListener != null && !getEventRouter().hasListeners(EnterPressListener.class)) {
+            component.removeShortcutListener(enterShortcutListener);
+        }
     }
 }
