@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.components.Formatter;
@@ -33,6 +34,10 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     protected String inputPrompt;
     // just stub
     protected CaseConversion caseConversion;
+    // just stub
+    protected int textChangeTimeout;
+    // just stub
+    protected TextChangeEventMode textChangeEventMode = TextChangeEventMode.LAZY;
 
     @Override
     protected JTextField createTextComponentImpl() {
@@ -167,6 +172,45 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     @Override
     public String getRawValue() {
         return impl.getText();
+    }
+
+    @Override
+    public void selectAll() {
+        impl.selectAll();
+    }
+
+    @Override
+    public void setSelectionRange(int pos, int length) {
+        impl.select(pos, pos + length);
+    }
+
+    @Override
+    public void addTextChangeListener(TextChangeListener listener) {
+    }
+
+    @Override
+    public void removeTextChangeListener(TextChangeListener listener) {
+    }
+
+    @Override
+    public void setTextChangeTimeout(int timeout) {
+        this.textChangeTimeout = timeout;
+    }
+
+    @Override
+    public int getTextChangeTimeout() {
+        return textChangeTimeout;
+    }
+
+    @Override
+    public TextChangeEventMode getTextChangeEventMode() {
+        return textChangeEventMode;
+    }
+
+    @Override
+    public void setTextChangeEventMode(TextChangeEventMode mode) {
+        Preconditions.checkNotNullArgument(mode);
+        this.textChangeEventMode = mode;
     }
 
     protected class FlushableTextField extends JTextField implements Flushable {

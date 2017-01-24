@@ -17,6 +17,8 @@
 
 package com.haulmont.cuba.gui.components;
 
+import java.util.EventObject;
+
 public interface TextInputField extends Field {
 
     /**
@@ -31,11 +33,13 @@ public interface TextInputField extends Field {
 
     interface TrimSupported extends TextInputField {
         boolean isTrimming();
+
         void setTrimming(boolean trimming);
     }
 
     interface MaxLengthLimited extends TextInputField {
         int getMaxLength();
+
         void setMaxLength(int value);
     }
 
@@ -58,5 +62,111 @@ public interface TextInputField extends Field {
          * Disable automatic case conversion or enable with chosen mode
          */
         void setCaseConversion(CaseConversion caseConversion);
+    }
+
+    interface TextSelectionSupported extends TextInputField {
+        void selectAll();
+        void setSelectionRange(int pos, int length);
+    }
+
+    interface TextChangeNotifier extends TextInputField {
+        void addTextChangeListener(TextChangeListener listener);
+        void removeTextChangeListener(TextChangeListener listener);
+
+        /**
+         * Gets the timeout used to fire {@link TextChangeEvent}s when the
+         * {@link #getTextChangeEventMode()} is {@link TextChangeEventMode#LAZY} or
+         * {@link TextChangeEventMode#TIMEOUT}.
+         *
+         * @return timeout in milliseconds
+         */
+        int getTextChangeTimeout();
+        /**
+         * The text change timeout modifies how often text change events are
+         * communicated to the application when {@link #getTextChangeEventMode()} is
+         * {@link TextChangeEventMode#LAZY} or {@link TextChangeEventMode#TIMEOUT}.
+         *
+         * @param timeout timeout in milliseconds
+         */
+        void setTextChangeTimeout(int timeout);
+
+        /**
+         * @return the mode used to trigger {@link TextChangeEvent}s.
+         */
+        TextChangeEventMode getTextChangeEventMode();
+        /**
+         * Sets the mode how the TextField triggers {@link TextChangeEvent}s.
+         *
+         * @param mode the new mode
+         */
+        void setTextChangeEventMode(TextChangeEventMode mode);
+    }
+
+    interface TextChangeListener {
+        void textChange(TextChangeEvent event);
+    }
+
+    /**
+     * TextChangeEvents are fired when the user is editing the text content of a field. Most commonly text change events
+     * are triggered by typing text with keyboard, but e.g. pasting content from clip board to a text field also
+     * triggers an event.
+     * <p>
+     * TextChangeEvents differ from {@link ValueChangeEvent}s so that they are triggered repeatedly while the end user
+     * is filling the field. ValueChangeEvents are not fired until the user for example hits enter or focuses another
+     * field. Also note the difference that TextChangeEvents are only fired if the change is triggered from the user,
+     * while ValueChangeEvents are also fired if the field value is set by the application code.
+     */
+    class TextChangeEvent extends EventObject {
+        private final String text;
+
+        private final int cursorPosition;
+
+        public TextChangeEvent(TextInputField source, String text, int cursorPosition) {
+            super(source);
+            this.text = text;
+            this.cursorPosition = cursorPosition;
+        }
+
+        @Override
+        public TextInputField getSource() {
+            return (TextInputField) super.getSource();
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public int getCursorPosition() {
+            return cursorPosition;
+        }
+    }
+
+    /**
+     * Different modes how the TextField can trigger {@link TextChangeEvent}s.
+     */
+    enum TextChangeEventMode {
+        /**
+         * An event is triggered on each text content change, most commonly key
+         * press events.
+         */
+        EAGER,
+        /**
+         * Each text change event in the UI causes the event to be communicated to the application after a timeout.
+         * The length of the timeout can be controlled with {@link TextChangeNotifier#setTextChangeTimeout(int)}.
+         * Only the last input event is reported to the server side if several text change events happen during the timeout.
+         * <p>
+         * In case of a {@link ValueChangeEvent} the schedule is not kept strictly. Before a {@link ValueChangeEvent}
+         * a {@link TextChangeEvent} is triggered if the text content has changed since the previous TextChangeEvent
+         * regardless of the schedule.
+         */
+        TIMEOUT,
+        /**
+         * An event is triggered when there is a pause of text modifications. The length of the pause can be modified
+         * with {@link TextChangeNotifier#setTextChangeTimeout(int)}. Like with the {@link #TIMEOUT} mode, an event is
+         * forced before {@link ValueChangeEvent}s, even if the user did not keep a pause while entering the text.
+         * <p>
+         * This is the default mode.
+         */
+        LAZY
     }
 }

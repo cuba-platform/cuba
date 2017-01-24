@@ -22,6 +22,8 @@ public interface TextArea extends TextInputField,
                                   TextInputField.MaxLengthLimited,
                                   TextInputField.CursorPositionSupported,
                                   TextInputField.TrimSupported,
+                                  TextInputField.TextChangeNotifier,
+                                  TextInputField.TextSelectionSupported,
                                   TextInputField.CaseConversionSupported,
                                   Component.HasInputPrompt {
 

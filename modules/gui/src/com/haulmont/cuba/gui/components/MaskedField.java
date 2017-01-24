@@ -31,7 +31,11 @@ package com.haulmont.cuba.gui.components;
  * </ul>
  * Any other symbols in format will be treated as mask literals.
  */
-public interface MaskedField extends TextField {
+public interface MaskedField
+        extends
+            TextInputField,
+            TextInputField.TextSelectionSupported,
+            TextInputField.CursorPositionSupported {
 
     String NAME = "maskedField";
 
@@ -52,6 +56,11 @@ public interface MaskedField extends TextField {
 
     boolean isSendNullRepresentation();
     void setSendNullRepresentation(boolean sendNullRepresentation);
+
+    /**
+     * Returns a string representation of the value.
+     */
+    String getRawValue();
 
     enum ValueMode {
         MASKED,

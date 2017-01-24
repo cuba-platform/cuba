@@ -44,6 +44,14 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="textChangeEventMode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="LAZY"/>
+            <xs:enumeration value="TIMEOUT"/>
+            <xs:enumeration value="EAGER"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="datatypeEnum">
         <xs:union>
             <xs:simpleType>
@@ -356,7 +364,7 @@
         </xs:restriction>
     </xs:simpleType>
 
-    <!-- Stylenames -->
+    <!-- Style names -->
 
     <xs:complexType name="labelStylename">
         <xs:union>
@@ -930,61 +938,61 @@
     <!-- Label -->
     <xs:complexType name="labelComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:sequence>
+                    <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
+                </xs:sequence>
+
+                <xs:attributeGroup ref="hasDatasource"/>
+
+                <xs:attribute name="stylename" type="labelStylename"/>
+                <xs:attribute name="value" type="resourceString"/>
+                <xs:attribute name="htmlEnabled" type="xs:boolean"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:sequence>
-            <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
-        </xs:sequence>
-
-        <xs:attributeGroup ref="hasDatasource"/>
-
-        <xs:attribute name="stylename" type="labelStylename"/>
-        <xs:attribute name="value" type="resourceString"/>
-        <xs:attribute name="htmlEnabled" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Link -->
     <xs:complexType name="linkComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:attribute name="url" type="xs:anyURI"/>
+                <xs:attribute name="target" type="linkTarget"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:attribute name="url" type="xs:anyURI"/>
-        <xs:attribute name="target" type="linkTarget"/>
     </xs:complexType>
 
     <!-- CheckBox -->
     <xs:complexType name="checkBoxComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:attributeGroup ref="hasEditable"/>
+                <xs:attributeGroup ref="hasDatasource"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:attributeGroup ref="hasEditable"/>
-        <xs:attributeGroup ref="hasDatasource"/>
     </xs:complexType>
 
     <!-- DatePicker -->
     <xs:complexType name="datePickerComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:attribute name="resolution">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="DAY"/>
+                            <xs:enumeration value="MONTH"/>
+                            <xs:enumeration value="YEAR"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+
+                <xs:attribute name="rangeStart" type="xs:string"/>
+                <xs:attribute name="rangeEnd" type="xs:string"/>
+
+                <xs:attributeGroup ref="hasEditable"/>
+                <xs:attributeGroup ref="hasDatasource"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:attribute name="resolution">
-            <xs:simpleType>
-                <xs:restriction base="xs:string">
-                    <xs:enumeration value="DAY"/>
-                    <xs:enumeration value="MONTH"/>
-                    <xs:enumeration value="YEAR"/>
-                </xs:restriction>
-            </xs:simpleType>
-        </xs:attribute>
-
-        <xs:attribute name="rangeStart" type="xs:string"/>
-        <xs:attribute name="rangeEnd" type="xs:string"/>
-
-        <xs:attributeGroup ref="hasEditable"/>
-        <xs:attributeGroup ref="hasDatasource"/>
     </xs:complexType>
 
     <!-- BaseComponent -->
@@ -1003,12 +1011,12 @@
     <!-- BaseField -->
     <xs:complexType name="baseFieldComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:attributeGroup ref="hasEditable"/>
+                <xs:attributeGroup ref="hasRequirements"/>
+                <xs:attributeGroup ref="hasDatasource"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:attributeGroup ref="hasEditable"/>
-        <xs:attributeGroup ref="hasRequirements"/>
-        <xs:attributeGroup ref="hasDatasource"/>
     </xs:complexType>
 
     <!-- BaseTextComponent -->
@@ -1025,22 +1033,22 @@
     <!-- Calendar -->
     <xs:complexType name="calendarComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:attribute name="datasource" type="xs:string"/>
+
+                <xs:attribute name="startDate" type="xs:string"/>
+                <xs:attribute name="endDate" type="xs:string"/>
+                <xs:attribute name="timeFormat" type="calendarTimeFormat"/>
+                <xs:attribute name="navigationButtonsVisible" type="xs:boolean"/>
+
+                <xs:attribute name="startDateProperty" type="xs:string"/>
+                <xs:attribute name="endDateProperty" type="xs:string"/>
+                <xs:attribute name="captionProperty" type="xs:string"/>
+                <xs:attribute name="descriptionProperty" type="xs:string"/>
+                <xs:attribute name="stylenameProperty" type="xs:string"/>
+                <xs:attribute name="isAllDayProperty" type="xs:string"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:attribute name="datasource" type="xs:string"/>
-
-        <xs:attribute name="startDate" type="xs:string"/>
-        <xs:attribute name="endDate" type="xs:string"/>
-        <xs:attribute name="timeFormat" type="calendarTimeFormat"/>
-        <xs:attribute name="navigationButtonsVisible" type="xs:boolean"/>
-
-        <xs:attribute name="startDateProperty" type="xs:string"/>
-        <xs:attribute name="endDateProperty" type="xs:string"/>
-        <xs:attribute name="captionProperty" type="xs:string"/>
-        <xs:attribute name="descriptionProperty" type="xs:string"/>
-        <xs:attribute name="stylenameProperty" type="xs:string"/>
-        <xs:attribute name="isAllDayProperty" type="xs:string"/>
     </xs:complexType>
 
     <!-- TextField -->
@@ -1058,6 +1066,8 @@
                 <xs:attribute name="trim" type="xs:boolean"/>
                 <xs:attribute name="inputPrompt" type="resourceString"/>
                 <xs:attribute name="caseConversion" type="caseConversion"/>
+                <xs:attribute name="textChangeEventMode" type="textChangeEventMode"/>
+                <xs:attribute name="textChangeTimeout" type="xs:int"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1080,6 +1090,8 @@
                 <xs:attribute name="trim" type="xs:boolean"/>
                 <xs:attribute name="inputPrompt" type="resourceString"/>
                 <xs:attribute name="wordwrap" type="xs:boolean"/>
+                <xs:attribute name="textChangeEventMode" type="textChangeEventMode"/>
+                <xs:attribute name="textChangeTimeout" type="xs:int"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1182,11 +1194,11 @@
     <!-- Progress bar -->
     <xs:complexType name="progressBarComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:attribute name="stylename" type="progressBarStylename"/>
+                <xs:attribute name="indeterminate" type="xs:string"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:attribute name="stylename" type="progressBarStylename"/>
-        <xs:attribute name="indeterminate" type="xs:string"/>
     </xs:complexType>
 
     <!-- LookupField-->
@@ -1330,136 +1342,136 @@
     <!-- FileUploadField -->
     <xs:complexType name="uploadComponent">
         <xs:complexContent>
-            <xs:extension base="baseFieldComponent"/>
+            <xs:extension base="baseFieldComponent">
+                <xs:attributeGroup ref="hasDatasource"/>
+                <xs:attributeGroup ref="hasRequirements"/>
+                <xs:attributeGroup ref="hasEditable"/>
+                <xs:attributeGroup ref="isUploadComponent"/>
+
+                <xs:attribute name="showClearButton" type="xs:boolean"/>
+                <xs:attribute name="clearButtonCaption" type="resourceString"/>
+                <xs:attribute name="clearButtonIcon" type="resourceString"/>
+                <xs:attribute name="clearButtonDescription" type="resourceString"/>
+
+                <xs:attribute name="uploadButtonCaption" type="resourceString"/>
+                <xs:attribute name="uploadButtonIcon" type="resourceString"/>
+                <xs:attribute name="uploadButtonDescription" type="resourceString"/>
+
+                <xs:attribute name="showFileName" type="xs:boolean"/>
+                <xs:attribute name="fileStoragePutMode" type="fileStoragePutMode"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:attributeGroup ref="hasDatasource"/>
-        <xs:attributeGroup ref="hasRequirements"/>
-        <xs:attributeGroup ref="hasEditable"/>
-        <xs:attributeGroup ref="isUploadComponent"/>
-
-        <xs:attribute name="showClearButton" type="xs:boolean"/>
-        <xs:attribute name="clearButtonCaption" type="resourceString"/>
-        <xs:attribute name="clearButtonIcon" type="resourceString"/>
-        <xs:attribute name="clearButtonDescription" type="resourceString"/>
-
-        <xs:attribute name="uploadButtonCaption" type="resourceString"/>
-        <xs:attribute name="uploadButtonIcon" type="resourceString"/>
-        <xs:attribute name="uploadButtonDescription" type="resourceString"/>
-
-        <xs:attribute name="showFileName" type="xs:boolean"/>
-        <xs:attribute name="fileStoragePutMode" type="fileStoragePutMode"/>
     </xs:complexType>
 
     <!-- FileMultiUploadField -->
     <xs:complexType name="multiuploadComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:attributeGroup ref="isUploadComponent"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:attributeGroup ref="isUploadComponent"/>
     </xs:complexType>
 
     <!-- Embedded -->
     <xs:complexType name="embeddedComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:attribute name="src" type="xs:string"/>
+                <xs:attribute name="relativeSrc" type="xs:string"/>
+                <xs:attribute name="type" type="embeddedType"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:attribute name="src" type="xs:string"/>
-        <xs:attribute name="relativeSrc" type="xs:string"/>
-        <xs:attribute name="type" type="embeddedType"/>
     </xs:complexType>
 
     <!-- Tree -->
     <xs:complexType name="treeComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:sequence>
+                    <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
+                    <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelComponent"/>
+                    <xs:element name="treechildren" minOccurs="1" maxOccurs="1">
+                        <xs:complexType>
+                            <xs:attributeGroup ref="hasCaptionSource"/>
+                            <xs:attribute name="datasource" type="xs:string" use="required"/>
+                            <xs:attribute name="hierarchyProperty" type="xs:string"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+
+                <xs:attribute name="multiselect" type="xs:boolean"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:sequence>
-            <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
-            <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelComponent"/>
-            <xs:element name="treechildren" minOccurs="1" maxOccurs="1">
-                <xs:complexType>
-                    <xs:attributeGroup ref="hasCaptionSource"/>
-                    <xs:attribute name="datasource" type="xs:string" use="required"/>
-                    <xs:attribute name="hierarchyProperty" type="xs:string"/>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-
-        <xs:attribute name="multiselect" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Button -->
     <xs:complexType name="buttonComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:attribute name="stylename" type="buttonStylename"/>
+                <xs:attribute name="action" type="xs:string"/>
+                <xs:attribute name="invoke" type="xs:string"/>
+
+                <xs:attribute name="focusable" type="xs:boolean"/>
+                <xs:attribute name="disableOnClick" type="xs:boolean"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:attribute name="stylename" type="buttonStylename"/>
-        <xs:attribute name="action" type="xs:string"/>
-        <xs:attribute name="invoke" type="xs:string"/>
-
-        <xs:attribute name="focusable" type="xs:boolean"/>
-        <xs:attribute name="disableOnClick" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- PopupButton -->
     <xs:complexType name="popupButtonComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:sequence>
+                    <xs:element name="actions" nillable="true" minOccurs="0" maxOccurs="1">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:choice minOccurs="1" maxOccurs="unbounded">
+                                    <xs:element name="action" type="popupButtonAction"/>
+                                </xs:choice>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+
+                <xs:attribute name="showActionIcons" type="xs:boolean"/>
+
+                <xs:attribute name="focusable" type="xs:boolean"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:sequence>
-            <xs:element name="actions" nillable="true" minOccurs="0" maxOccurs="1">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:choice minOccurs="1" maxOccurs="unbounded">
-                            <xs:element name="action" type="popupButtonAction"/>
-                        </xs:choice>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-
-        <xs:attribute name="showActionIcons" type="xs:boolean"/>
-
-        <xs:attribute name="focusable" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- PopupView -->
     <xs:complexType name="popupViewComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:sequence>
+                    <xs:group ref="singleLayoutOrComponent"/>
+                </xs:sequence>
+
+                <xs:attribute name="minimizedValue" type="resourceString"/>
+                <xs:attribute name="captionAsHtml" type="xs:boolean"/>
+                <xs:attribute name="hideOnMouseOut" type="xs:boolean"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:sequence>
-            <xs:group ref="singleLayoutOrComponent"/>
-        </xs:sequence>
-
-        <xs:attribute name="minimizedValue" type="resourceString"/>
-        <xs:attribute name="captionAsHtml" type="xs:boolean"/>
-        <xs:attribute name="hideOnMouseOut" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- ButtonsPanel -->
     <xs:complexType name="buttonsPanelComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:sequence>
+                    <xs:choice minOccurs="0" maxOccurs="unbounded">
+                        <xs:group ref="layoutOrComponent"/>
+                    </xs:choice>
+                </xs:sequence>
+
+                <xs:attributeGroup ref="hasExpand"/>
+
+                <xs:attribute name="providerClass" type="xs:string"/>
+                <xs:attribute name="alwaysVisible" type="xs:boolean"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:sequence>
-            <xs:choice minOccurs="0" maxOccurs="unbounded">
-                <xs:group ref="layoutOrComponent"/>
-            </xs:choice>
-        </xs:sequence>
-
-        <xs:attributeGroup ref="hasExpand"/>
-
-        <xs:attribute name="providerClass" type="xs:string"/>
-        <xs:attribute name="alwaysVisible" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Table.Column -->
@@ -1509,43 +1521,43 @@
     <!-- Table -->
     <xs:complexType name="tableComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:all>
+                    <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
+                    <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelComponent"/>
+                    <xs:element name="rowsCount" minOccurs="0" maxOccurs="1">
+                        <xs:complexType/>
+                    </xs:element>
+                    <xs:element name="columns" minOccurs="1" maxOccurs="1" type="tableColumnsList"/>
+                    <xs:element name="rows" minOccurs="1" type="tableRowsType"/>
+                </xs:all>
+
+                <xs:attribute name="stylename" type="tableStylename"/>
+                <xs:attributeGroup ref="isTableComponent"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:all>
-            <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
-            <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelComponent"/>
-            <xs:element name="rowsCount" minOccurs="0" maxOccurs="1">
-                <xs:complexType/>
-            </xs:element>
-            <xs:element name="columns" minOccurs="1" maxOccurs="1" type="tableColumnsList"/>
-            <xs:element name="rows" minOccurs="1" type="tableRowsType"/>
-        </xs:all>
-
-        <xs:attribute name="stylename" type="tableStylename"/>
-        <xs:attributeGroup ref="isTableComponent"/>
     </xs:complexType>
 
     <!-- GroupTable -->
     <xs:complexType name="groupTableComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:all>
+                    <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
+                    <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelComponent"/>
+                    <xs:element name="rowsCount" minOccurs="0" maxOccurs="1">
+                        <xs:complexType/>
+                    </xs:element>
+                    <xs:element name="columns" minOccurs="1" maxOccurs="1" type="groupTableColumnsType"/>
+                    <xs:element name="rows" minOccurs="1" type="tableRowsType"/>
+                </xs:all>
+
+                <xs:attributeGroup ref="isTableComponent"/>
+
+                <xs:attribute name="stylename" type="tableStylename"/>
+                <xs:attribute name="fixedGrouping" type="xs:boolean"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:all>
-            <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
-            <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelComponent"/>
-            <xs:element name="rowsCount" minOccurs="0" maxOccurs="1">
-                <xs:complexType/>
-            </xs:element>
-            <xs:element name="columns" minOccurs="1" maxOccurs="1" type="groupTableColumnsType"/>
-            <xs:element name="rows" minOccurs="1" type="tableRowsType"/>
-        </xs:all>
-
-        <xs:attributeGroup ref="isTableComponent"/>
-
-        <xs:attribute name="stylename" type="tableStylename"/>
-        <xs:attribute name="fixedGrouping" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- DataGrid.Column -->
@@ -1573,88 +1585,88 @@
     <!-- DataGrid -->
     <xs:complexType name="dataGridComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:all>
+                    <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
+                    <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelComponent"/>
+                    <xs:element name="rowsCount" minOccurs="0" maxOccurs="1">
+                        <xs:complexType/>
+                    </xs:element>
+                    <xs:element name="columns" minOccurs="1" maxOccurs="1" type="dataGridColumnsList"/>
+                </xs:all>
+
+                <xs:attribute name="columnsCollapsingAllowed" type="xs:boolean"/>
+                <xs:attribute name="columnResizeMode" type="dataGridColumnResizeMode"/>
+                <xs:attribute name="datasource" type="xs:string"/>
+                <xs:attribute name="frozenColumnCount" type="xs:integer"/>
+                <xs:attribute name="headerVisible" type="xs:boolean"/>
+                <xs:attribute name="reorderingAllowed" type="xs:boolean"/>
+                <xs:attribute name="selectionMode" type="dataGridSelectionMode"/>
+                <xs:attribute name="sortable" type="xs:boolean"/>
+
+                <xs:attributeGroup ref="hasSettings"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:all>
-            <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
-            <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelComponent"/>
-            <xs:element name="rowsCount" minOccurs="0" maxOccurs="1">
-                <xs:complexType/>
-            </xs:element>
-            <xs:element name="columns" minOccurs="1" maxOccurs="1" type="dataGridColumnsList"/>
-        </xs:all>
-
-        <xs:attribute name="columnsCollapsingAllowed" type="xs:boolean"/>
-        <xs:attribute name="columnResizeMode" type="dataGridColumnResizeMode"/>
-        <xs:attribute name="datasource" type="xs:string"/>
-        <xs:attribute name="frozenColumnCount" type="xs:integer"/>
-        <xs:attribute name="headerVisible" type="xs:boolean"/>
-        <xs:attribute name="reorderingAllowed" type="xs:boolean"/>
-        <xs:attribute name="selectionMode" type="dataGridSelectionMode"/>
-        <xs:attribute name="sortable" type="xs:boolean"/>
-
-        <xs:attributeGroup ref="hasSettings"/>
     </xs:complexType>
 
     <!-- Filter -->
     <xs:complexType name="filterComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:sequence>
+                    <xs:element name="properties" minOccurs="0" maxOccurs="1">
+                        <xs:complexType>
+                            <xs:attribute name="include" type="xs:string" use="required"/>
+                            <xs:attribute name="exclude" type="xs:string"/>
+                            <xs:attribute name="excludeProperties" type="xs:string"/>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
+                        <xs:complexType>
+                            <xs:attribute name="name" type="xs:string" use="required"/>
+                            <xs:attribute name="caption" type="resourceString"/>
+                            <xs:attribute name="paramWhere" type="xs:string"/>
+                            <xs:attribute name="paramView" type="xs:string"/>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="custom" minOccurs="0" maxOccurs="unbounded">
+                        <xs:complexType mixed="true">
+                            <xs:attribute name="name" type="xs:string" use="required"/>
+                            <xs:attribute name="caption" type="resourceString"/>
+                            <xs:attribute name="paramClass" type="xs:string"/>
+                            <xs:attribute name="inExpr" type="xs:boolean"/>
+                            <xs:attribute name="join" type="xs:string"/>
+                            <xs:attribute name="paramWhere" type="xs:string"/>
+                            <xs:attribute name="paramView" type="xs:string"/>
+                            <xs:attribute name="operatorType" type="operatorType"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+
+                <xs:attributeGroup ref="requiresDatasource"/>
+
+                <xs:attribute name="margin" type="xs:string"/>
+
+                <xs:attribute name="applyTo" type="xs:string"/>
+                <xs:attribute name="useMaxResults" type="xs:boolean"/>
+                <xs:attribute name="textMaxResults" type="xs:boolean"/>
+                <xs:attribute name="manualApplyRequired" type="xs:boolean"/>
+                <xs:attribute name="editable" type="xs:boolean"/>
+                <xs:attribute name="folderActionsEnabled" type="xs:boolean"/>
+                <xs:attribute name="columnsCount" type="xs:int"/>
+                <xs:attribute name="collapsable" type="xs:boolean"/>
+                <xs:attribute name="collapsed" type="xs:boolean"/>
+                <xs:attribute name="defaultMode">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="generic"/>
+                            <xs:enumeration value="fts"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+                <xs:attribute name="modeSwitchVisible" type="xs:boolean"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:sequence>
-            <xs:element name="properties" minOccurs="0" maxOccurs="1">
-                <xs:complexType>
-                    <xs:attribute name="include" type="xs:string" use="required"/>
-                    <xs:attribute name="exclude" type="xs:string"/>
-                    <xs:attribute name="excludeProperties" type="xs:string"/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType>
-                    <xs:attribute name="name" type="xs:string" use="required"/>
-                    <xs:attribute name="caption" type="resourceString"/>
-                    <xs:attribute name="paramWhere" type="xs:string"/>
-                    <xs:attribute name="paramView" type="xs:string"/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="custom" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType mixed="true">
-                    <xs:attribute name="name" type="xs:string" use="required"/>
-                    <xs:attribute name="caption" type="resourceString"/>
-                    <xs:attribute name="paramClass" type="xs:string"/>
-                    <xs:attribute name="inExpr" type="xs:boolean"/>
-                    <xs:attribute name="join" type="xs:string"/>
-                    <xs:attribute name="paramWhere" type="xs:string"/>
-                    <xs:attribute name="paramView" type="xs:string"/>
-                    <xs:attribute name="operatorType" type="operatorType"/>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-
-        <xs:attributeGroup ref="requiresDatasource"/>
-
-        <xs:attribute name="margin" type="xs:string"/>
-
-        <xs:attribute name="applyTo" type="xs:string"/>
-        <xs:attribute name="useMaxResults" type="xs:boolean"/>
-        <xs:attribute name="textMaxResults" type="xs:boolean"/>
-        <xs:attribute name="manualApplyRequired" type="xs:boolean"/>
-        <xs:attribute name="editable" type="xs:boolean"/>
-        <xs:attribute name="folderActionsEnabled" type="xs:boolean"/>
-        <xs:attribute name="columnsCount" type="xs:int"/>
-        <xs:attribute name="collapsable" type="xs:boolean"/>
-        <xs:attribute name="collapsed" type="xs:boolean"/>
-        <xs:attribute name="defaultMode">
-            <xs:simpleType>
-                <xs:restriction base="xs:string">
-                    <xs:enumeration value="generic"/>
-                    <xs:enumeration value="fts"/>
-                </xs:restriction>
-            </xs:simpleType>
-        </xs:attribute>
-        <xs:attribute name="modeSwitchVisible" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- FieldGroup.FieldConfig -->
@@ -1707,76 +1719,76 @@
     <!-- FieldGroup -->
     <xs:complexType name="fieldGroupComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:choice maxOccurs="unbounded" minOccurs="0">
+                    <xs:element name="field" type="fieldGroupField"/>
+                    <xs:element name="column">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="field" minOccurs="1" maxOccurs="unbounded" type="fieldGroupField"/>
+                            </xs:sequence>
+                            <xs:attributeGroup ref="hasId"/>
+
+                            <xs:attribute name="width" type="xs:string"/>
+                            <xs:attribute name="flex" type="xs:string"/>
+                            <xs:attribute name="fieldCaptionWidth" type="xs:string"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:choice>
+
+                <xs:attributeGroup ref="hasEditState"/>
+
+                <xs:attribute name="captionAlignment" type="fieldGroupCaptionAlignment"/>
+                <xs:attribute name="fieldCaptionWidth" type="xs:string"/>
+
+                <xs:attribute name="datasource" type="xs:string"/>
+                <xs:attribute name="border" type="borderMode"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:choice maxOccurs="unbounded" minOccurs="0">
-            <xs:element name="field" type="fieldGroupField"/>
-            <xs:element name="column">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="field" minOccurs="1" maxOccurs="unbounded" type="fieldGroupField"/>
-                    </xs:sequence>
-                    <xs:attributeGroup ref="hasId"/>
-
-                    <xs:attribute name="width" type="xs:string"/>
-                    <xs:attribute name="flex" type="xs:string"/>
-                    <xs:attribute name="fieldCaptionWidth" type="xs:string"/>
-                </xs:complexType>
-            </xs:element>
-        </xs:choice>
-
-        <xs:attributeGroup ref="hasEditState"/>
-
-        <xs:attribute name="captionAlignment" type="fieldGroupCaptionAlignment"/>
-        <xs:attribute name="fieldCaptionWidth" type="xs:string"/>
-
-        <xs:attribute name="datasource" type="xs:string"/>
-        <xs:attribute name="border" type="borderMode"/>
     </xs:complexType>
 
     <!-- TokenList -->
     <xs:complexType name="tokenListComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:all>
+                    <xs:element name="lookup" maxOccurs="1">
+                        <xs:complexType>
+                            <xs:attribute name="optionsDatasource" type="xs:string"/>
+                            <xs:attribute name="captionProperty" type="xs:string"/>
+                            <xs:attribute name="lookupScreen" type="xs:string"/>
+                            <xs:attribute name="lookup" type="xs:boolean"/>
+                            <xs:attribute name="filterMode" type="filterMode"/>
+                            <xs:attribute name="openType" type="openType"/>
+                            <xs:attribute name="multiselect" type="xs:boolean"/>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="addButton" minOccurs="0" maxOccurs="1">
+                        <xs:complexType>
+                            <xs:attribute name="caption" type="resourceString"/>
+
+                            <xs:attributeGroup ref="hasIcon"/>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="clearButton" minOccurs="0" maxOccurs="1">
+                        <xs:complexType>
+                            <xs:attribute name="caption" type="resourceString"/>
+
+                            <xs:attributeGroup ref="hasIcon"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:all>
+
+                <xs:attributeGroup ref="hasCaptionSource"/>
+                <xs:attributeGroup ref="hasDatasourceProp"/>
+
+                <xs:attribute name="refreshOptionsOnLookupClose" type="xs:boolean"/>
+                <xs:attribute name="position" type="tokenListPosition"/>
+                <xs:attribute name="inline" type="xs:boolean"/>
+                <xs:attribute name="simple" type="xs:boolean"/>
+                <xs:attribute name="clearEnabled" type="xs:boolean"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:all>
-            <xs:element name="lookup" maxOccurs="1">
-                <xs:complexType>
-                    <xs:attribute name="optionsDatasource" type="xs:string"/>
-                    <xs:attribute name="captionProperty" type="xs:string"/>
-                    <xs:attribute name="lookupScreen" type="xs:string"/>
-                    <xs:attribute name="lookup" type="xs:boolean"/>
-                    <xs:attribute name="filterMode" type="filterMode"/>
-                    <xs:attribute name="openType" type="openType"/>
-                    <xs:attribute name="multiselect" type="xs:boolean"/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addButton" minOccurs="0" maxOccurs="1">
-                <xs:complexType>
-                    <xs:attribute name="caption" type="resourceString"/>
-
-                    <xs:attributeGroup ref="hasIcon"/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="clearButton" minOccurs="0" maxOccurs="1">
-                <xs:complexType>
-                    <xs:attribute name="caption" type="resourceString"/>
-
-                    <xs:attributeGroup ref="hasIcon"/>
-                </xs:complexType>
-            </xs:element>
-        </xs:all>
-
-        <xs:attributeGroup ref="hasCaptionSource"/>
-        <xs:attributeGroup ref="hasDatasourceProp"/>
-
-        <xs:attribute name="refreshOptionsOnLookupClose" type="xs:boolean"/>
-        <xs:attribute name="position" type="tokenListPosition"/>
-        <xs:attribute name="inline" type="xs:boolean"/>
-        <xs:attribute name="simple" type="xs:boolean"/>
-        <xs:attribute name="clearEnabled" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- WidgetsTree -->
@@ -1799,26 +1811,26 @@
     <!-- TwinColumn -->
     <xs:complexType name="twinColumnComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:sequence>
+                    <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
+                </xs:sequence>
+
+                <xs:attributeGroup ref="hasDatasource"/>
+                <xs:attributeGroup ref="hasOptions"/>
+                <xs:attributeGroup ref="hasCaptionSource"/>
+                <xs:attributeGroup ref="hasRequirements"/>
+
+                <xs:attribute name="leftColumnCaption" type="resourceString"/>
+                <xs:attribute name="rightColumnCaption" type="resourceString"/>
+
+                <xs:attribute name="multiselect" type="xs:boolean"/>
+
+                <xs:attribute name="columns" type="xs:string"/>
+                <xs:attribute name="rows" type="xs:string"/>
+                <xs:attribute name="addAllBtnEnabled" type="xs:boolean"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:sequence>
-            <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
-        </xs:sequence>
-
-        <xs:attributeGroup ref="hasDatasource"/>
-        <xs:attributeGroup ref="hasOptions"/>
-        <xs:attributeGroup ref="hasCaptionSource"/>
-        <xs:attributeGroup ref="hasRequirements"/>
-
-        <xs:attribute name="leftColumnCaption" type="resourceString"/>
-        <xs:attribute name="rightColumnCaption" type="resourceString"/>
-
-        <xs:attribute name="multiselect" type="xs:boolean"/>
-
-        <xs:attribute name="columns" type="xs:string"/>
-        <xs:attribute name="rows" type="xs:string"/>
-        <xs:attribute name="addAllBtnEnabled" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Layouts && Containers -->
@@ -1826,214 +1838,214 @@
     <!-- HtmlBoxLayout -->
     <xs:complexType name="htmlBoxLayout">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:group ref="layoutOrComponent"/>
+
+                <xs:attribute name="stylename" type="layoutStylename"/>
+                <xs:attribute name="template" type="xs:string" use="required"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:group ref="layoutOrComponent"/>
-
-        <xs:attribute name="stylename" type="layoutStylename"/>
-        <xs:attribute name="template" type="xs:string" use="required"/>
     </xs:complexType>
 
     <!-- BoxLayout -->
     <xs:complexType name="boxLayout">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:group ref="layoutOrComponent"/>
+                <xs:attributeGroup ref="isLayoutComponent"/>
+
+                <xs:attributeGroup ref="hasSpacingMargin"/>
+
+                <xs:attribute name="stylename" type="boxLayoutStyleName"/>
+                <xs:attribute name="expand" type="xs:string"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:group ref="layoutOrComponent"/>
-        <xs:attributeGroup ref="isLayoutComponent"/>
-
-        <xs:attributeGroup ref="hasSpacingMargin"/>
-
-        <xs:attribute name="stylename" type="boxLayoutStyleName"/>
-        <xs:attribute name="expand" type="xs:string"/>
     </xs:complexType>
 
     <!-- FlowBoxLayout -->
     <xs:complexType name="flowBoxLayout">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:group ref="layoutOrComponent"/>
+
+                <xs:attribute name="stylename" type="layoutStylename"/>
+                <xs:attributeGroup ref="hasSpacingMargin"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:group ref="layoutOrComponent"/>
-
-        <xs:attribute name="stylename" type="layoutStylename"/>
-        <xs:attributeGroup ref="hasSpacingMargin"/>
     </xs:complexType>
 
     <!-- CssLayout -->
     <xs:complexType name="cssLayout">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:group ref="layoutOrComponent"/>
+
+                <xs:attribute name="stylename" type="csslayoutStylename"/>
+                <xs:attributeGroup ref="hasResponsive"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:group ref="layoutOrComponent"/>
-
-        <xs:attribute name="stylename" type="csslayoutStylename"/>
-        <xs:attributeGroup ref="hasResponsive"/>
     </xs:complexType>
 
     <!-- ScrollBoxLayout -->
     <xs:complexType name="scrollBoxLayout">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:group ref="layoutOrComponent"/>
+
+                <xs:attributeGroup ref="hasSpacingMargin"/>
+
+                <xs:attribute name="stylename" type="layoutStylename"/>
+                <xs:attribute name="orientation" type="orientation"/>
+                <xs:attribute name="scrollBars" type="scrollBars"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:group ref="layoutOrComponent"/>
-
-        <xs:attributeGroup ref="hasSpacingMargin"/>
-
-        <xs:attribute name="stylename" type="layoutStylename"/>
-        <xs:attribute name="orientation" type="orientation"/>
-        <xs:attribute name="scrollBars" type="scrollBars"/>
     </xs:complexType>
 
     <!-- SplitPanel -->
     <xs:complexType name="splitContainer">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:sequence minOccurs="2" maxOccurs="2">
+                    <xs:group ref="layoutOrComponent"/>
+                </xs:sequence>
+
+                <xs:attribute name="stylename" type="splitStylename"/>
+                <xs:attribute name="orientation" type="orientation"/>
+                <xs:attribute name="pos" type="xs:string"/>
+                <xs:attribute name="minSplitPosition" type="xs:string"/>
+                <xs:attribute name="maxSplitPosition" type="xs:string"/>
+                <xs:attribute name="reversePosition" type="xs:boolean"/>
+                <xs:attribute name="locked" type="xs:boolean"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:sequence minOccurs="2" maxOccurs="2">
-            <xs:group ref="layoutOrComponent"/>
-        </xs:sequence>
-
-        <xs:attribute name="stylename" type="splitStylename"/>
-        <xs:attribute name="orientation" type="orientation"/>
-        <xs:attribute name="pos" type="xs:string"/>
-        <xs:attribute name="minSplitPosition" type="xs:string"/>
-        <xs:attribute name="maxSplitPosition" type="xs:string"/>
-        <xs:attribute name="reversePosition" type="xs:boolean"/>
-        <xs:attribute name="locked" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Tabsheet -->
     <xs:complexType name="tabsheetContainer">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                    <xs:element name="tab">
+                        <xs:complexType>
+                            <xs:group ref="layoutOrComponent"/>
+
+                            <xs:attributeGroup ref="requiresId"/>
+                            <xs:attributeGroup ref="hasCaption"/>
+                            <xs:attributeGroup ref="hasIcon"/>
+                            <xs:attributeGroup ref="hasSpacingMargin"/>
+                            <xs:attributeGroup ref="hasVisibility"/>
+                            <xs:attributeGroup ref="hasEnableProp"/>
+                            <xs:attributeGroup ref="hasStyle"/>
+
+                            <xs:attribute name="lazy" type="xs:boolean"/>
+
+                            <xs:attribute name="expand" type="xs:string"/>
+                            <xs:attribute name="detachable" type="xs:boolean"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+
+                <xs:attribute name="stylename" type="tabsheetStylename"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:attribute name="stylename" type="tabsheetStylename"/>
-
-        <xs:sequence minOccurs="0" maxOccurs="unbounded">
-            <xs:element name="tab">
-                <xs:complexType>
-                    <xs:group ref="layoutOrComponent"/>
-
-                    <xs:attributeGroup ref="requiresId"/>
-                    <xs:attributeGroup ref="hasCaption"/>
-                    <xs:attributeGroup ref="hasIcon"/>
-                    <xs:attributeGroup ref="hasSpacingMargin"/>
-                    <xs:attributeGroup ref="hasVisibility"/>
-                    <xs:attributeGroup ref="hasEnableProp"/>
-                    <xs:attributeGroup ref="hasStyle"/>
-
-                    <xs:attribute name="lazy" type="xs:boolean"/>
-
-                    <xs:attribute name="expand" type="xs:string"/>
-                    <xs:attribute name="detachable" type="xs:boolean"/>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
     </xs:complexType>
 
     <!-- Accordion -->
     <xs:complexType name="accordionContainer">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                    <xs:element name="tab">
+                        <xs:complexType>
+                            <xs:group ref="layoutOrComponent"/>
+
+                            <xs:attributeGroup ref="requiresId"/>
+                            <xs:attributeGroup ref="hasCaption"/>
+                            <xs:attributeGroup ref="hasIcon"/>
+                            <xs:attributeGroup ref="hasSpacingMargin"/>
+                            <xs:attributeGroup ref="hasVisibility"/>
+                            <xs:attributeGroup ref="hasEnableProp"/>
+                            <xs:attributeGroup ref="hasStyle"/>
+
+                            <xs:attribute name="lazy" type="xs:boolean"/>
+                            <xs:attribute name="expand" type="xs:string"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+
+                <xs:attribute name="stylename" type="accordionStylename"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:attribute name="stylename" type="accordionStylename"/>
-
-        <xs:sequence minOccurs="0" maxOccurs="unbounded">
-            <xs:element name="tab">
-                <xs:complexType>
-                    <xs:group ref="layoutOrComponent"/>
-
-                    <xs:attributeGroup ref="requiresId"/>
-                    <xs:attributeGroup ref="hasCaption"/>
-                    <xs:attributeGroup ref="hasIcon"/>
-                    <xs:attributeGroup ref="hasSpacingMargin"/>
-                    <xs:attributeGroup ref="hasVisibility"/>
-                    <xs:attributeGroup ref="hasEnableProp"/>
-                    <xs:attributeGroup ref="hasStyle"/>
-
-                    <xs:attribute name="lazy" type="xs:boolean"/>
-                    <xs:attribute name="expand" type="xs:string"/>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
     </xs:complexType>
 
     <!-- GridLayout -->
     <xs:complexType name="gridLayout">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:sequence>
+                    <xs:element name="columns" minOccurs="1" maxOccurs="unbounded">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="column" minOccurs="0" maxOccurs="unbounded">
+                                    <xs:complexType>
+                                        <xs:attributeGroup ref="hasId"/>
+
+                                        <xs:attribute name="flex" type="xs:float"/>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                            <xs:attribute name="count" type="xs:int"/>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="rows" minOccurs="1">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="row" minOccurs="1" maxOccurs="unbounded">
+                                    <xs:complexType>
+                                        <xs:group ref="layoutOrComponent"/>
+
+                                        <xs:attributeGroup ref="hasId"/>
+
+                                        <xs:attribute name="flex" type="xs:float"/>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+
+                <xs:attributeGroup ref="hasSpacingMargin"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:sequence>
-            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="column" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                                <xs:attributeGroup ref="hasId"/>
-
-                                <xs:attribute name="flex" type="xs:float"/>
-                            </xs:complexType>
-                        </xs:element>
-                    </xs:sequence>
-                    <xs:attribute name="count" type="xs:int"/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="rows" minOccurs="1">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="row" minOccurs="1" maxOccurs="unbounded">
-                            <xs:complexType>
-                                <xs:group ref="layoutOrComponent"/>
-
-                                <xs:attributeGroup ref="hasId"/>
-
-                                <xs:attribute name="flex" type="xs:float"/>
-                            </xs:complexType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-
-        <xs:attributeGroup ref="hasSpacingMargin"/>
     </xs:complexType>
 
     <!-- GroupBox -->
     <xs:complexType name="groupBoxLayout">
-        <xs:group ref="layoutOrComponent" minOccurs="0"/>
-
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:group ref="layoutOrComponent" minOccurs="0"/>
+
+                <xs:attributeGroup ref="hasSpacing"/>
+                <xs:attributeGroup ref="hasSettings"/>
+                <xs:attributeGroup ref="hasExpand"/>
+
+                <xs:attribute name="stylename" type="groupBoxStylename"/>
+                <xs:attribute name="collapsable" type="xs:boolean"/>
+                <xs:attribute name="collapsed" type="xs:boolean"/>
+                <xs:attribute name="orientation" type="orientation"/>
+                <xs:attribute name="showAsPanel" type="xs:boolean"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:attributeGroup ref="hasSpacing"/>
-        <xs:attributeGroup ref="hasSettings"/>
-        <xs:attributeGroup ref="hasExpand"/>
-
-        <xs:attribute name="stylename" type="groupBoxStylename"/>
-        <xs:attribute name="collapsable" type="xs:boolean"/>
-        <xs:attribute name="collapsed" type="xs:boolean"/>
-        <xs:attribute name="orientation" type="orientation"/>
-        <xs:attribute name="showAsPanel" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Frame -->
     <xs:complexType name="frameContainer">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:attribute name="src" type="xs:string"/>
+                <xs:attribute name="screen" type="xs:string"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:attribute name="src" type="xs:string"/>
-        <xs:attribute name="screen" type="xs:string"/>
     </xs:complexType>
 
     <!-- RuntimeProperty -->
@@ -2054,45 +2066,45 @@
 
     <xs:complexType name="relatedComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:sequence>
+                    <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
+                        <xs:complexType>
+                            <xs:attribute name="name" type="xs:string" use="required"/>
+                            <xs:attribute name="screen" type="xs:string"/>
+                            <xs:attribute name="caption" type="resourceString"/>
+                            <xs:attribute name="filterCaption" type="resourceString"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+
+                <xs:attribute name="openType" type="openType"/>
+                <xs:attribute name="for" type="xs:string" use="required"/>
+                <xs:attribute name="exclude" type="xs:string"/>
+                <xs:attribute name="focusable" type="xs:boolean"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:sequence>
-            <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType>
-                    <xs:attribute name="name" type="xs:string" use="required"/>
-                    <xs:attribute name="screen" type="xs:string"/>
-                    <xs:attribute name="caption" type="resourceString"/>
-                    <xs:attribute name="filterCaption" type="resourceString"/>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-
-        <xs:attribute name="openType" type="openType"/>
-        <xs:attribute name="for" type="xs:string" use="required"/>
-        <xs:attribute name="exclude" type="xs:string"/>
-        <xs:attribute name="focusable" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="bulkEditorComponent">
         <xs:complexContent>
-            <xs:extension base="baseComponent"/>
+            <xs:extension base="baseComponent">
+                <xs:sequence>
+                    <xs:element name="validator" minOccurs="0" maxOccurs="unbounded">
+                        <xs:complexType>
+                            <xs:attribute name="field" type="xs:string"/>
+                            <xs:attribute name="class" type="xs:string"/>
+                            <xs:attribute name="script" type="xs:string"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+
+                <xs:attribute name="openType" type="openType"/>
+                <xs:attribute name="for" type="xs:string" use="required"/>
+                <xs:attribute name="exclude" type="xs:string"/>
+                <xs:attribute name="focusable" type="xs:boolean"/>
+            </xs:extension>
         </xs:complexContent>
-
-        <xs:sequence>
-            <xs:element name="validator" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType>
-                    <xs:attribute name="field" type="xs:string"/>
-                    <xs:attribute name="class" type="xs:string"/>
-                    <xs:attribute name="script" type="xs:string"/>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-
-        <xs:attribute name="openType" type="openType"/>
-        <xs:attribute name="for" type="xs:string" use="required"/>
-        <xs:attribute name="exclude" type="xs:string"/>
-        <xs:attribute name="focusable" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Datasources -->
