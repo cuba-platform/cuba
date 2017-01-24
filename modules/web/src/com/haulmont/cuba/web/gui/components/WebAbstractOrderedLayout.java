@@ -174,12 +174,37 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
         if (layoutClickListener == null) {
             layoutClickListener = (LayoutEvents.LayoutClickListener) event -> {
                 Component childComponent = findChildComponent(this, event.getChildComponent());
-                LayoutClickEvent layoutClickEvent = new LayoutClickEvent(this, childComponent);
+                MouseEventDetails mouseEventDetails = new MouseEventDetails();
+                mouseEventDetails.setButton(convertMouseButton(event.getButton()));
+                mouseEventDetails.setClientX(event.getClientX());
+                mouseEventDetails.setClientY(event.getClientY());
+                mouseEventDetails.setAltKey(event.isAltKey());
+                mouseEventDetails.setCtrlKey(event.isCtrlKey());
+                mouseEventDetails.setMetaKey(event.isMetaKey());
+                mouseEventDetails.setShiftKey(event.isShiftKey());
+                mouseEventDetails.setDoubleClick(event.isDoubleClick());
+                mouseEventDetails.setRelativeX(event.getRelativeX());
+                mouseEventDetails.setRelativeY(event.getRelativeY());
+
+                LayoutClickEvent layoutClickEvent = new LayoutClickEvent(this, childComponent, mouseEventDetails);
 
                 getEventRouter().fireEvent(LayoutClickListener.class, LayoutClickListener::layoutClick, layoutClickEvent);
             };
             component.addLayoutClickListener(layoutClickListener);
         }
+    }
+
+    @Nullable
+    protected MouseEventDetails.MouseButton convertMouseButton(com.vaadin.shared.MouseEventDetails.MouseButton mouseButton) {
+        switch (mouseButton) {
+            case LEFT:
+                return MouseEventDetails.MouseButton.LEFT;
+            case MIDDLE:
+                return MouseEventDetails.MouseButton.MIDDLE;
+            case RIGHT:
+                return MouseEventDetails.MouseButton.RIGHT;
+        }
+        return null;
     }
 
     protected Component findChildComponent(Container layout, com.vaadin.ui.Component clickedComponent) {
