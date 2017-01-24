@@ -1130,7 +1130,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     @Override
     public void repaint() {
-        component.markAsDirtyRecursive();
+        component.repaint();
     }
 
     protected boolean canBeSorted(CollectionDatasource datasource) {
@@ -1470,7 +1470,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         if (!this.rowStyleProviders.contains(styleProvider)) {
             this.rowStyleProviders.add(styleProvider);
 
-            component.refreshRowStyles();
+            component.repaint();
         }
     }
 
@@ -1478,7 +1478,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     public void removeRowStyleProvider(RowStyleProvider<? super E> styleProvider) {
         if (this.rowStyleProviders != null) {
             if (this.rowStyleProviders.remove(styleProvider)) {
-                component.refreshRowStyles();
+                component.repaint();
             }
         }
     }
@@ -1492,7 +1492,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         if (!this.cellStyleProviders.contains(styleProvider)) {
             this.cellStyleProviders.add(styleProvider);
 
-            component.refreshCellStyles();
+            component.repaint();
         }
     }
 
@@ -1500,7 +1500,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     public void removeCellStyleProvider(CellStyleProvider<? super E> styleProvider) {
         if (this.cellStyleProviders != null) {
             if (this.cellStyleProviders.remove(styleProvider)) {
-                component.refreshCellStyles();
+                component.repaint();
             }
         }
     }

@@ -21,15 +21,7 @@ import com.vaadin.ui.Grid;
 
 public class CubaGrid extends Grid implements Action.ShortcutNotifier {
 
-    public void refreshRowStyles() {
-        // We set the same style generator to refresh styles,
-        // because setRowStyleGenerator internally call datasourceExtension.refreshCache()
-        setRowStyleGenerator(getRowStyleGenerator());
-    }
-
-    public void refreshCellStyles() {
-        // We set the same style generator to refresh styles,
-        // because setCellStyleGenerator internally call datasourceExtension.refreshCache()
-        setCellStyleGenerator(getCellStyleGenerator());
+    public void repaint() {
+        datasourceExtension.refreshCache();
     }
 }
