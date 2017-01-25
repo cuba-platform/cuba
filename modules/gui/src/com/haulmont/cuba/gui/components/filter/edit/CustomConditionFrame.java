@@ -236,7 +236,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
         Object selectedItem = null;
         if (ParamType.ENTITY.equals(typeSelect.getValue())) {
             for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
-                if (!BooleanUtils.isTrue((Boolean) metaClass.getAnnotations().get(SystemLevel.class.getName()))) {
+                if (!metadataTools.isSystemLevel(metaClass)) {
                     items.put(messageTools.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
                 }
             }

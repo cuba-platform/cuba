@@ -720,7 +720,7 @@ public class Param {
         PersistenceManagerService persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
 
         LookupType type = null;
-        if (property.getRange().isClass()) {
+        if (property != null && property.getRange().isClass()) {
             type = (LookupType) metadata.getTools()
                     .getMetaAnnotationAttributes(property.getAnnotations(), Lookup.class)
                     .get("type");
