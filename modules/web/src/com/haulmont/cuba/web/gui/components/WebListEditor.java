@@ -30,19 +30,20 @@ import java.util.Objects;
 
 public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor> implements ListEditor {
 
-    protected static final String C_LISTEDITOR = "c-listeditor";
+    protected static final String LISTEDITOR_STYLENAME = "c-listeditor";
+
     protected ListEditorDelegate delegate;
 
     public WebListEditor() {
         delegate = AppBeans.get(ListEditorDelegate.class);
         delegate.setActualField(this);
         component = new CubaListEditor(delegate.getLayout());
-        setStyleName(C_LISTEDITOR);
+        setStyleName(LISTEDITOR_STYLENAME);
     }
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_LISTEDITOR, ""));
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(LISTEDITOR_STYLENAME, ""));
     }
 
     @Override

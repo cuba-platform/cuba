@@ -39,7 +39,7 @@ import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         implements PopupButton, Component.SecuredActionsHolder {
 
-    private final static String CONTEXT_MENU_BUTTON = "c-cm-button";
+    protected final static String CONTEXT_MENU_BUTTON_STYLENAME = "c-cm-button";
 
     protected Component popupComponent;
     protected com.vaadin.ui.Component vPopupComponent;
@@ -53,7 +53,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
             @Override
             public void setPopupVisible(boolean popupVisible) {
                 if (vPopupComponent instanceof VerticalLayout
-                    && popupVisible && !hasVisibleActions()) {
+                        && popupVisible && !hasVisibleActions()) {
                     return;
                 }
 
@@ -120,7 +120,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     @Override
     public void setMenuWidth(String width) {
         if (vPopupComponent != null && width != null) {
-            vPopupComponent.setWidth(width);    
+            vPopupComponent.setWidth(width);
         }
     }
 
@@ -133,7 +133,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     public void setShowActionIcons(boolean showActionIcons) {
         if (this.showActionIcons != showActionIcons) {
             this.showActionIcons = showActionIcons;
-            updateAcionsIcons();
+            updateActionsIcons();
         }
     }
 
@@ -180,7 +180,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         }
     }
 
-    protected void updateAcionsIcons() {
+    protected void updateActionsIcons() {
         for (Action action : actionOrder) {
             for (ActionOwner actionOwner : action.getOwners()) {
                 if (actionOwner instanceof PopupButtonActionButton) {
@@ -194,7 +194,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
                 }
             }
         }
-    };
+    }
 
     protected Button createActionButton(Action action) {
         WebButton button = new PopupButtonActionButton() {
@@ -211,7 +211,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         Button vButton = (Button) button.getComposition();
         vButton.setImmediate(true);
         vButton.setSizeFull();
-        vButton.setStyleName(CONTEXT_MENU_BUTTON);
+        vButton.setStyleName(CONTEXT_MENU_BUTTON_STYLENAME);
 
         if (AppUI.getCurrent().isTestMode()) {
             String debugId = getDebugId();

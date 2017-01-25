@@ -29,8 +29,8 @@ import org.apache.commons.lang.StringUtils;
 import static com.vaadin.ui.themes.BaseTheme.BUTTON_LINK;
 
 public class CubaFileUploadWrapper extends CustomField {
-    protected static final String FILE_UPLOAD_WRAPPER = "c-fileupload-wrapper";
-    protected static final String EMPTY_VALUE_STYLE = "c-fileupload-empty";
+    protected static final String FILE_UPLOAD_WRAPPER_STYLENAME = "c-fileupload-wrapper";
+    protected static final String EMPTY_VALUE_STYLENAME = "c-fileupload-empty";
 
     protected HorizontalLayout container;
     protected Button fileNameButton;
@@ -43,7 +43,7 @@ public class CubaFileUploadWrapper extends CustomField {
     protected String fileName;
 
     public CubaFileUploadWrapper(UploadComponent uploadButton) {
-        setPrimaryStyleName(FILE_UPLOAD_WRAPPER);
+        setPrimaryStyleName(FILE_UPLOAD_WRAPPER_STYLENAME);
         initLayout(uploadButton);
     }
 
@@ -210,11 +210,11 @@ public class CubaFileUploadWrapper extends CustomField {
 
         if (StringUtils.isNotEmpty(title)) {
             fileNameButton.setCaption(title);
-            fileNameButton.removeStyleName(EMPTY_VALUE_STYLE);
+            fileNameButton.removeStyleName(EMPTY_VALUE_STYLENAME);
         } else {
             Messages messages = AppBeans.get(Messages.NAME);
             fileNameButton.setCaption(messages.getMainMessage("FileUploadField.fileNotSelected"));
-            fileNameButton.addStyleName(EMPTY_VALUE_STYLE);
+            fileNameButton.addStyleName(EMPTY_VALUE_STYLENAME);
         }
     }
 

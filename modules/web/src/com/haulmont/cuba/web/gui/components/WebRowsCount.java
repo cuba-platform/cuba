@@ -34,7 +34,8 @@ import java.util.List;
 
 public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements RowsCount, VisibilityChangeNotifier {
 
-    protected static final String C_TABLE_ROWS_COUNT = "c-table-rows-count";
+    protected static final String TABLE_ROWS_COUNT_STYLENAME = "c-table-rows-count";
+
     protected CollectionDatasource datasource;
     protected boolean refreshing;
     protected State state;
@@ -50,12 +51,12 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     public WebRowsCount() {
         component = new CubaRowsCount();
-        component.setStyleName(C_TABLE_ROWS_COUNT);
+        component.setStyleName(TABLE_ROWS_COUNT_STYLENAME);
     }
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_TABLE_ROWS_COUNT, ""));
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(TABLE_ROWS_COUNT_STYLENAME, ""));
     }
 
     @Override
@@ -70,7 +71,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
             //noinspection unchecked
             collectionChangeListener = e -> {
                 samePage = Operation.REFRESH != e.getOperation()
-                            && Operation.CLEAR != e.getOperation();
+                        && Operation.CLEAR != e.getOperation();
                 onCollectionChanged();
             };
             //noinspection unchecked

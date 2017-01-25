@@ -35,9 +35,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static com.haulmont.cuba.web.toolkit.ui.CubaSearchSelect.C_SEARCHSELECT_STYLENAME;
-
 public class WebSearchField extends WebLookupField implements SearchField {
+
+    protected static final String SEARCHSELECT_STYLENAME = "c-searchselect";
 
     protected int minSearchStringLength = 0;
     protected Mode mode = Mode.CASE_SENSITIVE;
@@ -144,12 +144,12 @@ public class WebSearchField extends WebLookupField implements SearchField {
     public void setStyleName(String styleName) {
         super.setStyleName(styleName);
 
-        component.addStyleName(C_SEARCHSELECT_STYLENAME);
+        component.addStyleName(SEARCHSELECT_STYLENAME);
     }
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_SEARCHSELECT_STYLENAME, ""));
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(SEARCHSELECT_STYLENAME, ""));
     }
 
     @Override

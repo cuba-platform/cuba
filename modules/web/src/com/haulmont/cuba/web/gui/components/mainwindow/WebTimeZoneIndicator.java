@@ -29,12 +29,12 @@ import java.util.TimeZone;
 
 public class WebTimeZoneIndicator extends WebAbstractComponent<Label> implements TimeZoneIndicator {
 
-    protected static final String C_USER_TIMEZONE_LABEL = "c-user-timezone-label";
+    protected static final String USER_TIMEZONE_LABEL_STYLENAME = "c-user-timezone-label";
 
     public WebTimeZoneIndicator() {
         component = new Label();
         component.setSizeUndefined();
-        component.setStyleName(C_USER_TIMEZONE_LABEL);
+        component.setStyleName(USER_TIMEZONE_LABEL_STYLENAME);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
         TimeZone timeZone = uss.getUserSession().getTimeZone();
@@ -44,13 +44,13 @@ public class WebTimeZoneIndicator extends WebAbstractComponent<Label> implements
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_USER_TIMEZONE_LABEL, ""));
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(USER_TIMEZONE_LABEL_STYLENAME, ""));
     }
 
     @Override
     public void setStyleName(String styleName) {
         super.setStyleName(styleName);
 
-        component.addStyleName(C_USER_TIMEZONE_LABEL);
+        component.addStyleName(USER_TIMEZONE_LABEL_STYLENAME);
     }
 }
