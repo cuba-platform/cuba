@@ -16,16 +16,127 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Component.Alignment;
+import com.haulmont.cuba.gui.components.LookupField.FilterMode;
 import com.haulmont.cuba.gui.components.TextInputField;
+import com.vaadin.event.MouseEvents;
+import com.vaadin.shared.ui.combobox.FilteringMode;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractTextField;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
+/**
+ * Convenient class for methods that converts values from Vaadin to CUBA instances and vice versa.
+ */
 public final class WebWrapperUtils {
     private WebWrapperUtils() {
     }
 
+    public static CaptionMode toCaptionMode(AbstractSelect.ItemCaptionMode captionMode) {
+        if (captionMode == null) {
+            return null;
+        }
+
+        switch (captionMode) {
+            case ITEM:
+                return CaptionMode.ITEM;
+            case PROPERTY:
+                return CaptionMode.PROPERTY;
+            case EXPLICIT_DEFAULTS_ID:
+                return CaptionMode.MAP_ENTRY;
+            default:
+                throw new UnsupportedOperationException("Unsupported Vaadin AbstractSelect.ItemCaptionMode");
+        }
+    }
+
+    public static AbstractSelect.ItemCaptionMode toVaadinCaptionMode(CaptionMode captionMode) {
+        if (captionMode == null) {
+            return null;
+        }
+
+        switch (captionMode) {
+            case ITEM:
+                return AbstractSelect.ItemCaptionMode.ITEM;
+            case PROPERTY:
+                return AbstractSelect.ItemCaptionMode.PROPERTY;
+            case MAP_ENTRY:
+                return AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID;
+            default:
+                throw new UnsupportedOperationException("Unsupported CaptionMode");
+        }
+    }
+
+    public static com.vaadin.shared.ui.combobox.FilteringMode toVaadinFilterMode(FilterMode filterMode) {
+        if (filterMode == null) {
+            return null;
+        }
+
+        switch (filterMode) {
+            case NO:
+                return FilteringMode.OFF;
+            case STARTS_WITH:
+                return FilteringMode.STARTSWITH;
+            case CONTAINS:
+                return FilteringMode.CONTAINS;
+            default:
+                throw new UnsupportedOperationException("Unsupported FilterMode");
+        }
+    }
+
+    public static FilterMode toFilterMode(com.vaadin.shared.ui.combobox.FilteringMode filterMode) {
+        if (filterMode == null) {
+            return null;
+        }
+
+        switch (filterMode) {
+            case OFF:
+                return FilterMode.NO;
+            case CONTAINS:
+                return FilterMode.CONTAINS;
+            case STARTSWITH:
+                return FilterMode.STARTS_WITH;
+            default:
+                throw new UnsupportedOperationException("Unsupported Vaadin FilteringMode");
+        }
+    }
+
+    public static com.vaadin.ui.Alignment toVaadinAlignment(Alignment alignment) {
+        if (alignment == null) {
+            return null;
+        }
+
+        switch (alignment) {
+            case TOP_LEFT:
+                return com.vaadin.ui.Alignment.TOP_LEFT;
+            case TOP_CENTER:
+                return com.vaadin.ui.Alignment.TOP_CENTER;
+            case TOP_RIGHT:
+                return com.vaadin.ui.Alignment.TOP_RIGHT;
+            case MIDDLE_LEFT:
+                return com.vaadin.ui.Alignment.MIDDLE_LEFT;
+            case MIDDLE_CENTER:
+                return com.vaadin.ui.Alignment.MIDDLE_CENTER;
+            case MIDDLE_RIGHT:
+                return com.vaadin.ui.Alignment.MIDDLE_RIGHT;
+            case BOTTOM_LEFT:
+                return com.vaadin.ui.Alignment.BOTTOM_LEFT;
+            case BOTTOM_CENTER:
+                return com.vaadin.ui.Alignment.BOTTOM_CENTER;
+            case BOTTOM_RIGHT:
+                return com.vaadin.ui.Alignment.BOTTOM_RIGHT;
+            default:
+                throw new UnsupportedOperationException("Unsupported Alignment");
+        }
+    }
+
     public static TextInputField.TextChangeEventMode toTextChangeEventMode(AbstractTextField.TextChangeEventMode mode) {
+        if (mode == null) {
+            return null;
+        }
+
         switch (mode) {
             case EAGER:
                 return TextInputField.TextChangeEventMode.EAGER;
@@ -34,14 +145,16 @@ public final class WebWrapperUtils {
             case TIMEOUT:
                 return TextInputField.TextChangeEventMode.TIMEOUT;
             default:
-                throw new IllegalStateException("Unsupported Vaadin TextChangeEventMode");
+                throw new UnsupportedOperationException("Unsupported Vaadin TextChangeEventMode");
         }
     }
 
     public static AbstractTextField.TextChangeEventMode toVaadinTextChangeEventMode(TextInputField.TextChangeEventMode mode) {
-        checkNotNullArgument(mode);
+        if (mode == null) {
+            return null;
+        }
 
-        AbstractTextField.TextChangeEventMode vMode = AbstractTextField.TextChangeEventMode.LAZY;
+        AbstractTextField.TextChangeEventMode vMode;
         switch (mode) {
             case EAGER:
                 vMode = AbstractTextField.TextChangeEventMode.EAGER;
@@ -52,8 +165,45 @@ public final class WebWrapperUtils {
             case TIMEOUT:
                 vMode = AbstractTextField.TextChangeEventMode.TIMEOUT;
                 break;
+            default:
+                throw new UnsupportedOperationException("Unsupported TextChangeEventMode");
         }
 
         return vMode;
+    }
+
+    public static Component.MouseEventDetails toMouseEventDetails(MouseEvents.ClickEvent event) {
+        checkNotNullArgument(event);
+
+        Component.MouseEventDetails mouseEventDetails = new Component.MouseEventDetails();
+        mouseEventDetails.setButton(toMouseButton(event.getButton()));
+        mouseEventDetails.setClientX(event.getClientX());
+        mouseEventDetails.setClientY(event.getClientY());
+        mouseEventDetails.setAltKey(event.isAltKey());
+        mouseEventDetails.setCtrlKey(event.isCtrlKey());
+        mouseEventDetails.setMetaKey(event.isMetaKey());
+        mouseEventDetails.setShiftKey(event.isShiftKey());
+        mouseEventDetails.setDoubleClick(event.isDoubleClick());
+        mouseEventDetails.setRelativeX(event.getRelativeX());
+        mouseEventDetails.setRelativeY(event.getRelativeY());
+
+        return mouseEventDetails;
+    }
+
+    public static Component.MouseEventDetails.MouseButton toMouseButton(com.vaadin.shared.MouseEventDetails.MouseButton mouseButton) {
+        if (mouseButton == null) {
+            return null;
+        }
+
+        switch (mouseButton) {
+            case LEFT:
+                return Component.MouseEventDetails.MouseButton.LEFT;
+            case MIDDLE:
+                return Component.MouseEventDetails.MouseButton.MIDDLE;
+            case RIGHT:
+                return Component.MouseEventDetails.MouseButton.RIGHT;
+            default:
+                throw new UnsupportedOperationException("Unsupported Vaadin MouseButton");
+        }
     }
 }

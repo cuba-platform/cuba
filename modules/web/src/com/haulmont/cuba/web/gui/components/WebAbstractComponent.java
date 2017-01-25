@@ -360,7 +360,7 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
             com.vaadin.ui.Component component = this.getComposition().getParent();
             if (component instanceof Layout.AlignmentHandler) {
                 ((Layout.AlignmentHandler) component).setComponentAlignment(this.getComposition(),
-                        WebComponentsHelper.convertAlignment(alignment));
+                        WebWrapperUtils.toVaadinAlignment(alignment));
             }
         }
     }

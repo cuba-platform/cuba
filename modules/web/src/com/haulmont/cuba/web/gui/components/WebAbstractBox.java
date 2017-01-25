@@ -30,10 +30,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
-
-public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> implements BoxLayout,
-        Component.LayoutClickNotifier {
+public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> implements BoxLayout {
 
     protected List<Component> ownComponents = new ArrayList<>();
     protected LayoutEvents.LayoutClickListener layoutClickListener;
@@ -60,7 +57,7 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
 
         com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
         component.addComponent(vComponent, index);
-        component.setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
+        component.setComponentAlignment(vComponent, WebWrapperUtils.toVaadinAlignment(childComponent.getAlignment()));
 
         if (frame != null) {
             if (childComponent instanceof BelongToFrame
@@ -217,39 +214,15 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
     public void addLayoutClickListener(LayoutClickListener listener) {
         getEventRouter().addListener(LayoutClickListener.class, listener);
         if (layoutClickListener == null) {
-            layoutClickListener = (LayoutEvents.LayoutClickListener) event -> {
+            layoutClickListener = event -> {
                 Component childComponent = findChildComponent(this, event.getChildComponent());
-                MouseEventDetails mouseEventDetails = new MouseEventDetails();
-                mouseEventDetails.setButton(convertMouseButton(event.getButton()));
-                mouseEventDetails.setClientX(event.getClientX());
-                mouseEventDetails.setClientY(event.getClientY());
-                mouseEventDetails.setAltKey(event.isAltKey());
-                mouseEventDetails.setCtrlKey(event.isCtrlKey());
-                mouseEventDetails.setMetaKey(event.isMetaKey());
-                mouseEventDetails.setShiftKey(event.isShiftKey());
-                mouseEventDetails.setDoubleClick(event.isDoubleClick());
-                mouseEventDetails.setRelativeX(event.getRelativeX());
-                mouseEventDetails.setRelativeY(event.getRelativeY());
-
+                MouseEventDetails mouseEventDetails = WebWrapperUtils.toMouseEventDetails(event);
                 LayoutClickEvent layoutClickEvent = new LayoutClickEvent(this, childComponent, mouseEventDetails);
 
                 getEventRouter().fireEvent(LayoutClickListener.class, LayoutClickListener::layoutClick, layoutClickEvent);
             };
             component.addLayoutClickListener(layoutClickListener);
         }
-    }
-
-    @Nullable
-    protected MouseEventDetails.MouseButton convertMouseButton(com.vaadin.shared.MouseEventDetails.MouseButton mouseButton) {
-        switch (mouseButton) {
-            case LEFT:
-                return MouseEventDetails.MouseButton.LEFT;
-            case MIDDLE:
-                return MouseEventDetails.MouseButton.MIDDLE;
-            case RIGHT:
-                return MouseEventDetails.MouseButton.RIGHT;
-        }
-        return null;
     }
 
     protected Component findChildComponent(BoxLayout layout, com.vaadin.ui.Component clickedComponent) {

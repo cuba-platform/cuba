@@ -34,8 +34,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
-
 public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements GroupBoxLayout {
 
     private static final String GROUPBOX_PANEL_STYLENAME = "c-panel-groupbox";
@@ -92,7 +90,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
         com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
         getComponentContent().addComponent(vComponent, index);
-        getComponentContent().setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
+        getComponentContent().setComponentAlignment(vComponent, WebWrapperUtils.toVaadinAlignment(childComponent.getAlignment()));
 
         if (childComponent.getId() != null) {
             componentByIds.put(childComponent.getId(), childComponent);

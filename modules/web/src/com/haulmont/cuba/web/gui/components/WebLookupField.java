@@ -55,7 +55,6 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     protected Object nullOption;
     protected Entity nullEntity;
 
-    protected FilterMode filterMode;
     protected NewOptionHandler newOptionHandler;
 
     protected Object missingValue = null;
@@ -168,13 +167,12 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 
     @Override
     public void setFilterMode(FilterMode mode) {
-        filterMode = mode;
-        component.setFilteringMode(WebComponentsHelper.convertFilterMode(mode));
+        component.setFilteringMode(WebWrapperUtils.toVaadinFilterMode(mode));
     }
 
     @Override
     public FilterMode getFilterMode() {
-        return filterMode;
+        return WebWrapperUtils.toFilterMode(component.getFilteringMode());
     }
 
     @Override
@@ -298,7 +296,7 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     }
 
     protected void tryToAssignCaptionProperty() {
-        if (optionsDatasource != null && captionProperty != null && captionMode == CaptionMode.PROPERTY) {
+        if (optionsDatasource != null && captionProperty != null && getCaptionMode() == CaptionMode.PROPERTY) {
             MetaPropertyPath propertyPath = optionsDatasource.getMetaClass().getPropertyPath(captionProperty);
 
             if (propertyPath != null && component.getContainerDataSource() != null) {

@@ -55,7 +55,6 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.converter.Converter;
-import com.vaadin.event.MouseEvents;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.Component;
@@ -77,7 +76,6 @@ import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
-import static com.haulmont.cuba.gui.components.Component.MouseEventDetails.MouseButton;
 
 public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid>
         implements DataGrid<E>, com.haulmont.cuba.gui.components.Component.SecuredActionsHolder {
@@ -234,7 +232,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             }
 
             if (getEventRouter().hasListeners(ItemClickListener.class)) {
-                MouseEventDetails mouseEventDetails = getMouseEventDetails(e);
+                MouseEventDetails mouseEventDetails = WebWrapperUtils.toMouseEventDetails(e);
 
                 //noinspection unchecked
                 E item = (E) datasource.getItem(e.getItemId());
@@ -272,22 +270,6 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
         component.setRowStyleGenerator(createRowStyleGenerator());
         component.setCellStyleGenerator(createCellStyleGenerator());
-    }
-
-    protected MouseEventDetails getMouseEventDetails(MouseEvents.ClickEvent e) {
-        MouseEventDetails mouseEventDetails = new MouseEventDetails();
-        mouseEventDetails.setButton(convertToDataGridMouseButton(e.getButton()));
-        mouseEventDetails.setClientX(e.getClientX());
-        mouseEventDetails.setClientY(e.getClientY());
-        mouseEventDetails.setAltKey(e.isAltKey());
-        mouseEventDetails.setCtrlKey(e.isCtrlKey());
-        mouseEventDetails.setMetaKey(e.isMetaKey());
-        mouseEventDetails.setShiftKey(e.isShiftKey());
-        mouseEventDetails.setDoubleClick(e.isDoubleClick());
-        mouseEventDetails.setRelativeX(e.getRelativeX());
-        mouseEventDetails.setRelativeY(e.getRelativeY());
-
-        return mouseEventDetails;
     }
 
     protected List<Column> getColumnsOrderInternal() {
@@ -1616,27 +1598,14 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         getEventRouter().addListener(ContextClickListener.class, listener);
 
         if (contextClickListener == null) {
-            contextClickListener = (com.vaadin.event.ContextClickEvent.ContextClickListener) e -> {
-                MouseEventDetails mouseEventDetails = getMouseEventDetails(e);
+            contextClickListener = e -> {
+                MouseEventDetails mouseEventDetails = WebWrapperUtils.toMouseEventDetails(e);
 
                 ContextClickEvent event = new ContextClickEvent(WebDataGrid.this, mouseEventDetails);
                 getEventRouter().fireEvent(ContextClickListener.class, ContextClickListener::onContextClick, event);
             };
             component.addContextClickListener(contextClickListener);
         }
-    }
-
-    @Nullable
-    protected MouseButton convertToDataGridMouseButton(com.vaadin.shared.MouseEventDetails.MouseButton mouseButton) {
-        switch (mouseButton) {
-            case LEFT:
-                return MouseButton.LEFT;
-            case MIDDLE:
-                return MouseButton.MIDDLE;
-            case RIGHT:
-                return MouseButton.RIGHT;
-        }
-        return null;
     }
 
     @Override
