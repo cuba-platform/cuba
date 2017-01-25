@@ -20,6 +20,7 @@ import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.global.Metadata;
@@ -32,6 +33,8 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -103,6 +106,52 @@ public class CompositeKeyTest {
         try (Transaction tx = persistence.createTransaction()) {
             loadedBar = persistence.getEntityManager().find(CompositeKeyEntity.class, entityKey);
             assertNull(loadedBar);
+            tx.commit();
+        }
+    }
+
+    @Test
+    public void testListParameter() throws Exception {
+        CompositeKeyEntity foo1 = metadata.create(CompositeKeyEntity.class);
+
+        EntityKey entityKey1 = metadata.create(EntityKey.class);
+        entityKey1.setTenant(1);
+        entityKey1.setEntityId(10L);
+
+        foo1.setId(entityKey1);
+        foo1.setName("foo1");
+        foo1.setEmail("foo1@mail.com");
+
+        CompositeKeyEntity foo2 = metadata.create(CompositeKeyEntity.class);
+
+        EntityKey entityKey2 = metadata.create(EntityKey.class);
+        entityKey2.setTenant(2);
+        entityKey2.setEntityId(20L);
+
+        foo2.setId(entityKey2);
+        foo2.setName("foo2");
+        foo2.setEmail("foo2@mail.com");
+
+        try (Transaction tx = persistence.createTransaction()) {
+            persistence.getEntityManager().persist(foo1);
+            persistence.getEntityManager().persist(foo2);
+            tx.commit();
+        }
+
+        try (Transaction tx = persistence.createTransaction()) {
+            Query query = persistence.getEntityManager().createQuery("select e from test$CompositeKeyEntity e " +
+                    "where e.id.tenant in :list1 and e.id.entityId in :list2");
+            query.setParameter("list1", Arrays.asList(entityKey1.getTenant(), entityKey2.getTenant()));
+            query.setParameter("list2", Arrays.asList(entityKey1.getEntityId(), entityKey2.getEntityId()));
+            List resultList = query.getResultList();
+            assertTrue(resultList.contains(foo1) && resultList.contains(foo2));
+
+            tx.commit();
+        }
+
+        try (Transaction tx = persistence.createTransaction()) {
+            persistence.getEntityManager().remove(foo1);
+            persistence.getEntityManager().remove(foo2);
             tx.commit();
         }
     }
