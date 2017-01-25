@@ -47,6 +47,10 @@
     border-top-right-radius: 0;
   }
 
+  .#{$primary-stylename}.collapsed > .#{$primary-stylename}-content > .v-layout {
+    height: 0px;
+  }
+
   .#{$primary-stylename}.collapsed,
   .#{$primary-stylename}-light,
   .#{$primary-stylename}-nocaption.#{$primary-stylename}-light {

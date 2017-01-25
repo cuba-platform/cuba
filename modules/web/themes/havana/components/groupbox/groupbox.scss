@@ -49,6 +49,10 @@
     width: 100%;
   }
 
+  .#{$primary-stylename}.collapsed > .#{$primary-stylename}-content > .v-layout {
+    height: 0px;
+  }
+
   .#{$primary-stylename}-caption-start-deco {
     display: inline-block;
     height: 20px;
