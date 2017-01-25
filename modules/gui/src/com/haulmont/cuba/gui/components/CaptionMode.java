@@ -18,5 +18,6 @@ package com.haulmont.cuba.gui.components;
 
 public enum CaptionMode {
     ITEM,
-    PROPERTY
+    PROPERTY,
+    MAP_ENTRY
 }

@@ -41,6 +41,7 @@ import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
+import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
 import com.haulmont.cuba.web.toolkit.ui.CubaSingleModeContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
@@ -63,7 +64,6 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
-import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
 
 public class WebWindow implements Window, Component.Wrapper,
                                   Component.HasXmlDescriptor, WrappedWindow, Component.Disposable,
@@ -751,7 +751,7 @@ public class WebWindow implements Window, Component.Wrapper,
         com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
         ((AbstractOrderedLayout)container).addComponent(vComponent, index);
 
-        com.vaadin.ui.Alignment alignment = convertAlignment(childComponent.getAlignment());
+        com.vaadin.ui.Alignment alignment = WebWrapperUtils.toVaadinAlignment(childComponent.getAlignment());
         ((AbstractOrderedLayout) container).setComponentAlignment(vComponent, alignment);
 
         if (childComponent instanceof BelongToFrame

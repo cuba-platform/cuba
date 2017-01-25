@@ -172,19 +172,9 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
     public void addLayoutClickListener(LayoutClickListener listener) {
         getEventRouter().addListener(LayoutClickListener.class, listener);
         if (layoutClickListener == null) {
-            layoutClickListener = (LayoutEvents.LayoutClickListener) event -> {
+            layoutClickListener = event -> {
                 Component childComponent = findChildComponent(this, event.getChildComponent());
-                MouseEventDetails mouseEventDetails = new MouseEventDetails();
-                mouseEventDetails.setButton(convertMouseButton(event.getButton()));
-                mouseEventDetails.setClientX(event.getClientX());
-                mouseEventDetails.setClientY(event.getClientY());
-                mouseEventDetails.setAltKey(event.isAltKey());
-                mouseEventDetails.setCtrlKey(event.isCtrlKey());
-                mouseEventDetails.setMetaKey(event.isMetaKey());
-                mouseEventDetails.setShiftKey(event.isShiftKey());
-                mouseEventDetails.setDoubleClick(event.isDoubleClick());
-                mouseEventDetails.setRelativeX(event.getRelativeX());
-                mouseEventDetails.setRelativeY(event.getRelativeY());
+                MouseEventDetails mouseEventDetails = WebWrapperUtils.toMouseEventDetails(event);
 
                 LayoutClickEvent layoutClickEvent = new LayoutClickEvent(this, childComponent, mouseEventDetails);
 
@@ -192,19 +182,6 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
             };
             component.addLayoutClickListener(layoutClickListener);
         }
-    }
-
-    @Nullable
-    protected MouseEventDetails.MouseButton convertMouseButton(com.vaadin.shared.MouseEventDetails.MouseButton mouseButton) {
-        switch (mouseButton) {
-            case LEFT:
-                return MouseEventDetails.MouseButton.LEFT;
-            case MIDDLE:
-                return MouseEventDetails.MouseButton.MIDDLE;
-            case RIGHT:
-                return MouseEventDetails.MouseButton.RIGHT;
-        }
-        return null;
     }
 
     protected Component findChildComponent(Container layout, com.vaadin.ui.Component clickedComponent) {

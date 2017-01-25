@@ -33,8 +33,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
-
 public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel> implements ScrollBoxLayout {
 
     protected static final String SCROLLBOX_CONTENT_STYLENAME = "c-scrollbox-content";
@@ -106,7 +104,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel>
 
         com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
         getContent().addComponent(vComponent, index);
-        getContent().setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
+        getContent().setComponentAlignment(vComponent, WebWrapperUtils.toVaadinAlignment(childComponent.getAlignment()));
 
         if (childComponent.getId() != null) {
             componentByIds.put(childComponent.getId(), childComponent);

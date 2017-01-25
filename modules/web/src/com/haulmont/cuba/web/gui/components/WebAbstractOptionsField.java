@@ -49,7 +49,6 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     protected Class<? extends EnumClass> optionsEnum;
     protected CollectionDatasource optionsDatasource;
 
-    protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
     protected String descriptionProperty;
 
@@ -249,24 +248,12 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
 
     @Override
     public CaptionMode getCaptionMode() {
-        return captionMode;
+        return WebWrapperUtils.toCaptionMode(component.getItemCaptionMode());
     }
 
     @Override
     public void setCaptionMode(CaptionMode captionMode) {
-        this.captionMode = captionMode;
-        switch (captionMode) {
-            case ITEM:
-                component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ITEM);
-                break;
-
-            case PROPERTY:
-                component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
-                break;
-
-            default:
-                throw new UnsupportedOperationException();
-        }
+        component.setItemCaptionMode(WebWrapperUtils.toVaadinCaptionMode(captionMode));
     }
 
     @Override
@@ -334,17 +321,17 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     }
 
     @SuppressWarnings({"unchecked"})
-    protected <T> T wrapAsCollection(Object o) {
+    protected <CT> CT wrapAsCollection(Object o) {
         if (isMultiSelect()) {
             if (o instanceof Collection) {
-                return (T) Collections.unmodifiableCollection((Collection) o);
+                return (CT) Collections.unmodifiableCollection((Collection) o);
             } else if (o != null) {
-                return (T) Collections.singleton(o);
+                return (CT) Collections.singleton(o);
             } else {
-                return (T) Collections.emptySet();
+                return (CT) Collections.emptySet();
             }
         } else {
-            return (T) o;
+            return (CT) o;
         }
     }
 }

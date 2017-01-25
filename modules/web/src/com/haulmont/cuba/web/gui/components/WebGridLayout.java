@@ -29,8 +29,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
-
 public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implements GridLayout {
 
     protected List<Component> ownComponents = new ArrayList<>();
@@ -49,7 +47,7 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
         final com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
 
         component.addComponent(vComponent);
-        component.setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
+        component.setComponentAlignment(vComponent, WebWrapperUtils.toVaadinAlignment(childComponent.getAlignment()));
 
         if (frame != null) {
             if (childComponent instanceof BelongToFrame
@@ -99,7 +97,7 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
         final com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
 
         component.addComponent(vComponent, col, row, col2, row2);
-        component.setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
+        component.setComponentAlignment(vComponent, WebWrapperUtils.toVaadinAlignment(childComponent.getAlignment()));
 
         if (frame != null) {
             if (childComponent instanceof BelongToFrame
@@ -229,19 +227,9 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
         getEventRouter().addListener(LayoutClickListener.class, listener);
 
         if (layoutClickListener == null) {
-            layoutClickListener = (LayoutEvents.LayoutClickListener) event -> {
+            layoutClickListener = event -> {
                 Component childComponent = findChildComponent(this, event.getChildComponent());
-                MouseEventDetails mouseEventDetails = new MouseEventDetails();
-                mouseEventDetails.setButton(convertMouseButton(event.getButton()));
-                mouseEventDetails.setClientX(event.getClientX());
-                mouseEventDetails.setClientY(event.getClientY());
-                mouseEventDetails.setAltKey(event.isAltKey());
-                mouseEventDetails.setCtrlKey(event.isCtrlKey());
-                mouseEventDetails.setMetaKey(event.isMetaKey());
-                mouseEventDetails.setShiftKey(event.isShiftKey());
-                mouseEventDetails.setDoubleClick(event.isDoubleClick());
-                mouseEventDetails.setRelativeX(event.getRelativeX());
-                mouseEventDetails.setRelativeY(event.getRelativeY());
+                MouseEventDetails mouseEventDetails = WebWrapperUtils.toMouseEventDetails(event);
 
                 LayoutClickEvent layoutClickEvent = new LayoutClickEvent(this, childComponent, mouseEventDetails);
 
@@ -249,19 +237,6 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
             };
             component.addLayoutClickListener(layoutClickListener);
         }
-    }
-
-    @Nullable
-    protected MouseEventDetails.MouseButton convertMouseButton(com.vaadin.shared.MouseEventDetails.MouseButton mouseButton) {
-        switch (mouseButton) {
-            case LEFT:
-                return MouseEventDetails.MouseButton.LEFT;
-            case MIDDLE:
-                return MouseEventDetails.MouseButton.MIDDLE;
-            case RIGHT:
-                return MouseEventDetails.MouseButton.RIGHT;
-        }
-        return null;
     }
 
     protected Component findChildComponent(GridLayout layout, com.vaadin.ui.Component clickedComponent) {
