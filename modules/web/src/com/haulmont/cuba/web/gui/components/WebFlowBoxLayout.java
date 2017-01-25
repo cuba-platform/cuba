@@ -21,9 +21,9 @@ import com.haulmont.cuba.gui.components.FlowBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaFlowLayout;
 import com.vaadin.shared.ui.MarginInfo;
 
-import static com.haulmont.cuba.web.toolkit.ui.CubaFlowLayout.C_FLOWLAYOUT_STYLENAME;
-
 public class WebFlowBoxLayout extends WebAbstractOrderedLayout<CubaFlowLayout> implements FlowBoxLayout {
+
+    protected static final String FLOWLAYOUT_STYLENAME = "c-flowlayout";
 
     public WebFlowBoxLayout() {
         component = new CubaFlowLayout();
@@ -33,12 +33,12 @@ public class WebFlowBoxLayout extends WebAbstractOrderedLayout<CubaFlowLayout> i
     public void setStyleName(String styleName) {
         super.setStyleName(styleName);
 
-        component.addStyleName(C_FLOWLAYOUT_STYLENAME);
+        component.addStyleName(FLOWLAYOUT_STYLENAME);
     }
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_FLOWLAYOUT_STYLENAME, ""));
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(FLOWLAYOUT_STYLENAME, ""));
     }
 
     @Override

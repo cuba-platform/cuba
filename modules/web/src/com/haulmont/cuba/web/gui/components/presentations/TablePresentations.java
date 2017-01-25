@@ -43,9 +43,9 @@ import java.util.Map;
 public class TablePresentations extends VerticalLayout {
 
     public static final String CUSTOM_STYLE_NAME_PREFIX = "cs";
-    protected static final String MENUITEM_STYLE_CURRENT = "c-table-prefs-menuitem-current";
-    protected static final String MENUITEM_STYLE_DEFAULT = "c-table-prefs-menuitem-default";
-    protected static final String C_TABLE_PREFS = "c-table-prefs";
+    protected static final String CURRENT_MENUITEM_STYLENAME = "c-table-prefs-menuitem-current";
+    protected static final String DEFAULT_MENUITEM_STYLENAME = "c-table-prefs-menuitem-default";
+    protected static final String TABLE_PREFS_STYLENAME = "c-table-prefs";
 
     protected CubaMenuBar menuBar;
     protected WebPopupButton button;
@@ -67,7 +67,7 @@ public class TablePresentations extends VerticalLayout {
         this.tableImpl = (CubaEnhancedTable) WebComponentsHelper.unwrap(table);
 
         setSizeUndefined();
-        setStyleName(C_TABLE_PREFS);
+        setStyleName(TABLE_PREFS_STYLENAME);
         setParent((HasComponents) WebComponentsHelper.unwrap(component));
 
         initLayout();
@@ -130,23 +130,23 @@ public class TablePresentations extends VerticalLayout {
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_TABLE_PREFS, ""));
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(TABLE_PREFS_STYLENAME, ""));
     }
 
     protected void removeCurrentItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {
-        removeStyleForItem(item, MENUITEM_STYLE_CURRENT);
+        removeStyleForItem(item, CURRENT_MENUITEM_STYLENAME);
     }
 
     protected void setCurrentItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {
-        addStyleForItem(item, MENUITEM_STYLE_CURRENT);
+        addStyleForItem(item, CURRENT_MENUITEM_STYLENAME);
     }
 
     protected void removeDefaultItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {
-        removeStyleForItem(item, MENUITEM_STYLE_DEFAULT);
+        removeStyleForItem(item, DEFAULT_MENUITEM_STYLENAME);
     }
 
     protected void setDefaultItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {
-        addStyleForItem(item, MENUITEM_STYLE_DEFAULT);
+        addStyleForItem(item, DEFAULT_MENUITEM_STYLENAME);
         item.setDescription(messages.getMainMessage("PresentationsPopup.defaultPresentation"));
     }
 

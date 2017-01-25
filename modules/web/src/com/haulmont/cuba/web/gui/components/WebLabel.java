@@ -45,7 +45,7 @@ import java.util.Objects;
 
 public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implements Label {
 
-    public static final String CAPTION_STYLE = "c-label-caption-on-left";
+    protected static final String CAPTION_STYLENAME = "c-label-caption-on-left";
 
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
@@ -278,14 +278,14 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
     public void setIcon(String icon) {
         super.setIcon(icon);
         if (!StringUtils.isEmpty(icon)) {
-            getComposition().addStyleName(CAPTION_STYLE);
+            getComposition().addStyleName(CAPTION_STYLENAME);
         } else {
-            getComposition().removeStyleName(CAPTION_STYLE);
+            getComposition().removeStyleName(CAPTION_STYLENAME);
         }
     }
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(CAPTION_STYLE, ""));
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(CAPTION_STYLENAME, ""));
     }
 }

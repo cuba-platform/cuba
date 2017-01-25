@@ -37,8 +37,8 @@ import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAl
 
 public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel> implements ScrollBoxLayout {
 
-    public static final String CUBA_SCROLLBOX_CONTENT_STYLE = "c-scrollbox-content";
-    protected static final String C_SCROLLBOX = "c-scrollbox";
+    protected static final String SCROLLBOX_CONTENT_STYLENAME = "c-scrollbox-content";
+    protected static final String SCROLLBOX_STYLENAME = "c-scrollbox";
 
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected Map<String, Component> componentByIds = new HashMap<>();
@@ -48,11 +48,11 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel>
 
     public WebScrollBoxLayout() {
         component = new CubaScrollBoxPanel();
-        component.setStyleName(C_SCROLLBOX);
+        component.setStyleName(SCROLLBOX_STYLENAME);
 
         CubaVerticalActionsLayout content = new CubaVerticalActionsLayout();
         content.setWidth("100%");
-        content.setStyleName(CUBA_SCROLLBOX_CONTENT_STYLE);
+        content.setStyleName(SCROLLBOX_CONTENT_STYLENAME);
         component.setContent(content);
 
         getContent().setMargin(false);
@@ -84,7 +84,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel>
         if (newContent != null) {
             newContent.setMargin((getContent()).getMargin());
             newContent.setSpacing((getContent()).isSpacing());
-            newContent.setStyleName(CUBA_SCROLLBOX_CONTENT_STYLE);
+            newContent.setStyleName(SCROLLBOX_CONTENT_STYLENAME);
 
             com.vaadin.ui.Component oldContent = component.getContent();
             newContent.setWidth(oldContent.getWidth(), oldContent.getWidthUnits());
@@ -143,12 +143,12 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel>
     public void setStyleName(String styleName) {
         super.setStyleName(styleName);
 
-        component.addStyleName(C_SCROLLBOX);
+        component.addStyleName(SCROLLBOX_STYLENAME);
     }
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_SCROLLBOX, ""));
+        return StringHelper.removeExtraSpaces(super.getStyleName().replace(SCROLLBOX_STYLENAME, ""));
     }
 
     @Override
