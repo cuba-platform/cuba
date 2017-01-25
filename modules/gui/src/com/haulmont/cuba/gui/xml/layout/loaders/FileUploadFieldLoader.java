@@ -77,6 +77,8 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
 
         String uploadButtonIcon = element.attributeValue("uploadButtonIcon");
         if (StringUtils.isNotEmpty(uploadButtonIcon)) {
+            String themeValue = loadThemeString(uploadButtonIcon);
+            uploadButtonIcon = loadResourceString(themeValue);
             resultComponent.setUploadButtonIcon(uploadButtonIcon);
         }
 
@@ -99,6 +101,8 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
 
         String clearButtonIcon = element.attributeValue("clearButtonIcon");
         if (StringUtils.isNotEmpty(clearButtonIcon)) {
+            String themeValue = loadThemeString(clearButtonIcon);
+            clearButtonIcon = loadResourceString(themeValue);
             resultComponent.setClearButtonIcon(clearButtonIcon);
         }
 
