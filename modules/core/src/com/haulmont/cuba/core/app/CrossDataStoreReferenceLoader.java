@@ -197,12 +197,36 @@ public class CrossDataStoreReferenceLoader {
             return;
 
         MetaClass cdsrMetaClass = crossDataStoreProperty.property.getRange().asClass();
-
-        String queryString = String.format(
-                "select e from %s e where e.%s in :idList", cdsrMetaClass, crossDataStoreProperty.primaryKeyName);
-
         LoadContext<Entity> loadContext = new LoadContext<>(cdsrMetaClass);
-        loadContext.setQuery(LoadContext.createQuery(queryString).setParameter("idList", idList));
+
+        MetaProperty primaryKeyProperty = metadataTools.getPrimaryKeyProperty(cdsrMetaClass);
+        if (primaryKeyProperty == null || !primaryKeyProperty.getRange().isClass()) {
+            String queryString = String.format(
+                    "select e from %s e where e.%s in :idList", cdsrMetaClass, crossDataStoreProperty.primaryKeyName);
+            loadContext.setQuery(LoadContext.createQuery(queryString).setParameter("idList", idList));
+        } else {
+            // composite key entity
+            StringBuilder sb = new StringBuilder("select e from ");
+            sb.append(cdsrMetaClass).append(" e where ");
+
+            MetaClass idMetaClass = primaryKeyProperty.getRange().asClass();
+            for (Iterator<MetaProperty> it = idMetaClass.getProperties().iterator(); it.hasNext(); ) {
+                MetaProperty property = it.next();
+                sb.append("e.").append(crossDataStoreProperty.primaryKeyName).append(".").append(property.getName());
+                sb.append(" in :list_").append(property.getName());
+                if (it.hasNext())
+                    sb.append(" and ");
+            }
+            LoadContext.Query query = LoadContext.createQuery(sb.toString());
+            for (MetaProperty property : idMetaClass.getProperties()) {
+                List<Object> propList = idList.stream()
+                        .map(o -> ((Entity) o).getValue(property.getName()))
+                        .collect(Collectors.toList());
+                query.setParameter("list_" + property.getName(), propList);
+            }
+            loadContext.setQuery(query);
+        }
+
         loadContext.setView(crossDataStoreProperty.viewProperty.getView());
 
         List<Entity> loadedEntities = dataManager.loadList(loadContext);
