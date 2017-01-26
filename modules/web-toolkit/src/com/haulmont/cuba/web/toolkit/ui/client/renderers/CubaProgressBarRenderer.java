@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.gui.components.renderers;
+package com.haulmont.cuba.web.toolkit.ui.client.renderers;
 
-import com.haulmont.cuba.gui.components.DataGrid;
-import com.haulmont.cuba.web.gui.components.WebDataGrid.AbstractRenderer;
-import com.haulmont.cuba.web.toolkit.ui.renderers.CubaProgressBarRenderer;
+import com.google.gwt.core.shared.GWT;
+import com.haulmont.cuba.web.toolkit.ui.client.renderers.widgets.progressbar.CubaProgressBarWidget;
+import com.vaadin.client.renderers.ProgressBarRenderer;
 
-/**
- * A renderer that represents a double values as a graphical progress bar.
- */
-public class WebProgressBarRenderer extends AbstractRenderer<Double> implements DataGrid.ProgressBarRenderer {
+public class CubaProgressBarRenderer extends ProgressBarRenderer {
 
     @Override
-    protected CubaProgressBarRenderer createImplementation() {
-        return new CubaProgressBarRenderer();
+    public CubaProgressBarWidget createWidget() {
+        CubaProgressBarWidget progressBar = GWT.create(CubaProgressBarWidget.class);
+        progressBar.addStyleDependentName("static");
+        progressBar.setClickThroughEnabled(true);
+        return progressBar;
     }
 }

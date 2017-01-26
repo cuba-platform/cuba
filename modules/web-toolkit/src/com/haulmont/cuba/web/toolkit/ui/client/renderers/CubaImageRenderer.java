@@ -16,12 +16,22 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.renderers;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Image;
+import com.haulmont.cuba.web.toolkit.ui.client.renderers.widgets.image.CubaImageWidget;
 import com.vaadin.client.renderers.ImageRenderer;
 import com.vaadin.client.widget.grid.RendererCellReference;
 
 public class CubaImageRenderer extends ImageRenderer {
+    @Override
+    public CubaImageWidget createWidget() {
+        CubaImageWidget image = GWT.create(CubaImageWidget.class);
+        image.addClickHandler(this);
+        image.setClickThroughEnabled(true);
+        return image;
+    }
+
     @Override
     public void render(RendererCellReference cell, String url, Image image) {
         super.render(cell, url, image);
