@@ -77,11 +77,10 @@
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="baseMainElement">
-
+                    <xs:attribute name="selectOnClick" type="xs:boolean"/>
+                    <xs:attribute name="loadMenuConfig" type="xs:boolean"/>
                 </xs:extension>
             </xs:complexContent>
-
-            <xs:attribute name="selectOnClick" type="xs:boolean"/>
         </xs:complexType>
     </xs:element>
 

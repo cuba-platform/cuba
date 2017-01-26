@@ -41,8 +41,14 @@ public class SideMenuLoader extends AbstractComponentLoader<SideMenu> {
         loadVisible(resultComponent, element);
 
         loadSelectOnClick(resultComponent, element);
+        loadMenuConfigIfNeeded(resultComponent, element);
+    }
 
-        resultComponent.loadMenuConfig();
+    protected void loadMenuConfigIfNeeded(SideMenu component, Element element) {
+        String loadMenuConfig = element.attributeValue("loadMenuConfig");
+        if (StringUtils.isEmpty(loadMenuConfig) || Boolean.parseBoolean(loadMenuConfig)) {
+            component.loadMenuConfig();
+        }
     }
 
     protected void loadSelectOnClick(SideMenu component, Element element) {
