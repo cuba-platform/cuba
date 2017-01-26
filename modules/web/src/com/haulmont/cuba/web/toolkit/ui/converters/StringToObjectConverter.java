@@ -41,7 +41,9 @@ public class StringToObjectConverter implements Converter<String, Object> {
     @Override
     public String convertToPresentation(Object value, Class<? extends String> targetType, Locale locale)
             throws ConversionException {
-        return metadataTools.format(value, metaProperty);
+        return metaProperty != null
+                ? metadataTools.format(value, metaProperty)
+                : metadataTools.format(value);
     }
 
     @Override

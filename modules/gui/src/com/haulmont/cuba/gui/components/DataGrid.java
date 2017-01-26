@@ -22,9 +22,12 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
+import java.util.Locale;
 
 import static com.haulmont.cuba.gui.components.Component.MouseEventDetails.MouseButton;
 
@@ -489,6 +492,349 @@ public interface DataGrid<E extends Entity>
     }
 
     /**
+     * @param <E> DataGrid data type
+     * @param <T> column data type
+     */
+    interface ColumnGenerator<E, T> {
+        /**
+         * Returns value for given event.
+         *
+         * @param event an event providing more information
+         * @return generated value
+         */
+        T getValue(ColumnGeneratorEvent<E> event);
+
+        /**
+         * Return column type for this generator.
+         *
+         * @return type of generated property
+         */
+        Class<T> getType();
+    }
+
+    /**
+     * Event provided by a {@link ColumnGenerator}
+     */
+    class ColumnGeneratorEvent<E> extends AbstractDataGridEvent {
+        E item;
+        String propertyId;
+
+        /**
+         * Constructor for a column generator event
+         * @param component  the DataGrid from which this event originates
+         * @param item       an entity instance represented by the current row
+         * @param propertyId a generated column property id
+         */
+        public ColumnGeneratorEvent(DataGrid component, E item, String propertyId) {
+            super(component);
+
+            this.item = item;
+            this.propertyId = propertyId;
+        }
+
+        /**
+         * @return an entity instance represented by the current row
+         */
+        public E getItem() {
+            return item;
+        }
+
+        /**
+         * @return a generated column property id
+         */
+        public String getPropertyId() {
+            return propertyId;
+        }
+    }
+
+    /**
+     * Add a generated column to the DataGrid.
+     *
+     * @param columnId  column identifier as defined in XML descriptor
+     * @param generator column generator instance
+     * @see #addGeneratedColumn(String, ColumnGenerator, int)
+     */
+    Column addGeneratedColumn(String columnId, ColumnGenerator<E, ?> generator);
+
+    /**
+     * Add a generated column to the DataGrid.
+     *
+     * @param columnId  column identifier as defined in XML descriptor
+     * @param generator column generator instance
+     * @param index     index of a new generated column
+     * @see #addGeneratedColumn(String, ColumnGenerator)
+     */
+    Column addGeneratedColumn(String columnId, ColumnGenerator<E, ?> generator, int index);
+
+    /**
+     * Marker interface to indicate that the implementing class can be used as a renderer.
+     */
+    interface Renderer {
+    }
+
+    /**
+     * Renderer has null representation.
+     * String value which will be used for rendering if the original value is null.
+     */
+    interface HasNullRepresentation {
+        /**
+         * Null representation for the renderer.
+         *
+         * @return a textual representation of {@code null}
+         */
+        String getNullRepresentation();
+
+        /**
+         * Sets null representation for the renderer.
+         *
+         * @param nullRepresentation a textual representation of {@code null}
+         */
+        void setNullRepresentation(String nullRepresentation);
+    }
+
+    /**
+     * Renderer listens to clicks.
+     */
+    interface RendererClickListener {
+
+        /**
+         * Called when a renderer is clicked.
+         *
+         * @param event the event representing the click
+         */
+        void onClick(RendererClickEvent event);
+    }
+
+    /**
+     * Click event fired by a {@link HasRendererClickListener}
+     */
+    class RendererClickEvent extends DataGridClickEvent {
+        protected Object itemId;
+        protected String columnId;
+
+        /**
+         * Constructor for a renderer click event.
+         *
+         * @param component the DataGrid from which this event originates
+         * @param details   an instance of {@link MouseEventDetails} with information about mouse event details
+         * @param itemId    an item Id
+         * @param columnId  id of the DataGrid column
+         */
+        public RendererClickEvent(DataGrid component,
+                                  MouseEventDetails details, Object itemId, String columnId) {
+            super(component, details);
+
+            this.itemId = itemId;
+            this.columnId = columnId;
+        }
+
+        /**
+         * @return an item Id
+         */
+        public Object getItemId() {
+            return itemId;
+        }
+
+        /**
+         * @return id of the DataGrid column
+         */
+        public String getColumnId() {
+            return columnId;
+        }
+    }
+
+    /**
+     * Renderer has click listener.
+     */
+    interface HasRendererClickListener {
+        /**
+         * Sets new renderer click listener.
+         *
+         * @param listener the listener to set
+         */
+        void setRendererClickListener(RendererClickListener listener);
+    }
+
+    /**
+     * A renderer for presenting simple plain-text string values.
+     */
+    interface TextRenderer extends Renderer, HasNullRepresentation {
+    }
+
+    /**
+     * A renderer for presenting HTML content.
+     */
+    interface HtmlRenderer extends Renderer, HasNullRepresentation {
+    }
+
+    /**
+     * A renderer that represents a double values as a graphical progress bar.
+     */
+    interface ProgressBarRenderer extends Renderer {
+    }
+
+    /**
+     * A renderer for presenting date values.
+     */
+    interface DateRenderer extends Renderer, HasNullRepresentation {
+        /**
+         * @return the locale which is used to present dates
+         */
+        Locale getLocale();
+
+        /**
+         * Sets the locale in which to present dates.
+         *
+         * @param locale the locale in which to present dates
+         */
+        void setLocale(Locale locale);
+
+        /**
+         * @return the pattern describing the date and time format
+         */
+        String getFormatString();
+
+        /**
+         * @param formatString the pattern describing the date and time format
+         *                     which will be used to create {@link DateFormat} instance.
+         * @see <a href="https://docs.oracle.com/javase/tutorial/i18n/format/simpleDateFormat.html">Format
+         *      String Syntax</a>
+         */
+        void setFormatString(String formatString);
+
+        /**
+         * @return the instance of {@link DateFormat} which is used to present dates
+         */
+        DateFormat getDateFormat();
+
+        /**
+         * @param dateFormat the instance of {@link DateFormat} with which to present dates
+         */
+        void setDateFormat(DateFormat dateFormat);
+    }
+
+    /**
+     * A renderer for presenting number values.
+     */
+    interface NumberRenderer extends Renderer, HasNullRepresentation {
+        /**
+         * @return the locale which is used to present numbers
+         */
+        Locale getLocale();
+
+        /**
+         * Sets the locale in which to present numbers.
+         *
+         * @param locale the locale in which to present numbers
+         */
+        void setLocale(Locale locale);
+
+        /**
+         * @return the format string with which is used to format the number
+         */
+        String getFormatString();
+
+        /**
+         * @param formatString the format string with which to format the number
+         * @see <a href=
+         *      "http://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#dnum">Format String Syntax</a>
+         */
+        void setFormatString(String formatString);
+
+        /**
+         * @return the instance of {@link NumberFormat} which is used to present numbers
+         */
+        NumberFormat getNumberFormat();
+
+        /**
+         * @param numberFormat the instance of {@link NumberFormat} with which to present numbers
+         */
+        void setNumberFormat(NumberFormat numberFormat);
+    }
+
+    /**
+     * A Renderer that displays a button with a textual caption. The value of the
+     * corresponding property is used as the caption. Click listeners can be added
+     * to the renderer, invoked when any of the rendered buttons is clicked.
+     */
+    interface ButtonRenderer extends Renderer, HasNullRepresentation, HasRendererClickListener {
+    }
+
+    /**
+     * A renderer for presenting images. The value of the corresponding property
+     * is used as the image location. Location can be a theme resource or URL.
+     */
+    interface ImageRenderer extends Renderer, HasRendererClickListener {
+    }
+
+    /**
+     * A renderer that represents a boolean values as a graphical check box icons.
+     */
+    interface CheckBoxRenderer extends Renderer {
+    }
+
+    /**
+     * Creates renderer implementation by its type.
+     *
+     * @param type renderer type
+     * @return renderer instance with given type
+     */
+    <T extends Renderer> T createRenderer(Class<T> type);
+
+    /**
+     * Interface that implements conversion between a model and a presentation type.
+     *
+     * @param <P> the presentation type. Must be compatible with what
+     *            {@link #getPresentationType()} returns.
+     * @param <M> the model type. Must be compatible with what
+     *            {@link #getModelType()} returns.
+     */
+    interface Converter<P, M> {
+
+        /**
+         * Converts the given value from target type to source type.
+         *
+         * @param value      the value to convert, compatible with the target type.
+         *                   Can be null
+         * @param targetType the requested type of the return value
+         * @param locale     the locale to use for conversion. Can be null
+         * @return the converted value compatible with the source type
+         */
+        M convertToModel(P value, Class<? extends M> targetType, Locale locale);
+
+        /**
+         * Converts the given value from source type to target type.
+         *
+         * @param value      the value to convert, compatible with the target type.
+         *                   Can be null
+         * @param targetType the requested type of the return value
+         * @param locale     the locale to use for conversion. Can be null
+         * @return the converted value compatible with the source type
+         */
+        P convertToPresentation(M value, Class<? extends P> targetType, Locale locale);
+
+        /**
+         * The source type of the converter.
+         *
+         * Values of this type can be passed to
+         * {@link #convertToPresentation(Object, Class, Locale)}.
+         *
+         * @return The source type
+         */
+        Class<M> getModelType();
+
+        /**
+         * The target type of the converter.
+         *
+         * Values of this type can be passed to
+         * {@link #convertToModel(Object, Class, Locale)}.
+         *
+         * @return The target type
+         */
+        Class<P> getPresentationType();
+    }
+
+    /**
      * An event listener for column collapsing change events in the DataGrid.
      */
     interface ColumnCollapsingChangeListener {
@@ -894,9 +1240,9 @@ public interface DataGrid<E extends Entity>
      * Click event fired by a {@link DataGrid}
      */
     class ItemClickEvent<E> extends DataGridClickEvent {
-        private E item;
-        private Object itemId;
-        private String columnId;
+        protected E item;
+        protected Object itemId;
+        protected String columnId;
 
         /**
          * Constructor for a item click event.
@@ -1310,6 +1656,40 @@ public interface DataGrid<E extends Entity>
          * @see DataGrid#setFrozenColumnCount(int)
          */
         void setLastFrozenColumn();
+
+        /**
+         * Returns the renderer instance used by this column.
+         *
+         * @return the renderer
+         */
+        Renderer getRenderer();
+
+        /**
+         * Sets the renderer for this column.
+         * If given renderer is null, then the default renderer will be used.
+         *
+         * @param renderer the renderer to use
+         * @see #setConverter(Converter)
+         */
+        void setRenderer(Renderer renderer);
+
+        /**
+         * Returns the converter instance used by this column.
+         *
+         * @return the converter
+         */
+        Converter<?, ?> getConverter();
+
+        /**
+         * Sets the converter used to convert from the property value type to
+         * the renderer presentation type. If given converter is null, then the
+         * default converter will be used.
+         *
+         * @param converter the converter to use, or {@code null} to not use any
+         *                  converters
+         * @see #setRenderer(Renderer)
+         */
+        void setConverter(Converter<?, ?> converter);
 
         /**
          * @return the type of value represented by this column
