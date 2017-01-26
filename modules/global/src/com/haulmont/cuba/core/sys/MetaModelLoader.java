@@ -25,9 +25,9 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumerationImpl;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.impl.*;
-import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.entity.annotation.MetaAnnotation;
 import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.validation.groups.UiComponentChecks;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
@@ -62,6 +62,7 @@ public class MetaModelLoader {
     protected static final String VALIDATION_MAX = "_max";
 
     protected static final String VALIDATION_NOTNULL_MESSAGE = "_notnull_message";
+    protected static final String VALIDATION_NOTNULL_UI_COMPONENT = "_notnull_ui_component";
 
     protected Session session;
 
@@ -598,8 +599,14 @@ public class MetaModelLoader {
 
     protected void loadBeanValidationAnnotations(MetaProperty metaProperty, AnnotatedElement annotatedElement) {
         NotNull notNull = annotatedElement.getAnnotation(NotNull.class);
-        if (notNull != null && isDefinedForDefaultValidationGroup(notNull)) {
-            metaProperty.getAnnotations().put(NotNull.class.getName() + VALIDATION_NOTNULL_MESSAGE, notNull.message());
+        if (notNull != null) {
+            if (isDefinedForDefaultValidationGroup(notNull)) {
+                metaProperty.getAnnotations().put(NotNull.class.getName() + VALIDATION_NOTNULL_MESSAGE, notNull.message());
+            }
+            if (isDefinedForValidationGroup(notNull, UiComponentChecks.class, true)) {
+                metaProperty.getAnnotations().put(NotNull.class.getName() + VALIDATION_NOTNULL_MESSAGE, notNull.message());
+                metaProperty.getAnnotations().put(NotNull.class.getName() + VALIDATION_NOTNULL_UI_COMPONENT, true);
+            }
         }
 
         Size size = annotatedElement.getAnnotation(Size.class);
@@ -646,10 +653,17 @@ public class MetaModelLoader {
     }
 
     protected boolean isDefinedForDefaultValidationGroup(Annotation annotation) {
+        return isDefinedForValidationGroup(annotation, javax.validation.groups.Default.class, true);
+    }
+
+    protected boolean isDefinedForValidationGroup(Annotation annotation, Class groupClass, boolean inheritDefault) {
         try {
             Method groupsMethod = annotation.getClass().getMethod("groups");
             Class<?>[] groups = (Class<?>[]) groupsMethod.invoke(annotation);
-            return groups.length == 0 || ArrayUtils.contains(groups, Default.class);
+            if (inheritDefault && groups.length == 0) {
+                return true;
+            }
+            return ArrayUtils.contains(groups, groupClass);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException("Unable to use annotation metadata " + annotation);
         }

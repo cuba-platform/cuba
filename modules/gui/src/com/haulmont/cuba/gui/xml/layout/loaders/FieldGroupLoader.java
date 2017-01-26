@@ -42,6 +42,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -68,8 +69,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                     field.setCaption(attribute.getName());
                     field.setDatasource(ds);
                     field.setRequired(attribute.getRequired());
-                    field.setRequiredError(messages.formatMessage(
-                            messages.getMainMessagePack(),
+                    field.setRequiredError(messages.formatMainMessage(
                             "validation.required.defaultMsg",
                             attribute.getName()));
                     if (BooleanUtils.isTrue(attribute.getIsCollection())) {
@@ -281,6 +281,11 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
                 MetaProperty metaProperty = propertyPath.getMetaProperty();
                 isMandatory = metaProperty.isMandatory();
+
+                Object notNullUiComponent = metaProperty.getAnnotations().get(NotNull.class.getName() + "_notnull_ui_component");
+                if (Boolean.TRUE.equals(notNullUiComponent)) {
+                    isMandatory = true;
+                }
             }
 
             Element element = field.getXmlDescriptor();

@@ -394,11 +394,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
             }
         }
 
-        setRequired(metaProperty.isMandatory());
-        if (StringUtils.isEmpty(getRequiredMessage())) {
-            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            setRequiredMessage(messageTools.getDefaultRequiredMessage(datasource.getMetaClass(), property));
-        }
+        initRequired(metaPropertyPath);
 
         if (metaProperty.isReadOnly()) {
             setEditable(false);

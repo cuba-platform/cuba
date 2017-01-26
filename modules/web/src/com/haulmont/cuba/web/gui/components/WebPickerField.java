@@ -22,7 +22,9 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -245,11 +247,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
                 }
             }
 
-            setRequired(metaProperty.isMandatory());
-            if (StringUtils.isEmpty(getRequiredMessage())) {
-                MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-                setRequiredMessage(messageTools.getDefaultRequiredMessage(datasource.getMetaClass(), property));
-            }
+            initRequired(metaPropertyPath);
 
             if (metaProperty.isReadOnly()) {
                 setEditable(false);
