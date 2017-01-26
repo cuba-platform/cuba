@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.gui.components.renderers;
+package com.haulmont.cuba.web.toolkit.ui.client.renderers;
 
-import com.haulmont.cuba.gui.components.DataGrid;
-import com.haulmont.cuba.web.gui.components.WebDataGrid.AbstractRenderer;
-import com.haulmont.cuba.web.toolkit.ui.renderers.CubaProgressBarRenderer;
+import com.vaadin.client.connectors.ProgressBarRendererConnector;
+import com.vaadin.shared.ui.Connect;
 
-/**
- * A renderer that represents a double values as a graphical progress bar.
- */
-public class WebProgressBarRenderer extends AbstractRenderer<Double> implements DataGrid.ProgressBarRenderer {
+@Connect(com.haulmont.cuba.web.toolkit.ui.renderers.CubaProgressBarRenderer.class)
+public class CubaProgressBarRendererConnector extends ProgressBarRendererConnector {
 
     @Override
-    protected CubaProgressBarRenderer createImplementation() {
-        return new CubaProgressBarRenderer();
+    public CubaProgressBarRenderer getRenderer() {
+        return (CubaProgressBarRenderer) super.getRenderer();
     }
 }

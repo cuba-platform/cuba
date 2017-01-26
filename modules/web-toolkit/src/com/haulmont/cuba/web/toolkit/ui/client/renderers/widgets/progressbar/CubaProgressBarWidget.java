@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.gui.components.renderers;
+package com.haulmont.cuba.web.toolkit.ui.client.renderers.widgets.progressbar;
 
-import com.haulmont.cuba.gui.components.DataGrid;
-import com.haulmont.cuba.web.gui.components.WebDataGrid.AbstractRenderer;
-import com.haulmont.cuba.web.toolkit.ui.renderers.CubaProgressBarRenderer;
+import com.haulmont.cuba.web.toolkit.ui.client.grid.HasClickSettings;
+import com.vaadin.client.ui.VProgressBar;
 
-/**
- * A renderer that represents a double values as a graphical progress bar.
- */
-public class WebProgressBarRenderer extends AbstractRenderer<Double> implements DataGrid.ProgressBarRenderer {
+public class CubaProgressBarWidget extends VProgressBar implements HasClickSettings {
+    protected boolean clickThroughEnabled = false;
 
     @Override
-    protected CubaProgressBarRenderer createImplementation() {
-        return new CubaProgressBarRenderer();
+    public boolean isClickThroughEnabled() {
+        return clickThroughEnabled;
+    }
+
+    @Override
+    public void setClickThroughEnabled(boolean enabled) {
+        clickThroughEnabled = enabled;
     }
 }

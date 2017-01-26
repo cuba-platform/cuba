@@ -16,6 +16,9 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.grid;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.widgets.Grid;
 import elemental.json.JsonObject;
 
@@ -31,5 +34,25 @@ public class CubaGridWidget extends Grid<JsonObject> {
     protected void sortAfterDelayWithSorter(int delay, boolean multisort) {
         // ignore shiftKeyDown until datasources don't support multi-sorting
         super.sortAfterDelayWithSorter(delay, false);
+    }
+
+    @Override
+    protected boolean isWidgetAllowsClickHandling(Element targetElement) {
+        // by default, clicking on widget renderer prevents row selection
+        // for some widget renderers we want to allow row selection
+        return isClickThroughEnabled(targetElement);
+    }
+
+    @Override
+    protected boolean isEventHandlerShouldHandleEvent(Element targetElement) {
+        // by default, clicking on widget renderer prevents cell focus changing
+        // for some widget renderers we want to allow focus changing
+        return isClickThroughEnabled(targetElement);
+    }
+
+    protected boolean isClickThroughEnabled(Element e) {
+        Widget widget = WidgetUtil.findWidget(e, null);
+        return widget instanceof HasClickSettings &&
+                ((HasClickSettings) widget).isClickThroughEnabled();
     }
 }
