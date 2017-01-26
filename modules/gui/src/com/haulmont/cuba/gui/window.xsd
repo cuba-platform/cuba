@@ -366,7 +366,7 @@
 
     <!-- Style names -->
 
-    <xs:complexType name="labelStylename">
+    <xs:simpleType name="labelStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -388,9 +388,9 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
-    <xs:complexType name="textFieldStyleName">
+    <xs:simpleType name="textFieldStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -404,9 +404,9 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
-    <xs:complexType name="progressBarStylename">
+    <xs:simpleType name="progressBarStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -417,9 +417,9 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
-    <xs:complexType name="buttonStylename">
+    <xs:simpleType name="buttonStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -438,9 +438,9 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
-    <xs:complexType name="layoutStylename">
+    <xs:simpleType name="layoutStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -455,9 +455,9 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
-    <xs:complexType name="boxLayoutStyleName">
+    <xs:simpleType name="boxLayoutStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -473,9 +473,9 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
-    <xs:complexType name="csslayoutStylename">
+    <xs:simpleType name="csslayoutStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -491,9 +491,9 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
-    <xs:complexType name="splitStylename">
+    <xs:simpleType name="splitStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -504,9 +504,9 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
-    <xs:complexType name="tabsheetStylename">
+    <xs:simpleType name="tabsheetStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -523,9 +523,9 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
-    <xs:complexType name="accordionStylename">
+    <xs:simpleType name="accordionStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -536,9 +536,9 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
-    <xs:complexType name="groupBoxStylename">
+    <xs:simpleType name="groupBoxStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -550,9 +550,9 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
-    <xs:complexType name="lookupFieldStylename">
+    <xs:simpleType name="lookupFieldStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -565,9 +565,9 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
-    <xs:complexType name="pickerFieldStylename">
+    <xs:simpleType name="pickerFieldStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -580,9 +580,9 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
-    <xs:complexType name="lookupPickerFieldStylename">
+    <xs:simpleType name="lookupPickerFieldStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -595,9 +595,9 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
-    <xs:complexType name="textAreaStylename">
+    <xs:simpleType name="textAreaStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -610,9 +610,9 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
-    <xs:complexType name="dateFieldStylename">
+    <xs:simpleType name="dateFieldStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -623,9 +623,9 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
-    <xs:complexType name="tableStylename">
+    <xs:simpleType name="tableStylename">
         <xs:union>
             <xs:simpleType>
                 <xs:restriction base="xs:string"/>
@@ -642,7 +642,7 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
-    </xs:complexType>
+    </xs:simpleType>
 
     <!-- Interfaces -->
 
@@ -1061,7 +1061,7 @@
 
                 <xs:attributeGroup ref="hasDatatype"/>
 
-                <xs:attribute name="stylename" type="textFieldStyleName"/>
+                <xs:attribute name="stylename" type="textFieldStylename"/>
                 <xs:attribute name="maxLength" type="xs:int"/>
                 <xs:attribute name="trim" type="xs:boolean"/>
                 <xs:attribute name="inputPrompt" type="resourceString"/>
@@ -1856,7 +1856,7 @@
 
                 <xs:attributeGroup ref="hasSpacingMargin"/>
 
-                <xs:attribute name="stylename" type="boxLayoutStyleName"/>
+                <xs:attribute name="stylename" type="boxLayoutStylename"/>
                 <xs:attribute name="expand" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
