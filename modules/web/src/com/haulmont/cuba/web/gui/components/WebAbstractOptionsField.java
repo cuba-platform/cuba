@@ -22,8 +22,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -34,7 +32,6 @@ import com.haulmont.cuba.web.gui.data.EnumerationContainer;
 import com.haulmont.cuba.web.gui.data.ObjectContainer;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
@@ -98,11 +95,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             itemWrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
             Property itemProperty = itemWrapper.getItemProperty(metaPropertyPath);
 
-            setRequired(metaProperty.isMandatory());
-            if (StringUtils.isEmpty(getRequiredMessage())) {
-                MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-                setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
-            }
+            initRequired(metaPropertyPath);
 
             if (metaProperty.getRange().isEnum()) {
                 Enumeration enumeration = metaProperty.getRange().asEnumeration();

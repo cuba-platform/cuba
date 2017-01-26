@@ -29,7 +29,6 @@ import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.gui.components.CaptionMode;
@@ -186,14 +185,11 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         // noinspection unchecked
         datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
 
-        setRequired(metaProperty.isMandatory());
-        if (StringUtils.isEmpty(getRequiredMessage())) {
-            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
-        }
+        initRequired(metaPropertyPath);
 
         if (metaProperty.getRange().isEnum()) {
             Enumeration enumeration = metaProperty.getRange().asEnumeration();
+            @SuppressWarnings("unchecked")
             Class<Enum> javaClass = enumeration.getJavaClass();
 
             setOptionsList(Arrays.asList(javaClass.getEnumConstants()));

@@ -25,17 +25,19 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.BeanValidation;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.components.validators.BeanValidator;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.metadata.BeanDescriptor;
 import java.awt.*;
 import java.util.*;
@@ -152,6 +154,22 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
 
     protected void decorateMissingValue(JComponent jComponent, boolean missingValueState) {
         jComponent.setBackground(missingValueState ? requiredBgColor : defaultBgColor);
+    }
+
+    protected void initRequired(MetaPropertyPath metaPropertyPath) {
+        MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
+
+        boolean newRequired = metaProperty.isMandatory();
+        Object notNullUiComponent = metaProperty.getAnnotations().get(NotNull.class.getName() + "_notnull_ui_component");
+        if (Boolean.TRUE.equals(notNullUiComponent)) {
+            newRequired = true;
+        }
+        setRequired(newRequired);
+
+        if (StringUtils.isEmpty(getRequiredMessage())) {
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaPropertyPath.getMetaClass(), metaPropertyPath.toString()));
+        }
     }
 
     protected void initBeanValidator() {

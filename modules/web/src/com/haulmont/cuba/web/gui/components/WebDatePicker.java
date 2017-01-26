@@ -22,7 +22,10 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.DatePicker;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -32,7 +35,6 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaDatePicker;
 import com.vaadin.ui.InlineDateField;
-import org.apache.commons.lang.StringUtils;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
@@ -219,11 +221,7 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
                 }
             }
 
-            setRequired(metaProperty.isMandatory());
-            if (StringUtils.isEmpty(getRequiredMessage())) {
-                MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-                setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
-            }
+            initRequired(metaPropertyPath);
 
             if (metaProperty.isReadOnly()) {
                 setEditable(false);

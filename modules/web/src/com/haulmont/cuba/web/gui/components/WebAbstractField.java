@@ -40,6 +40,7 @@ import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import org.apache.commons.lang.StringUtils;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.metadata.BeanDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -120,11 +121,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> ex
             itemWrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
             component.setPropertyDataSource(itemWrapper.getItemProperty(metaPropertyPath));
 
-            setRequired(metaProperty.isMandatory());
-            if (StringUtils.isEmpty(getRequiredMessage())) {
-                MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-                setRequiredMessage(messageTools.getDefaultRequiredMessage(metaClass, property));
-            }
+            initRequired(metaPropertyPath);
 
             if (metaProperty.isReadOnly()) {
                 setEditable(false);
@@ -138,6 +135,22 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> ex
             this.datasource.addItemChangeListener(securityWeakItemChangeListener);
 
             initBeanValidator();
+        }
+    }
+
+    protected void initRequired(MetaPropertyPath metaPropertyPath) {
+        MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
+
+        boolean newRequired = metaProperty.isMandatory();
+        Object notNullUiComponent = metaProperty.getAnnotations().get(NotNull.class.getName() + "_notnull_ui_component");
+        if (Boolean.TRUE.equals(notNullUiComponent)) {
+            newRequired = true;
+        }
+        setRequired(newRequired);
+
+        if (StringUtils.isEmpty(getRequiredMessage())) {
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaPropertyPath.getMetaClass(), metaPropertyPath.toString()));
         }
     }
 

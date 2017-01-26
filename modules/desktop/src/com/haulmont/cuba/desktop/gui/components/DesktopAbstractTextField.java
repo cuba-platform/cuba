@@ -240,11 +240,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
         //noinspection unchecked
         datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener));
 
-        setRequired(metaProperty.isMandatory());
-        if (StringUtils.isEmpty(getRequiredMessage())) {
-            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            setRequiredMessage(messageTools.getDefaultRequiredMessage(datasource.getMetaClass(), property));
-        }
+        initRequired(metaPropertyPath);
 
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
             Object value = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
