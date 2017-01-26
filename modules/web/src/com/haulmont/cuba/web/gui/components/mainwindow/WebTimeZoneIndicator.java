@@ -40,6 +40,10 @@ public class WebTimeZoneIndicator extends WebAbstractComponent<Label> implements
         TimeZone timeZone = uss.getUserSession().getTimeZone();
         TimeZones timeZones = AppBeans.get(TimeZones.NAME);
         component.setValue(timeZones.getDisplayNameShort(timeZone));
+        if (timeZone == null) {
+            // hidden by default if timeZone is null
+            setVisible(false);
+        }
     }
 
     @Override
