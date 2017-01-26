@@ -18,8 +18,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -37,6 +35,7 @@ import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.gui.components.renderers.*;
 import com.haulmont.cuba.web.gui.data.IndexedCollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.SortableIndexedCollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.data.DataGridContainer;
@@ -54,14 +53,12 @@ import com.vaadin.addon.contextmenu.MenuItem;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.renderers.HtmlRenderer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -451,11 +448,11 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         if (column.getPropertyPath() != null) {
             getContainerDataSource().addContainerProperty(column.getPropertyPath(), column.getType(), null);
         } else {
-            containerWrapper.addGeneratedProperty(column.getId(), createDefaultPropertyValueGenerator(column));
+            containerWrapper.addGeneratedProperty(column.getId(), createDefaultPropertyValueGenerator());
         }
     }
 
-    protected PropertyValueGenerator createDefaultPropertyValueGenerator(final Column column) {
+    protected PropertyValueGenerator createDefaultPropertyValueGenerator() {
         return new PropertyValueGenerator() {
             @Override
             public Object getValue(Item item, Object itemId, Object propertyId) {
@@ -464,7 +461,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
             @Override
             public Class getType() {
-                return column.getType();
+                return String.class;
             }
         };
     }
@@ -508,24 +505,25 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             FormatterBasedConverter converter = new FormatterBasedConverter(column.getFormatter());
             gridColumn.setConverter(converter);
         } else {
-            applyDefaultRenderer(gridColumn, column.getPropertyPath());
+            MetaProperty metaProperty = column.getPropertyPath() != null
+                    ? column.getPropertyPath().getMetaProperty()
+                    : null;
+
+            setDefaultConverter(gridColumn, metaProperty, column.getType());
+            setDefaultRenderer(gridColumn, metaProperty, column.getType());
         }
     }
 
-    protected void applyDefaultRenderer(Grid.Column gridColumn, @Nullable MetaPropertyPath propertyPath) {
-        if (propertyPath != null) {
-            MetaProperty metaProperty = propertyPath.getMetaProperty();
+    protected void setDefaultRenderer(Grid.Column gridColumn, @Nullable MetaProperty metaProperty, Class type) {
+        gridColumn.setRenderer(type == Boolean.class && metaProperty != null
+                ? new com.vaadin.ui.renderers.HtmlRenderer()
+                : new com.vaadin.ui.renderers.TextRenderer());
+    }
 
-            if (metaProperty.getRange().isDatatype()) {
-                Datatype datatype = metaProperty.getRange().asDatatype();
-                if (datatype instanceof BooleanDatatype) {
-                    gridColumn.setRenderer(new HtmlRenderer(), new YesNoIconConverter());
-                    return;
-                }
-            }
-
-            gridColumn.setConverter(new StringToObjectConverter(metaProperty));
-        }
+    protected void setDefaultConverter(Grid.Column gridColumn, @Nullable MetaProperty metaProperty, Class type) {
+        gridColumn.setConverter(type == Boolean.class && metaProperty != null
+                ? new YesNoIconConverter()
+                : new StringToObjectConverter(metaProperty));
     }
 
     @Override
@@ -563,7 +561,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     @Override
     public void setDatasource(CollectionDatasource datasource) {
-        Preconditions.checkNotNullArgument(datasource, "datasource is null");
+        checkNotNullArgument(datasource, "datasource is null");
 
         if (!(datasource instanceof CollectionDatasource.Indexed)) {
             throw new IllegalArgumentException("Datasource must implement " +
@@ -657,9 +655,10 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     protected void createStubsForGeneratedColumns() {
+        PropertyValueGenerator generator = createDefaultPropertyValueGenerator();
         for (Column column : columnsOrder) {
             if (column.getPropertyPath() == null) {
-                containerWrapper.addGeneratedProperty(column.getId(), createDefaultPropertyValueGenerator(column));
+                containerWrapper.addGeneratedProperty(column.getId(), generator);
             }
         }
     }
@@ -1488,6 +1487,103 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     @Override
+    public Column addGeneratedColumn(String columnId, ColumnGenerator<E, ?> generator) {
+        return addGeneratedColumn(columnId, generator, columnsOrder.size());
+    }
+
+    @Override
+    public Column addGeneratedColumn(String columnId, ColumnGenerator<E, ?> generator, int index) {
+        checkNotNullArgument(columnId, "columnId is null");
+        checkNotNullArgument(generator, "generator is null for column id '%s'", columnId);
+
+        Column existingColumn = getColumn(columnId);
+        if (existingColumn != null) {
+            index = columnsOrder.indexOf(existingColumn);
+            removeColumn(existingColumn);
+        }
+
+        containerWrapper.addGeneratedProperty(columnId, new PropertyValueGenerator<Object>() {
+            @Override
+            public Object getValue(Item item, Object itemId, Object propertyId) {
+                //noinspection unchecked
+                ColumnGeneratorEvent<E> event = new ColumnGeneratorEvent<>(WebDataGrid.this,
+                        (E) datasource.getItem(itemId), propertyId.toString());
+
+                return generator.getValue(event);
+            }
+
+            @Override
+            public Class<Object> getType() {
+                //noinspection unchecked
+                return (Class<Object>) generator.getType();
+            }
+        });
+
+        Column column = new ColumnImpl(columnId, generator.getType(), this);
+        if (existingColumn != null) {
+            copyColumnProperties(column, existingColumn);
+        } else {
+            column.setCaption(columnId);
+        }
+
+        columns.put(column.getId(), column);
+        columnsOrder.add(index, column);
+
+        Grid.Column gridColumn = component.getColumn(((ColumnImpl) column).getColumnPropertyId());
+        if (gridColumn != null) {
+            setupGridColumnProperties(gridColumn, column);
+        }
+
+        component.setColumnOrder(getColumnPropertyIds());
+
+        return column;
+    }
+
+    protected void copyColumnProperties(Column column, Column existingColumn) {
+        column.setCaption(existingColumn.getCaption());
+        column.setVisible(existingColumn.isVisible());
+        column.setCollapsed(existingColumn.isCollapsed());
+        column.setCollapsible(existingColumn.isCollapsible());
+        column.setCollapsingToggleCaption(existingColumn.getCollapsingToggleCaption());
+        column.setMinimumWidth(existingColumn.getMinimumWidth());
+        column.setMaximumWidth(existingColumn.getMaximumWidth());
+        column.setWidth(existingColumn.getWidth());
+        column.setExpandRatio(existingColumn.getExpandRatio());
+        column.setResizable(existingColumn.isResizable());
+        column.setFormatter(existingColumn.getFormatter());
+    }
+
+    @Override
+    public <T extends Renderer> T createRenderer(Class<T> type) {
+        DataGrid.Renderer renderer = null;
+        if (type == DataGrid.TextRenderer.class) {
+            renderer = new WebTextRenderer();
+        }
+        if (type == DataGrid.HtmlRenderer.class) {
+            renderer = new WebHtmlRenderer();
+        }
+        if (type == DataGrid.ProgressBarRenderer.class) {
+            renderer = new WebProgressBarRenderer();
+        }
+        if (type == DataGrid.DateRenderer.class) {
+            renderer = new WebDateRenderer();
+        }
+        if (type == DataGrid.NumberRenderer.class) {
+            renderer = new WebNumberRenderer();
+        }
+        if (type == DataGrid.ButtonRenderer.class) {
+            renderer = new WebButtonRenderer();
+        }
+        if (type == DataGrid.ImageRenderer.class) {
+            renderer = new WebImageRenderer();
+        }
+        if (type == DataGrid.CheckBoxRenderer.class) {
+            renderer = new WebCheckBoxRenderer();
+        }
+        return type.cast(renderer);
+    }
+
+    @Override
     public void addColumnCollapsingChangeListener(ColumnCollapsingChangeListener listener) {
         getEventRouter().addListener(ColumnCollapsingChangeListener.class, listener);
 
@@ -1786,6 +1882,61 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
     }
 
+    public static abstract class AbstractRenderer<T> implements RendererWrapper<T> {
+        protected com.vaadin.ui.renderers.Renderer<T> renderer;
+        protected WebDataGrid dataGrid;
+        protected String nullRepresentation;
+
+        protected AbstractRenderer() {
+        }
+
+        protected AbstractRenderer(String nullRepresentation) {
+            this.nullRepresentation = nullRepresentation;
+        }
+
+        @Override
+        public com.vaadin.ui.renderers.Renderer<T> getImplementation() {
+            if (renderer == null) {
+                renderer = createImplementation();
+            }
+            return renderer;
+        }
+
+        protected abstract com.vaadin.ui.renderers.Renderer<T> createImplementation();
+
+        @Override
+        public void resetImplementation() {
+            renderer = null;
+        }
+
+        protected WebDataGrid getDataGrid() {
+            return dataGrid;
+        }
+
+        protected void setDataGrid(WebDataGrid dataGrid) {
+            this.dataGrid = dataGrid;
+        }
+
+        protected String getNullRepresentation() {
+            return nullRepresentation;
+        }
+
+        protected void setNullRepresentation(String nullRepresentation) {
+            checkRendererNotSet();
+            this.nullRepresentation = nullRepresentation;
+        }
+
+        protected Column getColumnByGridColumn(Grid.Column column) {
+            return dataGrid.getColumnByGridColumn(column);
+        }
+
+        protected void checkRendererNotSet() {
+            if (renderer != null) {
+                throw new IllegalStateException("Renderer parameters cannot be changed after it is set to a column");
+            }
+        }
+    }
+
     protected static class ColumnImpl implements Column {
 
         protected String id;
@@ -1804,6 +1955,9 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         protected boolean resizable;
         protected Formatter formatter;
 
+        protected AbstractRenderer<?> renderer;
+        protected Converter<?, ?> converter;
+
         protected Class type;
         protected Element element;
 
@@ -1811,9 +1965,17 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         protected Grid.Column gridColumn;
 
         public ColumnImpl(String id, @Nullable MetaPropertyPath propertyPath, WebDataGrid owner) {
+            this(id, propertyPath, propertyPath != null ? propertyPath.getRangeJavaClass() : String.class, owner);
+        }
+
+        public ColumnImpl(String id, Class type, WebDataGrid owner) {
+            this(id, null, type, owner);
+        }
+
+        protected ColumnImpl(String id, @Nullable MetaPropertyPath propertyPath, Class type, WebDataGrid owner) {
             this.id = id;
             this.propertyPath = propertyPath;
-            this.type = propertyPath != null ? propertyPath.getRangeJavaClass() : String.class;
+            this.type = type;
             this.owner = owner;
 
             setupDefaults();
@@ -2089,16 +2251,29 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             this.formatter = formatter;
             if (gridColumn != null) {
                 if (formatter != null) {
-                    Converter converter = gridColumn.getConverter();
+                    com.vaadin.data.util.converter.Converter converter = gridColumn.getConverter();
                     if (converter instanceof FormatterBasedConverter) {
                         ((FormatterBasedConverter) converter).setFormatter(formatter);
                     } else {
                         gridColumn.setConverter(new FormatterBasedConverter(formatter));
                     }
                 } else {
-                    owner.applyDefaultRenderer(gridColumn, propertyPath);
+                    if (converter != null) {
+                        gridColumn.setConverter(createConverterWrapper(converter));
+                    } else {
+                        owner.setDefaultConverter(gridColumn, getMetaProperty(), type);
+                    }
                 }
+                owner.repaint();
             }
+        }
+
+        protected
+        @Nullable
+        MetaProperty getMetaProperty() {
+            return getPropertyPath() != null
+                    ? getPropertyPath().getMetaProperty()
+                    : null;
         }
 
         @Override
@@ -2109,6 +2284,74 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         @Override
         public void setXmlDescriptor(Element element) {
             this.element = element;
+        }
+
+        @Override
+        public Renderer getRenderer() {
+            return renderer;
+        }
+
+        @Override
+        public void setRenderer(Renderer renderer) {
+            if (renderer == null && this.renderer != null) {
+                this.renderer.resetImplementation();
+                this.renderer.setDataGrid(null);
+            }
+
+            this.renderer = (AbstractRenderer<?>) renderer;
+            if (gridColumn != null) {
+                if (this.renderer != null) {
+                    this.renderer.setDataGrid(owner);
+                    gridColumn.setRenderer(this.renderer.getImplementation());
+                } else {
+                    owner.setDefaultRenderer(gridColumn, getMetaProperty(), type);
+                }
+                owner.repaint();
+            }
+        }
+
+        @Override
+        public Converter<?, ?> getConverter() {
+            return converter;
+        }
+
+        @Override
+        public void setConverter(Converter<?, ?> converter) {
+            this.converter = converter;
+            if (gridColumn != null) {
+                gridColumn.setConverter(converter != null ? createConverterWrapper(converter) : null);
+                owner.repaint();
+            }
+        }
+
+        protected com.vaadin.data.util.converter.Converter<?, ?> createConverterWrapper(final Converter converter) {
+            return new com.vaadin.data.util.converter.Converter<Object, Object>() {
+                @SuppressWarnings("unchecked")
+                @Override
+                public Object convertToModel(Object value, Class<?> targetType, Locale locale)
+                        throws ConversionException {
+                    return converter.convertToModel(value, targetType, locale);
+                }
+
+                @SuppressWarnings("unchecked")
+                @Override
+                public Object convertToPresentation(Object value, Class<?> targetType, Locale locale)
+                        throws ConversionException {
+                    return converter.convertToPresentation(value, targetType, locale);
+                }
+
+                @SuppressWarnings("unchecked")
+                @Override
+                public Class<Object> getModelType() {
+                    return converter.getModelType();
+                }
+
+                @SuppressWarnings("unchecked")
+                @Override
+                public Class<Object> getPresentationType() {
+                    return converter.getPresentationType();
+                }
+            };
         }
 
         @Nullable
