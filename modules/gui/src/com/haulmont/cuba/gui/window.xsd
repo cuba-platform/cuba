@@ -1566,7 +1566,7 @@
             <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
         </xs:sequence>
 
-        <xs:attributeGroup ref="requiresId"/>
+        <xs:attributeGroup ref="hasId"/>
         <xs:attribute name="property" type="xs:string"/>
 
         <xs:attribute name="caption" type="resourceString"/>
