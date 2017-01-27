@@ -207,8 +207,16 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
 
     protected Column loadColumn(DataGrid component, Element element, Datasource ds) {
         String id = element.attributeValue("id");
-
         String property = element.attributeValue("property");
+
+        if (id == null) {
+            if (property != null) {
+                id = property;
+            } else {
+                throw new GuiDevelopmentException("A column must have whether id or property specified",
+                        context.getCurrentFrameId(), "DataGrid ID", component.getId());
+            }
+        }
 
         Column column;
         if (property != null) {
