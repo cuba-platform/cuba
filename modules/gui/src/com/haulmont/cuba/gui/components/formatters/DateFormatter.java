@@ -31,17 +31,16 @@ import java.util.Date;
 
 /**
  * {@link Date} formatter to be used in screen descriptors.
- * <p/> Either <code>format</code> or <code>type</code> attributes should be defined in the <code>formatter</code> element.
+ * <br> Either {@code format} or {@code type} attributes should be defined in the {@code formatter} element.
  * <ul>
- *     <li/> <code>format</code> - format string for <code>SimpleDateFormat</code>
- *     <li/> <code>type</code> - <code>DATE</code> or <code>DATETIME</code> - if specified, the value will be formatted
- *     by means of {@code DateDatatype} or {@code DateTimeDatatype} respectively.
+ *     <li> {@code format} - format string for {@code SimpleDateFormat}</li>
+ *     <li> {@code type} - {@code DATE} or {@code DATETIME} - if specified, the value will be formatted
+ *     by means of {@code DateDatatype} or {@code DateTimeDatatype} respectively.</li>
  * </ul>
- * <p/> Example usage:
+ * <br> Example usage:
  * <pre>
  * &lt;formatter class=&quot;com.haulmont.cuba.gui.components.formatters.DateFormatter&quot; format=&quot;msg://dateFormat&quot;
  * </pre>
- *
  */
 public class DateFormatter implements Formatter<Date> {
 

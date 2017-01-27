@@ -24,10 +24,10 @@ import java.util.UUID;
 
 /**
  * Holds information about the current user session.
- *
- * <p>Instances of this class are normally set in {@link AppContext} by the framework, but also have to be
+ * <br>
+ * Instances of this class are normally set in {@link AppContext} by the framework, but also have to be
  * passed to it in case of manually running new threads. Here is the sample code for an asynchronous execution:
- * <pre>
+ * <pre>{@code
  *     final SecurityContext securityContext = AppContext.getSecurityContext();
  *     executor.submit(new Runnable() {
  *         public void run() {
@@ -35,22 +35,22 @@ import java.util.UUID;
  *             // business logic here
  *         }
  *     });
- * </pre>
- * <p> The same can be done using {@link SecurityContextAwareRunnable} or {@link SecurityContextAwareCallable}
+ * }</pre>
+ * <br>
+ * The same can be done using {@link SecurityContextAwareRunnable} or {@link SecurityContextAwareCallable}
  * wrappers, for example:
- * <pre>
+ * <pre>{@code
  *     executor.submit(new SecurityContextAwareRunnable<>(() -> {
  *         // business logic here
  *     }));
- * </pre>
+ * }</pre>
  * or
- * <pre>
- *     Future&lt;String&gt; future = executor.submit(new SecurityContextAwareCallable<>(() -> {
+ * <pre>{@code
+ *     Future<String> future = executor.submit(new SecurityContextAwareCallable<>(() -> {
  *         // business logic here
  *         return some_string;
  *     }));
- * </pre>
- *
+ * }</pre>
  */
 public class SecurityContext {
 
@@ -114,7 +114,7 @@ public class SecurityContext {
     /**
      * Whether the security check is required for standard mechanisms ({@code DataManager} in particular) on
      * the middleware. Example usage:
-     * <pre>
+     * <pre>{@code
      * boolean saved = AppContext.getSecurityContext().isAuthorizationRequired();
      * AppContext.getSecurityContext().setAuthorizationRequired(true);
      * try {
@@ -122,7 +122,7 @@ public class SecurityContext {
      * } finally {
      *     AppContext.getSecurityContext().setAuthorizationRequired(saved);
      * }
-     * </pre>
+     * }</pre>
      */
     public void setAuthorizationRequired(boolean authorizationRequired) {
         this.authorizationRequired = authorizationRequired;

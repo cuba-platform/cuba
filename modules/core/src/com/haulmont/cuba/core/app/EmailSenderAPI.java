@@ -23,9 +23,8 @@ import javax.mail.MessagingException;
 
 /**
  * Adapter to javax.mail email sending API.
- * <p/>
+ * <br>
  * Should not be used from application code, use {@link EmailerAPI}.
- *
  */
 public interface EmailSenderAPI {
     String NAME = "cuba_EmailSender";
@@ -33,7 +32,7 @@ public interface EmailSenderAPI {
     /**
      * Sends email with help of {@link org.springframework.mail.javamail.JavaMailSender}.
      * Message body and attachments' content must be loaded from file storage.
-     * <p/>
+     * <br>
      * Use {@link EmailerAPI} instead if you need email to be delivered reliably and stored to email history.
      *
      * @throws MessagingException if delivery fails

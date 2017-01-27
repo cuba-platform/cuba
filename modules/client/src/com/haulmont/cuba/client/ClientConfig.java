@@ -79,7 +79,7 @@ public interface ClientConfig extends Config {
     /**
      * List of screen aliases for which saving screen history is enabled.
      * <p>Obsolete. Recommended way to specify this information is entity annotations
-     * in <code>*-metadata.xml</code></p>
+     * in {@code *-metadata.xml}</p>
      * @return  comma-separated list of screen aliases
      */
     @Property("cuba.screenIdsToSaveHistory")
@@ -87,7 +87,7 @@ public interface ClientConfig extends Config {
 
     /**
      * @return Whether to enable password policy. If true, all new passwords will be checked for the compliance with
-     * <code>cuba.passwordPolicyRegExp</code>
+     * {@code cuba.passwordPolicyRegExp}
      */
     @Property("cuba.passwordPolicyEnabled")
     @Source(type = SourceType.DATABASE)
@@ -95,7 +95,7 @@ public interface ClientConfig extends Config {
     boolean getPasswordPolicyEnabled();
 
     /**
-     * @return The regular expression which is used by password policy (see also <code>cuba.passwordPolicyEnabled<code/>).
+     * @return The regular expression which is used by password policy (see also {@code cuba.passwordPolicyEnabled}).
      */
     @Property("cuba.passwordPolicyRegExp")
     @Source(type = SourceType.DATABASE)
@@ -104,7 +104,7 @@ public interface ClientConfig extends Config {
 
     /**
      * @return If true, all generic filters will require explicit Apply after screen opening. Empty connected table
-     * is shown.<br/>
+     * is shown.<br>
      * If false, the filter will be applied automatically, refreshing the table immediately after the screen opening.
      */
     @Property("cuba.gui.genericFilterManualApplyRequired")
@@ -114,7 +114,7 @@ public interface ClientConfig extends Config {
 
     /**
      * @return If true, then check filter conditions (empty or not) before applying filter. If all conditions are empty
-     * (no parameters entered), the filter doesn't apply and special message to user is shown.<br/>
+     * (no parameters entered), the filter doesn't apply and special message to user is shown.<br>
      * If false, no checks are performed and the filter applyes, refreshing connected table.
      */
     @Property("cuba.gui.genericFilterChecking")
@@ -123,7 +123,7 @@ public interface ClientConfig extends Config {
     boolean getGenericFilterChecking();
 
     /**
-     * @return If true, all generic text filters will trim value.<br/>
+     * @return If true, all generic text filters will trim value.<br>
      * If false, the text filter will not be trim value.
      */
     @Property("cuba.gui.genericFilterTrimParamValues")

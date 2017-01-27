@@ -21,9 +21,9 @@ import com.haulmont.cuba.gui.components.ProgressBar;
 
 /**
  * Web realization of progress bar depending on vaadin {@link ProgressBar} component.
- * <p/>
+ * <br>
  * Note that indeterminate bar implemented here just like as determinate, but with fixed 0.0 value
- * <p/>
+ * <br>
  */
 public class WebProgressBar extends WebAbstractField<com.vaadin.ui.ProgressBar> implements ProgressBar {
 

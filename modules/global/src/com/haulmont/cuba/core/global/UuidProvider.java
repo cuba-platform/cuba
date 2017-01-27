@@ -23,7 +23,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Provides static method to create UUIDs.
- *
  */
 public abstract class UuidProvider {
 
@@ -46,8 +45,8 @@ public abstract class UuidProvider {
 
     /**
      * Fast implementation of creating a {@code UUID} from the standard string representation.
-     *
-     * <p/>Borrowed from Apache Jackrabbit project which is licensed under the Apache License, Version 2.0.
+     * <br>
+     * Borrowed from Apache Jackrabbit project which is licensed under the Apache License, Version 2.0.
      * See http://www.apache.org/licenses/LICENSE-2.0.
      *
      * @param str   a string according to {@link java.util.UUID#toString()} rules

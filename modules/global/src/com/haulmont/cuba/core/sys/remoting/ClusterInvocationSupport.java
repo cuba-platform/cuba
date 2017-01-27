@@ -29,11 +29,9 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Class that holds the information about current cluster topology.
- * <p/>
+ * Class that holds the information about current cluster topology. <br>
  * Always inject or lookup this bean by name, not by type, because an application project can define several instances
  * of this type to work with different middleware blocks.
- *
  */
 public class ClusterInvocationSupport {
 
@@ -46,7 +44,7 @@ public class ClusterInvocationSupport {
         void urlListChanged(List<String> newUrlList);
     }
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(ClusterInvocationSupport.class);
 
     protected List<String> urls;
     protected ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -144,7 +142,7 @@ public class ClusterInvocationSupport {
                     newList.add(u);
                 }
             }
-            log.debug("Connection URL priority changed: " + urls + " -> " + newList);
+            log.debug("Connection URL priority changed: {} -> {}", urls, newList);
             urls = newList;
             for (Listener listener : listeners) {
                 listener.urlListChanged(Collections.unmodifiableList(urls));

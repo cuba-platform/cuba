@@ -18,8 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 /**
  * Interface defining method for formatting a value into string.
- * <p/> Used by various UI components.
- *
+ * <br> Used by various UI components.
  */
 public interface Formatter<T> {
 

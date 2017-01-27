@@ -114,6 +114,11 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     test {
         maxHeapSize = '256m'
     }
+
+    javadoc {
+        // move to plugin ?
+        options.addStringOption("sourcepath", "")
+    }
 }
 
 // configure web toolkit module
@@ -130,6 +135,11 @@ configure(webToolkitModule) {
 
     artifacts {
         archives sourceJar
+    }
+
+    javadoc {
+        // move to plugin ?
+        options.addStringOption("sourcepath", "")
     }
 }
 

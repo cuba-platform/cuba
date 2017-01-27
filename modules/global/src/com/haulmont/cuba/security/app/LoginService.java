@@ -27,7 +27,6 @@ import java.util.UUID;
 
 /**
  * Service interface defining methods to login users to the middleware.
- *
  */
 public interface LoginService {
 
@@ -111,8 +110,8 @@ public interface LoginService {
     UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale, Map<String, Object> params) throws LoginException;
 
     /**
-     * Get system user session from a trusted client. <br/>
-     * Do not call {@link #logout()} for obtained user session. It is cached on middleware for multiple clients. <br/>
+     * Get system user session from a trusted client. <br>
+     * Do not call {@link #logout()} for obtained user session. It is cached on middleware for multiple clients. <br>
      * Do not cache system session on clients since it is not replicated in cluster.
      *
      * @param trustedClientPassword trusted client password
@@ -128,16 +127,16 @@ public interface LoginService {
 
     /**
      * Substitute a user, obtaining all its security related environment.
-     * <p/>
+     * <br>
      * This method replaces an active UserSession with the new one, which is returned.
      *
      * @param substitutedUser a user to substitute. Must be in the current users' {@link User#substitutions} list.
      * @return new UserSession instance that contains: <ul>
-     *         <li> id - the previously active user session id </li>
-     *         <li> user - the logged in user </li>
-     *         <li> substitutedUser - the user passed to this method  </li>
-     *         <li> all security data - loaded for the substitutedUser </li>
-     *         </ul>
+     * <li> id - the previously active user session id </li>
+     * <li> user - the logged in user </li>
+     * <li> substitutedUser - the user passed to this method  </li>
+     * <li> all security data - loaded for the substitutedUser </li>
+     * </ul>
      */
     UserSession substituteUser(User substitutedUser);
 

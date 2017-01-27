@@ -27,9 +27,8 @@ import java.util.Set;
 
 /**
  * Interface providing access to datasources defined in a screen.
- * <p/>
+ * <br>
  * Implementation of this interface serves also for automatic coordination between datasources on load/commit time.
- *
  */
 public interface DsContext {
 
@@ -133,7 +132,7 @@ public interface DsContext {
 
     /**
      * This listener allows to intercept commit events.
-     * <p/> Should be used to augment {@link CommitContext} with entities which must be committed in the
+     * <br> Should be used to augment {@link CommitContext} with entities which must be committed in the
      * same transaction as datasources content. To do this, add needed entity instances to
      * {@link com.haulmont.cuba.core.global.CommitContext#getCommitInstances()} or
      * {@link com.haulmont.cuba.core.global.CommitContext#getRemoveInstances()} collections.
@@ -178,7 +177,7 @@ public interface DsContext {
 
     /**
      * This listener allows to intercept commit events.
-     * <p/> Should be used to augment {@link CommitContext} with entities which must be committed in the
+     * <br> Should be used to augment {@link CommitContext} with entities which must be committed in the
      * same transaction as datasources content. To do this, add needed entity instances to
      * {@link com.haulmont.cuba.core.global.CommitContext#getCommitInstances()} or
      * {@link com.haulmont.cuba.core.global.CommitContext#getRemoveInstances()} collections.

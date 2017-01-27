@@ -36,16 +36,16 @@ import java.util.Map;
 /**
  * Modal window wrapping around background task. Displays title, message and optional cancel button.
  * Window lasts until task completes, timeout timer elapses or user presses cancel button.
- * <p/>
+ * <br>
  * When cancelled by user, does not interrupt task thread.
- * <p/>
+ * <br>
  * <p>On error:
  * <ul>
  * <li>Executes handle exception in background task</li>
  * <li>Closes background window</li>
  * <li>Shows Warning message if for background task specified owner window</li>
  * </ul>
- * <p/>
+ * <br>
  */
 public class BackgroundWorkWindow<T, V> extends AbstractWindow {
 

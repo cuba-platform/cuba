@@ -35,9 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * JPQL cache loader <br/>
+ * JPQL cache loader <br>
  * Loads objects tree with jpql query and view
- *
  */
 public class StandardCacheLoader implements CacheLoader {
 

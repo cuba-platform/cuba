@@ -56,8 +56,8 @@ import java.util.Vector;
 
 /**
  * Utility class to provide common functionality related to persistence.
- * <p/> Implemented as Spring bean to allow extension in application projects.
- * <p/> A reference to this class can be obtained either via DI or by
+ * <br> Implemented as Spring bean to allow extension in application projects.
+ * <br> A reference to this class can be obtained either via DI or by
  * {@link com.haulmont.cuba.core.Persistence#getTools()} method.
  */
 @Component(PersistenceTools.NAME)
@@ -107,8 +107,8 @@ public class PersistenceTools {
 
     /**
      * Returns true if the given entity has dirty attributes (changed since the last load from the database).
-     * <p> If the entity is new, returns true.
-     * <p> If the entity is not persistent or not in the Managed state, returns false.
+     * <br> If the entity is new, returns true.
+     * <br> If the entity is not persistent or not in the Managed state, returns false.
      *
      * @param entity    entity instance
      *

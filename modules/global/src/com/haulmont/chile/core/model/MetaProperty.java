@@ -22,7 +22,6 @@ import java.lang.reflect.AnnotatedElement;
 
 /**
  * Metadata object representing an entity attribute.
- *
  */
 public interface MetaProperty extends MetadataObject {
 
@@ -54,7 +53,7 @@ public interface MetaProperty extends MetadataObject {
     MetaModel getModel();
 
     /**
-     * @return MetaClass, containing this MetaProperty. <br/>
+     * @return MetaClass, containing this MetaProperty. <br>
      * In case of {@link com.haulmont.cuba.core.entity.annotation.Extends} returns extended meta class.
      */
     MetaClass getDomain();

@@ -17,7 +17,7 @@
 package com.haulmont.cuba.core.global.validation.groups;
 
 /**
- * Bean validation constraint group used by core server for service parameters validation. <br/>
+ * Bean validation constraint group used by core server for service parameters validation. <br>
  * You can assign this group for constraints that must be checked only when instance is passed to a service.
  */
 public interface ServiceParametersChecks {

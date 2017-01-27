@@ -257,7 +257,7 @@ public interface DataGrid<E extends Entity>
      * The default value is 0.
      *
      * @param numberOfColumns the number of columns that should be frozen
-     * @throws IllegalArgumentException if the column count is < 0 or > the number of visible columns
+     * @throws IllegalArgumentException if the column count is &lt; 0 or &gt; the number of visible columns
      */
     void setFrozenColumnCount(int numberOfColumns);
 

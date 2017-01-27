@@ -24,9 +24,8 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 /**
- * Default "ComboBoxTextFieldPainter" painter class does not support background color overriding. <br/>
+ * Default "ComboBoxTextFieldPainter" painter class does not support background color overriding. <br>
  * Allows draw combobox without button for SearchComboBox.
- *
  */
 public class MandatoryComboBoxTextFieldPainter extends BaseMandatoryRegionPainter {
     //package private integers representing the available states that

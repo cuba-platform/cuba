@@ -60,7 +60,7 @@ import java.util.concurrent.Future;
 /**
  * Central class of the web application. An instance of this class is created for each client's session and is bound
  * to {@link VaadinSession}.
- * <p/>
+ * <br>
  * Use {@link #getInstance()} static method to obtain the reference to the current App instance.
  */
 public abstract class App {
@@ -328,7 +328,7 @@ public abstract class App {
     }
 
     /**
-     * Called from heartbeat request. <br/>
+     * Called from heartbeat request. <br>
      * Used for ping middleware session and show session messages
      */
     public void onHeartbeat() {

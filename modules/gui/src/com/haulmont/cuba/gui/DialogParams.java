@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.Window;
 
 /**
  * Parameters that will be used for opening next window in modal mode.
- * <p/> E.g. to open an edit screen as modal dialog and set its width, use the following code in calling screen
+ * <br> E.g. to open an edit screen as modal dialog and set its width, use the following code in calling screen
  * controller:
  * <pre>
  * getDialogParams().setWidth(500);
@@ -31,7 +31,6 @@ import com.haulmont.cuba.gui.components.Window;
  *
  * @deprecated Use {@link WindowManager.OpenType} or {@link Frame.MessageType} with parameters.
  *             Also you can use {@link Window#getDialogOptions()} from window controller.
- *
  */
 @Deprecated
 public class DialogParams {

@@ -31,9 +31,9 @@ import java.util.UUID;
 /**
  * System-level class with static methods providing access to some central application structures:
  * <ul>
- *     <li/>Spring's {@link ApplicationContext}
- *     <li/>Application properties which were set in <code>app.properties</code> files
- *     <li/>Current thread's {@link SecurityContext}
+ *     <li>Spring's {@link ApplicationContext}</li>
+ *     <li>Application properties which were set in {@code app.properties} files</li>
+ *     <li>Current thread's {@link SecurityContext}</li>
  * </ul>
  * It also allows to register listeners which are triggered on the application start/stop, and provides the method
  * {@link #isStarted()} to check whether the app is fully initialized at the moment.
@@ -94,7 +94,7 @@ public class AppContext {
     }
 
     /**
-     * @return all property names defined in the set of <code>app.properties</code> files
+     * @return all property names defined in the set of {@code app.properties} files
      */
     public static String[] getPropertyNames() {
         if (appProperties == null)
@@ -103,7 +103,7 @@ public class AppContext {
     }
 
     /**
-     * Get property value defined in the set of <code>app.properties</code> files.
+     * Get property value defined in the set of {@code app.properties} files.
      * @param key   property key
      * @return      property value or null if the key is not found
      */
@@ -116,7 +116,7 @@ public class AppContext {
 
     /**
      * Set property value. The new value will be accessible at the runtime through {@link #getProperty(String)} and
-     * {@link #getPropertyNames()}, but will not be saved in any <code>app.properties</code> file and will be lost
+     * {@link #getPropertyNames()}, but will not be saved in any {@code app.properties} file and will be lost
      * after the application restart.
      * @param key       property key
      * @param value     property value. If null, the property will be removed.

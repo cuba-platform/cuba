@@ -35,10 +35,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Bean that provides authentication to an arbitrary code on the Middleware.
- * <p/>
+ * <br>
  * Authentication is required if the code doesn't belong to a normal user request handling, which is the case for
  * invocation by schedulers or JMX tools, other than Web Client's JMX-console.
- * <p/>
+ * <br>
  * Example usage:
  * <pre>
  *     authentication.begin();
@@ -68,13 +68,13 @@ public class Authentication {
 
     /**
      * Begin an authenticated code block.
-     * <p/>
+     * <br>
      * If a valid current thread session exists, does nothing.
      * Otherwise sets the current thread session, logging in if necessary.
-     * <p/>
+     * <br>
      * Subsequent {@link #end()} method must be called in "finally" section.
      *
-     * @param login user login. If null, a value of <code>cuba.jmxUserLogin</code> app property is used.
+     * @param login user login. If null, a value of {@code cuba.jmxUserLogin} app property is used.
      * @return new or cached instance of system user session
      */
     public UserSession begin(@Nullable String login) {
@@ -133,8 +133,8 @@ public class Authentication {
     }
 
     /**
-     * Authenticate with login set in <code>cuba.jmxUserLogin</code> app property.
-     * <p/>
+     * Authenticate with login set in {@code cuba.jmxUserLogin} app property.
+     * <br>
      * Same as {@link #begin(String)} with null parameter
      */
     public UserSession begin() {
@@ -143,7 +143,7 @@ public class Authentication {
 
     /**
      * End of an authenticated code block.
-     * <p/>
+     * <br>
      * Performs cleanup for SecurityContext if there was previous loginOnce in this thread.
      * Must be called in "finally" section of a try/finally block.
      */

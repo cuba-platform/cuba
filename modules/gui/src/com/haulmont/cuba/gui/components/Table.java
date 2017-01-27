@@ -240,7 +240,7 @@ public interface Table<E extends Entity>
      */
     interface StyleProvider<E extends Entity> {
         /**
-         * Called by {@link Table} to get a style for row or cell. <br/>
+         * Called by {@link Table} to get a style for row or cell.<br>
          * All unhandled exceptions from StyleProvider in Web components by default are logged with ERROR level
          * and not shown to users.
          *
@@ -252,13 +252,13 @@ public interface Table<E extends Entity>
     }
 
     /**
-     * Set the cell style provider for the table. <br/>
+     * Set the cell style provider for the table.<br>
      * All style providers added before this call will be removed.
      */
     void setStyleProvider(@Nullable StyleProvider<? super E> styleProvider);
 
     /**
-     * Add style provider for the table. <br/>
+     * Add style provider for the table.<br>
      * Table can use several providers to obtain many style names for cells and rows.
      */
     void addStyleProvider(StyleProvider<? super E> styleProvider);
@@ -278,11 +278,11 @@ public interface Table<E extends Entity>
 
     /**
      * This method returns the datasource which contains the provided item. It can be used in data-aware components,
-     * created in generated columns. <br/>
+     * created in generated columns. <br>
      *
      * <b>Do not save to final variables, just get it from table when you need.</b>
      *
-     * <pre>
+     * <pre>{@code
      * modelsTable.addGeneratedColumn(
      *     "numberOfSeats",
      *     new Table.ColumnGenerator<Model>() {
@@ -295,7 +295,7 @@ public interface Table<E extends Entity>
      *         }
      *     }
      * );
-     * </pre>
+     * }</pre>
      *
      * @param item entity item
      * @return datasource containing the item
@@ -316,7 +316,7 @@ public interface Table<E extends Entity>
     }
 
     /**
-     * Allows set Printable representation for column in Excel export. <br/>
+     * Allows set Printable representation for column in Excel export. <br>
      * If for column specified Printable then value for Excel cell gets from Printable representation.
      *
      * @param <E> type of item
@@ -345,7 +345,7 @@ public interface Table<E extends Entity>
 
     /**
      * Add a generated column to the table.
-     * <p/> This method useful for desktop UI. Table can make additional look, feel and performance tweaks
+     * <br> This method useful for desktop UI. Table can make additional look, feel and performance tweaks
      * if it knows the class of components that will be generated.
      *
      * @param columnId       column identifier as defined in XML descriptor. May or may not correspond to an entity property.
@@ -357,7 +357,7 @@ public interface Table<E extends Entity>
     void removeGeneratedColumn(String columnId);
 
     /**
-     * Adds {@link Printable} representation for column. <br/>
+     * Adds {@link Printable} representation for column. <br>
      * Explicitly added Printable will be used instead of inherited from generated column.
      *
      * @param columnId  column id
@@ -366,7 +366,7 @@ public interface Table<E extends Entity>
     void addPrintable(String columnId, Printable<? super E, ?> printable);
 
     /**
-     * Removes {@link Printable} representation of column. <br/>
+     * Removes {@link Printable} representation of column. <br>
      * Unable to remove Printable representation inherited from generated column.
      *
      * @param columnId column id
@@ -392,8 +392,8 @@ public interface Table<E extends Entity>
     Printable getPrintable(String columnId);
 
     /**
-     * Add lightweight click handler for column cells.<br/>
-     * Web specific: cell value will be wrapped in span with cuba-table-clickable-cell style name.<br/>
+     * Add lightweight click handler for column cells.<br>
+     * Web specific: cell value will be wrapped in span with cuba-table-clickable-cell style name.<br>
      * You can use .cuba-table-clickable-cell for CSS rules to specify custom representation of cell value.
      *
      * @param columnId id of column
@@ -420,7 +420,7 @@ public interface Table<E extends Entity>
     }
 
     /**
-     * Show popup inside of Table, relative to last cell click event.<br/>
+     * Show popup inside of Table, relative to last cell click event.<br>
      * Call this method from {@link com.haulmont.cuba.gui.components.Table.CellClickListener} implementation.
      *
      * @param popupComponent popup content
@@ -428,8 +428,8 @@ public interface Table<E extends Entity>
     void showCustomPopup(Component popupComponent);
 
     /**
-     * Show autocloseable popup view with actions, relative to last cell click event.<br/>
-     * Call this method from {@link com.haulmont.cuba.gui.components.Table.CellClickListener} implementation.<br/>
+     * Show autocloseable popup view with actions, relative to last cell click event.<br>
+     * Call this method from {@link com.haulmont.cuba.gui.components.Table.CellClickListener} implementation.<br>
      * Autocloseable means that after any click on action popup will be closed.
      *
      * @param actions actions

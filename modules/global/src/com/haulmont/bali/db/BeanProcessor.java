@@ -27,16 +27,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
- * <code>BeanProcessor</code> matches column names to bean property names
- * and converts <code>ResultSet</code> columns into objects for those bean
+ * {@code BeanProcessor} matches column names to bean property names
+ * and converts {@code ResultSet} columns into objects for those bean
  * properties.  Subclasses should override the methods in the processing chain
  * to customize behavior.
  * </p>
@@ -53,9 +49,9 @@ import java.util.Map;
 public class BeanProcessor {
 
     /**
-     * Special array value used by <code>mapColumnsToProperties</code> that
+     * Special array value used by {@code mapColumnsToProperties} that
      * indicates there is no bean property that matches a column from a
-     * <code>ResultSet</code>.
+     * {@code ResultSet}.
      */
     protected static final int PROPERTY_NOT_FOUND = -1;
 
@@ -64,7 +60,7 @@ public class BeanProcessor {
      * is returned.  These are the same as the defaults that ResultSet get*
      * methods return in the event of a NULL column.
      */
-    private static final Map primitiveDefaults = new HashMap();
+    private static final Map<Class, Object> primitiveDefaults = new HashMap<>();
 
     static {
         primitiveDefaults.put(Integer.TYPE, new Integer(0));
@@ -85,11 +81,11 @@ public class BeanProcessor {
     }
 
     /**
-     * Convert a <code>ResultSet</code> row into a JavaBean.  This
-     * implementation uses reflection and <code>BeanInfo</code> classes to
+     * Convert a {@code ResultSet} row into a JavaBean.  This
+     * implementation uses reflection and {@code BeanInfo} classes to
      * match column names to bean property names.  Properties are matched to
      * columns based on several factors:
-     * <br/>
+     * <br>
      * <ol>
      *     <li>
      *     The class has a writable property with the same name as a column.
@@ -106,10 +102,10 @@ public class BeanProcessor {
      *
      * <p>
      * Primitive bean properties are set to their defaults when SQL NULL is
-     * returned from the <code>ResultSet</code>.  Numeric fields are set to 0
+     * returned from the {@code ResultSet}.  Numeric fields are set to 0
      * and booleans are set to false.  Object bean properties are set to
-     * <code>null</code> when SQL NULL is returned.  This is the same behavior
-     * as the <code>ResultSet</code> get* methods.
+     * {@code null} when SQL NULL is returned.  This is the same behavior
+     * as the {@code ResultSet} get* methods.
      * </p>
      *
      * @param rs ResultSet that supplies the bean data
@@ -128,11 +124,11 @@ public class BeanProcessor {
     }
 
     /**
-     * Convert a <code>ResultSet</code> into a <code>List</code> of JavaBeans.
-     * This implementation uses reflection and <code>BeanInfo</code> classes to
+     * Convert a {@code ResultSet} into a {@code List} of JavaBeans.
+     * This implementation uses reflection and {@code BeanInfo} classes to
      * match column names to bean property names. Properties are matched to
      * columns based on several factors:
-     * <br/>
+     * <br>
      * <ol>
      *     <li>
      *     The class has a writable property with the same name as a column.
@@ -149,10 +145,10 @@ public class BeanProcessor {
      *
      * <p>
      * Primitive bean properties are set to their defaults when SQL NULL is
-     * returned from the <code>ResultSet</code>.  Numeric fields are set to 0
+     * returned from the {@code ResultSet}.  Numeric fields are set to 0
      * and booleans are set to false.  Object bean properties are set to
-     * <code>null</code> when SQL NULL is returned.  This is the same behavior
-     * as the <code>ResultSet</code> get* methods.
+     * {@code null} when SQL NULL is returned.  This is the same behavior
+     * as the {@code ResultSet} get* methods.
      * </p>
      *
      * @param rs ResultSet that supplies the bean data
@@ -361,11 +357,11 @@ public class BeanProcessor {
     /**
      * The positions in the returned array represent column numbers.  The
      * values stored at each position represent the index in the
-     * <code>PropertyDescriptor[]</code> for the bean property that matches
+     * {@code PropertyDescriptor[]} for the bean property that matches
      * the column name.  If no bean property was found for a column, the
-     * position is set to <code>PROPERTY_NOT_FOUND</code>.
+     * position is set to {@code PROPERTY_NOT_FOUND}.
      *
-     * @param rsmd The <code>ResultSetMetaData</code> containing column
+     * @param rsmd The {@code ResultSetMetaData} containing column
      * information.
      *
      * @param props The bean property descriptors.
@@ -397,19 +393,19 @@ public class BeanProcessor {
     }
 
     /**
-     * Convert a <code>ResultSet</code> column into an object.  Simple
-     * implementations could just call <code>rs.getObject(index)</code> while
+     * Convert a {@code ResultSet} column into an object.  Simple
+     * implementations could just call {@code rs.getObject(index)} while
      * more complex implementations could perform type manipulation to match
      * the column's type to the bean property type.
      *
      * <p>
-     * This implementation calls the appropriate <code>ResultSet</code> getter
+     * This implementation calls the appropriate {@code ResultSet} getter
      * method for the given property type to perform the type conversion.  If
      * the property type doesn't match one of the supported
-     * <code>ResultSet</code> types, <code>getObject</code> is called.
+     * {@code ResultSet} types, {@code getObject} is called.
      * </p>
      *
-     * @param rs The <code>ResultSet</code> currently being processed.  It is
+     * @param rs The {@code ResultSet} currently being processed.  It is
      * positioned on a valid row before being passed into this method.
      *
      * @param index The current column index being processed.
@@ -419,8 +415,8 @@ public class BeanProcessor {
      *
      * @throws SQLException if a database access error occurs
      *
-     * @return The object from the <code>ResultSet</code> at the given column
-     * index after optional type processing or <code>null</code> if the column
+     * @return The object from the {@code ResultSet} at the given column
+     * index after optional type processing or {@code null} if the column
      * value was SQL NULL.
      */
     protected Object processColumn(ResultSet rs, int index, Class propType)

@@ -18,16 +18,14 @@
 package com.haulmont.cuba.desktop.exception;
 
 /**
- * Interface of all unhandled exception handlers in desktop UI<br/>
- *
- *
+ * Interface of all unhandled exception handlers in desktop UI<br>
  */
 public interface ExceptionHandler {
 
     /**
      * Handles exception if can
      *
-     * @param thread
+     * @param thread thread
      * @param exception exception
      * @return true if the exception has been handled, false otherwise
      */

@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Validator that applies JSR303 rules for {@link Field} instance using {@link BeanValidation}. <br/>
+ * Validator that applies JSR303 rules for {@link Field} instance using {@link BeanValidation}. <br>
  * Automatically added on {@link DatasourceComponent#setDatasource(Datasource, String)} call if property enclosing class
  * has {@link BeanValidation} constraints.
  */

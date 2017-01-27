@@ -23,23 +23,23 @@ import javax.annotation.Nullable;
 
 /**
  * Class that encapsulates an information needed to load an entity instance.
- * <p/> This information has the following string representation:
- * <code>metaclassName-id[-viewName]</code>, e.g.:
+ * <br>
+ * This information has the following string representation:
+ * {@code metaclassName-id[-viewName]}, e.g.:
  * <pre>
  * sec$User-60885987-1b61-4247-94c7-dff348347f93
  * sec$Role-0c018061-b26f-4de2-a5be-dff348347f93-role.browse
  * ref$Seller-101
  * ref$Currency-{usd}
  * </pre>
- * <p/> viewName part is optional.
- * <p/> id part should be:
+ * <br> viewName part is optional.
+ * <br> id part should be:
  * <ul>
  *     <li>For UUID keys: canonical UUID representation with 5 groups of hex digits delimited by dashes</li>
  *     <li>For numeric keys: decimal representation of the number</li>
  *     <li>For string keys: the key surrounded by curly brackets, e.g {mykey}</li>
  * </ul>
  * Use {@link EntityLoadInfoBuilder#parse(String)} and {@link #toString()} methods to convert from/to a string.
- *
  */
 public class EntityLoadInfo {
 

@@ -25,17 +25,17 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Defines an instance name format pattern in the form {0}|{1}, where
  * <ul>
- *     <li/> {0} - format string as for {@link String#format}, or a name of this object method, returning string,
- *     with <code>#</code> symbol in the beginning.
- *     <li/> {1} - comma-separated list of field names, corresponding to format {0}. These fields are also used for
- *     defining a <code>_minimal</code> view of this entity.
+ *     <li>{0} - format string as for {@link String#format}, or a name of this object method, returning string,
+ *     with {@code #} symbol in the beginning.</li>
+ *     <li>{1} - comma-separated list of field names, corresponding to format {0}. These fields are also used for
+ *     defining a {@code _minimal} view of this entity.</li>
  * </ul>
  * Extra spaces between parts are not allowed.
  *
- * <p/> Format string example: <code>@NamePattern("%s : %s|name,address")</code>
+ * <br> Format string example: {@code @NamePattern("%s : %s|name,address")}
  *
- * <p/> Method example:
- * <code>@NamePattern("#getCaption|login,name")</code>
+ * <br> Method example:
+ * {@code @NamePattern("#getCaption|login,name")}
  * <pre>
  * public class User extends StandardEntity {
  * ...
@@ -49,7 +49,6 @@ import java.lang.annotation.RetentionPolicy;
  *     }
  * }
  * </pre>
- *
  */
 @Target({java.lang.annotation.ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

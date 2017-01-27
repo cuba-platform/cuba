@@ -29,13 +29,13 @@ import java.util.Set;
 /**
  * <p>Handle focus traversing in table</p>
  * <p>Supports focus forward, backward, up and down navigation</p>
- * <p>Keys:
+ * Keys:
+ * <ul>
  * <li>TAB - next cell/control</li>
  * <li>SHIFT+TAB - previous cell/control</li>
  * <li>CTRL+TAB - next component after table</li>
  * <li>CTRL+SHIFT+TAB - previous component before table</li>
- * </p>
- *
+ * </ul>
  */
 public class TableFocusManager {
 

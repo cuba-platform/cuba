@@ -39,7 +39,7 @@ public interface CubaSideMenuClientRpc extends ClientRpc {
     /**
      * Update badges of items
      *
-     * @param badgeUpdates Map item id -> new badge text
+     * @param badgeUpdates Map item id -&gt; new badge text
      */
     void updateBadge(Map<String, String> badgeUpdates);
 }

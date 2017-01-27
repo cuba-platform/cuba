@@ -51,7 +51,7 @@ import java.util.UUID;
 
 /**
  * Handles links from outside of the application.
- * <p/> This bean is used particularly when a request URL contains one of
+ * <br> This bean is used particularly when a request URL contains one of
  * {@link com.haulmont.cuba.web.WebConfig#getLinkHandlerActions()} actions.
  */
 @org.springframework.stereotype.Component(LinkHandler.NAME)

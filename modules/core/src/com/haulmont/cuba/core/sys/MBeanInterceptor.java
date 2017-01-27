@@ -21,13 +21,12 @@ import org.slf4j.LoggerFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 /**
- * Intercepts invocations of methods defined in <code>*MBean</code> interfaces.
- * <p/> Sets the thread context classloader to the webapp classloader and logs exceptions.
- *
+ * Intercepts invocations of methods defined in {@code *MBean} interfaces.
+ * <br> Sets the thread context classloader to the webapp classloader and logs exceptions.
  */
 public class MBeanInterceptor {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private Logger log = LoggerFactory.getLogger(MBeanInterceptor.class);
 
     @SuppressWarnings("UnusedDeclaration")
     private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {

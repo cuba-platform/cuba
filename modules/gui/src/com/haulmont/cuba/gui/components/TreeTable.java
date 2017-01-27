@@ -36,7 +36,7 @@ public interface TreeTable<E extends Entity> extends Table<E> {
      * Expand tree table including specified level
      *
      * @param level level of TreeTable nodes to expand, if passed level = 1 then root items will be expanded
-     * @throws IllegalArgumentException if level < 1
+     * @throws IllegalArgumentException if level &lt; 1
      */
     void expandUpTo(int level);
 

@@ -25,12 +25,11 @@ import javax.annotation.Nullable;
 /**
  * Adapter class for {@link DatasourceListener}. Use it if you need to implement only few methods.
  *
- * @deprecated Use new listeners <br/>
- * {@link com.haulmont.cuba.gui.data.Datasource.ItemChangeListener} <br/>
- * {@link com.haulmont.cuba.gui.data.Datasource.ItemPropertyChangeListener} <br/>
- * {@link com.haulmont.cuba.gui.data.Datasource.StateChangeListener} <br/>
+ * @deprecated Use new listeners <br>
+ * {@link com.haulmont.cuba.gui.data.Datasource.ItemChangeListener} <br>
+ * {@link com.haulmont.cuba.gui.data.Datasource.ItemPropertyChangeListener} <br>
+ * {@link com.haulmont.cuba.gui.data.Datasource.StateChangeListener} <br>
  * {@link com.haulmont.cuba.gui.data.CollectionDatasource.CollectionChangeListener}
- *
  */
 @Deprecated
 public class DsListenerAdapter<T extends Entity> implements DatasourceListener<T> {

@@ -26,9 +26,12 @@ import java.io.OutputStream;
  */
 public interface Serialization {
     /**
-     * Serialize object {@param object} to stream {@param os}.
+     * Serialize object {@code object} to stream {@code os}.
      * Stream isn't closed automatically after serialization.
      * User code should be close stream correctly
+     *
+     * @param object object
+     * @param os output stream
      */
     void serialize(Object object, OutputStream os);
 

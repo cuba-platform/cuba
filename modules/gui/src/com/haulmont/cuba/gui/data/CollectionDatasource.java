@@ -33,7 +33,6 @@ import java.util.Map;
  * @param <K> type of entity ID
  *
  * @see #setQuery(String)
- *
  */
 public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource<T> {
 
@@ -108,11 +107,11 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     void updateItem(T item);
 
     /**
-     * Suspend invocation of <code>collectionChanged</code> method of registered {@link CollectionChangeListener}s.
+     * Suspend invocation of {@code collectionChanged} method of registered {@link CollectionChangeListener}s.
      * It makes sense in case of massive updates of the datasource by {@link #addItem(com.haulmont.cuba.core.entity.Entity)}
      * or similar methods.
-     * After that, <code>collectionChanged</code> will be invoked once on {@link #resumeListeners()} call.
-     * <p/>Usage example:
+     * After that, {@code collectionChanged} will be invoked once on {@link #resumeListeners()} call.
+     * <br>Usage example:
      * <pre>
      * ds.suspendListeners();
        try {
@@ -127,11 +126,11 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     void suspendListeners();
 
     /**
-     * Resume invocation of <code>collectionChanged</code> method of registered {@link CollectionChangeListener}s
+     * Resume invocation of {@code collectionChanged} method of registered {@link CollectionChangeListener}s
      * after calling {@link #suspendListeners()}.
-     * It will call <code>collectionChanged</code> just once, doesn't matter how many updates were issued
+     * It will call {@code collectionChanged} just once, doesn't matter how many updates were issued
      * since the previous {@link #suspendListeners()} call.
-     * <p/>This method should be called in <code>finally</code> section.
+     * <br>This method should be called in {@code finally} section.
      */
     void resumeListeners();
 
@@ -179,15 +178,15 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
 
     /**
      * Set query string which is used to load data. Implementation-dependent (JPQL, Groovy, etc.).
-     * <p/> The query may use the following parameters, distinguished by prefix:
+     * <br> The query may use the following parameters, distinguished by prefix:
      * <ul>
-     * <li><code>ds$</code> - current item in the specified datasource
-     * <li><code>component$</code> - value of the specified UI component
-     * <li><code>param$</code> - value of parameter passed to the window when opening it
-     * <li><code>session$</code> - <code>userId</code> represents current or substituted user ID,
-     * <code>userLogin</code> represents current or substituted user login in lower case,
+     * <li>{@code ds$} - current item in the specified datasource
+     * <li>{@code component$} - value of the specified UI component
+     * <li>{@code param$} - value of parameter passed to the window when opening it
+     * <li>{@code session$} - {@code userId} represents current or substituted user ID,
+     * {@code userLogin} represents current or substituted user login in lower case,
      * any other string represents a user session attribute with this name
-     * <li><code>custom$</code> - value of parameter passed to the {@link #refresh(java.util.Map)} method 
+     * <li>{@code custom$} - value of parameter passed to the {@link #refresh(java.util.Map)} method
      * </ul>
      */
     void setQuery(String query);
@@ -213,7 +212,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
 
     /**
      * Set max number of rows. 0 in case of no limits.
-     * <p/> Implementations may or may not take this parameter into account.
+     * <br> Implementations may or may not take this parameter into account.
      */
     void setMaxResults(int maxResults);
 
@@ -231,13 +230,13 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
 
     /**
      * Whether to refresh datasource on changing value of a component which it depends on
-     * (through <code>component$</code> parameter)
+     * (through {@code component$} parameter)
      */
     boolean getRefreshOnComponentValueChange();
 
     /**
      * Whether to refresh datasource on changing value of a component which it depends on
-     * (through <code>component$</code> parameter)
+     * (through {@code component$} parameter)
      */
     void setRefreshOnComponentValueChange(boolean refresh);
 
@@ -366,9 +365,9 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     }
 
     /**
-     * CollectionDatasource that supports defferred refresh.
+     * CollectionDatasource that supports deferred refresh.
      * When it is in suspended state, it doesn't actually refresh on refreshIfNotSuspended() calls, but refreshes
-     * once after switch to not supended.
+     * once after switch to not suspended.
      */
     interface Suspendable<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
 

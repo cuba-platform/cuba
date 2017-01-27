@@ -29,9 +29,8 @@ import java.text.DecimalFormat;
 
 /**
  * Number formatter to be used in screen descriptors and controllers.
- * <p/> If defined in XML together with <code>format</code> attribute, uses this format, otherwise formats by means of
+ * <br> If defined in XML together with {@code format} attribute, uses this format, otherwise formats by means of
  * {@link Datatype#format(Object, java.util.Locale)}.
- *
  */
 public class NumberFormatter implements Formatter<Number> {
 

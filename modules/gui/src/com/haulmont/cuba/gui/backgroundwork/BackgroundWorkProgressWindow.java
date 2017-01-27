@@ -33,17 +33,17 @@ import java.util.Map;
 
 /**
  * Window that indicates progress of the background task, shows progress bar and processed items' message.
- * <p/>
+ * <br>
  * Background task should have &lt;T extends Number&gt; as the progress measure unit. Progress measure passed to the publish() method
  * is displayed in processed items'/percents' message. Total number of items should be specified before task execution.
- * <p/>
+ * <br>
  * <p>On error:
  * <ul>
  * <li>Executes handle exception in background task</li>
  * <li>Closes background window</li>
  * <li>Shows Warning message if for background task specified owner window</li>
  * </ul>
- * <p/>
+ * <br>
  *
  * @param <T> measure unit which shows progress of task
  * @param <V> result type

@@ -157,7 +157,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
     }
 
     /**
-     * Join task thread to current <br/>
+     * Join task thread to current <br>
      * <b>Caution!</b> Call this method only from synchronous gui action
      *
      * @return Task result

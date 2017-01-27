@@ -58,7 +58,7 @@ public interface GroupTable<E extends Entity> extends Table<E> {
      */
     boolean isShowItemsCountForGroup();
     /**
-     * Show or hide items count for GroupTable groups. <br/>
+     * Show or hide items count for GroupTable groups. <br>
      * Default value is true.
      */
     void setShowItemsCountForGroup(boolean showItemsCountForGroup);

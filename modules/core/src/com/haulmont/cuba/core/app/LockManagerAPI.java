@@ -33,9 +33,9 @@ public interface LockManagerAPI {
      * Try to lock an arbitrary object.
      * @param name locking object name
      * @param id locking object ID
-     * @return <li>null in case of successful lock,
-     * <li>{@link com.haulmont.cuba.core.global.LockNotSupported} instance in case of locking is not configured for this object,
-     * <li>{@link LockInfo} instance in case of this object is already locked by someone
+     * @return - null in case of successful lock,<br>
+     * - {@link com.haulmont.cuba.core.global.LockNotSupported} instance in case of locking is not configured for this object,<br>
+     * - {@link LockInfo} instance in case of this object is already locked by someone
      */
     @Nullable
     LockInfo lock(String name, String id);
@@ -43,9 +43,9 @@ public interface LockManagerAPI {
     /**
      * Try to lock an entity.
      * @param entity entity instance
-     * @return <li>null in case of successful lock,
-     * <li>{@link com.haulmont.cuba.core.global.LockNotSupported} instance in case of locking is not configured for this entity,
-     * <li>{@link LockInfo} instance in case of this entity is already locked by someone
+     * @return - null in case of successful lock,<br>
+     * - {@link com.haulmont.cuba.core.global.LockNotSupported} instance in case of locking is not configured for this entity,<br>
+     * - {@link LockInfo} instance in case of this entity is already locked by someone
      */
     @Nullable
     LockInfo lock(Entity entity);
@@ -67,9 +67,9 @@ public interface LockManagerAPI {
      * Get locking status for particular object
      * @param name locking object name
      * @param id locking object ID
-     * @return <li>null in case of no lock,
-     * <li>{@link com.haulmont.cuba.core.global.LockNotSupported} instance in case of locking is not configured for this object,
-     * <li>{@link LockInfo} instance in case of this object is locked by someone
+     * @return - null in case of no lock,<br>
+     * - {@link com.haulmont.cuba.core.global.LockNotSupported} instance in case of locking is not configured for this object,<br>
+     * - {@link LockInfo} instance in case of this object is locked by someone
      */
     @Nullable
     LockInfo getLockInfo(String name, String id);

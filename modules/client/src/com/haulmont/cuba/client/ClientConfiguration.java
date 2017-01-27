@@ -25,7 +25,6 @@ import com.haulmont.cuba.core.global.Configuration;
  *
  * <p>Adds method {@link #getConfigCached(Class)} to obtain config proxies that are more effective in server invocations
  * at the cost of possible stale DB-stored parameter values.</p>
- *
  */
 public interface ClientConfiguration extends Configuration {
 

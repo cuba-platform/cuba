@@ -21,9 +21,8 @@ import com.vaadin.event.ConnectorActionManager;
 import com.vaadin.server.ClientConnector;
 
 /**
- * Keeps track of the ShortcutListeners added to component, and manages the painting and handling as well. <br/>
+ * Keeps track of the ShortcutListeners added to component, and manages the painting and handling as well. <br>
  * Paints actions with ShortcutListener to separate 'shortcuts' json tag.
- *
  */
 public class ShortcutActionManager extends ConnectorActionManager {
 

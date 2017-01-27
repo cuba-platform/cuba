@@ -31,7 +31,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 /**
- * Invokes IdpService to check if IDP sessions or tickets are expired. <br/>
+ * Invokes IdpService to check if IDP sessions or tickets are expired. <br>
  * Performs request to logout URLs of service providers registered in {@link IdpConfig#getServiceProviderLogoutUrls()}.
  */
 @Component("cuba_IdpSessionsWatchDog")

@@ -39,7 +39,7 @@ public abstract class AppConfig {
 
     /**
      * Current client type.
-     * <p/> Set up through the app property {@link #CLIENT_TYPE_PROP} on a client tier.
+     * <br> Set up through the app property {@link #CLIENT_TYPE_PROP} on a client tier.
      * @return  current client type
      */
     public static ClientType getClientType() {
@@ -48,12 +48,12 @@ public abstract class AppConfig {
 
     /**
      * Main messages pack used by GenericUI components and application code.
-     * <p/> Set up through app property <code>cuba.messagePack</code> depending on the client type and set of base projects.
+     * <br> Set up through app property {@code cuba.messagePack} depending on the client type and set of base projects.
      *
-     * <p/> This method is outdated but not deprecated because it is used in lots of places. Preferred method to
+     * <br> This method is outdated but not deprecated because it is used in lots of places. Preferred method to
      * obtain the main message pack is {@link com.haulmont.cuba.core.global.Messages#getMainMessagePack()}.
      *
-     * <p/> To obtain a message from the main message pack use {@link com.haulmont.cuba.core.global.Messages#getMainMessage(String)}.
+     * <br> To obtain a message from the main message pack use {@link com.haulmont.cuba.core.global.Messages#getMainMessage(String)}.
      */
     public static String getMessagesPack() {
         Messages messages = AppBeans.get(Messages.NAME);

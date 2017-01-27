@@ -232,7 +232,7 @@ public interface FileUploadField extends UploadField, Field {
     }
 
     /**
-     * Callback interface which is invoked by the {@link FileUploadField} before value clearing when user use clear button. <br/>
+     * Callback interface which is invoked by the {@link FileUploadField} before value clearing when user use clear button. <br>
      * Listener can prevent value clearing using {@link BeforeValueClearEvent#preventClearAction()}.
      *
      * @see #setShowClearButton(boolean)

@@ -400,9 +400,9 @@ public interface PickerField extends Field, Component.ActionsHolder {
          *
          * @param actionId  ID of action that closed the screen. The following values are possible:
          *                  <ul>
-         *                  <li/>select - user selected some items
-         *                  <li/>cancel - user pressed Cancel button
-         *                  <li/>close - user closed the lookup screen by other means
+         *                  <li>select - user selected some items</li>
+         *                  <li>cancel - user pressed Cancel button</li>
+         *                  <li>close - user closed the lookup screen by other means</li>
          *                  </ul>
          */
         public void afterCloseLookup(String actionId) {
@@ -492,9 +492,9 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
         /**
          * Set the edit screen ID explicitly. By default an edit screen ID is inferred from the entity metaclass
-         * name by adding suffix <code>.edit</code> to it.
+         * name by adding suffix {@code .edit} to it.
          *
-         * @param editScreen  edit screen ID, e.g. <code>sec$User.edit</code>
+         * @param editScreen  edit screen ID, e.g. {@code sec$User.edit}
          */
         public void setEditScreen(String editScreen) {
             this.editScreen = editScreen;

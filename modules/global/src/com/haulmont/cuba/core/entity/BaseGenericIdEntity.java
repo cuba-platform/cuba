@@ -39,7 +39,8 @@ import java.util.UUID;
 
 /**
  * Base class for persistent entities.
- * <p>When choosing a base class for your entity, consider more specific base classes defining the primary key type:
+ * <br>
+ * When choosing a base class for your entity, consider more specific base classes defining the primary key type:
  * <ul>
  * <li>{@link BaseUuidEntity}</li>
  * <li>{@link BaseLongIdEntity}</li>
@@ -47,7 +48,6 @@ import java.util.UUID;
  * <li>{@link BaseStringIdEntity}</li>
  * </ul>
  * or most commonly used {@link StandardEntity}.
- * </p>
  */
 @MappedSuperclass
 @com.haulmont.chile.core.annotations.MetaClass(name = "sys$BaseGenericIdEntity")

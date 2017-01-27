@@ -24,7 +24,6 @@ import java.util.Map;
 
 /**
  * Provides access to frame parameters and component values.
- *
  */
 public interface FrameContext {
 
@@ -32,8 +31,8 @@ public interface FrameContext {
 
     /**
      * For a window contains parameters passed to the window on opening.
-     * <p/> For a frame, linked to the window in XML, contains owning window parameters.
-     * <p/> For a frame, opened dynamically by {@code openFrame()} method contains parameters, passed to the method.
+     * <br> For a frame, linked to the window in XML, contains owning window parameters.
+     * <br> For a frame, opened dynamically by {@code openFrame()} method contains parameters, passed to the method.
      */
     Map<String, Object> getParams();
 

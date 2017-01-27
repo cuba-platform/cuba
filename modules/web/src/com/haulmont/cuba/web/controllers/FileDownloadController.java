@@ -60,9 +60,8 @@ import java.util.UUID;
 
 /**
  * Handles file download requests to the web client.
- * <p/> This controller is deployed in Spring context defined by <code>cuba.dispatcherSpringContextConfig</code>
+ * <br> This controller is deployed in Spring context defined by {@code cuba.dispatcherSpringContextConfig}
  * app property.
- *
  */
 @Controller
 public class FileDownloadController {

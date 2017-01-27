@@ -106,7 +106,7 @@ public interface UploadField extends Component, Component.HasCaption, Component.
     String getAccept();
 
     /**
-     * Sets the mask for files to filter them in the file selection dialog.<br/>
+     * Sets the mask for files to filter them in the file selection dialog.<br>
      * Example: <pre>{@code fileUpload.setAccept(".png,.jpeg")}</pre>
      *
      * @param accept comma separated types of files

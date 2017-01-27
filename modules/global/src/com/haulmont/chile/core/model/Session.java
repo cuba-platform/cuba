@@ -22,10 +22,9 @@ import java.util.Collection;
 
 /**
  * Metadata model entry point.
- * <p/>Metadata consists of a set of interrelated {@link MetaClass} instances.
- * <p/>The whole metadata is split into named models. One can obtain {@link MetaClass} instances through the
+ * <br>Metadata consists of a set of interrelated {@link MetaClass} instances.
+ * <br>The whole metadata is split into named models. One can obtain {@link MetaClass} instances through the
  * {@link MetaModel} references or directly from the Session.
- *
  */
 public interface Session {
 

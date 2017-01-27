@@ -24,9 +24,8 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
- * Simple factory bean for creation {@link CubaAuthProvider} by class from {@link WebAuthConfig#getExternalAuthenticationProviderClass()}.<br/>
+ * Simple factory bean for creation {@link CubaAuthProvider} by class from {@link WebAuthConfig#getExternalAuthenticationProviderClass()}.<br>
  * CAUTION: We do not use placeholder in class parameter for bean due to DEBUG errors on Spring context start.
- *
  */
 @Component("cuba_AuthProviderFactory")
 public class CubaAuthProviderFactory {

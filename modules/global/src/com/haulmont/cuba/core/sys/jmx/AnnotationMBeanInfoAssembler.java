@@ -39,15 +39,14 @@ import java.util.Map;
 /**
  * This assembler is a hybrid of {@link org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler}
  * and {@link org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler}.
- * <br/>
+ * <br>
  * It auto-detects jmx interface either by *-MBean naming convention or by looking for @ManagedResource annotated interface.
  * Any getter, setter or operation of jmx interface become JMX-exposed.
  * Bean, operation, operation parameter and attribute descriptions can be customized by using spring annotations
  * (like for MetadataMBeanInfoAssembler).
- * <br/>
+ * <br>
  * If getter or setter is annotated as @ManagedOperation, it is considered as heavy operation.
  * Such method is exposed as operation, not as attribute accessor.
- *
  */
 public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAssembler {
 
@@ -161,7 +160,7 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
 
     /**
      * Reads managed resource description from the source level metadata.
-     * Returns an empty <code>String</code> if no description can be found.
+     * Returns an empty {@code String} if no description can be found.
      */
     @Override
     protected String getDescription(Object managedBean, String beanKey) {
@@ -203,7 +202,7 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
     }
 
     /**
-     * Retrieves the description for the supplied <code>Method</code> from the
+     * Retrieves the description for the supplied {@code Method} from the
      * metadata. Uses the method name is no description is present in the metadata.
      */
     @Override
@@ -229,8 +228,8 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
     }
 
     /**
-     * Reads <code>MBeanParameterInfo</code> from the <code>ManagedOperationParameter</code>
-     * attributes attached to a method. Returns an empty array of <code>MBeanParameterInfo</code>
+     * Reads {@code MBeanParameterInfo} from the {@code ManagedOperationParameter}
+     * attributes attached to a method. Returns an empty array of {@code MBeanParameterInfo}
      * if no attributes are found.
      */
     @Override
@@ -254,7 +253,7 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
     }
 
     /**
-     * Reads the {@link ManagedNotification} metadata from the <code>Class</code> of the managed resource
+     * Reads the {@link ManagedNotification} metadata from the {@code Class} of the managed resource
      * and generates and returns the corresponding {@link javax.management.modelmbean.ModelMBeanNotificationInfo} metadata.
      */
     @Override
@@ -274,10 +273,10 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
     }
 
     /**
-     * Adds descriptor fields from the <code>ManagedResource</code> attribute
-     * to the MBean descriptor. Specifically, adds the <code>currencyTimeLimit</code>,
-     * <code>persistPolicy</code>, <code>persistPeriod</code>, <code>persistLocation</code>
-     * and <code>persistName</code> descriptor fields if they are present in the metadata.
+     * Adds descriptor fields from the {@code ManagedResource} attribute
+     * to the MBean descriptor. Specifically, adds the {@code currencyTimeLimit},
+     * {@code persistPolicy}, {@code persistPeriod}, {@code persistLocation}
+     * and {@code persistName} descriptor fields if they are present in the metadata.
      */
     @Override
     protected void populateMBeanDescriptor(Descriptor desc, Object managedBean, String beanKey) {
@@ -312,7 +311,7 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
     }
 
     /**
-     * Adds descriptor fields from the <code>ManagedAttribute</code> attribute or the <code>ManagedMetric</code> attribute
+     * Adds descriptor fields from the {@code ManagedAttribute} attribute or the {@code ManagedMetric} attribute
      * to the attribute descriptor.
      */
     @Override
@@ -380,8 +379,8 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
     }
 
     /**
-     * Adds descriptor fields from the <code>ManagedAttribute</code> attribute
-     * to the attribute descriptor. Specifically, adds the <code>currencyTimeLimit</code>
+     * Adds descriptor fields from the {@code ManagedAttribute} attribute
+     * to the attribute descriptor. Specifically, adds the {@code currencyTimeLimit}
      * descriptor field if it is present in the metadata.
      */
     @Override
@@ -394,11 +393,11 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
     }
 
     /**
-     * Determines which of two <code>int</code> values should be used as the value
+     * Determines which of two {@code int} values should be used as the value
      * for an attribute descriptor. In general, only the getter or the setter will
      * be have a non-negative value so we use that value. In the event that both values
      * are non-negative, we use the greater of the two. This method can be used to
-     * resolve any <code>int</code> valued descriptor where there are two possible values.
+     * resolve any {@code int} valued descriptor where there are two possible values.
      *
      * @param getter the int value associated with the getter for this attribute
      * @param setter the int associated with the setter for this attribute

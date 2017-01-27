@@ -36,9 +36,10 @@ public interface UserSessionsAPI {
 
     /**
      * Get user session from cache, updating its "last used" timestamp.
+     *
      * @param id        session id
      * @param propagate whether to propagate the new "last used" timestamp to the cluster
-     * @return          user session instance or null if not found
+     * @return user session instance or null if not found
      */
     UserSession get(UUID id, boolean propagate);
 
@@ -60,7 +61,7 @@ public interface UserSessionsAPI {
     void killSession(UUID id);
 
     /**
-     * Finds sessions with attribute with name {@param attributeName} and value equal to passed {@param attributeValue}
+     * Finds sessions with attribute with name {@code attributeName} and value equal to passed {@code attributeValue}
      *
      * @param attributeName attribute name
      * @param attributeValue attribute value
@@ -88,10 +89,10 @@ public interface UserSessionsAPI {
      * Set user session ping timeout in cluster.
      * If ping performed {@link com.haulmont.cuba.security.app.UserSessions#get},
      * user session sends in cluster only after specified timeout
+     *
      * @param timeout in seconds
      */
     void setSendTimeoutSec(int timeout);
-
 
     /**
      * Evict timed out sessions from the cache.

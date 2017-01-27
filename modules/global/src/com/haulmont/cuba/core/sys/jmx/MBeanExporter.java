@@ -29,10 +29,10 @@ import java.util.Map;
 
 /**
  * Tweaked MBean exporter.
- * <br/>
+ * <br>
  * Difference from spring one is that it does not try to expose bean as {@link javax.management.StandardMBean}
- * if it complies to MyObject -> MyObjectMBean naming scheme.
- * <br/>
+ * if it complies to MyObject -&gt; MyObjectMBean naming scheme.
+ * <br>
  * Instead it uses {@link AnnotationMBeanInfoAssembler} to construct MBean descriptor for every bean.
  */
 public class MBeanExporter extends org.springframework.jmx.export.MBeanExporter {

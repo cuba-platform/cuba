@@ -26,7 +26,6 @@ import com.haulmont.cuba.core.config.defaults.DefaultInt;
 
 /**
  * Configuration parameters interface used for sending emails.
- *
  */
 @Source(type = SourceType.DATABASE)
 public interface EmailerConfig extends Config {
@@ -105,7 +104,7 @@ public interface EmailerConfig extends Config {
     /**
      * How many scheduler ticks to skip after server startup.
      * Actual sending will start with the next call.
-     * <p/> This reduces the server load on startup.
+     * <br> This reduces the server load on startup.
      */
     @Property("cuba.email.delayCallCount")
     @Default("2")

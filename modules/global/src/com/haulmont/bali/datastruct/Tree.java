@@ -18,11 +18,11 @@ package com.haulmont.bali.datastruct;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * @param <T>
+ * @param <T> type of tree node data
  */
 public class Tree<T> implements Serializable {
     private static final long serialVersionUID = 701368293843044209L;
@@ -33,7 +33,7 @@ public class Tree<T> implements Serializable {
     }
 
     public Tree(final Node<T> root) {
-        this.rootNodes = new ArrayList<>(Arrays.asList(root));
+        this.rootNodes = new ArrayList<>(Collections.singletonList(root));
     }
 
     public Tree(List<Node<T>> rootNodes) {
@@ -72,10 +72,10 @@ public class Tree<T> implements Serializable {
     }
 
     /**
-     * Returns the Tree<T> as a List of Node<T> objects. The elements of the
+     * Returns the {@code Tree<T>} as a List of {@code Node<T>} objects. The elements of the
      * List are generated from a pre-order traversal of the tree.
      *
-     * @return a List<Node<T>>.
+     * @return a {@code List<Node<T>>}.
      */
     public List<Node<T>> toList() {
         List<Node<T>> list = new ArrayList<>();
@@ -100,7 +100,7 @@ public class Tree<T> implements Serializable {
     /**
      * Walks the Tree in pre-order style. This is a recursive method, and is
      * called from the toList() method with the root element as the first
-     * argument. It appends to the second argument, which is passed by reference     * as it recurses down the tree.
+     * argument. It appends to the second argument, which is passed by reference as it recurses down the tree.
      *
      * @param element the starting element.
      * @param list    the output of the walk.

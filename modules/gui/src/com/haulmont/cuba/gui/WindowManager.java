@@ -74,7 +74,7 @@ public abstract class WindowManager {
 
     /**
      * How to open a screen: {@link #NEW_TAB}, {@link #THIS_TAB}, {@link #DIALOG}, {@link #NEW_WINDOW}.
-     * <p/>
+     * <br>
      * You can set additional parameters for window using builder style methods:
      * <pre>
      * openEditor("sales$Customer.edit", customer,
@@ -84,7 +84,7 @@ public abstract class WindowManager {
     public final static class OpenType {
         /**
          * Open a screen in new tab of the main window.
-         * <p/> In Web Client with <code>AppWindow.Mode.SINGLE</code> the new screen replaces current screen.
+         * <br> In Web Client with {@code AppWindow.Mode.SINGLE} the new screen replaces current screen.
          */
         public static final OpenType NEW_TAB = new OpenType(OpenMode.NEW_TAB, false);
 
@@ -281,7 +281,7 @@ public abstract class WindowManager {
     public enum OpenMode {
         /**
          * Open a screen in new tab of the main window.
-         * <p/> In Web Client with <code>AppWindow.Mode.SINGLE</code> the new screen replaces current screen.
+         * <br> In Web Client with {@code AppWindow.Mode.SINGLE} the new screen replaces current screen.
          */
         NEW_TAB,
         /**
@@ -1069,53 +1069,53 @@ public abstract class WindowManager {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Show notification with {@link Frame.NotificationType#HUMANIZED}. <br/>
-     * Supports line breaks (<code>\n</code>).
+     * Show notification with {@link Frame.NotificationType#HUMANIZED}. <br>
+     * Supports line breaks ({@code \n}).
      *
      * @param caption text
      */
     public abstract void showNotification(String caption);
 
     /**
-     * Show notification. <br/>
-     * Supports line breaks (<code>\n</code>).
+     * Show notification. <br>
+     * Supports line breaks ({@code \n}).
      *
      * @param caption text
      * @param type    defines how to display the notification.
-     *                Don't forget to escape data from the database in case of <code>*_HTML</code> types!
+     *                Don't forget to escape data from the database in case of {@code *_HTML} types!
      */
     public abstract void showNotification(String caption, Frame.NotificationType type);
 
     /**
-     * Show notification with caption description. <br/>
-     * Supports line breaks (<code>\n</code>).
+     * Show notification with caption description. <br>
+     * Supports line breaks ({@code \n}).
      *
      * @param caption     caption
      * @param description text
      * @param type        defines how to display the notification.
-     *                    Don't forget to escape data from the database in case of <code>*_HTML</code> types!
+     *                    Don't forget to escape data from the database in case of {@code *_HTML} types!
      */
     public abstract void showNotification(String caption, String description, Frame.NotificationType type);
 
     /**
-     * Show message dialog with title and message. <br/>
-     * Supports line breaks (<code>\n</code>) for non HTML messageType.
+     * Show message dialog with title and message. <br>
+     * Supports line breaks ({@code \n}) for non HTML messageType.
      *
      * @param title       dialog title
      * @param message     text
      * @param messageType defines how to display the dialog.
-     *                    Don't forget to escape data from the database in case of <code>*_HTML</code> types!
+     *                    Don't forget to escape data from the database in case of {@code *_HTML} types!
      */
     public abstract void showMessageDialog(String title, String message, Frame.MessageType messageType);
 
     /**
-     * Show options dialog with title and message. <br/>
-     * Supports line breaks (<code>\n</code>) for non HTML messageType.
+     * Show options dialog with title and message. <br>
+     * Supports line breaks ({@code \n}) for non HTML messageType.
      *
      * @param title       dialog title
      * @param message     text
      * @param messageType defines how to display the dialog.
-     *                    Don't forget to escape data from the database in case of <code>*_HTML</code> types!
+     *                    Don't forget to escape data from the database in case of {@code *_HTML} types!
      * @param actions     available actions
      */
     public abstract void showOptionDialog(String title, String message, Frame.MessageType messageType, Action[] actions);
@@ -1126,15 +1126,15 @@ public abstract class WindowManager {
      * Open a web page in browser.
      * @param url       URL of the page
      * @param params    optional parameters.
-     * <p/>The following parameters are recognized by Web client:
+     * <br>The following parameters are recognized by Web client:
      * <ul>
-     * <li/> <code>target</code> - String value used as the target name in a
+     * <li>{@code target} - String value used as the target name in a
      * window.open call in the client. This means that special values such as
-     * "_blank", "_self", "_top", "_parent" have special meaning. If not specified, "_blank" is used.
-     * <li/> <code>width</code> - Integer value specifying the width of the browser window in pixels
-     * <li/> <code>height</code> - Integer value specifying the height of the browser window in pixels
-     * <li/> <code>border</code> - String value specifying the border style of the window of the browser window.
-     * Possible values are "DEFAULT", "MINIMAL", "NONE".
+     * "_blank", "_self", "_top", "_parent" have special meaning. If not specified, "_blank" is used.</li>
+     * <li> {@code width} - Integer value specifying the width of the browser window in pixels</li>
+     * <li> {@code height} - Integer value specifying the height of the browser window in pixels</li>
+     * <li> {@code border} - String value specifying the border style of the window of the browser window.
+     * Possible values are "DEFAULT", "MINIMAL", "NONE".</li>
      * </ul>
      * Desktop client doesn't support any parameters and just ignores them.
      */

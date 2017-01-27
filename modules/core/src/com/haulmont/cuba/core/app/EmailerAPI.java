@@ -28,13 +28,12 @@ import java.util.List;
 
 /**
  * Provides application with emailing functionality.
- * <br/>
+ * <br>
  * Sending email can be synchronous (caller's thread is blocked until email is delivered to SMTP server)
  * or asynchronous (email is persisted in a DB queue and sent later by scheduled task).
- * <br/>
+ * <br>
  * In order to send emails asynchronously, you should register a scheduled task that periodically invokes
  * {@link #processQueuedEmails()} method.
- *
  */
 public interface EmailerAPI {
 

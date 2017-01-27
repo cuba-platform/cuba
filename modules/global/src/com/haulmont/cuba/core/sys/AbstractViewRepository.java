@@ -49,10 +49,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Base implementation of the {@link ViewRepository}. Contains methods to store {@link View} objects and deploy
- * them from XML.
- * <p/>
- * <p/> Don't replace this class completely, because the framework uses it directly.
- *
+ * them from XML. <br>
+ * <br> Don't replace this class completely, because the framework uses it directly.
  */
 public class AbstractViewRepository implements ViewRepository {
 
@@ -259,7 +257,7 @@ public class AbstractViewRepository implements ViewRepository {
                 keySet.remove(View.MINIMAL);
                 return keySet;
             } else {
-                return Collections.<String>emptyList();
+                return Collections.emptyList();
             }
         } finally {
             lock.readLock().unlock();
@@ -307,7 +305,7 @@ public class AbstractViewRepository implements ViewRepository {
                             addPersistentAttributeToMinimalView(metaClass, visited, info, view, relatedProperty);
                         } else {
                             log.warn("Transient attribute '" + relatedPropertyName
-                                    + "' is listed in 'related' properties of another transient aatribute '" + metaProperty.getName() + "'");
+                                    + "' is listed in 'related' properties of another transient attribute '" + metaProperty.getName() + "'");
                         }
                     }
                 }

@@ -74,8 +74,7 @@ public class HaloTheme {
     /**
      * Spinner style. Add this style name to an empty Label to create a spinner.
      *
-     * <h4>Example</h4>
-     *
+     * <strong>Example</strong>
      * <pre>
      * Label spinner = new Label();
      * spinner.addStyleName(HaloTheme.LABEL_SPINNER);
@@ -84,7 +83,7 @@ public class HaloTheme {
     public static final String LABEL_SPINNER = "spinner";
 
     /**
-     * Primary action button (e.g. the button that should get activated when the user presses the <code>enter</code>
+     * Primary action button (e.g. the button that should get activated when the user presses the {@code enter}
      * key in a form). Use sparingly, only one default button per view should be visible. Can be combined with any
      * other Button style.
      */
@@ -338,9 +337,8 @@ public class HaloTheme {
     /**
      * Add this style name to a CssLayout to create a grouped set of components, i.e. a row of components
      * which are joined seamlessly together.
-     * <p>
-     * <h4>Example</h4>
-     * <p>
+     * <br>
+     * <strong>Example</strong>
      * <pre>
      * CssLayout group = new CssLayout();
      * group.addStyleName(HaloTheme.CSSLAYOUT_COMPONENT_GROUP);

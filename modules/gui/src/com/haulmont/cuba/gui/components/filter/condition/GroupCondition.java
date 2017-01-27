@@ -26,8 +26,7 @@ import com.haulmont.cuba.gui.components.filter.operationedit.GroupOperationEdito
 import org.dom4j.Element;
 
 /**
- * Base GUI class for grouping conditions (AND & OR).
- *
+ * Base GUI class for grouping conditions (AND &amp; OR).
  */
 @MetaClass(name = "sec$GroupCondition")
 @SystemLevel

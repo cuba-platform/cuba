@@ -53,18 +53,18 @@ public interface LoginWorker {
     UserSession loginTrusted(String login, String password, Locale locale) throws LoginException;
 
     /**
-     * @see LoginService#loginTrusted(String, String, java.util.Locale, java.util.Map))
+     * @see LoginService#loginTrusted(String, String, java.util.Locale, java.util.Map)
      */
     UserSession loginTrusted(String login, String password, Locale locale, Map<String, Object> params)
             throws LoginException;
 
     /**
-     * @see LoginService#loginByRememberMe(String, String, java.util.Locale))
+     * @see LoginService#loginByRememberMe(String, String, java.util.Locale)
      */
     UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException;
 
     /**
-     * @see LoginService#loginTrusted(String, String, java.util.Locale, java.util.Map))
+     * @see LoginService#loginTrusted(String, String, java.util.Locale, java.util.Map)
      */
     UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale, Map<String, Object> params)
             throws LoginException;
@@ -98,7 +98,7 @@ public interface LoginWorker {
      * Login anonymous session for trusted clients
      *
      * @return anonymous user session that is not replicated in cluster
-     * @throws LoginException
+     * @throws LoginException in case of login problem
      */
     UserSession loginAnonymous() throws LoginException;
 

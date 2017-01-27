@@ -36,10 +36,10 @@ public class PersistenceHelper {
      * Determines whether the instance is <em>New</em>, i.e. just created and not stored in database yet.
      *
      * @param entity entity instance
-     * @return  <li>true if the instance is a new persistent entity, or if it is actually in Managed state
-     *              but newly-persisted in this transaction
-     *          <li>true if the instance is a new non-persistent entity never returned from DataManager
-     *          <li>false otherwise
+     * @return  - true if the instance is a new persistent entity, or if it is actually in Managed state
+     *            but newly-persisted in this transaction <br>
+     *          - true if the instance is a new non-persistent entity never returned from DataManager <br>
+     *          - false otherwise
      * @throws IllegalArgumentException if entity instance is null
      */
     public static boolean isNew(Object entity) {
@@ -56,8 +56,8 @@ public class PersistenceHelper {
      * Determines whether the instance is <em>Managed</em>, i.e. attached to a persistence context.
      *
      * @param entity entity instance
-     * @return  <li>true if the instance is managed,
-     *          <li>false if it is New (and not yet persisted) or Detached, or if it is not a persistent entity
+     * @return - true if the instance is managed,<br>
+     *         - false if it is New (and not yet persisted) or Detached, or if it is not a persistent entity
      * @throws IllegalArgumentException if entity instance is null
      */
     public static boolean isManaged(Object entity) {
@@ -73,8 +73,8 @@ public class PersistenceHelper {
      * context at the moment.
      *
      * @param entity entity instance
-     * @return  <li>true if the instance is detached,
-     *          <li>false if it is New or Managed, or if it is not a persistent entity
+     * @return - true if the instance is detached,<br>
+     *         - false if it is New or Managed, or if it is not a persistent entity
      * @throws IllegalArgumentException if entity instance is null
      */
     public static boolean isDetached(Object entity) {
@@ -104,7 +104,7 @@ public class PersistenceHelper {
      * Determines whether the entity supports <em>Soft Deletion</em>.
      *
      * @param entityClass entity class
-     * @return <code>true</code> if the entity implements {@link SoftDelete}
+     * @return {@code true} if the entity implements {@link SoftDelete}
      */
     public static boolean isSoftDeleted(Class entityClass) {
         return SoftDelete.class.isAssignableFrom(entityClass);
@@ -147,8 +147,8 @@ public class PersistenceHelper {
      * Determines whether the entity instance was <em>deleted</em>.
      *
      * @param entity entity instance
-     * @return  <li>true if the instance was deleted
-     *          <li>false otherwise
+     * @return - true if the instance was deleted
+     *         - false otherwise
      * @throws IllegalArgumentException if entity instance is null
      */
     public static boolean isDeleted(Object entity) {

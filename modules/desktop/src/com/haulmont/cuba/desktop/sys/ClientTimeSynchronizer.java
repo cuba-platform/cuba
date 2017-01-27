@@ -34,12 +34,11 @@ import java.util.TimeZone;
 
 /**
  * Maintains desktop client time zone and time.
- * <p/>
+ * <br>
  * Time zone is taken from server.
  * Time is synchronized after each login. Additionally it can be performed by scheduled task (using spring scheduler).
- * <p/>
+ * <br>
  * All requests to server are performed in background thread to avoid delays in UI.
- *
  */
 @Component(ClientTimeSynchronizer.NAME)
 public class ClientTimeSynchronizer {

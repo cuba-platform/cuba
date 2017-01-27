@@ -22,9 +22,8 @@ import java.beans.PropertyChangeListener;
 import java.util.Collection;
 
 /**
- * The <code>Action</code> interface abstracts away a function from a visual component.
+ * The {@code Action} interface abstracts away a function from a visual component.
  * When an action occurs, {@link #actionPerform(Component)} method is invoked.
- *
  */
 public interface Action {
 
@@ -88,7 +87,7 @@ public interface Action {
      * Refresh internal state of the action to initialize enabled, visible, caption, icon, etc. properties depending
      * on programmatically set values and user permissions set at runtime.
      *
-     * <p/> For example, this method is called by visual components holding actions when they are connected to
+     * <br> For example, this method is called by visual components holding actions when they are connected to
      * datasources. At this moment the action can find out what entity it is connected to and change its state
      * according to the user permissions.
      */

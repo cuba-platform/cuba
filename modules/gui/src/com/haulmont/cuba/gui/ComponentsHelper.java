@@ -300,8 +300,8 @@ public abstract class ComponentsHelper {
      * Get the topmost window for the specified component.
      * @param component component instance
      * @return          topmost window in the hierarchy of frames for this component.
-     * <br/>If the window has a controller class, an instance of the controller is returned.
-     * <br/>Can be null only if the component wasn't properly initialized.
+     * <br>If the window has a controller class, an instance of the controller is returned.
+     * <br>Can be null only if the component wasn't properly initialized.
      */
     @Nullable
     public static Window getWindow(Component.BelongToFrame component) {
@@ -321,7 +321,7 @@ public abstract class ComponentsHelper {
      * @param component component instance
      * @return          topmost client specific window in the hierarchy of frames for this component.
      *
-     * <br/>Can be null only if the component wasn't properly initialized.
+     * <br>Can be null only if the component wasn't properly initialized.
      */
     @Nullable
     public static Window getWindowImplementation(Component.BelongToFrame component) {

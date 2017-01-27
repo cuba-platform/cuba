@@ -33,7 +33,7 @@ public interface Instance extends Serializable {
     
     /**
      * @return Instance name as defined by {@link com.haulmont.chile.core.annotations.NamePattern}
-     * or <code>toString()</code>.
+     * or {@code toString()}.
      */
     String getInstanceName();
 
@@ -47,7 +47,8 @@ public interface Instance extends Serializable {
 
     /**
      * Set an attribute value.
-     * <p/> An implementor should first read a current value of the attribute, and then call an appropriate setter
+     * <br>
+     * An implementor should first read a current value of the attribute, and then call an appropriate setter
      * method only if the new value differs. This ensures triggering of {@link PropertyChangeListener}s only if the attribute
      * was actually changed.
      *
@@ -58,10 +59,11 @@ public interface Instance extends Serializable {
 
     /**
      * Get an attribute value. Locates the attribute by the given path in object graph starting from this instance.
-     * <p/> The path must consist of attribute names according to JavaBeans notation, separated by dots, e.g.
-     * <code>car.driver.name</code>.
+     * <br>
+     * The path must consist of attribute names according to JavaBeans notation, separated by dots, e.g.
+     * {@code car.driver.name}.
      *
-     * @param propertyPath  path to an attribute
+     * @param propertyPath path to an attribute
      * @return attribute value. If any traversing attribute value is null or is not an {@link Instance}, this method
      * stops here and returns this value.
      */
@@ -70,18 +72,18 @@ public interface Instance extends Serializable {
 
     /**
      * Set an attribute value. Locates the attribute by the given path in object graph starting from this instance.
-     * <p/> The path must consist of attribute names according to JavaBeans notation, separated by dots, e.g.
-     * <code>car.driver.name</code>.
-     * <p/> In the example above this method first gets value of <code>car.driver</code> attribute, and if it is not
-     * null and is an {@link Instance}, sets value of <code>name</code> attribute in it. If the value returned from
-     * <code>getValueEx("car.driver")</code> is null or is not an {@link Instance}, this method throws
+     * <br> The path must consist of attribute names according to JavaBeans notation, separated by dots, e.g.
+     * {@code car.driver.name}.
+     * <br> In the example above this method first gets value of {@code car.driver} attribute, and if it is not
+     * null and is an {@link Instance}, sets value of {@code name} attribute in it. If the value returned from
+     * {@code getValueEx("car.driver")} is null or is not an {@link Instance}, this method throws
      * {@link IllegalStateException}.
-     * <p/> An implementor should first read a current value of the attribute, and then call an appropriate setter
+     * <br> An implementor should first read a current value of the attribute, and then call an appropriate setter
      * method only if the new value differs. This ensures triggering of {@link PropertyChangeListener}s only if the attribute
      * was actually changed.
      *
-     * @param propertyPath  path to an attribute
-     * @param value         attribute value
+     * @param propertyPath path to an attribute
+     * @param value        attribute value
      */
     void setValueEx(String propertyPath, Object value);
 

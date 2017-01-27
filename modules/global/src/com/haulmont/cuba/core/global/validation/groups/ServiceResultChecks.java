@@ -17,7 +17,7 @@
 package com.haulmont.cuba.core.global.validation.groups;
 
 /**
- * Bean validation constraint group used by core server for service methods result validation. <br/>
+ * Bean validation constraint group used by core server for service methods result validation. <br>
  * You can assign this group for constraints that must be checked only when instance is returned from a service method.
  */
 public interface ServiceResultChecks {

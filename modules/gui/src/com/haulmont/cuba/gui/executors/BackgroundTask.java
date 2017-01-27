@@ -28,12 +28,12 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Background task for execute by {@link BackgroundWorker}.
- * <p/> If the task is associated with a screen through ownerFrame constructor parameter, it will be canceled when
+ * <br> If the task is associated with a screen through ownerFrame constructor parameter, it will be canceled when
  * the screen is closed.
- * <p/> If timeout passed to constructor is exceeded, the task is canceled by special {@link WatchDog} thread.
+ * <br> If timeout passed to constructor is exceeded, the task is canceled by special {@link WatchDog} thread.
  *
- * <p/> Simplest usage example:
- * <pre>
+ * <br> Simplest usage example:
+ * <pre>{@code
  *    BackgroundTask<Integer, Void> task = new BackgroundTask<Integer, Void>(10, this) {
  *        public Void run(TaskLifeCycle<Integer> taskLifeCycle) throws Exception {
  *            for (int i = 0; i < 5; i++) {
@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
  *    };
  *    BackgroundTaskHandler taskHandler = backgroundWorker.handle(task);
  *    taskHandler.execute();
- * </pre>
+ * }</pre>
  *
  * @param <T> task progress measurement unit
  * @param <V> result type
@@ -72,7 +72,7 @@ public abstract class BackgroundTask<T, V> {
 
     /**
      * Create a task with timeout.
-     * <p/> The task will not be associated with any window.
+     * <br> The task will not be associated with any window.
      *
      * @param timeout  timeout
      * @param timeUnit timeout time unit
@@ -84,7 +84,7 @@ public abstract class BackgroundTask<T, V> {
 
     /**
      * Create a task with timeout in default SECONDS unit.
-     * <p/> The task will not be associated with any window.
+     * <br> The task will not be associated with any window.
      *
      * @param timeoutSeconds timeout in seconds
      */
@@ -106,12 +106,12 @@ public abstract class BackgroundTask<T, V> {
 
     /**
      * Main method that performs a task.
-     * <p/> Called by the execution environment in a separate working thread.
+     * <br> Called by the execution environment in a separate working thread.
      *
-     * <p/> Implementation of this method should support interruption:
+     * <br> Implementation of this method should support interruption:
      * <ul>
-     *     <li/> In long loops check {@link TaskLifeCycle#isInterrupted()} and return if it is true
-     *     <li/> Don't swallow {@link InterruptedException} - return from the method or don't catch it at all
+     *     <li>In long loops check {@link TaskLifeCycle#isInterrupted()} and return if it is true</li>
+     *     <li>Don't swallow {@link InterruptedException} - return from the method or don't catch it at all</li>
      * </ul>
      *
      * @param taskLifeCycle lifecycle object that allows the main method to interact with the execution environment
@@ -131,7 +131,7 @@ public abstract class BackgroundTask<T, V> {
     /**
      * Called by the execution environment in UI thread if the task is canceled by
      * {@link BackgroundTaskHandler#cancel()} invocation.
-     * <p/> This method is not called in case of timeout expiration or owner window closing.
+     * <br> This method is not called in case of timeout expiration or owner window closing.
      */
     public void canceled() {
     }

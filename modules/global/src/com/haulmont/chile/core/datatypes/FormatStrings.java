@@ -20,9 +20,8 @@ package com.haulmont.chile.core.datatypes;
 import java.text.DecimalFormatSymbols;
 
 /**
- * Localized format strings container.
- * <p/> An instance of this class can be acquired through {@link Datatypes#getFormatStrings(java.util.Locale)}.
- *
+ * Localized format strings container. <br>
+ * An instance of this class can be acquired through {@link Datatypes#getFormatStrings(java.util.Locale)}.
  */
 public class FormatStrings {
 

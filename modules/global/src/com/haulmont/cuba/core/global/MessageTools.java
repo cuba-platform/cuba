@@ -36,8 +36,8 @@ import java.util.Objects;
 
 /**
  * Utility class to provide common functionality related to localized messages.
- * <p/> Implemented as Spring bean to allow extension in application projects.
- * <p/> A reference to this class can be obtained either via DI or by
+ * <br> Implemented as Spring bean to allow extension in application projects.
+ * <br> A reference to this class can be obtained either via DI or by
  * {@link com.haulmont.cuba.core.global.Messages#getTools()} method.
  */
 @Component(MessageTools.NAME)
@@ -73,8 +73,8 @@ public class MessageTools {
 
     /**
      * Get localized message by reference provided in the full format.
-     * @param ref   reference to message in the following format: <code>msg://message_pack/message_id</code>
-     * @return      localized message or input string itself if it doesn't begin with <code>msg://</code>
+     * @param ref   reference to message in the following format: {@code msg://message_pack/message_id}
+     * @return      localized message or input string itself if it doesn't begin with {@code msg://}
      */
     public String loadString(String ref) {
         return loadString(null, ref);
@@ -82,8 +82,8 @@ public class MessageTools {
 
     /**
      * Get localized message by reference provided in the full format.
-     * @param ref   reference to message in the following format: <code>msg://message_pack/message_id</code>
-     * @return      localized message or input string itself if it doesn't begin with <code>msg://</code>
+     * @param ref   reference to message in the following format: {@code msg://message_pack/message_id}
+     * @return      localized message or input string itself if it doesn't begin with {@code msg://}
      */
     public String loadString(String ref, Locale locale) {
         return loadString(null, ref, locale);
@@ -94,11 +94,11 @@ public class MessageTools {
      * @param messagesPack  messages pack to use if the second parameter is in brief format
      * @param ref           reference to message in the following format:
      * <ul>
-     * <li>Full: <code>msg://message_pack/message_id</code>
-     * <li>Brief: <code>msg://message_id</code>, in this case the first parameter is taken into account
-     * <li>Message from a main messages pack: <code>mainMsg://message_id</code>
+     * <li>Full: {@code msg://message_pack/message_id}
+     * <li>Brief: {@code msg://message_id}, in this case the first parameter is taken into account
+     * <li>Message from a main messages pack: {@code mainMsg://message_id}
      * </ul>
-     * @return localized message or input string itself if it doesn't begin with <code>msg://</code> or <code>mainMsg://</code>
+     * @return localized message or input string itself if it doesn't begin with {@code msg://} or {@code mainMsg://}
      */
     @Nullable
     public String loadString(@Nullable String messagesPack, @Nullable String ref) {
@@ -111,11 +111,11 @@ public class MessageTools {
      * @param ref           reference to message in the following format:
      * @param locale        locale
      * <ul>
-     * <li>Full: <code>msg://message_pack/message_id</code>
-     * <li>Brief: <code>msg://message_id</code>, in this case the first parameter is taken into account
-     * <li>Message from a main messages pack: <code>mainMsg://message_id</code>
+     * <li>Full: {@code msg://message_pack/message_id}
+     * <li>Brief: {@code msg://message_id}, in this case the first parameter is taken into account
+     * <li>Message from a main messages pack: {@code mainMsg://message_id}
      * </ul>
-     * @return localized message or input string itself if it doesn't begin with <code>msg://</code> or <code>mainMsg://</code>
+     * @return localized message or input string itself if it doesn't begin with {@code msg://} or {@code mainMsg://}
      */
     @Nullable
     public String loadString(@Nullable String messagesPack, @Nullable String ref, @Nullable Locale locale) {
@@ -306,7 +306,7 @@ public class MessageTools {
      * Messages pack part of the reference corresponds to the entity's package.
      * @param metaClass     MetaClass containing the property
      * @param propertyName  property's name
-     * @return              message key in the form <code>msg://message_pack/message_id</code>
+     * @return              message key in the form {@code msg://message_pack/message_id}
      */
     public String getMessageRef(MetaClass metaClass, String propertyName) {
         MetaProperty property = metaClass.getProperty(propertyName);
@@ -319,8 +319,9 @@ public class MessageTools {
     /**
      * Get message reference of an entity property.
      * Messages pack part of the reference corresponds to the entity's package.
-     * @param property  MetaProperty
-     * @return          message key in the form <code>msg://message_pack/message_id</code>
+     *
+     * @param property MetaProperty
+     * @return message key in the form {@code msg://message_pack/message_id}
      */
     public String getMessageRef(MetaProperty property) {
         Class<?> declaringClass = property.getDeclaringClass();
@@ -340,10 +341,10 @@ public class MessageTools {
 
     /**
      * Get localized value of an attribute based on {@link com.haulmont.cuba.core.entity.annotation.LocalizedValue} annotation.
+     *
      * @param attribute attribute name
      * @param instance  entity instance
-     * @return          localized value or the value itself, if the value is null or the message pack
-     * can not be inferred
+     * @return localized value or the value itself, if the value is null or the message pack can not be inferred
      */
     @Nullable
     public String getLocValue(String attribute, Instance instance) {
@@ -390,7 +391,7 @@ public class MessageTools {
 
     /**
      * @return whether to use a full locale representation, or language only. Returns true if all locales listed
-     * in <code>cuba.availableLocales</code> app property are language only.
+     * in {@code cuba.availableLocales} app property are language only.
      */
     public boolean useLocaleLanguageOnly() {
         if (useLocaleLanguageOnly == null) {
@@ -409,9 +410,10 @@ public class MessageTools {
     }
 
     /**
-     * Locale representation depending on <code>cuba.useLocaleLanguageOnly</code> application property.
-     * @param locale    locale instance
-     * @return language code if <code>cuba.useLocaleLanguageOnly=true</code>, or full locale representation otherwise
+     * Locale representation depending on {@code cuba.useLocaleLanguageOnly} application property.
+     *
+     * @param locale locale instance
+     * @return language code if {@code cuba.useLocaleLanguageOnly=true}, or full locale representation otherwise
      */
     public String localeToString(Locale locale) {
         return useLocaleLanguageOnly() ? locale.getLanguage() : locale.toString();
@@ -427,7 +429,7 @@ public class MessageTools {
     }
 
     /**
-     * @return first locale from the list defined in <code>cuba.availableLocales</code> app property, taking into
+     * @return first locale from the list defined in {@code cuba.availableLocales} app property, taking into
      * account {@link #useLocaleLanguageOnly()} return value.
      */
     public Locale getDefaultLocale() {

@@ -24,7 +24,7 @@ public interface BackgroundTaskHandler<V> {
 
     /**
      * Execute the {@link BackgroundTask}.
-     * <p/> This method must be called only once for a handler instance.
+     * <br> This method must be called only once for a handler instance.
      */
     @ExecutedOnUIThread
     void execute();

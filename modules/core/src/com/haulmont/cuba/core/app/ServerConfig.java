@@ -170,7 +170,7 @@ public interface ServerConfig extends Config {
     boolean getDisableLoadValuesIfConstraints();
 
     /**
-     * <= 16 symbols string, used as key for AES encryption of security token
+     * &lt;= 16 symbols string, used as key for AES encryption of security token
      */
     @Property("cuba.keyForSecurityTokenEncryption")
     @DefaultString("CUBA.Platform")

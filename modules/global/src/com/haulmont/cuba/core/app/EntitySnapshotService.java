@@ -32,7 +32,6 @@ import java.util.UUID;
 
 /**
  * Provides entity snapshots functionality.
- *
  */
 public interface EntitySnapshotService {
 
@@ -95,7 +94,7 @@ public interface EntitySnapshotService {
      *
      * @param metaClass    Metaclass
      * @param id           Entity Id
-     * @param classMapping Map of [OldClass -> NewClass] for migration
+     * @param classMapping Map of [OldClass -&gt; NewClass] for migration
      */
     void migrateSnapshots(MetaClass metaClass, UUID id, Map<Class, Class> classMapping);
 }

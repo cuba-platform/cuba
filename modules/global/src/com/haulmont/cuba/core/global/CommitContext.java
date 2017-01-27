@@ -24,8 +24,7 @@ import java.util.*;
 
 /**
  * DTO that contains information about currently committed entities.
- * <p/> Used by {@link com.haulmont.cuba.core.app.DataService}
- *
+ * <br> Used by {@link com.haulmont.cuba.core.app.DataService}
  */
 @SuppressWarnings("unchecked")
 public class CommitContext implements Serializable {

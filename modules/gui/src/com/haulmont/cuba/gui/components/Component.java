@@ -49,7 +49,7 @@ public interface Component {
     String AUTO_SIZE = "-1px";
     int AUTO_SIZE_PX = -1;
 
-    /** Component ID as defined in <code>id</code> attribute */
+    /** Component ID as defined in {@code id} attribute */
     String getId();
     /** Set component ID */
     void setId(String id);
@@ -60,7 +60,7 @@ public interface Component {
     Component getParent();
 
     /**
-     * INTERNAL.<br/>
+     * INTERNAL.<br>
      *
      * {@link Component.Container#add(Component)} is normally used for adding components
      * to a parent and the used method will call this method implicitly.
@@ -201,7 +201,7 @@ public interface Component {
 
     /**
      * Get client specific component instance. Can be used in client module to simplify invocation of underlying API.
-     * <br/>
+     * <br>
      * Example:
      * <pre>
      * com.vaadin.ui.TextField vTextField = textField.unwrap(com.vaadin.ui.TextField.class);
@@ -215,7 +215,7 @@ public interface Component {
 
     /**
      * Get the outmost external container of client specific component instance. Can be used in client module to simplify invocation of underlying API.
-     * <br/>
+     * <br>
      * Example:
      * <pre>
      * com.vaadin.ui.Layout vLayout = table.unwrapComposition(com.vaadin.ui.Layout.class);

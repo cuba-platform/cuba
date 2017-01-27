@@ -37,12 +37,10 @@ import java.util.Map;
 
 /**
  * Base class for frame controllers.
- *
  */
 public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, Component.OrderedContainer {
 
     protected Frame frame;
-    private String styleName;
     private Object _companion;
 
     private Component parent;
@@ -65,10 +63,10 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
 
     /**
      * Called by the framework after creation of all components and before showing the screen.
-     * <p/> Override this method and put initialization logic here.
+     * <br> Override this method and put initialization logic here.
      * @param params parameters passed from caller's code, usually from
      * {@link #openWindow(String, com.haulmont.cuba.gui.WindowManager.OpenType)} and similar methods, or set in
-     *               <code>screens.xml</code> for this registered screen
+     *               {@code screens.xml} for this registered screen
      */
     public void init(Map<String, Object> params) {
     }
@@ -481,12 +479,12 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
 
     @Override
     public AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
-        return (AbstractEditor) frame.openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap(), parentDs);
+        return (AbstractEditor) frame.openEditor(windowAlias, item, openType, Collections.emptyMap(), parentDs);
     }
 
     @Override
     public AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
-        return (AbstractEditor) frame.openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap());
+        return (AbstractEditor) frame.openEditor(windowAlias, item, openType, Collections.emptyMap());
     }
 
     @Override
@@ -508,13 +506,13 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
 
     @Override
     public AbstractLookup openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
-        return (AbstractLookup) frame.openLookup(windowAlias, handler, openType, Collections.<String, Object>emptyMap());
+        return (AbstractLookup) frame.openLookup(windowAlias, handler, openType, Collections.emptyMap());
     }
 
     /**
-     * Load a frame registered in <code>screens.xml</code> and optionally show it inside a parent component of this frame.
+     * Load a frame registered in {@code screens.xml} and optionally show it inside a parent component of this frame.
      * @param parent        if specified, all parent's subcomponents will be removed and the frame will be added
-     * @param windowAlias   frame ID as defined in <code>screens.xml</code>
+     * @param windowAlias   frame ID as defined in {@code screens.xml}
      * @return              frame's controller instance
      */
     @Override
@@ -523,10 +521,10 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     }
 
     /**
-     * Load a frame registered in <code>screens.xml</code> and optionally show it inside a parent component of this frame.
+     * Load a frame registered in {@code screens.xml} and optionally show it inside a parent component of this frame.
      * @param parent        if specified, all parent's subcomponents will be removed and the frame will be added
-     * @param windowAlias   frame ID as defined in <code>screens.xml</code>
-     * @param params        parameters to be passed into the frame's controller <code>init</code> method
+     * @param windowAlias   frame ID as defined in {@code screens.xml}
+     * @param params        parameters to be passed into the frame's controller {@code init} method
      * @return              frame's controller instance
      */
     @Override

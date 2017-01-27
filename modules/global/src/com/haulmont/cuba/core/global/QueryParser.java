@@ -55,24 +55,24 @@ public interface QueryParser {
 
     /**
      * @return Entity name if not main entity name is returned, otherwise null
-     * Example: select u.group from sec$User u -> sec$Group
-     * Example: select g from sec$User u join u.group g -> sec$Group
+     * Example: select u.group from sec$User u -&gt; sec$Group
+     * Example: select g from sec$User u join u.group g -&gt; sec$Group
      */
     @Nullable
     String getEntityNameIfSecondaryReturnedInsteadOfMain();
 
     /**
      * @return Entity path if not main entity name is returned, otherwise null
-     * Example: select u.group from sec$User u -> u.group
-     * Example: select g from sec$User u join u.group g -> g
+     * Example: select u.group from sec$User u -&gt; u.group
+     * Example: select g from sec$User u join u.group g -&gt; g
      */
     @Nullable
     String getEntityPathIfSecondaryReturnedInsteadOfMain();
 
     /**
      * @return true if not main entity selected and it's path with collection
-     * Example: select u.group from sec$User u -> false
-     * Example: select u.userRoles from sec$User u -> true
+     * Example: select u.group from sec$User u -&gt; false
+     * Example: select u.userRoles from sec$User u -&gt; true
      */
     boolean isCollectionSecondaryEntitySelect();
 

@@ -23,11 +23,10 @@ import javax.annotation.Nullable;
 
 /**
  * Allows to log entity lifecycle events: create, modify, delete.
- * <p/>
+ * <br>
  * Configured by {@link com.haulmont.cuba.security.entity.LoggedEntity} and
  * {@link com.haulmont.cuba.security.entity.LoggedAttribute} entities.
  * See also {@link com.haulmont.cuba.security.app.EntityLogConfig} configuration interface.
- *
  */
 public interface EntityLogAPI {
 

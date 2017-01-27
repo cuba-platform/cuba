@@ -28,7 +28,6 @@ import java.sql.Connection;
  *
  * <p>Mostly mimics the {@code javax.persistence.EntityManager} interface and adds methods for working with views and
  * soft deletion.</p>
- *
  */
 public interface EntityManager {
 
@@ -194,8 +193,8 @@ public interface EntityManager {
 
     /**
      * Reload an entity from DB according to a combined view defined by the given array of views.
-     * <p/> Ensures all combined view attributes are loaded.
-     * <p/> If the given entity is in managed state, the method returns the same object instance. If the entity is
+     * <br> Ensures all combined view attributes are loaded.
+     * <br> If the given entity is in managed state, the method returns the same object instance. If the entity is
      * detached, the method returns a new object instance.
      *
      * @param entity        entity instance to reload
@@ -207,8 +206,8 @@ public interface EntityManager {
 
     /**
      * Reload an entity from DB according to a combined view defined by the given array of views.
-     * <p/> Ensures all combined view attributes are loaded.
-     * <p/> If the given entity is in managed state, the method returns the same object instance. If the entity is
+     * <br> Ensures all combined view attributes are loaded.
+     * <br> If the given entity is in managed state, the method returns the same object instance. If the entity is
      * detached, the method returns a new object instance.
      *
      * @param entity        entity instance to reload

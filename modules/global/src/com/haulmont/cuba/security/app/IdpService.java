@@ -40,10 +40,9 @@ public interface IdpService {
      * @param login    login name
      * @param password encrypted password
      * @param locale   client locale
-     * @param params   map of login parameters. Supported parameters are:
-     *                 <ul>
-     *                 <li>"com.haulmont.cuba.core.global.ClientType": "WEB" or "DESKTOP". It is used to check the
-     *                      "cuba.gui.loginToClient" specific permission.</li>
+     * @param params   map of login parameters. Supported parameters are:<br>
+     *                 - "com.haulmont.cuba.core.global.ClientType": "WEB" or "DESKTOP". It is used to check the
+     *                   "cuba.gui.loginToClient" specific permission.
      * @return login result
      * @throws LoginException in case of unsuccessful login
      */

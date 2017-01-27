@@ -260,7 +260,9 @@ public class CubaVaadinServletService extends VaadinServletService {
         }
     }
 
-    // Add ability to redirect to base application URL if we have unparsable path tail
+    /**
+     * Add ability to redirect to base application URL if we have unparsable path tail
+     */
     protected static class CubaServletBootstrapHandler extends ServletBootstrapHandler {
 
         @Override

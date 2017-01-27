@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 
 /**
  * Intercepts invocations of the middleware services.
- * <p/> Checks {@link UserSession} validity and wraps exceptions into {@link RemoteException}.
+ * <br> Checks {@link UserSession} validity and wraps exceptions into {@link RemoteException}.
  */
 public class ServiceInterceptor {
     private final Logger log = LoggerFactory.getLogger(ServiceInterceptor.class);

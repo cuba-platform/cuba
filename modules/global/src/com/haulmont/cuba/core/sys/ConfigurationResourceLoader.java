@@ -24,10 +24,9 @@ import org.springframework.util.ResourceUtils;
 import java.io.File;
 
 /**
- * System-level class for resource loading.
- * <p/> Should be used only in situations where {@link com.haulmont.cuba.core.global.Resources} bean is not available,
+ * System-level class for resource loading. <br>
+ * Should be used only in situations where {@link com.haulmont.cuba.core.global.Resources} bean is not available,
  * e.g. before the {@link AppContext} is fully initialized.
- *
  */
 public class ConfigurationResourceLoader extends DefaultResourceLoader {
 
@@ -61,15 +60,16 @@ public class ConfigurationResourceLoader extends DefaultResourceLoader {
     /**
      * Search for a resource according to the following rules:
      * <ul>
-     *     <li/> If the location represents an URL, return a new {@link org.springframework.core.io.UrlResource} for
-     *     this URL.
-     *     <li/> Try to find a file below the <code>conf</code> directory using <code>location</code> as relative path.
-     *     If found, return a new {@link org.springframework.core.io.UrlResource} for this file.
-     *     <li/> Otherwise return a new {@link org.springframework.core.io.ClassPathResource} to retrieve content
-     *     from classpath.
+     * <li>If the location represents an URL, return a new {@link org.springframework.core.io.UrlResource} for
+     * this URL.</li>
+     * <li>Try to find a file below the {@code conf} directory using {@code location} as relative path.
+     * If found, return a new {@link org.springframework.core.io.UrlResource} for this file.</li>
+     * <li> Otherwise return a new {@link org.springframework.core.io.ClassPathResource} to retrieve content
+     * from classpath.</li>
      * </ul>
-     * @param location  resource location
-     * @return          resource reference
+     *
+     * @param location resource location
+     * @return resource reference
      */
     @Override
     public Resource getResource(String location) {

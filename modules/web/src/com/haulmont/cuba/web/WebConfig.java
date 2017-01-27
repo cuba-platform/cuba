@@ -61,8 +61,8 @@ public interface WebConfig extends Config {
     boolean getLoginDialogPoweredByLinkVisible();
 
     /**
-     * @return HTTP session expiration timeout in seconds.<br/>
-     * Should be equals or less than middleware user session timeout <code>cuba.userSessionExpirationTimeoutSec</code>
+     * @return HTTP session expiration timeout in seconds.<br>
+     * Should be equals or less than middleware user session timeout {@code cuba.userSessionExpirationTimeoutSec}
      */
     @Property("cuba.httpSessionExpirationTimeoutSec")
     @DefaultInt(1800)
@@ -195,7 +195,7 @@ public interface WebConfig extends Config {
 
     /**
      * @return an action to force login.
-     * <p/> An action is represented by the last part of URL.
+     * <br> An action is represented by the last part of URL.
      */
     @Property("cuba.web.loginAction")
     @DefaultString("login")
@@ -203,7 +203,7 @@ public interface WebConfig extends Config {
 
     /**
      * @return list of URL actions to call {@link com.haulmont.cuba.web.sys.LinkHandler}
-     * <p/> An action is represented by the last part of URL.
+     * <br> An action is represented by the last part of URL.
      */
     @Property("cuba.web.linkHandlerActions")
     @Factory(factory = StringListTypeFactory.class)
@@ -211,7 +211,7 @@ public interface WebConfig extends Config {
     List<String> getLinkHandlerActions();
 
     /**
-     * Reinitialize session after login to protect from Session Fixation attacks. <br/>
+     * Reinitialize session after login to protect from Session Fixation attacks. <br>
      * This parameter is ignored if {@link WebAuthConfig#getExternalAuthentication()} is set to true.
      */
     @Property("cuba.web.useSessionFixationProtection")
@@ -228,9 +228,9 @@ public interface WebConfig extends Config {
 
     /**
      * Sets the page length for Table implementation - count of rows for first rendering of Table.
-     * After first partial rendering Table will request rest of rows from the server.<br/>
+     * After first partial rendering Table will request rest of rows from the server.<br>
      *
-     * Setting page length 0 disables paging. <br/>
+     * Setting page length 0 disables paging. <br>
      *
      * If Table has fixed height the client side may update the page length automatically the correct value.
      */
@@ -239,13 +239,13 @@ public interface WebConfig extends Config {
     int getTablePageLength();
 
     /**
-     * This method adjusts a possible caching mechanism of table implementation. <br/>
+     * This method adjusts a possible caching mechanism of table implementation. <br>
      *
      * Table component may fetch and render some rows outside visible area. With
      * complex tables (for example containing layouts and components), the
      * client side may become unresponsive. Setting the value lower, UI will
      * become more responsive. With higher values scrolling in client will hit
-     * server less frequently. <br/>
+     * server less frequently. <br>
      *
      * The amount of cached rows will be cacheRate multiplied with pageLength
      * {@link #getTablePageLength()} both below and above visible area.

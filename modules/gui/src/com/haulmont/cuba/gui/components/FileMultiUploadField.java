@@ -32,7 +32,7 @@ public interface FileMultiUploadField extends UploadField {
     @Deprecated
     abstract class UploadListener {
         /**
-         * File upload finished. Executed in uploading thread. <br/>
+         * File upload finished. Executed in uploading thread. <br>
          * <b>Do not perform progress indication here!</b>
          *
          * @param fileName file name
@@ -41,7 +41,7 @@ public interface FileMultiUploadField extends UploadField {
         }
 
         /**
-         * File uploading started. Executed in uploading thread. <br/>
+         * File uploading started. Executed in uploading thread. <br>
          * <b>Do not perform progress indication here!</b>
          *
          * @param fileName file name

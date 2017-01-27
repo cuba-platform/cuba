@@ -45,8 +45,8 @@ public interface IdpConfig extends Config {
     String getTrustedServicePassword();
 
     /**
-     * @return all permitted service URLs separated by comma. <br/>
-     *         IDP is allowed to send redirects only on these URLs. <br/>
+     * @return all permitted service URLs separated by comma. <br>
+     *         IDP is allowed to send redirects only on these URLs. <br>
      *         First URL is used as default if user opened IDP login form directly.
      */
     @Property("cuba.idp.serviceProviderUrls")
@@ -54,8 +54,8 @@ public interface IdpConfig extends Config {
     List<String> getServiceProviderUrls();
 
     /**
-     * @return all URLs that need to be notified on session logout or expiration separated by comma. <br/>
-     *         For example in CUBA it is http://localhost:8080/app/dispatch/idpc/logout. <br/>
+     * @return all URLs that need to be notified on session logout or expiration separated by comma. <br>
+     *         For example in CUBA it is http://localhost:8080/app/dispatch/idpc/logout. <br>
      *         IDP will pass to POST request two form-urlencoded parameters with names idpSessionId and trustedServicePassword.
      */
     @Property("cuba.idp.serviceProviderLogoutUrls")

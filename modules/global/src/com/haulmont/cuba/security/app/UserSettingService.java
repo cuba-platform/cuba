@@ -22,8 +22,8 @@ import com.haulmont.cuba.security.entity.User;
 /**
  * Service providing current user settings functionality:
  * an application can save/load some "setting" (plain or XML string) for current user.
- * <p/>It is ususally used by UI forms and components.
- *
+ * <br>
+ * It is usually used by UI forms and components.
  */
 public interface UserSettingService {
 

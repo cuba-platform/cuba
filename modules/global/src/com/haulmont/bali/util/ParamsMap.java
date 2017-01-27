@@ -22,9 +22,8 @@ import com.google.common.collect.ImmutableMap;
 import java.util.*;
 
 /**
- * Utility class for instantiation immutable Map&lt;String, Object&gt;. <br/>
+ * Utility class for instantiation immutable {@code Map<String, Object>}. <br>
  * Null values will be ignored. Null keys are not permitted.
- *
  */
 public final class ParamsMap {
 

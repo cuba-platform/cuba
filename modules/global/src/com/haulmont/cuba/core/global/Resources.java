@@ -27,13 +27,12 @@ import java.io.InputStream;
  *
  * Searches for a resource according to the following rules:
  * <ul>
- *     <li/> If the given location represents an URL, searches for this URL.
- *     <li/> If the given location starts from <code>classpath:</code> prefix, searches for a classpath resource.
- *     <li/> If not an URL, try to find a file below the <code>conf</code> directory using the given location
- *     as relative path. If a file found, uses this file.
- *     <li/> Otherwise searches for a classpath resource for the given location.
+ *     <li>If the given location represents an URL, searches for this URL.</li>
+ *     <li> If the given location starts from {@code classpath:} prefix, searches for a classpath resource.</li>
+ *     <li> If not an URL, try to find a file below the {@code conf} directory using the given location
+ *     as relative path. If a file found, uses this file.</li>
+ *     <li> Otherwise searches for a classpath resource for the given location.</li>
  * </ul>
- *
  */
 public interface Resources extends ResourceLoader {
 
@@ -42,8 +41,9 @@ public interface Resources extends ResourceLoader {
     /**
      * Searches for a resource according to the rules explained in {@link Resources} and returns the resource as stream
      * if found. The returned stream should be closed after use.
-     * @param location  resource location
-     * @return          InputStream or null if the resource is not found
+     *
+     * @param location resource location
+     * @return InputStream or null if the resource is not found
      */
     @Nullable
     InputStream getResourceAsStream(String location);
@@ -51,8 +51,9 @@ public interface Resources extends ResourceLoader {
     /**
      * Searches for a resource according to the rules explained in {@link Resources} and returns the resource as string
      * if found.
-     * @param location  resource location
-     * @return          resource content or null if the resource is not found
+     *
+     * @param location resource location
+     * @return resource content or null if the resource is not found
      */
     @Nullable
     String getResourceAsString(String location);

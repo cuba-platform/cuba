@@ -20,8 +20,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import org.apache.commons.lang.ObjectUtils;
 
 /**
- * Type of permission.
- * <p/>
+ * Type of permission. <br>
  * {@link #id} - corresponding value stored in the database
  */
 public enum PermissionType implements EnumClass<Integer> {

@@ -18,12 +18,13 @@ package com.haulmont.cuba.gui.components.autocomplete;
 
 /**
  * Class for single suggestion for an {@link AutoCompleteSupport} field.
- * <p/>
- * Single suggestion has three attributes: <li>Suggestion value itself. If
- * user selects this suggestion this value will be inserted to text field.</li>
- * <li>Display value that is presented inside the suggestion box. <li>Cursor
- * positions (start and end) for the replacement.
- *
+ * <br>
+ * Single suggestion has three attributes:
+ * <ul>
+ * <li>Suggestion value itself. If user selects this suggestion this value will be inserted to text field.</li>
+ * <li>Display value that is presented inside the suggestion box.</li>
+ * <li>Cursor positions (start and end) for the replacement.</li>
+ * </ul>
  */
 public class Suggestion {
 

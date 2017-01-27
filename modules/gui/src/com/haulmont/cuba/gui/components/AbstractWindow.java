@@ -224,8 +224,8 @@ public class AbstractWindow extends AbstractFrame
     }
 
     /**
-     * Hook to be implemented in subclasses. <br/>
-     * Called by the framework after the screen is fully initialized and opened. <br/>
+     * Hook to be implemented in subclasses. <br>
+     * Called by the framework after the screen is fully initialized and opened. <br>
      * Override this method and put custom initialization logic here.
      */
     public void ready() {
@@ -252,9 +252,9 @@ public class AbstractWindow extends AbstractFrame
 
     /**
      * Close the screen.
-     * <p/> If the screen has uncommitted changes in its {@link com.haulmont.cuba.gui.data.DsContext},
+     * <br> If the screen has uncommitted changes in its {@link com.haulmont.cuba.gui.data.DsContext},
      * the confirmation dialog will be shown.
-     * <p/> Don't override this method in subclasses, use hook {@link #preClose(String)}
+     * <br> Don't override this method in subclasses, use hook {@link #preClose(String)}
      *
      * @param actionId action ID that will be propagated to attached {@link CloseListener}s.
      *                 Use {@link #COMMIT_ACTION_ID} if some changes have just been committed, or
@@ -266,10 +266,11 @@ public class AbstractWindow extends AbstractFrame
         return ((Window) frame).close(actionId);
     }
 
-    /** Close the screen.
-     * <p/> If the window has uncommitted changes in its {@link com.haulmont.cuba.gui.data.DsContext},
+    /** 
+     * Close the screen.
+     * <br> If the window has uncommitted changes in its {@link com.haulmont.cuba.gui.data.DsContext},
      * and force=false, the confirmation dialog will be shown.
-     * <p/> Don't override this method in subclasses, use hook {@link #preClose(String)}
+     * <br> Don't override this method in subclasses, use hook {@link #preClose(String)}
      *
      * @param actionId action ID that will be propagated to attached {@link CloseListener}s.
      *                 Use {@link #COMMIT_ACTION_ID} if some changes have just been committed, or

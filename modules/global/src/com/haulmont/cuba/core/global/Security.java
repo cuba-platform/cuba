@@ -24,8 +24,7 @@ import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 /**
- * Intfrastructure interface providing methods to check permissions of the current user.
- *
+ * Infrastructure interface providing methods to check permissions of the current user.
  */
 public interface Security {
 
@@ -34,12 +33,12 @@ public interface Security {
     /**
      * Check if current user has permission to open a screen.
      *
-     * @param windowAlias screen id as registered in <code>screens.xml</code>
+     * @param windowAlias screen id as registered in {@code screens.xml}
      */
     boolean isScreenPermitted(String windowAlias);
 
     /**
-     * Check if current user has permission to execute an entity operation. <br/>
+     * Check if current user has permission to execute an entity operation. <br>
      * Takes into account original metaclass of entity.
      *
      * @param metaClass entity meta-class
@@ -48,7 +47,7 @@ public interface Security {
     boolean isEntityOpPermitted(MetaClass metaClass, EntityOp entityOp);
 
     /**
-     * Check if current user has permission to execute an entity operation. <br/>
+     * Check if current user has permission to execute an entity operation. <br>
      * Takes into account original metaclass of entity.
      *
      * @param entityClass entity class
@@ -57,7 +56,7 @@ public interface Security {
     boolean isEntityOpPermitted(Class<?> entityClass, EntityOp entityOp);
 
     /**
-     * Check if current user has permission to an entity attribute. <br/>
+     * Check if current user has permission to an entity attribute. <br>
      * Takes into account original metaclass of entity.
      *
      * @param metaClass entity meta-class
@@ -67,7 +66,7 @@ public interface Security {
     boolean isEntityAttrPermitted(MetaClass metaClass, String property, EntityAttrAccess access);
 
     /**
-     * Check if current user has permission to an entity attribute. <br/>
+     * Check if current user has permission to an entity attribute. <br>
      * Takes into account original metaclass of entity.
      *
      * @param entityClass entity class
@@ -139,7 +138,7 @@ public interface Security {
     boolean hasConstraints(MetaClass metaClass);
 
     /**
-     * Check if there are registered memory constraints of specified {@param operationTypes} for the metaClass or it's original metaClass
+     * Check if there are registered memory constraints of specified {@code operationTypes} for the metaClass or it's original metaClass
      */
     boolean hasInMemoryConstraints(MetaClass metaClass, ConstraintOperationType... operationTypes);
 }

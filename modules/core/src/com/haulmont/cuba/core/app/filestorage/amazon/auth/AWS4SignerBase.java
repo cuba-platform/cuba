@@ -29,7 +29,6 @@ import java.util.*;
 
 
 /**
- *
  * Common methods and properties for all AWS4 signer variants
  */
 public abstract class AWS4SignerBase {
@@ -109,7 +108,7 @@ public abstract class AWS4SignerBase {
         // step1: sort the headers by case-insensitive order
         List<String> sortedHeaders = new ArrayList<>();
         sortedHeaders.addAll(headers.keySet());
-        Collections.sort(sortedHeaders, String.CASE_INSENSITIVE_ORDER);
+        sortedHeaders.sort(String.CASE_INSENSITIVE_ORDER);
 
         // step2: form the canonical header:value entries in sorted order. 
         // Multiple white spaces in the values should be compressed to a single 
@@ -164,7 +163,7 @@ public abstract class AWS4SignerBase {
      * <p>
      * The canonicalized query string is formed by first sorting all the query
      * string parameters, then URI encoding both the key and value and then
-     * joining them, in order, separating key value pairs with an '&'.
+     * joining them, in order, separating key value pairs with an '&amp;'.
      *
      * @param parameters The query string parameters to be canonicalized.
      * @return A canonicalized form for the specified query string parameters.

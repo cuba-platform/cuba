@@ -22,12 +22,11 @@ import com.haulmont.cuba.gui.components.Frame;
 import javax.annotation.Nullable;
 
 /**
- * Generic interace to show data exported from the system.
+ * Generic interface to show data exported from the system.
  *
- * <p/> Use client-specific implementation obtained by
+ * <br> Use client-specific implementation obtained by
  * {@link com.haulmont.cuba.gui.AppConfig#createExportDisplay(Frame)} or by
  * injection into a screen controller.
- *
  */
 public interface ExportDisplay {
 

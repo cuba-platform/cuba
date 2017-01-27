@@ -203,7 +203,7 @@ public interface Persistence {
     EntityManagerContext getEntityManagerContext();
 
     /**
-     * Returns context of the current EntityManager.<br/>
+     * Returns context of the current EntityManager.<br>
      * If not exists, a new instance of context created and returned.
      *
      * @param storeName data store name

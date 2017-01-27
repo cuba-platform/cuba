@@ -40,7 +40,7 @@ import java.util.*;
 /**
  * Most commonly used {@link CollectionDatasource} implementation.
  * Contains collection of standalone (not property) entities, and can request data from database and commit changes.
- * <p/>
+ * <br>
  * Can be used as a base class for custom datasources that override e.g. {@link #loadData(java.util.Map)} method.
  *
  * @param <T> type of entity
@@ -101,7 +101,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     @Override
     public void refresh() {
         if (savedParameters == null)
-            refresh(Collections.<String, Object>emptyMap());
+            refresh(Collections.emptyMap());
         else
             refresh(savedParameters);
     }
@@ -133,7 +133,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             suspended = false;
             refreshOnResumeRequired = false;
 
-            fireCollectionChanged(Operation.REFRESH, Collections.<T>emptyList());
+            fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
 
             inRefresh = false;
             return;
@@ -180,7 +180,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         suspended = false;
         refreshOnResumeRequired = false;
 
-        fireCollectionChanged(Operation.REFRESH, Collections.<T>emptyList());
+        fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
 
         checkDataLoadError();
     }
@@ -243,7 +243,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
                 if (!sortOnDb || containsAllDataFromDb()) {
                     doSort();
 
-                    fireCollectionChanged(Operation.REFRESH, Collections.<T>emptyList());
+                    fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
                 } else {
                     refresh();
                 }
@@ -262,7 +262,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     protected void doSort() {
         List<T> list = new ArrayList<>(data.values());
-        Collections.sort(list, createEntityComparator());
+        list.sort(createEntityComparator());
         data.clear();
         for (T t : list) {
             data.put(t.getId(), t);
@@ -597,7 +597,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     /**
      * This method is invoked by {@link #loadData(Map)} method immediately before loading entities from {@code DataSupplier}.
-     * <p>If you override this method, be sure to call {@code super()}.
+     * <br>If you override this method, be sure to call {@code super()}.
      *
      * @param params    datasource parameters, as described in {@link CollectionDatasource#refresh(java.util.Map)}
      * @return          LoadContext which will be used to load data

@@ -49,7 +49,7 @@ public interface FileUploadingAPI {
      *
      * @param data  file contents
      * @return      temporary file ID. This ID is cached in memory and can be used for subsequent operations.
-     * @throws FileStorageException
+     * @throws FileStorageException in case of IO problems
      */
     UUID saveFile(byte[] data) throws FileStorageException;
 
@@ -59,7 +59,7 @@ public interface FileUploadingAPI {
      * @param stream    stream which content is to be stored
      * @param listener  optional listener to be notified about storing progress
      * @return          temporary file ID. This ID is cached in memory and can be used for subsequent operations.
-     * @throws FileStorageException
+     * @throws FileStorageException in case of IO problems
      */
     UUID saveFile(InputStream stream, @Nullable UploadProgressListener listener) throws FileStorageException;
 
@@ -67,7 +67,7 @@ public interface FileUploadingAPI {
      * Create a new empty temporary file and cache its ID for subsequent operations.
      *
      * @return the new temporary file ID
-     * @throws FileStorageException
+     * @throws FileStorageException in case of IO problems
      */
     UUID createEmptyFile() throws FileStorageException;
 
@@ -75,7 +75,7 @@ public interface FileUploadingAPI {
      * Create a new empty temporary file and cache its ID for subsequent operations.
      *
      * @return the new temporary file ID
-     * @throws FileStorageException
+     * @throws FileStorageException in case of IO problems
      */
     FileInfo createFile() throws FileStorageException;
 
@@ -83,7 +83,7 @@ public interface FileUploadingAPI {
      * Create and cache a new temporary file ID. Doesn't create any real file on disk.
      *
      * @return temporary file ID
-     * @throws FileStorageException
+     * @throws FileStorageException in case of IO problems
      */
     UUID createNewFileId() throws FileStorageException;
 
@@ -108,12 +108,12 @@ public interface FileUploadingAPI {
 
     /**
      * Remove a file from the temporary storage.
-     * <p/>
+     * <br>
      * This method is automatically called from putFileIntoStorage() when the file is successfully stored on the
      * middleware.
      *
      * @param fileId temporary file ID
-     * @throws FileStorageException
+     * @throws FileStorageException in case of IO problems
      */
     void deleteFile(UUID fileId) throws FileStorageException;
 
@@ -131,21 +131,21 @@ public interface FileUploadingAPI {
      * @param fileId    file ID in the temporary storage
      * @param fileDescr corresponding file descriptor entity. <b>Attention:</b> the FileDescriptor instance must be
      *                  stored in the database separately.
-     * @throws FileStorageException
+     * @throws FileStorageException in case of IO problems
      */
     void putFileIntoStorage(UUID fileId, FileDescriptor fileDescr) throws FileStorageException;
 
     /**
      * Upload a file from the client's temporary storage into the middleware FileStorage.
-     * <p/>
+     * <br>
      * This method is intended for integration with BackgroundTasks and should be called from
      * {@link com.haulmont.cuba.gui.executors.BackgroundTask#run(com.haulmont.cuba.gui.executors.TaskLifeCycle)}
-     * <p/>
+     * <br>
      * {@link com.haulmont.cuba.gui.executors.TaskLifeCycle#getParams()} map must contain the following entries with
      * String keys:
      * <ul>
-     *     <li/><code>fileId</code> - file ID in the temporary storage
-     *     <li/><code>fileName</code> - file name to set in the returned {@link FileDescriptor}
+     *     <li>{@code fileId} - file ID in the temporary storage</li>
+     *     <li>{@code fileName} - file name to set in the returned {@link FileDescriptor}</li>
      * </ul>
      *
      * <p>Usage: </p>
@@ -184,7 +184,7 @@ public interface FileUploadingAPI {
      * @param taskLifeCycle task life cycle with specified params: fileId and fileName
      * @return a new file descriptor. <b>Attention:</b> the returned {@link FileDescriptor} instance must be
      *         stored in the database separately.
-     * @throws FileStorageException
+     * @throws FileStorageException in case of IO problems
      */
     FileDescriptor putFileIntoStorage(TaskLifeCycle<Long> taskLifeCycle)
             throws FileStorageException, InterruptedIOException;

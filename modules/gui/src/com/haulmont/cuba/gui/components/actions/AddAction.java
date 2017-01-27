@@ -297,8 +297,8 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
     }
 
     /**
-     * The default implementation of <code>Lookup.Handler</code>, adding items to owner's datasource if they are not
-     * there yet. <br/>
+     * The default implementation of {@code Lookup.Handler}, adding items to owner's datasource if they are not
+     * there yet. <br>
      * It assumes that a lookup screen returns a collection of entities of the same type as owner's datasource or
      * subtype of owner's datasource class.
      */

@@ -25,8 +25,7 @@ import java.util.Collection;
 
 /**
  * Represents a repository of {@link View} objects, accessible by names.
- * <p/> Repository contains all views defined in XML and deployed at runtime.
- *
+ * <br>Repository contains all views defined in XML and deployed at runtime.
  */
 public interface ViewRepository {
 

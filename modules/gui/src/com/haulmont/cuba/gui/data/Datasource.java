@@ -148,10 +148,10 @@ public interface Datasource<T extends Entity> {
     /**
      * Add listener to datasource events.
      *
-     * @deprecated See new methods <br/>
-     * {@link #addItemChangeListener(ItemChangeListener)} <br/>
-     * {@link #addItemPropertyChangeListener(ItemPropertyChangeListener)} <br/>
-     * {@link #addStateChangeListener(StateChangeListener)} <br/>
+     * @deprecated See new methods <br>
+     * {@link #addItemChangeListener(ItemChangeListener)} <br>
+     * {@link #addItemPropertyChangeListener(ItemPropertyChangeListener)} <br>
+     * {@link #addStateChangeListener(StateChangeListener)} <br>
      * {@link CollectionDatasource#addCollectionChangeListener(CollectionDatasource.CollectionChangeListener)}
      */
     @Deprecated

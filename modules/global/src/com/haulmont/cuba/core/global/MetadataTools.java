@@ -45,8 +45,8 @@ import java.util.*;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
- * Utility class to provide common metadata-related functionality. <p/> Implemented as Spring bean to allow extension in
- * application projects. <p/> A reference to this class can be obtained either via DI or by {@link
+ * Utility class to provide common metadata-related functionality. <br> Implemented as Spring bean to allow extension in
+ * application projects. <br> A reference to this class can be obtained either via DI or by {@link
  * com.haulmont.cuba.core.global.Metadata#getTools()}.
  */
 @Component(MetadataTools.NAME)
@@ -271,9 +271,9 @@ public class MetadataTools {
     }
 
     /**
-     * Determine whether the given property is transient, that is not stored in the database.
-     * <p/>Unlike {@link #isTransient(com.haulmont.chile.core.model.MetaProperty)} for objects and properties not
-     * registered in metadata this method returns <code>true</code>.
+     * Determine whether the given property is transient, that is not stored in the database.<br>
+     * Unlike {@link #isTransient(com.haulmont.chile.core.model.MetaProperty)} for objects and properties not
+     * registered in metadata this method returns {@code true}.
      *
      * @param object   entity instance
      * @param property property name
@@ -743,7 +743,7 @@ public class MetadataTools {
     }
 
     /**
-     * Create a new instance and make it a shallow copy of the instance given. <p/> This method copies attributes
+     * Create a new instance and make it a shallow copy of the instance given. <br> This method copies attributes
      * according to the metadata and relies on {@link com.haulmont.chile.core.model.Instance#getMetaClass()} method
      * which should not return null.
      *
@@ -761,9 +761,9 @@ public class MetadataTools {
     }
 
     /**
-     * Make a shallow copy of an instance. <p/> This method copies attributes according to the metadata and relies on
+     * Make a shallow copy of an instance. <br> This method copies attributes according to the metadata and relies on
      * {@link com.haulmont.chile.core.model.Instance#getMetaClass()} method which should not return null for both
-     * objects. <p/> The source and destination instances don't have to be of the same Java class or metaclass. Copying
+     * objects. <br> The source and destination instances don't have to be of the same Java class or metaclass. Copying
      * is performed in the following scenario: get each source property and copy the value to the destination if it
      * contains a property with the same name and it is not read-only.
      *

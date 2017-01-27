@@ -17,8 +17,8 @@
 package com.haulmont.cuba.core.global.validation.groups;
 
 /**
- * Bean validation constraint group used by UI for fields validation. <br/>
- * You can assign this group for constraints that must be checked only when instance is set to UI component. <br/>
+ * Bean validation constraint group used by UI for fields validation. <br>
+ * You can assign this group for constraints that must be checked only when instance is set to UI component. <br>
  */
 public interface UiComponentChecks {
 }

@@ -24,13 +24,11 @@ import org.springframework.stereotype.Component;
 import javax.swing.*;
 
 /**
- * Naive implementation of WindowManagerProvider. <br/>
+ * Naive implementation of WindowManagerProvider. <br>
  * Always returns WindowManager of main application frame.
- *
  */
 @Component(WindowManagerProvider.NAME)
 public class DesktopWindowManagerProvider implements WindowManagerProvider {
-
     @Override
     public WindowManager get() {
         if (!SwingUtilities.isEventDispatchThread())

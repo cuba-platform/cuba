@@ -28,10 +28,9 @@ import javax.sql.DataSource;
 
 /**
  * Executes SQL queries with pluggable strategies for handling
- * <code>ResultSet</code>s.  This class is thread safe.
+ * {@code ResultSet}s.  This class is thread safe.
  *
  * @see ResultSetHandler
- *
  */
 public class QueryRunner {
 
@@ -49,10 +48,10 @@ public class QueryRunner {
 
     /**
      * Constructor for QueryRunner.  Methods that do not take a
-     * <code>Connection</code> parameter will retrieve connections from this
-     * <code>DataSource</code>.
+     * {@code Connection} parameter will retrieve connections from this
+     * {@code DataSource}.
      *
-     * @param ds The <code>DataSource</code> to retrieve connections from.
+     * @param ds The {@code DataSource} to retrieve connections from.
      */
     public QueryRunner(DataSource ds) {
         setDataSource(ds);
@@ -84,7 +83,7 @@ public class QueryRunner {
      * @param sql The SQL to execute.
      * @param params An array of query replacement parameters.  Each row in
      * this array is one set of batch replacement values.
-     * @param paramTypes Query replacement parameters types; <code>null</code> is a valid
+     * @param paramTypes Query replacement parameters types; {@code null} is a valid
      * value to pass in.
      * @return The number of rows updated per statement.
      * @throws SQLException if a database access error occurs
@@ -114,8 +113,8 @@ public class QueryRunner {
 
     /**
      * Execute a batch of SQL INSERT, UPDATE, or DELETE queries.  The
-     * <code>Connection</code> is retrieved from the <code>DataSource</code>
-     * set in the constructor.  This <code>Connection</code> must be in
+     * {@code Connection} is retrieved from the {@code DataSource}
+     * set in the constructor.  This {@code Connection} must be in
      * auto-commit mode or the update will not be saved.
      *
      * @param sql The SQL to execute.
@@ -131,14 +130,14 @@ public class QueryRunner {
 
     /**
      * Execute a batch of SQL INSERT, UPDATE, or DELETE queries.  The
-     * <code>Connection</code> is retrieved from the <code>DataSource</code>
-     * set in the constructor.  This <code>Connection</code> must be in
+     * {@code Connection} is retrieved from the {@code DataSource}
+     * set in the constructor.  This {@code Connection} must be in
      * auto-commit mode or the update will not be saved.
      *
      * @param sql The SQL to execute.
      * @param params An array of query replacement parameters.  Each row in
      * this array is one set of batch replacement values.
-     * @param paramTypes Query replacement parameters types; <code>null</code> is a valid
+     * @param paramTypes Query replacement parameters types; {@code null} is a valid
      * value to pass in.
      * @return The number of rows updated per statement.
      * @throws SQLException if a database access error occurs
@@ -154,10 +153,10 @@ public class QueryRunner {
     }
 
     /**
-     * Fill the <code>PreparedStatement</code> replacement parameters with
+     * Fill the {@code PreparedStatement} replacement parameters with
      * the given objects.
      * @param stmt PreparedStatement to fill
-     * @param params Query replacement parameters; <code>null</code> is a valid
+     * @param params Query replacement parameters; {@code null} is a valid
      * value to pass in.
      * @throws SQLException if a database access error occurs
      */
@@ -168,12 +167,12 @@ public class QueryRunner {
     }
 
     /**
-     * Fill the <code>PreparedStatement</code> replacement parameters with
+     * Fill the {@code PreparedStatement} replacement parameters with
      * the given objects.
      * @param stmt PreparedStatement to fill
-     * @param params Query replacement parameters; <code>null</code> is a valid
+     * @param params Query replacement parameters; {@code null} is a valid
      * value to pass in.
-     * @param paramTypes Query replacement parameters types; <code>null</code> is a valid
+     * @param paramTypes Query replacement parameters types; {@code null} is a valid
      * value to pass in.
      * @throws SQLException if a database access error occurs
      */
@@ -207,9 +206,9 @@ public class QueryRunner {
     }
 
     /**
-     * Returns the <code>DataSource</code> this runner is using.
-     * <code>QueryRunner</code> methods always call this method to get the
-     * <code>DataSource</code> so subclasses can provide specialized
+     * Returns the {@code DataSource} this runner is using.
+     * {@code QueryRunner} methods always call this method to get the
+     * {@code DataSource} so subclasses can provide specialized
      * behavior.
      *
      * @return DataSource the runner is using
@@ -220,16 +219,16 @@ public class QueryRunner {
 
     /**
      * Factory method that creates and initializes a
-     * <code>PreparedStatement</code> object for the given SQL.
-     * <code>QueryRunner</code> methods always call this method to prepare
+     * {@code PreparedStatement} object for the given SQL.
+     * {@code QueryRunner} methods always call this method to prepare
      * statements for them.  Subclasses can override this method to provide
      * special PreparedStatement configuration if needed.  This implementation
-     * simply calls <code>conn.prepareStatement(sql)</code>.
+     * simply calls {@code conn.prepareStatement(sql)}.
      *
-     * @param conn The <code>Connection</code> used to create the
-     * <code>PreparedStatement</code>
+     * @param conn The {@code Connection} used to create the
+     * {@code PreparedStatement}
      * @param sql The SQL statement to prepare.
-     * @return An initialized <code>PreparedStatement</code>.
+     * @return An initialized {@code PreparedStatement}.
      * @throws SQLException if a database access error occurs
      */
     protected PreparedStatement prepareStatement(Connection conn, String sql)
@@ -240,13 +239,13 @@ public class QueryRunner {
 
     /**
      * Factory method that creates and initializes a
-     * <code>Connection</code> object.  <code>QueryRunner</code> methods
+     * {@code Connection} object.  {@code QueryRunner} methods
      * always call this method to retrieve connections from its DataSource.
      * Subclasses can override this method to provide
-     * special <code>Connection</code> configuration if needed.  This
-     * implementation simply calls <code>ds.getConnection()</code>.
+     * special {@code Connection} configuration if needed.  This
+     * implementation simply calls {@code ds.getConnection()}.
      *
-     * @return An initialized <code>Connection</code>.
+     * @return An initialized {@code Connection}.
      * @throws SQLException if a database access error occurs
      * @since DbUtils 1.1
      */
@@ -349,13 +348,13 @@ public class QueryRunner {
 
     /**
      * Executes the given SELECT SQL with a single replacement parameter.
-     * The <code>Connection</code> is retrieved from the
-     * <code>DataSource</code> set in the constructor.
+     * The {@code Connection} is retrieved from the
+     * {@code DataSource} set in the constructor.
      *
      * @param sql The SQL statement to execute.
      * @param param The replacement parameter.
      * @param rsh The handler used to create the result object from
-     * the <code>ResultSet</code>.
+     * the {@code ResultSet}.
      *
      * @return An object generated by the handler.
      * @throws SQLException if a database access error occurs
@@ -368,15 +367,15 @@ public class QueryRunner {
 
     /**
      * Executes the given SELECT SQL query and returns a result object.
-     * The <code>Connection</code> is retrieved from the
-     * <code>DataSource</code> set in the constructor.
+     * The {@code Connection} is retrieved from the
+     * {@code DataSource} set in the constructor.
      *
      * @param sql The SQL statement to execute.
      * @param params Initialize the PreparedStatement's IN parameters with
      * this array.
      *
      * @param rsh The handler used to create the result object from
-     * the <code>ResultSet</code>.
+     * the {@code ResultSet}.
      *
      * @return An object generated by the handler.
      * @throws SQLException if a database access error occurs
@@ -389,8 +388,8 @@ public class QueryRunner {
 
     /**
      * Executes the given SELECT SQL query and returns a result object.
-     * The <code>Connection</code> is retrieved from the
-     * <code>DataSource</code> set in the constructor.
+     * The {@code Connection} is retrieved from the
+     * {@code DataSource} set in the constructor.
      *
      * @param sql The SQL statement to execute.
      * @param params Initialize the PreparedStatement's IN parameters with
@@ -398,7 +397,7 @@ public class QueryRunner {
      * @param paramTypes The query replacement parameter types.
      *
      * @param rsh The handler used to create the result object from
-     * the <code>ResultSet</code>.
+     * the {@code ResultSet}.
      *
      * @return An object generated by the handler.
      * @throws SQLException if a database access error occurs
@@ -417,12 +416,12 @@ public class QueryRunner {
 
     /**
      * Executes the given SELECT SQL without any replacement parameters.
-     * The <code>Connection</code> is retrieved from the
-     * <code>DataSource</code> set in the constructor.
+     * The {@code Connection} is retrieved from the
+     * {@code DataSource} set in the constructor.
      *
      * @param sql The SQL statement to execute.
      * @param rsh The handler used to create the result object from
-     * the <code>ResultSet</code>.
+     * the {@code ResultSet}.
      *
      * @return An object generated by the handler.
      * @throws SQLException if a database access error occurs
@@ -439,7 +438,7 @@ public class QueryRunner {
      *
      * @param sql The query that was executing when the exception happened.
      *
-     * @param params The query replacement parameters; <code>null</code> is a
+     * @param params The query replacement parameters; {@code null} is a
      * valid value to pass in.
      *
      * @throws SQLException if a database access error occurs
@@ -467,10 +466,10 @@ public class QueryRunner {
     }
 
     /**
-     * Sets the <code>DataSource</code> this runner will use to get
+     * Sets the {@code DataSource} this runner will use to get
      * database connections from.  This should be called after creating a
      * runner with the default constructor if you intend to use the
-     * execute methods without passing in a <code>Connection</code>.
+     * execute methods without passing in a {@code Connection}.
      *
      * @param dataSource The DataSource to use.
      */
@@ -559,9 +558,9 @@ public class QueryRunner {
 
     /**
      * Executes the given INSERT, UPDATE, or DELETE SQL statement without
-     * any replacement parameters. The <code>Connection</code> is retrieved
-     * from the <code>DataSource</code> set in the constructor.  This
-     * <code>Connection</code> must be in auto-commit mode or the update will
+     * any replacement parameters. The {@code Connection} is retrieved
+     * from the {@code DataSource} set in the constructor.  This
+     * {@code Connection} must be in auto-commit mode or the update will
      * not be saved.
      *
      * @param sql The SQL statement to execute.
@@ -574,9 +573,9 @@ public class QueryRunner {
 
     /**
      * Executes the given INSERT, UPDATE, or DELETE SQL statement with
-     * a single replacement parameter.  The <code>Connection</code> is
-     * retrieved from the <code>DataSource</code> set in the constructor.
-     * This <code>Connection</code> must be in auto-commit mode or the
+     * a single replacement parameter.  The {@code Connection} is
+     * retrieved from the {@code DataSource} set in the constructor.
+     * This {@code Connection} must be in auto-commit mode or the
      * update will not be saved.
      *
      * @param sql The SQL statement to execute.
@@ -590,8 +589,8 @@ public class QueryRunner {
 
     /**
      * Executes the given INSERT, UPDATE, or DELETE SQL statement.  The
-     * <code>Connection</code> is retrieved from the <code>DataSource</code>
-     * set in the constructor.  This <code>Connection</code> must be in
+     * {@code Connection} is retrieved from the {@code DataSource}
+     * set in the constructor.  This {@code Connection} must be in
      * auto-commit mode or the update will not be saved.
      *
      * @param sql The SQL statement to execute.
@@ -612,8 +611,8 @@ public class QueryRunner {
 
     /**
      * Executes the given INSERT, UPDATE, or DELETE SQL statement.  The
-     * <code>Connection</code> is retrieved from the <code>DataSource</code>
-     * set in the constructor.  This <code>Connection</code> must be in
+     * {@code Connection} is retrieved from the {@code DataSource}
+     * set in the constructor.  This {@code Connection} must be in
      * auto-commit mode or the update will not be saved.
      *
      * @param sql The SQL statement to execute.
@@ -634,8 +633,8 @@ public class QueryRunner {
     }
 
     /**
-     * Wrap the <code>ResultSet</code> in a decorator before processing it.
-     * This implementation returns the <code>ResultSet</code> it is given
+     * Wrap the {@code ResultSet} in a decorator before processing it.
+     * This implementation returns the {@code ResultSet} it is given
      * without any decoration.
      *
      * <p>
@@ -650,16 +649,16 @@ public class QueryRunner {
      * };
      * </pre>
      *
-     * @param rs The <code>ResultSet</code> to decorate; never
-     * <code>null</code>.
-     * @return The <code>ResultSet</code> wrapped in some decorator.
+     * @param rs The {@code ResultSet} to decorate; never
+     * {@code null}.
+     * @return The {@code ResultSet} wrapped in some decorator.
      */
     protected ResultSet wrap(ResultSet rs) {
         return rs;
     }
 
     /**
-     * Close a <code>Connection</code>.  This implementation avoids closing if
+     * Close a {@code Connection}.  This implementation avoids closing if
      * null and does <strong>not</strong> suppress any exceptions.  Subclasses
      * can override to provide special handling like logging.
      * @param conn Connection to close
@@ -671,7 +670,7 @@ public class QueryRunner {
     }
 
     /**
-     * Close a <code>Statement</code>.  This implementation avoids closing if
+     * Close a {@code Statement}.  This implementation avoids closing if
      * null and does <strong>not</strong> suppress any exceptions.  Subclasses
      * can override to provide special handling like logging.
      * @param stmt Statement to close
@@ -683,7 +682,7 @@ public class QueryRunner {
     }
 
     /**
-     * Close a <code>ResultSet</code>.  This implementation avoids closing if
+     * Close a {@code ResultSet}.  This implementation avoids closing if
      * null and does <strong>not</strong> suppress any exceptions.  Subclasses
      * can override to provide special handling like logging.
      * @throws SQLException if a database access error occurs
@@ -693,5 +692,4 @@ public class QueryRunner {
     protected void close(ResultSet rs) throws SQLException {
         DbUtils.close(rs);
     }
-
 }

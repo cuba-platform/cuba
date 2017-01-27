@@ -29,7 +29,6 @@ import java.util.List;
 
 /**
  * Type-safe extension of Query interface.
- *
  */
 public interface TypedQuery<T> extends Query {
 
@@ -84,7 +83,7 @@ public interface TypedQuery<T> extends Query {
 
     /**
      * Set View for this Query instance.
-     * <p/> All non-lazy view properties contained in a combination of all added views are eagerly fetched.
+     * <br> All non-lazy view properties contained in a combination of all added views are eagerly fetched.
      *
      * @param viewName      view name - must not be null
      * @return the same query instance
@@ -93,7 +92,7 @@ public interface TypedQuery<T> extends Query {
 
     /**
      * Adds View for this Query instance.
-     * <p/> All non-lazy view properties contained in a combination of all added views are eagerly fetched.
+     * <br> All non-lazy view properties contained in a combination of all added views are eagerly fetched.
      *
      * @param viewName      view name - must not be null
      * @return the same query instance
@@ -102,7 +101,7 @@ public interface TypedQuery<T> extends Query {
 
     /**
      * Set query results to be cached
-     * @param cacheable
+     * @param cacheable whether query is cacheable
      * @return the same query instance
      */
     TypedQuery<T> setCacheable(boolean cacheable);

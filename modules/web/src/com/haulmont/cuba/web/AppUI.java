@@ -121,9 +121,9 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
 
     /**
      * Dynamically init external JS libraries.
-     * You should create JavaScriptExtension class and extend UI object here. <br/>
+     * You should create JavaScriptExtension class and extend UI object here. <br>
      * <p>
-     * Example: <br/>
+     * Example: <br>
      * <pre><code>
      * JavaScriptExtension:
      *

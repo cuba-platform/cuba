@@ -35,7 +35,7 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
      * Expand tree including specified level
      *
      * @param level level of Tree nodes to expand, if passed level = 1 then root items will be expanded
-     * @throws IllegalArgumentException if level < 1
+     * @throws IllegalArgumentException if level &lt; 1
      */
     void expandUpTo(int level);
 
@@ -69,7 +69,7 @@ public interface Tree<E extends Entity> extends ListComponent<E>, Component.Edit
      */
     interface StyleProvider<E extends Entity> {
         /**
-         * Called by {@link Tree} to get a style for item. <br/>
+         * Called by {@link Tree} to get a style for item. <br>
          * All unhandled exceptions from StyleProvider in Web components by default are logged with ERROR level
          * and not shown to users.
          *
