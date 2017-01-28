@@ -2388,7 +2388,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 return (com.vaadin.ui.Field<?>) componentImpl;
             }
 
-            return new EditableColumnFieldWrapper(componentImpl);
+            return new EditableColumnFieldWrapper(componentImpl, columnComponent);
         }
 
         protected Component getComponentImplementation(com.haulmont.cuba.gui.components.Component columnComponent) {
@@ -2798,11 +2798,18 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         protected Component component;
 
-        public EditableColumnFieldWrapper(Component component) {
+        public EditableColumnFieldWrapper(Component component, com.haulmont.cuba.gui.components.Component columnComponent) {
             this.component = component;
 
             if (component.getWidth() < 0) {
                 setWidthUndefined();
+            }
+
+            if (columnComponent instanceof Field) {
+                AbstractComponent vComponent = columnComponent.unwrap(AbstractComponent.class);
+                if (vComponent instanceof Focusable) {
+                    setFocusDelegate((Focusable) vComponent);
+                }
             }
         }
 
