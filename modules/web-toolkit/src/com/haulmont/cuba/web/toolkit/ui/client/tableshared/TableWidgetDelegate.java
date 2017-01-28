@@ -93,11 +93,13 @@ public class TableWidgetDelegate {
 
     public void setFocus(String itemKey, String columnKey) {
         HasWidgets row = tableWidget.getRenderedRowByKey(itemKey);
+        int columnIndex = Arrays.asList(tableWidget.getVisibleColOrder()).indexOf(columnKey);
+
         for (Widget childWidget : row) {
-            int columnIndex = Arrays.asList(tableWidget.getVisibleColOrder()).indexOf(columnKey);
             Element element = ((Widget) row).getElement();
             if (element.getChild(columnIndex).getFirstChild() == childWidget.getElement().getParentNode()) {
                 this.focusWidget(childWidget);
+                break;
             }
         }
     }
