@@ -77,7 +77,7 @@ import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid>
         implements DataGrid<E>, com.haulmont.cuba.gui.components.Component.SecuredActionsHolder {
 
-    private static final String HAS_TOP_PANEL_STYLE_NAME = "has-top-panel";
+    protected static final String HAS_TOP_PANEL_STYLE_NAME = "has-top-panel";
 
     // Style names used by grid itself
     protected final List<String> internalStyles = new ArrayList<>();
@@ -168,7 +168,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         initContextMenu();
     }
 
-    private void initComponent(Grid component) {
+    protected void initComponent(Grid component) {
         setSelectionMode(SelectionMode.SINGLE);
         component.setImmediate(true);
 
@@ -636,9 +636,6 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                     ColumnImpl column = new ColumnImpl(propertyName, metaPropertyPath, this);
                     MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(metaPropertyPath);
                     column.setCaption(messageTools.getPropertyCaption(propertyMetaClass, propertyName));
-
-                    Element element = DocumentHelper.createElement("column");
-                    column.setXmlDescriptor(element);
 
                     addColumn(column);
                 }
@@ -2268,9 +2265,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             }
         }
 
-        protected
         @Nullable
-        MetaProperty getMetaProperty() {
+        protected MetaProperty getMetaProperty() {
             return getPropertyPath() != null
                     ? getPropertyPath().getMetaProperty()
                     : null;
