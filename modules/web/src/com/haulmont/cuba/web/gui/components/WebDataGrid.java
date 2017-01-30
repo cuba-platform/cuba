@@ -1235,13 +1235,15 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     // if buttons panel becomes hidden we need to set top panel height to 0
     protected void updateCompositionStylesTopPanelVisible() {
         if (topPanel != null) {
-            boolean topPanelVisible = topPanel.getComponentCount() > 0;
+            boolean hasChildren = topPanel.getComponentCount() > 0;
+            boolean anyChildVisible = false;
             for (Component childComponent : topPanel) {
-                if (!childComponent.isVisible()) {
-                    topPanelVisible = false;
+                if (childComponent.isVisible()) {
+                    anyChildVisible = true;
                     break;
                 }
             }
+            boolean topPanelVisible = hasChildren && anyChildVisible;
 
             if (!topPanelVisible) {
                 componentComposition.removeStyleName(HAS_TOP_PANEL_STYLE_NAME);
