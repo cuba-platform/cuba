@@ -19,6 +19,7 @@
     padding-top: 31px;
 
     .c-data-grid-top {
+      height: 25px;
       margin-top: -31px;
     }
   }
@@ -34,5 +35,16 @@
 
   .#{$primary-stylename}-cell .boolean-value-false {
     background: url(sprites/checkbox-unchecked.png) no-repeat left center;
+  }
+
+  .#{$primary-stylename}-cell.sort-asc,
+  .#{$primary-stylename}-cell.sort-desc {
+    &:after {
+      cursor: pointer;
+    }
+  }
+
+  .#{$primary-stylename}-body .#{$primary-stylename}-row {
+    cursor: pointer;
   }
 }

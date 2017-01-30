@@ -40,6 +40,7 @@
     padding-top: $v-unit-size + ceil($v-layout-spacing-vertical);
 
     .c-data-grid-top {
+      height: $v-unit-size;
       margin-top: -1 * ($v-unit-size + ceil($v-layout-spacing-vertical));
     }
   }
@@ -71,5 +72,16 @@
         color: $font-color;
       }
     }
+  }
+
+  .#{$primary-stylename}-cell.sort-asc,
+  .#{$primary-stylename}-cell.sort-desc {
+    &:after {
+      cursor: pointer;
+    }
+  }
+
+  .#{$primary-stylename}-body .#{$primary-stylename}-row {
+    cursor: pointer;
   }
 }
