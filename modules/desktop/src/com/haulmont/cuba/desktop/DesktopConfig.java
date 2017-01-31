@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
@@ -94,6 +95,9 @@ public interface DesktopConfig extends Config {
     @DefaultInt(60)
     int getSessionMessagesIntervalSec();
 
+    /**
+     * @deprecated Use {@link ClientConfig#getSuggestionFieldAsyncSearchDelayMs()} instead
+     */
     @Property("cuba.desktop.searchField.asyncTimeoutMs")
     @DefaultInt(200)
     int getSearchFieldAsyncTimeoutMs();

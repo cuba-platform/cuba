@@ -70,6 +70,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(PopupButton.NAME, DesktopPopupButton.class);
         classes.put(LookupField.NAME, DesktopLookupField.class);
         classes.put(PickerField.NAME, DesktopPickerField.class);
+        classes.put(SuggestionField.NAME, DesktopSuggestionField.class);
         classes.put(LookupPickerField.NAME, DesktopLookupPickerField.class);
         classes.put(MaskedField.NAME, DesktopMaskedField.class);
 

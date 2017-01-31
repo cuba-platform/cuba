@@ -22,17 +22,17 @@ import com.haulmont.cuba.core.entity.Entity;
 import java.util.List;
 import java.util.Map;
 
-public interface SuggestionField extends SearchField {
+public interface SuggestionField extends Field {
 
     String NAME = "suggestionField";
 
     interface SearchExecutor<E extends Entity> {
 
         /**
-         * Executed on backgroud thread.
+         * Executed on background thread.
          *
-         * @param searchString search string as is.
-         * @param searchParams additional parameters, empty of SearchExecutor is not instance of {@link ParametrizedSearchExecutor}
+         * @param searchString search string as is
+         * @param searchParams additional parameters, empty if SearchExecutor is not instance of {@link ParametrizedSearchExecutor}
          * @return list with found entities
          */
         List<E> search(String searchString, Map<String, Object> searchParams);
@@ -65,17 +65,99 @@ public interface SuggestionField extends SearchField {
         void onArrowDownKeyPressed(String currentSearchString);
     }
 
+    /**
+     * @return delay between the last key press action and async search
+     * @deprecated Use {@link SuggestionField#getAsyncSearchDelayMs()} instead.
+     */
+    @Deprecated
     int getAsyncSearchTimeoutMs();
+
+    /**
+     * Sets delay between the last key press action and async search.
+     *
+     * @param asyncSearchTimeoutMs delay in ms
+     * @deprecated Use {@link SuggestionField#setAsyncSearchDelayMs(int)} instead.
+     */
+    @Deprecated
     void setAsyncSearchTimeoutMs(int asyncSearchTimeoutMs);
 
+    /**
+     * @return delay between the last key press action and async search
+     */
+    int getAsyncSearchDelayMs();
+
+    /**
+     * Sets delay between the last key press action and async search.
+     *
+     * @param asyncSearchDelayMs delay in ms
+     */
+    void setAsyncSearchDelayMs(int asyncSearchDelayMs);
+
+    /**
+     * @return {@link SearchExecutor} which performs search
+     */
     SearchExecutor getSearchExecutor();
+
+    /**
+     * Sets {@link SearchExecutor} which performs search.
+     *
+     * @param searchExecutor SearchExecutor instance
+     */
     void setSearchExecutor(SearchExecutor searchExecutor);
 
+    /**
+     * @return {@link EnterActionHandler} which handles ENTER key pressing
+     */
     EnterActionHandler getEnterActionHandler();
+
+    /**
+     * Sets {@link EnterActionHandler} which handles ENTER key pressing.
+     *
+     * @param enterActionHandler EnterActionHandler instance
+     */
     void setEnterActionHandler(EnterActionHandler enterActionHandler);
 
+    /**
+     * @return {@link ArrowDownActionHandler} which handles ARROW_DOWN key pressing
+     */
     ArrowDownActionHandler getArrowDownActionHandler();
+
+    /**
+     * Sets {@link ArrowDownActionHandler} which handles ARROW_DOWN key pressing.
+     *
+     * @param arrowDownActionHandler ArrowDownActionHandler instance
+     */
     void setArrowDownActionHandler(ArrowDownActionHandler arrowDownActionHandler);
 
+    /**
+     * @return min string length to perform suggestions search
+     */
+    int getMinSearchStringLength();
+
+    /**
+     * Sets min string length which is required to perform suggestions search.
+     *
+     * @param minSearchStringLength required string length to perform search
+     */
+    void setMinSearchStringLength(int minSearchStringLength);
+
+    /**
+     * @return limit of suggestions which will be shown
+     */
+    int getSuggestionsLimit();
+
+
+    /**
+     * Sets limit of suggestions which will be shown.
+     *
+     * @param suggestionsLimit integer limit value
+     */
+    void setSuggestionsLimit(int suggestionsLimit);
+
+    /**
+     * Show passed suggestions in popup.
+     *
+     * @param suggestions suggestions to show
+     */
     void showSuggestions(List<? extends Entity> suggestions);
 }

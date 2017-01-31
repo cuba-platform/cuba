@@ -1,0 +1,32 @@
+$cuba-suggestionfield-edit-color: scale-color(lighten($v-focus-color, 35%), $saturation: -15%) !default;
+
+@mixin halo-cuba-suggestionfield($primary-stylename: c-suggestionfield) {
+  .#{$primary-stylename} {
+    @include valo-textfield-style;
+    width: $v-default-field-width;
+    font-size: $v-font-size;
+
+    &.modified {
+      background-color: $cuba-suggestionfield-edit-color;
+    }
+  }
+
+  .#{$primary-stylename}-popup {
+    @include valo-selection-overlay-style;
+    overflow-y: auto;
+    outline: 0px;
+  }
+
+  .#{$primary-stylename}-item {
+    overflow-x: hidden;
+    border-radius: 3px;
+    cursor: pointer;
+    line-height: $v-selection-item-height;
+    padding-right: $v-selection-item-padding-horizontal*2;
+    padding-left: $v-selection-item-padding-horizontal;
+  }
+
+  .#{$primary-stylename}-item-selected {
+    @include valo-selection-item-selected-style;
+  }
+}

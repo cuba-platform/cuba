@@ -73,6 +73,7 @@
 @import "components/draganddrop/draganddrop";
 @import "components/sidemenu/sidemenu";
 @import "components/fileuploadwrapper/fileuploadwrapper";
+@import "components/suggestionfield/suggestionfield";
 
 // Application specific
 @import "app/log-control";
@@ -151,6 +152,7 @@
   @include halo-cuba-fieldgrouplayout;
   @include halo-cuba-resizabletextarea;
   @include halo-cuba-fileupload-wrapper;
+  @include halo-cuba-suggestionfield;
 
   @include cuba-log-control;
   @include cuba-login-window;

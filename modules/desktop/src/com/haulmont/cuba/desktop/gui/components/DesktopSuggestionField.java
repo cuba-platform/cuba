@@ -18,8 +18,8 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.matchers.TextMatcherEditor;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -30,10 +30,11 @@ import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.SearchAutoCompleteSupport;
 import com.haulmont.cuba.desktop.sys.vcl.SearchComboBox;
-import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SuggestionField;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
@@ -50,7 +51,7 @@ import java.util.concurrent.ExecutionException;
 
 public class DesktopSuggestionField extends DesktopAbstractOptionsField<JComponent> implements SuggestionField {
 
-    protected static final FilterMode DEFAULT_FILTER_MODE = FilterMode.CONTAINS;
+    private final Logger log = LoggerFactory.getLogger(DesktopSuggestionField.class);
 
     protected BasicEventList<Object> items = new BasicEventList<>();
     protected SearchAutoCompleteSupport<Object> autoComplete;
@@ -63,8 +64,6 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     protected boolean disableActionListener = false;
 
     protected boolean editable = true;
-
-    protected Mode mode = Mode.CASE_SENSITIVE;
 
     protected Object nullOption;
 
@@ -79,22 +78,17 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     protected String lastSearchString;
 
     protected int minSearchStringLength = 0;
-    protected int asyncSearchTimeoutMs;
+
+    protected int asyncSearchDelayMs;
+
     protected SearchExecutor<Entity> searchExecutor;
     protected EnterActionHandler enterActionHandler;
 
-    protected SearchNotifications searchNotifications;
-    protected Frame.NotificationType defaultNotificationType = Frame.NotificationType.TRAY;
-
     protected Color searchEditBgColor = (Color) UIManager.get("cubaSearchEditBackground");
 
-    protected String inputPrompt;
     protected String currentSearchComponentText;
-    protected boolean nullOptionVisible = true;
     private ArrowDownActionHandler arrowDownActionHandler;
-
-    // just stub
-    protected OptionIconProvider optionIconProvider;
+    protected int suggestionsLimit = 10;
 
     public DesktopSuggestionField() {
         composition = new JPanel();
@@ -121,101 +115,81 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
             }
         };
 
-        comboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (settingValue || disableActionListener) {
-                    return;
-                }
-
-                if ("comboBoxEdited".equals(e.getActionCommand())) {
-                    Object selectedItem = comboBox.getSelectedItem();
-
-                    if (popupItemSelectionHandling) {
-                        if (selectedItem instanceof ValueWrapper) {
-                            Object selectedValue = ((ValueWrapper) selectedItem).getValue();
-                            setValue(selectedValue);
-                        }
-                    } else if (enterHandling) {
-                        if (selectedItem instanceof String) {
-                            boolean found = false;
-                            String newFilter = (String) selectedItem;
-                            if (prevValue != null) {
-                                if (StringUtils.equals(getDisplayString((Entity) prevValue), newFilter)) {
-                                    found = true;
-                                }
-                            }
-
-                            final boolean searchStringEqualsToCurrentValue = found;
-                            // we need to do it later
-                            // unable to change current text from ActionListener
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    updateComponent(prevValue);
-
-                                    if (!searchStringEqualsToCurrentValue) {
-                                        handleOnEnterAction(((String) selectedItem));
-                                    }
-                                }
-                            });
-                        } else if (currentSearchComponentText != null) {
-                            // Disable variants after select
-                            final String enterActionString = currentSearchComponentText;
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    updateComponent(prevValue);
-
-                                    handleOnEnterAction(enterActionString);
-                                }
-                            });
-
-                            currentSearchComponentText = null;
-                        }
-                    }
-
-                    clearSearchVariants();
-
-                    popupItemSelectionHandling = false;
-                    enterHandling = false;
-                }
-
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateEditState();
-                    }
-                });
+        comboBox.addActionListener(e -> {
+            if (settingValue || disableActionListener) {
+                return;
             }
+
+            if ("comboBoxEdited".equals(e.getActionCommand())) {
+                Object selectedItem = comboBox.getSelectedItem();
+
+                if (popupItemSelectionHandling) {
+                    if (selectedItem instanceof ValueWrapper) {
+                        Object selectedValue = ((ValueWrapper) selectedItem).getValue();
+                        setValue(selectedValue);
+                    }
+                } else if (enterHandling) {
+                    if (selectedItem instanceof String) {
+                        boolean found = false;
+                        String newFilter = (String) selectedItem;
+                        if (prevValue != null) {
+                            if (StringUtils.equals(getDisplayString((Entity) prevValue), newFilter)) {
+                                found = true;
+                            }
+                        }
+
+                        final boolean searchStringEqualsToCurrentValue = found;
+                        // we need to do it later
+                        // unable to change current text from ActionListener
+                        SwingUtilities.invokeLater(() -> {
+                            updateComponent(prevValue);
+
+                            if (!searchStringEqualsToCurrentValue) {
+                                handleOnEnterAction(((String) selectedItem));
+                            }
+                        });
+                    } else if (currentSearchComponentText != null) {
+                        // Disable variants after select
+                        final String enterActionString = currentSearchComponentText;
+                        SwingUtilities.invokeLater(() -> {
+                            updateComponent(prevValue);
+
+                            handleOnEnterAction(enterActionString);
+                        });
+
+                        currentSearchComponentText = null;
+                    }
+                }
+
+                clearSearchVariants();
+
+                popupItemSelectionHandling = false;
+                enterHandling = false;
+            }
+
+            SwingUtilities.invokeLater(this::updateEditState);
         });
 
         Component editorComponent = comboBox.getEditor().getEditorComponent();
         editorComponent.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateEditState();
+                SwingUtilities.invokeLater(() -> {
+                    updateEditState();
 
-                        if (e.getKeyChar() != '\n') {
-                            handleSearchInput();
-                        }
+                    if (e.getKeyChar() != '\n') {
+                        handleSearchInput();
                     }
                 });
             }
 
             @Override
             public void keyPressed(KeyEvent e) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (e.getKeyCode() == KeyEvent.VK_DOWN
-                                && arrowDownActionHandler != null
-                                && !comboBox.isPopupVisible()) {
-                            arrowDownActionHandler.onArrowDownKeyPressed(getComboBoxEditorField().getText());
-                        }
+                SwingUtilities.invokeLater(() -> {
+                    if (e.getKeyCode() == KeyEvent.VK_DOWN
+                            && arrowDownActionHandler != null
+                            && !comboBox.isPopupVisible()) {
+                        arrowDownActionHandler.onArrowDownKeyPressed(getComboBoxEditorField().getText());
                     }
                 });
             }
@@ -241,12 +215,8 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
         }
 
         final JTextField searchEditorComponent = getComboBoxEditorField();
-        searchEditorComponent.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                currentSearchComponentText = searchEditorComponent.getText();
-            }
-        });
+        searchEditorComponent.addActionListener(e ->
+                currentSearchComponentText = searchEditorComponent.getText());
 
         // set value only on PopupMenu closing to avoid firing listeners on keyboard navigation
         comboBox.addPopupMenuListener(
@@ -283,8 +253,6 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
                 }
         );
 
-        setFilterMode(DEFAULT_FILTER_MODE);
-
         textField = new JTextField();
         textField.setEditable(false);
         UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
@@ -296,7 +264,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
         DesktopComponentsHelper.adjustSize(comboBox);
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
-        asyncSearchTimeoutMs = configuration.getConfig(DesktopConfig.class).getSearchFieldAsyncTimeoutMs();
+        asyncSearchDelayMs = configuration.getConfig(ClientConfig.class).getSuggestionFieldAsyncSearchDelayMs();
     }
 
     protected void handleOnEnterAction(String currentSearchString) {
@@ -341,7 +309,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     protected SwingWorker<List<Entity>, Void> createSearchWorker(final String currentSearchString,
                                                                  final Map<String, Object> params) {
         final SearchExecutor<Entity> currentSearchExecutor = this.searchExecutor;
-        final int currentAsyncSearchTimeoutMs = this.asyncSearchTimeoutMs;
+        final int currentAsyncSearchTimeoutMs = this.asyncSearchDelayMs;
 
         return new SwingWorker<List<Entity>, Void>() {
             @Override
@@ -405,7 +373,8 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
         if (isVisible() && isEnabled() && isEditable()) {
             items.clear();
             List<SearchEntityWrapper> wrappers = new ArrayList<>();
-            for (Entity item : searchResultItems) {
+            for (int i = 0; i < searchResultItems.size() && i < suggestionsLimit; i++) {
+                Entity item = searchResultItems.get(i);
                 wrappers.add(new SearchEntityWrapper(item));
             }
             items.addAll(wrappers);
@@ -476,100 +445,6 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     }
 
     @Override
-    public Object getNullOption() {
-        return nullOption;
-    }
-
-    @Override
-    public void setNullOption(Object nullOption) {
-        this.nullOption = nullOption;
-        autoComplete.setFirstItem(new NullOption());
-    }
-
-    @Override
-    public FilterMode getFilterMode() {
-        return autoComplete.getFilterMode() == TextMatcherEditor.CONTAINS
-                ? FilterMode.CONTAINS : FilterMode.STARTS_WITH;
-    }
-
-    @Override
-    public void setFilterMode(FilterMode mode) {
-        autoComplete.setFilterMode(FilterMode.CONTAINS.equals(mode)
-                ? TextMatcherEditor.CONTAINS : TextMatcherEditor.STARTS_WITH);
-    }
-
-    @Override
-    public boolean isNewOptionAllowed() {
-        return false;
-    }
-
-    @Override
-    public void setNewOptionAllowed(boolean newOptionAllowed) {
-    }
-
-    @Override
-    public boolean isTextInputAllowed() {
-        return true;
-    }
-
-    @Override
-    public void setTextInputAllowed(boolean textInputAllowed) {
-        throw new UnsupportedOperationException("Option textInputAllowed is unsupported for Suggestion field");
-    }
-
-    @Override
-    public NewOptionHandler getNewOptionHandler() {
-        return null;
-    }
-
-    @Override
-    public void setNewOptionHandler(NewOptionHandler newOptionHandler) {
-    }
-
-    @Override
-    public int getPageLength() {
-        return 0;
-    }
-
-    @Override
-    public void setPageLength(int pageLength) {
-        // do nothing
-    }
-
-    @Override
-    public void setNullOptionVisible(boolean nullOptionVisible) {
-        this.nullOptionVisible = nullOptionVisible;
-    }
-
-    @Override
-    public boolean isNullOptionVisible() {
-        return nullOptionVisible;
-    }
-
-    public void setOptionIconProvider(OptionIconProvider<?> optionIconProvider) {
-        this.optionIconProvider = optionIconProvider;
-    }
-
-    @Override
-    public <T> void setOptionIconProvider(Class<T> optionClass, OptionIconProvider<T> optionIconProvider) {
-        this.optionIconProvider = optionIconProvider;
-    }
-
-    public OptionIconProvider<?> getOptionIconProvider() {
-        return optionIconProvider;
-    }
-
-    @Override
-    public String getInputPrompt() {
-        return inputPrompt;
-    }
-
-    @Override
-    public void setInputPrompt(String inputPrompt) {
-        this.inputPrompt = inputPrompt;
-    }
-
-    @Override
     public boolean isMultiSelect() {
         return false;
     }
@@ -625,8 +500,28 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     }
 
     @Override
+    public int getSuggestionsLimit() {
+        return suggestionsLimit;
+    }
+
+    @Override
+    public void setSuggestionsLimit(int suggestionsLimit) {
+        this.suggestionsLimit = suggestionsLimit;
+    }
+
+    @Override
     public void updateMissingValueState() {
         updateEditState();
+    }
+
+    @Override
+    public int getMinSearchStringLength() {
+        return minSearchStringLength;
+    }
+
+    @Override
+    public void setMinSearchStringLength(int minSearchStringLength) {
+        this.minSearchStringLength = minSearchStringLength;
     }
 
     @Override
@@ -768,58 +663,8 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     }
 
     @Override
-    public int getMinSearchStringLength() {
-        return minSearchStringLength;
-    }
-
-    @Override
-    public void setMinSearchStringLength(int searchStringLength) {
-        this.minSearchStringLength = searchStringLength;
-    }
-
-    @Override
-    public SearchNotifications getSearchNotifications() {
-        return searchNotifications;
-    }
-
-    @Override
-    public void setSearchNotifications(SearchNotifications searchNotifications) {
-        this.searchNotifications = searchNotifications;
-    }
-
-    @Override
-    public Frame.NotificationType getDefaultNotificationType() {
-        return defaultNotificationType;
-    }
-
-    @Override
-    public void setDefaultNotificationType(Frame.NotificationType defaultNotificationType) {
-        this.defaultNotificationType = defaultNotificationType;
-    }
-
-    @Override
-    public Mode getMode() {
-        return mode;
-    }
-
-    @Override
-    public void setMode(Mode mode) {
-        this.mode = mode;
-    }
-
-    @Override
-    public boolean isEscapeValueForLike() {
-        return false;
-    }
-
-    @Override
-    public void setEscapeValueForLike(boolean escapeValueForLike) {
-        throw new UnsupportedOperationException("escapeValueForLike for SuggestionField is unsupported");
-    }
-
-    @Override
     public int getAsyncSearchTimeoutMs() {
-        return asyncSearchTimeoutMs;
+        return asyncSearchDelayMs;
     }
 
     /**
@@ -828,7 +673,17 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
      */
     @Override
     public void setAsyncSearchTimeoutMs(int asyncSearchTimeoutMs) {
-        this.asyncSearchTimeoutMs = asyncSearchTimeoutMs;
+        this.asyncSearchDelayMs = asyncSearchTimeoutMs;
+    }
+
+    @Override
+    public int getAsyncSearchDelayMs() {
+        return asyncSearchDelayMs;
+    }
+
+    @Override
+    public void setAsyncSearchDelayMs(int asyncSearchDelayMs) {
+        this.asyncSearchDelayMs = asyncSearchDelayMs;
     }
 
     @Override

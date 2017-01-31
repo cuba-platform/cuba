@@ -362,4 +362,8 @@ public interface ClientConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(true)
     boolean getCreateActionAddsFirst();
+
+    @Property("cuba.gui.suggestionField.asyncSearchDelayMs")
+    @DefaultInt(300)
+    int getSuggestionFieldAsyncSearchDelayMs();
 }
