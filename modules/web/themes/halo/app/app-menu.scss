@@ -15,6 +15,27 @@
  *
  */
 
+$cuba-default-menubar-background: #1c1e20 !default;
+
+@function get-menu-background-color($color) {
+    @if ($color == #fafafa) {
+      @return $cuba-default-menubar-background;
+    } @else {
+      @return scale-color($color, $lightness: if(color-luminance($color) < 10, 15%, -70%));
+    }
+}
+
+@function get-menu-border-color($color) {
+    @if ($color == #fafafa) {
+      @return $cuba-default-menubar-background;
+    } @else {
+      @return first-color(valo-border($color: $v-selection-color));
+    }
+}
+
+$cuba-menubar-background-color: get-menu-background-color($v-app-background-color) !default;
+$cuba-menubar-border-color: get-menu-border-color($v-app-background-color) !default;
+
 @mixin cuba-menubar {
   .c-main-menu.v-menubar {
     border: 0;
@@ -153,8 +174,8 @@
 
   @if ($v-support-inverse-menu) {
     .c-inverse-header.c-app-menubar {
-      background: #1c1e20;
-      border: 1px solid #1c1e20;
+      background: $cuba-menubar-background-color;
+      border: 1px solid $cuba-menubar-border-color;
 
       @include box-shadow(none);
 
