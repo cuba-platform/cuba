@@ -82,7 +82,7 @@ public class Emailer implements EmailerAPI {
     protected Resources resources;
 
     @Inject
-    protected FileStorageAPI fileStorage;
+    protected FileStorageAPI<FileDescriptor> fileStorage;
 
     @Inject
     public void setConfig(Configuration configuration) {

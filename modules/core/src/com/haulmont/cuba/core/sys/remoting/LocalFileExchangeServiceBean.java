@@ -28,7 +28,7 @@ import java.io.InputStream;
 @Service(LocalFileExchangeService.NAME)
 public class LocalFileExchangeServiceBean implements LocalFileExchangeService {
     @Inject
-    protected FileStorageAPI fileStorage;
+    protected FileStorageAPI<FileDescriptor> fileStorage;
 
     @Override
     public void uploadFile(InputStream inputStream, FileDescriptor fileDescriptor) {

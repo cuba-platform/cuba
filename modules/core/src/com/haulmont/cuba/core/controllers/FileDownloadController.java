@@ -58,7 +58,7 @@ public class FileDownloadController {
     private UserSessionManager userSessionManager;
 
     @Inject
-    private FileStorageAPI fileStorage;
+    private FileStorageAPI<FileDescriptor> fileStorage;
 
     @Inject
     private DataService dataService;
