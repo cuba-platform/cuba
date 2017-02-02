@@ -88,6 +88,11 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
                     tab.setDetachable(Boolean.parseBoolean(detachable));
                 }
 
+                String closable = tabElement.attributeValue("closable");
+                if (StringUtils.isNotEmpty(closable)) {
+                    tab.setClosable(Boolean.parseBoolean(closable));
+                }
+
                 String caption = tabElement.attributeValue("caption");
                 if (!StringUtils.isEmpty(caption)) {
                     caption = loadResourceString(caption);

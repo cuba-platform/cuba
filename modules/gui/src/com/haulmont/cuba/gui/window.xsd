@@ -1943,6 +1943,7 @@
 
                             <xs:attribute name="expand" type="xs:string"/>
                             <xs:attribute name="detachable" type="xs:boolean"/>
+                            <xs:attribute name="closable" type="xs:boolean"/>
                         </xs:complexType>
                     </xs:element>
                 </xs:sequence>
