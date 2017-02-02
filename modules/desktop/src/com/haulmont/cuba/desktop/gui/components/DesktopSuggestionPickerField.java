@@ -27,6 +27,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.Collection;
+import java.util.Collections;
 
 public class DesktopSuggestionPickerField extends DesktopSuggestionField implements SuggestionPickerField {
 
@@ -159,6 +160,16 @@ public class DesktopSuggestionPickerField extends DesktopSuggestionField impleme
         super.updateEnabled();
 
         pickerField.setParentEnabled(isEnabledWithParent());
+    }
+
+    @Override
+    public void setLookupSelectHandler(Runnable selectHandler) {
+        // do nothing
+    }
+
+    @Override
+    public Collection getLookupSelectedItems() {
+        return Collections.singleton(getValue());
     }
 
     private class Picker extends com.haulmont.cuba.desktop.sys.vcl.Picker {
