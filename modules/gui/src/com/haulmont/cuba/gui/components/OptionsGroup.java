@@ -16,7 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface OptionsGroup extends OptionsField {
+public interface OptionsGroup extends OptionsField, LookupComponent {
 
     String NAME = "optionsGroup";
 

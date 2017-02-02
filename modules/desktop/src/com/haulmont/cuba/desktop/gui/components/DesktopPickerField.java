@@ -598,4 +598,14 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
     public ActionsPermissions getActionsPermissions() {
         return actionsPermissions;
     }
+
+    @Override
+    public void setLookupSelectHandler(Runnable selectHandler) {
+        // do nothing
+    }
+
+    @Override
+    public Collection getLookupSelectedItems() {
+        return Collections.singleton(getValue());
+    }
 }

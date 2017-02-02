@@ -47,10 +47,8 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> implements LookupField, UserSelectionHandler {
 
@@ -743,6 +741,16 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
             captionValue = "";
 
         return captionValue;
+    }
+
+    @Override
+    public void setLookupSelectHandler(Runnable selectHandler) {
+        // do nothing
+    }
+
+    @Override
+    public Collection getLookupSelectedItems() {
+        return Collections.singleton(getValue());
     }
 
     protected class NullOption extends EntityWrapper {

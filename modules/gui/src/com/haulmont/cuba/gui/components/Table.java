@@ -31,7 +31,7 @@ public interface Table<E extends Entity>
         extends
             ListComponent<E>, Component.Editable, Component.HasSettings,
             Component.HasButtonsPanel, Component.HasPresentations, Component.HasCaption,
-            Component.HasIcon, Component.HasRowsCount {
+            Component.HasIcon, Component.HasRowsCount, LookupComponent {
 
     enum ColumnAlignment {
         LEFT,

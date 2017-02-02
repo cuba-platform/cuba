@@ -169,6 +169,35 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
     }
 
     @Override
+    public void setLookupSelectHandler(Runnable selectHandler) {
+        impl.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1) {
+                    int rowForLocation = impl.getRowForLocation(e.getX(), e.getY());
+                    TreePath pathForLocation = impl.getPathForRow(rowForLocation);
+                    if (pathForLocation != null) {
+                        CollectionDatasource treeCds = getDatasource();
+                        if (treeCds != null) {
+                            TreeModelAdapter.Node treeItem =
+                                    (TreeModelAdapter.Node) pathForLocation.getLastPathComponent();
+                            if (treeItem != null) {
+                                treeCds.setItem(treeItem.getEntity());
+                                selectHandler.run();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public Collection getLookupSelectedItems() {
+        return getSelected();
+    }
+
+    @Override
     public JComponent getComposition() {
         return panel;
     }

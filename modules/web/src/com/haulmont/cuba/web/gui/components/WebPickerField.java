@@ -423,6 +423,16 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         return actionsPermissions;
     }
 
+    @Override
+    public void setLookupSelectHandler(Runnable selectHandler) {
+        // do nothing
+    }
+
+    @Override
+    public Collection getLookupSelectedItems() {
+        return Collections.singleton(getValue());
+    }
+
     protected class PickerButton extends WebButton {
         public PickerButton() {
         }

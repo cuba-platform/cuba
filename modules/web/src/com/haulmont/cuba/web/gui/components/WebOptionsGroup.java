@@ -26,6 +26,7 @@ import com.vaadin.data.util.converter.Converter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -104,5 +105,18 @@ public class WebOptionsGroup extends WebAbstractOptionsBase<CubaOptionGroup> imp
                 component.setConverter(new SetToListConverter());
             }
         }
+    }
+
+    @Override
+    public void setLookupSelectHandler(Runnable selectHandler) {
+        // do nothing
+    }
+
+    @Override
+    public Collection getLookupSelectedItems() {
+        Object value = getValue();
+        return (value instanceof Collection)
+                ? (Collection) value
+                : Collections.singleton(value);
     }
 }

@@ -791,6 +791,28 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
     }
 
+    @Override
+    public void setLookupSelectHandler(Runnable selectHandler) {
+        setEnterPressAction(new AbstractAction(WindowDelegate.LOOKUP_ENTER_PRESSED_ACTION_ID) {
+            @Override
+            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                selectHandler.run();
+            }
+        });
+
+        setItemClickAction(new AbstractAction(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID) {
+            @Override
+            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                selectHandler.run();
+            }
+        });
+    }
+
+    @Override
+    public Collection getLookupSelectedItems() {
+        return getSelected();
+    }
+
     protected Action getEnterAction() {
         for (Action action : getActions()) {
             KeyCombination kc = action.getShortcutCombination();

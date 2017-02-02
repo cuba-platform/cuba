@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -213,6 +214,24 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
                 }
             }
         }
+    }
+
+    @Override
+    public void setLookupSelectHandler(Runnable selectHandler) {
+        component.setDoubleClickMode(true);
+        component.addItemClickListener(event -> {
+            if (event.isDoubleClick()) {
+                if (event.getItem() != null) {
+                    component.setValue(event.getItemId());
+                    selectHandler.run();
+                }
+            }
+        });
+    }
+
+    @Override
+    public Collection getLookupSelectedItems() {
+        return getSelected();
     }
 
     @Override

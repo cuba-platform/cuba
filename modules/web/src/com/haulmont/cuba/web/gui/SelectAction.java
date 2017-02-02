@@ -43,21 +43,8 @@ public class SelectAction implements Button.ClickListener {
             throw new IllegalStateException("lookupComponent is not set");
 
         Collection selected;
-        if (lookupComponent instanceof Table ) {
-            selected = ((Table) lookupComponent).getSelected();
-        } else if (lookupComponent instanceof Tree) {
-            selected = ((Tree) lookupComponent).getSelected();
-        } else if (lookupComponent instanceof LookupField) {
-            selected = Collections.singleton(((LookupField) lookupComponent).getValue());
-        } else if (lookupComponent instanceof PickerField) {
-            selected = Collections.singleton(((PickerField) lookupComponent).getValue());
-        } else if (lookupComponent instanceof OptionsGroup) {
-            final OptionsGroup optionsGroup = (OptionsGroup) lookupComponent;
-            Object value = optionsGroup.getValue();
-			if (value instanceof Collection)
-			    selected = (Collection)value;
-			else
-				selected = Collections.singleton(value);
+        if (lookupComponent instanceof LookupComponent) {
+            selected = ((LookupComponent) lookupComponent).getLookupSelectedItems();
         } else {
             throw new UnsupportedOperationException("Unsupported lookupComponent type: " + lookupComponent.getClass());
         }
