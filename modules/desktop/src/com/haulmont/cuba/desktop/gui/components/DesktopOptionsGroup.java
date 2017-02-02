@@ -405,4 +405,17 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
             button.setEnabled(enabled && editable && parentEnabled);
         }
     }
+
+    @Override
+    public void setLookupSelectHandler(Runnable selectHandler) {
+        // do nothing
+    }
+
+    @Override
+    public Collection getLookupSelectedItems() {
+        Object value = getValue();
+        return (value instanceof Collection)
+                ? (Collection) value
+                : Collections.singleton(value);
+    }
 }

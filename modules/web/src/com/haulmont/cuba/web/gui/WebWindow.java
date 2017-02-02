@@ -29,7 +29,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
-import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -43,9 +42,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
 import com.haulmont.cuba.web.toolkit.ui.CubaSingleModeContainer;
-import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -1633,36 +1630,8 @@ public class WebWindow implements Window, Component.Wrapper,
         public void setLookupComponent(Component lookupComponent) {
             this.lookupComponent = lookupComponent;
 
-            if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table) {
-                com.haulmont.cuba.gui.components.Table table = (com.haulmont.cuba.gui.components.Table) lookupComponent;
-                table.setEnterPressAction(
-                        new AbstractAction(WindowDelegate.LOOKUP_ENTER_PRESSED_ACTION_ID) {
-                            @Override
-                            public void actionPerform(Component component) {
-                                fireSelectAction();
-                            }
-                        });
-                table.setItemClickAction(new AbstractAction(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID) {
-                    @Override
-                    public void actionPerform(Component component) {
-                        fireSelectAction();
-                    }
-                });
-            } else if (lookupComponent instanceof Tree) {
-                final Tree tree = (Tree) lookupComponent;
-                final CubaTree treeComponent = (CubaTree) WebComponentsHelper.unwrap(tree);
-                treeComponent.setDoubleClickMode(true);
-                treeComponent.addItemClickListener(new ItemClickEvent.ItemClickListener() {
-                    @Override
-                    public void itemClick(ItemClickEvent event) {
-                        if (event.isDoubleClick()) {
-                            if (event.getItem() != null) {
-                                treeComponent.setValue(event.getItemId());
-                                fireSelectAction();
-                            }
-                        }
-                    }
-                });
+            if (lookupComponent instanceof LookupComponent) {
+                ((LookupComponent) lookupComponent).setLookupSelectHandler(this::fireSelectAction);
             }
         }
 

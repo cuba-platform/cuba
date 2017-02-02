@@ -29,7 +29,6 @@ import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
-import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.DialogWindow;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
@@ -46,7 +45,6 @@ import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
@@ -64,12 +62,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
-import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 
@@ -1688,44 +1683,9 @@ public class DesktopWindow implements Window, Component.Disposable,
         @Override
         public void setLookupComponent(Component lookupComponent) {
             this.lookupComponent = lookupComponent;
-            if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table) {
-                com.haulmont.cuba.gui.components.Table table = (com.haulmont.cuba.gui.components.Table) lookupComponent;
-                table.setEnterPressAction(
-                        new AbstractAction(WindowDelegate.LOOKUP_ENTER_PRESSED_ACTION_ID) {
-                            @Override
-                            public void actionPerform(Component component) {
-                                fireSelectAction();
-                            }
-                        });
-                table.setItemClickAction(
-                        new AbstractAction(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID) {
-                            @Override
-                            public void actionPerform(Component component) {
-                                fireSelectAction();
-                            }
-                        });
-            } else if (lookupComponent instanceof Tree) {
-                final Tree tree = (Tree) lookupComponent;
-                final JTree treeComponent = (JTree) DesktopComponentsHelper.unwrap(tree);
-                treeComponent.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mousePressed(MouseEvent e) {
-                        if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1) {
-                            int rowForLocation = treeComponent.getRowForLocation(e.getX(), e.getY());
-                            TreePath pathForLocation = treeComponent.getPathForRow(rowForLocation);
-                            if (pathForLocation != null) {
-                                CollectionDatasource treeCds = tree.getDatasource();
-                                if (treeCds != null) {
-                                    TreeModelAdapter.Node treeItem = (TreeModelAdapter.Node) pathForLocation.getLastPathComponent();
-                                    if (treeItem != null) {
-                                        treeCds.setItem(treeItem.getEntity());
-                                        fireSelectAction();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
+
+            if (lookupComponent instanceof LookupComponent) {
+                ((LookupComponent) lookupComponent).setLookupSelectHandler(this::fireSelectAction);
             }
         }
 

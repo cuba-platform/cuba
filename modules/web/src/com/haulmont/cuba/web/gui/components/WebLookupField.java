@@ -454,6 +454,16 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
         component.setInputPrompt(inputPrompt);
     }
 
+    @Override
+    public void setLookupSelectHandler(Runnable selectHandler) {
+        // do nothing
+    }
+
+    @Override
+    public Collection getLookupSelectedItems() {
+        return Collections.singleton(getValue());
+    }
+
     protected interface LookupFieldDsWrapper {
         void forceItemSetNotification();
     }
