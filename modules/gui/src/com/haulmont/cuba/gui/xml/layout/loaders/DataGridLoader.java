@@ -99,6 +99,7 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
         loadColumnsHidingAllowed(resultComponent, element);
         loadColumnResizeMode(resultComponent, element);
         loadSortable(resultComponent, element);
+        loadResponsive(resultComponent, element);
         loadReorderingAllowed(resultComponent, element);
         loadHeaderVisible(resultComponent, element);
 
