@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
+import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleSelectedTabChangeListener;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -51,8 +52,6 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     protected Map<String, Component> componentByIds = new HashMap<>();
 
     protected Set<com.vaadin.ui.Component> lazyTabs = new HashSet<>();
-
-    protected List<TabChangeListener> listeners = null; // lazy initialized list
 
     public WebTabSheet() {
         component = createComponent();
@@ -449,12 +448,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     public void addListener(TabChangeListener listener) {
         initComponentTabChangeListener();
 
-        if (listeners == null) {
-            listeners = new ArrayList<>();
-        }
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
-        }
+        getEventRouter().addListener(SelectedTabChangeListener.class, new CompatibleSelectedTabChangeListener(listener));
     }
 
     private void initComponentTabChangeListener() {
@@ -468,7 +462,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
                     context.executeInitTasks();
                 }
                 // Fire GUI listener
-                fireTabChanged();
+                fireTabChanged(new SelectedTabChangeEvent(WebTabSheet.this, getTab()));
                 // Execute outstanding post init tasks after GUI listener.
                 // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
                 if (context != null) {
@@ -488,17 +482,23 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
 
     @Override
     public void removeListener(TabChangeListener listener) {
-        if (listeners != null) {
-            listeners.remove(listener);
-        }
+        getEventRouter().removeListener(SelectedTabChangeListener.class, new CompatibleSelectedTabChangeListener(listener));
     }
 
-    protected void fireTabChanged() {
-        if (listeners != null) {
-            for (TabChangeListener listener : listeners) {
-                listener.tabChanged(getTab());
-            }
-        }
+    @Override
+    public void addSelectedTabChangeListener(SelectedTabChangeListener listener) {
+        initComponentTabChangeListener();
+
+        getEventRouter().addListener(SelectedTabChangeListener.class, listener);
+    }
+
+    @Override
+    public void removeSelectedTabChangeListener(SelectedTabChangeListener listener) {
+        getEventRouter().removeListener(SelectedTabChangeListener.class, listener);
+    }
+
+    protected void fireTabChanged(SelectedTabChangeEvent event) {
+        getEventRouter().fireEvent(SelectedTabChangeListener.class, SelectedTabChangeListener::selectedTabChanged, event);
     }
 
     protected class LazyTabChangeListener implements com.vaadin.ui.TabSheet.SelectedTabChangeListener {

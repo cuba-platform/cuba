@@ -31,6 +31,7 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.TabSheet;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
+import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleSelectedTabChangeListener;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.lang.StringUtils;
@@ -63,7 +64,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
     protected boolean postInitTaskAdded;
     protected boolean componentTabChangeListenerInitialized;
 
-    protected List<TabChangeListener> listeners = new ArrayList<>();
+    protected List<SelectedTabChangeListener> listeners = new ArrayList<>();
 
     // CAUTION do not add ChangeListeners directly to impl
     protected List<ChangeListener> implTabSheetChangeListeners = new ArrayList<>();
@@ -371,8 +372,10 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
     public void addListener(TabChangeListener listener) {
         initComponentTabChangeListener();
 
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
+        CompatibleSelectedTabChangeListener adapter = new CompatibleSelectedTabChangeListener(listener);
+
+        if (!listeners.contains(adapter)) {
+            listeners.add(adapter);
         }
     }
 
@@ -493,13 +496,27 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
 
     @Override
     public void removeListener(TabChangeListener listener) {
-        listeners.remove(listener);
+        listeners.remove(new CompatibleSelectedTabChangeListener(listener));
     }
 
     protected void fireTabChanged() {
-        for (TabChangeListener listener : listeners) {
-            listener.tabChanged(getTab());
+        for (SelectedTabChangeListener listener : listeners) {
+            listener.selectedTabChanged(new SelectedTabChangeEvent(this, getTab()));
         }
+    }
+
+    @Override
+    public void addSelectedTabChangeListener(SelectedTabChangeListener listener) {
+        initComponentTabChangeListener();
+
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeSelectedTabChangeListener(SelectedTabChangeListener listener) {
+        listeners.remove(listener);
     }
 
     protected void updateTabVisibility(TabImpl tab) {

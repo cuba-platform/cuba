@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.dom4j.Element;
 
 import java.util.Collection;
+import java.util.EventObject;
 
 /**
  * TabSheet component interface.
@@ -90,8 +91,16 @@ public interface TabSheet extends Component.Container, Component.BelongToFrame, 
 
     /**
      * Add a listener that will be notified when a selected tab is changed.
+     *
+     * @deprecated Use {@link TabSheet#addSelectedTabChangeListener(SelectedTabChangeListener)} instead
      */
+    @Deprecated
     void addListener(TabChangeListener listener);
+
+    /**
+     * @deprecated Use {@link TabSheet#removeSelectedTabChangeListener(SelectedTabChangeListener)} instead
+     */
+    @Deprecated
     void removeListener(TabChangeListener listener);
 
     /**
@@ -160,8 +169,11 @@ public interface TabSheet extends Component.Container, Component.BelongToFrame, 
     }
 
     /**
-     * Listener notified when a selected tab is changed.
+     * Listener that will be notified when a selected tab is changed.
+     *
+     * @deprecated Use {@link SelectedTabChangeListener} instead
      */
+    @Deprecated
     interface TabChangeListener {
         void tabChanged(Tab newTab);
     }
@@ -171,5 +183,44 @@ public interface TabSheet extends Component.Container, Component.BelongToFrame, 
      */
     interface TabCloseHandler {
         void onTabClose(Tab tab);
+    }
+
+    /**
+     * Add a listener that will be notified when a selected tab is changed.
+     */
+    void addSelectedTabChangeListener(SelectedTabChangeListener listener);
+
+    /**
+     * Remove previously added SelectedTabChangeListener.
+     */
+    void removeSelectedTabChangeListener(SelectedTabChangeListener listener);
+
+    /**
+     * Listener that will be notified when a selected tab is changed.
+     */
+    interface SelectedTabChangeListener {
+
+        void selectedTabChanged(SelectedTabChangeEvent event);
+    }
+
+    /**
+     * SelectedTabChangeEvents are fired when a selected tab is changed.
+     */
+    class SelectedTabChangeEvent extends EventObject {
+        private final Tab selectedTab;
+
+        public SelectedTabChangeEvent(TabSheet tabSheet, Tab selectedTab) {
+            super(tabSheet);
+            this.selectedTab = selectedTab;
+        }
+
+        @Override
+        public TabSheet getSource() {
+            return (TabSheet) super.getSource();
+        }
+
+        public Tab getSelectedTab() {
+            return selectedTab;
+        }
     }
 }
