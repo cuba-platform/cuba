@@ -42,6 +42,7 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -721,6 +722,16 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     @Override
     public void setEscapeValueForLike(boolean escapeValueForLike) {
         this.escapeValueForLike = escapeValueForLike;
+    }
+
+    @Override
+    public void setLookupSelectHandler(Runnable selectHandler) {
+        // do nothing
+    }
+
+    @Override
+    public Collection getLookupSelectedItems() {
+        return Collections.singleton(getValue());
     }
 
     protected class NullOption extends EntityWrapper {
