@@ -22,6 +22,10 @@
     @include user-select(none);
   }
 
+  .text-selection-enabled .#{$primary-stylename}-body {
+    @include user-select(text);
+  }
+
   .#{$primary-stylename}-row  > .#{$primary-stylename}-cell:last-child {
     border-right: $v-grid-border-size solid $border-color;
   }

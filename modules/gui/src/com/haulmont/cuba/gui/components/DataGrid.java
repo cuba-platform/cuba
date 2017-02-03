@@ -158,6 +158,18 @@ public interface DataGrid<E extends Entity>
     void selectAll();
 
     /**
+     * @return {@code true} if text selection is enabled.
+     */
+    boolean isTextSelectionEnabled();
+
+    /**
+     * Enable or disable text selection in DataGrid cells. Default value is {@code false}.
+     *
+     * @param textSelectionEnabled specifies whether text selection in DataGrid cells is enabled
+     */
+    void setTextSelectionEnabled(boolean textSelectionEnabled);
+
+    /**
      * Returns whether column reordering is allowed. Default value is {@code true}.
      *
      * @return {@code true} if reordering is allowed

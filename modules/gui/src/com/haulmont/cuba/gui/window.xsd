@@ -1603,6 +1603,7 @@
                 <xs:attribute name="reorderingAllowed" type="xs:boolean"/>
                 <xs:attribute name="selectionMode" type="dataGridSelectionMode"/>
                 <xs:attribute name="sortable" type="xs:boolean"/>
+                <xs:attribute name="textSelectionEnabled" type="xs:boolean"/>
 
                 <xs:attributeGroup ref="hasSettings"/>
             </xs:extension>

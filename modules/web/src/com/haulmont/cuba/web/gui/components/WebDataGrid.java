@@ -743,6 +743,16 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     @Override
+    public boolean isTextSelectionEnabled() {
+        return component.isTextSelectionEnabled();
+    }
+
+    @Override
+    public void setTextSelectionEnabled(boolean textSelectionEnabled) {
+        component.setTextSelectionEnabled(textSelectionEnabled);
+    }
+
+    @Override
     public boolean isColumnReorderingAllowed() {
         return component.isColumnReorderingAllowed();
     }

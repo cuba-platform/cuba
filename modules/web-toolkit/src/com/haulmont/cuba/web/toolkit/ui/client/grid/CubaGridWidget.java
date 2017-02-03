@@ -17,12 +17,33 @@
 package com.haulmont.cuba.web.toolkit.ui.client.grid;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.TableSectionElement;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.WidgetUtil;
+import com.vaadin.client.widgets.Escalator;
 import com.vaadin.client.widgets.Grid;
 import elemental.json.JsonObject;
 
 public class CubaGridWidget extends Grid<JsonObject> {
+
+    protected static final String TEXT_SELECTION_ENABLED_STYLE = "text-selection-enabled";
+
+    protected boolean textSelectionEnabled = false;
+
+    public boolean isTextSelectionEnabled() {
+        return textSelectionEnabled;
+    }
+
+    public void setTextSelectionEnabled(boolean textSelectionEnabled) {
+        this.textSelectionEnabled = textSelectionEnabled;
+
+        if (textSelectionEnabled) {
+            getElement().addClassName(TEXT_SELECTION_ENABLED_STYLE);
+        } else {
+            getElement().removeClassName(TEXT_SELECTION_ENABLED_STYLE);
+        }
+    }
 
     @Override
     protected void sortWithSorter(Column<?, ?> column, boolean shiftKeyDown) {
