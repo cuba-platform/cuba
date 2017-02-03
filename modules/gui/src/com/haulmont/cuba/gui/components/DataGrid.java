@@ -624,19 +624,20 @@ public interface DataGrid<E extends Entity>
      */
     class ColumnGeneratorEvent<E> extends AbstractDataGridEvent {
         E item;
-        String propertyId;
+        String columnId;
 
         /**
          * Constructor for a column generator event
-         * @param component  the DataGrid from which this event originates
-         * @param item       an entity instance represented by the current row
-         * @param propertyId a generated column property id
+         *
+         * @param component the DataGrid from which this event originates
+         * @param item      an entity instance represented by the current row
+         * @param columnId  a generated column id
          */
-        public ColumnGeneratorEvent(DataGrid component, E item, String propertyId) {
+        public ColumnGeneratorEvent(DataGrid component, E item, String columnId) {
             super(component);
 
             this.item = item;
-            this.propertyId = propertyId;
+            this.columnId = columnId;
         }
 
         /**
@@ -647,10 +648,10 @@ public interface DataGrid<E extends Entity>
         }
 
         /**
-         * @return a generated column property id
+         * @return a generated column id
          */
-        public String getPropertyId() {
-            return propertyId;
+        public String getColumnId() {
+            return columnId;
         }
     }
 
