@@ -86,6 +86,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     protected final Map<String, Column> columns = new HashMap<>();
     protected List<Column> columnsOrder = new ArrayList<>();
+    protected final Map<String, ColumnGenerator<E, ?>> columnGenerators = new HashMap<>();
 
     protected final List<Action> actionList = new ArrayList<>();
     protected final ShortcutsDelegate<ShortcutListener> shortcutsDelegate;
@@ -560,6 +561,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
         columns.remove(column.getId());
         columnsOrder.remove(column);
+        columnGenerators.remove(column.getId());
 
         column.setOwner(null);
         ((ColumnImpl) column).setGridColumn(null);
@@ -1634,6 +1636,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
         columns.put(column.getId(), column);
         columnsOrder.add(index, column);
+        columnGenerators.put(column.getId(), generator);
 
         Grid.Column gridColumn = component.getColumn(((ColumnImpl) column).getColumnPropertyId());
         if (gridColumn != null) {
@@ -1643,6 +1646,11 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         component.setColumnOrder(getColumnPropertyIds());
 
         return column;
+    }
+
+    @Override
+    public ColumnGenerator<E, ?> getColumnGenerator(String columnId) {
+        return columnGenerators.get(columnId);
     }
 
     protected void copyColumnProperties(Column column, Column existingColumn) {

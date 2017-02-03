@@ -26,10 +26,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.components.AggregationInfo;
-import com.haulmont.cuba.gui.components.GroupTable;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.TreeTable;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
@@ -38,6 +35,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
@@ -249,6 +247,113 @@ public class ExcelExporter {
         display.show(new ByteArrayDataProvider(out.toByteArray()), fileName + ".xls", ExportFormat.XLS);
     }
 
+    public void exportDataGrid(DataGrid dataGrid, ExportDisplay display) {
+        exportDataGrid(dataGrid, dataGrid.getColumns(), display);
+    }
+
+    public void exportDataGrid(DataGrid dataGrid, List<DataGrid.Column> columns, ExportDisplay display) {
+        exportDataGrid(dataGrid, columns, display, null, null, ExportMode.ALL_ROWS);
+    }
+
+    public void exportDataGrid(DataGrid dataGrid, List<DataGrid.Column> columns, ExportDisplay display,
+                               ExportMode exportMode) {
+        exportDataGrid(dataGrid, columns, display, null, null, exportMode);
+    }
+
+    public void exportDataGrid(DataGrid dataGrid, List<DataGrid.Column> columns, ExportDisplay display,
+                               List<String> filterDescription) {
+        exportDataGrid(dataGrid, columns, display, filterDescription, null, ExportMode.ALL_ROWS);
+    }
+
+    public void exportDataGrid(DataGrid<Entity> dataGrid, List<DataGrid.Column> columns,
+                               ExportDisplay display, List<String> filterDescription,
+                               String fileName, ExportMode exportMode) {
+        if (display == null) {
+            throw new IllegalArgumentException("ExportDisplay is null");
+        }
+
+        createWorkbookWithSheet();
+        createFonts();
+        createFormats();
+
+        int r = 0;
+        if (filterDescription != null) {
+            for (r = 0; r < filterDescription.size(); r++) {
+                String line = filterDescription.get(r);
+                HSSFRow row = sheet.createRow(r);
+                if (r == 0) {
+                    HSSFRichTextString richTextFilterName = new HSSFRichTextString(line);
+                    richTextFilterName.applyFont(boldFont);
+                    row.createCell(0).setCellValue(richTextFilterName);
+                } else {
+                    row.createCell(0).setCellValue(line);
+                }
+            }
+            r++;
+        }
+        HSSFRow row = sheet.createRow(r);
+        createAutoColumnSizers(columns.size());
+
+        float maxHeight = sheet.getDefaultRowHeightInPoints();
+
+        CellStyle headerCellStyle = wb.createCellStyle();
+        headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        for (DataGrid.Column column : columns) {
+            String caption = column.getCaption();
+
+            int countOfReturnSymbols = StringUtils.countMatches(caption, "\n");
+            if (countOfReturnSymbols > 0) {
+                maxHeight = Math.max(maxHeight, (countOfReturnSymbols + 1) * sheet.getDefaultRowHeightInPoints());
+                headerCellStyle.setWrapText(true);
+            }
+        }
+        row.setHeightInPoints(maxHeight);
+
+        for (int c = 0; c < columns.size(); c++) {
+            DataGrid.Column column = columns.get(c);
+            String caption = column.getCaption();
+
+            HSSFCell cell = row.createCell(c);
+            HSSFRichTextString richTextString = new HSSFRichTextString(caption);
+            richTextString.applyFont(boldFont);
+            cell.setCellValue(richTextString);
+
+            ExcelAutoColumnSizer sizer = new ExcelAutoColumnSizer();
+            sizer.notifyCellValue(caption, boldFont);
+            sizers[c] = sizer;
+
+            cell.setCellStyle(headerCellStyle);
+        }
+
+        CollectionDatasource datasource = dataGrid.getDatasource();
+        if (exportMode == ExportMode.SELECTED_ROWS && dataGrid.getSelected().size() > 0) {
+            for (Entity item : dataGrid.getSelected()) {
+                createDataGridRow(dataGrid, columns, 0, ++r, item.getId());
+            }
+        } else {
+            for (Object itemId : datasource.getItemIds()) {
+                createDataGridRow(dataGrid, columns, 0, ++r, itemId);
+            }
+        }
+
+        for (int c = 0; c < columns.size(); c++) {
+            sheet.setColumnWidth(c, sizers[c].getWidth() * COL_WIDTH_MAGIC);
+        }
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            wb.write(out);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if (fileName == null) {
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            fileName = messageTools.getEntityCaption(datasource.getMetaClass());
+        }
+
+        display.show(new ByteArrayDataProvider(out.toByteArray()), fileName + ".xls", ExportFormat.XLS);
+    }
+
     protected void createFormats() {
         timeFormatCellStyle = wb.createCellStyle();
         timeFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("h:mm"));
@@ -396,6 +501,41 @@ public class ExcelExporter {
                 if (printable != null) {
                     cellValue = printable.getValue((Entity) instance);
                 }
+            }
+
+            formatValueCell(cell, cellValue, propertyPath, c, rowNumber, level, null);
+        }
+    }
+
+    protected void createDataGridRow(DataGrid dataGrid, List<DataGrid.Column> columns,
+                                     int startColumn, int rowNumber, Object itemId) {
+        if (startColumn >= columns.size()) {
+            return;
+        }
+        HSSFRow row = sheet.createRow(rowNumber);
+        Instance instance = dataGrid.getDatasource().getItem(itemId);
+
+        int level = 0;
+        for (int c = startColumn; c < columns.size(); c++) {
+            HSSFCell cell = row.createCell(c);
+
+            DataGrid.Column column = columns.get(c);
+            Object cellValue;
+
+            MetaPropertyPath propertyPath = null;
+            if (column.getPropertyPath() != null) {
+                propertyPath = column.getPropertyPath();
+
+                cellValue = InstanceUtils.getValueEx(instance, propertyPath.getPath());
+
+                if (column.getFormatter() != null) {
+                    cellValue = column.getFormatter().format(cellValue);
+                }
+            } else {
+                DataGrid.ColumnGenerator generator = dataGrid.getColumnGenerator(column.getId());
+                DataGrid.ColumnGeneratorEvent event =
+                        new DataGrid.ColumnGeneratorEvent(dataGrid, instance, column.getId());
+                cellValue = generator.getValue(event);
             }
 
             formatValueCell(cell, cellValue, propertyPath, c, rowNumber, level, null);
