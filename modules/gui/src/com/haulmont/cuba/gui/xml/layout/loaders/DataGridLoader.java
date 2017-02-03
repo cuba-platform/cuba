@@ -102,6 +102,7 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
         loadResponsive(resultComponent, element);
         loadReorderingAllowed(resultComponent, element);
         loadHeaderVisible(resultComponent, element);
+        loadTextSelectionEnabled(resultComponent, element);
 
         Element columnsElement = element.element("columns");
 
@@ -166,6 +167,13 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
         String reorderingAllowed = element.attributeValue("reorderingAllowed");
         if (StringUtils.isNotEmpty(reorderingAllowed)) {
             component.setColumnReorderingAllowed(Boolean.parseBoolean(reorderingAllowed));
+        }
+    }
+
+    protected void loadTextSelectionEnabled(DataGrid dataGrid, Element element) {
+        String textSelectionEnabled = element.attributeValue("textSelectionEnabled");
+        if (StringUtils.isNotEmpty(textSelectionEnabled)) {
+            dataGrid.setTextSelectionEnabled(Boolean.parseBoolean(textSelectionEnabled));
         }
     }
 
