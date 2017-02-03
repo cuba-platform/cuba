@@ -111,6 +111,9 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     protected List<RowStyleProvider> rowStyleProviders;
     protected List<CellStyleProvider> cellStyleProviders;
 
+    protected RowDescriptionProvider<E> rowDescriptionProvider;
+    protected CellDescriptionProvider<E> cellDescriptionProvider;
+
     protected Security security = AppBeans.get(Security.NAME);
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
@@ -1537,6 +1540,59 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     @Override
+    public CellDescriptionProvider getCellDescriptionProvider() {
+        return cellDescriptionProvider;
+    }
+
+    @Override
+    public void setCellDescriptionProvider(CellDescriptionProvider<E> provider) {
+        this.cellDescriptionProvider = provider;
+
+        if (provider != null) {
+            component.setCellDescriptionGenerator(createCellDescriptionGenerator());
+        } else {
+            component.setCellDescriptionGenerator(null);
+        }
+    }
+
+    protected Grid.CellDescriptionGenerator createCellDescriptionGenerator() {
+        return cell -> {
+            //noinspection unchecked
+            E item = (E) datasource.getItem(cell.getItemId());
+            Column column = getColumnByPropertyId(cell.getPropertyId());
+            if (column == null) {
+                throw new RuntimeException("Column not found for propertyId: " + cell.getPropertyId());
+            }
+            return cellDescriptionProvider.getDescription(item, column.getId());
+        };
+    }
+
+    @Override
+    public RowDescriptionProvider getRowDescriptionProvider() {
+        return rowDescriptionProvider;
+    }
+
+    @Override
+    public void setRowDescriptionProvider(RowDescriptionProvider<E> provider) {
+        this.rowDescriptionProvider = provider;
+
+        if (provider != null) {
+            component.setRowDescriptionGenerator(createRowDescriptionGenerator());
+        } else {
+            component.setRowDescriptionGenerator(null);
+        }
+    }
+
+    protected Grid.RowDescriptionGenerator createRowDescriptionGenerator() {
+        return row -> {
+            //noinspection unchecked
+            E item = (E) datasource.getItem(row.getItemId());
+
+            return rowDescriptionProvider.getDescription(item);
+        };
+    }
+
+    @Override
     public Column addGeneratedColumn(String columnId, ColumnGenerator<E, ?> generator) {
         return addGeneratedColumn(columnId, generator, columnsOrder.size());
     }
@@ -1853,7 +1909,11 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         Entity item = datasource.getItem(itemId);
         String joinedStyle = null;
         for (CellStyleProvider styleProvider : cellStyleProviders) {
-            String styleName = styleProvider.getStyleName(item, propertyId == null ? null : propertyId.toString());
+            Column column = getColumnByPropertyId(propertyId);
+            if (column == null) {
+                throw new RuntimeException("Column not found for propertyId: " + propertyId);
+            }
+            String styleName = styleProvider.getStyleName(item, column.getId());
             if (styleName != null) {
                 if (joinedStyle == null) {
                     joinedStyle = styleName;
