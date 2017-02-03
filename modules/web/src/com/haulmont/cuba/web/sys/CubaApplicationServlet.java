@@ -134,8 +134,8 @@ public class CubaApplicationServlet extends VaadinServlet {
 
         if (Strings.isNullOrEmpty(initParameters.getProperty(Constants.SERVLET_PARAMETER_PRODUCTION_MODE))) {
             boolean productionMode = webConfig.getProductionMode();
-            if (!productionMode) {
-                initParameters.setProperty(Constants.SERVLET_PARAMETER_PRODUCTION_MODE, String.valueOf(false));
+            if (productionMode) {
+                initParameters.setProperty(Constants.SERVLET_PARAMETER_PRODUCTION_MODE, String.valueOf(true));
             }
         }
 

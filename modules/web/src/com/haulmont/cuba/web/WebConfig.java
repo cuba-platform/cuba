@@ -272,21 +272,21 @@ public interface WebConfig extends Config {
      * @return true if push should use long polling transport instead of websocket+xhr
      */
     @Property("cuba.web.pushLongPolling")
-    @DefaultBoolean(value = false)
+    @DefaultBoolean(false)
     boolean getUsePushLongPolling();
 
     /**
      * @return true if push is enabled
      */
     @Property("cuba.web.pushEnabled")
-    @DefaultBoolean(value = true)
+    @DefaultBoolean(true)
     boolean getPushEnabled();
 
     /**
      * @return true if production mode is enabled
      */
     @Property("cuba.web.productionMode")
-    @DefaultBoolean(value = true)
+    @DefaultBoolean(false)
     boolean getProductionMode();
 
     /**
