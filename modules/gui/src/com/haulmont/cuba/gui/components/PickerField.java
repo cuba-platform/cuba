@@ -226,9 +226,9 @@ public interface PickerField extends Field, Component.ActionsHolder, LookupCompo
 
         /**
          * Set the lookup screen ID explicitly. By default a lookup screen ID is inferred from the entity metaclass
-         * name by adding suffix <code>.lookup</code> to it.
+         * name by adding suffix {@code .lookup} to it.
          *
-         * @param lookupScreen  lookup screen ID, e.g. <code>sec$User.lookup</code>
+         * @param lookupScreen  lookup screen ID, e.g. {@code sec$User.lookup}
          */
         public void setLookupScreen(@Nullable String lookupScreen) {
             this.lookupScreen = lookupScreen;
@@ -318,7 +318,7 @@ public interface PickerField extends Field, Component.ActionsHolder, LookupCompo
                 lookupWindow.addCloseListener(actionId -> {
                     // if value is selected then options datasource is refreshed in select handler
                     if (!Window.Lookup.SELECT_ACTION_ID.equals(actionId)
-                            && pickerField instanceof LookupField) {
+                            && pickerField instanceof LookupPickerField) {
                         LookupPickerField lookupPickerField = (LookupPickerField) pickerField;
 
                         CollectionDatasource optionsDatasource = lookupPickerField.getOptionsDatasource();
@@ -585,7 +585,7 @@ public interface PickerField extends Field, Component.ActionsHolder, LookupCompo
                     windowConfig.getWindowInfo(windowAlias),
                     entity,
                     openType,
-                    screenParams != null ? screenParams : Collections.<String, Object>emptyMap()
+                    screenParams != null ? screenParams : Collections.emptyMap()
             );
             editor.addCloseListener(actionId -> {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
