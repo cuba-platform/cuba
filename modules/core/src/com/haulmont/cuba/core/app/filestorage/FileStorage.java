@@ -27,15 +27,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,7 +44,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 @Component(FileStorageAPI.NAME)
 public class FileStorage implements FileStorageAPI {
 
-    protected Logger log = LoggerFactory.getLogger(FileStorage.class);
+    private final Logger log = LoggerFactory.getLogger(FileStorage.class);
 
     @Inject
     protected UserSessionSource userSessionSource;
@@ -104,7 +103,7 @@ public class FileStorage implements FileStorageAPI {
             throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, fileDescr.getId().toString());
         }
 
-        File dir = getStorageDir(roots[0], fileDescr.getCreateDate());
+        File dir = getStorageDir(roots[0], fileDescr);
         dir.mkdirs();
         if (!dir.exists())
             throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, dir.getAbsolutePath());
@@ -138,7 +137,7 @@ public class FileStorage implements FileStorageAPI {
                 continue;
             }
 
-            File copyDir = getStorageDir(roots[i], fileDescr.getCreateDate());
+            File copyDir = getStorageDir(roots[i], fileDescr);
             final File fileCopy = new File(copyDir, getFileName(fileDescr));
 
             writeExecutor.submit(new Runnable() {
@@ -202,7 +201,7 @@ public class FileStorage implements FileStorageAPI {
         }
 
         for (File root : roots) {
-            File dir = getStorageDir(root, fileDescr.getCreateDate());
+            File dir = getStorageDir(root, fileDescr);
             File file = new File(dir, getFileName(fileDescr));
             if (file.exists()) {
                 if (!file.delete()) {
@@ -232,7 +231,7 @@ public class FileStorage implements FileStorageAPI {
 
         InputStream inputStream = null;
         for (File root : roots) {
-            File dir = getStorageDir(root, fileDescr.getCreateDate());
+            File dir = getStorageDir(root, fileDescr);
 
             File file = new File(dir, getFileName(fileDescr));
             if (!file.exists()) {
@@ -271,7 +270,7 @@ public class FileStorage implements FileStorageAPI {
 
         File[] roots = getStorageRoots();
         for (File root : roots) {
-            File dir = getStorageDir(root, fileDescr.getCreateDate());
+            File dir = getStorageDir(root, fileDescr);
             File file = new File(dir, getFileName(fileDescr));
             if (file.exists()) {
                 return true;
@@ -283,9 +282,12 @@ public class FileStorage implements FileStorageAPI {
     /**
      * INTERNAL. Don't use in application code.
      */
-    public File getStorageDir(File rootDir, Date createDate) {
+    public File getStorageDir(File rootDir, FileDescriptor fileDescriptor) {
+        checkNotNullArgument(rootDir);
+        checkNotNullArgument(fileDescriptor);
+
         Calendar cal = Calendar.getInstance();
-        cal.setTime(createDate);
+        cal.setTime(fileDescriptor.getCreateDate());
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH) + 1;
         int day = cal.get(Calendar.DAY_OF_MONTH);

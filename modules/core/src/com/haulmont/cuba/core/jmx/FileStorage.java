@@ -69,7 +69,7 @@ public class FileStorage implements FileStorageMBean {
             TypedQuery<FileDescriptor> query = em.createQuery("select fd from sys$FileDescriptor fd", FileDescriptor.class);
             List<FileDescriptor> fileDescriptors = query.getResultList();
             for (FileDescriptor fileDescriptor : fileDescriptors) {
-                File dir = fileStorage.getStorageDir(roots[0], fileDescriptor.getCreateDate());
+                File dir = fileStorage.getStorageDir(roots[0], fileDescriptor);
                 File file = new File(dir, com.haulmont.cuba.core.app.filestorage.FileStorage.getFileName(fileDescriptor));
                 if (!file.exists()) {
                     sb.append(fileDescriptor.getId())
