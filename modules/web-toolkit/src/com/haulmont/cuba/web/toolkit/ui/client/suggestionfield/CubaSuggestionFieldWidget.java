@@ -21,7 +21,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -69,13 +68,15 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
     // search query
     protected String prevQuery;
 
+    public boolean iePreventBlur = false;
+
     protected List<Suggestion> suggestions = new ArrayList<>();
 
     public CubaSuggestionFieldWidget() {
         textField = GWT.create(VTextField.class);
         initTextField();
 
-        suggestionsContainer = new SuggestionsContainer();
+        suggestionsContainer = new SuggestionsContainer(this);
         suggestionsPopup = new CubaSuggestionFieldWidget.SuggestionPopup(suggestionsContainer);
 
         suggestionTimer = new CubaSuggestionFieldWidget.SuggestionTimer();
@@ -197,6 +198,14 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
         }
     }
 
+    public boolean isReadonly() {
+        return textField.isReadOnly();
+    }
+
+    public void setReadonly(boolean readonly) {
+        textField.setReadOnly(readonly);
+    }
+
     protected void cancelSearch() {
         if (suggestionTimer != null) {
             suggestionTimer.cancel();
@@ -267,21 +276,30 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
     protected void handleOnBlur(BlurEvent event) {
         removeStyleName(MODIFIED_STYLENAME);
 
-        if (!suggestionsPopup.isShowing()) {
-            resetComponentState();
-            return;
-        }
-
-        EventTarget eventTarget = event.getNativeEvent().getRelatedEventTarget();
-        if (eventTarget == null) {
-            resetComponentState();
-            return;
-        }
-
-        if (Element.is(eventTarget)) {
-            Widget widget = WidgetUtil.findWidget(Element.as(eventTarget), null);
-            if (widget != suggestionsContainer) {
+        if (BrowserInfo.get().isIE()) {
+            if (iePreventBlur) {
+                textField.setFocus(true);
+                iePreventBlur = false;
+            } else {
                 resetComponentState();
+            }
+        } else {
+            if (!suggestionsPopup.isShowing()) {
+                resetComponentState();
+                return;
+            }
+
+            EventTarget eventTarget = event.getNativeEvent().getRelatedEventTarget();
+            if (eventTarget == null) {
+                resetComponentState();
+                return;
+            }
+
+            if (Element.is(eventTarget)) {
+                Widget widget = WidgetUtil.findWidget(Element.as(eventTarget), null);
+                if (widget != suggestionsContainer) {
+                    resetComponentState();
+                }
             }
         }
     }
@@ -367,23 +385,6 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
                 popupOuterPadding = WidgetUtil.measureHorizontalPaddingAndBorder(getElement(), 2);
             }
 
-            Widget popup = getWidget();
-
-            Element containerFirstChild = popup.getElement().getFirstChild().cast();
-            int naturalMenuWidth = containerFirstChild.getOffsetWidth();
-            final int textFieldWidth = textField.getOffsetWidth();
-
-            if (naturalMenuWidth < textFieldWidth) {
-                popup.setWidth((textFieldWidth - popupOuterPadding) + "px");
-                containerFirstChild.getStyle().setWidth(100, Style.Unit.PCT);
-                naturalMenuWidth = textFieldWidth;
-            }
-
-            if (BrowserInfo.get().isIE()) {
-                int rootWidth = naturalMenuWidth - popupOuterPadding;
-                getContainerElement().getStyle().setWidth(rootWidth, Style.Unit.PX);
-            }
-
             int top;
             int left;
 
@@ -397,6 +398,10 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
                 int topMargin = (top - topPosition);
                 top -= topMargin;
             }
+
+            Widget popup = getWidget();
+            Element containerFirstChild = popup.getElement().getFirstChild().cast();
+            final int textFieldWidth = textField.getOffsetWidth();
 
             offsetWidth = containerFirstChild.getOffsetWidth();
             if (offsetWidth + getPopupLeft() > Window.getClientWidth() + Window.getScrollLeft()) {

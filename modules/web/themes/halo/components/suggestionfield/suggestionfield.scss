@@ -11,14 +11,27 @@ $cuba-suggestionfield-edit-color: scale-color(lighten($v-focus-color, 35%), $sat
     }
   }
 
+  .#{$primary-stylename}-error {
+    @include valo-textfield-error-style;
+  }
+
+  .#{$primary-stylename}.v-readonly,
+  .#{$primary-stylename}-error.v-readonly {
+    @include valo-textfield-readonly-style;
+  }
+
   .#{$primary-stylename}-popup {
     @include valo-selection-overlay-style;
+    min-width: 200px;
+    max-width: 400px;
     overflow-y: auto;
     outline: 0px;
   }
 
   .#{$primary-stylename}-item {
-    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
     border-radius: 3px;
     cursor: pointer;
     line-height: $v-selection-item-height;

@@ -21,6 +21,9 @@ import com.haulmont.cuba.web.toolkit.ui.client.suggestionfield.CubaSuggestionFie
 import com.haulmont.cuba.web.toolkit.ui.client.suggestionfield.CubaSuggestionFieldState;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.FieldEvents;
+import com.vaadin.server.AbstractErrorMessage;
+import com.vaadin.server.CompositeErrorMessage;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.KeyMapper;
 import com.vaadin.ui.AbstractField;
 import elemental.json.Json;
@@ -48,6 +51,7 @@ public class CubaSuggestionField extends AbstractField<Object> {
     protected int suggestionsLimit = 10;
 
     public CubaSuggestionField() {
+        setValidationVisible(false);
         serverRpc = new CubaSuggestionFieldServerRpc() {
             @Override
             public void searchSuggestions(String query) {
@@ -110,6 +114,19 @@ public class CubaSuggestionField extends AbstractField<Object> {
         if (!getState(false).text.equals(stringValue)) {
             getState().text = stringValue;
         }
+    }
+
+    @Override
+    public ErrorMessage getErrorMessage() {
+        ErrorMessage superError = super.getErrorMessage();
+        if (!isReadOnly() && isRequired() && isEmpty()) {
+            ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
+                    new com.vaadin.data.Validator.EmptyValueException(getRequiredError()));
+            if (error != null) {
+                return new CompositeErrorMessage(superError, error);
+            }
+        }
+        return superError;
     }
 
     @SuppressWarnings("unchecked")

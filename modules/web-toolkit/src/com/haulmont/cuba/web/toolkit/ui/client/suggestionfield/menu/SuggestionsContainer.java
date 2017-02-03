@@ -29,6 +29,8 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.impl.FocusImpl;
+import com.haulmont.cuba.web.toolkit.ui.client.suggestionfield.CubaSuggestionFieldWidget;
+import com.vaadin.client.BrowserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,14 +43,17 @@ public class SuggestionsContainer extends Widget {
     protected final Element container;
     protected SuggestionItem selectedSuggestion;
 
-    public SuggestionsContainer() {
+    protected final CubaSuggestionFieldWidget suggestionFieldWidget;
+
+    public SuggestionsContainer(CubaSuggestionFieldWidget suggestionFieldWidget) {
+        this.suggestionFieldWidget = suggestionFieldWidget;
         container = DOM.createDiv();
 
         final Element outer = FocusImpl.getFocusImplForPanel().createFocusable();
         DOM.appendChild(outer, container);
         setElement(outer);
 
-        sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT | Event.ONFOCUS | Event.ONKEYDOWN);
+        sinkEvents(Event.ONCLICK | Event.ONMOUSEDOWN | Event.ONMOUSEOVER | Event.ONMOUSEOUT | Event.ONFOCUS | Event.ONKEYDOWN);
         addDomHandler(event ->
                 selectItem(null), BlurEvent.getType());
 
@@ -139,6 +144,13 @@ public class SuggestionsContainer extends Widget {
 
         SuggestionItem item = findItem(DOM.eventGetTarget(event));
         switch (DOM.eventGetType(event)) {
+            case Event.ONMOUSEDOWN: {
+                if (BrowserInfo.get().isIE()) {
+                    suggestionFieldWidget.iePreventBlur = true;
+                }
+                break;
+            }
+
             case Event.ONCLICK: {
                 if (event.getButton() == NativeEvent.BUTTON_LEFT) {
                     performItemCommand(item);

@@ -1246,6 +1246,16 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <xs:complexType name="suggestionFieldComponent">
+        <xs:complexContent>
+            <xs:extension base="baseFieldComponent">
+                <xs:attribute name="asyncSearchDelayMs" type="xs:integer"/>
+                <xs:attribute name="minSearchStringLength" type="xs:integer"/>
+                <xs:attribute name="suggestionsLimit" type="xs:integer"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     <!-- PickerField -->
     <xs:complexType name="pickerFieldComponent">
         <xs:complexContent>
@@ -2351,6 +2361,7 @@
 
                 <xs:element name="lookupField" type="lookupFieldComponent"/>
                 <xs:element name="searchField" type="searchFieldComponent"/>
+                <xs:element name="suggestionField" type="suggestionFieldComponent"/>
                 <xs:element name="pickerField" type="pickerFieldComponent"/>
                 <xs:element name="lookupPickerField" type="lookupPickerFieldComponent"/>
                 <xs:element name="searchPickerField" type="searchPickerFieldComponent"/>
