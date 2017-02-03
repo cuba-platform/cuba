@@ -1597,6 +1597,7 @@
 
                 <xs:attribute name="columnsCollapsingAllowed" type="xs:boolean"/>
                 <xs:attribute name="columnResizeMode" type="dataGridColumnResizeMode"/>
+                <xs:attribute name="contextMenuEnabled" type="xs:boolean"/>
                 <xs:attribute name="datasource" type="xs:string"/>
                 <xs:attribute name="frozenColumnCount" type="xs:integer"/>
                 <xs:attribute name="headerVisible" type="xs:boolean"/>

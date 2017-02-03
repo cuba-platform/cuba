@@ -198,6 +198,18 @@ public interface DataGrid<E extends Entity>
     void setHeaderVisible(boolean headerVisible);
 
     /**
+     * @return {@code true} if context menu is enabled, {@code false} otherwise
+     */
+    boolean isContextMenuEnabled();
+
+    /**
+     * Sets whether or not context menu is enabled. Default value is {@code true}.
+     *
+     * @param contextMenuEnabled specifies whether context menu is enabled
+     */
+    void setContextMenuEnabled(boolean contextMenuEnabled);
+
+    /**
      * @return an action to be executed on double click on a DataGrid row,
      * assigned by {@link #setItemClickAction(Action)}
      * @see #setItemClickAction(Action)

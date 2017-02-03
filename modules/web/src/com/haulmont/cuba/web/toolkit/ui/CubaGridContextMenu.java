@@ -28,6 +28,8 @@ public class CubaGridContextMenu extends GridContextMenu {
 
     protected ContextClickListener contextClickListener;
 
+    protected boolean enabled = true;
+
     public CubaGridContextMenu(Grid parentComponent) {
         super(parentComponent);
     }
@@ -42,6 +44,10 @@ public class CubaGridContextMenu extends GridContextMenu {
 
     protected void initContextClickListener() {
         contextClickListener = (ContextClickListener) event -> {
+            if (!isEnabled()) {
+                return;
+            }
+
             fireEvent(new ContextMenuOpenListener.ContextMenuOpenEvent(CubaGridContextMenu.this, event));
 
             // prevent opening context menu in non BODY sections
@@ -54,5 +60,13 @@ public class CubaGridContextMenu extends GridContextMenu {
 
             open(event.getClientX(), event.getClientY());
         };
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
