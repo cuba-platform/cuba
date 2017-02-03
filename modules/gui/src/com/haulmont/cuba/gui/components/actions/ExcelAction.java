@@ -46,7 +46,7 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
 
     public static final String ACTION_ID = ListActionType.EXCEL.getId();
 
-    protected final Table table;
+    protected final ListComponent listComponent;
     protected final ExportDisplay display;
 
     protected BeforeActionPerformedHandler beforeActionPerformedHandler;
@@ -104,8 +104,40 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
      * @param id            action's name
      */
     public ExcelAction(Table table, ExportDisplay display, String id) {
+        this((ListComponent) table, display, id);
+    }
+
+    /**
+     * The simplest constructor. The action uses default name and other parameters.
+     *
+     * @param listComponent listComponent containing this action
+     */
+    public ExcelAction(ListComponent listComponent) {
+        this(listComponent, AppConfig.createExportDisplay(listComponent.getFrame()), ACTION_ID);
+    }
+
+    /**
+     * Constructor that allows to specify the ExportDisplay implementation. The action uses default name
+     * and other parameters.
+     *
+     * @param listComponent listComponent containing this action
+     * @param display       ExportDisplay implementation
+     */
+    public ExcelAction(ListComponent listComponent, ExportDisplay display) {
+        this(listComponent, display, ACTION_ID);
+    }
+
+    /**
+     * Constructor that allows to specify all parameters.
+     *
+     * @param listComponent listComponent containing this action
+     * @param display       ExportDisplay implementation
+     *                      {@link ExcelExporter}
+     * @param id            action's name
+     */
+    public ExcelAction(ListComponent listComponent, ExportDisplay display, String id) {
         super(id);
-        this.table = table;
+        this.listComponent = listComponent;
         this.display = display;
         this.caption = messages.getMainMessage("actions.Excel");
 
@@ -124,7 +156,7 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
                 return;
         }
 
-        if (table.getSelected().isEmpty() || table.getDatasource().size() <= 1) {
+        if (listComponent.getSelected().isEmpty() || listComponent.getDatasource().size() <= 1) {
             export(ExportMode.ALL_ROWS);
         } else {
             String title = messages.getMainMessage("actions.exportSelectedTitle");
@@ -151,7 +183,7 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
                     exportAllAction,
                     new DialogAction(Type.CANCEL)
             };
-            Frame frame = table.getFrame();
+            Frame frame = listComponent.getFrame();
             frame.showOptionDialog(title, caption, MessageType.CONFIRMATION, actions);
         }
     }
@@ -161,7 +193,15 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
      */
     protected void export(ExportMode exportMode) {
         ExcelExporter exporter = new ExcelExporter();
-        exporter.exportTable(table, table.getNotCollapsedColumns(), display, exportMode);
+        if (listComponent instanceof Table) {
+            Table table = (Table) listComponent;
+            exporter.exportTable(table, table.getNotCollapsedColumns(), display, exportMode);
+        }
+
+        if (listComponent instanceof DataGrid) {
+            DataGrid dataGrid = (DataGrid) listComponent;
+            exporter.exportDataGrid(dataGrid, dataGrid.getVisibleColumns(), display, exportMode);
+        }
     }
 
     @Override

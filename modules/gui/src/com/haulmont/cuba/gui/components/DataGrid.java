@@ -673,6 +673,8 @@ public interface DataGrid<E extends Entity>
      */
     Column addGeneratedColumn(String columnId, ColumnGenerator<E, ?> generator, int index);
 
+    ColumnGenerator<E, ?> getColumnGenerator(String columnId);
+
     /**
      * Marker interface to indicate that the implementing class can be used as a renderer.
      */

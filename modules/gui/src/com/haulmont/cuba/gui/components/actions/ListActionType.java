@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Table;
 
@@ -71,10 +72,10 @@ public enum ListActionType {
     EXCEL("excel") {
         @Override
         public Action createAction(ListComponent holder) {
-            if (holder instanceof Table)
+            if (holder instanceof Table || holder instanceof DataGrid)
                 return ExcelAction.create(holder);
             else
-                throw new IllegalArgumentException("Only Table can contain EXCEL action");
+                throw new IllegalArgumentException("Only Table and DataGrid can contain EXCEL action");
         }
     };
 
