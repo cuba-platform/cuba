@@ -62,7 +62,6 @@ import com.vaadin.ui.HorizontalLayout;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import javax.annotation.Nonnull;
@@ -947,6 +946,12 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     @Override
+    public void sort(String columnId, SortDirection direction) {
+        ColumnImpl column = (ColumnImpl) getColumnNN(columnId);
+        component.sort(column.getColumnPropertyId(), convertToGridSortDirection(direction));
+    }
+
+    @Override
     public void addAction(Action action) {
         int index = findActionById(actionList, action.getId());
         if (index < 0) {
@@ -1713,15 +1718,26 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
     }
 
-    @Nullable
     protected SortDirection convertToDataGridSortDirection(com.vaadin.shared.data.sort.SortDirection sortDirection) {
         switch (sortDirection) {
             case ASCENDING:
                 return SortDirection.ASCENDING;
             case DESCENDING:
                 return SortDirection.DESCENDING;
+            default:
+                throw new UnsupportedOperationException("Unsupported SortDirection");
         }
-        return null;
+    }
+
+    protected com.vaadin.shared.data.sort.SortDirection convertToGridSortDirection(SortDirection sortDirection) {
+        switch (sortDirection) {
+            case ASCENDING:
+                return com.vaadin.shared.data.sort.SortDirection.ASCENDING;
+            case DESCENDING:
+                return com.vaadin.shared.data.sort.SortDirection.DESCENDING;
+            default:
+                throw new UnsupportedOperationException("Unsupported SortDirection");
+        }
     }
 
     @Override

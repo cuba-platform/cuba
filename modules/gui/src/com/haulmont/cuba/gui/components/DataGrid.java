@@ -158,6 +158,14 @@ public interface DataGrid<E extends Entity>
     void selectAll();
 
     /**
+     * Sorts the DataGrid data for passed column id in the chosen sort direction.
+     *
+     * @param columnId  id of the column to sort
+     * @param direction sort direction
+     */
+    void sort(String columnId, SortDirection direction);
+
+    /**
      * @return {@code true} if text selection is enabled.
      */
     boolean isTextSelectionEnabled();
