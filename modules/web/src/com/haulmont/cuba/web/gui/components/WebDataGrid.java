@@ -92,7 +92,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     protected final ShortcutsDelegate<ShortcutListener> shortcutsDelegate;
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
-    protected GridContextMenu contextMenu;
+    protected CubaGridContextMenu contextMenu;
     protected final List<ActionMenuItemWrapper> contextMenuItems = new ArrayList<>();
 
     protected boolean settingsEnabled = true;
@@ -796,6 +796,16 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     @Override
     public void setHeaderVisible(boolean headerVisible) {
         component.setHeaderVisible(headerVisible);
+    }
+
+    @Override
+    public boolean isContextMenuEnabled() {
+        return contextMenu.isEnabled();
+    }
+
+    @Override
+    public void setContextMenuEnabled(boolean contextMenuEnabled) {
+        contextMenu.setEnabled(contextMenuEnabled);
     }
 
     @Override

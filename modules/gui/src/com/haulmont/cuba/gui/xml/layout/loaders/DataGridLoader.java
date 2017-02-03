@@ -96,6 +96,7 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
 
         loadActions(resultComponent, element);
 
+        loadContextMenuEnabled(resultComponent, element);
         loadColumnsHidingAllowed(resultComponent, element);
         loadColumnResizeMode(resultComponent, element);
         loadSortable(resultComponent, element);
@@ -181,6 +182,13 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
         String columnHeaderVisible = element.attributeValue("headerVisible");
         if (StringUtils.isNotEmpty(columnHeaderVisible)) {
             component.setHeaderVisible(Boolean.parseBoolean(columnHeaderVisible));
+        }
+    }
+
+    protected void loadContextMenuEnabled(DataGrid dataGrid, Element element) {
+        String contextMenuEnabled = element.attributeValue("contextMenuEnabled");
+        if (StringUtils.isNotEmpty(contextMenuEnabled)) {
+            dataGrid.setContextMenuEnabled(Boolean.parseBoolean(contextMenuEnabled));
         }
     }
 
@@ -307,7 +315,7 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
         }
 
         Integer minimumWidth = loadWidth(element, "minimumWidth");
-        if (minimumWidth  != null) {
+        if (minimumWidth != null) {
             column.setMinimumWidth(minimumWidth);
         }
 
