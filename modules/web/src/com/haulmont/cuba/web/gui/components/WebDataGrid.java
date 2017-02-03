@@ -899,6 +899,10 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     @Override
     public void setSelected(@Nullable E item) {
+        if (getSelectionMode().equals(SelectionMode.NONE)) {
+            return;
+        }
+
         if (item == null) {
             component.deselectAll();
         } else {
