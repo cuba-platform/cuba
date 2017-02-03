@@ -66,9 +66,9 @@ public class CubaApplicationServlet extends VaadinServlet {
     protected volatile ClassLoader classLoader;
 
     /*
-       The field is used to prevent double initialization of the servlet.
-       Double initialization might occur during single WAR deployment when we call the method from initializer.
-    */
+     * The field is used to prevent double initialization of the servlet.
+     * Double initialization might occur during single WAR deployment when we call the method from initializer.
+     */
     protected volatile boolean initialized = false;
 
     @Override
@@ -91,8 +91,7 @@ public class CubaApplicationServlet extends VaadinServlet {
             resources = AppBeans.get(Resources.class);
 
             if (configuration.getConfig(GlobalConfig.class).getTestMode()) {
-                System.setProperty(getPackageName() + ".disable-xsrf-protection",
-                        "true");
+                System.setProperty(getPackageName() + ".disable-xsrf-protection", "true");
             }
 
             super.init(servletConfig);
@@ -109,8 +108,7 @@ public class CubaApplicationServlet extends VaadinServlet {
         super.servletInitialized();
 
         getService().addSessionInitListener(event -> {
-            CubaBootstrapListener bootstrapListener = AppBeans.get(CubaBootstrapListener.NAME);
-
+            BootstrapListener bootstrapListener = AppBeans.get(CubaBootstrapListener.NAME);
             event.getSession().addBootstrapListener(bootstrapListener);
         });
     }
