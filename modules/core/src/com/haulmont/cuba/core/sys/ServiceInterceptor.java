@@ -19,10 +19,7 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
 import com.haulmont.cuba.core.app.ServerConfig;
-import com.haulmont.cuba.core.global.BeanValidation;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Logging;
-import com.haulmont.cuba.core.global.RemoteException;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.validation.MethodParametersValidationException;
 import com.haulmont.cuba.core.global.validation.MethodResultValidationException;
 import com.haulmont.cuba.core.global.validation.ServiceMethodConstraintViolation;
@@ -119,7 +116,7 @@ public class ServiceInterceptor {
 
                     validateMethodResult(ctx, validatedContext, res);
 
-                    if (persistence.isInTransaction()) {
+                    if (Stores.getAdditional().isEmpty() && persistence.isInTransaction()) {
                         log.warn("Open transaction left in {}", ctx.getSignature().toShortString());
                     }
 

@@ -148,7 +148,7 @@ public interface Persistence {
     /**
      * Current transaction status.
      *
-     * @return true if currently in a transaction
+     * @return true if there is currently at least one open transaction for main or additional data store
      */
     boolean isInTransaction();
 
