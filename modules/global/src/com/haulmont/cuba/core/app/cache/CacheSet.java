@@ -28,10 +28,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Set of elements for ObjectsCache
- *
  */
 @SuppressWarnings({"unused"})
 public class CacheSet implements Cloneable {
+    protected boolean forUpdate = false;
     protected Set<Object> addedItems = Sets.newHashSet();
     protected Set<Object> removedItems = Sets.newHashSet();
 
@@ -46,8 +46,21 @@ public class CacheSet implements Cloneable {
     }
 
     public Collection<Object> getItems() {
-        return new DifferencesDecorator<>(items);
+        if (isForUpdate()) {
+            return new DifferencesDecorator<>(items);
+        } else {
+            return items;
+        }
     }
+
+    public boolean isForUpdate() {
+        return forUpdate;
+    }
+
+    public void setForUpdate(boolean forUpdate) {
+        this.forUpdate = forUpdate;
+    }
+
 
     public Set<Object> getAddedItems() {
         return addedItems;
