@@ -33,9 +33,9 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-import org.springframework.context.annotation.Scope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -49,20 +49,19 @@ import java.util.regex.Pattern;
 @Scope("prototype")
 public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTreeBuilderAPI {
 
+    private final Logger log = LoggerFactory.getLogger(ConditionDescriptorsTreeBuilder.class);
+
     protected static final List<String> defaultExcludedProps = Collections.unmodifiableList(Collections.singletonList("version"));
     protected static final String CUSTOM_CONDITIONS_PERMISSION = "cuba.gui.filter.customConditions";
-
-    protected static final Logger log = LoggerFactory.getLogger(ConditionDescriptorsTreeBuilder.class);
 
     protected Filter filter;
     protected int hierarchyDepth;
     protected Security security;
     protected String filterComponentName;
-    protected MessageTools messageTools;
     protected MetadataTools metadataTools;
     protected DynamicAttributes dynamicAttributes;
     protected List<String> excludedProperties;
-    private final String storeName;
+    protected final String storeName;
 
     /**
      * @param filter filter
@@ -72,7 +71,6 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         this.filter = filter;
         this.hierarchyDepth = hierarchyDepth;
         security = AppBeans.get(Security.class);
-        messageTools = AppBeans.get(MessageTools.NAME);
         metadataTools = AppBeans.get(MetadataTools.NAME);
         dynamicAttributes = AppBeans.get(DynamicAttributes.class);
         filterComponentName = getFilterComponentName();
@@ -108,7 +106,6 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
                 } else {
                     throw new UnsupportedOperationException("Element not supported: " + element.getName());
                 }
-
             }
         }
 
@@ -116,8 +113,8 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
             addMultiplePropertyDescriptors(".*", "", propertyDescriptors, filter);
         }
 
-        Collections.sort(propertyDescriptors, new ConditionDescriptorComparator());
-        Collections.sort(customDescriptors, new ConditionDescriptorComparator());
+        propertyDescriptors.sort(new ConditionDescriptorComparator());
+        customDescriptors.sort(new ConditionDescriptorComparator());
 
         HeaderConditionDescriptor propertyHeaderDescriptor = new HeaderConditionDescriptor("propertyConditions",
                 messages.getMainMessage("filter.addCondition.propertyConditions"), filterComponentName, datasource);
@@ -129,13 +126,19 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         int currentDepth = 0;
 
         for (AbstractConditionDescriptor propertyDescriptor : propertyDescriptors) {
-            MetaPropertyPath propertyPath = propertyDescriptor.getDatasourceMetaClass().getPropertyPath(propertyDescriptor.getName());
+            MetaClass propertyDsMetaClass = propertyDescriptor.getDatasourceMetaClass();
+            MetaPropertyPath propertyPath = propertyDsMetaClass.getPropertyPath(propertyDescriptor.getName());
             if (propertyPath == null) {
-                log.error("Property path for " + propertyDescriptor.getName() + " of metaClass" + propertyDescriptor.getDatasourceMetaClass().getName() + " not found");
+                log.error("Property path for {} of metaClass {} not found",
+                        propertyDescriptor.getName(), propertyDsMetaClass.getName());
                 continue;
             }
+
             MetaProperty metaProperty = propertyPath.getMetaProperty();
-            if (isPropertyAllowed(datasource.getMetaClass(), metaProperty) && !excludedProperties.contains(metaProperty.getName())) {
+            MetaClass propertyEnclosingMetaClass = metadataTools.getPropertyEnclosingMetaClass(propertyPath);
+
+            if (isPropertyAllowed(propertyEnclosingMetaClass, metaProperty)
+                    && !excludedProperties.contains(metaProperty.getName())) {
                 Node<AbstractConditionDescriptor> node = new Node<>(propertyDescriptor);
                 propertyHeaderNode.addChild(node);
 
@@ -179,10 +182,11 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         }
 
         MetaProperty metaProperty = mpp.getMetaProperty();
-        if (metaProperty.getRange().isClass() && (metadataTools.getCrossDataStoreReferenceIdProperty(storeName, metaProperty) == null)) {
+        if (metaProperty.getRange().isClass()
+                && (metadataTools.getCrossDataStoreReferenceIdProperty(storeName, metaProperty) == null)) {
             MetaClass childMetaClass = metaProperty.getRange().asClass();
             for (MetaProperty property : childMetaClass.getProperties()) {
-                if (isPropertyAllowed(filterMetaClass, property)) {
+                if (isPropertyAllowed(childMetaClass, property)) {
                     String propertyPath = mpp.toString() + "." + property.getName();
                     if (excludedProperties.contains(propertyPath))
                         continue;
@@ -194,7 +198,8 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
             }
         }
 
-        Collections.sort(descriptors, new ConditionDescriptorComparator());
+        descriptors.sort(new ConditionDescriptorComparator());
+
         for (AbstractConditionDescriptor descriptor : descriptors) {
             Node<AbstractConditionDescriptor> newNode = new Node<>(descriptor);
             parentNode.addChild(newNode);
@@ -232,7 +237,9 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
 
         MetaClass metaClass = filter.getDatasource().getMetaClass();
         for (MetaProperty property : metaClass.getProperties()) {
-            if (!isPropertyAllowed(metaClass, property)) continue;
+            if (!isPropertyAllowed(metaClass, property)) {
+                continue;
+            }
 
             if (inclPattern.matcher(property.getName()).matches()) {
                 includedProps.add(property.getName());
