@@ -121,7 +121,7 @@ public class CubaSideMenuWidget extends FocusableFlowPanel
 
     @Override
     public void onFocus(FocusEvent event) {
-        if (getFocusedItem() == null) {
+        if (isEnabled() && getFocusedItem() == null) {
             if (getSelectedItem() != null) {
                 setFocusedItem(getSelectedItem());
             } else if (getWidgetCount() > 0) {
@@ -552,12 +552,14 @@ public class CubaSideMenuWidget extends FocusableFlowPanel
 
         @Override
         public void onClick(ClickEvent event) {
-            if (subMenu == null) {
-                menu.setFocusedItem(null);
-                menu.onMenuItemTriggered(this);
-            } else {
-                menu.setFocusedItem(this);
-                subMenu.triggerExpand();
+            if (menu.isEnabled()) {
+                if (subMenu == null) {
+                    menu.setFocusedItem(null);
+                    menu.onMenuItemTriggered(this);
+                } else {
+                    menu.setFocusedItem(this);
+                    subMenu.triggerExpand();
+                }
             }
         }
 
