@@ -19,6 +19,11 @@
   .v-button.c-paging-change-page {
     height: round($v-unit-size/1.5);
     padding: 0 round($v-unit-size/6);
+    line-height: $v-font-size;
+
+    img.v-icon {
+      margin-left: -2px;
+    }
   }
 
   .c-paging-status {
