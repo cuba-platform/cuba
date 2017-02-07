@@ -194,13 +194,15 @@ public abstract class AbstractConnection implements Connection {
     }
 
     protected TimeZone detectTimeZone() {
-        Page page = AppUI.getCurrent().getPage();
-        WebBrowser webBrowser = page.getWebBrowser();
+        WebBrowser webBrowser = Page.getCurrent().getWebBrowser();
 
         int offset = webBrowser.getTimezoneOffset() / 1000 / 60;
-        String hours = StringUtils.leftPad(String.valueOf(offset / 60), 2, '0');
-        String minutes = StringUtils.leftPad(String.valueOf(offset % 60), 2, '0');
         char sign = offset >= 0 ? '+' : '-';
+        int absOffset = Math.abs(offset);
+
+        String hours = StringUtils.leftPad(String.valueOf(absOffset / 60), 2, '0');
+        String minutes = StringUtils.leftPad(String.valueOf(absOffset % 60), 2, '0');
+
         return TimeZone.getTimeZone("GMT" + sign + hours + minutes);
     }
 
