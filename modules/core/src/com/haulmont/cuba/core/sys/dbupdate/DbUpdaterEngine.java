@@ -47,6 +47,7 @@ public class DbUpdaterEngine implements DbUpdater {
     private static final String SQL_DELIMITER = "^";
 
     private static final String GROOVY_EXTENSION = "groovy";
+    protected static final String UPGRADE_GROOVY_EXTENSION = "upgrade.groovy";
 
     private static final Logger log = LoggerFactory.getLogger(DbUpdaterEngine.class);
 
@@ -368,14 +369,16 @@ public class DbUpdaterEngine implements DbUpdater {
             Binding bind = new Binding();
             bind.setProperty("ds", getDataSource());
             bind.setProperty("log", LoggerFactory.getLogger(file.getName()));
-            bind.setProperty("postUpdate", new PostUpdateScripts() {
-                @Override
-                public void add(Closure closure) {
-                    super.add(closure);
+            if (!StringUtils.endsWithIgnoreCase(file.getName(), "." + UPGRADE_GROOVY_EXTENSION)) {
+                bind.setProperty("postUpdate", new PostUpdateScripts() {
+                    @Override
+                    public void add(Closure closure) {
+                        super.add(closure);
 
-                    log.warn("Added post update action will be ignored");
-                }
-            });
+                        log.warn("Added post update action will be ignored");
+                    }
+                });
+            }
 
             GroovyShell shell = new GroovyShell(classLoader, bind, cc);
             //noinspection UnnecessaryLocalVariable

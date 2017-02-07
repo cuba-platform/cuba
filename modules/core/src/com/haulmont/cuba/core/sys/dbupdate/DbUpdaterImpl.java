@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.sys.PostUpdateScripts;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import groovy.lang.Binding;
 import groovy.lang.Closure;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,19 +71,21 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
         Binding bind = new Binding();
         bind.setProperty("ds", getDataSource());
         bind.setProperty("log", LoggerFactory.getLogger(file.getName()));
-        bind.setProperty("postUpdate", new PostUpdateScripts() {
-            @Override
-            public void add(Closure closure) {
-                postUpdateScripts.put(closure, file);
+        if (!StringUtils.endsWithIgnoreCase(file.getName(), "." + UPGRADE_GROOVY_EXTENSION)) {
+            bind.setProperty("postUpdate", new PostUpdateScripts() {
+                @Override
+                public void add(Closure closure) {
+                    postUpdateScripts.put(closure, file);
 
-                postUpdate.add(closure);
-            }
+                    postUpdate.add(closure);
+                }
 
-            @Override
-            public List<Closure> getUpdates() {
-                return postUpdate.getUpdates();
-            }
-        });
+                @Override
+                public List<Closure> getUpdates() {
+                    return postUpdate.getUpdates();
+                }
+            });
+        }
 
         scripting.runGroovyScript(getScriptName(file), bind);
         return !postUpdateScripts.containsValue(file);
