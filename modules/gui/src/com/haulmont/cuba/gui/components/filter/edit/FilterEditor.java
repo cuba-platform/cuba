@@ -273,6 +273,10 @@ public class FilterEditor extends AbstractWindow {
         if (!validateAll()) {
             return;
         }
+        if (hasEmptyGroupConditions()) {
+            showNotification(getMessage("filter.editor.groupConditionCannotBeEmpty"), NotificationType.WARNING);
+            return;
+        }
         if (activeConditionFrame != null) {
             activeConditionFrame.commit();
         }
@@ -285,6 +289,13 @@ public class FilterEditor extends AbstractWindow {
         filterEntity.setIsDefault(defaultCb.getValue());
         filterEntity.setApplyDefault(applyDefaultCb.getValue());
         close(COMMIT_ACTION_ID, true);
+    }
+
+    protected boolean hasEmptyGroupConditions() {
+        for (Node<AbstractCondition> rootNode : conditions.getRootNodes()) {
+            if (rootNode.getData() instanceof GroupCondition && rootNode.getChildren().isEmpty()) return true;
+        }
+        return false;
     }
 
     public void cancel() {

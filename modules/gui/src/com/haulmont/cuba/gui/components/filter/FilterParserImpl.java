@@ -126,10 +126,12 @@ public class FilterParserImpl implements FilterParser {
     protected void recursiveToXml(Node<AbstractCondition> node, Element element, Param.ValueProperty valueProperty) {
         AbstractCondition condition = node.getData();
         if (condition.isGroup()) {
-            Element elem = element.addElement(((GroupCondition) condition).getGroupType().getXml());
-            condition.toXml(elem, valueProperty);
-            for (Node<AbstractCondition> n : node.getChildren()) {
-                recursiveToXml(n, elem, valueProperty);
+            if (node.getChildren().size() > 0) {
+                Element elem = element.addElement(((GroupCondition) condition).getGroupType().getXml());
+                condition.toXml(elem, valueProperty);
+                for (Node<AbstractCondition> n : node.getChildren()) {
+                    recursiveToXml(n, elem, valueProperty);
+                }
             }
         } else {
             Element elem = element.addElement("c");
