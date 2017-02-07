@@ -74,4 +74,9 @@
       border-radius: 0;
     }
   }
+
+  .#{$primary-stylename}.v-disabled {
+    @include opacity($v-disabled-opacity);
+    pointer-events: none;
+  }
 }

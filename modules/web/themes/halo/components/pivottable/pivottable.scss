@@ -72,4 +72,9 @@
       border-color: $border-color;
     }
   }
+
+  .#{$primary-stylename}.v-disabled {
+    @include opacity($v-disabled-opacity);
+    pointer-events: none;
+  }
 }
