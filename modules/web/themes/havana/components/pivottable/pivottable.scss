@@ -76,7 +76,7 @@
   }
 
   .#{$primary-stylename}.v-disabled {
-    @include opacity($v-disabled-opacity);
+    opacity: 0.5;
     pointer-events: none;
   }
 }
