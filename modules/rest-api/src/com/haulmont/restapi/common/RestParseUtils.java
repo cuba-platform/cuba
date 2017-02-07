@@ -17,15 +17,17 @@
 package com.haulmont.restapi.common;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Collection;
@@ -43,7 +45,22 @@ public class RestParseUtils {
     @Inject
     protected Metadata metadata;
 
-    public Object toObject(Class clazz, String value) throws ParseException {
+    public Object toObject(Type type, String value) throws ParseException {
+        Class clazz;
+        Class argumentTypeClass = null;
+        if (type instanceof Class) {
+            clazz = (Class) type;
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) type;
+            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+            if (actualTypeArguments.length > 0) {
+                argumentTypeClass = (Class) actualTypeArguments[0];
+            }
+            clazz = (Class) parameterizedType.getRawType();
+        } else {
+            throw new RuntimeException("Cannot handle the method argument with type " + type.getTypeName());
+        }
+
         if (String.class == clazz) return value;
         if (Integer.class == clazz || Integer.TYPE == clazz
                 || Byte.class == clazz || Byte.TYPE == clazz
@@ -69,7 +86,8 @@ public class RestParseUtils {
             return entitySerializationAPI.entityFromJson(value, metadata.getClassNN(clazz));
         }
         if (Collection.class.isAssignableFrom(clazz)) {
-            return entitySerializationAPI.<Entity>entitiesCollectionFromJson(value, null);
+            MetaClass metaClass = argumentTypeClass != null ? metadata.getClass(argumentTypeClass) : null;
+            return entitySerializationAPI.entitiesCollectionFromJson(value, metaClass != null ? metaClass : null);
         }
         return deserializePOJO(value, clazz);
     }

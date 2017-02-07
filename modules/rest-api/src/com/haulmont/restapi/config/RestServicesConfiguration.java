@@ -185,14 +185,25 @@ public class RestServicesConfiguration {
         }
 
         Object service = AppBeans.get(serviceName);
-        Method serviceMethod;
+        Method serviceMethod = null;
+        //the service object we get here is proxy. To get methods with type information
+        //we need tp know actual interfaces implemented by the service (this is required when parameterized
+        //collection of entities is passed as an argument)
+        Class<?>[] serviceInterfaces = service.getClass().getInterfaces();
+        if (serviceInterfaces.length == 0) {
+            log.error("Service {} doesn't implement any interface. It cannot be user for the REST API", serviceName);
+            return null;
+        }
+
         if (paramTypes.isEmpty()) {
-            //trying to guess which method to invoke
-            Method[] methods = service.getClass().getMethods();
             List<Method> appropriateMethods = new ArrayList<>();
-            for (Method method : methods) {
-                if (methodName.equals(method.getName()) && method.getParameterTypes().length == paramInfos.size()) {
-                    appropriateMethods.add(method);
+            for (Class<?> serviceInterface : serviceInterfaces) {
+                //trying to guess which method to invoke
+                Method[] methods = serviceInterface.getMethods();
+                for (Method method : methods) {
+                    if (methodName.equals(method.getName()) && method.getParameterTypes().length == paramInfos.size()) {
+                        appropriateMethods.add(method);
+                    }
                 }
             }
             if (appropriateMethods.size() == 1) {
@@ -206,9 +217,12 @@ public class RestServicesConfiguration {
                 return null;
             }
         } else {
-            try {
-                serviceMethod = service.getClass().getMethod(methodName, paramTypes.toArray(new Class[paramTypes.size()]));
-            } catch (NoSuchMethodException e) {
+            for (Class<?> serviceInterface : serviceInterfaces) {
+                try {
+                    serviceMethod = serviceInterface.getMethod(methodName, paramTypes.toArray(new Class[paramTypes.size()]));
+                } catch (NoSuchMethodException ignored) {}
+            }
+            if (serviceMethod == null) {
                 log.error("Method not found. Service: {}, method: {}, argument types: {}", serviceName, methodName, paramTypes);
                 return null;
             }
