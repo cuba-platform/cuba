@@ -40,6 +40,7 @@ import javax.inject.Inject;
 import javax.validation.ValidationException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -127,11 +128,10 @@ public class ServicesControllerManager {
                     HttpStatus.NOT_FOUND);
         }
         List<Object> paramValues = new ArrayList<>();
-        Class<?>[] types = serviceMethod.getParameterTypes();
+        Type[] types = serviceMethod.getGenericParameterTypes();
         for (int i = 0; i < types.length; i++) {
-            Class<?> aClass = types[i];
             try {
-                paramValues.add(restParseUtils.toObject(aClass, paramValuesStr.get(i)));
+                paramValues.add(restParseUtils.toObject(types[i], paramValuesStr.get(i)));
             } catch (ParseException e) {
                 log.error("Error on parsing service param value", e);
                 throw new RestAPIException("Invalid parameter value",
