@@ -1467,7 +1467,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             if (maxResults != null && maxResults > 0) {
                 datasource.setMaxResults(maxResults);
             } else {
-                datasource.setMaxResults(persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName()));
+                datasource.setMaxResults(persistenceManager.getFetchUI(datasource.getMetaClass().getName()));
             }
         }
         if (datasource instanceof CollectionDatasource.SupportsPaging) {
