@@ -19,6 +19,7 @@ package com.haulmont.cuba.restapi;
 import com.haulmont.cuba.core.app.ClusterListener;
 import com.haulmont.cuba.core.app.ClusterListenerAdapter;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.slf4j.Logger;
@@ -188,9 +189,10 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         authenticationToAccessTokenStore.remove(authenticationKey);
         UUID sessionId = tokenValueToSessionIdStore.remove(tokenValue);
         if (sessionId != null) {
-            UserSession session = userSessionManager.getSession(sessionId);
-            if (session != null)
+            try {
+                UserSession session = userSessionManager.getSession(sessionId);
                 userSessionManager.removeSession(session);
+            } catch (NoUserSessionException ignored) {}
         }
     }
 }
