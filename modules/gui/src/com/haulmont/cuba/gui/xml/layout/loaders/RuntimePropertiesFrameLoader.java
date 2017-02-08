@@ -36,7 +36,8 @@ import java.io.InputStream;
 
 public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
 
-    private static final String DEFAULT_DESCRIPTOR = "/com/haulmont/cuba/gui/app/core/dynamicattributes/runtime-properties-frame.xml";
+    protected static final String DEFAULT_DESCRIPTOR =
+            "/com/haulmont/cuba/gui/app/core/dynamicattributes/runtime-properties-frame.xml";
 
     protected String frameId;
     protected ComponentLoader frameLoader;
@@ -116,6 +117,8 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
         context.getParams().put("cols", cols);
         String fieldWidth = element.attributeValue("fieldWidth");
         context.getParams().put("fieldWidth", fieldWidth);
+        String fieldCaptionWidth = element.attributeValue("fieldCaptionWidth");
+        context.getParams().put("fieldCaptionWidth", fieldCaptionWidth);
 
         String screenPath = StringUtils.equals(src, DEFAULT_DESCRIPTOR) ? "runtimeProperties" : src;
         if (element.attributeValue("id") != null) {

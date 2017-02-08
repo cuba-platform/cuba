@@ -2064,6 +2064,7 @@
         <xs:attribute name="cols" type="xs:integer"/>
         <xs:attribute name="rows" type="xs:integer"/>
         <xs:attribute name="fieldWidth" type="xs:string"/>
+        <xs:attribute name="fieldCaptionWidth" type="xs:string"/>
     </xs:complexType>
 
     <xs:complexType name="relatedComponent">
