@@ -68,7 +68,12 @@
                         <popupButton id="groupCreateButton" caption="msg://create.caption" icon="theme://actions.Create.icon"/>
                         <button action="groupsTree.edit"/>
                         <button id="removeButton" action="groupsTree.remove"/>
-                        <button action="groupsTree.export" icon="icons/download.png" caption="" description="mainMsg://actions.Export"/>
+                        <popupButton id="exportBtn" icon="icons/download.png">
+                            <actions>
+                                <action id="exportJSON" caption="msg://exportJSON" invoke="exportJSON"/>
+                                <action id="exportZIP" caption="msg://exportZIP" invoke="exportZIP"/>
+                            </actions>
+                        </popupButton>
                         <upload id="importUpload"
                                 uploadButtonIcon="icons/upload.png"
                                 uploadButtonCaption=""

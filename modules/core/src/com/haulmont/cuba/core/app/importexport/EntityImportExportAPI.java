@@ -31,19 +31,34 @@ public interface EntityImportExportAPI {
     String NAME = "cuba_EntityImportExport";
 
     /**
-     * See documentation for {@link EntityImportExportService#exportEntities(Collection)}
+     * See documentation for {@link EntityImportExportService#exportEntitiesToZIP(Collection)}
      */
-    byte[] exportEntities(Collection<? extends Entity> entities);
+    byte[] exportEntitiesToZIP(Collection<? extends Entity> entities);
 
     /**
-     * See documentation for {@link EntityImportExportService#exportEntities(Collection, View)}
+     * See documentation for {@link EntityImportExportService#exportEntitiesToZIP(Collection, View)}
      */
-    byte[] exportEntities(Collection<? extends Entity> entities, View view);
+    byte[] exportEntitiesToZIP(Collection<? extends Entity> entities, View view);
 
     /**
-     * See documentation for {@link EntityImportExportService#importEntities(byte[], EntityImportView)}
+     * See documentation for {@link EntityImportExportService#exportEntitiesToJSON(Collection, View)}
      */
-    Collection<Entity> importEntities(byte[] zipBytes, EntityImportView entityImportView);
+    String exportEntitiesToJSON(Collection<? extends Entity> entities, View view);
+
+    /**
+     * See documentation for {@link EntityImportExportService#exportEntitiesToJSON(Collection)}
+     */
+    String exportEntitiesToJSON(Collection<? extends Entity> entities);
+
+    /**
+     * See documentation for {@link EntityImportExportService#importEntitiesFromJSON(String, EntityImportView)}
+     */
+    Collection<Entity> importEntitiesFromJson(String json, EntityImportView view);
+
+    /**
+     * See documentation for {@link EntityImportExportService#importEntitiesFromZIP(byte[], EntityImportView)}
+     */
+    Collection<Entity> importEntitiesFromZIP(byte[] zipBytes, EntityImportView entityImportView);
 
     /**
      * See documentation for {@link EntityImportExportService#importEntities(Collection, EntityImportView)}

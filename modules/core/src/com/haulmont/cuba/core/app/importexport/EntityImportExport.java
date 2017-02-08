@@ -68,13 +68,13 @@ public class EntityImportExport implements EntityImportExportAPI {
     protected PersistenceSecurity persistenceSecurity;
 
     @Override
-    public byte[] exportEntities(Collection<? extends Entity> entities, View view) {
-        return exportEntities(reloadEntities(entities, view));
+    public byte[] exportEntitiesToZIP(Collection<? extends Entity> entities, View view) {
+        return exportEntitiesToZIP(reloadEntities(entities, view));
     }
 
     @Override
-    public byte[] exportEntities(Collection<? extends Entity> entities) {
-        String json = entitySerialization.toJson(entities, null,EntitySerializationOption.COMPACT_REPEATED_ENTITIES);
+    public byte[] exportEntitiesToZIP(Collection<? extends Entity> entities) {
+        String json = entitySerialization.toJson(entities, null, EntitySerializationOption.COMPACT_REPEATED_ENTITIES);
         byte[] jsonBytes = json.getBytes();
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -92,6 +92,17 @@ public class EntityImportExport implements EntityImportExportAPI {
             IOUtils.closeQuietly(zipOutputStream);
         }
         return byteArrayOutputStream.toByteArray();
+    }
+
+    @Override
+    public String exportEntitiesToJSON(Collection<? extends Entity> entities, View view) {
+        return exportEntitiesToJSON(reloadEntities(entities, view));
+    }
+
+    @Override
+    public String exportEntitiesToJSON(Collection<? extends Entity> entities) {
+        return entitySerialization.toJson(entities, null, EntitySerializationOption.COMPLEX_ID_FORMAT,
+                EntitySerializationOption.COMPACT_REPEATED_ENTITIES, EntitySerializationOption.PRETTY_PRINT);
     }
 
     protected Collection<? extends Entity> reloadEntities(Collection<? extends Entity> entities, View view) {
@@ -123,7 +134,17 @@ public class EntityImportExport implements EntityImportExportAPI {
     }
 
     @Override
-    public Collection<Entity> importEntities(byte[] zipBytes, EntityImportView view) {
+    public Collection<Entity> importEntitiesFromJson(String json, EntityImportView view) {
+        Collection<Entity> result = new ArrayList<>();
+        Collection<? extends Entity> entities = entitySerialization.entitiesCollectionFromJson(json,
+                null,
+                EntitySerializationOption.COMPLEX_ID_FORMAT, EntitySerializationOption.COMPACT_REPEATED_ENTITIES);
+        result.addAll(importEntities(entities, view));
+        return result;
+    }
+
+    @Override
+    public Collection<Entity> importEntitiesFromZIP(byte[] zipBytes, EntityImportView view) {
         Collection<Entity> result = new ArrayList<>();
         Collection<? extends Entity> entities = null;
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(zipBytes);

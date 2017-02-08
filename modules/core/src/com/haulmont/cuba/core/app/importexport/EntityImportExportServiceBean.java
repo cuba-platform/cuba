@@ -31,18 +31,33 @@ public class EntityImportExportServiceBean implements EntityImportExportService 
     protected EntityImportExportAPI entityImportExport;
 
     @Override
-    public byte[] exportEntities(Collection<? extends Entity> entities) {
-        return entityImportExport.exportEntities(entities);
+    public byte[] exportEntitiesToZIP(Collection<? extends Entity> entities) {
+        return entityImportExport.exportEntitiesToZIP(entities);
     }
 
     @Override
-    public byte[] exportEntities(Collection<? extends Entity> entities, View view) {
-        return entityImportExport.exportEntities(entities, view);
+    public byte[] exportEntitiesToZIP(Collection<? extends Entity> entities, View view) {
+        return entityImportExport.exportEntitiesToZIP(entities, view);
     }
 
     @Override
-    public Collection<Entity> importEntities(byte[] zipBytes, EntityImportView view) {
-        return entityImportExport.importEntities(zipBytes, view);
+    public String exportEntitiesToJSON(Collection<? extends Entity> entities) {
+        return entityImportExport.exportEntitiesToJSON(entities);
+    }
+
+    @Override
+    public String exportEntitiesToJSON(Collection<? extends Entity> entities, View view) {
+        return entityImportExport.exportEntitiesToJSON(entities, view);
+    }
+
+    @Override
+    public Collection<Entity> importEntitiesFromJSON(String json, EntityImportView entityImportView) {
+        return entityImportExport.importEntitiesFromJson(json, entityImportView);
+    }
+
+    @Override
+    public Collection<Entity> importEntitiesFromZIP(byte[] zipBytes, EntityImportView view) {
+        return entityImportExport.importEntitiesFromZIP(zipBytes, view);
     }
 
     @Override

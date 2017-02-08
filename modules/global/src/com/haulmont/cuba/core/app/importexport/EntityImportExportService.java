@@ -38,7 +38,7 @@ public interface EntityImportExportService {
      * @param entities a collection of entities to export
      * @return a byte array of zipped JSON file
      */
-    byte[] exportEntities(Collection<? extends Entity> entities);
+    byte[] exportEntitiesToZIP(Collection<? extends Entity> entities);
 
     /**
      * <p>Serializes a collection of entities to JSON using {@link com.haulmont.cuba.core.app.serialization.EntitySerializationAPI
@@ -51,7 +51,43 @@ public interface EntityImportExportService {
      * @param view     before serialization to JSON entities will be reloaded with this view
      * @return a byte array of zipped JSON file
      */
-    byte[] exportEntities(Collection<? extends Entity> entities, View view);
+    byte[] exportEntitiesToZIP(Collection<? extends Entity> entities, View view);
+
+    /**
+     * <p>Serializes a collection of entities to JSON using {@link com.haulmont.cuba.core.app.serialization.EntitySerializationAPI
+     * EntitySerializationAPI}.</p> <p>Serialization is described in the {@link com.haulmont.cuba.core.app.serialization.EntitySerializationAPI#toJson(Collection)
+     * EntitySerializationAPI#toJson(Collection)} method documentation</p>
+     *
+     * @param entities a collection of entities to export
+     * @return a JSON string
+     */
+    String exportEntitiesToJSON(Collection<? extends Entity> entities);
+
+    /**
+     * <p>Serializes a collection of entities to JSON using {@link com.haulmont.cuba.core.app.serialization.EntitySerializationAPI
+     * EntitySerializationAPI}. Before the serialization entities will be
+     * reloaded with the view passed as method parameter.</p> <p>Serialization is described in the {@link
+     * com.haulmont.cuba.core.app.serialization.EntitySerializationAPI#toJson(Collection)
+     * EntitySerializationAPI#toJson(Collection)} method documentation</p>
+     *
+     * @param entities a collection of entities to export
+     * @param view     before serialization to JSON entities will be reloaded with this view
+     * @return a JSON string
+     */
+    String exportEntitiesToJSON(Collection<? extends Entity> entities, View view);
+
+    /**
+     * Deserializes the JSON and persists deserialized entities according
+     * to the rules, described by the {@code entityImportView} parameter. If the entity is not present in the database,
+     * it will be saved. Otherwise the fields of the existing entity that are in the {@code entityImportView} will be
+     * updated.
+     *
+     * @param json             JSON file containing entities
+     * @param entityImportView {@code EntityImportView} with the rules that describes how entities should be persisted.
+     * @return a collection of entities that have been imported
+     * @see EntityImportView
+     */
+    Collection<Entity> importEntitiesFromJSON(String json, EntityImportView entityImportView);
 
     /**
      * Reads a zip archive that contains a JSON file, deserializes the JSON and persists deserialized entities according
@@ -64,7 +100,7 @@ public interface EntityImportExportService {
      * @return a collection of entities that have been imported
      * @see EntityImportView
      */
-    Collection<Entity> importEntities(byte[] zipBytes, EntityImportView entityImportView);
+    Collection<Entity> importEntitiesFromZIP(byte[] zipBytes, EntityImportView entityImportView);
 
     /**
      * Persists entities according to the rules, described by the {@code entityImportView} parameter. If the entity is

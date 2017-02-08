@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.app.core.entityinspector;
 
+import com.google.common.io.Files;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -57,6 +58,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+
+import static com.haulmont.cuba.gui.export.ExportFormat.JSON;
+import static com.haulmont.cuba.gui.export.ExportFormat.ZIP;
 
 public class EntityInspectorBrowse extends AbstractLookup {
 
@@ -131,8 +135,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected Button removeButton;
     protected Button excelButton;
     protected Button refreshButton;
-    protected Button exportButton;
     protected FileUploadField importUpload;
+    protected PopupButton exportPopupButton;
+
 
     protected CollectionDatasource entitiesDs;
     protected MetaClass selectedMeta;
@@ -325,10 +330,10 @@ public class EntityInspectorBrowse extends AbstractLookup {
         refreshButton.setIcon(themeConstants.get("actions.Refresh.icon"));
         refreshButton.setFrame(frame);
 
-        exportButton = componentsFactory.createComponent(Button.class);
-        exportButton.setIcon("icons/download.png");
-        exportButton.setAction(new ExportAction());
-        exportButton.setCaption(getMessage("export"));
+        exportPopupButton = componentsFactory.createComponent(PopupButton.class);
+        exportPopupButton.setIcon("icons/download.png");
+        exportPopupButton.addAction(new ExportAction("exportJSON", JSON));
+        exportPopupButton.addAction(new ExportAction("exportZIP", ZIP));
 
         importUpload = componentsFactory.createComponent(FileUploadField.class);
         importUpload.setUploadButtonIcon("icons/upload.png");
@@ -339,9 +344,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 String errorMsg = String.format("Entities import upload error. File with id %s not found", importUpload.getFileId());
                 throw new RuntimeException(errorMsg);
             }
-            byte[] zipBytes;
+            byte[] fileBytes;
             try (InputStream is = new FileInputStream(file)) {
-                zipBytes = IOUtils.toByteArray(is);
+                fileBytes = IOUtils.toByteArray(is);
             } catch (IOException e) {
                 throw new RuntimeException("Unable to upload file", e);
             }
@@ -351,7 +356,12 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 log.error("Unable to delete temp file", e);
             }
             try {
-                Collection<Entity> importedEntities = entityImportExportService.importEntities(zipBytes, createEntityImportView(selectedMeta));
+                Collection<Entity> importedEntities;
+                if ("json".equals(Files.getFileExtension(importUpload.getFileName()))) {
+                    importedEntities = entityImportExportService.importEntitiesFromJSON(new String(fileBytes), createEntityImportView(selectedMeta));
+                } else {
+                    importedEntities = entityImportExportService.importEntitiesFromZIP(fileBytes, createEntityImportView(selectedMeta));
+                }
                 showNotification(importedEntities.size() + " entities imported", NotificationType.HUMANIZED);
             } catch (Exception e) {
                 showNotification(getMessage("importFailed"), e.getMessage(), NotificationType.ERROR);
@@ -365,7 +375,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         buttonsPanel.add(removeButton);
         buttonsPanel.add(excelButton);
         buttonsPanel.add(refreshButton);
-        buttonsPanel.add(exportButton);
+        buttonsPanel.add(exportPopupButton);
         buttonsPanel.add(importUpload);
 
         table.setButtonsPanel(buttonsPanel);
@@ -480,8 +490,11 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
     protected class ExportAction extends ItemTrackingAction {
 
-        public ExportAction() {
-            super("export");
+        private ExportFormat exportFormat;
+
+        public ExportAction(String id, ExportFormat exportFormat) {
+            super(id);
+            this.exportFormat = exportFormat;
         }
 
         @Override
@@ -489,13 +502,23 @@ public class EntityInspectorBrowse extends AbstractLookup {
             Set<Entity> selected = entitiesTable.getSelected();
             if (!selected.isEmpty()) {
                 try {
-                    exportDisplay.show(new ByteArrayDataProvider(entityImportExportService.exportEntities(selected)),
-                            selectedMeta.getJavaClass().getSimpleName() + ".zip", ExportFormat.ZIP);
+                    if (exportFormat == ZIP) {
+                        exportDisplay.show(new ByteArrayDataProvider(entityImportExportService.exportEntitiesToZIP(selected)),
+                                selectedMeta.getJavaClass().getSimpleName() + ".zip", ZIP);
+                    } else if (exportFormat == JSON) {
+                        exportDisplay.show(new ByteArrayDataProvider(entityImportExportService.exportEntitiesToJSON(selected).getBytes()),
+                                selectedMeta.getJavaClass().getSimpleName() + ".json", JSON);
+                    }
                 } catch (Exception e) {
                     showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);
                     log.error("Entities export failed", e);
                 }
             }
+        }
+
+        @Override
+        public String getCaption() {
+            return getMessage(id);
         }
     }
 }

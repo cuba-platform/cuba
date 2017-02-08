@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.app.security.role.browse;
 
+import com.google.common.io.Files;
 import com.haulmont.cuba.core.app.importexport.CollectionImportPolicy;
 import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
@@ -81,6 +82,9 @@ public class RoleBrowser extends AbstractLookup {
 
     @Inject
     protected FileUploadingAPI fileUploadingAPI;
+
+    @Inject
+    protected PopupButton exportBtn;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -174,36 +178,38 @@ public class RoleBrowser extends AbstractLookup {
             }
         });
 
-
-        ExportAction action = new ExportAction();
-        rolesTable.addAction(action);
-
         importRolesUpload.addFileUploadSucceedListener(event -> {
             File file = fileUploadingAPI.getFile(importRolesUpload.getFileId());
             if (file == null) {
                 String errorMsg = String.format("Entities import upload error. File with id %s not found", importRolesUpload.getFileId());
                 throw new RuntimeException(errorMsg);
             }
-            byte[] zipBytes;
+
+            byte[] fileBytes;
             try (InputStream is = new FileInputStream(file)) {
-                zipBytes = IOUtils.toByteArray(is);
+                fileBytes = IOUtils.toByteArray(is);
             } catch (IOException e) {
                 throw new RuntimeException("Unable to import file", e);
+            }
+
+            try {
+                Collection<Entity> importedEntities;
+                if ("json".equals(Files.getFileExtension(importRolesUpload.getFileName()))) {
+                    importedEntities = entityImportExportService.importEntitiesFromJSON(new String(fileBytes), createRolesImportView());
+                } else {
+                    importedEntities = entityImportExportService.importEntitiesFromZIP(fileBytes, createRolesImportView());
+                }
+                long importedRolesCount = importedEntities.stream().filter(entity -> entity instanceof Role).count();
+                showNotification(importedRolesCount + " roles imported", NotificationType.HUMANIZED);
+                rolesDs.refresh();
+            } catch (Exception e) {
+                showNotification(formatMessage("importError", e.getMessage()), NotificationType.ERROR);
             }
 
             try {
                 fileUploadingAPI.deleteFile(importRolesUpload.getFileId());
             } catch (FileStorageException e) {
                 log.error("Unable to delete temp file", e);
-            }
-
-            try {
-                Collection<Entity> importedEntities = entityImportExportService.importEntities(zipBytes, createRolesImportView());
-                long importedRolesCount = importedEntities.stream().filter(entity -> entity instanceof Role).count();
-                showNotification(importedRolesCount + " roles imported", NotificationType.HUMANIZED);
-                rolesDs.refresh();
-            } catch (Exception e) {
-                showNotification(formatMessage("importError", e.getMessage()), NotificationType.ERROR);
             }
         });
         importRolesUpload.setCaption(null);
@@ -218,31 +224,32 @@ public class RoleBrowser extends AbstractLookup {
                         CollectionImportPolicy.REMOVE_ABSENT_ITEMS);
     }
 
-    protected class ExportAction extends ItemTrackingAction {
-        public ExportAction() {
-            super("export");
-        }
 
-        @Override
-        public void actionPerform(Component component) {
-            Set<Role> selected = rolesTable.getSelected();
-            View view = viewRepository.getView(Role.class, "role.export");
-            if (view == null) {
-                throw new DevelopmentException("View 'role.export' for sec$Role was not found");
-            }
-            if (!selected.isEmpty()) {
-                try {
-                    exportDisplay.show(new ByteArrayDataProvider(entityImportExportService.exportEntities(selected, view)), "Roles", ExportFormat.ZIP);
-                } catch (Exception e) {
-                    showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);
-                    log.error("Roles export failed", e);
+    public void exportZIP() {
+        export(ExportFormat.ZIP);
+    }
+
+    public void exportJSON() {
+        export(ExportFormat.JSON);
+    }
+
+    protected void export(ExportFormat exportFormat) {
+        Set<Role> selected = rolesTable.getSelected();
+        View view = viewRepository.getView(Role.class, "role.export");
+        if (view == null) {
+            throw new DevelopmentException("View 'role.export' for sec$Role was not found");
+        }
+        if (!selected.isEmpty()) {
+            try {
+                if (exportFormat == ExportFormat.ZIP) {
+                    exportDisplay.show(new ByteArrayDataProvider(entityImportExportService.exportEntitiesToZIP(selected, view)), "Roles", ExportFormat.ZIP);
+                } else if (exportFormat == ExportFormat.JSON) {
+                    exportDisplay.show(new ByteArrayDataProvider(entityImportExportService.exportEntitiesToJSON(selected, view).getBytes()), "Roles", ExportFormat.JSON);
                 }
+            } catch (Exception e) {
+                showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);
+                log.error("Roles export failed", e);
             }
-        }
-
-        @Override
-        public String getCaption() {
-            return null;
         }
     }
 }

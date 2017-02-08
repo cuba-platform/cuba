@@ -126,6 +126,9 @@ public class EntitySerialization implements EntitySerializationAPI {
 
     protected Gson createGsonForSerialization(@Nullable View view, EntitySerializationOption... options) {
         GsonBuilder gsonBuilder = new GsonBuilder();
+        if (ArrayUtils.contains(options, EntitySerializationOption.PRETTY_PRINT)) {
+            gsonBuilder.setPrettyPrinting();
+        }
         gsonBuilder
                 .registerTypeHierarchyAdapter(Entity.class, new EntitySerializer(view, options))
                 .create();

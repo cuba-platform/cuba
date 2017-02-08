@@ -51,7 +51,12 @@
                 <button action="rolesTable.excel"/>
                 <button action="rolesTable.copy" icon="icons/copy.png"/>
                 <button action="rolesTable.assignToUsers" icon="icons/user-group-ok.png"/>
-                <button action="rolesTable.export" icon="icons/download.png" description="mainMsg://actions.Export"/>
+                <popupButton id="exportBtn" icon="icons/download.png">
+                    <actions>
+                        <action id="exportJSON" caption="msg://exportJSON" invoke="exportJSON"/>
+                        <action id="exportZIP" caption="msg://exportZIP" invoke="exportZIP"/>
+                    </actions>
+                </popupButton>
                 <upload id="importRolesUpload"
                         uploadButtonIcon="icons/upload.png"
                         uploadButtonDescription="mainMsg://actions.Import"/>

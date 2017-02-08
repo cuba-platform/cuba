@@ -36,5 +36,10 @@ public enum EntitySerializationOption {
     /**
      * Specifies that entity instance name will be serialized. The default behavior is not to serialize instance name.
      */
-    SERIALIZE_INSTANCE_NAME
+    SERIALIZE_INSTANCE_NAME,
+
+    /**
+     * Specifies that JSON must be pretty printed
+     */
+    PRETTY_PRINT
 }

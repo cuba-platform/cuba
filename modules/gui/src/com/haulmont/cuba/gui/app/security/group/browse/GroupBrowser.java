@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.app.security.group.browse;
 
+import com.google.common.io.Files;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.importexport.CollectionImportPolicy;
@@ -244,17 +245,15 @@ public class GroupBrowser extends AbstractWindow {
         groupCreateButton.setEnabled(hasPermissionsToCreateGroup);
         groupCopyAction.setEnabled(hasPermissionsToCreateGroup);
 
-        groupsTree.addAction(new ExportAction());
-
         importUpload.addFileUploadSucceedListener(event -> {
             File file = fileUploadingAPI.getFile(importUpload.getFileId());
             if (file == null) {
                 String errorMsg = String.format("Entities import upload error. File with id %s not found", importUpload.getFileId());
                 throw new RuntimeException(errorMsg);
             }
-            byte[] zipBytes;
+            byte[] fileBytes;
             try (InputStream is = new FileInputStream(file)) {
-                zipBytes = IOUtils.toByteArray(is);
+                fileBytes = IOUtils.toByteArray(is);
             } catch (IOException e) {
                 throw new RuntimeException("Unable to import file", e);
             }
@@ -266,7 +265,12 @@ public class GroupBrowser extends AbstractWindow {
             }
 
             try {
-                Collection<Entity> importedEntities = entityImportExportService.importEntities(zipBytes, createGroupsImportView());
+                Collection<Entity> importedEntities;
+                if ("json".equals(Files.getFileExtension(importUpload.getFileName()))) {
+                    importedEntities = entityImportExportService.importEntitiesFromJSON(new String(fileBytes), createGroupsImportView());
+                } else {
+                    importedEntities = entityImportExportService.importEntitiesFromZIP(fileBytes, createGroupsImportView());
+                }
                 long importedGroupsCount = importedEntities.stream().filter(entity -> entity instanceof Group).count();
                 showNotification(importedGroupsCount + " groups imported", NotificationType.HUMANIZED);
                 groupsDs.refresh();
@@ -389,32 +393,32 @@ public class GroupBrowser extends AbstractWindow {
         }
     }
 
-    protected class ExportAction extends ItemTrackingAction {
-        public ExportAction() {
-            super("export");
+    public void exportZIP() {
+        export(ExportFormat.ZIP);
+    }
 
-            setCaption(messages.getMainMessage("actions.Export"));
+    public void exportJSON() {
+        export(ExportFormat.JSON);
+    }
+
+    protected void export(ExportFormat exportFormat) {
+        Set<Group> selected = groupsTree.getSelected();
+        View view = viewRepository.getView(Group.class, "group.export");
+        if (view == null) {
+            throw new DevelopmentException("View 'group.export' for sec$Group was not found");
         }
-
-        @Override
-        public void actionPerform(Component component) {
-            Set<Group> selected = groupsTree.getSelected();
-            View view = viewRepository.getView(Group.class, "group.export");
-            if (view == null) {
-                throw new DevelopmentException("View 'group.export' for sec$Group was not found");
-            }
-
-            if (!selected.isEmpty()) {
-                try {
-                    exportDisplay.show(
-                            new ByteArrayDataProvider(entityImportExportService.exportEntities(selected, view)),
-                            "Groups", ExportFormat.ZIP);
-
-                } catch (Exception e) {
-                    showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);
-                    log.error("Groups export failed", e);
+        if (!selected.isEmpty()) {
+            try {
+                if (exportFormat == ExportFormat.ZIP) {
+                    exportDisplay.show(new ByteArrayDataProvider(entityImportExportService.exportEntitiesToZIP(selected, view)), "Groups", ExportFormat.ZIP);
+                } else if (exportFormat == ExportFormat.JSON) {
+                    exportDisplay.show(new ByteArrayDataProvider(entityImportExportService.exportEntitiesToJSON(selected, view).getBytes()), "Groups", ExportFormat.JSON);
                 }
+            } catch (Exception e) {
+                showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);
+                log.error("Groups export failed", e);
             }
         }
     }
+
 }
