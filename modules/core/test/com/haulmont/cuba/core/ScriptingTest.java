@@ -54,7 +54,7 @@ public class ScriptingTest {
     @Test
     public void testImportsEvaluate() {
         String result = scripting.evaluateGroovy("import org.apache.commons.lang.StringUtils\n" +
-                                                 "return StringUtlis.normalizeSpace(' Hello! ')", (Binding) null);
+                                                 "return StringUtils.normalizeSpace(' Hello! ')", (Binding) null);
         assertNotNull(result);
     }
 
