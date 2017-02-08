@@ -16,6 +16,8 @@
  */
 package com.haulmont.bali.util;
 
+import org.apache.commons.lang.StringUtils;
+
 public final class StringHelper {
 
     private StringHelper() {
@@ -30,26 +32,6 @@ public final class StringHelper {
     */
     @Deprecated
     public static String removeExtraSpaces(String str) {
-        StringBuilder sb = new StringBuilder();
-
-        int pos = 0;
-        boolean prevWS = true;
-
-        for (int i = 0; i < str.length(); i++) {
-            if (Character.isWhitespace(str.charAt(i)) || i == str.length() - 1) {
-                if (!prevWS) {
-                    sb.append(str.substring(pos, i)).append(str.charAt(i));
-                }
-                prevWS = true;
-            } else {
-                if (prevWS)
-                    pos = i;
-                prevWS = false;
-            }
-        }
-        if (Character.isWhitespace(sb.charAt(sb.length() - 1)))
-            sb.deleteCharAt(sb.length() - 1);
-
-        return sb.toString();
+        return StringUtils.normalizeSpace(str);
     }
 }
