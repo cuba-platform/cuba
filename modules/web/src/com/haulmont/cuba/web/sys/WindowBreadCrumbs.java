@@ -111,7 +111,7 @@ public class WindowBreadCrumbs extends CssLayout {
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_HEADLINE_CONTAINER, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(C_HEADLINE_CONTAINER, ""));
     }
 
     protected Layout createEnclosingLayout() {

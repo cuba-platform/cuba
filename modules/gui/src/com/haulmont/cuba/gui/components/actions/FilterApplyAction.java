@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 
 /**
- * DEPRECATED. List action to apply current filter by refreshing the underlying datasource.
+ * @deprecated List action to apply current filter by refreshing the underlying datasource.
  */
 @Deprecated
 public class FilterApplyAction extends AbstractAction {
@@ -32,7 +32,8 @@ public class FilterApplyAction extends AbstractAction {
 
     /**
      * The simplest constructor. The action has default name.
-     * @param owner    component containing this action
+     *
+     * @param owner component containing this action
      */
     public FilterApplyAction(ListComponent owner) {
         this(owner, ACTION_ID);
@@ -40,8 +41,9 @@ public class FilterApplyAction extends AbstractAction {
 
     /**
      * Constructor that allows to specify the action name.
-     * @param owner    component containing this action
-     * @param id        action name
+     *
+     * @param owner component containing this action
+     * @param id    action name
      */
     public FilterApplyAction(ListComponent owner, String id) {
         super(id);

@@ -20,6 +20,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.gui.components.LinkButton;
 import com.vaadin.ui.themes.BaseTheme;
+import org.apache.commons.lang.StringUtils;
 
 public class WebLinkButton extends WebButton implements LinkButton {
 
@@ -35,6 +36,6 @@ public class WebLinkButton extends WebButton implements LinkButton {
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(BaseTheme.BUTTON_LINK, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(BaseTheme.BUTTON_LINK, ""));
     }
 }

@@ -1223,7 +1223,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         for (String internalStyle : internalStyles) {
             styleName = styleName.replace(internalStyle, "");
         }
-        return StringHelper.removeExtraSpaces(styleName);
+        return StringUtils.normalizeSpace(styleName);
     }
 
     public void validate() throws ValidationException {

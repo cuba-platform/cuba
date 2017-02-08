@@ -26,7 +26,9 @@ public final class StringHelper {
      * Examples:<br>
      * " aaa  bbb   ccc ddd " becomes "aaa bbb ccc ddd"
      *
+     * @deprecated use {@link org.apache.commons.lang.StringUtils#normalizeSpace(String)} instead
     */
+    @Deprecated
     public static String removeExtraSpaces(String str) {
         StringBuilder sb = new StringBuilder();
 

@@ -286,6 +286,6 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(CAPTION_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(CAPTION_STYLENAME, ""));
     }
 }

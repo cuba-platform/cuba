@@ -121,7 +121,7 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
     @Override
     public String getStyleName() {
         if (getIcon() != null)
-            return StringHelper.removeExtraSpaces(super.getStyleName().replace(ICON_STYLE, ""));
+            return StringUtils.normalizeSpace(super.getStyleName().replace(ICON_STYLE, ""));
 
         return super.getStyleName();
     }

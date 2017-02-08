@@ -69,7 +69,7 @@ public class WebUserIndicator extends WebAbstractComponent<CubaCssLayout> implem
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(USER_INDICATOR_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(USER_INDICATOR_STYLENAME, ""));
     }
 
     @Override

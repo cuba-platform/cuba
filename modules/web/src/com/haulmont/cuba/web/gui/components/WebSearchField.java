@@ -149,7 +149,7 @@ public class WebSearchField extends WebLookupField implements SearchField {
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(SEARCHSELECT_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(SEARCHSELECT_STYLENAME, ""));
     }
 
     @Override
