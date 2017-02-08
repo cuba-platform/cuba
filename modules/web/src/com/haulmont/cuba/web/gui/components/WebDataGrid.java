@@ -46,7 +46,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaSingleSelectionModel;
 import com.haulmont.cuba.web.toolkit.ui.converters.FormatterBasedConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToObjectConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.YesNoIconConverter;
-import com.vaadin.addon.contextmenu.GridContextMenu;
 import com.vaadin.addon.contextmenu.GridContextMenu.GridContextMenuOpenListener;
 import com.vaadin.addon.contextmenu.Menu;
 import com.vaadin.addon.contextmenu.MenuItem;
@@ -77,6 +76,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         implements DataGrid<E>, com.haulmont.cuba.gui.components.Component.SecuredActionsHolder {
 
     protected static final String HAS_TOP_PANEL_STYLE_NAME = "has-top-panel";
+    protected static final String TEXT_SELECTION_ENABLED_STYLE = "text-selection-enabled";
 
     // Style names used by grid itself
     protected final List<String> internalStyles = new ArrayList<>();
@@ -98,6 +98,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     protected boolean settingsEnabled = true;
     protected boolean sortable = true;
     protected boolean columnsCollapsingAllowed = true;
+    protected boolean textSelectionEnabled = false;
 
     protected Action itemClickAction;
     protected Action enterPressAction;
@@ -748,12 +749,25 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     @Override
     public boolean isTextSelectionEnabled() {
-        return component.isTextSelectionEnabled();
+        return textSelectionEnabled;
     }
 
     @Override
     public void setTextSelectionEnabled(boolean textSelectionEnabled) {
-        component.setTextSelectionEnabled(textSelectionEnabled);
+        if (this.textSelectionEnabled != textSelectionEnabled) {
+            this.textSelectionEnabled = textSelectionEnabled;
+
+            if (textSelectionEnabled) {
+                if (!internalStyles.contains(TEXT_SELECTION_ENABLED_STYLE)) {
+                    internalStyles.add(TEXT_SELECTION_ENABLED_STYLE);
+                }
+
+                componentComposition.addStyleName(TEXT_SELECTION_ENABLED_STYLE);
+            } else {
+                internalStyles.remove(TEXT_SELECTION_ENABLED_STYLE);
+                componentComposition.removeStyleName(TEXT_SELECTION_ENABLED_STYLE);
+            }
+        }
     }
 
     @Override
