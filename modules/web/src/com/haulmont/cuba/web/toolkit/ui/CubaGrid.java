@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.web.toolkit.ui.client.grid.CubaGridState;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Grid;
 
@@ -24,25 +23,5 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
 
     public void repaint() {
         datasourceExtension.refreshCache();
-    }
-
-    @Override
-    protected CubaGridState getState() {
-        return (CubaGridState) super.getState();
-    }
-
-    @Override
-    protected CubaGridState getState(boolean markAsDirty) {
-        return (CubaGridState) super.getState(markAsDirty);
-    }
-
-    public boolean isTextSelectionEnabled() {
-        return getState(false).textSelectionEnabled;
-    }
-
-    public void setTextSelectionEnabled(boolean textSelectionEnabled) {
-        if (isTextSelectionEnabled() != textSelectionEnabled) {
-            getState(true).textSelectionEnabled = textSelectionEnabled;
-        }
     }
 }

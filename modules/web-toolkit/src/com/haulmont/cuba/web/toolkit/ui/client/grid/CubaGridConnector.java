@@ -17,7 +17,6 @@
 package com.haulmont.cuba.web.toolkit.ui.client.grid;
 
 import com.haulmont.cuba.web.toolkit.ui.CubaGrid;
-import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.connectors.GridConnector;
 import com.vaadin.shared.ui.Connect;
 
@@ -27,19 +26,5 @@ public class CubaGridConnector extends GridConnector {
     @Override
     public CubaGridWidget getWidget() {
         return (CubaGridWidget) super.getWidget();
-    }
-
-    @Override
-    public CubaGridState getState() {
-        return (CubaGridState) super.getState();
-    }
-
-    @Override
-    public void onStateChanged(StateChangeEvent stateChangeEvent) {
-        super.onStateChanged(stateChangeEvent);
-
-        if (stateChangeEvent.hasPropertyChanged("textSelectionEnabled")) {
-            getWidget().setTextSelectionEnabled(getState().textSelectionEnabled);
-        }
     }
 }
