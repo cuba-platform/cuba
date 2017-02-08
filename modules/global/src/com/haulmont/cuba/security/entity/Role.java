@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.security.entity;
 
+import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
@@ -57,6 +58,7 @@ public class Role extends StandardEntity {
 
     @OneToMany(mappedBy = "role")
     @OnDelete(DeletePolicy.CASCADE)
+    @Composition
     private Set<Permission> permissions;
 
     public String getName() {
