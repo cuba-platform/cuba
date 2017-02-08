@@ -94,6 +94,12 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     @WindowParam
     protected Boolean borderVisible;
 
+    @WindowParam
+    protected String fieldCaptionWidth;
+
+    @WindowParam
+    protected String[] fieldCaptionWidths;
+
     @Override
     public void init(Map<String, Object> params) {
         initDatasources(params);
@@ -145,6 +151,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
         final FieldGroup newRuntimeFieldGroup = componentsFactory.createComponent(FieldGroup.class);
         newRuntimeFieldGroup.setBorderVisible(Boolean.TRUE.equals(borderVisible));
+
         newRuntimeFieldGroup.setWidth("100%");
         newRuntimeFieldGroup.setId("runtime");
 
@@ -169,7 +176,32 @@ public class RuntimePropertiesFrame extends AbstractWindow {
             loadRequired(newRuntimeFieldGroup, fieldConfig);
         }
 
+        initFieldCaptionWidth(newRuntimeFieldGroup);
+
         return newRuntimeFieldGroup;
+    }
+
+    protected void initFieldCaptionWidth(FieldGroup newRuntimeFieldGroup) {
+        if (fieldCaptionWidth != null) {
+            if (fieldCaptionWidth.contains("%")) {
+                throw new IllegalStateException("RuntimePropertiesFrame fieldCaptionWidth with '%' unit is unsupported");
+            }
+
+            int captionWidth = Integer.parseInt(fieldCaptionWidth.replace("px", ""));
+
+            newRuntimeFieldGroup.setFieldCaptionWidth(captionWidth);
+        }
+        if (fieldCaptionWidths != null) {
+            for (int i = 0; i < fieldCaptionWidths.length; i++) {
+                if (fieldCaptionWidths[i].contains("%")) {
+                    throw new IllegalStateException("RuntimePropertiesFrame fieldCaptionWidth with '%' unit is unsupported");
+                }
+
+                int captionWidth = Integer.parseInt(fieldCaptionWidths[i].replace("px", ""));
+
+                newRuntimeFieldGroup.setFieldCaptionWidth(i, captionWidth);
+            }
+        }
     }
 
     protected java.util.List<FieldGroup.FieldConfig> createFieldsForAttributes() {
