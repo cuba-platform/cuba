@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
-import com.haulmont.bali.util.StringHelper;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.global.*;
@@ -69,7 +68,7 @@ public class WebUserIndicator extends WebAbstractComponent<CubaCssLayout> implem
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(USER_INDICATOR_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(USER_INDICATOR_STYLENAME, ""));
     }
 
     @Override

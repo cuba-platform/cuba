@@ -16,10 +16,10 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.gui.components.FlowBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaFlowLayout;
 import com.vaadin.shared.ui.MarginInfo;
+import org.apache.commons.lang.StringUtils;
 
 public class WebFlowBoxLayout extends WebAbstractOrderedLayout<CubaFlowLayout> implements FlowBoxLayout {
 
@@ -38,7 +38,7 @@ public class WebFlowBoxLayout extends WebAbstractOrderedLayout<CubaFlowLayout> i
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(FLOWLAYOUT_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(FLOWLAYOUT_STYLENAME, ""));
     }
 
     @Override

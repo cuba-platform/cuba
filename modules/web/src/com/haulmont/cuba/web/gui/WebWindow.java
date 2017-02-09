@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.web.gui;
 
-import com.haulmont.bali.util.StringHelper;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
@@ -194,7 +193,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(component.getStyleName().replace(C_WINDOW_LAYOUT, ""));
+        return StringUtils.normalizeSpace(component.getStyleName().replace(C_WINDOW_LAYOUT, ""));
     }
 
     @Override
@@ -1667,7 +1666,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
         @Override
         public String getStyleName() {
-            return StringHelper.removeExtraSpaces(container.getStyleName().replace(C_WINDOW_LAYOUT, ""));
+            return StringUtils.normalizeSpace(container.getStyleName().replace(C_WINDOW_LAYOUT, ""));
         }
 
         @Override

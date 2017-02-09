@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.util.StringHelper;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
@@ -149,7 +148,7 @@ public class WebSearchField extends WebLookupField implements SearchField {
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(SEARCHSELECT_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(SEARCHSELECT_STYLENAME, ""));
     }
 
     @Override

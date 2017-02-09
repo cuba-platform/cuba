@@ -18,7 +18,6 @@
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.VBoxLayout;
@@ -36,6 +35,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import fi.jasoft.dragdroplayouts.client.ui.LayoutDragMode;
 import fi.jasoft.dragdroplayouts.drophandlers.DefaultTabSheetDropHandler;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -103,7 +103,7 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName()
+        return StringUtils.normalizeSpace(super.getStyleName()
                 .replace(WORKAREA_STYLENAME, "")
                 .replace(MODE_TABBED_STYLENAME, "")
                 .replace(MODE_SINGLE_STYLENAME, "")

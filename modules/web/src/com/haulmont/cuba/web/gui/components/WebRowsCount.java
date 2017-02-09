@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ListComponent;
@@ -27,6 +26,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import com.haulmont.cuba.web.toolkit.ui.CubaRowsCount;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -56,7 +56,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(TABLE_ROWS_COUNT_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(TABLE_ROWS_COUNT_STYLENAME, ""));
     }
 
     @Override
