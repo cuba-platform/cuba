@@ -18,7 +18,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.bali.util.StringHelper;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
@@ -1223,7 +1222,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         for (String internalStyle : internalStyles) {
             styleName = styleName.replace(internalStyle, "");
         }
-        return StringHelper.removeExtraSpaces(styleName);
+        return StringUtils.normalizeSpace(styleName);
     }
 
     public void validate() throws ValidationException {

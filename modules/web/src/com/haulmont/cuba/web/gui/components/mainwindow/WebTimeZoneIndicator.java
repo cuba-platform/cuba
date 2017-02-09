@@ -17,13 +17,13 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
-import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.TimeZones;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.mainwindow.TimeZoneIndicator;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.vaadin.ui.Label;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.TimeZone;
 
@@ -48,7 +48,7 @@ public class WebTimeZoneIndicator extends WebAbstractComponent<Label> implements
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(USER_TIMEZONE_LABEL_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(USER_TIMEZONE_LABEL_STYLENAME, ""));
     }
 
     @Override

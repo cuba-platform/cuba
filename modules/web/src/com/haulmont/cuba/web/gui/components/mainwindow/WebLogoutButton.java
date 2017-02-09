@@ -17,11 +17,11 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
-import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.gui.components.mainwindow.LogoutButton;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
+import org.apache.commons.lang.StringUtils;
 
 public class WebLogoutButton extends WebAbstractComponent<CubaButton> implements LogoutButton {
 
@@ -50,6 +50,6 @@ public class WebLogoutButton extends WebAbstractComponent<CubaButton> implements
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(LOGOUT_BUTTON_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(LOGOUT_BUTTON_STYLENAME, ""));
     }
 }

@@ -17,10 +17,10 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
-import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.web.app.folders.CubaFoldersPane;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
+import org.apache.commons.lang.StringUtils;
 
 import static com.haulmont.cuba.web.app.folders.CubaFoldersPane.C_FOLDERS_PANE;
 
@@ -43,7 +43,7 @@ public class WebFoldersPane extends WebAbstractComponent<CubaFoldersPane> implem
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_FOLDERS_PANE, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(C_FOLDERS_PANE, ""));
     }
 
     @Override

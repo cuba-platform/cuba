@@ -28,6 +28,9 @@ public final class StringHelper {
      *
     */
     public static String removeExtraSpaces(String str) {
+        if (str == null || str.isEmpty())
+            return str;
+
         StringBuilder sb = new StringBuilder();
 
         int pos = 0;

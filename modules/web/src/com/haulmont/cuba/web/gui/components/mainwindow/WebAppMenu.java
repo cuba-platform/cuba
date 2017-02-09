@@ -17,13 +17,13 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
-import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.components.mainwindow.TopLevelWindowAttachListener;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.sys.MenuBuilder;
 import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
+import org.apache.commons.lang.StringUtils;
 
 public class WebAppMenu extends WebAbstractComponent<CubaMenuBar>
         implements AppMenu, TopLevelWindowAttachListener {
@@ -44,7 +44,7 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar>
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(MENU_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(MENU_STYLENAME, ""));
     }
 
     @Override

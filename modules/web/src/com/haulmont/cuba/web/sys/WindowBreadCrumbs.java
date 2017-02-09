@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.web.sys;
 
-import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
@@ -111,7 +110,7 @@ public class WindowBreadCrumbs extends CssLayout {
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_HEADLINE_CONTAINER, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(C_HEADLINE_CONTAINER, ""));
     }
 
     protected Layout createEnclosingLayout() {

@@ -17,13 +17,13 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
-import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.gui.components.mainwindow.NewWindowButton;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
@@ -62,6 +62,6 @@ public class WebNewWindowButton extends WebAbstractComponent<CubaButton> impleme
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(NEW_WINDOW_BUTTON_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(NEW_WINDOW_BUTTON_STYLENAME, ""));
     }
 }
