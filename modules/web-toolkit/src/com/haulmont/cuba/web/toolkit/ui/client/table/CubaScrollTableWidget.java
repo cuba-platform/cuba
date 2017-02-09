@@ -275,7 +275,19 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
     }
 
     protected TableAggregationRow createAggregationRow() {
-        return new TableAggregationRow(this);
+        return new TableAggregationRow(this) {
+            @Override
+            protected boolean addSpecificCell(String columnId, int colIndex) {
+                if (showRowHeaders && colIndex == 0) {
+                    addCell("", aligns[colIndex], "", false);
+                    int w = tableWidget.getColWidth(getColKeyByIndex(colIndex));
+                    super.setCellWidth(colIndex, w);
+                    return true;
+                }
+
+                return super.addSpecificCell(columnId, colIndex);
+            }
+        };
     }
 
     @Override
