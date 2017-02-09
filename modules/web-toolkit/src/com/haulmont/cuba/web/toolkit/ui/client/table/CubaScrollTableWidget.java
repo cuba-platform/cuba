@@ -322,7 +322,19 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     }
 
     protected TableAggregationRow createAggregationRow() {
-        return new TableAggregationRow(getAggregatableTable());
+        return new TableAggregationRow(getAggregatableTable()) {
+            @Override
+            protected boolean addSpecificCell(String columnId, int colIndex) {
+                if (showRowHeaders && colIndex == 0) {
+                    addCell("", aligns[colIndex], "", false);
+                    int w = CubaScrollTableWidget.this.getColWidth(getColKeyByIndex(colIndex));
+                    super.setCellWidth(colIndex, w);
+                    return true;
+                }
+
+                return super.addSpecificCell(columnId, colIndex);
+            }
+        };
     }
 
     protected AggregatableTable getAggregatableTable() {
