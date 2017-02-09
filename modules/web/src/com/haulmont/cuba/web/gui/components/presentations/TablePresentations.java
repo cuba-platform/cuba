@@ -130,7 +130,7 @@ public class TablePresentations extends VerticalLayout {
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(TABLE_PREFS_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(TABLE_PREFS_STYLENAME, ""));
     }
 
     protected void removeCurrentItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {

@@ -53,16 +53,16 @@ public class ScriptingTest {
 
     @Test
     public void testImportsEvaluate() {
-        String result = scripting.evaluateGroovy("import com.haulmont.bali.util.StringHelper\n" +
-                                                 "return StringHelper.removeExtraSpaces(' Hello! ')", (Binding) null);
+        String result = scripting.evaluateGroovy("import org.apache.commons.lang.StringUtils\n" +
+                                                 "return StringUtils.normalizeSpace(' Hello! ')", (Binding) null);
         assertNotNull(result);
     }
 
     @Test
     public void testPackageAndImportsEvaluate() {
         String result = scripting.evaluateGroovy("package com.haulmont.cuba.core\n" +
-                "import com.haulmont.bali.util.StringHelper\n" +
-                "return StringHelper.removeExtraSpaces(' Hello! ')", (Binding) null);
+                "import org.apache.commons.lang.StringUtils\n" +
+                "return StringUtils.normalizeSpace(' Hello! ')", (Binding) null);
         assertNotNull(result);
     }
 

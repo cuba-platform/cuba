@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.gui.components.ButtonsPanel;
 import com.haulmont.cuba.gui.components.VisibilityChangeNotifier;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -45,7 +46,7 @@ public class WebButtonsPanel extends WebHBoxLayout implements ButtonsPanel, Visi
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(BUTTONS_PANNEL_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(BUTTONS_PANNEL_STYLENAME, ""));
     }
 
     @Override

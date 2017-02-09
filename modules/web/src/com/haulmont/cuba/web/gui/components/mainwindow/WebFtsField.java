@@ -134,6 +134,6 @@ public class WebFtsField extends WebAbstractComponent<HorizontalLayout> implemen
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(FTS_FIELD_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(FTS_FIELD_STYLENAME, ""));
     }
 }

@@ -194,7 +194,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(component.getStyleName().replace(C_WINDOW_LAYOUT, ""));
+        return StringUtils.normalizeSpace(component.getStyleName().replace(C_WINDOW_LAYOUT, ""));
     }
 
     @Override
@@ -1667,7 +1667,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
         @Override
         public String getStyleName() {
-            return StringHelper.removeExtraSpaces(container.getStyleName().replace(C_WINDOW_LAYOUT, ""));
+            return StringUtils.normalizeSpace(container.getStyleName().replace(C_WINDOW_LAYOUT, ""));
         }
 
         @Override

@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.ListEditor;
 import com.haulmont.cuba.gui.components.listeditor.ListEditorDelegate;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(LISTEDITOR_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(LISTEDITOR_STYLENAME, ""));
     }
 
     @Override

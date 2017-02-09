@@ -28,6 +28,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.ui.AbstractOrderedLayout;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.annotation.Nonnull;
@@ -378,6 +379,6 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(GROUPBOX_PANEL_STYLENAME, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(GROUPBOX_PANEL_STYLENAME, ""));
     }
 }

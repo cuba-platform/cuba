@@ -119,7 +119,7 @@ public class CubaFoldersPane extends VerticalLayout {
 
     @Override
     public String getStyleName() {
-        return StringHelper.removeExtraSpaces(super.getStyleName().replace(C_FOLDERS_PANE, ""));
+        return StringUtils.normalizeSpace(super.getStyleName().replace(C_FOLDERS_PANE, ""));
     }
 
     public void loadFolders() {
