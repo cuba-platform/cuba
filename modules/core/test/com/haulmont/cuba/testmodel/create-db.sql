@@ -295,3 +295,27 @@ create table TEST_ORDER (
     constraint TEST_ORDER_CUSTOMER foreign key (CUSTOMER_ID) references TEST_CUSTOMER(ID),
     constraint TEST_ORDER_USER foreign key (USER_ID) references SEC_USER(ID)
 )^
+
+create table TEST_LINK_ENTITY (
+    ID bigint,
+    --
+    NAME varchar(128),
+    CAT varchar(128),
+    PACKAGE_NAME varchar(128),
+    MODULE_NAME varchar(128),
+    CLASS_NAME varchar(128),
+    FUNC_NAME varchar(128),
+    primary key (ID)
+)^
+
+create table TEST_MULTI_LINK_ENTITY (
+    ID bigint,
+    --
+    A_ID bigint,
+    B_ID bigint,
+    C_ID bigint,
+    primary key (ID),
+    constraint FK_TEST_LINK_ENTITY_1 foreign key (A_ID) references TEST_LINK_ENTITY(ID),
+    constraint FK_TEST_LINK_ENTITY_2 foreign key (B_ID) references TEST_LINK_ENTITY(ID),
+    constraint FK_TEST_LINK_ENTITY_3 foreign key (C_ID) references TEST_LINK_ENTITY(ID)
+)^

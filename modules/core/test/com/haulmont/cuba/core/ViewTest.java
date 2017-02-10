@@ -23,6 +23,8 @@ import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.testmodel.multiplelinks.LinkEntity;
+import com.haulmont.cuba.testmodel.multiplelinks.MultiLinkEntity;
 import com.haulmont.cuba.testmodel.selfinherited.ChildEntity;
 import com.haulmont.cuba.testmodel.selfinherited.RootEntity;
 import com.haulmont.cuba.testmodel.selfinherited.RootEntityDetail;
@@ -53,6 +55,8 @@ public class ViewTest {
     private UUID userId;
     private RootEntity rootEntity;
     private ChildEntity childEntity;
+    private MultiLinkEntity multiLinkEntity;
+    private LinkEntity linkEntity1, linkEntity2, linkEntity3;
     private Persistence persistence;
     private Metadata metadata;
 
@@ -99,6 +103,24 @@ public class ViewTest {
             detail2.setMaster(childEntity);
             em.persist(detail2);
 
+            linkEntity1 = metadata.create(LinkEntity.class);
+            linkEntity1.setName("A");
+            em.persist(linkEntity1);
+
+            linkEntity2 = metadata.create(LinkEntity.class);
+            linkEntity2.setName("B");
+            em.persist(linkEntity2);
+
+            linkEntity3 = metadata.create(LinkEntity.class);
+            linkEntity3.setName("C");
+            em.persist(linkEntity3);
+
+            multiLinkEntity = metadata.create(MultiLinkEntity.class);
+            multiLinkEntity.setA(linkEntity1);
+            multiLinkEntity.setB(linkEntity2);
+            multiLinkEntity.setC(linkEntity3);
+            em.persist(multiLinkEntity);
+
             tx.commit();
         } finally {
             tx.end();
@@ -114,6 +136,8 @@ public class ViewTest {
         cont.deleteRecord("TEST_ROOT_ENTITY_DETAIL");
         cont.deleteRecord("TEST_CHILD_ENTITY");
         cont.deleteRecord("TEST_ROOT_ENTITY");
+        cont.deleteRecord("TEST_MULTI_LINK_ENTITY");
+        cont.deleteRecord("TEST_LINK_ENTITY");
     }
 
     @Test
@@ -506,5 +530,29 @@ public class ViewTest {
         assertEquals(childEntity, loaded);
         assertNotNull(loaded.getDetails());
         assertEquals(2, loaded.getDetails().size());
+    }
+
+    @Test
+    public void testMultiLinkInEntity() throws Exception {
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+            View linkView = new View(LinkEntity.class).addProperty("name");
+            View view = new View(MultiLinkEntity.class)
+                    .addProperty("a", linkView)
+                    .addProperty("b", linkView)
+                    .addProperty("c", linkView)
+                    .setLoadPartialEntities(true);
+
+            MultiLinkEntity reloadEntity = em.find(MultiLinkEntity.class, multiLinkEntity.getId(), view);
+
+            tx.commit();
+            reloadEntity = reserialize(reloadEntity);
+            assertEquals("A", reloadEntity.getA().getName());
+            assertEquals("B", reloadEntity.getB().getName());
+            assertEquals("C", reloadEntity.getC().getName());
+        } finally {
+            tx.end();
+        }
     }
 }
