@@ -220,7 +220,7 @@ public class RelatedAction extends BaseAction implements Action.HasBeforeActionP
         if (cardinality == Cardinality.MANY_TO_ONE) {
             return getManyToOneCondition(parentIds, datasource, filterComponentName, relatedPrimaryKey);
         } else if (cardinality == Cardinality.ONE_TO_MANY || cardinality == Cardinality.ONE_TO_ONE) {
-            return getOneToManyCondition(parentIds, datasource, filterComponentName, relatedPrimaryKey);
+            return getOneToManyCondition(parentIds, datasource, filterComponentName);
         } else if (cardinality == Cardinality.MANY_TO_MANY) {
             return getManyToManyCondition(parentIds, datasource, filterComponentName, relatedPrimaryKey);
         }
@@ -230,15 +230,17 @@ public class RelatedAction extends BaseAction implements Action.HasBeforeActionP
 
     @Nullable
     protected AbstractCondition getOneToManyCondition(List<Object> parentIds, CollectionDatasource datasource,
-                                                      String filterComponentName, String relatedPrimaryKey) {
+                                                      String filterComponentName) {
         MetaProperty inverseField = metaProperty.getInverse();
         if (inverseField == null) {
             return null;
         }
-        CustomCondition customCondition = getCustomCondition(parentIds, datasource, filterComponentName, relatedPrimaryKey);
+
+        String parentPrimaryKey = metadataTools.getPrimaryKeyName(metaClass);
+        CustomCondition customCondition = getParentEntitiesCondition(parentIds, parentPrimaryKey, datasource, filterComponentName);
 
         String whereString = String.format("{E}.%s.%s in :%s",
-                inverseField.getName(), metadataTools.getPrimaryKeyName(metaClass), paramName);
+                inverseField.getName(), parentPrimaryKey, paramName);
         customCondition.setWhere(whereString);
 
         return customCondition;
@@ -247,16 +249,15 @@ public class RelatedAction extends BaseAction implements Action.HasBeforeActionP
     @Nullable
     protected AbstractCondition getManyToManyCondition(List<Object> parentIds, CollectionDatasource datasource,
                                                        String filterComponentName, String relatedPrimaryKey) {
-        CustomCondition customCondition = getCustomCondition(parentIds, datasource, filterComponentName, relatedPrimaryKey);
+        String parentPrimaryKey = metadataTools.getPrimaryKeyName(metaClass);
+        CustomCondition customCondition = getParentEntitiesCondition(parentIds, parentPrimaryKey, datasource, filterComponentName);
 
         String parentEntityAlias = RandomStringUtils.randomAlphabetic(6);
         String entityAlias = RandomStringUtils.randomAlphabetic(6);
-        String select = String.format("select %s.%s from %s %s ", parentEntityAlias, relatedPrimaryKey,
-                metaClass, entityAlias);
+        String select = String.format("select %s.%s from %s %s ", entityAlias, relatedPrimaryKey, metaClass, parentEntityAlias);
 
-        String parentPrimaryKey = metadataTools.getPrimaryKeyName(metaClass);
-        String joinWhere = String.format("join %s.%s %s where %s.%s in :%s", entityAlias, metaProperty.getName(),
-                parentEntityAlias, entityAlias, parentPrimaryKey, paramName);
+        String joinWhere = String.format("join %s.%s %s where %s.%s in :%s", parentEntityAlias, metaProperty.getName(),
+                entityAlias, parentEntityAlias, parentPrimaryKey, paramName);
 
         String whereString = String.format("{E}.%s in (%s)", relatedPrimaryKey, select + joinWhere);
         customCondition.setWhere(whereString);
@@ -267,27 +268,27 @@ public class RelatedAction extends BaseAction implements Action.HasBeforeActionP
     @Nullable
     protected AbstractCondition getManyToOneCondition(List<Object> parentIds, CollectionDatasource datasource,
                                                       String filterComponentName, String relatedPrimaryKey) {
-        CustomCondition customCondition = getCustomCondition(parentIds, datasource, filterComponentName, relatedPrimaryKey);
+        String parentPrimaryKey = metadataTools.getPrimaryKeyName(metaClass);
+        CustomCondition customCondition = getParentEntitiesCondition(parentIds, parentPrimaryKey, datasource, filterComponentName);
 
         String entityAlias = RandomStringUtils.randomAlphabetic(6);
-        String parentPrimaryKey = metadataTools.getPrimaryKeyName(metaClass);
-        String subQuery = String.format("select %s.%s.%s from %s %s where %s.%s in :%s",
-                entityAlias, metaProperty.getName(), parentPrimaryKey, metaClass.getName(), entityAlias,
-                entityAlias, relatedPrimaryKey, paramName);
+        String subQuery = String.format("select %s.%s.%s from %s %s where %s.%s in :%s", entityAlias,
+                metaProperty.getName(), relatedPrimaryKey, metaClass.getName(), entityAlias, entityAlias, parentPrimaryKey, paramName);
 
-        String whereString = String.format("{E}.%s in (%s)", parentPrimaryKey, subQuery);
+        String whereString = String.format("{E}.%s in (%s)", relatedPrimaryKey, subQuery);
         customCondition.setWhere(whereString);
 
         return customCondition;
     }
 
-    protected Param getCustomConditionParam(List<Object> parentIds, String primaryKey, CollectionDatasource datasource, Class idType, String paramName) {
+    protected Param getParentEntitiesParam(List<Object> parentIds, String parentPrimaryKey, CollectionDatasource datasource,
+                                           Class parentPrimaryKeyClass, String paramName) {
         Param param = Param.Builder.getInstance().setName(paramName)
-                .setJavaClass(idType)
+                .setJavaClass(parentPrimaryKeyClass)
                 .setEntityWhere(StringUtils.EMPTY)
                 .setEntityView(StringUtils.EMPTY)
                 .setDataSource(datasource)
-                .setProperty(relatedMetaClass.getPropertyNN(primaryKey))
+                .setProperty(metaClass.getPropertyNN(parentPrimaryKey))
                 .setInExpr(true)
                 .setRequired(true)
                 .build();
@@ -295,22 +296,21 @@ public class RelatedAction extends BaseAction implements Action.HasBeforeActionP
         return param;
     }
 
-    protected CustomCondition getCustomCondition(List<Object> parentIds, CollectionDatasource datasource,
-                                                 String filterComponentName, String relatedPrimaryKey) {
+    protected CustomCondition getParentEntitiesCondition(List<Object> parentIds, String parentPrimaryKey, CollectionDatasource datasource,
+                                                         String filterComponentName) {
         String conditionName = String.format("related_%s", RandomStringUtils.randomAlphabetic(6));
         CustomCondition condition = new CustomCondition(getConditionXmlElement(conditionName), AppConfig.getMessagesPack(),
                 filterComponentName, datasource);
 
-        Class<?> relatedPrimaryKeyClass = relatedMetaClass.getPropertyNN(relatedPrimaryKey).getJavaType();
-        condition.setJavaClass(relatedPrimaryKeyClass);
+        Class<?> parentPrimaryKeyClass = metaClass.getPropertyNN(parentPrimaryKey).getJavaType();
+        condition.setJavaClass(parentPrimaryKeyClass);
         condition.setHidden(true);
         condition.setInExpr(true);
 
         int randInt = new Random().nextInt((99999 - 11111) + 1) + 11111;
         paramName = String.format("component$%s.%s%s", filterComponentName, conditionName, randInt);
-        //noinspection ConstantConditions
-        Param param = getCustomConditionParam(parentIds, relatedPrimaryKey, datasource, relatedPrimaryKeyClass, paramName);
-        condition.setParam(param);
+
+        condition.setParam(getParentEntitiesParam(parentIds, parentPrimaryKey, datasource, parentPrimaryKeyClass, paramName));
         return condition;
     }
 
