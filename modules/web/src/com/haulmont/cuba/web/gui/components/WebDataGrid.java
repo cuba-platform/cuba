@@ -128,6 +128,9 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     protected com.vaadin.event.SortEvent.SortListener sortListener;
     protected com.vaadin.event.ContextClickEvent.ContextClickListener contextClickListener;
 
+    protected final List<HeaderRow> headerRows = new ArrayList<>();
+    protected final List<FooterRow> footerRows = new ArrayList<>();
+
     protected boolean showIconsForPopupMenuActions;
 
     public WebDataGrid() {
@@ -170,6 +173,9 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         initComponent(component);
 
         initContextMenu();
+
+        initHeaderRows(component);
+        initFooterRows(component);
     }
 
     protected void initComponent(Grid component) {
@@ -271,6 +277,20 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
         component.setRowStyleGenerator(createRowStyleGenerator());
         component.setCellStyleGenerator(createCellStyleGenerator());
+    }
+
+    protected void initHeaderRows(Grid component) {
+        for (int i = 0; i < component.getHeaderRowCount(); i++) {
+            Grid.HeaderRow gridRow = component.getHeaderRow(i);
+            addHeaderRowInternal(gridRow);
+        }
+    }
+
+    protected void initFooterRows(Grid component) {
+        for (int i = 0; i < component.getFooterRowCount(); i++) {
+            Grid.FooterRow gridRow = component.getFooterRow(i);
+            addFooterRowInternal(gridRow);
+        }
     }
 
     protected List<Column> getColumnsOrderInternal() {
@@ -1864,6 +1884,136 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     @Override
+    public HeaderRow getHeaderRow(int index) {
+        return getHeaderRowByGridRow(component.getHeaderRow(index));
+    }
+
+    @Nullable
+    protected HeaderRow getHeaderRowByGridRow(Grid.HeaderRow gridRow) {
+        for (HeaderRow headerRow : headerRows) {
+            if (((HeaderRowImpl) headerRow).getGridRow() == gridRow) {
+                return headerRow;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public HeaderRow appendHeaderRow() {
+        Grid.HeaderRow gridRow = component.appendHeaderRow();
+        return addHeaderRowInternal(gridRow);
+    }
+
+    @Override
+    public HeaderRow prependHeaderRow() {
+        Grid.HeaderRow gridRow = component.prependHeaderRow();
+        return addHeaderRowInternal(gridRow);
+    }
+
+    @Override
+    public HeaderRow addHeaderRowAt(int index) {
+        Grid.HeaderRow gridRow = component.addHeaderRowAt(index);
+        return addHeaderRowInternal(gridRow);
+    }
+
+    protected HeaderRow addHeaderRowInternal(Grid.HeaderRow gridRow) {
+        HeaderRowImpl rowImpl = new HeaderRowImpl(this, gridRow);
+        headerRows.add(rowImpl);
+        return rowImpl;
+    }
+
+    @Override
+    public void removeHeaderRow(HeaderRow headerRow) {
+        if (headerRow == null || !headerRows.contains(headerRow)) {
+            return;
+        }
+
+        component.removeHeaderRow(((HeaderRowImpl) headerRow).getGridRow());
+        headerRows.remove(headerRow);
+    }
+
+    @Override
+    public void removeHeaderRow(int index) {
+        HeaderRow headerRow = getHeaderRow(index);
+        removeHeaderRow(headerRow);
+    }
+
+    @Override
+    public HeaderRow getDefaultHeaderRow() {
+        return getHeaderRowByGridRow(component.getDefaultHeaderRow());
+    }
+
+    @Override
+    public void setDefaultHeaderRow(HeaderRow headerRow) {
+        component.setDefaultHeaderRow(((HeaderRowImpl) headerRow).getGridRow());
+    }
+
+    @Override
+    public int getHeaderRowCount() {
+        return component.getHeaderRowCount();
+    }
+
+    @Override
+    public FooterRow getFooterRow(int index) {
+        return getFooterRowByGridRow(component.getFooterRow(index));
+    }
+
+    @Nullable
+    protected FooterRow getFooterRowByGridRow(Grid.FooterRow gridRow) {
+        for (FooterRow footerRow : footerRows) {
+            if (((FooterRowImpl) footerRow).getGridRow() == gridRow) {
+                return footerRow;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public FooterRow appendFooterRow() {
+        Grid.FooterRow gridRow = component.appendFooterRow();
+        return addFooterRowInternal(gridRow);
+    }
+
+    @Override
+    public FooterRow prependFooterRow() {
+        Grid.FooterRow gridRow = component.prependFooterRow();
+        return addFooterRowInternal(gridRow);
+    }
+
+    @Override
+    public FooterRow addFooterRowAt(int index) {
+        Grid.FooterRow gridRow = component.addFooterRowAt(index);
+        return addFooterRowInternal(gridRow);
+    }
+
+    protected FooterRow addFooterRowInternal(Grid.FooterRow gridRow) {
+        FooterRowImpl rowImpl = new FooterRowImpl(this, gridRow);
+        footerRows.add(rowImpl);
+        return rowImpl;
+    }
+
+    @Override
+    public void removeFooterRow(FooterRow footerRow) {
+        if (footerRow == null || !footerRows.contains(footerRow)) {
+            return;
+        }
+
+        component.removeFooterRow(((FooterRowImpl) footerRow).getGridRow());
+        footerRows.remove(footerRow);
+    }
+
+    @Override
+    public void removeFooterRow(int index) {
+        FooterRow footerRow = getFooterRow(index);
+        removeFooterRow(footerRow);
+    }
+
+    @Override
+    public int getFooterRowCount() {
+        return component.getFooterRowCount();
+    }
+
+    @Override
     public void addSelectionListener(SelectionListener<E> listener) {
         getEventRouter().addListener(SelectionListener.class, listener);
 
@@ -2539,6 +2689,242 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         @Override
         public String toString() {
             return id == null ? super.toString() : id;
+        }
+    }
+
+    protected abstract static class AbstractStaticRowImp<T extends StaticCell> implements StaticRow<T> {
+
+        protected WebDataGrid dataGrid;
+        protected Grid.StaticSection.StaticRow<?> gridRow;
+
+        public AbstractStaticRowImp(WebDataGrid dataGrid, Grid.StaticSection.StaticRow<?> gridRow) {
+            this.dataGrid = dataGrid;
+            this.gridRow = gridRow;
+        }
+
+        @Override
+        public String getStyleName() {
+            return gridRow.getStyleName();
+        }
+
+        @Override
+        public void setStyleName(String styleName) {
+            gridRow.setStyleName(styleName);
+        }
+
+        @Override
+        public T join(String... columnIds) {
+            Object[] propertyIds = new Object[columnIds.length];
+            for (int i = 0; i < columnIds.length; i++) {
+                ColumnImpl column = (ColumnImpl) dataGrid.getColumnNN(columnIds[i]);
+                propertyIds[i] = column.getColumnPropertyId();
+            }
+
+            T cell = joinInternal(propertyIds);
+
+            // FIXME: gg, workaround for https://github.com/vaadin/framework/issues/8512
+            switch (cell.getCellType()) {
+                case HTML:
+                    cell.setHtml(cell.getHtml());
+                    break;
+                case TEXT:
+                    cell.setText(cell.getText());
+                    break;
+                case COMPONENT:
+                    cell.setComponent(cell.getComponent());
+                    break;
+            }
+
+            return cell;
+        }
+
+        protected abstract T joinInternal(Object[] propertyIds);
+
+        @Override
+        public T getCell(String columnId) {
+            ColumnImpl column = (ColumnImpl) dataGrid.getColumnNN(columnId);
+            return getCellInternal(column.getColumnPropertyId());
+        }
+
+        protected abstract T getCellInternal(Object propertyId);
+
+        public Grid.StaticSection.StaticRow<?> getGridRow() {
+            return gridRow;
+        }
+    }
+
+    protected static class HeaderRowImpl extends AbstractStaticRowImp<HeaderCell> implements HeaderRow {
+
+        public HeaderRowImpl(WebDataGrid dataGrid, Grid.HeaderRow gridRow) {
+            super(dataGrid, gridRow);
+        }
+
+        @Override
+        public Grid.HeaderRow getGridRow() {
+            return (Grid.HeaderRow) super.getGridRow();
+        }
+
+        @Override
+        protected HeaderCell getCellInternal(Object propertyId) {
+            Grid.HeaderCell gridCell = getGridRow().getCell(propertyId);
+            return new HeaderCellImpl(this, gridCell);
+        }
+
+        @Override
+        protected HeaderCell joinInternal(Object[] propertyIds) {
+            Grid.HeaderCell gridCell = getGridRow().join(propertyIds);
+            return new HeaderCellImpl(this, gridCell);
+        }
+    }
+
+    protected static class FooterRowImpl extends AbstractStaticRowImp<FooterCell> implements FooterRow {
+
+        public FooterRowImpl(WebDataGrid dataGrid, Grid.FooterRow gridRow) {
+            super(dataGrid, gridRow);
+        }
+
+        @Override
+        public Grid.FooterRow getGridRow() {
+            return (Grid.FooterRow) super.getGridRow();
+        }
+
+        @Override
+        protected FooterCell getCellInternal(Object propertyId) {
+            Grid.FooterCell gridCell = getGridRow().getCell(propertyId);
+            return new FooterCellImpl(this, gridCell);
+        }
+
+        @Override
+        protected FooterCell joinInternal(Object[] propertyIds) {
+            Grid.FooterCell gridCell = getGridRow().join(propertyIds);
+            return new FooterCellImpl(this, gridCell);
+        }
+    }
+
+    protected abstract static class AbstractStaticCellImpl implements StaticCell {
+
+        protected StaticRow<?> row;
+        protected com.haulmont.cuba.gui.components.Component component;
+
+        public AbstractStaticCellImpl(StaticRow<?> row) {
+            this.row = row;
+        }
+
+        @Override
+        public StaticRow<?> getRow() {
+            return row;
+        }
+
+        @Override
+        public com.haulmont.cuba.gui.components.Component getComponent() {
+            return component;
+        }
+
+        @Override
+        public void setComponent(com.haulmont.cuba.gui.components.Component component) {
+            this.component = component;
+        }
+    }
+
+    protected static class HeaderCellImpl extends AbstractStaticCellImpl implements HeaderCell {
+
+        protected Grid.HeaderCell gridCell;
+
+        public HeaderCellImpl(StaticRow<?> row, Grid.HeaderCell gridCell) {
+            super(row);
+            this.gridCell = gridCell;
+        }
+
+        @Override
+        public String getStyleName() {
+            return gridCell.getStyleName();
+        }
+
+        @Override
+        public void setStyleName(String styleName) {
+            gridCell.setStyleName(styleName);
+        }
+
+        @Override
+        public DataGridStaticCellType getCellType() {
+            return WebWrapperUtils.toDataGridStaticCellType(gridCell.getCellType());
+        }
+
+        @Override
+        public void setComponent(com.haulmont.cuba.gui.components.Component component) {
+            super.setComponent(component);
+            gridCell.setComponent(component.unwrap(Component.class));
+        }
+
+        @Override
+        public String getHtml() {
+            return gridCell.getHtml();
+        }
+
+        @Override
+        public void setHtml(String html) {
+            gridCell.setHtml(html);
+        }
+
+        @Override
+        public String getText() {
+            return gridCell.getText();
+        }
+
+        @Override
+        public void setText(String text) {
+            gridCell.setText(text);
+        }
+    }
+
+    protected static class FooterCellImpl extends AbstractStaticCellImpl implements FooterCell {
+
+        protected Grid.FooterCell gridCell;
+
+        public FooterCellImpl(StaticRow<?> row, Grid.FooterCell gridCell) {
+            super(row);
+            this.gridCell = gridCell;
+        }
+
+        @Override
+        public String getStyleName() {
+            return gridCell.getStyleName();
+        }
+
+        @Override
+        public void setStyleName(String styleName) {
+            gridCell.setStyleName(styleName);
+        }
+
+        @Override
+        public DataGridStaticCellType getCellType() {
+            return WebWrapperUtils.toDataGridStaticCellType(gridCell.getCellType());
+        }
+
+        @Override
+        public void setComponent(com.haulmont.cuba.gui.components.Component component) {
+            super.setComponent(component);
+            gridCell.setComponent(component.unwrap(Component.class));
+        }
+
+        @Override
+        public String getHtml() {
+            return gridCell.getHtml();
+        }
+
+        @Override
+        public void setHtml(String html) {
+            gridCell.setHtml(html);
+        }
+
+        @Override
+        public String getText() {
+            return gridCell.getText();
+        }
+
+        @Override
+        public void setText(String text) {
+            gridCell.setText(text);
         }
     }
 

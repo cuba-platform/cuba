@@ -1520,6 +1520,333 @@ public interface DataGrid<E extends Entity>
     }
 
     /**
+     * Base interface for DataGrid header and footer rows.
+     *
+     * @param <T> the type of the cells in the row
+     */
+    interface StaticRow<T extends StaticCell> {
+        /**
+         * Returns the custom style name for this row.
+         *
+         * @return the style name or null if no style name has been set
+         */
+        String getStyleName();
+
+        /**
+         * Sets a custom style name for this row.
+         *
+         * @param styleName the style name to set or
+         *                  null to not use any style name
+         */
+        void setStyleName(String styleName);
+
+        /**
+         * Merges columns cells in a row.
+         *
+         * @param columnIds the ids of columns to merge
+         * @return the remaining visible cell after the merge
+         */
+        T join(String... columnIds);
+
+        /**
+         * Returns the cell for the given column id on this row. If the
+         * column is merged returned cell is the cell for the whole group.
+         *
+         * @param columnId column id
+         * @return the cell for the given column id,
+         *         merged cell for merged properties,
+         *         null if not found
+         */
+        T getCell(String columnId);
+    }
+
+    /**
+     * Base interface for DataGrid header or footer cells.
+     */
+    interface StaticCell {
+
+        /**
+         * Returns the custom style name for this cell.
+         *
+         * @return the style name or null if no style name has been set
+         */
+        String getStyleName();
+
+        /**
+         * Sets a custom style name for this cell.
+         *
+         * @param styleName the style name to set or null to not use any style name
+         */
+        void setStyleName(String styleName);
+
+        /**
+         * Returns the type of content stored in this cell.
+         *
+         * @return cell content type
+         */
+        DataGridStaticCellType getCellType();
+
+        /**
+         * Returns the component displayed in this cell.
+         *
+         * @return the component
+         */
+        Component getComponent();
+
+        /**
+         * Sets the component displayed in this cell.
+         *
+         * @param component the component to set
+         */
+        void setComponent(Component component);
+
+        /**
+         * Returns the HTML content displayed in this cell.
+         *
+         * @return the html
+         *
+         */
+        String getHtml();
+
+        /**
+         * Sets the HTML content displayed in this cell.
+         *
+         * @param html the html to set
+         */
+        void setHtml(String html);
+
+        /**
+         * Returns the text displayed in this cell.
+         *
+         * @return the plain text caption
+         */
+        String getText();
+
+        /**
+         * Sets the text displayed in this cell.
+         *
+         * @param text a plain text caption
+         */
+        void setText(String text);
+
+        /**
+         * Gets the row where this cell is.
+         *
+         * @return row for this cell
+         */
+        StaticRow<?> getRow();
+    }
+
+    /**
+     * Enumeration, specifying the content type of a Cell in a DataGrid header or footer.
+     */
+    enum DataGridStaticCellType {
+        /**
+         * Text content
+         */
+        TEXT,
+
+        /**
+         * HTML content
+         */
+        HTML,
+
+        /**
+         * Component content
+         */
+        COMPONENT
+    }
+
+    /**
+     * Represents a header row in DataGrid.
+     */
+    interface HeaderRow extends StaticRow<HeaderCell> {
+    }
+
+    /**
+     * Represents a header cell in DataGrid.
+     * Can be a merged cell for multiple columns.
+     */
+    interface HeaderCell extends StaticCell {
+    }
+
+    /**
+     * Gets the header row at given index.
+     *
+     * @param index 0 based index for row. Counted from top to bottom
+     * @return header row at given index
+     */
+    HeaderRow getHeaderRow(int index);
+
+    /**
+     * Adds a new row at the bottom of the header section.
+     *
+     * @return the new row
+     * @see #prependHeaderRow()
+     * @see #addHeaderRowAt(int)
+     * @see #removeHeaderRow(HeaderRow)
+     * @see #removeHeaderRow(int)
+     */
+    HeaderRow appendHeaderRow();
+
+    /**
+     * Adds a new row at the top of the header section.
+     *
+     * @return the new row
+     * @see #appendHeaderRow()
+     * @see #addHeaderRowAt(int)
+     * @see #removeHeaderRow(HeaderRow)
+     * @see #removeHeaderRow(int)
+     */
+    HeaderRow prependHeaderRow();
+
+    /**
+     * Inserts a new row at the given position to the header section. Shifts the
+     * row currently at that position and any subsequent rows down (adds one to
+     * their indices).
+     *
+     * @param index the position at which to insert the row
+     * @return the new row
+     * @see #appendHeaderRow()
+     * @see #prependHeaderRow()
+     * @see #removeHeaderRow(HeaderRow)
+     * @see #removeHeaderRow(int)
+     */
+    HeaderRow addHeaderRowAt(int index);
+
+    /**
+     * Removes the given row from the header section.
+     *
+     * @param headerRow the row to be removed
+     * @see #removeHeaderRow(int)
+     * @see #addHeaderRowAt(int)
+     * @see #appendHeaderRow()
+     * @see #prependHeaderRow()
+     */
+    void removeHeaderRow(HeaderRow headerRow);
+
+    /**
+     * Removes the row at the given position from the header section.
+     *
+     * @param index the position of the row
+     * @see #removeHeaderRow(HeaderRow)
+     * @see #addHeaderRowAt(int)
+     * @see #appendHeaderRow()
+     * @see #prependHeaderRow()
+     */
+    void removeHeaderRow(int index);
+
+    /**
+     * Returns the current default row of the header section. The default row is
+     * a special header row providing a user interface for sorting columns.
+     * Setting a header text for column updates cells in the default header.
+     *
+     * @return the default row or null if no default row set
+     */
+    HeaderRow getDefaultHeaderRow();
+
+    /**
+     * Sets the default row of the header. The default row is a special header
+     * row providing a user interface for sorting columns.
+     *
+     * @param headerRow the new default row, or null for no default row
+     */
+    void setDefaultHeaderRow(HeaderRow headerRow);
+
+    /**
+     * Gets the row count for the header section.
+     *
+     * @return row count
+     */
+    int getHeaderRowCount();
+
+    /**
+     * Represents a footer row in DataGrid.
+     */
+    interface FooterRow extends StaticRow<FooterCell> {
+    }
+
+    /**
+     * Represents a footer cell in DataGrid.
+     * Can be a merged cell for multiple columns.
+     */
+    interface FooterCell extends StaticCell {
+    }
+
+    /**
+     * Gets the footer row at given index.
+     *
+     * @param index 0 based index for row. Counted from top to bottom
+     * @return footer row at given index
+     */
+    FooterRow getFooterRow(int index);
+
+    /**
+     * Adds a new row at the bottom of the footer section.
+     *
+     * @return the new row
+     * @see #prependFooterRow()
+     * @see #addFooterRowAt(int)
+     * @see #removeFooterRow(FooterRow)
+     * @see #removeFooterRow(int)
+     */
+    FooterRow appendFooterRow();
+
+    /**
+     * Adds a new row at the top of the footer section.
+     *
+     * @return the new row
+     * @see #appendFooterRow()
+     * @see #addFooterRowAt(int)
+     * @see #removeFooterRow(FooterRow)
+     * @see #removeFooterRow(int)
+     */
+    FooterRow prependFooterRow();
+
+    /**
+     * Inserts a new row at the given position to the footer section. Shifts the
+     * row currently at that position and any subsequent rows down (adds one to
+     * their indices).
+     *
+     * @param index the position at which to insert the row
+     * @return the new row
+     * @see #appendFooterRow()
+     * @see #prependFooterRow()
+     * @see #removeFooterRow(FooterRow)
+     * @see #removeFooterRow(int)
+     */
+    FooterRow addFooterRowAt(int index);
+
+    /**
+     * Removes the given row from the footer section.
+     *
+     * @param footerRow the row to be removed
+     * @see #removeFooterRow(int)
+     * @see #addFooterRowAt(int)
+     * @see #appendFooterRow()
+     * @see #prependFooterRow()
+     */
+    void removeFooterRow(FooterRow footerRow);
+
+    /**
+     * Removes the row at the given position from the footer section.
+     *
+     * @param index the position of the row
+     * @see #removeFooterRow(FooterRow)
+     * @see #addFooterRowAt(int)
+     * @see #appendFooterRow()
+     * @see #prependFooterRow()
+     */
+    void removeFooterRow(int index);
+
+    /**
+     * Gets the row count for the footer.
+     *
+     * @return row count
+     */
+    int getFooterRowCount();
+
+    /**
      * A column in the DataGrid.
      */
     interface Column extends HasXmlDescriptor, HasFormatter, Serializable {
@@ -1817,4 +2144,5 @@ public interface DataGrid<E extends Entity>
          */
         void setOwner(DataGrid owner);
     }
+
 }

@@ -19,10 +19,12 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Component.Alignment;
+import com.haulmont.cuba.gui.components.DataGrid.DataGridStaticCellType;
 import com.haulmont.cuba.gui.components.LookupField.FilterMode;
 import com.haulmont.cuba.gui.components.TextInputField;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.shared.ui.combobox.FilteringMode;
+import com.vaadin.shared.ui.grid.GridStaticCellType;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractTextField;
 
@@ -205,5 +207,24 @@ public final class WebWrapperUtils {
             default:
                 throw new UnsupportedOperationException("Unsupported Vaadin MouseButton");
         }
+    }
+
+    public static DataGridStaticCellType toDataGridStaticCellType(GridStaticCellType cellType) {
+        DataGridStaticCellType type;
+        switch (cellType) {
+            case HTML:
+                type = DataGridStaticCellType.HTML;
+                break;
+            case TEXT:
+                type = DataGridStaticCellType.TEXT;
+                break;
+            case WIDGET:
+                type = DataGridStaticCellType.COMPONENT;
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported GridStaticCellType");
+        }
+
+        return type;
     }
 }
