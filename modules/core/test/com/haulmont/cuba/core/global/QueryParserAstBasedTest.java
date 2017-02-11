@@ -342,6 +342,7 @@ public class QueryParserAstBasedTest {
         EntityBuilder builder = new EntityBuilder();
         builder.startNewEntity("sec$GroupHierarchy");
         builder.addReferenceAttribute("group", "sec$Group");
+        builder.addReferenceAttribute("as", "sec$Group");
         builder.addStringAttribute("createdBy");
         builder.addReferenceAttribute("parent", "sec$GroupHierarchy");
         builder.addReferenceAttribute("other", "sec$GroupHierarchy");
