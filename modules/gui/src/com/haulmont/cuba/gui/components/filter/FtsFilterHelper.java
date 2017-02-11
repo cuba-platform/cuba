@@ -48,7 +48,7 @@ public interface FtsFilterHelper {
     /**
      * Creates a filter condition that joins a set of entities stored with given @{code queryKey}
      */
-    CustomCondition createFtsCondition(int queryKey);
+    CustomCondition createFtsCondition(String entityName, int queryKey);
 
     /**
      * Class for holding search result.
