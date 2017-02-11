@@ -60,6 +60,22 @@ public class QueryVariableContext {
         return parent == null ? null : parent.getEntityByVariableName(entityVariableName);
     }
 
+    public JpqlEntityModel getEntityByVariableNameHierarchically(String entityVariableName) {
+        JpqlEntityModel result = entityVariableName2entity.get(entityVariableName);
+        if (result != null) {
+            return result;
+        }
+        if (children != null) {
+            for (QueryVariableContext child : children) {
+                JpqlEntityModel childModel = child.getEntityByVariableNameHierarchically(entityVariableName);
+                if (childModel != null) {
+                    return childModel;
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * Internal method to register entity variables found in query
      *
