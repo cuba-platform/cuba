@@ -207,6 +207,18 @@ public class NonEntityQueryTest {
     }
 
     @Test
+    public void testScalarWithSubQuery() throws Exception {
+        ValueLoadContext context = ValueLoadContext.create();
+        context.setQueryString("select s.name from sys$Server s where s.name in (select u.login from sec$User u) ");
+        context.addProperty("name");
+
+        List<KeyValueEntity> list = dataManager.secure().loadValues(context);
+
+        assertEquals(0, list.size());
+    }
+
+
+    @Test
     public void testDeniedAttribute() throws Exception {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
         UserSession userSession = lw.login(USER_NAME_1, passwordEncryption.getPlainHash(USER_PASSWORD), Locale.getDefault());
