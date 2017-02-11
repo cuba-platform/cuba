@@ -1435,7 +1435,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             params.put("sessionId", userSessionSource.getUserSession().getId());
             params.put("queryKey", queryKey);
 
-            CustomCondition ftsCondition = ftsFilterHelper.createFtsCondition(queryKey);
+            CustomCondition ftsCondition = ftsFilterHelper.createFtsCondition(datasource.getMetaClass().getName(), queryKey);
             conditions = new ConditionsTree();
             conditions.getRootNodes().add(new Node<>(ftsCondition));
 
