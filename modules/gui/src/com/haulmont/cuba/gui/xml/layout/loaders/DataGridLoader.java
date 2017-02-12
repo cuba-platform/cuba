@@ -261,6 +261,7 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
 
         String collapsingToggleCaption = element.attributeValue("collapsingToggleCaption");
         if (StringUtils.isNotEmpty(collapsingToggleCaption)) {
+            collapsingToggleCaption = loadResourceString(collapsingToggleCaption);
             column.setCollapsingToggleCaption(collapsingToggleCaption);
         }
 
