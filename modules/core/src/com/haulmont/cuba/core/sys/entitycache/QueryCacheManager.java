@@ -198,9 +198,11 @@ public class QueryCacheManager {
      * @param sendInCluster - if true - discard queries results in all query caches in cluster
      */
     public void invalidate(Set<String> typeNames, boolean sendInCluster) {
-        queryCache.invalidate(typeNames);
-        if (sendInCluster) {
-            clusterManager.send(new InvalidateQueryCacheMsg(typeNames));
+        if (typeNames != null && typeNames.size() > 0) {
+            queryCache.invalidate(typeNames);
+            if (sendInCluster) {
+                clusterManager.send(new InvalidateQueryCacheMsg(typeNames));
+            }
         }
     }
 
