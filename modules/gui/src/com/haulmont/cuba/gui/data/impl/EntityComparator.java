@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.IdProxy;
 
 public class EntityComparator<T extends Entity> extends AbstractComparator<T> {
     private MetaPropertyPath propertyPath;
@@ -48,7 +49,7 @@ public class EntityComparator<T extends Entity> extends AbstractComparator<T> {
         return __compare(v1, v2);
     }
 
-    private Object getValue(Instance instance) {
+    protected Object getValue(Instance instance) {
         Object value;
         if (property != null) {
             value = instance.getValue(property.getName());
@@ -57,7 +58,11 @@ public class EntityComparator<T extends Entity> extends AbstractComparator<T> {
         }
 
         if (!(value == null || value instanceof Comparable || value instanceof Instance)) {
-            value = value.toString();
+            if (value instanceof IdProxy) {
+                value = ((IdProxy) value).get();
+            } else {
+                value = value.toString();
+            }
         }
 
         return value;
