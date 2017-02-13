@@ -80,6 +80,9 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
 
     @Override
     public void loadComponent() {
+        assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
+
         loadEnable(resultComponent, element);
         loadVisible(resultComponent, element);
         loadSettingsEnabled(resultComponent, element);
