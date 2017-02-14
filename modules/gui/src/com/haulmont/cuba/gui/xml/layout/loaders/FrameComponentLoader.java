@@ -95,6 +95,7 @@ public class FrameComponentLoader extends ContainerLoader<Frame> {
         loadVisible(resultComponent, element);
 
         loadStyleName(resultComponent, element);
+        loadResponsive(resultComponent, element);
 
         loadAlign(resultComponent, element);
 

@@ -16,6 +16,9 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.gui.GuiDevelopmentException;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.mainwindow.SideMenu;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -42,8 +45,10 @@ public class SideMenuLoader extends AbstractComponentLoader<SideMenu> {
 
         loadSelectOnClick(resultComponent, element);
         loadMenuConfigIfNeeded(resultComponent, element);
-    }
 
+        loadSidePanel(resultComponent, element);
+        loadSidePanelToggleButton(resultComponent, element);
+    }
     protected void loadMenuConfigIfNeeded(SideMenu component, Element element) {
         String loadMenuConfig = element.attributeValue("loadMenuConfig");
         if (StringUtils.isEmpty(loadMenuConfig) || Boolean.parseBoolean(loadMenuConfig)) {
@@ -55,6 +60,30 @@ public class SideMenuLoader extends AbstractComponentLoader<SideMenu> {
         String selectOnClick = element.attributeValue("selectOnClick");
         if (StringUtils.isNotEmpty(selectOnClick)) {
             component.setSelectOnClick(Boolean.parseBoolean(selectOnClick));
+        }
+    }
+
+    protected void loadSidePanel(SideMenu component, Element element) {
+        String sidePanelId = element.attributeValue("sidePanel");
+        if (StringUtils.isNotEmpty(sidePanelId)) {
+            Component sidePanel = resultComponent.getFrame().getComponent(sidePanelId);
+            if (sidePanel == null) {
+                throw new GuiDevelopmentException("Unable to find sidePanel component for SideMenu",
+                        context.getFullFrameId(), "sidePanel", sidePanelId);
+            }
+            component.setSidePanel(sidePanel);
+        }
+    }
+
+    protected void loadSidePanelToggleButton(SideMenu component, Element element) {
+        String toggleButtonId = element.attributeValue("sidePanelToggleButton");
+        if (StringUtils.isNotEmpty(toggleButtonId)) {
+            Component toggleButton = resultComponent.getFrame().getComponent(toggleButtonId);
+            if (!(toggleButton instanceof Button)) {
+                throw new GuiDevelopmentException("Unable to find sidePanelToggleButton for SideMenu",
+                        context.getFullFrameId(), "sidePanelToggleButton", toggleButtonId);
+            }
+            component.setSidePanelToggleButton((Button) toggleButton);
         }
     }
 }

@@ -160,6 +160,7 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
         loadWidth(resultComponent, layoutElement);
         loadHeight(resultComponent, layoutElement);
         loadStyleName(resultComponent, layoutElement);
+        loadResponsive(resultComponent, layoutElement);
 
         ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
         setContext(innerContext);

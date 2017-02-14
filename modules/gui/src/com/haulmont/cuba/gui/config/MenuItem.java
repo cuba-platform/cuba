@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.config;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
@@ -29,7 +28,6 @@ import java.util.List;
 
 /**
  * Main menu item descriptor
- *
  */
 public class MenuItem {
 
@@ -42,6 +40,7 @@ public class MenuItem {
     private String description;
     private Element descriptor;
     private boolean separator = false;
+    private boolean expanded = false;
 
     private KeyCombination shortcut;
     private boolean isMenu = false;
@@ -144,5 +143,13 @@ public class MenuItem {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public boolean isExpanded() {
+        return expanded;
+    }
+
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
     }
 }

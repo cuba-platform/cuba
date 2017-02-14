@@ -870,16 +870,20 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public boolean isResponsive() {
-        if (component instanceof AbstractComponent) {
-            return ((AbstractComponent) component).isResponsive();
+        ComponentContainer container = getContainer();
+
+        if (container instanceof AbstractComponent) {
+            return ((AbstractComponent) container).isResponsive();
         }
         return false;
     }
 
     @Override
     public void setResponsive(boolean responsive) {
-        if (component instanceof AbstractComponent) {
-            ((AbstractComponent) component).setResponsive(responsive);
+        ComponentContainer container = getContainer();
+
+        if (container instanceof AbstractComponent) {
+            ((AbstractComponent) container).setResponsive(responsive);
         }
     }
 

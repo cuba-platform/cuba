@@ -79,10 +79,13 @@ public class WebUserIndicator extends WebAbstractComponent<CubaCssLayout> implem
 
         User user = uss.getUserSession().getUser();
         AppUI ui = AppUI.getCurrent();
+
+        String substitutedUserCaption = getSubstitutedUserCaption(user);
+
         if (substitutions.isEmpty()) {
             userComboBox = null;
 
-            userNameLabel = new Label(getSubstitutedUserCaption(user));
+            userNameLabel = new Label(substitutedUserCaption);
             userNameLabel.setStyleName("c-user-select-label");
             userNameLabel.setSizeUndefined();
 
@@ -91,6 +94,7 @@ public class WebUserIndicator extends WebAbstractComponent<CubaCssLayout> implem
             }
 
             component.addComponent(userNameLabel);
+            component.setDescription(substitutedUserCaption);
         } else {
             userNameLabel = null;
 
@@ -106,7 +110,7 @@ public class WebUserIndicator extends WebAbstractComponent<CubaCssLayout> implem
 
             userComboBox.setStyleName("c-user-select-combobox");
             userComboBox.addItem(user);
-            userComboBox.setItemCaption(user, getSubstitutedUserCaption(user));
+            userComboBox.setItemCaption(user, substitutedUserCaption);
 
             for (UserSubstitution substitution : substitutions) {
                 User substitutedUser = substitution.getSubstitutedUser();
@@ -119,6 +123,7 @@ public class WebUserIndicator extends WebAbstractComponent<CubaCssLayout> implem
             userComboBox.addValueChangeListener(new SubstitutedUserChangeListener(userComboBox));
 
             component.addComponent(userComboBox);
+            component.setDescription(null);
         }
 
         adjustWidth();

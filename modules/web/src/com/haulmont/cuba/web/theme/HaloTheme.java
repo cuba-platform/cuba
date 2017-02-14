@@ -363,4 +363,45 @@ public class HaloTheme {
      * description.
      */
     public static final String FILEUPLOADFIELD_DROPZONE_DESCRIPTION = "dropzone-description";
+
+    /**
+     * Style for layout tag in mainwindow with responsive {@link com.haulmont.cuba.gui.components.mainwindow.SideMenu}.
+     */
+    public static final String SIDEMENU_LAYOUT_RESPONSIVE = "c-sidemenu-responsive";
+
+    /**
+     * Style for horizontal layout that contains {@link #SIDEMENU_PANEL} and {@link com.haulmont.cuba.gui.components.mainwindow.AppWorkArea}
+     * in responsive mainwindow with {@link com.haulmont.cuba.gui.components.mainwindow.SideMenu}.
+     */
+    public static final String SIDEMENU_LAYOUT = "c-sidemenu-layout";
+
+    /**
+     * Style for side panel in responsive mainwindow with {@link com.haulmont.cuba.gui.components.mainwindow.SideMenu}.
+     */
+    public static final String SIDEMENU_PANEL = "c-sidemenu-panel";
+
+    /**
+     * Style for opened side panel in responsive mainwindow with {@link com.haulmont.cuba.gui.components.mainwindow.SideMenu}.
+     */
+    public static final String SIDEMENU_PANEL_OPEN = "c-sidemenu-open";
+
+    /**
+     * Style for opened side panel content in responsive mainwindow with {@link com.haulmont.cuba.gui.components.mainwindow.SideMenu}.
+     */
+    public static final String SIDEMENU_WRAP = "c-sidemenu-wrap";
+
+    /**
+     * Style for side panel toggle button in responsive mainwindow with {@link com.haulmont.cuba.gui.components.mainwindow.SideMenu}.
+     */
+    public static final String SIDEMENU_TOGGLE_BUTTON = "c-sidemenu-toggle";
+
+    /**
+     * Style for mobile buttons in top panel in responsive mainwindow with {@link com.haulmont.cuba.gui.components.mainwindow.SideMenu}.
+     */
+    public static final String SIDEMENU_MOBILE_BUTTONS = "c-sidemenu-mobile-buttons";
+
+    /**
+     * Style for top header in responsive mainwindow with {@link com.haulmont.cuba.gui.components.mainwindow.SideMenu}.
+     */
+    public static final String SIDEMENU_TITLE = "c-sidemenu-title";
 }

@@ -37,27 +37,27 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.MissingResourceException;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * GenericUI class holding information about the main menu structure.
- *
  */
 @Component(MenuConfig.NAME)
 public class MenuConfig {
+    private final Logger log = LoggerFactory.getLogger(MenuConfig.class);
 
     public static final String NAME = "cuba_MenuConfig";
 
     public static final String MENU_CONFIG_XML_PROP = "cuba.menuConfig";
-
-    private static Logger log = LoggerFactory.getLogger(MenuConfig.class);
     
     protected List<MenuItem> rootItems = new ArrayList<>();
 
     @Inject
     protected Resources resources;
+
+    @Inject
+    protected Messages messages;
 
     protected volatile boolean initialized;
 
@@ -66,14 +66,17 @@ public class MenuConfig {
     /**
      * Localized menu item caption.
      * @param id screen ID as defined in <code>screens.xml</code>
+     *
+     * @deprecated Use {@link MenuConfig#getItemCaption(String)}
      */
+    @Deprecated
     public static String getMenuItemCaption(String id) {
-        try {
-            Messages messages = AppBeans.get(Messages.NAME);
-            return messages.getMainMessage("menu-config." + id);
-        } catch (MissingResourceException e) {
-            return id;
-        }
+        MenuConfig menuConfig = AppBeans.get(MenuConfig.NAME);
+        return menuConfig.getItemCaption(id);
+    }
+
+    public String getItemCaption(String id) {
+        return messages.getMainMessage("menu-config." + id);
     }
 
     protected void checkInitialized() {
@@ -172,6 +175,7 @@ public class MenuConfig {
                 loadIcon(element, menuItem);
                 loadShortcut(menuItem, element);
                 loadStylename(element, menuItem);
+                loadExpanded(element, menuItem);
                 loadDescription(element, menuItem);
                 loadMenuItems(element, menuItem);
 
@@ -207,6 +211,13 @@ public class MenuConfig {
             } else {
                 addItem(rootItems, menuItem, nextToItem, before);
             }
+        }
+    }
+
+    protected void loadExpanded(Element element, MenuItem menuItem) {
+        String expanded = element.attributeValue("expanded");
+        if (StringUtils.isNotEmpty(expanded)) {
+            menuItem.setExpanded(Boolean.parseBoolean(expanded));
         }
     }
 
