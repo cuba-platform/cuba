@@ -1246,12 +1246,29 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- SuggestionField -->
     <xs:complexType name="suggestionFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
                 <xs:attribute name="asyncSearchDelayMs" type="xs:integer"/>
                 <xs:attribute name="minSearchStringLength" type="xs:integer"/>
                 <xs:attribute name="suggestionsLimit" type="xs:integer"/>
+                
+                <xs:attributeGroup ref="hasCaptionSource"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- SuggestionPickerField -->
+    <xs:complexType name="suggestionPickerFieldComponent">
+        <xs:complexContent>
+            <xs:extension base="suggestionFieldComponent">
+                <xs:sequence>
+                    <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
+                    <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
+                </xs:sequence>
+
+                <xs:attribute name="metaClass" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1656,6 +1673,7 @@
                 </xs:sequence>
 
                 <xs:attributeGroup ref="requiresDatasource"/>
+                <xs:attributeGroup ref="hasSettings"/>
 
                 <xs:attribute name="margin" type="xs:string"/>
 
@@ -2363,6 +2381,7 @@
                 <xs:element name="lookupField" type="lookupFieldComponent"/>
                 <xs:element name="searchField" type="searchFieldComponent"/>
                 <xs:element name="suggestionField" type="suggestionFieldComponent"/>
+                <xs:element name="suggestionPickerField" type="suggestionPickerFieldComponent"/>
                 <xs:element name="pickerField" type="pickerFieldComponent"/>
                 <xs:element name="lookupPickerField" type="lookupPickerFieldComponent"/>
                 <xs:element name="searchPickerField" type="searchPickerFieldComponent"/>

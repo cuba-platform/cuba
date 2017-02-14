@@ -16,8 +16,11 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.SuggestionField;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
@@ -27,6 +30,7 @@ import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.toolkit.ui.CubaSuggestionField;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,9 +51,40 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
     protected EnterActionHandler enterActionHandler;
     protected ArrowDownActionHandler arrowDownActionHandler;
 
+    protected StringToEntityConverter textViewConverter = new StringToEntityConverter();
+
+    protected CaptionMode captionMode = CaptionMode.ITEM;
+    protected String captionProperty;
+
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+
     public WebSuggestionField() {
         component = new CubaSuggestionField();
-        component.setTextViewConverter(new StringToEntityConverter());
+
+        component.setTextViewConverter(obj -> {
+            if (obj == null) {
+                return StringUtils.EMPTY;
+            }
+
+            Entity entity = (Entity) obj;
+            if (captionMode == CaptionMode.ITEM) {
+                return textViewConverter.convertToPresentation(entity, String.class, userSession.getLocale());
+            }
+
+            if (StringUtils.isNotEmpty(captionProperty)) {
+                MetaPropertyPath propertyPath = entity.getMetaClass().getPropertyPath(captionProperty);
+                if (propertyPath == null) {
+                    throw new IllegalArgumentException(String.format("Can't find property for given caption property: %s", captionProperty));
+                }
+
+                return metadataTools.format(entity.getValueEx(captionProperty), propertyPath.getMetaProperty());
+            }
+
+            log.warn("Using StringToEntityConverter to get entity text presentation. Caption property is not defined " +
+                    "while caption mode is \"PROPERTY\"");
+            return textViewConverter.convertToPresentation(entity, String.class, userSession.getLocale());
+        });
+
         component.setSearchExecutor(query -> {
             cancelSearch();
             searchSuggestions(query);
@@ -58,6 +93,32 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
         component.setCancelSearchHandler(this::cancelSearch);
 
         attachListener(component);
+    }
+
+    @Override
+    public CaptionMode getCaptionMode() {
+        return captionMode;
+    }
+
+    @Override
+    public void setCaptionMode(CaptionMode captionMode) {
+        this.captionMode = captionMode;
+    }
+
+    @Override
+    public String getCaptionProperty() {
+        return captionProperty;
+    }
+
+    @Override
+    public void setCaptionProperty(String captionProperty) {
+        this.captionProperty = captionProperty;
+
+        if (StringUtils.isNotEmpty(captionProperty)) {
+            captionMode = CaptionMode.PROPERTY;
+        } else {
+            captionMode = CaptionMode.ITEM;
+        }
     }
 
     protected void cancelSearch() {

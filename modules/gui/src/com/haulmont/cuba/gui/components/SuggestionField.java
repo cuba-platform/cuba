@@ -160,4 +160,10 @@ public interface SuggestionField extends Field {
      * @param suggestions suggestions to show
      */
     void showSuggestions(List<? extends Entity> suggestions);
+
+    CaptionMode getCaptionMode();
+    void setCaptionMode(CaptionMode captionMode);
+
+    String getCaptionProperty();
+    void setCaptionProperty(String captionProperty);
 }
