@@ -19,7 +19,6 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.haulmont.cuba.web.toolkit.ui.client.suggestionfield.CubaSuggestionFieldClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.suggestionfield.CubaSuggestionFieldServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.suggestionfield.CubaSuggestionFieldState;
-import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
@@ -29,9 +28,11 @@ import com.vaadin.ui.AbstractField;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class CubaSuggestionField extends AbstractField<Object> {
     protected static final String SUGGESTION_ID = "id";
@@ -47,7 +48,7 @@ public class CubaSuggestionField extends AbstractField<Object> {
     protected FieldEvents.FocusAndBlurServerRpcImpl focusBlurRpc;
     protected CubaSuggestionFieldServerRpc serverRpc;
 
-    protected Converter<String, Object> textViewConverter;
+    protected Function<Object, String> textViewConverter;
     protected int suggestionsLimit = 10;
 
     public CubaSuggestionField() {
@@ -108,10 +109,9 @@ public class CubaSuggestionField extends AbstractField<Object> {
     }
 
     public void updateTextPresentation(Object value) {
-        //noinspection unchecked
-        String stringValue = textViewConverter.convertToPresentation(value, String.class, getLocale());
+        String stringValue = textViewConverter.apply(value);
 
-        if (!getState(false).text.equals(stringValue)) {
+        if (!StringUtils.equals(getState(false).text, stringValue)) {
             getState().text = stringValue;
         }
     }
@@ -129,9 +129,8 @@ public class CubaSuggestionField extends AbstractField<Object> {
         return superError;
     }
 
-    @SuppressWarnings("unchecked")
-    public void setTextViewConverter(Converter<String, ?> converter) {
-        this.textViewConverter = (Converter<String, Object>) converter;
+    public void setTextViewConverter(Function<?, String> converter) {
+        this.textViewConverter = (Function<Object, String>) converter;
     }
 
     @Override
@@ -199,7 +198,7 @@ public class CubaSuggestionField extends AbstractField<Object> {
         //noinspection unchecked
         object.put(SUGGESTION_ID, Json.create(keyMapper.key(suggestion)));
 
-        String caption = textViewConverter.convertToPresentation(suggestion, String.class, getLocale());
+        String caption = textViewConverter.apply(suggestion);
         object.put(SUGGESTION_CAPTION, Json.create(caption));
         return object;
     }

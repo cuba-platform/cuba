@@ -16,7 +16,10 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.SuggestionField;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 public class SuggestionFieldLoader extends AbstractFieldLoader<SuggestionField> {
 
@@ -30,29 +33,39 @@ public class SuggestionFieldLoader extends AbstractFieldLoader<SuggestionField> 
     public void loadComponent() {
         super.loadComponent();
 
-        loadAsyncSearchDelayMs();
-        loadMinSearchStringLength();
-        loadSuggestionsLimit();
+        loadAsyncSearchDelayMs(resultComponent, element);
+        loadMinSearchStringLength(resultComponent, element);
+        loadSuggestionsLimit(resultComponent, element);
+
+        loadCaptionProperty(resultComponent, element);
     }
 
-    private void loadSuggestionsLimit() {
-        if (element.attribute("suggestionsLimit") != null) {
-            String suggestionsLimit = element.attributeValue("suggestionsLimit");
-            resultComponent.setSuggestionsLimit(Integer.parseInt(suggestionsLimit));
+    protected void loadCaptionProperty(SuggestionField suggestionField, Element element) {
+        String captionProperty = element.attributeValue("captionProperty");
+        if (StringUtils.isNotEmpty(captionProperty)) {
+            suggestionField.setCaptionMode(CaptionMode.PROPERTY);
+            suggestionField.setCaptionProperty(captionProperty);
         }
     }
 
-    private void loadMinSearchStringLength() {
-        if (element.attribute("minSearchStringLength") != null) {
-            String minSearchStringLength = element.attributeValue("minSearchStringLength");
-            resultComponent.setMinSearchStringLength(Integer.parseInt(minSearchStringLength));
+    protected void loadSuggestionsLimit(SuggestionField suggestionField, Element element) {
+        String suggestionsLimit = element.attributeValue("suggestionsLimit");
+        if (StringUtils.isNotEmpty(suggestionsLimit)) {
+            suggestionField.setSuggestionsLimit(Integer.parseInt(suggestionsLimit));
         }
     }
 
-    private void loadAsyncSearchDelayMs() {
-        if (element.attribute("asyncSearchDelayMs") != null) {
-            String asyncSearchDelayMs = element.attributeValue("asyncSearchDelayMs");
-            resultComponent.setAsyncSearchDelayMs(Integer.parseInt(asyncSearchDelayMs));
+    protected void loadMinSearchStringLength(SuggestionField suggestionField, Element element) {
+        String minSearchStringLength = element.attributeValue("minSearchStringLength");
+        if (StringUtils.isNotEmpty(minSearchStringLength)) {
+            suggestionField.setMinSearchStringLength(Integer.parseInt(minSearchStringLength));
+        }
+    }
+
+    protected void loadAsyncSearchDelayMs(SuggestionField suggestionField, Element element) {
+        String asyncSearchDelayMs = element.attributeValue("asyncSearchDelayMs");
+        if (StringUtils.isNotEmpty(asyncSearchDelayMs)) {
+            suggestionField.setAsyncSearchDelayMs(Integer.parseInt(asyncSearchDelayMs));
         }
     }
 }

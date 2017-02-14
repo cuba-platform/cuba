@@ -51,6 +51,7 @@
   }
 
   .#{$primary-stylename}-layout > .v-filterselect > input,
+  .#{$primary-stylename}-layout > .c-suggestionfield,
   .v-textfield.#{$primary-stylename}-text {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
