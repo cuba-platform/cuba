@@ -55,6 +55,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Component("cuba_PermissionConfig")
 public class PermissionConfig {
 
+    private final Logger log = LoggerFactory.getLogger(PermissionConfig.class);
+
     @Inject
     protected DynamicAttributes dynamicAttributes;
 
@@ -106,7 +108,7 @@ public class PermissionConfig {
 
         private void walkMenu(MenuItem info, Node<BasicPermissionTarget> node) {
             String id = info.getId();
-            String caption = MenuConfig.getMenuItemCaption(id).replaceAll("<.+?>", "").replaceAll("&gt;", "");
+            String caption = menuConfig.getItemCaption(id).replaceAll("<.+?>", "").replaceAll("&gt;", "");
             caption = StringEscapeUtils.unescapeHtml(caption);
 
             if (info.getChildren() != null && !info.getChildren().isEmpty()) {
@@ -150,12 +152,12 @@ public class PermissionConfig {
 
             Session session = metadata.getSession();
             List<MetaModel> modelList = new ArrayList<>(session.getModels());
-            Collections.sort(modelList, new MetadataObjectAlphabetComparator());
+            modelList.sort(new MetadataObjectAlphabetComparator());
 
             for (MetaModel model : modelList) {
 
                 List<MetaClass> classList = new ArrayList<>(model.getClasses());
-                Collections.sort(classList, new MetadataObjectAlphabetComparator());
+                classList.sort(new MetadataObjectAlphabetComparator());
 
                 for (MetaClass metaClass : classList) {
                     String name = metaClass.getName();
@@ -188,7 +190,7 @@ public class PermissionConfig {
                                             DynamicAttributesUtils.encodeAttributeCode(dynamicAttribute.getCode()));
                             propertyList.add(metaPropertyPath.getMetaProperty());
                         }
-                        Collections.sort(propertyList, new MetadataObjectAlphabetComparator());
+                        propertyList.sort(new MetadataObjectAlphabetComparator());
 
                         for (MetaProperty metaProperty : propertyList) {
                             String metaPropertyName = metaProperty.getName();
@@ -299,8 +301,6 @@ public class PermissionConfig {
     private ClientType clientType;
 
     private List<Item> items = new CopyOnWriteArrayList<>();
-
-    private Logger log = LoggerFactory.getLogger(PermissionConfig.class);
 
     public PermissionConfig() {
         this.clientType = AppConfig.getClientType();

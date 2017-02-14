@@ -295,4 +295,16 @@ public interface WebConfig extends Config {
     @Property("cuba.web.widgetSet")
     @Default("com.haulmont.cuba.web.toolkit.ui.WidgetSet")
     String getWidgetSet();
+
+    @Property("cuba.web.useDeviceWidthForViewport")
+    @DefaultBoolean(false)
+    boolean getUseDeviceWidthForViewport();
+
+    @Property("cuba.web.customDeviceWidthForViewport")
+    @DefaultInt(-1)
+    int getCustomDeviceWidthForViewport();
+
+    @Property("cuba.web.pageInitialScale")
+    @DefaultString("0.8")
+    String getPageInitialScale();
 }

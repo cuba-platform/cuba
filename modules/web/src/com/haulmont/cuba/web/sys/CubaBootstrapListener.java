@@ -17,12 +17,14 @@
 
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.server.BootstrapFragmentResponse;
 import com.vaadin.server.BootstrapListener;
 import com.vaadin.server.BootstrapPageResponse;
 import org.jsoup.nodes.Element;
-
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
 
 /**
  * Event listener notified when the bootstrap HTML is about to be generated and
@@ -35,6 +37,9 @@ public class CubaBootstrapListener implements BootstrapListener {
 
     public static final String NAME = "cuba_BootstrapListener";
 
+    @Inject
+    protected WebConfig webConfig;
+
     @Override
     public void modifyBootstrapFragment(BootstrapFragmentResponse response) {
     }
@@ -44,11 +49,27 @@ public class CubaBootstrapListener implements BootstrapListener {
         Element head = response.getDocument().getElementsByTag("head").get(0);
 
         includeScript("VAADIN/resources/jquery/jquery-1.12.4.min.js", response, head);
+
+        int customDeviceWidthForViewport = webConfig.getCustomDeviceWidthForViewport();
+        if (customDeviceWidthForViewport > 0) {
+            includeMetaViewport("width=" + customDeviceWidthForViewport +
+                    ", initial-scale=" + webConfig.getPageInitialScale(), response, head);
+        } else if (webConfig.getUseDeviceWidthForViewport()) {
+            includeMetaViewport("width=device-width" +
+                    ", initial-scale=" + webConfig.getPageInitialScale(), response, head);
+        }
     }
 
     protected void includeScript(String src, BootstrapPageResponse response, Element head) {
         Element script = response.getDocument().createElement("script");
         script.attr("src", src);
         head.appendChild(script);
+    }
+
+    protected void includeMetaViewport(String content, BootstrapPageResponse response, Element head) {
+        Element meta = response.getDocument().createElement("meta");
+        meta.attr("name", "viewport");
+        meta.attr("content", content);
+        head.appendChild(meta);
     }
 }

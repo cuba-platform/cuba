@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.web.theme.HaloTheme;
 import com.haulmont.cuba.web.toolkit.ui.client.verticalmenu.CubaSideMenuClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.verticalmenu.CubaSideMenuServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.verticalmenu.CubaSideMenuState;
@@ -64,6 +65,8 @@ public class CubaSideMenu extends AbstractComponent implements Component.Focusab
 
     protected PropertyChangeListener itemsPropertyChangeListener = this::menuItemPropertyChanged;
 
+    protected Consumer<MenuItem> beforeMenuItemTriggeredHandler = null;
+
     public CubaSideMenu() {
         CubaSideMenuServerRpc menuRpc = (CubaSideMenuServerRpc) itemId -> {
             MenuItem menuItem = menuItemIdMapper.get(itemId);
@@ -71,12 +74,24 @@ public class CubaSideMenu extends AbstractComponent implements Component.Focusab
                 if (isSelectOnClick()) {
                     this.selectedItem = menuItem;
                 }
+                if (beforeMenuItemTriggeredHandler != null) {
+                    beforeMenuItemTriggeredHandler.accept(menuItem);
+                }
                 if (menuItem.getCommand() != null) {
                     menuItem.getCommand().accept(new MenuItemTriggeredEvent(this, menuItem));
                 }
+                removeStyleName(HaloTheme.SIDEMENU_PANEL_OPEN);
             }
         };
         registerRpc(menuRpc);
+    }
+
+    public Consumer<MenuItem> getBeforeMenuItemTriggeredHandler() {
+        return beforeMenuItemTriggeredHandler;
+    }
+
+    public void setBeforeMenuItemTriggeredHandler(Consumer<MenuItem> beforeMenuItemTriggeredHandler) {
+        this.beforeMenuItemTriggeredHandler = beforeMenuItemTriggeredHandler;
     }
 
     @Override

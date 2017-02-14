@@ -90,12 +90,20 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
 
     @Override
     public boolean isResponsive() {
-        return component.isResponsive();
+        com.vaadin.ui.Component composition = getComposition();
+        if (composition instanceof AbstractComponent) {
+            return ((AbstractComponent) composition).isResponsive();
+        }
+        return false;
     }
 
     @Override
     public void setResponsive(boolean responsive) {
-        component.setResponsive(responsive);
+        com.vaadin.ui.Component composition = getComposition();
+
+        if (composition instanceof AbstractComponent) {
+            ((AbstractComponent) composition).setResponsive(true);
+        }
     }
 
     public void assignAutoDebugId() {

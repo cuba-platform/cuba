@@ -17,10 +17,10 @@
   -->
 
 <xs:schema targetNamespace="http://schemas.haulmont.com/cuba/menu.xsd"
-        xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        xmlns="http://schemas.haulmont.com/cuba/menu.xsd"
-        elementFormDefault="qualified"
-        attributeFormDefault="unqualified">
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://schemas.haulmont.com/cuba/menu.xsd"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
 
     <xs:element name="menu-config" type="menuOrItem"/>
 
@@ -41,12 +41,13 @@
                 <xs:element name="separator"/>
             </xs:choice>
         </xs:sequence>
-        <xs:attribute type="xs:string" name="id" use="optional"/>
-        <xs:attribute type="xs:string" name="insertBefore" use="optional"/>
-        <xs:attribute type="xs:string" name="insertAfter" use="optional"/>
-        <xs:attribute type="xs:string" name="description" use="optional"/>
-        <xs:attribute type="xs:string" name="stylename" use="optional"/>
-        <xs:attribute type="xs:string" name="icon" use="optional"/>
+        <xs:attribute type="xs:string" name="id"/>
+        <xs:attribute type="xs:string" name="insertBefore"/>
+        <xs:attribute type="xs:string" name="insertAfter"/>
+        <xs:attribute type="xs:string" name="description"/>
+        <xs:attribute type="xs:string" name="stylename"/>
+        <xs:attribute type="xs:string" name="icon"/>
+        <xs:attribute type="xs:boolean" name="expanded"/>
     </xs:complexType>
 
     <xs:complexType name="itemType">
@@ -54,15 +55,15 @@
             <xs:element type="paramType" name="param" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element type="permissionsType" name="permissions" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
-        <xs:attribute type="xs:string" name="id" use="optional"/>
-        <xs:attribute type="openTypeType" name="openType" use="optional"/>
-        <xs:attribute type="xs:boolean" name="resizable" use="optional"/>
-        <xs:attribute type="xs:string" name="shortcut" use="optional"/>
-        <xs:attribute type="xs:string" name="description" use="optional"/>
-        <xs:attribute type="xs:string" name="stylename" use="optional"/>
-        <xs:attribute type="xs:string" name="icon" use="optional"/>
-        <xs:attribute type="xs:string" name="insertBefore" use="optional"/>
-        <xs:attribute type="xs:string" name="insertAfter" use="optional"/>
+        <xs:attribute type="xs:string" name="id"/>
+        <xs:attribute type="openTypeType" name="openType"/>
+        <xs:attribute type="xs:boolean" name="resizable"/>
+        <xs:attribute type="xs:string" name="shortcut"/>
+        <xs:attribute type="xs:string" name="description"/>
+        <xs:attribute type="xs:string" name="stylename"/>
+        <xs:attribute type="xs:string" name="icon"/>
+        <xs:attribute type="xs:string" name="insertBefore"/>
+        <xs:attribute type="xs:string" name="insertAfter"/>
     </xs:complexType>
 
     <xs:complexType name="paramType">

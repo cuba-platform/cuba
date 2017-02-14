@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.components.mainwindow;
 
+import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
 
 import javax.annotation.Nullable;
@@ -33,6 +34,28 @@ public interface SideMenu extends Component.BelongToFrame {
      * Load menu structure from {@link com.haulmont.cuba.gui.config.MenuConfig}
      */
     void loadMenuConfig();
+
+    /**
+     * Bind show/hide side panel action to button.
+     *
+     * @param button button that should trigger show/hide of side panel
+     */
+    void setSidePanelToggleButton(Button button);
+    /**
+     * @return side panel toggle button
+     */
+    Button getSidePanelToggleButton();
+
+    /**
+     * Bind side panel for show/hide action.
+     *
+     * @param sidePanel side panel
+     */
+    void setSidePanel(Component sidePanel);
+    /**
+     * @return side panel
+     */
+    Component getSidePanel();
 
     /**
      * @return true if an item becomes selected by click

@@ -16,10 +16,15 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.mainwindow.SideMenu;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.sys.SideMenuBuilder;
+import com.haulmont.cuba.web.theme.HaloTheme;
 import com.haulmont.cuba.web.toolkit.ui.CubaSideMenu;
 
 import javax.annotation.Nullable;
@@ -35,14 +40,73 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
 
     protected Map<String, MenuItem> allItemsIds = new HashMap<>();
 
+    protected Button toggleButton;
+    protected Component sidePanel;
+
     public WebSideMenu() {
         component = new CubaSideMenu();
+        component.setBeforeMenuItemTriggeredHandler(menuItem -> {
+            if (sidePanel != null) {
+                sidePanel.removeStyleName(HaloTheme.SIDEMENU_PANEL_OPEN);
+            }
+        });
     }
 
     @Override
     public void loadMenuConfig() {
-        SideMenuBuilder menuBuilder = new SideMenuBuilder(this);
-        menuBuilder.build();
+        SideMenuBuilder menuBuilder = AppBeans.getPrototype(SideMenuBuilder.NAME);
+        menuBuilder.build(this);
+    }
+
+    @Override
+    public void setSidePanelToggleButton(Button toggleButton) {
+        if (this.toggleButton != null) {
+            toggleButton.setAction(null);
+        }
+
+        if (toggleButton != null) {
+            AbstractAction toggleAction = new AbstractAction("toggleSideMenu") {
+                @Override
+                public void actionPerform(Component component) {
+                    toggleSidePanel();
+                }
+            };
+
+            toggleAction.setCaption(toggleButton.getCaption());
+            toggleAction.setIcon(toggleButton.getIcon());
+            toggleAction.setDescription(toggleButton.getDescription());
+            toggleAction.setEnabled(toggleButton.isEnabled());
+            toggleAction.setVisible(toggleButton.isVisible());
+
+            toggleButton.setAction(toggleAction);
+        }
+
+        this.toggleButton = toggleButton;
+    }
+
+    protected void toggleSidePanel() {
+        if (sidePanel != null) {
+            if (sidePanel.getStyleName().contains(HaloTheme.SIDEMENU_PANEL_OPEN)) {
+                sidePanel.removeStyleName(HaloTheme.SIDEMENU_PANEL_OPEN);
+            } else {
+                sidePanel.addStyleName(HaloTheme.SIDEMENU_PANEL_OPEN);
+            }
+        }
+    }
+
+    @Override
+    public Button getSidePanelToggleButton() {
+        return toggleButton;
+    }
+
+    @Override
+    public void setSidePanel(Component sidePanel) {
+        this.sidePanel = sidePanel;
+    }
+
+    @Override
+    public Component getSidePanel() {
+        return sidePanel;
     }
 
     @Override
