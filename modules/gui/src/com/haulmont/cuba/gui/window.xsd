@@ -1673,6 +1673,7 @@
                 </xs:sequence>
 
                 <xs:attributeGroup ref="requiresDatasource"/>
+                <xs:attributeGroup ref="hasSettings"/>
 
                 <xs:attribute name="margin" type="xs:string"/>
 
