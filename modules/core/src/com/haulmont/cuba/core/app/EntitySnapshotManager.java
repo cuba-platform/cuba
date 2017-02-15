@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
@@ -42,6 +43,7 @@ import javax.inject.Inject;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.lang.String.format;
 
 @Component(EntitySnapshotAPI.NAME)
 public class EntitySnapshotManager implements EntitySnapshotAPI {
@@ -71,18 +73,19 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     protected ViewSerializationAPI viewSerializationAPI;
 
     @Override
-    public List<EntitySnapshot> getSnapshots(MetaClass metaClass, UUID id) {
-        metaClass = getOriginalOrCurrentMetaClass(metaClass);
+    public List<EntitySnapshot> getSnapshots(Entity entity) {
+        checkCompositePrimaryKey(entity);
+        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(entity.getMetaClass());
 
         List<EntitySnapshot> resultList = null;
         View view = metadata.getViewRepository().getView(EntitySnapshot.class, "entitySnapshot.browse");
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            TypedQuery<EntitySnapshot> query = em.createQuery(
-                    "select s from sys$EntitySnapshot s where s.entityId = :entityId and s.entityMetaClass = :metaClass " +
-                            "order by s.snapshotDate desc", EntitySnapshot.class);
-            query.setParameter("entityId", id);
+            TypedQuery<EntitySnapshot> query = em.createQuery(format(
+                    "select s from sys$EntitySnapshot s where s.%s = :entityId and s.entityMetaClass = :metaClass " +
+                            "order by s.snapshotDate desc", getEntityIdPropertyName(entity)), EntitySnapshot.class);
+            query.setParameter("entityId", getEntityId(entity));
             query.setParameter("metaClass", metaClass.getName());
             query.setView(view);
             resultList = query.getResultList();
@@ -95,89 +98,18 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         return resultList;
     }
 
-    private void replaceInXmlTree(Element element, Map<Class, Class> classMapping) {
-        for (int i = 0; i < element.nodeCount(); i++) {
-            Node node = element.node(i);
-            if (node instanceof Element) {
-                Element childElement = (Element) node;
-                replaceClasses(childElement, classMapping);
-                replaceInXmlTree(childElement, classMapping);
-            }
-        }
-    }
-
-    private void replaceClasses(Element element, Map<Class, Class> classMapping) {
-        // translate XML
-        for (Map.Entry<Class, Class> classEntry : classMapping.entrySet()) {
-            Class beforeClass = classEntry.getKey();
-            Class afterClass = classEntry.getValue();
-
-            checkNotNull(beforeClass);
-            checkNotNull(afterClass);
-
-            // If BeforeClass != AfterClass
-            if (!beforeClass.equals(afterClass)) {
-                String beforeClassName = beforeClass.getCanonicalName();
-                String afterClassName = afterClass.getCanonicalName();
-
-                if (beforeClassName.equals(element.getName())) {
-                    element.setName(afterClassName);
-                }
-
-                Attribute classAttribute = element.attribute("class");
-                if ((classAttribute != null) && beforeClassName.equals(classAttribute.getValue())) {
-                    classAttribute.setValue(afterClassName);
-                }
-            }
-        }
-    }
-
-    private String processViewXml(String viewXml, Map<Class, Class> classMapping) {
-        if (!isXml(viewXml)) {
-            return viewXml;
-        }
-        for (Map.Entry<Class, Class> classEntry : classMapping.entrySet()) {
-            Class beforeClass = classEntry.getKey();
-            Class afterClass = classEntry.getValue();
-
-            checkNotNull(beforeClass);
-            checkNotNull(afterClass);
-
-            String beforeClassName = beforeClass.getCanonicalName();
-            String afterClassName = afterClass.getCanonicalName();
-
-            viewXml = viewXml.replaceAll(beforeClassName, afterClassName);
-        }
-        return viewXml;
-    }
-
-    private String processSnapshotXml(String snapshotXml, Map<Class, Class> classMapping) {
-        if (!isXml(snapshotXml)) {
-            return snapshotXml;
-        }
-        Document document;
-        try {
-            document = DocumentHelper.parseText(snapshotXml);
-        } catch (DocumentException e) {
-            throw new RuntimeException("Couldn't parse snapshot xml content", e);
-        }
-        replaceClasses(document.getRootElement(), classMapping);
-        replaceInXmlTree(document.getRootElement(), classMapping);
-        return document.asXML();
-    }
-
     @Override
-    public void migrateSnapshots(MetaClass metaClass, UUID id, Map<Class, Class> classMapping) {
-        metaClass = getOriginalOrCurrentMetaClass(metaClass);
+    public void migrateSnapshots(Entity entity, Map<Class, Class> classMapping) {
+        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(entity.getMetaClass());
 
         // load snapshots
-        List<EntitySnapshot> snapshotList = getSnapshots(metaClass, id);
+        List<EntitySnapshot> snapshotList = getSnapshots(entity);
         Class javaClass = metaClass.getJavaClass();
 
         MetaClass mappedMetaClass = null;
         if (classMapping.containsKey(javaClass)) {
             Class mappedClass = classMapping.get(javaClass);
-            mappedMetaClass = getOriginalOrCurrentMetaClass(mappedClass);
+            mappedMetaClass = extendedEntities.getOriginalOrThisMetaClass(metadata.getClass(mappedClass));
         }
 
         for (EntitySnapshot snapshot : snapshotList) {
@@ -220,12 +152,11 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     @Override
     public EntitySnapshot createSnapshot(Entity entity, View view, Date snapshotDate, User author) {
-        if (!(entity instanceof HasUuid))
-            throw new UnsupportedOperationException("Entity " + entity + " has no persistent UUID attribute");
-
         Preconditions.checkNotNullArgument(entity);
         Preconditions.checkNotNullArgument(view);
         Preconditions.checkNotNullArgument(snapshotDate);
+
+        checkCompositePrimaryKey(entity);
 
         Class viewEntityClass = view.getEntityClass();
         Class entityClass = entity.getClass();
@@ -234,11 +165,11 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
             throw new IllegalStateException("View could not be used with this propertyValue");
         }
 
+        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(metadata.getClass(entity.getClass()));
+
         EntitySnapshot snapshot = metadata.create(EntitySnapshot.class);
-        snapshot.setEntityId(((HasUuid) entity).getUuid());
 
-        MetaClass metaClass = getOriginalOrCurrentMetaClass(entity.getClass());
-
+        snapshot.setObjectEntityId(getEntityId(entity));
         snapshot.setEntityMetaClass(metaClass.getName());
         snapshot.setViewXml(viewSerializationAPI.toJson(view, ViewSerializationOption.COMPACT_FORMAT));
         snapshot.setSnapshotXml(entitySerializationAPI.toJson(entity));
@@ -287,20 +218,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         return diffManager.getDifference(first, second);
     }
 
-    private MetaClass getOriginalOrCurrentMetaClass(Class javaClass) {
-        MetaClass metaClass = metadata.getSession().getClass(javaClass);
-        return getOriginalOrCurrentMetaClass(metaClass);
-    }
-
-    private MetaClass getOriginalOrCurrentMetaClass(MetaClass mappedMetaClass) {
-        MetaClass originalMappedMetaClass = extendedEntities.getOriginalMetaClass(mappedMetaClass);
-        if (originalMappedMetaClass != null) {
-            mappedMetaClass = originalMappedMetaClass;
-        }
-        return mappedMetaClass;
-    }
-
-    private Object fromXML(String xml) {
+    protected Object fromXML(String xml) {
         final List exclUpdateFields = Arrays.asList("updateTs", "updatedBy");
         XStream xStream = new XStream() {
             @Override
@@ -338,5 +256,119 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     protected boolean isXml(String value) {
         return value != null && value.trim().startsWith("<");
+    }
+
+    protected Object getEntityId(Entity entity) {
+        if (entity instanceof HasUuid) {
+            return ((HasUuid) entity).getUuid();
+        }
+        Object entityId = entity.getId();
+        if (entityId instanceof IdProxy) {
+            return ((IdProxy) entityId).get();
+        }
+        return entity.getId();
+    }
+
+    protected void checkCompositePrimaryKey(Entity entity) {
+        if (metadata.getTools().hasCompositePrimaryKey(entity.getMetaClass()) && !(entity instanceof HasUuid)) {
+            throw new UnsupportedOperationException(format("Entity %s has no persistent UUID attribute", entity));
+        }
+    }
+
+    protected String getEntityIdPropertyName(Entity entity) {
+        MetaClass metaClass = entity.getMetaClass();
+        if (HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
+            return "entityId";
+        }
+        MetaProperty primaryKey = metadata.getTools().getPrimaryKeyProperty(metaClass);;
+        if (primaryKey != null) {
+            Class type = primaryKey.getJavaType();
+            if (UUID.class.equals(type)) {
+                return "entityId";
+            } else if (Long.class.equals(type)) {
+                return "longEntityId";
+            } else if (Integer.class.equals(type)) {
+                return "intEntityId";
+            } else if (String.class.equals(type)) {
+                return "stringEntityId";
+            } else {
+                throw new IllegalStateException(
+                        String.format("Unsupported primary key type: %s for %s", type.getSimpleName(), metaClass.getName()));
+            }
+        } else {
+            throw new IllegalStateException(
+                    String.format("Primary key not found for %s", metaClass.getName()));
+        }
+    }
+
+    protected void replaceInXmlTree(Element element, Map<Class, Class> classMapping) {
+        for (int i = 0; i < element.nodeCount(); i++) {
+            Node node = element.node(i);
+            if (node instanceof Element) {
+                Element childElement = (Element) node;
+                replaceClasses(childElement, classMapping);
+                replaceInXmlTree(childElement, classMapping);
+            }
+        }
+    }
+
+    protected void replaceClasses(Element element, Map<Class, Class> classMapping) {
+        // translate XML
+        for (Map.Entry<Class, Class> classEntry : classMapping.entrySet()) {
+            Class beforeClass = classEntry.getKey();
+            Class afterClass = classEntry.getValue();
+
+            checkNotNull(beforeClass);
+            checkNotNull(afterClass);
+
+            // If BeforeClass != AfterClass
+            if (!beforeClass.equals(afterClass)) {
+                String beforeClassName = beforeClass.getCanonicalName();
+                String afterClassName = afterClass.getCanonicalName();
+
+                if (beforeClassName.equals(element.getName())) {
+                    element.setName(afterClassName);
+                }
+
+                Attribute classAttribute = element.attribute("class");
+                if ((classAttribute != null) && beforeClassName.equals(classAttribute.getValue())) {
+                    classAttribute.setValue(afterClassName);
+                }
+            }
+        }
+    }
+
+    protected String processViewXml(String viewXml, Map<Class, Class> classMapping) {
+        if (!isXml(viewXml)) {
+            return viewXml;
+        }
+        for (Map.Entry<Class, Class> classEntry : classMapping.entrySet()) {
+            Class beforeClass = classEntry.getKey();
+            Class afterClass = classEntry.getValue();
+
+            checkNotNull(beforeClass);
+            checkNotNull(afterClass);
+
+            String beforeClassName = beforeClass.getCanonicalName();
+            String afterClassName = afterClass.getCanonicalName();
+
+            viewXml = viewXml.replaceAll(beforeClassName, afterClassName);
+        }
+        return viewXml;
+    }
+
+    protected String processSnapshotXml(String snapshotXml, Map<Class, Class> classMapping) {
+        if (!isXml(snapshotXml)) {
+            return snapshotXml;
+        }
+        Document document;
+        try {
+            document = DocumentHelper.parseText(snapshotXml);
+        } catch (DocumentException e) {
+            throw new RuntimeException("Couldn't parse snapshot xml content", e);
+        }
+        replaceClasses(document.getRootElement(), classMapping);
+        replaceInXmlTree(document.getRootElement(), classMapping);
+        return document.asXML();
     }
 }

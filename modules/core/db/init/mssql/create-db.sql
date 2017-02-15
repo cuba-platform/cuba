@@ -690,7 +690,10 @@ create table SYS_ENTITY_SNAPSHOT (
     CREATED_BY varchar(50),
     --
     ENTITY_META_CLASS varchar(50) not null,
-    ENTITY_ID uniqueidentifier not null,
+    ENTITY_ID uniqueidentifier,
+    STRING_ENTITY_ID varchar(255),
+    INT_ENTITY_ID integer,
+    LONG_ENTITY_ID bigint,
     AUTHOR_ID uniqueidentifier not null,
     VIEW_XML varchar(max) not null,
     SNAPSHOT_XML varchar(max) not null,
@@ -701,6 +704,9 @@ create table SYS_ENTITY_SNAPSHOT (
 )^
 
 create index IDX_SYS_ENTITY_SNAPSHOT_ENTITY_ID on SYS_ENTITY_SNAPSHOT (ENTITY_ID)^
+create index IDX_SYS_ENTITY_SNAPSHOT_SENTITY_ID on SYS_ENTITY_SNAPSHOT (STRING_ENTITY_ID)^
+create index IDX_SYS_ENTITY_SNAPSHOT_IENTITY_ID on SYS_ENTITY_SNAPSHOT (INT_ENTITY_ID)^
+create index IDX_SYS_ENTITY_SNAPSHOT_LENTITY_ID on SYS_ENTITY_SNAPSHOT (LONG_ENTITY_ID)^
 
 create clustered index IDX_SYS_ENTITY_SNAPSHOT_CREATE_TS on SYS_ENTITY_SNAPSHOT (CREATE_TS)^
 

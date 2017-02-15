@@ -654,6 +654,9 @@ create table SYS_ENTITY_SNAPSHOT (
     --
     ENTITY_META_CLASS varchar(50),
     ENTITY_ID varchar(36),
+    STRING_ENTITY_ID varchar(255),
+    INT_ENTITY_ID integer,
+    LONG_ENTITY_ID bigint,
     AUTHOR_ID varchar(36) not null,
     VIEW_XML longvarchar,
     SNAPSHOT_XML longvarchar,

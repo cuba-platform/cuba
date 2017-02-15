@@ -661,7 +661,10 @@ create table SYS_ENTITY_SNAPSHOT (
     CREATED_BY varchar(50),
     --
     ENTITY_META_CLASS varchar(50) not null,
-    ENTITY_ID uuid not null,
+    ENTITY_ID uuid,
+    STRING_ENTITY_ID varchar(255),
+    INT_ENTITY_ID integer,
+    LONG_ENTITY_ID bigint,
     AUTHOR_ID uuid not null,
     VIEW_XML text not null,
     SNAPSHOT_XML text not null,
@@ -672,6 +675,9 @@ create table SYS_ENTITY_SNAPSHOT (
 )^
 
 create index IDX_SYS_ENTITY_SNAPSHOT_ENTITY_ID on SYS_ENTITY_SNAPSHOT (ENTITY_ID)^
+create index IDX_SYS_ENTITY_SNAPSHOT_SENTITY_ID on SYS_ENTITY_SNAPSHOT (STRING_ENTITY_ID)^
+create index IDX_SYS_ENTITY_SNAPSHOT_IENTITY_ID on SYS_ENTITY_SNAPSHOT (INT_ENTITY_ID)^
+create index IDX_SYS_ENTITY_SNAPSHOT_LENTITY_ID on SYS_ENTITY_SNAPSHOT (LONG_ENTITY_ID)^
 
 -------------------------------------------------------------------------------------------------------------
 

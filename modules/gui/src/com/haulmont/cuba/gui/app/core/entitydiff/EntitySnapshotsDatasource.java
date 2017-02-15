@@ -46,17 +46,19 @@ public class EntitySnapshotsDatasource extends CustomCollectionDatasource<Entity
 
     @Override
     protected Collection<EntitySnapshot> getEntities(Map<String, Object> params) {
-        if (entity != null && entity instanceof HasUuid) {
+        if (entity != null) {
             EntitySnapshotService snapshotService = AppBeans.get(EntitySnapshotService.NAME);
-            snapshots = snapshotService.getSnapshots(entity.getMetaClass(), ((HasUuid) entity).getUuid());
+            snapshots = snapshotService.getSnapshots(entity);
             return snapshots;
         }
         return Collections.emptyList();
     }
 
     public EntitySnapshot getLatestSnapshot() {
-        if ((snapshots != null) && (snapshots.size() > 0))
+        if (snapshots != null && snapshots.size() > 0) {
             return snapshots.get(snapshots.size() - 1);
-        return null;
+        } else {
+            return null;
+        }
     }
 }

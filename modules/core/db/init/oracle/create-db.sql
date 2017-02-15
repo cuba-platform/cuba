@@ -108,7 +108,10 @@ create table SYS_ENTITY_SNAPSHOT (
     CREATE_TS timestamp,
     CREATED_BY varchar2(50),
     ENTITY_META_CLASS varchar2(50) not null,
-    ENTITY_ID varchar2(32) not null,
+    ENTITY_ID varchar2(32),
+    STRING_ENTITY_ID varchar2(255),
+    INT_ENTITY_ID integer,
+    LONG_ENTITY_ID number,
     AUTHOR_ID varchar2(32) not null,
     VIEW_XML clob not null,
     SNAPSHOT_XML clob not null,
@@ -116,6 +119,9 @@ create table SYS_ENTITY_SNAPSHOT (
     primary key(ID)
 )^
 create index IDX_SYS_ENTITY_SNAPSHOT_ENT_ID on SYS_ENTITY_SNAPSHOT(ENTITY_ID)^
+create index IDX_SYS_ENTITY_SSNAPSHOT_ENT_ID on SYS_ENTITY_SNAPSHOT(STRING_ENTITY_ID)^
+create index IDX_SYS_ENTITY_ISNAPSHOT_ENT_ID on SYS_ENTITY_SNAPSHOT(INT_ENTITY_ID)^
+create index IDX_SYS_ENTITY_LSNAPSHOT_ENT_ID on SYS_ENTITY_SNAPSHOT(LONG_ENTITY_ID)^
 
 create table SYS_ENTITY_STATISTICS (
     ID varchar2(32) not null,

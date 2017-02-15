@@ -67,6 +67,15 @@ public class EntitySnapshot extends BaseUuidEntity implements Creatable {
     @Column(name = "ENTITY_ID")
     private UUID entityId;
 
+    @Column(name = "STRING_ENTITY_ID", length = 255)
+    private String stringEntityId;
+
+    @Column(name = "INT_ENTITY_ID")
+    private Integer intEntityId;
+
+    @Column(name = "LONG_ENTITY_ID")
+    private Long longEntityId;
+
     @Override
     public Date getCreateTs() {
         return createTs;
@@ -155,5 +164,49 @@ public class EntitySnapshot extends BaseUuidEntity implements Creatable {
 
     public void setSnapshotDate(Date snapshotDate) {
         this.snapshotDate = snapshotDate;
+    }
+
+    public String getStringEntityId() {
+        return stringEntityId;
+    }
+
+    public void setStringEntityId(String stringEntityId) {
+        this.stringEntityId = stringEntityId;
+    }
+
+    public Integer getIntEntityId() {
+        return intEntityId;
+    }
+
+    public void setIntEntityId(Integer intEntityId) {
+        this.intEntityId = intEntityId;
+    }
+
+    public Long getLongEntityId() {
+        return longEntityId;
+    }
+
+    public void setLongEntityId(Long longEntityId) {
+        this.longEntityId = longEntityId;
+    }
+
+    public void setObjectEntityId(Object objectEntityId) {
+        if (objectEntityId instanceof UUID) {
+            setEntityId((UUID) objectEntityId);
+        } else if (objectEntityId instanceof Long) {
+            setLongEntityId((Long) objectEntityId);
+        } else if (objectEntityId instanceof Integer) {
+            setIntEntityId((Integer) objectEntityId);
+        } else if (objectEntityId instanceof String) {
+            setStringEntityId((String) objectEntityId);
+        } else if (objectEntityId == null) {
+            setEntityId(null);
+            setLongEntityId(null);
+            setIntEntityId(null);
+            setStringEntityId(null);
+        } else {
+            throw new IllegalArgumentException(
+                    String.format("Unsupported primary key type: %s", objectEntityId.getClass().getSimpleName()));
+        }
     }
 }

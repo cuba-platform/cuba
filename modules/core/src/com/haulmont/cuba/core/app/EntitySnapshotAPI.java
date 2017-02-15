@@ -40,20 +40,18 @@ public interface EntitySnapshotAPI {
     /**
      * Load snapshots for entity
      *
-     * @param metaClass Entity metaclass
-     * @param id        Entity Id
+     * @param entity    Entity
      * @return Snapshot list sorted by snapshotDate desc
      */
-    List<EntitySnapshot> getSnapshots(MetaClass metaClass, UUID id);
+    List<EntitySnapshot> getSnapshots(Entity entity);
 
     /**
      * Translate snapshots for archival classes
      *
-     * @param metaClass    Metaclass
-     * @param id           Entity Id
+     * @param entity    Entity
      * @param classMapping Map of [OldClass -&gt; NewClass] for migration
      */
-    void migrateSnapshots(MetaClass metaClass, UUID id, Map<Class, Class> classMapping);
+    void migrateSnapshots(Entity entity, Map<Class, Class> classMapping);
 
     /**
      * Create snapshot for Entity and store it to database
