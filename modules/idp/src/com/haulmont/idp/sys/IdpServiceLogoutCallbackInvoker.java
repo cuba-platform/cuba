@@ -16,6 +16,7 @@
 
 package com.haulmont.idp.sys;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.haulmont.idp.IdpConfig;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -48,7 +49,12 @@ public class IdpServiceLogoutCallbackInvoker {
     @Inject
     protected IdpConfig idpConfig;
 
-    protected ExecutorService asyncServiceLogoutExecutor = Executors.newSingleThreadExecutor();
+    protected ExecutorService asyncServiceLogoutExecutor =
+            Executors.newSingleThreadExecutor(
+                    new ThreadFactoryBuilder()
+                            .setNameFormat("IdpServiceLogoutCallbackInvoker-%d")
+                            .build()
+            );
 
     public void performLogoutOnServiceProviders(String idpSessionId) {
         List<String> serviceProviderLogoutUrls = idpConfig.getServiceProviderLogoutUrls();
@@ -58,10 +64,13 @@ public class IdpServiceLogoutCallbackInvoker {
             HttpClient client = HttpClientBuilder.create()
                     .setConnectionManager(connectionManager)
                     .build();
+
             try {
                 for (String serviceProviderLogoutUrl : serviceProviderLogoutUrls) {
                     callLoggedOutServiceUrl(client, serviceProviderLogoutUrl, idpSessionId);
                 }
+            } catch (Throwable ex) {
+                log.error("Unable to perform logout on IDP services for session {}", idpSessionId, ex);
             } finally {
                 connectionManager.shutdown();
             }

@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Resources;
@@ -49,7 +50,7 @@ import java.util.concurrent.atomic.LongAdder;
 @Component(ClusterManagerAPI.NAME)
 public class ClusterManager implements ClusterManagerAPI, AppContext.Listener, Ordered {
 
-    protected Logger log = LoggerFactory.getLogger(ClusterManager.class);
+    private final Logger log = LoggerFactory.getLogger(ClusterManager.class);
 
     protected Map<String, ClusterListener> listeners = new HashMap<>();
 
@@ -83,6 +84,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener, O
         int nThreads = clusterConfig.getClusterMessageSendingThreadPoolSize();
         executor = new ThreadPoolExecutor(nThreads, nThreads,
                 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(clusterConfig.getClusterMessageSendingQueueCapacity()),
+                new ThreadFactoryBuilder().setNameFormat("ClusterManagerMessageSender-%d").build(),
                 new RejectedExecutionHandler() {
                     @Override
                     public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
