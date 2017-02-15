@@ -24,6 +24,7 @@ buildscript {
     
     repositories {
         mavenLocal()
+	jcenter()
         maven {
             credentials {
                 username System.getenv('HAULMONT_REPOSITORY_USER') ?: 'cuba'
