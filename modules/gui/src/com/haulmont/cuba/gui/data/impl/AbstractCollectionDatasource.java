@@ -315,7 +315,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         return map;
     }
 
-    private String makeCaseInsensitive(String value) {
+    protected String makeCaseInsensitive(String value) {
         StringBuilder sb = new StringBuilder();
         sb.append(ParametersHelper.CASE_INSENSITIVE_MARKER);
         if (!value.startsWith("%"))
@@ -675,7 +675,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         this.refreshMode = refreshMode;
     }
 
-    private class ComponentValueListener implements Component.ValueChangeListener {
+    protected class ComponentValueListener implements Component.ValueChangeListener {
         @Override
         public void valueChanged(Component.ValueChangeEvent e) {
             refresh();

@@ -58,7 +58,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     protected List<CollectionChangeListener<T, K>> collectionChangeListeners;
 
-    private AggregatableDelegate<K> aggregatableDelegate = new AggregatableDelegate<K>() {
+    protected AggregatableDelegate<K> aggregatableDelegate = new AggregatableDelegate<K>() {
         @Override
         public Object getItem(K itemId) {
             return CollectionPropertyDatasourceImpl.this.getItem(itemId);
@@ -261,14 +261,14 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
-    private void checkState() {
+    protected void checkState() {
         State state = getState();
         if (state != State.VALID) {
             throw new IllegalStateException("Invalid datasource state: " + state);
         }
     }
 
-    private void checkPermission() {
+    protected void checkPermission() {
         Security security = AppBeans.get(Security.NAME);
         MetaClass parentMetaClass = masterDs.getMetaClass();
 
@@ -381,7 +381,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         return false;
     }
 
-    private void initCollection() {
+    protected void initCollection() {
         Instance item = masterDs.getItem();
         if (item == null)
             throw new IllegalStateException("Item is null");
