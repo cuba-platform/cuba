@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.executors.impl;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -76,23 +77,15 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         WebConfig webConfig = configuration.getConfig(WebConfig.class);
-        ThreadFactory threadFactory = new ThreadFactory() {
-            private final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
-
-            @Override
-            public Thread newThread(@Nonnull final Runnable r) {
-                Thread thread = defaultFactory.newThread(r);
-                thread.setName("BackgroundTaskThread-" + thread.getName());
-                return thread;
-            }
-        };
-
         this.executorService = new ThreadPoolExecutor(
                 webConfig.getMinBackgroundThreadsCount(),
                 webConfig.getMaxActiveBackgroundTasksCount(),
                 10L, TimeUnit.MINUTES,
                 new LinkedBlockingQueue<>(),
-                threadFactory);
+                new ThreadFactoryBuilder()
+                        .setNameFormat("BackgroundTaskThread-%d")
+                        .build()
+        );
     }
 
     @PreDestroy

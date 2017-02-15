@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.app.filestorage;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
@@ -29,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -55,7 +57,8 @@ public class FileStorage implements FileStorageAPI {
     @Inject
     protected Configuration configuration;
 
-    protected ExecutorService writeExecutor = Executors.newFixedThreadPool(5);
+    protected ExecutorService writeExecutor = Executors.newFixedThreadPool(5,
+            new ThreadFactoryBuilder().setNameFormat("FileStorageWriter-%d").build());
 
     protected volatile File[] storageRoots;
 
@@ -99,7 +102,7 @@ public class FileStorage implements FileStorageAPI {
             throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, fileDescr.getId().toString());
         }
         if (!roots[0].exists()) {
-            log.error("Inaccessible primary storage at " + roots[0]);
+            log.error("Inaccessible primary storage at {}", roots[0]);
             throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, fileDescr.getId().toString());
         }
 
@@ -133,7 +136,7 @@ public class FileStorage implements FileStorageAPI {
         final SecurityContext securityContext = AppContext.getSecurityContext();
         for (int i = 1; i < roots.length; i++) {
             if (!roots[i].exists()) {
-                log.error("Error saving " + fileDescr + " into " + roots[i] + " : directory doesn't exist");
+                log.error("Error saving {} into {} : directory doesn't exist", fileDescr, roots[i]);
                 continue;
             }
 
@@ -148,8 +151,9 @@ public class FileStorage implements FileStorageAPI {
                         FileUtils.copyFile(file, fileCopy, true);
                         writeLog(fileCopy, false);
                     } catch (Exception e) {
-                        log.error("Error saving " + fileDescr + " into " + fileCopy.getAbsolutePath() + " : "
-                                + e.getMessage());
+                        log.error("Error saving {} into {} : {}", fileDescr, fileCopy.getAbsolutePath(), e.getMessage());
+                    } finally {
+                        AppContext.setSecurityContext(null);
                     }
                 }
             });
@@ -299,5 +303,10 @@ public class FileStorage implements FileStorageAPI {
 
     public static String getFileName(FileDescriptor fileDescriptor) {
         return fileDescriptor.getId().toString() + "." + fileDescriptor.getExtension();
+    }
+
+    @PreDestroy
+    protected void stopWriteExecutor() {
+        writeExecutor.shutdown();
     }
 }
