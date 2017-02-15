@@ -49,8 +49,20 @@
     }
   }
 
-  & > * {
+  & .#{$primary-stylename}-title,
+  & .#{$primary-stylename}-wrap > * {
+    min-width: $v-unit-size * 3;
     max-width: $v-unit-size * 4;
+  }
+
+  .v-ie & {
+    max-width: $v-unit-size * 4 + 18px;
+
+    .#{$primary-stylename}-title,
+    .#{$primary-stylename}-wrap,
+    .#{$primary-stylename}-wrap > * {
+      max-width: $v-unit-size * 4 + 18px;
+    }
   }
 
   .#{$primary-stylename}-item-action {
@@ -173,6 +185,14 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
 
     .c-app-icon {
       height: 64px;
+
+      .v-ie9 > & {
+        width: 100%;
+
+        img {
+          width: 64px;
+        }
+      }
     }
 
     .v-button.c-fts-button,
@@ -347,6 +367,12 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
       margin: $v-layout-spacing-vertical 0;
     }
 
+    .c-userindicator > .v-label {
+      overflow: hidden;
+      word-wrap: normal;
+      white-space: nowrap;
+    }
+
     .c-userindicator > .v-label,
     .c-app-icon,
     .c-welcome-text,
@@ -355,7 +381,8 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
       text-align: center;
     }
 
-    .#{$primary-stylename}-panel > .#{$primary-stylename}-title {
+    .#{$primary-stylename}-panel > .#{$primary-stylename}-title,
+    .#{$primary-stylename}-panel > .#{$primary-stylename}-wrap {
       display: block;
     }
 
@@ -404,6 +431,7 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
         padding-top: 0;
         padding-bottom: 0;
         -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
 
         .v-label {
           line-height: $v-unit-size;
@@ -422,7 +450,10 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
         overflow: auto;
         padding: round($v-unit-size / 2) 0;
         @include transform(translatex(-100%));
-        @include transition(all 300ms);
+
+        @if $v-animations-enabled {
+          @include transition(transform 300ms);
+        }
       }
 
       .#{$primary-stylename}-panel.#{$primary-stylename}-open .#{$primary-stylename}-wrap {
@@ -437,4 +468,3 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
     }
   }
 }
-
