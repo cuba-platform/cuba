@@ -22,7 +22,9 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.EntityLogService;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.HasUuid;
+import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
@@ -261,6 +263,14 @@ public class EntityLogBrowser extends AbstractWindow {
             instancePicker.setValue(null);
         });
         selectAllCheckBox.addValueChangeListener(e -> enableAllCheckBoxes((boolean) e.getValue()));
+
+        entityLogTable.addGeneratedColumn("entityId", entity -> {
+            EntityLogItem item = (EntityLogItem)entity;
+            if (item.getObjectEntityId() != null) {
+                return new Table.PlainTextCell(item.getObjectEntityId().toString());
+            }
+            return null;
+        });
     }
 
     public TreeMap<String, Object> getEntityMetaClasses() {
@@ -270,10 +280,11 @@ public class EntityLogBrowser extends AbstractWindow {
                 MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
                 String originalName = originalMetaClass == null ? metaClass.getName() : originalMetaClass.getName();
                 Class javaClass = metaClass.getJavaClass();
-                if (HasUuid.class.isAssignableFrom(javaClass)) {
-                    String caption = messages.getMessage(javaClass, javaClass.getSimpleName()) + " (" + metaClass.getName() + ")";
-                    options.put(caption, originalName);
+                if (metadata.getTools().hasCompositePrimaryKey(metaClass) && !HasUuid.class.isAssignableFrom(javaClass)) {
+                    continue;
                 }
+                String caption = messages.getMessage(javaClass, javaClass.getSimpleName()) + " (" + metaClass.getName() + ")";
+                options.put(caption, originalName);
             }
         }
         return options;
@@ -314,7 +325,8 @@ public class EntityLogBrowser extends AbstractWindow {
             for (MetaProperty property : metaProperties) {
                 if (!systemAttrsList.contains(property.getName())) {
                     Range range = property.getRange();
-                    if (range.isClass() && !HasUuid.class.isAssignableFrom(range.asClass().getJavaClass())) {
+                    if (range.isClass() && metadata.getTools().hasCompositePrimaryKey(range.asClass()) &&
+                            !HasUuid.class.isAssignableFrom(range.asClass().getJavaClass())) {
                         continue;
                     }
                     CheckBox checkBox = factory.createComponent(CheckBox.class);
@@ -397,9 +409,21 @@ public class EntityLogBrowser extends AbstractWindow {
             showNotification(messages.getMessage(getClass(),"invalidNumber"),NotificationType.HUMANIZED);
             return;
         }
-
-        entityLogDs.refresh();
-        entityLogTable.refresh();
+        Entity entity = instancePicker.getValue();
+        Map<String, Object> params = new HashMap<>();
+        if (entity != null) {
+            Object entityId = getEntityId(entity);
+            if (entityId instanceof UUID) {
+                params.put("entityId", entityId);
+            } else if (entityId instanceof String) {
+                params.put("stringEntityId", entityId);
+            } else if (entityId instanceof Integer) {
+                params.put("intEntityId", entityId);
+            } else if (entityId instanceof Long) {
+                params.put("longEntityId", entityId);
+            }
+        }
+        entityLogDs.refresh(params);
     }
 
     public void clearAttributes() {
@@ -449,6 +473,17 @@ public class EntityLogBrowser extends AbstractWindow {
 
         loggedEntityTable.setEnabled(false);
         cancelBtn.requestFocus();
+    }
+
+    protected Object getEntityId(Entity entity) {
+        if (entity instanceof HasUuid) {
+            return ((HasUuid) entity).getUuid();
+        }
+        Object entityId = entity.getId();
+        if (entityId instanceof IdProxy) {
+            return ((IdProxy) entityId).get();
+        }
+        return entity.getId();
     }
 
     protected class SaveAction extends AbstractAction {

@@ -79,7 +79,7 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
 
                 String id = properties.getProperty(name + EntityLogAttr.VALUE_ID_SUFFIX);
                 if (id != null)
-                    attr.setValueId(UuidProvider.fromString(id));
+                    attr.setValueId(id);
 
                 String mp = properties.getProperty(name + EntityLogAttr.MP_SUFFIX);
                 if (mp != null)
@@ -147,7 +147,10 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
                 attr.setLogItem(item);
                 attr.setName(rs.getString("NAME"));
                 attr.setValue(rs.getString("VALUE"));
-                attr.setValueId((UUID) converter.getJavaObject(rs, rs.findColumn("VALUE_ID")));
+                UUID valueId = (UUID) converter.getJavaObject(rs, rs.findColumn("VALUE_ID"));
+                if (valueId != null) {
+                    attr.setValueId(valueId.toString());
+                }
                 attr.setMessagesPack(rs.getString("MESSAGES_PACK"));
 
                 attributes.add(attr);

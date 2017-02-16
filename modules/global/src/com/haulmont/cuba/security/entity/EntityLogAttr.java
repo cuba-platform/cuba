@@ -51,7 +51,7 @@ public class EntityLogAttr extends AbstractNotPersistentEntity {
     private String value;
 
     @MetaProperty
-    private UUID valueId;
+    private String valueId;
 
     @MetaProperty
     private String messagesPack;
@@ -108,11 +108,11 @@ public class EntityLogAttr extends AbstractNotPersistentEntity {
         }
     }
 
-    public UUID getValueId() {
+    public String getValueId() {
         return valueId;
     }
 
-    public void setValueId(UUID valueId) {
+    public void setValueId(String valueId) {
         this.valueId = valueId;
     }
 

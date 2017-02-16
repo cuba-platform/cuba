@@ -24,9 +24,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
-import com.haulmont.cuba.core.entity.EmbeddableEntity;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.HasUuid;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.persistence.EntityAttributeChanges;
@@ -47,32 +45,22 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class EntityLog implements EntityLogAPI {
 
     protected Logger log = LoggerFactory.getLogger(EntityLog.class);
-
-    private volatile boolean loaded;
-
-    private EntityLogConfig config;
-
-    private Map<String, Set<String>> entitiesManual;
-    private Map<String, Set<String>> entitiesAuto;
-
-    private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-
-    private ThreadLocal<Boolean> entityLogSwitchedOn = new ThreadLocal<>();
-
     @Inject
     protected TimeSource timeSource;
-
     @Inject
     protected Persistence persistence;
-
     @Inject
     protected Metadata metadata;
-
     @Inject
     protected MetadataTools metadataTools;
-
     @Inject
     protected UserSessionSource userSessionSource;
+    private volatile boolean loaded;
+    private EntityLogConfig config;
+    private Map<String, Set<String>> entitiesManual;
+    private Map<String, Set<String>> entitiesAuto;
+    private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private ThreadLocal<Boolean> entityLogSwitchedOn = new ThreadLocal<>();
 
     @Inject
     public EntityLog(Configuration configuration) {
@@ -177,7 +165,7 @@ public class EntityLog implements EntityLogAPI {
         } finally {
             tx.end();
         }
-        log.debug("Loaded: entitiesAuto=" + entitiesAuto.size() + ", entitiesManual=" + entitiesManual.size());
+        log.debug("Loaded: entitiesAuto={}, entitiesManual={}", entitiesAuto.size(), entitiesManual.size());
     }
 
     private String getEntityName(Entity entity) {
@@ -187,7 +175,16 @@ public class EntityLog implements EntityLogAPI {
     }
 
     protected boolean doNotRegister(Entity entity) {
-        return entity == null || !(entity instanceof HasUuid) || entity instanceof EntityLogItem || !isEnabled();
+        if (entity == null) {
+            return true;
+        }
+        if (entity instanceof EntityLogItem) {
+            return true;
+        }
+        if (metadata.getTools().hasCompositePrimaryKey(entity.getMetaClass()) && !(entity instanceof HasUuid)) {
+            return true;
+        }
+        return !isEnabled();
     }
 
     @Override
@@ -235,7 +232,7 @@ public class EntityLog implements EntityLogAPI {
         item.setUser(findUser(em));
         item.setType(EntityLogItem.Type.CREATE);
         item.setEntity(entityName);
-        item.setEntityId(((HasUuid) entity).getUuid());
+        item.setObjectEntityId(getEntityId(entity));
 
         Properties properties = new Properties();
         for (String attr : attributes) {
@@ -331,7 +328,7 @@ public class EntityLog implements EntityLogAPI {
             item.setUser(findUser(em));
             item.setType(EntityLogItem.Type.MODIFY);
             item.setEntity(metaClass.getName());
-            item.setEntityId(((HasUuid) entity).getUuid());
+            item.setObjectEntityId(getEntityId(entity));
             item.setChanges(getChanges(properties));
 
             em.persist(item);
@@ -354,7 +351,7 @@ public class EntityLog implements EntityLogAPI {
         Object value = entity.getValue(attr);
         properties.setProperty(attr, stringify(value));
 
-        UUID valueId = getValueId(value);
+        Object valueId = getValueId(value);
         if (valueId != null)
             properties.setProperty(attr + EntityLogAttr.VALUE_ID_SUFFIX, valueId.toString());
 
@@ -407,7 +404,7 @@ public class EntityLog implements EntityLogAPI {
         item.setUser(findUser(em));
         item.setType(EntityLogItem.Type.DELETE);
         item.setEntity(entityName);
-        item.setEntityId(((HasUuid) entity).getUuid());
+        item.setObjectEntityId(getEntityId(entity));
 
         Properties properties = new Properties();
         for (String attr : attributes) {
@@ -429,11 +426,11 @@ public class EntityLog implements EntityLogAPI {
         return attributes;
     }
 
-    protected UUID getValueId(Object value) {
+    protected Object getValueId(Object value) {
         if (value instanceof EmbeddableEntity) {
             return null;
-        } else if (value instanceof HasUuid) {
-            return ((HasUuid) value).getUuid();
+        } else if (value instanceof BaseGenericIdEntity) {
+            return getEntityId((Entity) value);
         } else {
             return null;
         }
@@ -462,6 +459,17 @@ public class EntityLog implements EntityLogAPI {
     }
 
     protected void logError(Entity entity, Exception e) {
-        log.warn("Unable to log entity " + entity + ", id=" + entity.getId(), e);
+        log.warn("Unable to log entity {}, id={}", entity, entity.getId(), e);
+    }
+
+    protected Object getEntityId(Entity entity) {
+        if (entity instanceof HasUuid) {
+            return ((HasUuid) entity).getUuid();
+        }
+        Object entityId = entity.getId();
+        if (entityId instanceof IdProxy) {
+            return ((IdProxy) entityId).get();
+        }
+        return entity.getId();
     }
 }

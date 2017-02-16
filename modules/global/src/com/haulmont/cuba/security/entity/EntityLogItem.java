@@ -83,6 +83,15 @@ public class EntityLogItem extends BaseUuidEntity {
     @Column(name = "ENTITY_ID")
     private UUID entityId;
 
+    @Column(name = "STRING_ENTITY_ID", length = 255)
+    private String stringEntityId;
+
+    @Column(name = "INT_ENTITY_ID")
+    private Integer intEntityId;
+
+    @Column(name = "LONG_ENTITY_ID")
+    private Long longEntityId;
+
     @Transient
     @MetaProperty
     private Set<EntityLogAttr> attributes;
@@ -144,5 +153,63 @@ public class EntityLogItem extends BaseUuidEntity {
 
     public void setChanges(String changes) {
         this.changes = changes;
+    }
+
+    public String getStringEntityId() {
+        return stringEntityId;
+    }
+
+    public void setStringEntityId(String stringEntityId) {
+        this.stringEntityId = stringEntityId;
+    }
+
+    public Integer getIntEntityId() {
+        return intEntityId;
+    }
+
+    public void setIntEntityId(Integer intEntityId) {
+        this.intEntityId = intEntityId;
+    }
+
+    public Long getLongEntityId() {
+        return longEntityId;
+    }
+
+    public void setLongEntityId(Long longEntityId) {
+        this.longEntityId = longEntityId;
+    }
+
+    public void setObjectEntityId(Object objectEntityId) {
+        if (objectEntityId instanceof UUID) {
+            setEntityId((UUID) objectEntityId);
+        } else if (objectEntityId instanceof Long) {
+            setLongEntityId((Long) objectEntityId);
+        } else if (objectEntityId instanceof Integer) {
+            setIntEntityId((Integer) objectEntityId);
+        } else if (objectEntityId instanceof String) {
+            setStringEntityId((String) objectEntityId);
+        } else if (objectEntityId == null) {
+            setEntityId(null);
+            setLongEntityId(null);
+            setIntEntityId(null);
+            setStringEntityId(null);
+        } else {
+            throw new IllegalArgumentException(
+                    String.format("Unsupported primary key type: %s", objectEntityId.getClass().getSimpleName()));
+        }
+    }
+
+    public Object getObjectEntityId() {
+        if (entityId != null) {
+            return entityId;
+        } else if (longEntityId != null) {
+            return longEntityId;
+        } else if (intEntityId != null) {
+            return intEntityId;
+        } else if (stringEntityId != null) {
+            return stringEntityId;
+        } else {
+            return null;
+        }
     }
 }

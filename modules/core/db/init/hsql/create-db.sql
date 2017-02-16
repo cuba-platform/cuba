@@ -426,6 +426,9 @@ create table SEC_ENTITY_LOG (
     CHANGE_TYPE char(1),
     ENTITY varchar(100),
     ENTITY_ID varchar(36),
+    STRING_ENTITY_ID varchar(255),
+    INT_ENTITY_ID integer,
+    LONG_ENTITY_ID bigint,
     CHANGES longvarchar,
     --
     primary key (ID),
