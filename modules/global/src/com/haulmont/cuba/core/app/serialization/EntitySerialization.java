@@ -242,7 +242,8 @@ public class EntitySerialization implements EntitySerializationAPI {
         protected boolean propertyWritingAllowed(MetaProperty metaProperty, Entity entity) {
             return !"id".equals(metaProperty.getName()) &&
                     (DynamicAttributesUtils.isDynamicAttribute(metaProperty) ||
-                            (entity instanceof AbstractNotPersistentEntity)||
+                            (entity instanceof AbstractNotPersistentEntity) ||
+                            !metadataTools.isPersistent(metaProperty) ||
                             (metadataTools.isPersistent(metaProperty) && PersistenceHelper.isLoaded(entity, metaProperty.getName())));
         }
 
@@ -429,7 +430,7 @@ public class EntitySerialization implements EntitySerializationAPI {
                         fetchDynamicAttributes(entity);
                     }
 
-                    if (!metadataTools.isPersistent(metaProperty)) {
+                    if (metaProperty.isReadOnly()) {
                         continue;
                     }
                     Class<?> propertyType = metaProperty.getJavaType();
