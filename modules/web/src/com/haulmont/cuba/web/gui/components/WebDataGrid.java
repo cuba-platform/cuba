@@ -54,6 +54,8 @@ import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Grid;
@@ -273,7 +275,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         // default added style
         internalStyles.add("c-data-grid-composition");
 
-        component.setSizeFull();
+        component.setSizeUndefined();
+        component.setHeightMode(HeightMode.UNDEFINED);
 
         component.setRowStyleGenerator(createRowStyleGenerator());
         component.setCellStyleGenerator(createCellStyleGenerator());
@@ -1194,6 +1197,30 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     @Override
     public void scrollToEnd() {
         component.scrollToEnd();
+    }
+
+    @Override
+    public void setHeight(String height) {
+        super.setHeight(height);
+
+        if (getHeight() < 0) {
+            component.setHeightUndefined();
+            component.setHeightMode(HeightMode.UNDEFINED);
+        } else {
+            component.setHeight(100, Sizeable.Unit.PERCENTAGE);
+            component.setHeightMode(HeightMode.CSS);
+        }
+    }
+
+    @Override
+    public void setWidth(String width) {
+        super.setWidth(width);
+
+        if (getWidth() < 0) {
+            component.setWidthUndefined();
+        } else {
+            component.setWidth(100, Sizeable.Unit.PERCENTAGE);
+        }
     }
 
     @Override
