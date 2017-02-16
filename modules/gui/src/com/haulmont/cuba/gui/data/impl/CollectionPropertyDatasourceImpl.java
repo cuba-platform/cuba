@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleDatasourceListene
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.persistence.ManyToMany;
@@ -883,8 +884,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     @Override
     public K getIdByIndex(int index) {
         Collection<T> collection = getCollection();
-        if ((collection != null) && !collection.isEmpty()) {
-            Iterables.get(collection, index).getId();
+        if (CollectionUtils.isNotEmpty(collection)) {
+            return Iterables.get(collection, index).getId();
         }
         return null;
     }
