@@ -489,6 +489,8 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
             boolean optionsContainItem = super.containsId(itemId);
             if (!optionsContainItem) {
                 missingValue = itemId;
+                // refresh all item captions, forget old items
+                itemsCache.clear();
             }
             return true;
         }
