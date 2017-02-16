@@ -277,7 +277,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     @Override
     public K getIdByIndex(int index) {
         if (!data.isEmpty()) {
-            return (K) data.getValue(index);
+            return (K) data.get(index);
         }
         return null;
     }
