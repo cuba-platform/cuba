@@ -99,7 +99,6 @@
     margin: round($v-unit-size/4) 0 0;
     padding: round($v-unit-size/5) round($v-unit-size/1.5) round($v-unit-size/5) round($v-unit-size/4);
     border: none;
-    text-overflow: ellipsis;
     overflow: hidden;
     background: darken($bg, 6%);
     box-shadow: valo-bevel-and-shadow($shadow: $v-shadow);
@@ -110,6 +109,7 @@
 
     .#{$primary-stylename}-item-caption {
       font-size: round($v-font-size * 0.9);
+      text-overflow: ellipsis;
     }
 
     .#{$primary-stylename}-item-badge {
@@ -205,6 +205,10 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
     .c-fts-field-wrap {
       padding-left: $v-layout-margin-left;
       padding-right: $v-layout-margin-right;
+    }
+
+    .v-ie9 & {
+      width: 250px;
     }
   }
 
@@ -453,6 +457,10 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
 
         @if $v-animations-enabled {
           @include transition(transform 300ms);
+        }
+
+        .v-edge & {
+          @include transition(none);
         }
       }
 
