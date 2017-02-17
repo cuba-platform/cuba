@@ -28,10 +28,7 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
-import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
@@ -381,7 +378,11 @@ public class EntitySerialization implements EntitySerializationAPI {
                         throw new EntitySerializationException("Primary key property not found for entity " + resultMetaClass);
                     Datatype idDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
                     try {
-                        entity.setValue("id", idDatatype.parse(idString));
+                        Object pkValue = idDatatype.parse(idString);
+                        if (entity instanceof BaseDbGeneratedIdEntity) {
+                            pkValue = IdProxy.of((Long) pkValue);
+                        }
+                        entity.setValue("id", pkValue);
                     } catch (ParseException e) {
                         throw new EntitySerializationException(e);
                     }
