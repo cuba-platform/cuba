@@ -113,10 +113,10 @@ public class IdProxy extends Number implements Serializable {
             return value;
 
         if (entity == null)
-            throw new IllegalStateException("Entity is null");
+            throw new IllegalStateException("Cannot get primary key value: entity is null");
 
         if (entity.getDbGeneratedId() == null)
-            throw new IllegalStateException("ID is null in entity " + entity);
+            throw new IllegalStateException("Cannot get primary key value: ID is null in entity " + entity);
 
         return entity.getDbGeneratedId();
     }

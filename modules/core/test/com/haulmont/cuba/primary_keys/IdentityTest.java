@@ -222,4 +222,36 @@ public class IdentityTest {
         }
         assertEquals(foo, loaded);
     }
+
+    @Test
+    public void testReload() throws Exception {
+        // no ID
+        IdentityEntity foo = metadata.create(IdentityEntity.class);
+        foo.setName("foo");
+        foo.setEmail("foo@mail.com");
+        try (Transaction tx = persistence.createTransaction()) {
+            IdentityEntity reloadedFoo = persistence.getEntityManager().reload(foo);
+            tx.commit();
+            assertNull(reloadedFoo);
+        }
+
+        // existing ID
+        try (Transaction tx = persistence.createTransaction()) {
+            persistence.getEntityManager().persist(foo);
+            tx.commit();
+        }
+        Long idVal = foo.getId().get();
+
+        foo = metadata.create(IdentityEntity.class);
+        foo.setName("foo");
+        foo.setEmail("foo@mail.com");
+        foo.setId(IdProxy.of(idVal));
+
+        try (Transaction tx = persistence.createTransaction()) {
+            IdentityEntity reloadedFoo = persistence.getEntityManager().reload(foo);
+            tx.commit();
+            assertEquals(reloadedFoo, foo);
+        }
+    }
+
 }

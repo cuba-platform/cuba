@@ -264,6 +264,10 @@ public class EntityManagerImpl implements EntityManager {
         Preconditions.checkNotNullArgument(entityClass, "entityClass is null");
         Preconditions.checkNotNullArgument(id, "id is null");
 
+        if (id instanceof IdProxy && ((IdProxy) id).get() == null) {
+            return null;
+        }
+
         T entity = find(entityClass, id, viewNames);
         return entity;
     }
@@ -273,6 +277,10 @@ public class EntityManagerImpl implements EntityManager {
     @Override
     public <T extends Entity> T reload(T entity, String... viewNames) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
+
+        if (entity.getId() instanceof IdProxy && ((IdProxy) entity.getId()).get() == null) {
+            return null;
+        }
 
         Entity resultEntity = find(entity.getClass(), entity.getId(), viewNames);
         return (T) resultEntity;
