@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.sys.listener.EntityListenerType;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.eclipse.persistence.internal.helper.CubaUtil;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.persistence.EntityNotFoundException;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collection;
@@ -400,11 +402,18 @@ public class EntityManagerImpl implements EntityManager {
 
             // copy non-persistent attributes to the resulting merged instance
             for (MetaProperty property : metadata.getClassNN(entity.getClass()).getProperties()) {
-                String name = property.getName();
                 if (metadata.getTools().isTransient(property) && !property.isReadOnly()) {
-                    Object value = entity.getValue(name);
-                    if (value != null) {
-                        merged.setValue(name, value);
+                    // copy using reflection to avoid executing getter/setter code
+                    Field field = FieldUtils.getDeclaredField(entity.getClass(), property.getName(), true);
+                    if (field != null) {
+                        try {
+                            Object value = FieldUtils.readField(field, entity);
+                            if (value != null) {
+                                FieldUtils.writeField(field, merged, value);
+                            }
+                        } catch (IllegalAccessException e) {
+                            throw new RuntimeException("Error copying non-persistent attribute value to merged instance", e);
+                        }
                     }
                 }
             }
