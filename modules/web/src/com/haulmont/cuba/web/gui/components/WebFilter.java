@@ -349,4 +349,14 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     public void setAfterFilterAppliedHandler(AfterFilterAppliedHandler afterFilterAppliedHandler) {
         delegate.setAfterFilterAppliedHandler(afterFilterAppliedHandler);
     }
+
+    @Override
+    public void setBorderVisible(boolean visible) {
+        delegate.setBorderVisible(visible);
+    }
+
+    @Override
+    public boolean isBorderVisible() {
+        return delegate.isBorderVisible();
+    }
 }

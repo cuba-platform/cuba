@@ -161,4 +161,7 @@ public interface FilterDelegate {
 
     void addExpandedStateChangeListener(FDExpandedStateChangeListener listener);
     void removeExpandedStateChangeListener(FDExpandedStateChangeListener listener);
+
+    void setBorderVisible(boolean visible);
+    boolean isBorderVisible();
 }
