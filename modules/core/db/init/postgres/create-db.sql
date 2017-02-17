@@ -419,6 +419,9 @@ create table SEC_ENTITY_LOG (
     CHANGE_TYPE char(1),
     ENTITY varchar(100),
     ENTITY_ID uuid,
+    STRING_ENTITY_ID varchar(255),
+    INT_ENTITY_ID integer,
+    LONG_ENTITY_ID bigint,
     CHANGES text,
     --
     primary key (ID),
@@ -426,6 +429,9 @@ create table SEC_ENTITY_LOG (
 )^
 
 create index IDX_SEC_ENTITY_LOG_ENTITY_ID on SEC_ENTITY_LOG (ENTITY_ID)^
+create index IDX_SEC_ENTITY_LOG_SENTITY_ID on SEC_ENTITY_LOG (STRING_ENTITY_ID)^
+create index IDX_SEC_ENTITY_LOG_IENTITY_ID on SEC_ENTITY_LOG (INT_ENTITY_ID)^
+create index IDX_SEC_ENTITY_LOG_LENTITY_ID on SEC_ENTITY_LOG (LONG_ENTITY_ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
