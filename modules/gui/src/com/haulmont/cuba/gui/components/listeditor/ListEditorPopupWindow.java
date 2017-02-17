@@ -105,6 +105,8 @@ public class ListEditorPopupWindow extends AbstractWindow {
 
     @Inject
     private Action commit;
+    @Inject
+    private Button commitBtn;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -115,22 +117,28 @@ public class ListEditorPopupWindow extends AbstractWindow {
                 .setHeight(theme.getInt("cuba.gui.listEditor.popup.dialog.height"))
                 .setResizable(true);
 
-        if (editable == null) editable = true;
+        if (editable == null) {
+            editable = true;
+        }
 
         initAddComponentLayout();
         initValues();
 
         commit.setEnabled(editable);
+
+        if (!editable) {
+            commitBtn.requestFocus();
+        }
     }
-
-
 
     public List<Object> getValue() {
         return new ArrayList<>(valuesMap.keySet());
     }
 
     protected void initValues() {
-        if (values == null) values = new ArrayList<>();
+        if (values == null) {
+            values = new ArrayList<>();
+        }
 
         valuesMap = values.stream()
                 .collect(Collectors.toMap(Function.identity(), o -> ListEditorHelper.getValueCaption(o, itemType)));
@@ -192,6 +200,9 @@ public class ListEditorPopupWindow extends AbstractWindow {
             addItemLayout.expand(componentForAdding);
 
             componentForAdding.setEditable(editable);
+            if (editable) {
+                componentForAdding.requestFocus();
+            }
 
             if (itemType != ListEditor.ItemType.ENTITY) {
                 Button addBtn = componentsFactory.createComponent(Button.class);
