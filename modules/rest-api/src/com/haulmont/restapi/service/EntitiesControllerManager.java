@@ -26,8 +26,10 @@ import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.app.importexport.EntityImportViewBuilderAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
+import com.haulmont.cuba.core.entity.BaseDbGeneratedIdEntity;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.validation.groups.RestApiChecks;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -241,7 +243,9 @@ public class EntitiesControllerManager {
         MetaProperty primaryKeyProperty = metadata.getTools().getPrimaryKeyProperty(metaClass);
         Class<?> declaringClass = primaryKeyProperty.getJavaType();
         Object id;
-        if (UUID.class.isAssignableFrom(declaringClass)) {
+        if (BaseDbGeneratedIdEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
+            id = IdProxy.of(Long.valueOf(entityId));
+        } else if (UUID.class.isAssignableFrom(declaringClass)) {
             id = UUID.fromString(entityId);
         } else if (Integer.class.isAssignableFrom(declaringClass)) {
             id = Integer.valueOf(entityId);
