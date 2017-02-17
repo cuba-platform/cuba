@@ -23,7 +23,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.presentations.Presentations;
 
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Interface to be implemented by classes with client-specific behaviour that cannot be placed into
@@ -95,4 +94,6 @@ public interface FilterHelper {
     void setLookupFieldPageLength(LookupField lookupField, int pageLength);
 
     void setInternalDebugId(Component component, String id);
+
+    Component.Container createSearchButtonGroupContainer();
 }

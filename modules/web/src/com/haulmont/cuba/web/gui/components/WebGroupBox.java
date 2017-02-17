@@ -51,6 +51,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
         component.setExpandChangeHandler(this::fireExpandStateChange);
 
         CubaVerticalActionsLayout container = new CubaVerticalActionsLayout();
+        container.setStyleName("c-groupbox-inner");
         component.setContent(container);
     }
 
@@ -73,10 +74,13 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
         }
 
         if (newContent != null) {
+            newContent.setStyleName("c-groupbox-inner");
             component.setContent(newContent);
 
-            newContent.setMargin(((CubaOrderedActionsLayout) component.getContent()).getMargin());
-            newContent.setSpacing(((CubaOrderedActionsLayout) component.getContent()).isSpacing());
+            CubaOrderedActionsLayout currentContent = (CubaOrderedActionsLayout) component.getContent();
+
+            newContent.setMargin(currentContent.getMargin());
+            newContent.setSpacing(currentContent.isSpacing());
         }
 
         if (ownComponents.contains(childComponent)) {

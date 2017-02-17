@@ -17,7 +17,6 @@
 
 @mixin halo-checkbox($primary-stylename: v-checkbox) {
   :root & .#{$primary-stylename} > input {
-    font-size: $v-font-size;
     left: 0;
     top: 0;
   }

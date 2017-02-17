@@ -43,18 +43,22 @@
     }
   }
 
-  .v-widget {
-    font-size: $v-font-size;
+  .v-gridlayout.c-shrink-empty {
+    font-size: 0;
+    & > .v-gridlayout-slot > * {
+      font-size: $v-font-size;
+    }
+  }
+  .v-csslayout.c-shrink-empty {
+    font-size: 0;
+    & > * {
+      font-size: $v-font-size;
+    }
   }
 
-  .v-panel,
-  .v-scrollable,
-  .v-gridlayout,
-  .v-verticallayout,
-  .v-horizontallayout,
-  .v-csslayout,
-  .c-fglayout {
-    font-size: 0;
+  .v-gridlayout.c-hide-overflow,
+  .v-gridlayout.c-hide-overflow > .v-gridlayout-slot {
+    overflow: hidden;
   }
 
   // calendar uses font size in em
@@ -65,10 +69,6 @@
   .v-caption {
     padding-left: 0;
     padding-bottom: 0;
-  }
-
-  .v-captiontext {
-    font-size: $v-font-size;
   }
 
   .v-ios.v-touch &,

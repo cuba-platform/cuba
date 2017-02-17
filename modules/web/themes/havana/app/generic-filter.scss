@@ -45,13 +45,18 @@
 
   .c-generic-filter .filter-control-no-border {
     border-top: none;
-    padding-top: 0px;
+    padding-top: 0;
     border-bottom: none;
-    padding-bottom: 0px;
+    padding-bottom: 0;
   }
 
-  .c-generic-filter .filter-settings-button .v-popup-indicator {
-    display: none;
+  .c-generic-filter .filter-settings-button {
+    .v-popup-indicator {
+      display: none;
+    }
+    .v-icon {
+      margin-right: 0;
+    }
   }
 
   .c-generic-filter .filter-conditions .v-popupbutton .v-popup-indicator {

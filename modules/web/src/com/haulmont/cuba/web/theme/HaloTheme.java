@@ -404,4 +404,14 @@ public class HaloTheme {
      * Style for top header in responsive mainwindow with {@link com.haulmont.cuba.gui.components.mainwindow.SideMenu}.
      */
     public static final String SIDEMENU_TITLE = "c-sidemenu-title";
+
+    /**
+     * Style for layouts to hide empty / zero height content.
+     */
+    public static final String SHRINK_EMPTY_CONTAINER = "c-shrink-empty";
+
+    /**
+     * Style for layouts to hide overflow of nested content.
+     */
+    public static final String HIDE_CONTAINER_OVERFLOW = "c-hide-overflow";
 }

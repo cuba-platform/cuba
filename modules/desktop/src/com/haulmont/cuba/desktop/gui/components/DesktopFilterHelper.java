@@ -23,25 +23,23 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang.ObjectUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Map;
-import java.util.UUID;
 
 @org.springframework.stereotype.Component(FilterHelper.NAME)
 public class DesktopFilterHelper implements FilterHelper {
-
-    private Logger log = LoggerFactory.getLogger(DesktopFilterHelper.class);
-
     @Inject
     protected DesktopFilterDragAndDropSupport dragAndDropSupport;
+
+    @Inject
+    protected ComponentsFactory componentsFactory;
 
     @Override
     public void setLookupNullSelectionAllowed(LookupField lookupField, boolean value) {
@@ -60,7 +58,6 @@ public class DesktopFilterHelper implements FilterHelper {
 
     @Override
     public void openFolderEditWindow(boolean isAppFolder, AbstractSearchFolder folder, Presentations presentations, Runnable commitHandler) {
-
     }
 
     @Override
@@ -160,5 +157,10 @@ public class DesktopFilterHelper implements FilterHelper {
     @Override
     public void setInternalDebugId(Component component, String id) {
         // do nothing
+    }
+
+    @Override
+    public Component.Container createSearchButtonGroupContainer() {
+        return componentsFactory.createComponent(HBoxLayout.class);
     }
 }

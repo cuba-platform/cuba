@@ -16,4 +16,17 @@
  */
 
 @mixin halo-panel($primary-stylename : v-panel) {
+  .#{$primary-stylename}.c-shrink-empty {
+    font-size: 0 !important;
+
+    & > .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption,
+    & > .#{$primary-stylename}-content > * {
+      font-size: $v-font-size;
+    }
+  }
+
+  .#{$primary-stylename}.c-hide-overflow,
+  .#{$primary-stylename}.c-hide-overflow > .#{$primary-stylename}-content {
+    overflow: hidden;
+  }
 }

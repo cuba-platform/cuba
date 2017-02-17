@@ -228,6 +228,7 @@
     padding-top: $v-unit-size + ceil($v-layout-spacing-vertical);
 
     .c-table-top {
+      overflow: hidden;
       height: $v-unit-size;
       margin-top: -1 * ($v-unit-size + ceil($v-layout-spacing-vertical));
     }
@@ -239,6 +240,12 @@
   }
 
   .c-table-composition {
+    font-size: 0;
+
+    & > * {
+      font-size: $v-font-size;
+    }
+
     &.no-stripes {
       .v-table {
         @include valo-table-no-stripes-style;

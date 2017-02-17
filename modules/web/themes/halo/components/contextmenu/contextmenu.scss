@@ -35,6 +35,12 @@
       text-align: left;
     }
 
+    .v-button:focus {
+      &:after {
+        @include box-shadow(none);
+      }
+    }
+
     .c-cm-button-selected {
       @include valo-selection-item-selected-style;
     }

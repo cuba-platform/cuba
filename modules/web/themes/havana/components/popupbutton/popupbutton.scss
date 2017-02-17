@@ -16,12 +16,14 @@
  */
 
 @mixin havana-popupbutton($primary-stylename: v-popupbutton) {
-
   @include havana-cuba-contextmenu($primary-stylename + "-popup");
 
   .#{$primary-stylename}-popup {
-    padding: 0;
-    border: none;
+    border-radius: 0;
+  }
+
+  .#{$primary-stylename}.icon-only .v-popup-indicator {
+    padding-left: 0;
   }
 
   .v-button.#{$primary-stylename} {

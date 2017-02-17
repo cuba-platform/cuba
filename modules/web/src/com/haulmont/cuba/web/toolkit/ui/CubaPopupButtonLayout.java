@@ -20,10 +20,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.vaadin.ui.VerticalLayout;
 
 public class CubaPopupButtonLayout extends VerticalLayout {
-
     public CubaPopupButtonLayout() {
-        addStyleName("c-cm-container");
-        setMargin(false);
         setWidthUndefined();
     }
 }

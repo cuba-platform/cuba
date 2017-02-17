@@ -22,10 +22,12 @@
 
   .#{$primary-stylename} {
     border: 0;
-    font-size: 0;
-    overflow: hidden !important;
     box-shadow: none;
     background: transparent;
+  }
+
+  .#{$primary-stylename}-caption {
+    font-size: round($v-font-size * 0.95);
   }
 
   .#{$primary-stylename}-content {

@@ -154,7 +154,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected TextField ftsSearchCriteriaField;
     protected CheckBox ftsSwitch;
     protected LinkButton addConditionBtn;
-    protected HBoxLayout filtersPopupBox;
+    protected Component.Container filtersPopupBox;
     protected Button searchBtn;
     protected Component controlsLayoutGap;
     protected Object paramEditComponentToFocus;
@@ -236,11 +236,12 @@ public class FilterDelegateImpl implements FilterDelegate {
                 layout.remove(component);
             }
         }
-        layout.setSpacing(false);
+        layout.setSpacing(true);
 
         appliedFiltersLayout = componentsFactory.createComponent(VBoxLayout.class);
 
         conditionsLayout = componentsFactory.createComponent(HBoxLayout.class);
+        conditionsLayout.setVisible(false); // initially hidden
         conditionsLayout.setWidth("100%");
         conditionsLayout.setStyleName("filter-conditions");
 
@@ -265,8 +266,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         controlsLayout.setWidth("100%");
         filterHelper.setInternalDebugId(controlsLayout, "controlsLayout");
 
-        filtersPopupBox = componentsFactory.createComponent(HBoxLayout.class);
-        filtersPopupBox.setStyleName("filter-search-button-layout");
+        filtersPopupBox = filterHelper.createSearchButtonGroupContainer();
+        filtersPopupBox.addStyleName("filter-search-button-layout");
         filterHelper.setInternalDebugId(filtersPopupBox, "filtersPopupBox");
 
         searchBtn = componentsFactory.createComponent(Button.class);
@@ -283,6 +284,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         filterHelper.setInternalDebugId(searchBtn, "searchBtn");
 
         filtersPopupButton = componentsFactory.createComponent(PopupButton.class);
+        filtersPopupButton.setStyleName("icon-only");
         filterHelper.setInternalDebugId(filtersPopupButton, "filtersPopupButton");
         filtersPopupBox.add(filtersPopupButton);
 
@@ -395,7 +397,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public void switchFilterMode(FilterMode filterMode) {
         if (filterMode == FilterMode.FTS_MODE && !isFtsModeEnabled()) {
-            log.warn("Unable to switch to the FTS filter mode. FTS mode is not supported for the " + datasource.getMetaClass().getName() + " entity");
+            log.warn("Unable to switch to the FTS filter mode. FTS mode is not supported for the {} entity",
+                    datasource.getMetaClass().getName());
             return;
         }
         this.filterMode = filterMode;
@@ -407,7 +410,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
         conditions = (filterMode == FilterMode.GENERIC_MODE) ? prevConditions : new ConditionsTree();
         createLayout();
-//        initMaxResults();
+
         if (filterMode == FilterMode.GENERIC_MODE) {
             fillConditionsLayout(ConditionsFocusType.FIRST);
             addConditionBtn.setVisible(editable && userCanEditFilers());
@@ -583,7 +586,8 @@ public class FilterDelegateImpl implements FilterDelegate {
      * Sets conditionsLayout visibility and shows/hides top border of controlsLayout
      */
     protected void setConditionsLayoutVisible(boolean visible) {
-        conditionsLayout.setVisible(visible);
+        conditionsLayout.setVisible(visible && !conditionsLayout.getComponents().isEmpty());
+
         controlsLayout.setStyleName(getControlsLayoutStyleName());
     }
 
@@ -751,7 +755,6 @@ public class FilterDelegateImpl implements FilterDelegate {
      * @param conditionsFocusType where to set focus (first condition, last condition, no focus)
      */
     protected void fillConditionsLayout(ConditionsFocusType conditionsFocusType) {
-        layout.setSpacing(false);
         for (Component component : conditionsLayout.getComponents()) {
             conditionsLayout.remove(component);
         }
@@ -760,7 +763,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         recursivelyCreateConditionsLayout(conditionsFocusType, false, conditions.getRootNodes(), conditionsLayout, 0);
 
-        if (!conditionsLayout.getComponents().isEmpty()) layout.setSpacing(true);
+        conditionsLayout.setVisible(!conditionsLayout.getComponents().isEmpty());
     }
 
     protected void recursivelyCreateConditionsLayout(ConditionsFocusType conditionsFocusType,
@@ -1038,15 +1041,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected void addFiltersPopupActions() {
         addResetFilterAction(filtersPopupButton);
 
-        Collections.sort(
-                filterEntities,
-                new Comparator<FilterEntity>() {
-                    @Override
-                    public int compare(FilterEntity f1, FilterEntity f2) {
-                        return getFilterCaption(f1).compareTo(getFilterCaption(f2));
-                    }
-                }
-        );
+        filterEntities.sort(Comparator.comparing(this::getFilterCaption));
 
         Iterator<FilterEntity> it = filterEntities.iterator();
         int addedEntitiesCount = 0;
@@ -1465,7 +1460,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 filterHelper.initTableFtsTooltips((Table) applyTo, ftsSearchResult.getHitInfos());
             }
         } else if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
-            filterHelper.initTableFtsTooltips((Table) applyTo, Collections.<Object, String>emptyMap());
+            filterHelper.initTableFtsTooltips((Table) applyTo, Collections.emptyMap());
         }
 
         applyDatasourceFilter();
@@ -1612,7 +1607,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (elements.length == 1) {
             return getOwnComponent(id);
         } else {
-            throw new UnsupportedOperationException("Filter contains only one level of subcomponents");
+            throw new UnsupportedOperationException("Filter contains only one level of sub components");
         }
     }
 
@@ -2481,7 +2476,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             for (Map.Entry<String, List<String>> entry : components.entrySet()) {
                 Component component = getControlsLayoutComponent(entry.getKey(), entry.getValue());
                 if (component == null) {
-                    log.warn("Filter controls layout component " + entry.getKey() + " not supported");
+                    log.warn("Filter controls layout component {} not supported", entry.getKey());
                     continue;
                 }
                 controlsLayout.add(component);
@@ -2529,15 +2524,18 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         protected Button createActionBtn(String actionName, List<String> options) {
-            if (!isActionAllowed(actionName)) return null;
+            if (!isActionAllowed(actionName)) {
+                return null;
+            }
             Button button = componentsFactory.createComponent(Button.class);
             button.setAction(filterActions.get(actionName));
             if (options.contains("no-caption")) {
                 button.setCaption(null);
                 button.setDescription(filterActions.get(actionName).getCaption());
             }
-            if (options.contains("no-icon"))
+            if (options.contains("no-icon")) {
                 button.setIcon(null);
+            }
             return button;
         }
 
@@ -2545,7 +2543,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             for (String actionName : actionNames) {
                 AbstractAction action = filterActions.get(actionName);
                 if (action == null) {
-                    log.warn("Action " + actionName + " cannot be added to settingsBtn");
+                    log.warn("Action {} cannot be added to settingsBtn", actionName);
                     continue;
                 }
                 if (isActionAllowed(actionName)) {

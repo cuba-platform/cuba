@@ -19,8 +19,11 @@
   @include halo-cuba-contextmenu($primary-stylename + "-popup");
 
   .#{$primary-stylename}-popup {
-    box-shadow: none;
-    padding: 0;
+    font-size: $v-font-size;
+  }
+
+  .#{$primary-stylename}.icon-only .v-popup-indicator {
+    padding-left: 0;
   }
 
   .v-disabled.v-button.v-selected {

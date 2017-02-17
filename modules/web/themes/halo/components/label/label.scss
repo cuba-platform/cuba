@@ -16,8 +16,7 @@
  */
 
 @mixin halo-label($primary-stylename: v-label) {
-  .v-caption-c-label-caption-on-left,
-  .#{$primary-stylename} {
+  .v-caption-c-label-caption-on-left {
     font-size: $v-font-size;
   }
 
@@ -28,7 +27,6 @@
 
   .#{$primary-stylename}-empty {
     border: 0;
-    font-size: 0;
   }
 
   .#{$primary-stylename}-spinner {

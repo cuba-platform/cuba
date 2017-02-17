@@ -40,6 +40,14 @@
     }
   }
 
+  .c-data-grid-composition {
+    font-size: 0;
+
+    & > * {
+      font-size: $v-font-size;
+    }
+  }
+
   .c-data-grid-composition.has-top-panel {
     padding-top: $v-unit-size + ceil($v-layout-spacing-vertical);
 

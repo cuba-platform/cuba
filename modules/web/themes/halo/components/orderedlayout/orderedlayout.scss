@@ -18,18 +18,32 @@
 @mixin halo-orderedlayout {
   .v-horizontallayout,
   .v-verticallayout {
-    overflow: hidden;
     outline: 0;
-  }
-
-  .v-slot {
-    overflow: hidden;
-    @include box-defaults;
   }
 
   .v-verticallayout,
   .v-horizontallayout,
   .v-slot {
     -ms-scroll-limit: 0;
+  }
+
+  .v-horizontallayout.c-shrink-empty,
+  .v-verticallayout.c-shrink-empty {
+    font-size: 0 !important;
+
+    & > .v-slot > *,
+    & > .v-expand > .v-slot > * {
+      font-size: $v-font-size;
+    }
+  }
+
+  .v-horizontallayout.c-hide-overflow,
+  .v-verticallayout.c-hide-overflow {
+    overflow: hidden;
+
+    & > .v-expand > .v-slot,
+    & > .v-slot {
+      overflow: hidden;
+    }
   }
 }

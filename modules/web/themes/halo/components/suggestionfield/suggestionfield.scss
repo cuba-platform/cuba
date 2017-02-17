@@ -4,7 +4,6 @@ $cuba-suggestionfield-edit-color: scale-color(lighten($v-focus-color, 35%), $sat
   .#{$primary-stylename} {
     @include valo-textfield-style;
     width: $v-default-field-width;
-    font-size: $v-font-size;
 
     &.modified {
       background-color: $cuba-suggestionfield-edit-color;

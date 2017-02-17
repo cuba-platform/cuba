@@ -95,6 +95,35 @@
       display: none !important;
     }
   }
+
+  .v-csslayout-v-component-group {
+    white-space: nowrap;
+    position: relative;
+
+    .v-widget {
+      vertical-align: middle;
+
+      $v-border-width: 1px;
+
+      @if $v-border-width > 0 {
+        margin-left: $v-component-group-spacing or -$v-border-width;
+      } @else {
+        margin-left: $v-component-group-spacing or 1px;
+      }
+
+      &:first-child {
+        margin-left: 0;
+      }
+
+      // Focused component should be on top
+      &:focus,
+      &[class*="focus"],
+      [class*="focus"] {
+        position: relative;
+        z-index: 5;
+      }
+    }
+  }
 }
 
 @mixin box-defaults {

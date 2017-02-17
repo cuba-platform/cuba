@@ -549,16 +549,16 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
     public class CubaTokenList extends CustomField {
 
-        private VerticalLayout composition;
+        protected VerticalLayout composition;
 
-        private Panel scrollContainer;
+        protected Panel scrollContainer;
 
-        private CssLayout scrollContainerlayout;
+        protected CssLayout scrollContainerLayout;
 
-        private Component editor;
+        protected Component editor;
 
-        private Map<Instance, CubaTokenListLabel> itemComponents = new HashMap<>();
-        private Map<CubaTokenListLabel, Instance> componentItems = new HashMap<>();
+        protected Map<Instance, CubaTokenListLabel> itemComponents = new HashMap<>();
+        protected Map<CubaTokenListLabel, Instance> componentItems = new HashMap<>();
 
         public CubaTokenList() {
             composition = new VerticalLayout();
@@ -566,10 +566,12 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             composition.setSizeFull();
 
             scrollContainer = new Panel();
-            scrollContainerlayout = new CssLayout();
-            scrollContainerlayout.setSizeUndefined();
+            scrollContainer.setStyleName("c-tokenlist-scrollbox");
+            scrollContainerLayout = new CssLayout();
+            scrollContainerLayout.setStyleName("c-tokenlist-scrollbox-inner");
+            scrollContainerLayout.setSizeUndefined();
 
-            scrollContainer.setContent(scrollContainerlayout);
+            scrollContainer.setContent(scrollContainerLayout);
             scrollContainer.setSizeFull();
 
             composition.addComponent(scrollContainer);
@@ -721,10 +723,10 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         public void refreshComponent() {
             if (inline) {
                 addStyleName("inline");
-                scrollContainerlayout.setSizeUndefined();
+                scrollContainerLayout.setSizeUndefined();
             } else {
                 removeStyleName("inline");
-                scrollContainerlayout.setWidth(100, Unit.PERCENTAGE);
+                scrollContainerLayout.setWidth(100, Unit.PERCENTAGE);
             }
 
             if (editor != null) {
@@ -768,7 +770,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                     f.setWidthUndefined();
 
                     setTokenStyle(f, itemId);
-                    scrollContainerlayout.addComponent(f);
+                    scrollContainerLayout.addComponent(f);
                     usedItems.add(item);
                 }
 

@@ -44,20 +44,24 @@
     }
   }
 
-  .#{$primary-stylename}.v-disabled .c-tokenlist-label-close{
+  .#{$primary-stylename}.v-disabled .#{$primary-stylename}-label-close{
     @include opacity($v-disabled-opacity);
   }
 
-  .#{$primary-stylename}.readonly .c-tokenlist-label-close{
+  .#{$primary-stylename}.readonly .#{$primary-stylename}-label-close{
     display: none;
   }
 
-  .#{$primary-stylename} .c-tokenlist-label-content {
+  .#{$primary-stylename} .#{$primary-stylename}-label-content {
     white-space: nowrap;
     outline: none;
     font-size: 0;
     padding-right: $v-unit-size;
     overflow: hidden;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-scrollbox {
+    @include box-shadow(none);
   }
 
   .#{$primary-stylename} .c-tokenlist-label-content .content {

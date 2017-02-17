@@ -16,10 +16,6 @@
  */
 
 @mixin halo-button($primary-stylename: v-button) {
-  .#{$primary-stylename} {
-    font-size: $v-font-size;
-  }
-
   $link-padding: 2px;
 
   .#{$primary-stylename}-link {
@@ -34,7 +30,7 @@
     }
 
     &:focus:after {
-      box-shadow: none;
+      @include box-shadow(none);
     }
   }
 
