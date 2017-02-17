@@ -30,29 +30,29 @@ import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.TextField;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class WebFtsField extends WebAbstractComponent<HorizontalLayout> implements FtsField {
+public class WebFtsField extends WebAbstractComponent<CssLayout> implements FtsField {
 
-    public static final String FTS_FIELD_STYLENAME = "c-fts-field-wrap";
+    public static final String FTS_FIELD_STYLENAME = "c-ftsfield";
 
     protected TextField searchField;
     protected Button searchBtn;
 
     public WebFtsField() {
-        component = new HorizontalLayout();
-        component.addStyleName(FTS_FIELD_STYLENAME);
+        component = new CssLayout();
+        component.setPrimaryStyleName(FTS_FIELD_STYLENAME);
 
         ComponentsFactory cf = AppBeans.get(ComponentsFactory.NAME);
         com.haulmont.cuba.gui.components.TextField searchFieldComponent =
                 cf.createComponent(com.haulmont.cuba.gui.components.TextField.class);
         searchField = (TextField) WebComponentsHelper.unwrap(searchFieldComponent);
-        searchField.setStyleName("c-fts-field");
+        searchField.setStyleName("c-ftsfield-text");
 
         AppUI ui = AppUI.getCurrent();
         if (ui.isTestMode()) {
@@ -67,14 +67,13 @@ public class WebFtsField extends WebAbstractComponent<HorizontalLayout> implemen
         });
 
         searchBtn = new CubaButton();
-        searchBtn.setStyleName("c-fts-button");
+        searchBtn.setStyleName("c-ftsfield-button");
         searchBtn.setIcon(WebComponentsHelper.getIcon("app/images/fts-button.png"));
         searchBtn.addClickListener(
                 (Button.ClickListener) event -> openSearchWindow()
         );
 
         component.addComponent(searchField);
-        component.setExpandRatio(searchField, 1);
         component.addComponent(searchBtn);
 
         adjustHeight();
@@ -122,13 +121,6 @@ public class WebFtsField extends WebAbstractComponent<HorizontalLayout> implemen
         } else {
             searchField.setHeight(100, Sizeable.Unit.PERCENTAGE);
         }
-    }
-
-    @Override
-    public void setStyleName(String name) {
-        super.setStyleName(name);
-
-        component.addStyleName(FTS_FIELD_STYLENAME);
     }
 
     @Override

@@ -204,14 +204,28 @@ $cuba-menubar-border-color: get-menu-border-color($v-app-background-color) !defa
         color: #adaeb0;
       }
 
-      .c-fts-button,
+      .c-ftsfield {
+        padding-right: $v-unit-size;
+        font-size: 0;
+        white-space: nowrap;
+
+        & > * {
+          font-size: $v-font-size;
+        }
+      }
+
+      .c-ftsfield-button {
+        margin-right: -$v-unit-size;
+      }
+
+      .c-ftsfield-button,
       .c-logout-button,
       .c-newwindow-button {
         color: #adaeb0;
       }
 
-      .c-fts-button:hover,
-      .c-fts-button:focus,
+      .c-ftsfield-button:hover,
+      .c-ftsfield-button:focus,
       .c-logout-button:hover,
       .c-newwindow-button:hover,
       .c-logout-button:focus,

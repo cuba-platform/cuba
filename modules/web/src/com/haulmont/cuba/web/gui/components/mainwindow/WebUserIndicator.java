@@ -33,7 +33,6 @@ import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
 import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
-import com.haulmont.cuba.web.toolkit.ui.CubaCssLayout;
 import com.vaadin.data.Property;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.Field;
@@ -44,7 +43,7 @@ import java.util.List;
 
 import static com.vaadin.server.Sizeable.Unit;
 
-public class WebUserIndicator extends WebAbstractComponent<CubaCssLayout> implements UserIndicator {
+public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayout> implements UserIndicator {
 
     protected static final String USER_INDICATOR_STYLENAME = "c-userindicator";
 
@@ -54,7 +53,7 @@ public class WebUserIndicator extends WebAbstractComponent<CubaCssLayout> implem
     protected CubaComboBox userComboBox;
 
     public WebUserIndicator() {
-        component = new CubaCssLayout();
+        component = new com.vaadin.ui.CssLayout();
 
         setStyleName(USER_INDICATOR_STYLENAME);
     }

@@ -169,7 +169,7 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
       background-image: none;
     }
 
-    .c-fts-button,
+    .c-ftsfield-button,
     .c-newwindow-button,
     .c-logout-button {
       color: valo-font-color($valo-menu-background-color, 0.5);
@@ -195,14 +195,14 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
       }
     }
 
-    .v-button.c-fts-button,
+    .v-button.c-ftsfield-button,
     .v-button.c-logout-button,
     .v-button.c-newwindow-button {
       height: $v-unit-size;
       padding: ceil($v-unit-size/10) ceil($v-unit-size/5);
     }
 
-    .c-fts-field-wrap {
+    .c-ftsfield {
       padding-left: $v-layout-margin-left;
       padding-right: $v-layout-margin-right;
     }
@@ -395,7 +395,7 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
       & > .c-app-icon,
       & > .c-userindicator,
       & > .c-user-timezone-label,
-      & > .c-fts-field-wrap,
+      & > .c-ftsfield,
       & > .c-main-buttons {
         display: block;
       }

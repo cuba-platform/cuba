@@ -149,7 +149,21 @@
     }
   }
 
-  .c-fts-button.v-button {
+  .c-ftsfield {
+    padding-right: 25px;
+    font-size: 0;
+    white-space: nowrap;
+
+    & > * {
+      font-size: 12px;
+    }
+  }
+
+  .c-ftsfield-button {
+    margin-right: -25px;
+  }
+
+  .c-ftsfield-button.v-button {
     display: inline-block;
     border: 1px solid $cuba-field-border-color;
     border-left: 0;
