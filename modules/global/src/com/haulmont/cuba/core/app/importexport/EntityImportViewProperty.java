@@ -27,6 +27,8 @@ public class EntityImportViewProperty implements Serializable {
 
     protected ReferenceImportBehaviour referenceImportBehaviour;
 
+    protected CollectionImportPolicy collectionImportPolicy;
+
     public EntityImportViewProperty(String name) {
         this.name = name;
     }
@@ -36,9 +38,21 @@ public class EntityImportViewProperty implements Serializable {
         this.view = view;
     }
 
+    public EntityImportViewProperty(String name, EntityImportView view, CollectionImportPolicy collectionImportPolicy) {
+        this.name = name;
+        this.view = view;
+        this.collectionImportPolicy = collectionImportPolicy;
+    }
+
     public EntityImportViewProperty(String name, ReferenceImportBehaviour referenceImportBehaviour) {
         this.name = name;
         this.referenceImportBehaviour = referenceImportBehaviour;
+    }
+
+    public EntityImportViewProperty(String name, ReferenceImportBehaviour referenceImportBehaviour, CollectionImportPolicy collectionImportPolicy) {
+        this.name = name;
+        this.referenceImportBehaviour = referenceImportBehaviour;
+        this.collectionImportPolicy = collectionImportPolicy;
     }
 
     public String getName() {
@@ -63,5 +77,13 @@ public class EntityImportViewProperty implements Serializable {
 
     public void setReferenceImportBehaviour(ReferenceImportBehaviour referenceImportBehaviour) {
         this.referenceImportBehaviour = referenceImportBehaviour;
+    }
+
+    public CollectionImportPolicy getCollectionImportPolicy() {
+        return collectionImportPolicy;
+    }
+
+    public void setCollectionImportPolicy(CollectionImportPolicy collectionImportPolicy) {
+        this.collectionImportPolicy = collectionImportPolicy;
     }
 }

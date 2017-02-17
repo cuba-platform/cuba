@@ -36,7 +36,7 @@ import java.util.Map;
 /**
  */
 @Component(EntityImportViewBuilderAPI.NAME)
-public class EntityImportViewBuilder implements EntityImportViewBuilderAPI{
+public class EntityImportViewBuilder implements EntityImportViewBuilderAPI {
 
     @Inject
     protected MetadataTools metadataTools;
@@ -68,7 +68,7 @@ public class EntityImportViewBuilder implements EntityImportViewBuilderAPI{
                 Class<?> propertyType = metaProperty.getJavaType();
                 if (propertyRange.isDatatype() || propertyRange.isEnum()) {
                     if (security.isEntityAttrUpdatePermitted(metaClass, propertyName))
-                        view.addProperty(propertyName);
+                        view.addLocalProperty(propertyName);
                 } else if (propertyRange.isClass()) {
                     if (Entity.class.isAssignableFrom(propertyType)) {
                         if (metadataTools.isEmbedded(metaProperty)) {
@@ -79,7 +79,7 @@ public class EntityImportViewBuilder implements EntityImportViewBuilderAPI{
                             }
                             if (security.isEntityAttrUpdatePermitted(metaClass, propertyName)) {
                                 EntityImportView propertyImportView = buildFromJsonObject(propertyJsonObject.getAsJsonObject(), propertyMetaClass);
-                                view.addProperty(propertyName, propertyImportView);
+                                view.addEmbeddedProperty(propertyName, propertyImportView);
                             }
                         } else {
                             MetaClass propertyMetaClass = metadata.getClass(propertyType);
@@ -90,28 +90,40 @@ public class EntityImportViewBuilder implements EntityImportViewBuilderAPI{
                                 }
                                 if (security.isEntityAttrUpdatePermitted(metaClass, propertyName)) {
                                     EntityImportView propertyImportView = buildFromJsonObject(propertyJsonObject.getAsJsonObject(), propertyMetaClass);
-                                    view.addProperty(propertyName, propertyImportView);
+                                    if (metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_ONE) {
+                                        view.addManyToOneProperty(propertyName, propertyImportView);
+                                    } else {
+                                        view.addOneToOneProperty(propertyName, propertyImportView);
+                                    }
                                 }
 
                             } else {
                                 if (security.isEntityAttrUpdatePermitted(metaClass, propertyName))
-                                    view.addProperty(propertyName, ReferenceImportBehaviour.ERROR_ON_MISSING);
+                                    if (metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_ONE) {
+                                        view.addManyToOneProperty(propertyName, ReferenceImportBehaviour.ERROR_ON_MISSING);
+                                    } else {
+                                        view.addOneToOneProperty(propertyName, ReferenceImportBehaviour.ERROR_ON_MISSING);
+                                    }
                             }
                         }
                     } else if (Collection.class.isAssignableFrom(propertyType)) {
                         MetaClass propertyMetaClass = metaProperty.getRange().asClass();
-                        if (metaProperty.getType() == MetaProperty.Type.COMPOSITION) {
-                            JsonElement compositionJsonArray = entry.getValue();
-                            if (!compositionJsonArray.isJsonArray()) {
-                                throw new RuntimeException("JsonArray was expected for property " + propertyName);
-                            }
-                            EntityImportView propertyImportView = buildFromJsonArray(compositionJsonArray.getAsJsonArray(), propertyMetaClass);
-                            if (security.isEntityAttrUpdatePermitted(metaClass, propertyName))
-                                view.addProperty(propertyName, propertyImportView);
-
-                        } else {
-                            if (security.isEntityAttrUpdatePermitted(metaClass, propertyName))
-                                view.addProperty(propertyName, ReferenceImportBehaviour.ERROR_ON_MISSING);
+                        switch (metaProperty.getRange().getCardinality()) {
+                            case MANY_TO_MANY:
+                                if (security.isEntityAttrUpdatePermitted(metaClass, propertyName))
+                                    view.addManyToManyProperty(propertyName, ReferenceImportBehaviour.ERROR_ON_MISSING, CollectionImportPolicy.REMOVE_ABSENT_ITEMS);
+                                break;
+                            case ONE_TO_MANY:
+                                if (metaProperty.getType() == MetaProperty.Type.COMPOSITION) {
+                                    JsonElement compositionJsonArray = entry.getValue();
+                                    if (!compositionJsonArray.isJsonArray()) {
+                                        throw new RuntimeException("JsonArray was expected for property " + propertyName);
+                                    }
+                                    EntityImportView propertyImportView = buildFromJsonArray(compositionJsonArray.getAsJsonArray(), propertyMetaClass);
+                                    if (security.isEntityAttrUpdatePermitted(metaClass, propertyName))
+                                        view.addOneToManyProperty(propertyName, propertyImportView, CollectionImportPolicy.REMOVE_ABSENT_ITEMS);
+                                }
+                                break;
                         }
                     }
                 }
@@ -139,6 +151,7 @@ public class EntityImportViewBuilder implements EntityImportViewBuilderAPI{
                         EntityImportViewProperty propertyCopy = new EntityImportViewProperty(p.getName());
                         propertyCopy.setView(p.getView());
                         propertyCopy.setReferenceImportBehaviour(p.getReferenceImportBehaviour());
+                        propertyCopy.setCollectionImportPolicy(p.getCollectionImportPolicy());
                         resultView.addProperty(propertyCopy);
                     });
         }

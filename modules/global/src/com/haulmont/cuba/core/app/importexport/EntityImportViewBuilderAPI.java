@@ -32,7 +32,10 @@ public interface EntityImportViewBuilderAPI {
      * All references will be added to the view as a {@link com.haulmont.cuba.core.app.importexport.ReferenceImportBehaviour#ERROR_ON_MISSING}
      * behavior. All references that have a @Composition annotation will be added to the view with a property that has a
      * {@link com.haulmont.cuba.core.app.importexport.EntityImportViewProperty}. This means that compositions will be
-     * persisted during the import.
+     * persisted during the import. Absent collection items will be removed from the database.
+     * <p>
+     * For many-to-many association items corresponding entities will be searched in the database. If any of them is
+     * missing, an error will be thrown. Absent collection members will be excluded from the many-to-many association.
      *
      * @param json      a string that represents a JSON object
      * @param metaClass a MetaClass of the entity

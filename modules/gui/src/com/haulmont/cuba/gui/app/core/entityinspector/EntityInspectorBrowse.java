@@ -20,8 +20,10 @@ package com.haulmont.cuba.gui.app.core.entityinspector;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.app.importexport.CollectionImportPolicy;
 import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.app.importexport.ReferenceImportBehaviour;
@@ -401,12 +403,18 @@ public class EntityInspectorBrowse extends AbstractLookup {
             switch (metaProperty.getType()) {
                 case DATATYPE:
                 case ENUM:
-                    entityImportView.addProperty(metaProperty.getName());
+                    entityImportView.addLocalProperty(metaProperty.getName());
                     break;
                 case ASSOCIATION:
                 case COMPOSITION:
-                    if (!metaProperty.getRange().getCardinality().isMany()) {
-                        entityImportView.addProperty(metaProperty.getName(), ReferenceImportBehaviour.IGNORE_MISSING);
+                    Range.Cardinality cardinality = metaProperty.getRange().getCardinality();
+                    switch (cardinality) {
+                        case MANY_TO_ONE:
+                            entityImportView.addManyToOneProperty(metaProperty.getName(), ReferenceImportBehaviour.IGNORE_MISSING);
+                            break;
+                        case ONE_TO_ONE:
+                            entityImportView.addOneToOneProperty(metaProperty.getName(), ReferenceImportBehaviour.IGNORE_MISSING);
+                            break;
                     }
                     break;
                 default:

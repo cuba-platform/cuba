@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.app.security.group.browse;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.app.importexport.CollectionImportPolicy;
 import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.app.importexport.ReferenceImportBehaviour;
@@ -278,12 +279,18 @@ public class GroupBrowser extends AbstractWindow {
     protected EntityImportView createGroupsImportView() {
         return new EntityImportView(Group.class)
                 .addLocalProperties()
-                .addProperty("parent", ReferenceImportBehaviour.ERROR_ON_MISSING)
-                .addProperty("hierarchyList", new EntityImportView(GroupHierarchy.class)
+                .addManyToOneProperty("parent", ReferenceImportBehaviour.ERROR_ON_MISSING)
+                .addOneToManyProperty("hierarchyList",
+                        new EntityImportView(GroupHierarchy.class)
                         .addLocalProperties()
-                        .addProperty("parent", ReferenceImportBehaviour.ERROR_ON_MISSING))
-                .addProperty("sessionAttributes", new EntityImportView(SessionAttribute.class).addLocalProperties())
-                .addProperty("constraints", new EntityImportView(Constraint.class).addLocalProperties());
+                        .addManyToOneProperty("parent", ReferenceImportBehaviour.ERROR_ON_MISSING),
+                        CollectionImportPolicy.REMOVE_ABSENT_ITEMS)
+                .addOneToManyProperty("sessionAttributes",
+                        new EntityImportView(SessionAttribute.class).addLocalProperties(),
+                        CollectionImportPolicy.REMOVE_ABSENT_ITEMS)
+                .addOneToManyProperty("constraints",
+                        new EntityImportView(Constraint.class).addLocalProperties(),
+                        CollectionImportPolicy.REMOVE_ABSENT_ITEMS);
     }
 
     public void copyGroup() {

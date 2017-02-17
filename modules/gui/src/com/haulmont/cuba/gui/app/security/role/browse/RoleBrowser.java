@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.app.security.role.browse;
 
+import com.haulmont.cuba.core.app.importexport.CollectionImportPolicy;
 import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.entity.Entity;
@@ -212,7 +213,9 @@ public class RoleBrowser extends AbstractLookup {
     protected EntityImportView createRolesImportView() {
         return new EntityImportView(Role.class)
                 .addLocalProperties()
-                .addProperty("permissions", new EntityImportView(Permission.class).addLocalProperties());
+                .addOneToManyProperty("permissions",
+                        new EntityImportView(Permission.class).addLocalProperties(),
+                        CollectionImportPolicy.REMOVE_ABSENT_ITEMS);
     }
 
     protected class ExportAction extends ItemTrackingAction {

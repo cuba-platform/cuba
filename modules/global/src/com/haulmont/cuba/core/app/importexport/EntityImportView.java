@@ -29,39 +29,42 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>Class describing how entity fields should be saved during the import performed by
- * {@link EntityImportExportService EntityImportExportService}</p>
- *
- * <p>Only fields that are added as properties to the {@code EntityImportView} will be saved.</p>
- *
- * <p>For simple entity property the rule is simple: if property name is added to the view, then the property will be saved.</p>
- *
- * <p>For references to other entities there are three options:</p>
- * <ul>
- *     <li>Create or update the referenced entity/entities. This is useful when you are importing the master entities
- *     with a collection of its detail entities, like Order and its OrderItems</li>
- *     <li>Try to find the referenced entity in the database and continue the import process if it is not found</li>
- *     <li>Try to find the referenced entity in the database and stop the import process if it is not found</li>
- * </ul>
- *
- * <p>Use the {@link #addProperty(String, EntityImportView)} method when you want to save the referenced entity. It will
- * be saved according to the {@code EntityImportView} passed as parameter.</p>
- *
- * <p>The property should be added with the {@link #addProperty(String, ReferenceImportBehaviour)} method if you want
- * to find the reference in the database. {@link ReferenceImportBehaviour} enum describes the desired behavior:
- * ignore missing reference or throw an exception if it was not found in the database.</p>
- *
- * <p>You can invoke {@code addProperty} methods in fluent interface style. There are also useful methods like
- * {@link #addLocalProperties()}, {@link #addSystemProperties()} or {@link #addProperties(String...)}</p>
- *
- * <p>Example of creating the EntityImportView object:</p>
+ * Class describing how entity fields should be saved during the import performed by {@link EntityImportExportService
+ * EntityImportExportService} <p> Only fields that are added as properties to the {@code EntityImportView} will be
+ * saved.</p> <p> For local entity property the rule is simple: if property name is added to the view, then the property
+ * will be saved. Use {@link #addLocalProperty(String)} method for adding local property to the view. <p> For
+ * <b>many-to-one</b> references there are two possible options: <ul> <li>Create or update the referenced entity. Use
+ * the {@link #addManyToOneProperty(String, EntityImportView)} method. The referenced entity will be saved according to
+ * the {@code EntityImportView} passed as parameter</li> <li>Try to find the reference in the database and put it to the
+ * property value. {@link #addManyToOneProperty(String, ReferenceImportBehaviour)} must be used for this. {@link
+ * ReferenceImportBehaviour} parameter specifies the behaviour in case when referenced entity is missed in the database:
+ * missing entity can be ignored or import may fail with an error.</li> </ul>
+ * <p>
+ * For <b>one-to-one</b> references behavior is the same as for the many-to-one references. Just use the corresponding
+ * methods for adding properties to the view: {@link #addOneToOneProperty(String, EntityImportView)} or {@link
+ * #addOneToOneProperty(String, ReferenceImportBehaviour)}.
+ * <p>
+ * For <b>one-to-many</b> references you must specify the {@link EntityImportView} which defines how entities from the
+ * collection must be saved. The second parameter is the {@link CollectionImportPolicy} which specifies what to do with
+ * collection items that weren't passed to the import: they can be removed or remained.
+ * <p>
+ * For <b>many-to-many</b> references the following things must be defined: <ul> <li>Whether the passed collection
+ * members must be created/updated or just searched in the database</li> <li>Whether the collection items not passed to
+ * the import must be removed or remain. Keep in mind that for many-to-many properties missing collection members will be
+ * removed from the collection only, not from the database</li> </ul>
+ * <p>
+ * You can invoke methods for adding view properties in fluent interface style. There are also useful methods like
+ * {@link #addLocalProperties()}, {@link #addSystemProperties()} or {@link #addProperties(String...)}
+ * <p>
+ * Example of creating the EntityImportView object:
  * <pre>
  * EntityImportView importView = new EntityImportView(Group.class)
  *           .addLocalProperties()
- *           .addProperty("constraints", new EntityImportView(Constraint.class).addLocalProperties())
- *           .addProperty("parent", ReferenceImportBehaviour.IGNORE_MISSING);
+ *           .addOneToManyProperty("constraints",
+ *                  new EntityImportView(Constraint.class).addLocalProperties(),
+ *                  CollectionImportPolicy.KEEP_ABSENT_ITEMS)
+ *           .addManyToOneProperty("parent", ReferenceImportBehaviour.ERROR_ON_MISSING);
  * </pre>
- *
  */
 public class EntityImportView implements Serializable {
 
@@ -73,20 +76,56 @@ public class EntityImportView implements Serializable {
         this.entityClass = entityClass;
     }
 
-    public EntityImportView addProperty(String name, EntityImportView view) {
+    public EntityImportView addLocalProperty(String name) {
+        EntityImportViewProperty property = new EntityImportViewProperty(name);
+        properties.put(name, property);
+        return this;
+    }
+
+    public EntityImportView addManyToOneProperty(String name, EntityImportView view) {
         EntityImportViewProperty property = new EntityImportViewProperty(name, view);
         properties.put(name, property);
         return this;
     }
 
-    public EntityImportView addProperty(String name, ReferenceImportBehaviour referenceImportBehaviour) {
+    public EntityImportView addManyToOneProperty(String name, ReferenceImportBehaviour referenceImportBehaviour) {
         EntityImportViewProperty property = new EntityImportViewProperty(name, referenceImportBehaviour);
         properties.put(name, property);
         return this;
     }
 
-    public EntityImportView addProperty(String name) {
-        EntityImportViewProperty property = new EntityImportViewProperty(name);
+    public EntityImportView addOneToOneProperty(String name, EntityImportView view) {
+        EntityImportViewProperty property = new EntityImportViewProperty(name, view);
+        properties.put(name, property);
+        return this;
+    }
+
+    public EntityImportView addOneToOneProperty(String name, ReferenceImportBehaviour referenceImportBehaviour) {
+        EntityImportViewProperty property = new EntityImportViewProperty(name, referenceImportBehaviour);
+        properties.put(name, property);
+        return this;
+    }
+
+    public EntityImportView addOneToManyProperty(String name, EntityImportView view, CollectionImportPolicy collectionImportPolicy) {
+        EntityImportViewProperty property = new EntityImportViewProperty(name, view, collectionImportPolicy);
+        properties.put(name, property);
+        return this;
+    }
+
+    public EntityImportView addManyToManyProperty(String name, EntityImportView view, CollectionImportPolicy collectionImportPolicy) {
+        EntityImportViewProperty property = new EntityImportViewProperty(name, view, collectionImportPolicy);
+        properties.put(name, property);
+        return this;
+    }
+
+    public EntityImportView addManyToManyProperty(String name, ReferenceImportBehaviour referenceImportBehaviour, CollectionImportPolicy collectionImportPolicy) {
+        EntityImportViewProperty property = new EntityImportViewProperty(name, referenceImportBehaviour, collectionImportPolicy);
+        properties.put(name, property);
+        return this;
+    }
+
+    public EntityImportView addEmbeddedProperty(String name, EntityImportView view) {
+        EntityImportViewProperty property = new EntityImportViewProperty(name, view);
         properties.put(name, property);
         return this;
     }
@@ -114,7 +153,7 @@ public class EntityImportView implements Serializable {
         MetadataTools metadataTools = metadata.getTools();
         metaClass.getProperties().stream()
                 .filter(property -> !property.getRange().isClass() && !metadataTools.isSystem(property))
-                .forEach(metaProperty -> addProperty(metaProperty.getName()));
+                .forEach(metaProperty -> addLocalProperty(metaProperty.getName()));
         return this;
     }
 
@@ -124,13 +163,13 @@ public class EntityImportView implements Serializable {
         MetadataTools metadataTools = metadata.getTools();
         metaClass.getProperties().stream()
                 .filter(metadataTools::isSystem)
-                .forEach(metaProperty -> addProperty(metaProperty.getName()));
+                .forEach(metaProperty -> addLocalProperty(metaProperty.getName()));
         return this;
     }
 
     public EntityImportView addProperties(String... names) {
         for (String name : names) {
-            addProperty(name);
+            addLocalProperty(name);
         }
         return this;
     }
