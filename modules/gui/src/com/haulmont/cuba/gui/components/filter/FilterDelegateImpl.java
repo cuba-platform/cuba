@@ -80,6 +80,8 @@ import java.util.regex.Pattern;
 @Scope("prototype")
 public class FilterDelegateImpl implements FilterDelegate {
 
+    protected static final String BORDER_HIDDEN_STYLENAME = "border-hidden";
+
     protected static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
     protected static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
     protected static final String FILTER_EDIT_PERMISSION = "cuba.gui.filter.edit";
@@ -191,6 +193,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected Filter.BeforeFilterAppliedHandler beforeFilterAppliedHandler;
 
     protected Filter.AfterFilterAppliedHandler afterFilterAppliedHandler;
+    protected boolean borderVisible = true;
 
     protected enum ConditionsFocusType {
         NONE,
@@ -440,6 +443,22 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         maxResultsField = textMaxResults ? maxResultsTextField : maxResultsLookupField;
         maxResultsLayout.add(maxResultsField);
+    }
+
+    @Override
+    public void setBorderVisible(boolean visible) {
+        borderVisible = visible;
+
+        if (visible) {
+            groupBoxLayout.removeStyleName(BORDER_HIDDEN_STYLENAME);
+        } else {
+            groupBoxLayout.addStyleName(BORDER_HIDDEN_STYLENAME);
+        }
+    }
+
+    @Override
+    public boolean isBorderVisible() {
+        return borderVisible;
     }
 
     /**

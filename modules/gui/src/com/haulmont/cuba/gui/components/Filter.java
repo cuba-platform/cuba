@@ -139,4 +139,17 @@ public interface Filter extends Component.Margin, Component.BelongToFrame, Compo
      */
     void setColumnsCount(int columnsCount);
     int getColumnsCount();
+
+    /**
+     * Sets whether border is visible.
+     *
+     * @param visible <code>true</code> to show the border, <code>false</code> to hide it
+     */
+    void setBorderVisible(boolean visible);
+    /**
+     * Determines whether or not border is visible.
+     *
+     * @return <code>true</code> if the border is visible
+     */
+    boolean isBorderVisible();
 }

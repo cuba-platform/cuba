@@ -21,6 +21,24 @@
     padding-top: 5px;
   }
 
+  .c-generic-filter.border-hidden {
+    padding-top: 0!important;
+
+    .c-groupbox-captionwrap {
+      .c-groupbox-caption-start-deco,
+      .c-groupbox-caption-end-deco {
+        div {
+          border: none;
+        }
+      }
+    }
+
+    .c-groupbox-content {
+      border: none;
+      padding: 0;
+    }
+  }
+
   .c-generic-filter .filter-control-with-bottom-border {
     border-bottom: valo-border();
     padding-bottom: 5px;

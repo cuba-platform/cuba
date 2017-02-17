@@ -47,6 +47,9 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     protected List<ExpandedStateChangeListener> expandedStateChangeListeners;
 
+    // just stub
+    protected boolean borderVisible = true;
+
     public DesktopFilter() {
         delegate = AppBeans.get(FilterDelegate.class);
         delegate.setFilter(this);
@@ -370,5 +373,17 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     @Override
     public void setAfterFilterAppliedHandler(AfterFilterAppliedHandler afterFilterAppliedHandler) {
         delegate.setAfterFilterAppliedHandler(afterFilterAppliedHandler);
+    }
+
+    // just stub
+    @Override
+    public void setBorderVisible(boolean visible) {
+        borderVisible = visible;
+    }
+
+    // just stub
+    @Override
+    public boolean isBorderVisible() {
+        return borderVisible;
     }
 }
