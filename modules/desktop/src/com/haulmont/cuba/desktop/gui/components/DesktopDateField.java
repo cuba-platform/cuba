@@ -104,7 +104,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
         datePicker = new FlushableDatePicker();
 
-        Dimension size = new Dimension(110, DesktopComponentsHelper.FIELD_HEIGHT);
+        Dimension size = getDefaultDimension();
         datePicker.setPreferredSize(size);
         datePicker.setMinimumSize(size);
 
@@ -637,6 +637,14 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
             updateInstance();
             updateMissingValueState();
         }
+    }
+
+    protected Dimension getDefaultDimension() {
+        UIDefaults lafDefaults = UIManager.getLookAndFeelDefaults();
+        if (lafDefaults.getDimension("DateField.dimension") != null) { // take it from desktop theme
+            return lafDefaults.getDimension("DateField.dimension");
+        }
+        return new Dimension(110, DesktopComponentsHelper.FIELD_HEIGHT);
     }
 
     public class FocusableComposition extends JPanel implements FocusableComponent, Flushable {
