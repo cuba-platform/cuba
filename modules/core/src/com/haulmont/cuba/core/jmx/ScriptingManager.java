@@ -23,10 +23,9 @@ import groovy.lang.Binding;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
-import java.util.Collections;
 
 @Component("cuba_ScriptingManagerMBean")
 public class ScriptingManager implements ScriptingManagerMBean {
@@ -45,6 +44,9 @@ public class ScriptingManager implements ScriptingManagerMBean {
     @Inject
     protected Metadata metadata;
 
+    @Inject
+    protected DataManager dataManager;
+
     @Override
     public String getRootPath() {
         return configuration.getConfig(GlobalConfig.class).getConfDir();
@@ -58,6 +60,7 @@ public class ScriptingManager implements ScriptingManagerMBean {
             binding.setVariable("persistence", persistence);
             binding.setVariable("metadata", metadata);
             binding.setVariable("configuration", configuration);
+            binding.setVariable("dataManager", dataManager);
             Object result = scripting.runGroovyScript(scriptName, binding);
             return String.valueOf(result);
         } catch (Exception e) {
