@@ -62,6 +62,7 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
         loadWidth(resultComponent, element, "100%");
         loadCollapsible(resultComponent, element, true);
         loadSettingsEnabled(resultComponent, element);
+        loadBorderVisible(resultComponent, element);
 
         String useMaxResults = element.attributeValue("useMaxResults");
         resultComponent.setUseMaxResults(useMaxResults == null || Boolean.parseBoolean(useMaxResults));
@@ -116,5 +117,12 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
                 resultComponent.switchFilterMode(FilterDelegate.FilterMode.FTS_MODE);
             }
         });
+    }
+
+    protected void loadBorderVisible(Filter resultComponent, Element element) {
+        String borderVisible = element.attributeValue("borderVisible");
+        if (StringUtils.isNotEmpty(borderVisible)) {
+            resultComponent.setBorderVisible(Boolean.valueOf(borderVisible));
+        }
     }
 }

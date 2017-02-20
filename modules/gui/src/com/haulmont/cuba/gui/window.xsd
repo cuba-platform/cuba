@@ -1689,6 +1689,7 @@
                     </xs:simpleType>
                 </xs:attribute>
                 <xs:attribute name="modeSwitchVisible" type="xs:boolean"/>
+                <xs:attribute name="borderVisible" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
