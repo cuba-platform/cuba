@@ -28,4 +28,17 @@
     margin-right: $v-layout-spacing-horizontal;
     margin-bottom: $v-layout-spacing-vertical;
   }
+
+  .#{$primary-stylename}.v-csslayout-margin-top {
+    padding-top: $v-layout-margin-top;
+  }
+  .#{$primary-stylename}.v-csslayout-margin-bottom {
+    padding-bottom: $v-layout-margin-bottom;
+  }
+  .#{$primary-stylename}.v-csslayout-margin-left {
+    padding-left: $v-layout-margin-left;
+  }
+  .#{$primary-stylename}.v-csslayout-margin-right {
+    padding-right: $v-layout-margin-right;
+  }
 }
