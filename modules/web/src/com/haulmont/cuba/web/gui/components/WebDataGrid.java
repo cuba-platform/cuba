@@ -268,12 +268,9 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         });
 
         componentComposition = new CssLayout();
-        componentComposition.addStyleName("c-data-grid-composition");
+        componentComposition.setPrimaryStyleName("c-data-grid-composition");
         componentComposition.addComponent(component);
         componentComposition.setWidthUndefined();
-
-        // default added style
-        internalStyles.add("c-data-grid-composition");
 
         component.setSizeUndefined();
         component.setHeightMode(HeightMode.UNDEFINED);

@@ -61,6 +61,7 @@
     display: table-cell !important;
     text-align: center !important;
     vertical-align: middle;
+    overflow: hidden;
     padding: 0;
     width: $v-unit-size;
     min-width: $v-unit-size;

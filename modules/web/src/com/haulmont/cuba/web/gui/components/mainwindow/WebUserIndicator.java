@@ -47,33 +47,19 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
 
     protected static final String USER_INDICATOR_STYLENAME = "c-userindicator";
 
-    protected UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
-
     protected Label userNameLabel;
     protected CubaComboBox userComboBox;
 
     public WebUserIndicator() {
         component = new com.vaadin.ui.CssLayout();
-
-        setStyleName(USER_INDICATOR_STYLENAME);
-    }
-
-    @Override
-    public void setStyleName(String name) {
-        super.setStyleName(name);
-
-        component.addStyleName(USER_INDICATOR_STYLENAME);
-    }
-
-    @Override
-    public String getStyleName() {
-        return StringUtils.normalizeSpace(super.getStyleName().replace(USER_INDICATOR_STYLENAME, ""));
+        component.setPrimaryStyleName(USER_INDICATOR_STYLENAME);
     }
 
     @Override
     public void refreshUserSubstitutions() {
         component.removeAllComponents();
 
+        UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
         List<UserSubstitution> substitutions = getUserSubstitutions();
 
         User user = uss.getUserSession().getUser();
@@ -136,6 +122,7 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
     protected List<UserSubstitution> getUserSubstitutions() {
         TimeSource timeSource = AppBeans.get(TimeSource.NAME);
         DataService dataService = AppBeans.get(DataService.NAME);
+        UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
 
         LoadContext<UserSubstitution> ctx = new LoadContext<>(UserSubstitution.class);
         LoadContext.Query query = ctx.setQueryString("select us from sec$UserSubstitution us " +
@@ -149,6 +136,7 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
     }
 
     protected void revertToCurrentUser() {
+        UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
         UserSession us = uss.getUserSession();
 
         userComboBox.select(us.getCurrentOrSubstitutedUser());
@@ -211,6 +199,8 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
 
         @Override
         public void valueChange(Property.ValueChangeEvent event) {
+            UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
+
             User newUser = (User) event.getProperty().getValue();
             UserSession userSession = uss.getUserSession();
             if (userSession == null) {

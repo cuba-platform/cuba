@@ -77,7 +77,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
     public WebDateField() {
         innerLayout = new com.vaadin.ui.CssLayout();
-        innerLayout.addStyleName("c-datefield-layout");
+        innerLayout.setPrimaryStyleName("c-datefield-layout");
 
         dateField = new CubaDateField();
         dateField.setValidationVisible(false);

@@ -672,12 +672,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         setEditable(false);
 
         componentComposition = new CssLayout();
-        componentComposition.addStyleName("c-table-composition");
+        componentComposition.setPrimaryStyleName("c-table-composition");
         componentComposition.addComponent(component);
         componentComposition.setWidthUndefined();
-
-        // default added style
-        internalStyles.add("c-table-composition");
 
         // todo artamonov adjust component size relative to composition size
 

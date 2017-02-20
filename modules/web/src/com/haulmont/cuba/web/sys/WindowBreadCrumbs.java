@@ -21,7 +21,6 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
@@ -56,10 +55,10 @@ public class WindowBreadCrumbs extends CssLayout {
 
     protected List<Listener> listeners = new ArrayList<>();
 
-    public WindowBreadCrumbs(WebAppWorkArea workArea) {
+    public WindowBreadCrumbs(AppWorkArea workArea) {
         setWidth(100, Unit.PERCENTAGE);
-        setHeight(-1, Unit.PIXELS);
-        setStyleName(C_HEADLINE_CONTAINER);
+        setHeightUndefined();
+        setPrimaryStyleName(C_HEADLINE_CONTAINER);
 
         tabbedMode = workArea.getMode() == AppWorkArea.Mode.TABBED;
 
@@ -108,26 +107,21 @@ public class WindowBreadCrumbs extends CssLayout {
         }
     }
 
-    @Override
-    public String getStyleName() {
-        return StringUtils.normalizeSpace(super.getStyleName().replace(C_HEADLINE_CONTAINER, ""));
-    }
-
     protected Layout createEnclosingLayout() {
         Layout enclosingLayout = new CssLayout();
-        enclosingLayout.setStyleName("c-breadcrumbs-container");
+        enclosingLayout.setPrimaryStyleName("c-breadcrumbs-container");
         return enclosingLayout;
     }
 
     protected Layout createLinksLayout() {
         CssLayout linksLayout = new CssLayout();
-        linksLayout.setStyleName("c-breadcrumbs");
+        linksLayout.setPrimaryStyleName("c-breadcrumbs");
         return linksLayout;
     }
 
     protected Layout createLogoLayout() {
         CssLayout logoLayout = new CssLayout();
-        logoLayout.setStyleName("c-breadcrumbs-logo");
+        logoLayout.setPrimaryStyleName("c-breadcrumbs-logo");
         return logoLayout;
     }
 

@@ -78,7 +78,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
 
     protected void initLayout() {
         container = new CubaCssActionsLayout();
-        container.setStyleName("c-pickerfield-layout");
+        container.setPrimaryStyleName("c-pickerfield-layout");
 
         field.setWidth(100, Unit.PERCENTAGE);
 
@@ -115,7 +115,8 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         field.setImmediate(true);
         field.setReadOnly(true);
         field.setNullRepresentation("");
-        addValueChangeListener((ValueChangeListener) event -> {
+
+        addValueChangeListener(event -> {
             if (!suppressTextChangeListener) {
                 updateTextRepresentation();
             }
@@ -242,7 +243,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     }
 
     public void addFieldListener(final PickerField.FieldListener listener) {
-        field.addValueChangeListener((ValueChangeListener) event -> {
+        field.addValueChangeListener(event -> {
             String text = (String) event.getProperty().getValue();
 
             if (!suppressTextChangeListener && !Objects.equals(getStringRepresentation(), text)) {

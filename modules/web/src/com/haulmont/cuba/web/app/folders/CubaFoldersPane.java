@@ -116,11 +116,6 @@ public class CubaFoldersPane extends VerticalLayout {
         folderUpdateBackgroundTaskWrapper = new BackgroundTaskWrapper(new AppFolderUpdateBackgroundTask(10));
     }
 
-    @Override
-    public String getStyleName() {
-        return StringUtils.normalizeSpace(super.getStyleName().replace(C_FOLDERS_PANE, ""));
-    }
-
     public void loadFolders() {
         UserSettingsTools.FoldersState state = userSettingsTools.loadFoldersState();
         if (state == null) {

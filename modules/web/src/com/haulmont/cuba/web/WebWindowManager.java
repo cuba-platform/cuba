@@ -480,7 +480,7 @@ public class WebWindowManager extends WindowManager {
     protected Layout createNewTabLayout(final Window window, final boolean multipleOpen, WindowBreadCrumbs breadCrumbs,
                                         Component... additionalComponents) {
         Layout layout = new CssLayout();
-        layout.setStyleName("c-app-window-wrap");
+        layout.setPrimaryStyleName("c-app-window-wrap");
         layout.setSizeFull();
 
         layout.addComponent(breadCrumbs);

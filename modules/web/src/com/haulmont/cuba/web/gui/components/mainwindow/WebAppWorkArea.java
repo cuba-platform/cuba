@@ -69,7 +69,7 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
 
     public WebAppWorkArea() {
         component = new CssLayout();
-        component.addStyleName(WORKAREA_STYLENAME);
+        component.setPrimaryStyleName(WORKAREA_STYLENAME);
         component.addStyleName(MODE_TABBED_STYLENAME);
         component.addStyleName(STATE_INITIAL_STYLENAME);
 
@@ -85,8 +85,6 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
     @Override
     public void setStyleName(String name) {
         super.setStyleName(name);
-
-        component.addStyleName(WORKAREA_STYLENAME);
 
         if (mode == Mode.TABBED) {
             component.addStyleName(MODE_TABBED_STYLENAME);
@@ -104,7 +102,6 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
     @Override
     public String getStyleName() {
         return StringUtils.normalizeSpace(super.getStyleName()
-                .replace(WORKAREA_STYLENAME, "")
                 .replace(MODE_TABBED_STYLENAME, "")
                 .replace(MODE_SINGLE_STYLENAME, "")
                 .replace(STATE_INITIAL_STYLENAME, "")
