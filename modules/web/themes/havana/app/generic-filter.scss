@@ -15,14 +15,17 @@
  *
  */
 
-@mixin cuba-generic-filter {
+@mixin cuba-generic-filter($primary-stylename: c-generic-filter) {
+  .#{$primary-stylename} {
+    outline: 0;
+  }
 
-  .c-generic-filter .filter-control-with-top-border {
+  .#{$primary-stylename} .filter-control-with-top-border {
     border-top: solid 1px #BABFC0;
     padding-top: 5px;
   }
 
-  .c-generic-filter.border-hidden {
+  .#{$primary-stylename} > .border-hidden {
     .c-groupbox-captionwrap {
       .c-groupbox-caption-start-deco,
       .c-groupbox-caption-end-deco {
@@ -38,19 +41,19 @@
     }
   }
 
-  .c-generic-filter .filter-control-with-bottom-border {
+  .#{$primary-stylename} .filter-control-with-bottom-border {
     border-bottom: solid 1px #BABFC0;
     padding-bottom: 5px;
   }
 
-  .c-generic-filter .filter-control-no-border {
+  .#{$primary-stylename} .filter-control-no-border {
     border-top: none;
     padding-top: 0;
     border-bottom: none;
     padding-bottom: 0;
   }
 
-  .c-generic-filter .filter-settings-button {
+  .#{$primary-stylename} .filter-settings-button {
     .v-popup-indicator {
       display: none;
     }
@@ -59,15 +62,15 @@
     }
   }
 
-  .c-generic-filter .filter-conditions .v-popupbutton .v-popup-indicator {
+  .#{$primary-stylename} .filter-conditions .v-popupbutton .v-popup-indicator {
     display: none;
   }
 
-  .c-generic-filter .filter-conditions .v-popupbutton {
+  .#{$primary-stylename} .filter-conditions .v-popupbutton {
     background: transparent;
   }
 
-  .c-generic-filter .filter-search-button-layout {
+  .#{$primary-stylename} .filter-search-button-layout {
     .v-button.filter-search-button {
       border-right-color: transparent;
     }
@@ -81,7 +84,22 @@
     }
   }
 
-  .c-generic-filter .filter-control-no-border {
+  $marginWidth: 5px;
+
+  .#{$primary-stylename} .filter-control-no-border {
     height: 25px !important; // fix for high dpi
+  }
+
+  .#{$primary-stylename}-margin-top {
+    padding-top: $marginWidth;
+  }
+  .#{$primary-stylename}-margin-bottom {
+    padding-bottom: $marginWidth;
+  }
+  .#{$primary-stylename}-margin-left {
+    padding-left: $marginWidth;
+  }
+  .#{$primary-stylename}-margin-right {
+    padding-right: $marginWidth;
   }
 }

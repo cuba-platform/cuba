@@ -223,7 +223,6 @@ public class FilterDelegateImpl implements FilterDelegate {
             groupBoxLayout = componentsFactory.createComponent(GroupBoxLayout.class);
             groupBoxLayout.addExpandedStateChangeListener(e -> fireExpandStateChange());
             groupBoxLayout.setOrientation(GroupBoxLayout.Orientation.VERTICAL);
-            groupBoxLayout.setStyleName("c-generic-filter");
             groupBoxLayout.setWidth("100%");
             layout = componentsFactory.createComponent(VBoxLayout.class);
             layout.setWidth("100%");

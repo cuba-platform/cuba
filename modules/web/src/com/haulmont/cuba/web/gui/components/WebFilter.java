@@ -24,7 +24,7 @@ import com.haulmont.cuba.gui.components.compatibility.ComponentExpandCollapseLis
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
-import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
+import com.haulmont.cuba.web.toolkit.ui.CubaCssActionsLayout;
 import com.vaadin.shared.ui.MarginInfo;
 import org.dom4j.Element;
 
@@ -36,7 +36,9 @@ import java.util.List;
  * Generic filter implementation for the web-client.
  *
  */
-public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> implements Filter, FilterImplementation {
+public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implements Filter, FilterImplementation {
+
+    protected static final String FILTER_STYLENAME = "c-generic-filter";
 
     protected FilterDelegate delegate;
     protected boolean settingsEnabled = true;
@@ -46,11 +48,12 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     public WebFilter() {
         delegate = AppBeans.get(FilterDelegate.class);
         delegate.setFilter(this);
-        component = new CubaVerticalActionsLayout();
+        component = new CubaCssActionsLayout();
         Container layout = delegate.getLayout();
         com.vaadin.ui.Component unwrap = WebComponentsHelper.getComposition(layout);
         component.addComponent(unwrap);
         component.setWidth("100%");
+        component.setPrimaryStyleName(FILTER_STYLENAME);
 
         delegate.addExpandedStateChangeListener(e -> fireExpandStateChange(e.isExpanded()));
     }

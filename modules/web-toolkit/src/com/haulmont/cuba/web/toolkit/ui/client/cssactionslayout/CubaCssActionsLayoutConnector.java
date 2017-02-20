@@ -20,9 +20,11 @@ import com.haulmont.cuba.web.toolkit.ui.CubaCssActionsLayout;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.Paintable;
 import com.vaadin.client.UIDL;
+import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.csslayout.CssLayoutConnector;
 import com.vaadin.shared.ui.Connect;
+import com.vaadin.shared.ui.MarginInfo;
 
 @Connect(CubaCssActionsLayout.class)
 public class CubaCssActionsLayoutConnector extends CssLayoutConnector implements Paintable {
@@ -30,6 +32,19 @@ public class CubaCssActionsLayoutConnector extends CssLayoutConnector implements
     @Override
     public CubaCssActionsLayoutWidget getWidget() {
         return (CubaCssActionsLayoutWidget) super.getWidget();
+    }
+
+    @Override
+    public CubaCssActionsLayoutState getState() {
+        return (CubaCssActionsLayoutState) super.getState();
+    }
+
+    @Override
+    public void onStateChanged(StateChangeEvent stateChangeEvent) {
+        super.onStateChanged(stateChangeEvent);
+
+        getWidget().setMargin(new MarginInfo(getState().marginsBitmask));
+        getWidget().setSpacing(getState().spacing);
     }
 
     @Override

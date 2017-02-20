@@ -16,12 +16,15 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.web.toolkit.ui.client.cssactionslayout.CubaCssActionsLayoutState;
 import com.vaadin.event.Action;
 import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.LegacyComponent;
 
 import java.util.Map;
@@ -29,8 +32,14 @@ import java.util.Map;
 /**
  * CssLayout with separate action manager for shortcuts
  */
-public class CubaCssActionsLayout extends CssLayout implements Action.Container, LegacyComponent {
+public class CubaCssActionsLayout extends CssLayout implements Action.Container, LegacyComponent,
+        Layout.MarginHandler, Layout.SpacingHandler {
     protected ActionManager actionManager;
+
+    @Override
+    protected CubaCssActionsLayoutState getState() {
+        return (CubaCssActionsLayoutState) super.getState();
+    }
 
     @Override
     public void addActionHandler(Action.Handler actionHandler) {
@@ -76,5 +85,30 @@ public class CubaCssActionsLayout extends CssLayout implements Action.Container,
         if (actionManager != null) {
             actionManager.handleActions(variables, this);
         }
+    }
+
+    @Override
+    public void setMargin(boolean enabled) {
+        setMargin(new MarginInfo(enabled));
+    }
+
+    @Override
+    public void setMargin(MarginInfo marginInfo) {
+        getState().marginsBitmask = marginInfo.getBitMask();
+    }
+
+    @Override
+    public MarginInfo getMargin() {
+        return new MarginInfo(getState().marginsBitmask);
+    }
+
+    @Override
+    public void setSpacing(boolean enabled) {
+        getState().spacing = enabled;
+    }
+
+    @Override
+    public boolean isSpacing() {
+        return getState().spacing;
     }
 }

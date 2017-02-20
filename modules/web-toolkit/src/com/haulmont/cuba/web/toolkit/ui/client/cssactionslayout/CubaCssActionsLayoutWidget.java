@@ -20,6 +20,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VCssLayout;
+import com.vaadin.shared.ui.MarginInfo;
 
 public class CubaCssActionsLayoutWidget extends VCssLayout {
     protected ShortcutActionHandler shortcutHandler;
@@ -47,5 +48,26 @@ public class CubaCssActionsLayoutWidget extends VCssLayout {
 
     public void setShortcutHandler(ShortcutActionHandler shortcutHandler) {
         this.shortcutHandler = shortcutHandler;
+    }
+
+    public void setMargin(MarginInfo marginInfo) {
+        if (marginInfo != null) {
+            // Styles inherited from v-csslayout from base theme
+            enableStyleDependentName("margin-top", marginInfo.hasTop());
+            enableStyleDependentName("margin-right", marginInfo.hasRight());
+            enableStyleDependentName("margin-bottom", marginInfo.hasBottom());
+            enableStyleDependentName("margin-left", marginInfo.hasLeft());
+        }
+    }
+
+    public void setSpacing(boolean spacing) {
+        enableStyleDependentName("spacing", spacing);
+    }
+
+    public void enableStyleDependentName(String suffix, boolean enable) {
+        if (enable)
+            addStyleDependentName(suffix);
+        else
+            removeStyleDependentName(suffix);
     }
 }

@@ -15,13 +15,17 @@
  *
  */
 
-@mixin cuba-generic-filter {
-  .c-generic-filter .filter-control-with-top-border {
+@mixin cuba-generic-filter($primary-stylename: c-generic-filter) {
+  .#{$primary-stylename} {
+    outline: 0;
+  }
+
+  .#{$primary-stylename} .filter-control-with-top-border {
     border-top: valo-border();
     padding-top: 5px;
   }
 
-  .c-generic-filter.border-hidden {
+  .#{$primary-stylename} > .border-hidden {
     padding-top: 0!important;
 
     .c-groupbox-captionwrap {
@@ -39,28 +43,28 @@
     }
   }
 
-  .c-generic-filter .filter-control-with-bottom-border {
+  .#{$primary-stylename} .filter-control-with-bottom-border {
     border-bottom: valo-border();
     padding-bottom: 5px;
   }
 
-  .c-generic-filter .filter-control-no-border {
+  .#{$primary-stylename} .filter-control-no-border {
     border-top: none;
     padding-top: 0;
     border-bottom: none;
     padding-bottom: 0;
   }
 
-  .c-generic-filter .filter-settings-button .v-popup-indicator,
-  .c-generic-filter .filter-conditions .v-popupbutton .v-popup-indicator {
+  .#{$primary-stylename} .filter-settings-button .v-popup-indicator,
+  .#{$primary-stylename} .filter-conditions .v-popupbutton .v-popup-indicator {
     display: none;
   }
 
-  .c-generic-filter .filter-conditions .v-popupbutton {
+  .#{$primary-stylename} .filter-conditions .v-popupbutton {
     background: transparent;
   }
 
-  .c-generic-filter .filter-search-button-layout {
+  .#{$primary-stylename} .filter-search-button-layout {
     .v-button.filter-search-button {
       border-right: 1px solid transparent;
       border-bottom-right-radius: 0;
@@ -80,7 +84,20 @@
     }
   }
 
-  .c-generic-filter .filter-control-no-border {
+  .#{$primary-stylename} .filter-control-no-border {
     height: $v-unit-size !important; // fix for high dpi
+  }
+
+  .#{$primary-stylename}-margin-top {
+    padding-top: $v-layout-margin-top;
+  }
+  .#{$primary-stylename}-margin-bottom {
+    padding-bottom: $v-layout-margin-bottom;
+  }
+  .#{$primary-stylename}-margin-left {
+    padding-left: $v-layout-margin-left;
+  }
+  .#{$primary-stylename}-margin-right {
+    padding-right: $v-layout-margin-right;
   }
 }
