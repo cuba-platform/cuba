@@ -960,6 +960,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         saveAction.setEnabled(filterSavingPossible && filterModified);
 
         String currentCaption = groupBoxLayout.getCaption();
+        if (StringUtils.isEmpty(currentCaption))
+            return;
+
         if (filterModified && !currentCaption.endsWith(MODIFIED_INDICATOR_SYMBOL)) {
             groupBoxLayout.setCaption(currentCaption + MODIFIED_INDICATOR_SYMBOL);
         }
