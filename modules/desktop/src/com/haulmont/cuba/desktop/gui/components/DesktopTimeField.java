@@ -22,13 +22,11 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -62,13 +60,16 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     private DateField.Resolution resolution;
     private boolean editable = true;
 
-    protected static final int DIGIT_WIDTH = 23;
+    protected static final int DEFAULT_DIGIT_WIDTH = 23;
+    private int digitWidth;
 
     protected Datasource.ItemChangeListener itemChangeListener;
     protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
     public DesktopTimeField() {
         UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
+
+        digitWidth = getDigitWidth();
 
         timeFormat = Datatypes.getFormatStringsNN(uss.getLocale()).getTimeFormat();
         resolution = DateField.Resolution.MIN;
@@ -351,19 +352,19 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     }
 
     protected void updateWidth() {
-        int width = isAmPmUsed() ? DIGIT_WIDTH : 0;
+        int width = isAmPmUsed() ? digitWidth : 0;
         if (showSeconds) {
-            width = width + DIGIT_WIDTH;
+            width = width + digitWidth;
         }
         int height = impl.getPreferredSize().height;
 
         switch (resolution) {
             case HOUR:
-                impl.setMinimumSize(new Dimension(DIGIT_WIDTH + width, height));
+                impl.setMinimumSize(new Dimension(digitWidth + width, height));
                 break;
             case MIN:
             case SEC:
-                impl.setMinimumSize(new Dimension(DIGIT_WIDTH * 2 + width, height));
+                impl.setMinimumSize(new Dimension(digitWidth * 2 + width, height));
         }
     }
 
@@ -459,5 +460,13 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
         public void flushValue() {
             flush();
         }
+    }
+
+    protected int getDigitWidth() {
+        UIDefaults lafDefaults = UIManager.getLookAndFeelDefaults();
+        if (lafDefaults.getDimension("TimeField.digitWidth") != null) { // take it from desktop theme
+            return (int) lafDefaults.getDimension("TimeField.digitWidth").getWidth();
+        }
+        return DEFAULT_DIGIT_WIDTH;
     }
 }

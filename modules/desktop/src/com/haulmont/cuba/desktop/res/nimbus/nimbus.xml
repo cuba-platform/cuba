@@ -37,6 +37,10 @@
         <color property="cubaSessionMessageDialogBackground" value="#f3501a"/>
         <color property="cubaSessionMessageDialogFontColor" value="#ffffff"/>
         <font property="cubaSessionMessageDialogFont" size="14" family="SansSerif" style="bold"/>
+
+        <dimension property="DateField.dimension" value="110 28"/>
+        <!--the expected dimension of one digit. to configure width only-->
+        <dimension property="TimeField.digitWidth" value="23 -1"/>
     </ui-defaults>
 
     <layout margin-size="5" spacing-size="3"/>
