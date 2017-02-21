@@ -175,22 +175,18 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
             return;
         }
 
-        // Iterate through all datasources in the same DsContext
-        for (Datasource sibling : getDsContext().getAll()) {
-            // If the datasource is a property datasource of the Child
-            if (sibling instanceof NestedDatasource
-                    && ((NestedDatasource) sibling).getMaster().equals(this)
-                    && !metadata.getTools().isEmbeddable(sibling.getMetaClass())) {
-                // Look for corresponding property datasource in the Parent's DsContext
-                for (Datasource siblingOfParent : parentDs.getDsContext().getAll()) {
-                    if (siblingOfParent instanceof NestedDatasource
-                            && ((NestedDatasource) siblingOfParent).getMaster() == parentDs) {
-                        // If such corresponding datasource found, set it as a parent for our property datasource
-                        ((DatasourceImplementation) sibling).setParent(siblingOfParent);
-                    }
-                }
-            }
-        }
+        getDsContext().getAll().stream()
+                .filter(sibling -> !metadata.getTools().isEmbeddable(sibling.getMetaClass()))
+                .filter(sibling -> sibling instanceof NestedDatasource)
+                .map(sibling -> (NestedDatasource) sibling)
+                .filter(sibling -> sibling.getMaster().equals(AbstractDatasource.this))
+                .forEach(sibling -> ((DatasourceImplementation) sibling).setParent(parentDs.getDsContext().getAll().stream()
+                        .filter(siblingOfParent -> siblingOfParent instanceof NestedDatasource)
+                        .map(siblingOfParent -> (NestedDatasource) siblingOfParent)
+                        .filter(siblingOfParent -> siblingOfParent.getMaster() == parentDs)
+                        .filter(siblingOfParent -> sibling.getProperty().equals(siblingOfParent.getProperty()))
+                        .findAny()
+                        .orElse(null)));
     }
 
     @Override
