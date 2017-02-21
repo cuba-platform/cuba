@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
@@ -38,8 +39,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel>
     protected static final String SCROLLBOX_CONTENT_STYLENAME = "c-scrollbox-content";
     protected static final String SCROLLBOX_STYLENAME = "c-scrollbox";
 
-    protected Collection<Component> ownComponents = new LinkedHashSet<>();
-    protected Map<String, Component> componentByIds = new HashMap<>();
+    protected List<Component> ownComponents = new ArrayList<>();
 
     protected Orientation orientation = Orientation.VERTICAL;
     protected ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
@@ -106,10 +106,6 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel>
         getContent().addComponent(vComponent, index);
         getContent().setComponentAlignment(vComponent, WebWrapperUtils.toVaadinAlignment(childComponent.getAlignment()));
 
-        if (childComponent.getId() != null) {
-            componentByIds.put(childComponent.getId(), childComponent);
-        }
-
         if (frame != null) {
             if (childComponent instanceof BelongToFrame
                     && ((BelongToFrame) childComponent).getFrame() == null) {
@@ -122,11 +118,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel>
         if (index == ownComponents.size()) {
             ownComponents.add(childComponent);
         } else {
-            List<Component> componentsTempList = new ArrayList<>(ownComponents);
-            componentsTempList.add(index, childComponent);
-
-            ownComponents.clear();
-            ownComponents.addAll(componentsTempList);
+            ownComponents.add(index, childComponent);
         }
 
         childComponent.setParent(this);
@@ -151,10 +143,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel>
 
     @Override
     public void remove(Component childComponent) {
-        getContent().removeComponent(WebComponentsHelper.getComposition(childComponent));
-        if (childComponent.getId() != null) {
-            componentByIds.remove(childComponent.getId());
-        }
+        getContent().removeComponent(childComponent.unwrapComposition(com.vaadin.ui.Component.class));
         ownComponents.remove(childComponent);
 
         childComponent.setParent(null);
@@ -163,9 +152,8 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel>
     @Override
     public void removeAll() {
         getContent().removeAllComponents();
-        componentByIds.clear();
 
-        List<Component> components = new ArrayList<>(ownComponents);
+        Component[] components = ownComponents.toArray(new Component[ownComponents.size()]);
         ownComponents.clear();
 
         for (Component childComponent : components) {
@@ -193,7 +181,12 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel>
 
     @Override
     public Component getOwnComponent(String id) {
-        return componentByIds.get(id);
+        Preconditions.checkNotNullArgument(id);
+
+        return ownComponents.stream()
+                .filter(component -> Objects.equals(id, component.getId()))
+                .findFirst()
+                .orElse(null);
     }
 
     @Nullable
