@@ -24,7 +24,7 @@ import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
-import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleSelectedTabChangeListener;
+import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleTabSheetSelectedTabChangeListener;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -448,7 +448,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     public void addListener(TabChangeListener listener) {
         initComponentTabChangeListener();
 
-        getEventRouter().addListener(SelectedTabChangeListener.class, new CompatibleSelectedTabChangeListener(listener));
+        getEventRouter().addListener(SelectedTabChangeListener.class, new CompatibleTabSheetSelectedTabChangeListener(listener));
     }
 
     private void initComponentTabChangeListener() {
@@ -482,7 +482,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
 
     @Override
     public void removeListener(TabChangeListener listener) {
-        getEventRouter().removeListener(SelectedTabChangeListener.class, new CompatibleSelectedTabChangeListener(listener));
+        getEventRouter().removeListener(SelectedTabChangeListener.class, new CompatibleTabSheetSelectedTabChangeListener(listener));
     }
 
     @Override

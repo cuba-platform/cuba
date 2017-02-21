@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.dom4j.Element;
 
 import java.util.Collection;
+import java.util.EventObject;
 
 public interface Accordion extends Component.Container, Component.BelongToFrame, Component.HasCaption, Component.HasIcon {
     String NAME = "accordion";
@@ -87,9 +88,53 @@ public interface Accordion extends Component.Container, Component.BelongToFrame,
 
     /**
      * Add a listener that will be notified when a selected tab is changed.
+     *
+     * @deprecated Use {@link Accordion#addSelectedTabChangeListener(Accordion.SelectedTabChangeListener)} instead
      */
+    @Deprecated
     void addListener(TabChangeListener listener);
+
+    @Deprecated
     void removeListener(TabChangeListener listener);
+
+    /**
+     * Add a listener that will be notified when a selected tab is changed.
+     */
+    void addSelectedTabChangeListener(Accordion.SelectedTabChangeListener listener);
+
+    /**
+     * Remove previously added SelectedTabChangeListener.
+     */
+    void removeSelectedTabChangeListener(Accordion.SelectedTabChangeListener listener);
+
+    /**
+     * Listener that will be notified when a selected tab is changed.
+     */
+    interface SelectedTabChangeListener {
+
+        void selectedTabChanged(Accordion.SelectedTabChangeEvent event);
+    }
+
+    /**
+     * SelectedTabChangeEvents are fired when a selected tab is changed.
+     */
+    class SelectedTabChangeEvent extends EventObject {
+        private final Accordion.Tab selectedTab;
+
+        public SelectedTabChangeEvent(Accordion accordion, Accordion.Tab selectedTab) {
+            super(accordion);
+            this.selectedTab = selectedTab;
+        }
+
+        @Override
+        public Accordion getSource() {
+            return (Accordion) super.getSource();
+        }
+
+        public Accordion.Tab getSelectedTab() {
+            return selectedTab;
+        }
+    }
 
     /**
      * Tab interface.
@@ -137,7 +182,10 @@ public interface Accordion extends Component.Container, Component.BelongToFrame,
 
     /**
      * Listener notified when a selected tab is changed.
+     *
+     * @deprecated Use {@link SelectedTabChangeListener} instead
      */
+    @Deprecated
     interface TabChangeListener {
         void tabChanged(Tab newTab);
     }

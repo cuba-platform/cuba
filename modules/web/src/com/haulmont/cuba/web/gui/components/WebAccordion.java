@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
+import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleAccordionSelectedTabChangeListener;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.web.AppUI;
@@ -54,7 +55,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
 
     protected Set<com.vaadin.ui.Component> lazyTabs = new HashSet<>();
 
-    protected Set<Accordion.TabChangeListener> listeners = new HashSet<>();
+    protected Set<Accordion.SelectedTabChangeListener> listeners = new HashSet<>();
 
     public WebAccordion() {
         component = createComponent();
@@ -428,7 +429,10 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
     @Override
     public void addListener(Accordion.TabChangeListener listener) {
         initComponentTabChangeListener();
-        listeners.add(listener);
+
+        CompatibleAccordionSelectedTabChangeListener adapter = new CompatibleAccordionSelectedTabChangeListener(listener);
+
+        listeners.add(adapter);
     }
 
     private void initComponentTabChangeListener() {
@@ -462,13 +466,25 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
 
     @Override
     public void removeListener(Accordion.TabChangeListener listener) {
-        listeners.remove(listener);
+        listeners.remove(new CompatibleAccordionSelectedTabChangeListener(listener));
     }
 
     protected void fireTabChanged() {
-        for (Accordion.TabChangeListener listener : listeners) {
-            listener.tabChanged(getTab());
+        for (SelectedTabChangeListener listener : listeners) {
+            listener.selectedTabChanged(new SelectedTabChangeEvent(this, getTab()));
         }
+    }
+
+    @Override
+    public void addSelectedTabChangeListener(SelectedTabChangeListener listener) {
+        initComponentTabChangeListener();
+
+        listeners.add(listener);
+    }
+
+    @Override
+    public void removeSelectedTabChangeListener(SelectedTabChangeListener listener) {
+        listeners.remove(listener);
     }
 
     protected class LazyTabChangeListener implements com.vaadin.ui.Accordion.SelectedTabChangeListener {

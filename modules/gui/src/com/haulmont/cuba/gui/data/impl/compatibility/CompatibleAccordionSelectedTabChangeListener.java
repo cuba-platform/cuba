@@ -16,18 +16,18 @@
 
 package com.haulmont.cuba.gui.data.impl.compatibility;
 
-import com.haulmont.cuba.gui.components.TabSheet;
+import com.haulmont.cuba.gui.components.Accordion;
 
-public class CompatibleSelectedTabChangeListener implements TabSheet.SelectedTabChangeListener {
+public class CompatibleAccordionSelectedTabChangeListener implements Accordion.SelectedTabChangeListener {
 
-    private final TabSheet.TabChangeListener listener;
+    private final Accordion.TabChangeListener listener;
 
-    public CompatibleSelectedTabChangeListener(TabSheet.TabChangeListener listener) {
+    public CompatibleAccordionSelectedTabChangeListener(Accordion.TabChangeListener listener) {
         this.listener = listener;
     }
 
     @Override
-    public void selectedTabChanged(TabSheet.SelectedTabChangeEvent event) {
+    public void selectedTabChanged(Accordion.SelectedTabChangeEvent event) {
         listener.tabChanged(event.getSelectedTab());
     }
 
@@ -41,7 +41,7 @@ public class CompatibleSelectedTabChangeListener implements TabSheet.SelectedTab
             return false;
         }
 
-        CompatibleSelectedTabChangeListener that = (CompatibleSelectedTabChangeListener) obj;
+        CompatibleAccordionSelectedTabChangeListener that = (CompatibleAccordionSelectedTabChangeListener) obj;
 
         return this.listener.equals(that.listener);
     }
