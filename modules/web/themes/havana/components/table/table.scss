@@ -403,6 +403,13 @@
     color: #ecf2f8;
   }
 
+  .c-table-composition {
+    font-size: 0;
+    & > * {
+      font-size: 12px;
+    }
+  }
+
   .c-table-composition.has-top-panel {
     padding-top: 31px;
 

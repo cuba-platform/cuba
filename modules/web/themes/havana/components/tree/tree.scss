@@ -98,4 +98,13 @@
   .v-scrollable.v-panel-content>.v-widget.#{$primary-stylename} {
     overflow: auto;
   }
+
+  .c-tree-composition.has-top-panel {
+    padding-top: 31px;
+
+    .c-tree-top {
+      height: 25px;
+      margin-top: -31px;
+    }
+  }
 }

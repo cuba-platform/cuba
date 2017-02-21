@@ -1521,7 +1521,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     @Override
     public void setButtonsPanel(ButtonsPanel panel) {
         if (buttonsPanel != null && topPanel != null) {
-            topPanel.removeComponent(WebComponentsHelper.unwrap(buttonsPanel));
+            topPanel.removeComponent(buttonsPanel.unwrap(Component.class));
             buttonsPanel.setParent(null);
         }
         buttonsPanel = panel;
@@ -1535,7 +1535,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 topPanel.setWidth("100%");
                 componentComposition.addComponentAsFirst(topPanel);
             }
-            topPanel.addComponent(WebComponentsHelper.unwrap(panel));
+            topPanel.addComponent(panel.unwrap(Component.class));
             if (panel instanceof VisibilityChangeNotifier) {
                 ((VisibilityChangeNotifier) panel).addVisibilityChangeListener(event ->
                         updateCompositionStylesTopPanelVisible()
@@ -1607,7 +1607,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                         }
                         component.setParent(WebAbstractTable.this);
 
-                        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(component);
+                        com.vaadin.ui.Component vComponent = component.unwrapComposition(Component.class);
 
                         // wrap field for show required asterisk
                         if ((vComponent instanceof com.vaadin.ui.Field)

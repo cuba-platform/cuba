@@ -24,12 +24,13 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,12 +38,16 @@ import java.util.List;
 public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
         extends WebAbstractList<T, E> implements Tree<E> {
 
+    private static final String HAS_TOP_PANEL_STYLENAME = "has-top-panel";
+    // Style names used by tree itself
+    protected List<String> internalStyles = new ArrayList<>();
+
     protected List<Tree.StyleProvider> styleProviders; // lazily initialized List
     protected StyleGeneratorAdapter styleGenerator;    // lazily initialized field
 
     protected ButtonsPanel buttonsPanel;
     protected HorizontalLayout topPanel;
-    protected VerticalLayout componentComposition;
+    protected com.vaadin.ui.CssLayout componentComposition;
     protected Action enterPressAction;
     protected IconProvider<? super E> iconProvider;
 
@@ -138,7 +143,7 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     @Override
     public void setButtonsPanel(ButtonsPanel panel) {
         if (buttonsPanel != null && topPanel != null) {
-            topPanel.removeComponent(WebComponentsHelper.unwrap(buttonsPanel));
+            topPanel.removeComponent(buttonsPanel.unwrap(com.vaadin.ui.Component.class));
             buttonsPanel.setParent(null);
         }
         buttonsPanel = panel;
@@ -148,26 +153,62 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
             }
 
             if (topPanel == null) {
-                topPanel = new HorizontalLayout();
+                topPanel = createTopPanel();
                 topPanel.setWidth("100%");
-
                 componentComposition.addComponentAsFirst(topPanel);
             }
-            topPanel.addComponent(WebComponentsHelper.unwrap(panel));
+            topPanel.addComponent(panel.unwrap(com.vaadin.ui.Component.class));
+            if (panel instanceof VisibilityChangeNotifier) {
+                ((VisibilityChangeNotifier) panel).addVisibilityChangeListener(event ->
+                        updateCompositionStylesTopPanelVisible()
+                );
+            }
             panel.setParent(this);
+        }
+
+        updateCompositionStylesTopPanelVisible();
+    }
+
+    protected HorizontalLayout createTopPanel() {
+        HorizontalLayout topPanel = new HorizontalLayout();
+        topPanel.setStyleName("c-tree-top");
+        return topPanel;
+    }
+
+    // if buttons panel becomes hidden we need to set top panel height to 0
+    protected void updateCompositionStylesTopPanelVisible() {
+        if (topPanel != null) {
+            boolean hasChildren = topPanel.getComponentCount() > 0;
+            boolean anyChildVisible = false;
+            for (com.vaadin.ui.Component childComponent : topPanel) {
+                if (childComponent.isVisible()) {
+                    anyChildVisible = true;
+                    break;
+                }
+            }
+            boolean topPanelVisible = hasChildren && anyChildVisible;
+
+            if (!topPanelVisible) {
+                componentComposition.removeStyleName(HAS_TOP_PANEL_STYLENAME);
+
+                internalStyles.remove(HAS_TOP_PANEL_STYLENAME);
+            } else {
+                componentComposition.addStyleName(HAS_TOP_PANEL_STYLENAME);
+
+                if (!internalStyles.contains(HAS_TOP_PANEL_STYLENAME)) {
+                    internalStyles.add(HAS_TOP_PANEL_STYLENAME);
+                }
+            }
         }
     }
 
     public void initComponent(CubaTree component) {
-        componentComposition = new VerticalLayout();
+        componentComposition = new CssLayout();
+        componentComposition.setPrimaryStyleName("c-tree-composition");
+        componentComposition.setWidthUndefined();
         componentComposition.addComponent(component);
 
-        componentComposition.setSpacing(true);
-        componentComposition.setMargin(false);
-        componentComposition.setWidth("-1px");
-
         component.setSizeFull();
-        componentComposition.setExpandRatio(component, 1);
 
         component.addShortcutListener(new ShortcutListener("tableEnter", com.vaadin.event.ShortcutAction.KeyCode.ENTER, null) {
             @Override
@@ -280,6 +321,24 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     @Override
     public void refresh() {
         datasource.refresh();
+    }
+
+    @Override
+    public void setStyleName(String name) {
+        super.setStyleName(name);
+
+        for (String internalStyle : internalStyles) {
+            componentComposition.addStyleName(internalStyle);
+        }
+    }
+
+    @Override
+    public String getStyleName() {
+        String styleName = super.getStyleName();
+        for (String internalStyle : internalStyles) {
+            styleName = styleName.replace(internalStyle, "");
+        }
+        return StringUtils.normalizeSpace(styleName);
     }
 
     @Override

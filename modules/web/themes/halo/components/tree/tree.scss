@@ -16,7 +16,6 @@
  */
 
 @mixin halo-tree($primary-stylename: v-tree) {
-
   .#{$primary-stylename},
   .v-scrollable > .#{$primary-stylename} {
     overflow: auto;
@@ -41,5 +40,22 @@
 
   .#{$primary-stylename} > div {
     position: relative;
+  }
+
+  .c-tree-composition {
+    font-size: 0;
+    & > * {
+      font-size: $v-font-size;
+    }
+  }
+
+  .c-tree-composition.has-top-panel {
+    padding-top: $v-unit-size + ceil($v-layout-spacing-vertical);
+
+    .c-tree-top {
+      overflow: hidden;
+      height: $v-unit-size;
+      margin-top: -1 * ($v-unit-size + ceil($v-layout-spacing-vertical));
+    }
   }
 }
