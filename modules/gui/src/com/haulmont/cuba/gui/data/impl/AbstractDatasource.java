@@ -184,6 +184,7 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
                 // Look for corresponding property datasource in the Parent's DsContext
                 for (Datasource siblingOfParent : parentDs.getDsContext().getAll()) {
                     if (siblingOfParent instanceof NestedDatasource
+                            && ((NestedDatasource) siblingOfParent).getProperty().equals(((NestedDatasource) sibling).getProperty())
                             && ((NestedDatasource) siblingOfParent).getMaster() == parentDs) {
                         // If such corresponding datasource found, set it as a parent for our property datasource
                         ((DatasourceImplementation) sibling).setParent(siblingOfParent);
