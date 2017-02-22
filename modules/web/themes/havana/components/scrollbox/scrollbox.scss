@@ -16,9 +16,7 @@
 
 @mixin havana-scrollbox($primary-stylename: c-scrollbox) {
   .#{$primary-stylename} {
-    .#{$primary-stylename} > .v-panel-captionwrap {
-      display: none;
-    }
+    overflow: auto;
 
     .#{$primary-stylename}-content {
       border: 0;

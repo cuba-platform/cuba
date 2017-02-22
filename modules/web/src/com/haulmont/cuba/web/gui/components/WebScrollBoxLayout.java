@@ -22,11 +22,11 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
-import com.haulmont.cuba.web.toolkit.ui.CubaScrollBoxPanel;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.CssLayout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -34,7 +34,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel> implements ScrollBoxLayout {
+public class WebScrollBoxLayout extends WebAbstractComponent<CssLayout> implements ScrollBoxLayout {
 
     protected static final String SCROLLBOX_CONTENT_STYLENAME = "c-scrollbox-content";
     protected static final String SCROLLBOX_STYLENAME = "c-scrollbox";
@@ -45,19 +45,19 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel>
     protected ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
 
     public WebScrollBoxLayout() {
-        component = new CubaScrollBoxPanel();
-        component.setStyleName(SCROLLBOX_STYLENAME);
+        component = new CssLayout();
+        component.setPrimaryStyleName(SCROLLBOX_STYLENAME);
 
         CubaVerticalActionsLayout content = new CubaVerticalActionsLayout();
         content.setWidth("100%");
         content.setStyleName(SCROLLBOX_CONTENT_STYLENAME);
-        component.setContent(content);
+        component.addComponent(content);
 
         getContent().setMargin(false);
     }
 
     protected AbstractOrderedLayout getContent() {
-        return (AbstractOrderedLayout) component.getContent();
+        return (AbstractOrderedLayout) component.getComponent(0);
     }
 
     @Override
@@ -84,11 +84,12 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxPanel>
             newContent.setSpacing((getContent()).isSpacing());
             newContent.setStyleName(SCROLLBOX_CONTENT_STYLENAME);
 
-            com.vaadin.ui.Component oldContent = component.getContent();
+            com.vaadin.ui.Component oldContent = component.getComponent(0);
             newContent.setWidth(oldContent.getWidth(), oldContent.getWidthUnits());
             newContent.setHeight(oldContent.getHeight(), oldContent.getHeightUnits());
 
-            component.setContent(newContent);
+            component.removeAllComponents();
+            component.addComponent(newContent);
 
             applyScrollBarsPolicy(scrollBarPolicy);
         }
