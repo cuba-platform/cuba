@@ -55,6 +55,8 @@ import java.util.Map;
 
 public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implements EntityLinkField {
 
+    protected static final String EMPTY_VALUE_STYLENAME = "empty-value";
+
     protected EntityLinkClickHandler clickHandler;
 
     protected String screen;
@@ -154,6 +156,8 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
             if (datasource == null && metaClass == null) {
                 throw new IllegalStateException("Datasource or metaclass must be set for field");
             }
+            
+            component.removeStyleName(EMPTY_VALUE_STYLENAME);
 
             MetaClass fieldMetaClass = getMetaClass();
             if (fieldMetaClass != null) {
@@ -168,9 +172,16 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
                     );
                 }
             }
+        } else {
+            component.addStyleName("empty-value");
         }
 
         super.setValue(value);
+    }
+
+    @Override
+    public String getStyleName() {
+        return StringUtils.normalizeSpace(super.getStyleName().replace(EMPTY_VALUE_STYLENAME, ""));
     }
 
     @Override
