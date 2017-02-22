@@ -21,6 +21,10 @@
         caption="msg://entityRestore.caption"
         focusComponent="entities">
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.large"
+                width="theme://cuba.gui.dialogSize.width.large"
+                resizable="true"/>
+
     <layout spacing="true" expand="tablePanel">
         <hbox spacing="true">
             <label value="msg://entityType" align="MIDDLE_LEFT"/>

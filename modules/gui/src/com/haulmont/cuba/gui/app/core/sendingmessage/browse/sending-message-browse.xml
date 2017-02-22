@@ -30,6 +30,9 @@
             </query>
         </collectionDatasource>
     </dsContext>
+    <dialogMode height="theme://cuba.gui.dialogSize.height.xlarge"
+                width="theme://cuba.gui.dialogSize.width.xlarge"
+                resizable="true"/>
     <layout>
         <split width="100%" height="100%" orientation="horizontal" pos="70">
             <vbox id="leftBox" expand="table" spacing="true" height="100%" margin="false,true,false,false">

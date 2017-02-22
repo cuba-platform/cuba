@@ -35,6 +35,10 @@
 
     <assign name="width" value="theme://cuba.gui.user-edit.field.width"/>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.xlarge"
+                width="theme://cuba.gui.dialogSize.width.xlarge"
+                resizable="true"/>
+
     <layout expand="split" spacing="true">
         <groupBox id="propertiesBox">
             <grid id="propertiesGrid" width="100%" spacing="true">

@@ -29,6 +29,10 @@
         </collectionDatasource>
     </dsContext>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.large"
+                width="theme://cuba.gui.dialogSize.width.large"
+                resizable="true"/>
+
     <layout expand="filesTable" spacing="true">
         <filter id="genericFilter" datasource="filesDs" margin="false,false,true,false" applyTo="filesTable">
             <properties include=".*"/>

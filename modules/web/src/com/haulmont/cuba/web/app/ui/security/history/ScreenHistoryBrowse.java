@@ -19,13 +19,12 @@ package com.haulmont.cuba.web.app.ui.security.history;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.gui.app.LinkColumnHelper;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.gui.app.LinkColumnHelper;
 import com.haulmont.cuba.web.gui.components.ShowLinkAction;
 import com.haulmont.cuba.web.sys.LinkHandler;
 
@@ -42,16 +41,8 @@ public class ScreenHistoryBrowse extends AbstractWindow {
     @Inject
     protected Configuration configuration;
 
-    @Inject
-    protected ThemeConstants themeConstants;
-
     @Override
     public void init(Map<String, Object> params) {
-        getDialogOptions()
-                .setHeight(themeConstants.getInt("cuba.web.ScreenHistoryBrowse.height"))
-                .setWidth(themeConstants.getInt("cuba.web.ScreenHistoryBrowse.width"))
-                .setResizable(false);
-
         LinkColumnHelper.initColumn(historyTable, "caption", entity -> {
             close("windowClose");
             openUrl(entity);

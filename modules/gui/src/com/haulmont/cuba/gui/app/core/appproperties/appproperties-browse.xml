@@ -31,6 +31,10 @@
         </hierarchicalDatasource>
     </dsContext>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.medium"
+                width="theme://cuba.gui.dialogSize.width.medium"
+                resizable="true"/>
+
     <layout expand="paramsTable" spacing="true">
         <hbox id="hintBox">
             <label value="msg://hint" align="MIDDLE_LEFT"/>

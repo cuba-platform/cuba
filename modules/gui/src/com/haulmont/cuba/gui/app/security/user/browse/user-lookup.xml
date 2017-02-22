@@ -35,6 +35,10 @@
         </collectionDatasource>
     </dsContext>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.xlarge"
+                width="theme://cuba.gui.dialogSize.width.xlarge"
+                resizable="true"/>
+
     <layout spacing="true" expand="usersTable">
         <filter id="genericFilter" datasource="usersDs">
             <properties include=".*" exclude="(password)|(loginLowerCase)"/>

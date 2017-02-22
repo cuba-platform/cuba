@@ -28,6 +28,10 @@
 
     <assign name="width" value="theme://cuba.gui.role-edit.name.width"/>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.xlarge"
+                width="theme://cuba.gui.dialogSize.width.xlarge"
+                resizable="true"/>
+
     <layout expand="permissionsTabsheet" spacing="true">
         <groupBox id="roleGroupBox">
             <hbox id="rolePropertiesHBox" spacing="true">
