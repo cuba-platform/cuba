@@ -17,6 +17,9 @@
 
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
         class="com.haulmont.cuba.gui.components.filter.edit.DynamicAttributesConditionFrame">
+    <dialogMode height="theme://cuba.gui.dialogSize.height.medium"
+                width="theme://cuba.gui.dialogSize.width.medium"
+                resizable="true"/>
     <layout spacing="true">
         <grid spacing="true" width="100%">
             <columns>

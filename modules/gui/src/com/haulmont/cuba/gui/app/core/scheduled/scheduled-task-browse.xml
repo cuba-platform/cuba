@@ -29,6 +29,10 @@
         </groupDatasource>
     </dsContext>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.large"
+                width="theme://cuba.gui.dialogSize.width.large"
+                resizable="true"/>
+
     <layout expand="tasksTable" spacing="true">
         <filter id="tasksFilter" datasource="tasksDs" applyTo="tasksTable">
             <properties include=".*"/>

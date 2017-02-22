@@ -33,6 +33,10 @@
 
     <assign name="filterFieldWidth" value="theme://cuba.gui.session-browse.filterField.width"/>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.medium"
+                width="theme://cuba.gui.dialogSize.width.medium"
+                resizable="true"/>
+
     <layout expand="sessionsTable" spacing="true">
         <hbox id="filterHBox" spacing="true" width="100%">
             <groupBox id="filterGroupBox" caption="msg://filter" orientation="horizontal" spacing="true" width="AUTO">

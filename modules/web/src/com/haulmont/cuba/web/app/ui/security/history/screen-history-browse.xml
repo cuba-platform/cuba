@@ -32,6 +32,10 @@
         </collectionDatasource>
     </dsContext>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.small"
+                width="theme://cuba.gui.dialogSize.width.small"
+                resizable="true"/>
+
     <layout expand="historyTable">
         <table id="historyTable" width="100%">
             <columns>

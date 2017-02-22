@@ -56,6 +56,10 @@
         </collectionDatasource>
     </dsContext>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.xlarge"
+                width="theme://cuba.gui.dialogSize.width.xlarge"
+                resizable="true"/>
+
     <layout expand="split">
         <split id="split" orientation="horizontal" pos="30" width="100%">
             <vbox id="topBox" spacing="true" margin="false,true,false,false" height="100%" expand="groupsTree">

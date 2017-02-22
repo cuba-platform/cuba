@@ -24,6 +24,10 @@
         <desktop class="com.haulmont.cuba.desktop.app.core.entityinspector.EntityInspectorBrowseCompanion"/>
     </companions>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.xlarge"
+                width="theme://cuba.gui.dialogSize.width.xlarge"
+                resizable="true"/>
+
     <layout expand="tableBox" spacing="true">
         <hbox id="lookupBox" spacing="true">
             <label value="msg://entityType" align="MIDDLE_LEFT"/>

@@ -36,6 +36,10 @@
     <assign name="logFieldWidth" value="theme://cuba.web.server-log-window.logField.width"/>
     <assign name="logLevelFieldWidth" value="theme://cuba.web.server-log-window.logLevelField.width"/>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.xlarge"
+                width="theme://cuba.gui.dialogSize.width.xlarge"
+                resizable="true"/>
+
     <layout expand="logFieldBox" spacing="true">
         <grid spacing="true">
             <columns>

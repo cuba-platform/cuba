@@ -39,6 +39,10 @@
 
     <assign name="fieldWidth" value="theme://cuba.web.display-mbeans.field.width"/>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.xlarge"
+                width="theme://cuba.gui.dialogSize.width.xlarge"
+                resizable="true"/>
+
     <layout expand="mbeans" spacing="true">
         <groupBox>
             <grid spacing="true">

@@ -30,6 +30,10 @@
         <timer id="valuesTimer" delay="5000" autostart="true" repeating="true" onTimer="onRefresh"/>
     </timers>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.large"
+                width="theme://cuba.gui.dialogSize.width.large"
+                resizable="true"/>
+
     <layout expand="paramsTable" spacing="true">
         <groupBox orientation="horizontal" spacing="true" width="theme://cuba.web.perf-stat.width">
             <grid spacing="true" width="100%">

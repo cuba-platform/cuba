@@ -31,6 +31,10 @@
         </groupDatasource>
     </dsContext>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.medium"
+                width="theme://cuba.gui.dialogSize.width.medium"
+                resizable="true"/>
+
     <layout spacing="true">
         <tabSheet id="tabSheet" width="100%" height="100%">
             <tab margin="true" id="viewTab" caption="msg://view">

@@ -32,6 +32,10 @@
         <timer id="refreshEventsTimer" delay="10000" repeating="true" onTimer="refreshEvents"/>
     </timers>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.xlarge"
+                width="theme://cuba.gui.dialogSize.width.xlarge"
+                resizable="true"/>
+
     <layout expand="table" spacing="true">
         <groupBox orientation="vertical" height="AUTO">
             <grid id="grid" spacing="true" width="AUTO" height="AUTO">

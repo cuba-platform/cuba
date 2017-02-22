@@ -30,6 +30,10 @@
         </collectionDatasource>
     </dsContext>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.xlarge"
+                width="theme://cuba.gui.dialogSize.width.xlarge"
+                resizable="true"/>
+
     <layout>
         <table id="rolesTable" height="100%" width="100%" editable="true" multiselect="true">
             <actions>
