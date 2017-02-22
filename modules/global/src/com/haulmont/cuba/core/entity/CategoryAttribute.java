@@ -67,6 +67,15 @@ public class CategoryAttribute extends StandardEntity {
     @Column(name = "DEFAULT_ENTITY_VALUE")
     private UUID defaultEntityId;
 
+    @Column(name = "DEFAULT_STR_ENTITY_VALUE", length = 255)
+    private String defaultStringEntityId;
+
+    @Column(name = "DEFAULT_INT_ENTITY_VALUE")
+    private Integer defaultIntEntityId;
+
+    @Column(name = "DEFAULT_LONG_ENTITY_VALUE")
+    private Long defaultLongEntityId;
+
     @Column(name = "ORDER_NO")
     private Integer orderNo;
 
@@ -162,6 +171,30 @@ public class CategoryAttribute extends StandardEntity {
 
     public void setDefaultEntityId(UUID defaultEntityId) {
         this.defaultEntityId = defaultEntityId;
+    }
+
+    public String getDefaultStringEntityId() {
+        return defaultStringEntityId;
+    }
+
+    public void setDefaultStringEntityId(String defaultStringEntityId) {
+        this.defaultStringEntityId = defaultStringEntityId;
+    }
+
+    public Integer getDefaultIntEntityId() {
+        return defaultIntEntityId;
+    }
+
+    public void setDefaultIntEntityId(Integer defaultIntEntityId) {
+        this.defaultIntEntityId = defaultIntEntityId;
+    }
+
+    public Long getDefaultLongEntityId() {
+        return defaultLongEntityId;
+    }
+
+    public void setDefaultLongEntityId(Long defaultLongEntityId) {
+        this.defaultLongEntityId = defaultLongEntityId;
     }
 
     public String getDefaultString() {

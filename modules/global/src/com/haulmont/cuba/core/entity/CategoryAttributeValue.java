@@ -58,11 +58,29 @@ public class CategoryAttributeValue extends StandardEntity {
     @Column(name = "ENTITY_ID")
     private UUID entityId;
 
+    @Column(name = "STRING_ENTITY_ID", length = 255)
+    private String stringEntityId;
+
+    @Column(name = "INT_ENTITY_ID")
+    private Integer intEntityId;
+
+    @Column(name = "LONG_ENTITY_ID")
+    private Long longEntityId;
+
     @Column(name = "ENTITY_VALUE")
     private UUID entityValue;
 
+    @Column(name = "STRING_ENTITY_VALUE", length = 255)
+    private String stringEntityValue;
+
+    @Column(name = "INT_ENTITY_VALUE")
+    private Integer intEntityValue;
+
+    @Column(name = "LONG_ENTITY_VALUE")
+    private Long longEntityValue;
+
     @Transient
-    private BaseUuidEntity transientEntityValue;
+    private BaseGenericIdEntity transientEntityValue;
 
     @OneToMany(mappedBy = "parent")
     @OnDelete(DeletePolicy.CASCADE)
@@ -91,12 +109,60 @@ public class CategoryAttributeValue extends StandardEntity {
         this.entityId = entityId;
     }
 
+    public String getStringEntityId() {
+        return stringEntityId;
+    }
+
+    public void setStringEntityId(String stringEntityId) {
+        this.stringEntityId = stringEntityId;
+    }
+
+    public Integer getIntEntityId() {
+        return intEntityId;
+    }
+
+    public void setIntEntityId(Integer intEntityId) {
+        this.intEntityId = intEntityId;
+    }
+
+    public Long getLongEntityId() {
+        return longEntityId;
+    }
+
+    public void setLongEntityId(Long longEntityId) {
+        this.longEntityId = longEntityId;
+    }
+
     public UUID getEntityValue() {
         return entityValue;
     }
 
     public void setEntityValue(UUID entityValue) {
         this.entityValue = entityValue;
+    }
+
+    public String getStringEntityValue() {
+        return stringEntityValue;
+    }
+
+    public void setStringEntityValue(String stringEntityValue) {
+        this.stringEntityValue = stringEntityValue;
+    }
+
+    public Integer getIntEntityValue() {
+        return intEntityValue;
+    }
+
+    public void setIntEntityValue(Integer intEntityValue) {
+        this.intEntityValue = intEntityValue;
+    }
+
+    public Long getLongEntityValue() {
+        return longEntityValue;
+    }
+
+    public void setLongEntityValue(Long longEntityValue) {
+        this.longEntityValue = longEntityValue;
     }
 
     public String getStringValue() {
@@ -147,11 +213,11 @@ public class CategoryAttributeValue extends StandardEntity {
         this.code = code;
     }
 
-    public BaseUuidEntity getTransientEntityValue() {
+    public BaseGenericIdEntity getTransientEntityValue() {
         return transientEntityValue;
     }
 
-    public void setTransientEntityValue(BaseUuidEntity transientEntityValue) {
+    public void setTransientEntityValue(BaseGenericIdEntity transientEntityValue) {
         this.transientEntityValue = transientEntityValue;
     }
 
@@ -200,9 +266,10 @@ public class CategoryAttributeValue extends StandardEntity {
             setBooleanValue((Boolean) value);
         } else if (value instanceof UUID) {
             setEntityValue((UUID) value);
-        } else if (value instanceof HasUuid) {
+        } else if (value instanceof BaseGenericIdEntity) {
+            //overwrite it
             setEntityValue(((HasUuid) value).getUuid());
-            setTransientEntityValue((BaseUuidEntity) value);
+            setTransientEntityValue((BaseGenericIdEntity) value);
         } else if (value instanceof String) {
             setStringValue((String) value);
         } else if (value instanceof List) {

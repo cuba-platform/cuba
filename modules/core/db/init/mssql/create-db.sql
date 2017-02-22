@@ -764,6 +764,9 @@ create table SYS_CATEGORY_ATTR (
     DEFAULT_DATE_IS_CURRENT tinyint,
     DEFAULT_BOOLEAN tinyint,
     DEFAULT_ENTITY_VALUE uniqueidentifier,
+    DEFAULT_STR_ENTITY_VALUE varchar(255),
+    DEFAULT_INT_ENTITY_VALUE integer,
+    DEFAULT_LONG_ENTITY_VALUE bigint,
     ENUMERATION varchar(500),
     ORDER_NO integer,
     SCREEN varchar(255),
@@ -797,12 +800,18 @@ create table SYS_ATTR_VALUE (
     --
     CATEGORY_ATTR_ID uniqueidentifier not null,
     ENTITY_ID uniqueidentifier,
+    STRING_ENTITY_ID varchar(255),
+    INT_ENTITY_ID integer,
+    LONG_ENTITY_ID bigint,
     STRING_VALUE varchar(max),
     INTEGER_VALUE integer,
     DOUBLE_VALUE numeric,
     DATE_VALUE datetime,
     BOOLEAN_VALUE tinyint,
     ENTITY_VALUE uniqueidentifier,
+    STRING_ENTITY_VALUE varchar(255),
+    INT_ENTITY_VALUE integer,
+    LONG_ENTITY_VALUE bigint,
     CODE varchar(100),
     PARENT_ID uniqueidentifier,
     --
@@ -812,6 +821,9 @@ create table SYS_ATTR_VALUE (
 )^
 
 create clustered index IDX_SYS_ATTR_VALUE_ENTITY on SYS_ATTR_VALUE (ENTITY_ID)^
+create index IDX_SYS_ATTR_VALUE_SENTITY on SYS_ATTR_VALUE(STRING_ENTITY_ID)^
+create index IDX_SYS_ATTR_VALUE_IENTITY on SYS_ATTR_VALUE(INT_ENTITY_ID)^
+create index IDX_SYS_ATTR_VALUE_LENTITY on SYS_ATTR_VALUE(LONG_ENTITY_ID)^
 
 --------------------------------------------------------------------------------------------------------------
 

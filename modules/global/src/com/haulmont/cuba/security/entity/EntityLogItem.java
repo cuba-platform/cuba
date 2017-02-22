@@ -179,26 +179,6 @@ public class EntityLogItem extends BaseUuidEntity {
         this.longEntityId = longEntityId;
     }
 
-    public void setObjectEntityId(Object objectEntityId) {
-        if (objectEntityId instanceof UUID) {
-            setEntityId((UUID) objectEntityId);
-        } else if (objectEntityId instanceof Long) {
-            setLongEntityId((Long) objectEntityId);
-        } else if (objectEntityId instanceof Integer) {
-            setIntEntityId((Integer) objectEntityId);
-        } else if (objectEntityId instanceof String) {
-            setStringEntityId((String) objectEntityId);
-        } else if (objectEntityId == null) {
-            setEntityId(null);
-            setLongEntityId(null);
-            setIntEntityId(null);
-            setStringEntityId(null);
-        } else {
-            throw new IllegalArgumentException(
-                    String.format("Unsupported primary key type: %s", objectEntityId.getClass().getSimpleName()));
-        }
-    }
-
     public Object getObjectEntityId() {
         if (entityId != null) {
             return entityId;

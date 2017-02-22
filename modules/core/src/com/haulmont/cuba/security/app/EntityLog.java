@@ -461,15 +461,4 @@ public class EntityLog implements EntityLogAPI {
     protected void logError(Entity entity, Exception e) {
         log.warn("Unable to log entity {}, id={}", entity, entity.getId(), e);
     }
-
-    protected Object getEntityId(Entity entity) {
-        if (entity instanceof HasUuid) {
-            return ((HasUuid) entity).getUuid();
-        }
-        Object entityId = entity.getId();
-        if (entityId instanceof IdProxy) {
-            return ((IdProxy) entityId).get();
-        }
-        return entity.getId();
-    }
 }

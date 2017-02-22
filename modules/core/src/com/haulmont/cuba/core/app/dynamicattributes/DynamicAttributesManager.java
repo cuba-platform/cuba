@@ -66,10 +66,6 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
     protected volatile DynamicAttributesCache dynamicAttributesCache;
 
-    private static class ReloadCacheMsg implements Serializable {
-        private static final long serialVersionUID = -3116358584797500962L;
-    }
-
     @Inject
     public void setClusterManager(ClusterManagerAPI clusterManager) {
         this.clusterManager = clusterManager;
@@ -182,8 +178,6 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
     @Override
     public void storeDynamicAttributes(BaseGenericIdEntity entity) {
-        if (!(entity instanceof HasUuid))
-            return;
         try (Transaction tx = persistence.getTransaction()) {
             doStoreDynamicAttributes(entity);
             tx.commit();
@@ -193,28 +187,24 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     @Override
     public <E extends BaseGenericIdEntity> void fetchDynamicAttributes(List<E> entities, @Nonnull Set<Class> dependentClasses) {
         Set<BaseGenericIdEntity> toProcess = new HashSet<>();
-        entities.stream()
-                .filter(entity -> entity instanceof HasUuid)
-                .forEach(entity -> {
-                    toProcess.add(entity);
-                    if (!dependentClasses.isEmpty()) {
-                        metadata.getTools().traverseAttributes(entity, new EntityAttributeVisitor() {
-                            @Override
-                            public void visit(Entity dependentEntity, MetaProperty property) {
-                                if (dependentEntity instanceof HasUuid) {
-                                    toProcess.add((BaseGenericIdEntity) dependentEntity);
-                                }
-                            }
+        entities.forEach(entity -> {
+            toProcess.add(entity);
+            if (!dependentClasses.isEmpty()) {
+                metadata.getTools().traverseAttributes(entity, new EntityAttributeVisitor() {
+                    @Override
+                    public void visit(Entity dependentEntity, MetaProperty property) {
+                        toProcess.add((BaseGenericIdEntity) dependentEntity);
+                    }
 
-                            @Override
-                            public boolean skip(MetaProperty property) {
-                                return metadata.getTools().isPersistent(property)
-                                        && property.getRange().isClass()
-                                        && dependentClasses.contains(property.getJavaType());
-                            }
-                        });
+                    @Override
+                    public boolean skip(MetaProperty property) {
+                        return metadata.getTools().isPersistent(property)
+                                && property.getRange().isClass()
+                                && dependentClasses.contains(property.getJavaType());
                     }
                 });
+            }
+        });
         if (toProcess.isEmpty())
             return;
 
@@ -276,6 +266,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     /**
      * Removes nested {@code CategoryAttributeValue} entities for items that were removed from the collection value
      * and creates new child {@code CategoryAttributeValue} instances for just added collection value items.
+     *
      * @param categoryAttributeValue
      */
     protected void storeCategoryAttributeValueWithCollectionType(CategoryAttributeValue categoryAttributeValue) {
@@ -414,15 +405,15 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         HashMultimap<MetaClass, UUID> entitiesIdsToBeLoaded = HashMultimap.create();
 
         cavsOfEntityType.forEach(cav -> {
-                    String className = cav.getCategoryAttribute().getEntityClass();
-                    try {
-                        Class<?> aClass = Class.forName(className);
-                        MetaClass metaClass = metadata.getClass(aClass);
-                        entitiesIdsToBeLoaded.put(metaClass, cav.getEntityValue());
-                    } catch (ClassNotFoundException e) {
-                        log.error("Class {} not found", className);
-                    }
-                });
+            String className = cav.getCategoryAttribute().getEntityClass();
+            try {
+                Class<?> aClass = Class.forName(className);
+                MetaClass metaClass = metadata.getClass(aClass);
+                entitiesIdsToBeLoaded.put(metaClass, cav.getEntityValue());
+            } catch (ClassNotFoundException e) {
+                log.error("Class {} not found", className);
+            }
+        });
 
         EntityManager em = persistence.getEntityManager();
         Map<Object, BaseUuidEntity> idToEntityMap = new HashMap<>();
@@ -466,5 +457,9 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
                 .setParameter("ids", ids)
                 .setView(view)
                 .getResultList();
+    }
+
+    private static class ReloadCacheMsg implements Serializable {
+        private static final long serialVersionUID = -3116358584797500962L;
     }
 }
