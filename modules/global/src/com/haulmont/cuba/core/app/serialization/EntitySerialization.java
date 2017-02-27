@@ -381,8 +381,15 @@ public class EntitySerialization implements EntitySerializationAPI {
                         Object pkValue = idDatatype.parse(idString);
                         if (entity instanceof BaseDbGeneratedIdEntity) {
                             pkValue = IdProxy.of((Long) pkValue);
+                            JsonPrimitive uuidPrimitive = jsonObject.getAsJsonPrimitive("uuid");
+                            if (uuidPrimitive != null) {
+                                UUID uuid = UUID.fromString(uuidPrimitive.getAsString());
+                                ((IdProxy) pkValue).setUuid(uuid);
+                            }
+                            ((BaseDbGeneratedIdEntity) entity).setId((IdProxy) pkValue);
+                        } else {
+                            entity.setValue("id", pkValue);
                         }
-                        entity.setValue("id", pkValue);
                     } catch (ParseException e) {
                         throw new EntitySerializationException(e);
                     }
