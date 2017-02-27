@@ -261,9 +261,9 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     @Override
     public Entity extractEntity(EntitySnapshot snapshot) {
         String rawResult = snapshot.getSnapshotXml();
-        BaseUuidEntity entity;
+        Entity entity;
         if (isXml(rawResult)) {
-            entity = (BaseUuidEntity) fromXML(snapshot.getSnapshotXml());
+            entity = (Entity) fromXML(snapshot.getSnapshotXml());
         } else {
             entity = entitySerializationAPI.entityFromJson(rawResult, metadata.getClass(snapshot.getEntityMetaClass()));
         }
