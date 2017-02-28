@@ -296,6 +296,8 @@ create table TEST_ORDER (
     constraint TEST_ORDER_USER foreign key (USER_ID) references SEC_USER(ID)
 )^
 
+----------------------------------------------------------------------------------------------------------------
+
 create table TEST_LINK_ENTITY (
     ID bigint,
     --
@@ -318,4 +320,27 @@ create table TEST_MULTI_LINK_ENTITY (
     constraint FK_TEST_LINK_ENTITY_1 foreign key (A_ID) references TEST_LINK_ENTITY(ID),
     constraint FK_TEST_LINK_ENTITY_2 foreign key (B_ID) references TEST_LINK_ENTITY(ID),
     constraint FK_TEST_LINK_ENTITY_3 foreign key (C_ID) references TEST_LINK_ENTITY(ID)
+)^
+
+----------------------------------------------------------------------------------------------------------------
+
+create table TEST_JOINED_LONGID_BASE (
+    ID bigint not null,
+    DTYPE varchar(100),
+    NAME varchar(255),
+    primary key (ID)
+)^
+
+create table TEST_JOINED_LONGID_FOO (
+    ID bigint not null,
+    FOO varchar(255),
+    primary key (ID),
+    constraint FK_TEST_JOINED_LONGID_FOO foreign key (ID) references TEST_JOINED_LONGID_BASE(ID)
+)^
+
+create table TEST_JOINED_LONGID_BAR (
+    ID bigint not null,
+    BAR varchar(255),
+    primary key (ID),
+    constraint FK_TEST_JOINED_LONGID_BAR foreign key (ID) references TEST_JOINED_LONGID_BASE(ID)
 )^
