@@ -31,6 +31,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -118,11 +120,24 @@ public class MetadataImpl implements Metadata {
                 return;
 
             if (entity instanceof BaseLongIdEntity) {
-                ((BaseGenericIdEntity<Long>) entity).setId(numberIdSource.createLongId(metaClass.getName()));
+                ((BaseGenericIdEntity<Long>) entity).setId(numberIdSource.createLongId(getEntityNameForIdGeneration(metaClass)));
             } else if (entity instanceof BaseIntegerIdEntity) {
-                ((BaseGenericIdEntity<Integer>) entity).setId(numberIdSource.createIntegerId(metaClass.getName()));
+                ((BaseGenericIdEntity<Integer>) entity).setId(numberIdSource.createIntegerId(getEntityNameForIdGeneration(metaClass)));
             }
         }
+    }
+
+    protected String getEntityNameForIdGeneration(MetaClass metaClass) {
+        MetaClass result = metaClass.getAncestors().stream()
+                .filter(mc -> {
+                    // use root of inheritance tree if the strategy is JOINED because ID is stored in the root table
+                    Class<?> javaClass = mc.getJavaClass();
+                    Inheritance inheritance = javaClass.getAnnotation(Inheritance.class);
+                    return inheritance != null && inheritance.strategy() == InheritanceType.JOINED;
+                })
+                .findFirst()
+                .orElse(metaClass);
+        return result.getName();
     }
 
     protected void assignUuid(Entity entity) {
