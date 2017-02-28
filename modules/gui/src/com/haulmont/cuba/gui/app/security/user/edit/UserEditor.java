@@ -195,12 +195,11 @@ public class UserEditor extends AbstractEditor<User> {
         lc.setView(View.MINIMAL);
         List<Role> allowedRoles = dataSupplier.loadList(lc);
 
-        Collection<UserRole> items = rolesDs.getItems();
-        for (UserRole userRole : items) {
+        Collection<UserRole> userRoles = new ArrayList<>(rolesDs.getItems());
+        for (UserRole userRole : userRoles) {
             if (!allowedRoles.contains(userRole.getRole())) {
                 rolesDs.excludeItem(userRole);
             }
-
         }
 
         if (BooleanUtils.isTrue(initCopy)) {
