@@ -62,6 +62,16 @@ public final class EventRouter {
         }
     }
 
+    public <L> void addListener(Class<L> listenerClass, L listener, Runnable runIfFirstListenerWasAdded) {
+        boolean isFirst = !hasListeners(listenerClass);
+
+        addListener(listenerClass, listener);
+
+        if (isFirst) {
+            runIfFirstListenerWasAdded.run();
+        }
+    }
+
     public <L> void removeListener(Class<L> listenerClass, L listener) {
         Preconditions.checkNotNullArgument(listener, "listener cannot be null");
 
@@ -73,6 +83,16 @@ public final class EventRouter {
                     events.remove(listenerClass);
                 }
             }
+        }
+    }
+
+    public <L> void removeListener(Class<L> listenerClass, L listener, Runnable runIfLastListenerWasRemoved) {
+        boolean hadListeners = hasListeners(listenerClass);
+
+        removeListener(listenerClass, listener);
+
+        if (hadListeners && !hasListeners(listenerClass)) {
+            runIfLastListenerWasRemoved.run();
         }
     }
 
