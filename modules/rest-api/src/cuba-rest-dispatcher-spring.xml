@@ -93,7 +93,11 @@
         <property name="clientDetailsService" ref="clientDetailsService"/>
     </bean>
 
-    <bean id="tokenStore" class="com.haulmont.restapi.auth.ClientProxyTokenStore"/>
+    <bean id="tokenStore" class="com.haulmont.restapi.auth.ClientProxyTokenStore">
+        <property name="authenticationKeyGenerator">
+            <bean class="com.haulmont.restapi.auth.UniqueAuthenticationKeyGenerator"/>
+        </property>
+    </bean>
 
     <oauth2:resource-server id="resourceFilter" token-services-ref="tokenServices" />
 

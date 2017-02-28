@@ -657,6 +657,20 @@ create table SEC_REMEMBER_ME (
 create index IDX_SEC_REMEMBER_ME_USER on SEC_REMEMBER_ME(USER_ID)^
 create index IDX_SEC_REMEMBER_ME_TOKEN on SEC_REMEMBER_ME(TOKEN)^
 
+create table SYS_REST_API_TOKEN (
+    ID varchar2(32) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar2(50),
+    --
+    ACCESS_TOKEN_VALUE varchar2(255),
+    ACCESS_TOKEN_BYTES blob,
+    AUTHENTICATION_KEY varchar2(255),
+    AUTHENTICATION_BYTES blob,
+    EXPIRY timestamp,
+    --
+    primary key (ID)
+)^
+
 alter table SYS_APP_FOLDER add constraint FK_SYS_APP_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID)^
 
 alter table SYS_ATTR_VALUE add constraint SYS_ATTR_VALUE_CATEGORY_ATT_ID foreign key (CATEGORY_ATTR_ID) references SYS_CATEGORY_ATTR(ID)^

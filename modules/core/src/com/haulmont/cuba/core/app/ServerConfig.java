@@ -239,4 +239,13 @@ public interface ServerConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(true)
     boolean getUseReadOnlyTransactionForLoad();
+
+    /**
+     * @return whether to store REST API OAuth tokens in the database
+     */
+    @Property("cuba.rest.storeTokensInDb")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(false)
+    boolean getRestStoreTokensInDb();
+
 }

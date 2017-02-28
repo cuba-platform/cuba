@@ -17,6 +17,7 @@
 package com.haulmont.cuba.restapi;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Cluster message containing an information about the REST API token to be stored
@@ -26,12 +27,18 @@ public class TokenStoreAddTokenMsg implements Serializable {
     protected byte[] accessTokenBytes;
     protected String authenticationKey;
     protected byte[] authenticationBytes;
+    protected Date tokenExpiry;
 
-    public TokenStoreAddTokenMsg(String tokenValue, byte[] accessTokenBytes, String authenticationKey, byte[] authenticationBytes) {
+    public TokenStoreAddTokenMsg(String tokenValue,
+                                 byte[] accessTokenBytes,
+                                 String authenticationKey,
+                                 byte[] authenticationBytes,
+                                 Date tokenExpiry) {
         this.tokenValue = tokenValue;
         this.accessTokenBytes = accessTokenBytes;
         this.authenticationKey = authenticationKey;
         this.authenticationBytes = authenticationBytes;
+        this.tokenExpiry = tokenExpiry;
     }
 
     public String getTokenValue() {
@@ -48,5 +55,9 @@ public class TokenStoreAddTokenMsg implements Serializable {
 
     public byte[] getAuthenticationBytes() {
         return authenticationBytes;
+    }
+
+    public Date getTokenExpiry() {
+        return tokenExpiry;
     }
 }

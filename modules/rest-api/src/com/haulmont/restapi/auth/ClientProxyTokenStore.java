@@ -33,7 +33,6 @@ import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.common.util.SerializationUtils;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.AuthenticationKeyGenerator;
-import org.springframework.security.oauth2.provider.token.DefaultAuthenticationKeyGenerator;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 import javax.inject.Inject;
@@ -59,9 +58,13 @@ public class ClientProxyTokenStore implements TokenStore {
     @Inject
     protected LoginService loginService;
 
-    protected AuthenticationKeyGenerator authenticationKeyGenerator = new DefaultAuthenticationKeyGenerator();
+    protected AuthenticationKeyGenerator authenticationKeyGenerator;
 
     private Logger log = LoggerFactory.getLogger(ClientProxyTokenStore.class);
+
+    public void setAuthenticationKeyGenerator(AuthenticationKeyGenerator authenticationKeyGenerator) {
+        this.authenticationKeyGenerator = authenticationKeyGenerator;
+    }
 
     @Override
     public OAuth2Authentication readAuthentication(OAuth2AccessToken token) {
@@ -84,7 +87,8 @@ public class ClientProxyTokenStore implements TokenStore {
         serverTokenStore.storeAccessToken(token.getValue(),
                 serializeAccessToken(token),
                 authenticationKey,
-                serializeAuthentication(authentication));
+                serializeAuthentication(authentication),
+                token.getExpiration());
         processSession(authentication, token.getValue());
         log.info("REST API access token stored: [{}] {}", authentication.getPrincipal(), token.getValue()) ;
     }
