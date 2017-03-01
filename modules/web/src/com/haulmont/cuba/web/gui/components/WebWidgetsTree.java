@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
@@ -68,6 +69,12 @@ public class WebWidgetsTree<E extends Entity> extends WebAbstractTree<CubaWidget
 
     @Override
     public void setDatasource(HierarchicalDatasource datasource) {
+        Preconditions.checkNotNullArgument(datasource, "datasource is null");
+
+        if (this.datasource != null) {
+            throw new UnsupportedOperationException("Changing datasource is not supported by the WidgetsTree component");
+        }
+
         this.datasource = datasource;
         this.hierarchyProperty = datasource.getHierarchyPropertyName();
 

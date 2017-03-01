@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ListComponent;
@@ -66,26 +67,31 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     @Override
     public void setDatasource(CollectionDatasource datasource) {
+        Preconditions.checkNotNullArgument(datasource, "datasource is null");
+
+        if (this.datasource != null) {
+            throw new UnsupportedOperationException("Changing datasource is not supported by the RowsCount component");
+        }
+
         this.datasource = datasource;
-        if (datasource != null) {
-            //noinspection unchecked
-            collectionChangeListener = e -> {
-                samePage = Operation.REFRESH != e.getOperation()
-                        && Operation.CLEAR != e.getOperation();
-                onCollectionChanged();
-            };
-            //noinspection unchecked
-            datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeListener));
 
-            component.getCountButton().addClickListener(event -> onLinkClick());
-            component.getPrevButton().addClickListener(event -> onPrevClick());
-            component.getNextButton().addClickListener(event -> onNextClick());
-            component.getFirstButton().addClickListener(event -> onFirstClick());
-            component.getLastButton().addClickListener(event -> onLastClick());
+        //noinspection unchecked
+        collectionChangeListener = e -> {
+            samePage = Operation.REFRESH != e.getOperation()
+                    && Operation.CLEAR != e.getOperation();
+            onCollectionChanged();
+        };
+        //noinspection unchecked
+        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeListener));
 
-            if (datasource.getState() == Datasource.State.VALID) {
-                onCollectionChanged();
-            }
+        component.getCountButton().addClickListener(event -> onLinkClick());
+        component.getPrevButton().addClickListener(event -> onPrevClick());
+        component.getNextButton().addClickListener(event -> onNextClick());
+        component.getFirstButton().addClickListener(event -> onFirstClick());
+        component.getLastButton().addClickListener(event -> onLastClick());
+
+        if (datasource.getState() == Datasource.State.VALID) {
+            onCollectionChanged();
         }
     }
 

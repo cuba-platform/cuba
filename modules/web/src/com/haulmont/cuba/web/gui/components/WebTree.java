@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -192,6 +193,12 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
 
     @Override
     public void setDatasource(HierarchicalDatasource datasource) {
+        Preconditions.checkNotNullArgument(datasource, "datasource is null");
+
+        if (this.datasource != null) {
+            throw new UnsupportedOperationException("Changing datasource is not supported by the Tree component");
+        }
+
         this.datasource = datasource;
         this.hierarchyProperty = datasource.getHierarchyPropertyName();
 

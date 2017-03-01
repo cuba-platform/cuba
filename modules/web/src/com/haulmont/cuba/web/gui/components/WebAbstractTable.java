@@ -864,6 +864,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     public void setDatasource(final CollectionDatasource datasource) {
         Preconditions.checkNotNullArgument(datasource, "datasource is null");
 
+        if (this.datasource != null) {
+            throw new UnsupportedOperationException("Changing datasource is not supported by the Table component");
+        }
+
         MessageTools messageTools = AppBeans.get(MessageTools.NAME);
 
         final Collection<Object> columns;

@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -118,6 +119,12 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
     @Override
     public void setDatasource(CollectionDatasource datasource) {
+        Preconditions.checkNotNullArgument(datasource, "datasource is null");
+
+        if (this.datasource != null) {
+            throw new UnsupportedOperationException("Changing datasource is not supported by the TokenList component");
+        }
+
         this.datasource = datasource;
 
         collectionChangeListener = e -> {

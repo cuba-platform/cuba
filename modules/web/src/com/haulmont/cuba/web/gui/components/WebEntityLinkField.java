@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
@@ -249,6 +250,12 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
 
     @Override
     public void setDatasource(Datasource datasource, String property) {
+        Preconditions.checkNotNullArgument(datasource, "datasource is null");
+
+        if (this.datasource != null) {
+            throw new UnsupportedOperationException("Changing datasource is not supported by the EntityLinkField component");
+        }
+
         //noinspection unchecked
         this.datasource = datasource;
 

@@ -387,14 +387,18 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
     @SuppressWarnings("unchecked")
     @Override
     public void setDatasource(final Datasource datasource) {
+        Preconditions.checkNotNullArgument(datasource, "datasource is null");
+
+        if (this.datasource != null) {
+            throw new UnsupportedOperationException("Changing datasource is not supported by the FieldGroup component");
+        }
+
         this.datasource = datasource;
 
         component.setColumns(cols);
 
         if (!this.fields.isEmpty()) {
             component.setRows(rowsCount());
-        } else if (datasource != null) {
-            LoggerFactory.getLogger(WebFieldGroup.class).warn("Field group does not have fields");
         }
 
         assignAutoDebugId();
