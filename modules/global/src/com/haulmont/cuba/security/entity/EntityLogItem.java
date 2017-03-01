@@ -22,6 +22,8 @@ import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.ReferenceToEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -82,7 +84,7 @@ public class EntityLogItem extends BaseUuidEntity {
     private String entity;
 
     @Embedded
-    private ReferenceToEntity referenceToEntity;
+    private ReferenceToEntity entityRef;
 
     @Transient
     @MetaProperty
@@ -139,11 +141,22 @@ public class EntityLogItem extends BaseUuidEntity {
         this.changes = changes;
     }
 
-    public ReferenceToEntity getReferenceToEntity() {
-        return referenceToEntity;
+    public ReferenceToEntity getEntityRef() {
+        return entityRef;
     }
 
-    public void setReferenceToEntity(ReferenceToEntity referenceToEntity) {
-        this.referenceToEntity = referenceToEntity;
+    public void setEntityRef(ReferenceToEntity entityRef) {
+        this.entityRef = entityRef;
+    }
+
+    public void setObjectEntityId(Object entity) {
+        if (entityRef == null) {
+            entityRef = AppBeans.get(Metadata.class).create(ReferenceToEntity.class);
+        }
+        entityRef.setObjectEntityId(entity);
+    }
+
+    public Object getObjectEntityId() {
+        return entityRef == null ? null : entityRef.getObjectEntityId();
     }
 }

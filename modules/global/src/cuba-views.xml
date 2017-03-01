@@ -272,18 +272,16 @@
         <property name="group" view="_minimal"/>
     </view>
 
-    <view class="com.haulmont.cuba.security.entity.LoggedEntity"
-          name="loggedAttrs">
+    <view class="com.haulmont.cuba.security.entity.LoggedEntity" name="loggedAttrs">
         <property name="attributes" view="_local"/>
         <property name="auto"/>
         <property name="manual"/>
         <property name="name"/>
     </view>
 
-    <view class="com.haulmont.cuba.security.entity.EntityLogItem"
-          extends="_local"
-          name="logView">
+    <view class="com.haulmont.cuba.security.entity.EntityLogItem" extends="_local" name="logView">
         <property name="user" view="_minimal"/>
+        <property name="entityRef" view="_local"/>
     </view>
 
     <view class="com.haulmont.cuba.security.entity.UserSubstitution" name="usersubst.edit">

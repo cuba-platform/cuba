@@ -234,10 +234,7 @@ public class EntityLog implements EntityLogAPI {
         item.setUser(findUser(em));
         item.setType(EntityLogItem.Type.CREATE);
         item.setEntity(entityName);
-
-        ReferenceToEntity referenceToEntity = metadata.create(ReferenceToEntity.class);
-        referenceToEntity.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
-        item.setReferenceToEntity(referenceToEntity);
+        item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
 
         Properties properties = new Properties();
         for (String attr : attributes) {
@@ -333,11 +330,7 @@ public class EntityLog implements EntityLogAPI {
             item.setUser(findUser(em));
             item.setType(EntityLogItem.Type.MODIFY);
             item.setEntity(metaClass.getName());
-
-            ReferenceToEntity referenceToEntity = metadata.create(ReferenceToEntity.class);
-            referenceToEntity.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
-            item.setReferenceToEntity(referenceToEntity);
-
+            item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
             item.setChanges(getChanges(properties));
 
             em.persist(item);
@@ -413,10 +406,7 @@ public class EntityLog implements EntityLogAPI {
         item.setUser(findUser(em));
         item.setType(EntityLogItem.Type.DELETE);
         item.setEntity(entityName);
-
-        ReferenceToEntity referenceToEntity = metadata.create(ReferenceToEntity.class);
-        referenceToEntity.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
-        item.setReferenceToEntity(referenceToEntity);
+        item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
 
         Properties properties = new Properties();
         for (String attr : attributes) {
