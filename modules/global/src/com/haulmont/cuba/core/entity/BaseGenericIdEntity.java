@@ -22,10 +22,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
@@ -97,7 +94,7 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
 
     @Override
     public void setValue(String property, Object newValue, boolean checkEquals) {
-        if (this instanceof HasUuid && DynamicAttributesUtils.isDynamicAttribute(property)) {
+        if (DynamicAttributesUtils.isDynamicAttribute(property)) {
             Preconditions.checkState(dynamicAttributes != null, "Dynamic attributes should be loaded explicitly");
             String attributeCode = DynamicAttributesUtils.decodeAttributeCode(property);
             CategoryAttributeValue categoryAttributeValue = dynamicAttributes.get(attributeCode);
@@ -115,10 +112,15 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
                     categoryAttributeValue.setDeleteTs(null);
                 } else {
                     Metadata metadata = AppBeans.get(Metadata.NAME);
+                    ReferenceToEntitySupport referenceToEntitySupport = AppBeans.get(ReferenceToEntitySupport.class);
 
                     categoryAttributeValue = metadata.create(CategoryAttributeValue.class);
                     categoryAttributeValue.setValue(newValue);
-                    categoryAttributeValue.setEntityId(((HasUuid) this).getUuid());
+
+                    ReferenceToEntity referenceToEntity = metadata.create(ReferenceToEntity.class);
+                    referenceToEntity.setObjectEntityId(referenceToEntitySupport.getReferenceId(this));
+                    categoryAttributeValue.setReferenceToEntity(referenceToEntity);
+
                     categoryAttributeValue.setCode(attributeCode);
                     DynamicAttributes dynamicAttributesBean = AppBeans.get(DynamicAttributes.NAME);
                     categoryAttributeValue.setCategoryAttribute(

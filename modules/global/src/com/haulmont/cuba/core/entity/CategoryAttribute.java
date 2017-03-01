@@ -23,6 +23,8 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -64,17 +66,14 @@ public class CategoryAttribute extends StandardEntity {
     @Column(name = "ENTITY_CLASS")
     private String entityClass;
 
-    @Column(name = "DEFAULT_ENTITY_VALUE")
-    private UUID defaultEntityId;
-
-    @Column(name = "DEFAULT_STR_ENTITY_VALUE", length = 255)
-    private String defaultStringEntityId;
-
-    @Column(name = "DEFAULT_INT_ENTITY_VALUE")
-    private Integer defaultIntEntityId;
-
-    @Column(name = "DEFAULT_LONG_ENTITY_VALUE")
-    private Long defaultLongEntityId;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name="entityId", column=@Column(name="DEFAULT_ENTITY_VALUE")),
+            @AttributeOverride(name="stringEntityId", column=@Column(name="DEFAULT_STR_ENTITY_VALUE")),
+            @AttributeOverride(name="intEntityId", column=@Column(name="DEFAULT_INT_ENTITY_VALUE")),
+            @AttributeOverride(name="longEntityId", column=@Column(name="DEFAULT_LONG_ENTITY_VALUE"))
+    })
+    private ReferenceToEntity defaultEntity;
 
     @Column(name = "ORDER_NO")
     private Integer orderNo;
@@ -165,36 +164,12 @@ public class CategoryAttribute extends StandardEntity {
         return getDataType() == PropertyType.ENTITY;
     }
 
-    public UUID getDefaultEntityId() {
-        return defaultEntityId;
+    public ReferenceToEntity getDefaultEntity() {
+        return defaultEntity;
     }
 
-    public void setDefaultEntityId(UUID defaultEntityId) {
-        this.defaultEntityId = defaultEntityId;
-    }
-
-    public String getDefaultStringEntityId() {
-        return defaultStringEntityId;
-    }
-
-    public void setDefaultStringEntityId(String defaultStringEntityId) {
-        this.defaultStringEntityId = defaultStringEntityId;
-    }
-
-    public Integer getDefaultIntEntityId() {
-        return defaultIntEntityId;
-    }
-
-    public void setDefaultIntEntityId(Integer defaultIntEntityId) {
-        this.defaultIntEntityId = defaultIntEntityId;
-    }
-
-    public Long getDefaultLongEntityId() {
-        return defaultLongEntityId;
-    }
-
-    public void setDefaultLongEntityId(Long defaultLongEntityId) {
-        this.defaultLongEntityId = defaultLongEntityId;
+    public void setDefaultEntity(ReferenceToEntity defaultEntity) {
+        this.defaultEntity = defaultEntity;
     }
 
     public String getDefaultString() {
@@ -246,12 +221,22 @@ public class CategoryAttribute extends StandardEntity {
                 case DATE: return defaultDate;
                 case STRING: return defaultString;
                 case ENUMERATION: return defaultString;
-                case ENTITY: return defaultEntityId;
+                case ENTITY: return getObjectDefaultEntityId();
                 default: return null;
             }
         }
-
         return null;
+    }
+
+    public void setObjectDefaultEntityId(Object entity) {
+        if (defaultEntity == null) {
+            defaultEntity = AppBeans.get(Metadata.class).create(ReferenceToEntity.class);
+        }
+        defaultEntity.setObjectEntityId(entity);
+    }
+
+    public Object getObjectDefaultEntityId() {
+        return defaultEntity == null ? null : defaultEntity.getObjectEntityId();
     }
 
     public Integer getOrderNo() {

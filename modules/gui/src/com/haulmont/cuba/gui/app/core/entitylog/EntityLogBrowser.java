@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.app.EntityLogService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.entity.IdProxy;
+import com.haulmont.cuba.core.entity.ReferenceToEntity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
@@ -265,9 +266,10 @@ public class EntityLogBrowser extends AbstractWindow {
         selectAllCheckBox.addValueChangeListener(e -> enableAllCheckBoxes((boolean) e.getValue()));
 
         entityLogTable.addGeneratedColumn("entityId", entity -> {
-            EntityLogItem item = (EntityLogItem)entity;
-            if (item.getObjectEntityId() != null) {
-                return new Table.PlainTextCell(item.getObjectEntityId().toString());
+            EntityLogItem item = (EntityLogItem) entity;
+            ReferenceToEntity referenceToEntity = item.getReferenceToEntity();
+            if (referenceToEntity != null) {
+                return new Table.PlainTextCell(referenceToEntity.getObjectEntityId().toString());
             }
             return null;
         });

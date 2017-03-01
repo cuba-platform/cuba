@@ -24,16 +24,12 @@ import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
-import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -45,6 +41,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import static java.lang.String.format;
 
 public class CategoryAttrsFrame extends AbstractFrame {
 
@@ -61,10 +59,13 @@ public class CategoryAttrsFrame extends AbstractFrame {
     protected ComponentsFactory factory;
 
     @Inject
-    protected DataSupplier dataSupplier;
+    protected DataManager dataManager;
 
     @Inject
-    private Table<CategoryAttribute> categoryAttrsTable;
+    protected ReferenceToEntitySupport referenceToEntitySupport;
+
+    @Inject
+    protected Table<CategoryAttribute> categoryAttrsTable;
 
     @Inject
     protected Datasource categoryDs;
@@ -209,17 +210,20 @@ public class CategoryAttrsFrame extends AbstractFrame {
                                 defaultValue = attribute.getDefaultValue().toString();
                     }
                 } else {
-                    Class clazz = attribute.getJavaClassForEntity();
-                    if (clazz != null) {
-                        LoadContext entitiesContext = new LoadContext(clazz);
-                        String entityClassName = metadata.getClassNN(clazz).getName();
-                        if (attribute.getDefaultEntityId() != null) {
-                            LoadContext.Query query = entitiesContext.setQueryString("select a from " + entityClassName + " a where a.id =:e");
-                            query.setParameter("e", attribute.getDefaultEntityId());
-                            entitiesContext.setView("_local");
-                            Entity entity = dataSupplier.load(entitiesContext);
-                            defaultValue = InstanceUtils.getInstanceName(entity);
-                        } else defaultValue = "";
+                    Class entityClass = attribute.getJavaClassForEntity();
+                    if (entityClass != null) {
+                        defaultValue = "";
+                        if (attribute.getObjectDefaultEntityId() != null) {
+                            MetaClass metaClass = metadata.getClassNN(entityClass);
+                            LoadContext<Entity> lc = new LoadContext<>(entityClass).setView(View.MINIMAL);
+                            String pkName = referenceToEntitySupport.getPrimaryKeyForLoadingEntity(metaClass);
+                            lc.setQueryString(format("select e from %s e where e.%s = :entityId", metaClass.getName(), pkName))
+                                    .setParameter("entityId", attribute.getObjectDefaultEntityId());
+                            Entity entity = dataManager.load(lc);
+                            if (entity != null) {
+                                defaultValue = InstanceUtils.getInstanceName(entity);
+                            }
+                        }
                     } else {
                         defaultValue = getMessage("entityNotFound");
                     }

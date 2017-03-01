@@ -26,7 +26,6 @@ import com.google.common.collect.Multimap;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -45,19 +44,19 @@ import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.edit.FilterEditor;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.FilterEntity;
-import javafx.scene.layout.HBox;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.inject.Inject;
 import java.util.*;
+
+import static java.lang.String.format;
 
 /**
  * Class that encapsulates editing of {@link com.haulmont.cuba.core.entity.CategoryAttribute} entities.
@@ -94,8 +93,6 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     }
 
     protected CategoryAttribute attribute;
-
-    protected DataSupplier dataSupplier;
 
     @Inject
     protected FieldGroup attributeFieldGroup;
@@ -140,6 +137,12 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected DynamicAttributesGuiTools dynamicAttributesGuiTools;
 
     @Inject
+    protected DataManager dataManager;
+
+    @Inject
+    protected ReferenceToEntitySupport referenceToEntitySupport;
+
+    @Inject
     protected Table targetScreensTable;
 
     @Inject
@@ -154,8 +157,6 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         getDialogOptions().setWidth(themeConstants.getInt("cuba.gui.AttributeEditor.width"));
 
         fieldWidth = themeConstants.get("cuba.gui.AttributeEditor.field.width");
-
-        dataSupplier = getDsContext().getDataSupplier();
 
         initFieldGroup();
 
@@ -234,7 +235,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 Map<String, Object> options = new TreeMap<>();
                 MetaClass entityType = null;
                 for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
-                    if (!metadataTools.isSystemLevel(metaClass) && BaseUuidEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
+                    if (!metadataTools.isSystemLevel(metaClass)) {
                         options.put(messageTools.getDetailedEntityCaption(metaClass), metaClass.getJavaClass().getName());
                         if (attribute != null
                                 && metaClass.getJavaClass().getName().equals(attribute.getEntityClass())) {
@@ -253,10 +254,11 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         attributeFieldGroup.addCustomField("defaultEntityId", (datasource, propertyId) -> {
             defaultEntityField = factory.createComponent(PickerField.class);
             defaultEntityField.addValueChangeListener(e -> {
-                if (e.getValue() instanceof BaseUuidEntity) {
-                    attribute.setDefaultEntityId(((BaseUuidEntity) e.getValue()).getId());
+                Entity entity = (Entity) e.getValue();
+                if (entity != null) {
+                    attribute.setObjectDefaultEntityId(referenceToEntitySupport.getReferenceId(entity));
                 } else {
-                    attribute.setDefaultEntityId(null);
+                    attribute.setObjectDefaultEntityId(null);
                 }
             });
             entityLookupAction = defaultEntityField.addLookupAction();
@@ -420,15 +422,15 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         screenField.setValue(screensMap.containsValue(value) ? value : null);
     }
 
+    @SuppressWarnings("unchecked")
     protected void fillDefaultEntities(Class entityClass) {
-        String entityClassName = metadata.getClassNN(entityClass).getName();
-        if (attribute.getDefaultEntityId() != null) {
-            LoadContext<Entity> entityContext = new LoadContext<>(entityClass);
-            LoadContext.Query query2 = entityContext.setQueryString("select a from " + entityClassName + " a where a.id =:e");
-            query2.setParameter("e", attribute.getDefaultEntityId());
-            entityContext.setView("_minimal");
-
-            Entity entity = dataSupplier.load(entityContext);
+        MetaClass metaClass = metadata.getClassNN(entityClass);
+        if (attribute.getObjectDefaultEntityId() != null) {
+            LoadContext<Entity> lc = new LoadContext<>(entityClass).setView(View.MINIMAL);
+            String pkName = referenceToEntitySupport.getPrimaryKeyForLoadingEntity(metaClass);
+            lc.setQueryString(format("select e from %s e where e.%s = :entityId", metaClass.getName(), pkName))
+                    .setParameter("entityId", attribute.getObjectDefaultEntityId());
+            Entity entity = dataManager.load(lc);
             if (entity != null) {
                 defaultEntityField.setValue(entity);
             } else {

@@ -55,8 +55,10 @@ public class EntityLog implements EntityLogAPI {
     protected MetadataTools metadataTools;
     @Inject
     protected UserSessionSource userSessionSource;
+    @Inject
+    protected ReferenceToEntitySupport referenceToEntitySupport;
     private volatile boolean loaded;
-    private EntityLogConfig config;
+    protected EntityLogConfig config;
     private Map<String, Set<String>> entitiesManual;
     private Map<String, Set<String>> entitiesAuto;
     private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -232,7 +234,10 @@ public class EntityLog implements EntityLogAPI {
         item.setUser(findUser(em));
         item.setType(EntityLogItem.Type.CREATE);
         item.setEntity(entityName);
-        item.setObjectEntityId(getEntityId(entity));
+
+        ReferenceToEntity referenceToEntity = metadata.create(ReferenceToEntity.class);
+        referenceToEntity.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
+        item.setReferenceToEntity(referenceToEntity);
 
         Properties properties = new Properties();
         for (String attr : attributes) {
@@ -328,7 +333,11 @@ public class EntityLog implements EntityLogAPI {
             item.setUser(findUser(em));
             item.setType(EntityLogItem.Type.MODIFY);
             item.setEntity(metaClass.getName());
-            item.setObjectEntityId(getEntityId(entity));
+
+            ReferenceToEntity referenceToEntity = metadata.create(ReferenceToEntity.class);
+            referenceToEntity.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
+            item.setReferenceToEntity(referenceToEntity);
+
             item.setChanges(getChanges(properties));
 
             em.persist(item);
@@ -404,7 +413,10 @@ public class EntityLog implements EntityLogAPI {
         item.setUser(findUser(em));
         item.setType(EntityLogItem.Type.DELETE);
         item.setEntity(entityName);
-        item.setObjectEntityId(getEntityId(entity));
+
+        ReferenceToEntity referenceToEntity = metadata.create(ReferenceToEntity.class);
+        referenceToEntity.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
+        item.setReferenceToEntity(referenceToEntity);
 
         Properties properties = new Properties();
         for (String attr : attributes) {
@@ -430,7 +442,7 @@ public class EntityLog implements EntityLogAPI {
         if (value instanceof EmbeddableEntity) {
             return null;
         } else if (value instanceof BaseGenericIdEntity) {
-            return getEntityId((Entity) value);
+            return referenceToEntitySupport.getReferenceId((Entity) value);
         } else {
             return null;
         }

@@ -55,29 +55,17 @@ public class CategoryAttributeValue extends StandardEntity {
     @Column(name = "DATE_VALUE")
     private Date dateValue;
 
-    @Column(name = "ENTITY_ID")
-    private UUID entityId;
+    @Embedded
+    private ReferenceToEntity referenceToEntity;
 
-    @Column(name = "STRING_ENTITY_ID", length = 255)
-    private String stringEntityId;
-
-    @Column(name = "INT_ENTITY_ID")
-    private Integer intEntityId;
-
-    @Column(name = "LONG_ENTITY_ID")
-    private Long longEntityId;
-
-    @Column(name = "ENTITY_VALUE")
-    private UUID entityValue;
-
-    @Column(name = "STRING_ENTITY_VALUE", length = 255)
-    private String stringEntityValue;
-
-    @Column(name = "INT_ENTITY_VALUE")
-    private Integer intEntityValue;
-
-    @Column(name = "LONG_ENTITY_VALUE")
-    private Long longEntityValue;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name="entityId", column=@Column(name="ENTITY_VALUE")),
+            @AttributeOverride(name="stringEntityId", column=@Column(name="STRING_ENTITY_VALUE")),
+            @AttributeOverride(name="intEntityId", column=@Column(name="INT_ENTITY_VALUE")),
+            @AttributeOverride(name="longEntityId", column=@Column(name="LONG_ENTITY_VALUE"))
+    })
+    private ReferenceToEntity referenceToEntityValue;
 
     @Transient
     private BaseGenericIdEntity transientEntityValue;
@@ -101,68 +89,12 @@ public class CategoryAttributeValue extends StandardEntity {
         return categoryAttribute;
     }
 
-    public UUID getEntityId() {
-        return entityId;
+    public ReferenceToEntity getReferenceToEntity() {
+        return referenceToEntity;
     }
 
-    public void setEntityId(UUID entityId) {
-        this.entityId = entityId;
-    }
-
-    public String getStringEntityId() {
-        return stringEntityId;
-    }
-
-    public void setStringEntityId(String stringEntityId) {
-        this.stringEntityId = stringEntityId;
-    }
-
-    public Integer getIntEntityId() {
-        return intEntityId;
-    }
-
-    public void setIntEntityId(Integer intEntityId) {
-        this.intEntityId = intEntityId;
-    }
-
-    public Long getLongEntityId() {
-        return longEntityId;
-    }
-
-    public void setLongEntityId(Long longEntityId) {
-        this.longEntityId = longEntityId;
-    }
-
-    public UUID getEntityValue() {
-        return entityValue;
-    }
-
-    public void setEntityValue(UUID entityValue) {
-        this.entityValue = entityValue;
-    }
-
-    public String getStringEntityValue() {
-        return stringEntityValue;
-    }
-
-    public void setStringEntityValue(String stringEntityValue) {
-        this.stringEntityValue = stringEntityValue;
-    }
-
-    public Integer getIntEntityValue() {
-        return intEntityValue;
-    }
-
-    public void setIntEntityValue(Integer intEntityValue) {
-        this.intEntityValue = intEntityValue;
-    }
-
-    public Long getLongEntityValue() {
-        return longEntityValue;
-    }
-
-    public void setLongEntityValue(Long longEntityValue) {
-        this.longEntityValue = longEntityValue;
+    public void setReferenceToEntity(ReferenceToEntity referenceToEntity) {
+        this.referenceToEntity = referenceToEntity;
     }
 
     public String getStringValue() {
@@ -213,6 +145,14 @@ public class CategoryAttributeValue extends StandardEntity {
         this.code = code;
     }
 
+    public ReferenceToEntity getReferenceToEntityValue() {
+        return referenceToEntityValue;
+    }
+
+    public void setReferenceToEntityValue(ReferenceToEntity referenceToEntityValue) {
+        this.referenceToEntityValue = referenceToEntityValue;
+    }
+
     public BaseGenericIdEntity getTransientEntityValue() {
         return transientEntityValue;
     }
@@ -252,8 +192,8 @@ public class CategoryAttributeValue extends StandardEntity {
             intValue = null;
             doubleValue = null;
             booleanValue = null;
-            entityValue = null;
             dateValue = null;
+            referenceToEntityValue = null;
             transientEntityValue = null;
             transientCollectionValue = null;
         } else if (value instanceof Date) {
@@ -264,11 +204,14 @@ public class CategoryAttributeValue extends StandardEntity {
             setDoubleValue((Double) value);
         } else if (value instanceof Boolean) {
             setBooleanValue((Boolean) value);
-        } else if (value instanceof UUID) {
-            setEntityValue((UUID) value);
         } else if (value instanceof BaseGenericIdEntity) {
-            //overwrite it
-            setEntityValue(((HasUuid) value).getUuid());
+            if (referenceToEntityValue == null) {
+                Metadata metadata = AppBeans.get(Metadata.class);
+                referenceToEntityValue = metadata.create(ReferenceToEntity.class);
+            }
+            ReferenceToEntitySupport referenceToEntitySupport = AppBeans.get(ReferenceToEntitySupport.class);
+            Object referenceId = referenceToEntitySupport.getReferenceId((BaseGenericIdEntity) value);
+            referenceToEntityValue.setObjectEntityId(referenceId);
             setTransientEntityValue((BaseGenericIdEntity) value);
         } else if (value instanceof String) {
             setStringValue((String) value);

@@ -42,6 +42,8 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+
 @Component(DynamicAttributesManagerAPI.NAME)
 public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     public static final int MAX_ENTITIES_FOR_ATTRIBUTE_VALUES_BATCH = 100;
@@ -59,6 +61,9 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
     @Inject
     protected Persistence persistence;
+
+    @Inject
+    protected ReferenceToEntitySupport referenceToEntitySupport;
 
     protected ClusterManagerAPI clusterManager;
 
@@ -112,7 +117,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
                         attributes.put(categoryAttribute.getCode(), categoryAttribute);
                     }
                 } else {
-                    log.warn(String.format("Could not resolve meta class name [%s] for the category [%s].",
+                    log.warn(format("Could not resolve meta class name [%s] for the category [%s].",
                             category.getEntityType(), category.getName()));
                 }
             }
@@ -209,7 +214,12 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             return;
 
         try (Transaction tx = persistence.getTransaction()) {
-            doFetchDynamicAttributes(toProcess);
+            Multimap<String, BaseGenericIdEntity> entitiesByType = HashMultimap.create();
+            toProcess.forEach(e -> entitiesByType.put(e.getMetaClass().getName(), e));
+            entitiesByType.keySet().forEach(entityType -> {
+                MetaClass metaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metadata.getClass(entityType));
+                doFetchDynamicAttributes(metaClass, entitiesByType.get(entityType));
+            });
             tx.commit();
         }
     }
@@ -291,36 +301,40 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             CategoryAttributeValue childCAV = metadata.create(CategoryAttributeValue.class);
             childCAV.setParent(categoryAttributeValue);
             childCAV.setValue(value);
-            childCAV.setEntityId(categoryAttributeValue.getEntityId());
+            if (categoryAttributeValue.getReferenceToEntity() != null) {
+                ReferenceToEntity referenceToEntity = metadata.create(ReferenceToEntity.class);
+                metadata.getTools().copy(categoryAttributeValue.getReferenceToEntity(), referenceToEntity);
+                childCAV.setReferenceToEntity(referenceToEntity);
+            }
             childCAV.setCode(categoryAttributeValue.getCode());
             childCAV.setCategoryAttribute(categoryAttributeValue.getCategoryAttribute());
             em.persist(childCAV);
         });
     }
 
-    protected void doFetchDynamicAttributes(Set<BaseGenericIdEntity> entities) {
-        List<UUID> ids = entities.stream()
-                .map(e -> ((HasUuid) e).getUuid())
+    protected void doFetchDynamicAttributes(MetaClass metaClass, Collection<BaseGenericIdEntity> entities) {
+        List<Object> ids = entities.stream()
+                .map(e -> referenceToEntitySupport.getReferenceId(e))
                 .collect(Collectors.toList());
 
-        Multimap<UUID, CategoryAttributeValue> attributeValuesForEntity = HashMultimap.create();
+        Multimap<Object, CategoryAttributeValue> allAttributeValues = HashMultimap.create();
 
-        List<UUID> currentIds = new ArrayList<>();
-        for (UUID id : ids) {
+        List<Object> currentIds = new ArrayList<>();
+        for (Object id : ids) {
             currentIds.add(id);
             if (currentIds.size() >= MAX_ENTITIES_FOR_ATTRIBUTE_VALUES_BATCH) {
-                handleAttributeValuesForIds(currentIds, attributeValuesForEntity);
+                handleAttributeValuesForIds(metaClass, currentIds, allAttributeValues);
                 currentIds = new ArrayList<>();
             }
         }
-        handleAttributeValuesForIds(currentIds, attributeValuesForEntity);
+        handleAttributeValuesForIds(metaClass, currentIds, allAttributeValues);
 
         for (BaseGenericIdEntity entity : entities) {
-            Collection<CategoryAttributeValue> theEntityAttributeValues = attributeValuesForEntity.get(((HasUuid) entity).getUuid());
+            Collection<CategoryAttributeValue> entityAttributeValues = allAttributeValues.get(referenceToEntitySupport.getReferenceId(entity));
             Map<String, CategoryAttributeValue> map = new HashMap<>();
             entity.setDynamicAttributes(map);
-            if (CollectionUtils.isNotEmpty(theEntityAttributeValues)) {
-                for (CategoryAttributeValue categoryAttributeValue : theEntityAttributeValues) {
+            if (CollectionUtils.isNotEmpty(entityAttributeValues)) {
+                for (CategoryAttributeValue categoryAttributeValue : entityAttributeValues) {
                     CategoryAttribute attribute = categoryAttributeValue.getCategoryAttribute();
                     if (attribute != null) {
                         map.put(attribute.getCode(), categoryAttributeValue);
@@ -330,41 +344,50 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         }
     }
 
-    protected void handleAttributeValuesForIds(List<UUID> currentIds, Multimap<UUID, CategoryAttributeValue> attributeValuesForEntity) {
+    protected void handleAttributeValuesForIds(MetaClass metaClass, List<Object> currentIds, Multimap<Object, CategoryAttributeValue> attributeValuesForEntity) {
         if (CollectionUtils.isNotEmpty(currentIds)) {
-            List<CategoryAttributeValue> allAttributeValues = loadAttributeValues(currentIds);
-            for (CategoryAttributeValue categoryAttributeValue : allAttributeValues) {
-                attributeValuesForEntity.put(categoryAttributeValue.getEntityId(), categoryAttributeValue);
+            for (CategoryAttributeValue attributeValue : loadAttributeValues(metaClass, currentIds)) {
+                attributeValuesForEntity.put(attributeValue.getReferenceToEntity().getObjectEntityId(), attributeValue);
             }
         }
     }
 
-    protected List<CategoryAttributeValue> loadAttributeValues(List<UUID> entityIds) {
-        List<CategoryAttributeValue> resultList = new ArrayList<>();
+    protected List<CategoryAttributeValue> loadAttributeValues(MetaClass metaClass, List<Object> entityIds) {
+        List<CategoryAttributeValue> attributeValues = new ArrayList<>();
         try (Transaction tx = persistence.getTransaction()) {
             EntityManager em = persistence.getEntityManager();
-            View baseAttributeValueView = viewRepository.getView(CategoryAttributeValue.class, View.LOCAL);
-            View baseAttributeView = viewRepository.getView(CategoryAttribute.class, View.LOCAL);
 
-            View view = new View(baseAttributeValueView, null, false)
-                    .addProperty("categoryAttribute", new View(baseAttributeView, null, false).addProperty("category"));
+            View view = new View(viewRepository.getView(CategoryAttributeValue.class, View.LOCAL), null, false)
+                    .addProperty("categoryAttribute", new View(viewRepository.getView(CategoryAttribute.class, View.LOCAL), null, false)
+                            .addProperty("category"));
 
-            List<CategoryAttributeValue> _resultList = em.createQuery("select cav from sys$CategoryAttributeValue cav where cav.entityId in :ids and cav.parent is null", CategoryAttributeValue.class)
-                    .setParameter("ids", entityIds)
-                    .setView(view)
-                    .getResultList();
+            TypedQuery<CategoryAttributeValue> query;
+            if (HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
+                query = em.createQuery(format("select cav from sys$CategoryAttributeValue cav where cav.referenceToEntity.%s in :ids and cav.parent is null",
+                        referenceToEntitySupport.getReferenceIdPropertyName(metaClass)),
+                        CategoryAttributeValue.class);
+            } else {
+                query = em.createQuery(format("select cav from sys$CategoryAttributeValue cav where cav.referenceToEntity.%s in :ids " +
+                                "and cav.categoryAttribute.categoryEntityType = :entityType and cav.parent is null",
+                        referenceToEntitySupport.getReferenceIdPropertyName(metaClass)),
+                        CategoryAttributeValue.class);
+                query.setParameter("entityType", metaClass.getName());
+            }
+            query.setParameter("ids", entityIds);
+            query.setView(view);
+            List<CategoryAttributeValue> resultList = query.getResultList();
 
-            List<CategoryAttributeValue> cavsOfEntityType = _resultList.stream()
-                    .filter(cav -> cav.getEntityValue() != null)
+            List<CategoryAttributeValue> cavsOfEntityType = resultList.stream()
+                    .filter(cav -> cav.getReferenceToEntityValue() != null && cav.getReferenceToEntityValue().getObjectEntityId() != null)
                     .collect(Collectors.toList());
 
-            List<CategoryAttributeValue> cavsOfCollectionType = _resultList.stream()
+            List<CategoryAttributeValue> cavsOfCollectionType = resultList.stream()
                     .filter(cav -> cav.getCategoryAttribute().getIsCollection())
                     .collect(Collectors.toList());
 
             if (cavsOfCollectionType.isEmpty()) {
                 loadEntityValues(cavsOfEntityType);
-                resultList.addAll(_resultList);
+                attributeValues.addAll(resultList);
             } else {
                 List<CategoryAttributeValue> cavsOfCollectionTypeWithChildren = reloadCategoryAttributeValuesWithChildren(cavsOfCollectionType);
 
@@ -385,57 +408,66 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
                             cav.setTransientCollectionValue(value);
                         });
 
-                resultList.addAll(_resultList.stream()
+                attributeValues.addAll(resultList.stream()
                         .filter(cav -> !cavsOfCollectionTypeWithChildren.contains(cav))
                         .collect(Collectors.toList()));
 
-                resultList.addAll(cavsOfCollectionTypeWithChildren);
+                attributeValues.addAll(cavsOfCollectionTypeWithChildren);
             }
 
             tx.commit();
         }
-        return resultList;
+        return attributeValues;
     }
 
     /**
      * Method loads entity values for CategoryAttributeValues of entity type and sets entity values to the corresponding
      * property of the {@code CategoryAttributeValue} entity.
      */
+    @SuppressWarnings("unchecked")
     protected void loadEntityValues(List<CategoryAttributeValue> cavsOfEntityType) {
-        HashMultimap<MetaClass, UUID> entitiesIdsToBeLoaded = HashMultimap.create();
+        HashMultimap<MetaClass, Object> entitiesIdsToBeLoaded = HashMultimap.create();
+        HashMultimap<MetaClass, CategoryAttributeValue> cavByType = HashMultimap.create();
 
         cavsOfEntityType.forEach(cav -> {
             String className = cav.getCategoryAttribute().getEntityClass();
             try {
                 Class<?> aClass = Class.forName(className);
                 MetaClass metaClass = metadata.getClass(aClass);
-                entitiesIdsToBeLoaded.put(metaClass, cav.getEntityValue());
+                entitiesIdsToBeLoaded.put(metaClass, cav.getReferenceToEntityValue().getObjectEntityId());
+                cavByType.put(metaClass, cav);
             } catch (ClassNotFoundException e) {
                 log.error("Class {} not found", className);
             }
         });
 
         EntityManager em = persistence.getEntityManager();
-        Map<Object, BaseUuidEntity> idToEntityMap = new HashMap<>();
 
-        for (Map.Entry<MetaClass, Collection<UUID>> entry : entitiesIdsToBeLoaded.asMap().entrySet()) {
+        for (Map.Entry<MetaClass, Collection<Object>> entry : entitiesIdsToBeLoaded.asMap().entrySet()) {
+            Map<Object, BaseGenericIdEntity> idToEntityMap = new HashMap<>();
             MetaClass metaClass = entry.getKey();
-            Collection<UUID> ids = entry.getValue();
+            Collection<Object> ids = entry.getValue();
 
             if (!ids.isEmpty()) {
-                List<BaseUuidEntity> entitiesValues = em.createQuery("select e from " + metaClass.getName() + " e where e.id in :ids")
+                String pkName;
+                if (metadata.getTools().hasCompositePrimaryKey(metaClass) && HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
+                    pkName = "uuid";
+                } else {
+                    pkName = metadata.getTools().getPrimaryKeyName(metaClass);
+                }
+                List<BaseGenericIdEntity> entitiesValues = em.createQuery(format("select e from %s e where e.%s in :ids", metaClass.getName(), pkName))
                         .setParameter("ids", ids)
                         .setView(metaClass.getJavaClass(), View.MINIMAL)
                         .getResultList();
 
-                for (BaseUuidEntity entity : entitiesValues) {
+                for (BaseGenericIdEntity entity : entitiesValues) {
                     idToEntityMap.put(entity.getId(), entity);
                 }
             }
-        }
 
-        for (CategoryAttributeValue cav : cavsOfEntityType) {
-            cav.setTransientEntityValue(idToEntityMap.get(cav.getEntityValue()));
+            for (CategoryAttributeValue cav : cavByType.get(metaClass)) {
+                cav.setTransientEntityValue(idToEntityMap.get(cav.getReferenceToEntityValue().getObjectEntityId()));
+            }
         }
     }
 

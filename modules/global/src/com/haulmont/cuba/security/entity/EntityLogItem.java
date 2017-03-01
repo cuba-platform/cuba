@@ -19,6 +19,7 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.ReferenceToEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
@@ -80,17 +81,8 @@ public class EntityLogItem extends BaseUuidEntity {
     @Column(name = "ENTITY", length = 100)
     private String entity;
 
-    @Column(name = "ENTITY_ID")
-    private UUID entityId;
-
-    @Column(name = "STRING_ENTITY_ID", length = 255)
-    private String stringEntityId;
-
-    @Column(name = "INT_ENTITY_ID")
-    private Integer intEntityId;
-
-    @Column(name = "LONG_ENTITY_ID")
-    private Long longEntityId;
+    @Embedded
+    private ReferenceToEntity referenceToEntity;
 
     @Transient
     @MetaProperty
@@ -105,14 +97,6 @@ public class EntityLogItem extends BaseUuidEntity {
 
     public void setEntity(String entity) {
         this.entity = entity;
-    }
-
-    public UUID getEntityId() {
-        return entityId;
-    }
-
-    public void setEntityId(UUID entityId) {
-        this.entityId = entityId;
     }
 
     public Date getEventTs() {
@@ -155,41 +139,11 @@ public class EntityLogItem extends BaseUuidEntity {
         this.changes = changes;
     }
 
-    public String getStringEntityId() {
-        return stringEntityId;
+    public ReferenceToEntity getReferenceToEntity() {
+        return referenceToEntity;
     }
 
-    public void setStringEntityId(String stringEntityId) {
-        this.stringEntityId = stringEntityId;
-    }
-
-    public Integer getIntEntityId() {
-        return intEntityId;
-    }
-
-    public void setIntEntityId(Integer intEntityId) {
-        this.intEntityId = intEntityId;
-    }
-
-    public Long getLongEntityId() {
-        return longEntityId;
-    }
-
-    public void setLongEntityId(Long longEntityId) {
-        this.longEntityId = longEntityId;
-    }
-
-    public Object getObjectEntityId() {
-        if (entityId != null) {
-            return entityId;
-        } else if (longEntityId != null) {
-            return longEntityId;
-        } else if (intEntityId != null) {
-            return intEntityId;
-        } else if (stringEntityId != null) {
-            return stringEntityId;
-        } else {
-            return null;
-        }
+    public void setReferenceToEntity(ReferenceToEntity referenceToEntity) {
+        this.referenceToEntity = referenceToEntity;
     }
 }
