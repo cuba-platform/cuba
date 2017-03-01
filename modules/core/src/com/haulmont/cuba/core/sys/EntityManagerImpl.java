@@ -310,6 +310,7 @@ public class EntityManagerImpl implements EntityManager {
      * Copies all property values from source to dest excluding null values.
      */
     protected void deepCopyIgnoringNulls(Entity source, Entity dest) {
+        MetadataTools metadataTools = metadata.getTools();
         for (MetaProperty srcProperty : source.getMetaClass().getProperties()) {
             String name = srcProperty.getName();
 
@@ -326,12 +327,7 @@ public class EntityManagerImpl implements EntityManager {
                 continue;
             }
 
-            if (srcProperty.getRange().isClass()) {
-                MetadataTools metadataTools = metadata.getTools();
-
-                if (!metadataTools.isOwningSide(srcProperty))
-                    continue;
-
+            if (srcProperty.getRange().isClass() && metadataTools.isOwningSide(srcProperty)) {
                 Class refClass = srcProperty.getRange().asClass().getJavaClass();
                 if (!metadataTools.isPersistent(refClass))
                     continue;
@@ -371,6 +367,16 @@ public class EntityManagerImpl implements EntityManager {
                         deepCopyIgnoringNulls(srcRef, reloadedRef);
                     }
                 }
+            } else if (metadataTools.isEmbedded(srcProperty)) {
+                Entity srcRef = (Entity) value;
+                Entity destRef = dest.getValue(name);
+                if (destRef != null) {
+                    deepCopyIgnoringNulls(srcRef, destRef);
+                } else {
+                    Entity newRef = (Entity) metadata.create(srcProperty.getRange().asClass().getJavaClass());
+                    dest.setValue(name, newRef);
+                    deepCopyIgnoringNulls(srcRef, newRef);
+                }
             } else {
                 dest.setValue(name, value);
             }
@@ -382,7 +388,7 @@ public class EntityManagerImpl implements EntityManager {
         if (reloadedRef == null) {
             reloadedRef = metadata.create(entityClass);
             if (reloadedRef instanceof BaseGenericIdEntity) {
-                ((BaseGenericIdEntity)reloadedRef).setId(id);
+                ((BaseGenericIdEntity) reloadedRef).setId(id);
             }
             persist(reloadedRef);
         }
