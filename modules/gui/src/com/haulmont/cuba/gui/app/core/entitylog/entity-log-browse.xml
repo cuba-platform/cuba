@@ -54,10 +54,10 @@
                         <c>e.user.id = :component$userField</c>
                         <c>e.eventTs &gt;= :component$fromDateField</c>
                         <c>e.eventTs &lt;= :component$tillDateField</c>
-                        <c>e.entityId = :custom$entityId</c>
-                        <c>e.stringEntityId = :custom$stringEntityId</c>
-                        <c>e.intEntityId = :custom$intEntityId</c>
-                        <c>e.longEntityId = :custom$longEntityId</c>
+                        <c>e.entityRef.entityId = :custom$entityId</c>
+                        <c>e.entityRef.stringEntityId = :custom$stringEntityId</c>
+                        <c>e.entityRef.intEntityId = :custom$intEntityId</c>
+                        <c>e.entityRef.longEntityId = :custom$longEntityId</c>
                     </and>
                 </filter>
             </query>

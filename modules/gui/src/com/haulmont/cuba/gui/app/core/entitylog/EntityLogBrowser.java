@@ -24,9 +24,9 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.EntityLogService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.HasUuid;
-import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.ReferenceToEntitySupport;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
@@ -61,6 +61,9 @@ public class EntityLogBrowser extends AbstractWindow {
 
     @Inject
     protected EntityLogService logService;
+
+    @Inject
+    protected ReferenceToEntitySupport referenceToEntitySupport;
 
     @Inject
     protected CollectionDatasource<EntityLogItem, UUID> entityLogDs;
@@ -265,7 +268,7 @@ public class EntityLogBrowser extends AbstractWindow {
         selectAllCheckBox.addValueChangeListener(e -> enableAllCheckBoxes((boolean) e.getValue()));
 
         entityLogTable.addGeneratedColumn("entityId", entity -> {
-            EntityLogItem item = (EntityLogItem)entity;
+            EntityLogItem item = (EntityLogItem) entity;
             if (item.getObjectEntityId() != null) {
                 return new Table.PlainTextCell(item.getObjectEntityId().toString());
             }
@@ -412,7 +415,7 @@ public class EntityLogBrowser extends AbstractWindow {
         Entity entity = instancePicker.getValue();
         Map<String, Object> params = new HashMap<>();
         if (entity != null) {
-            Object entityId = getEntityId(entity);
+            Object entityId = referenceToEntitySupport.getReferenceId(entity);
             if (entityId instanceof UUID) {
                 params.put("entityId", entityId);
             } else if (entityId instanceof String) {
@@ -473,17 +476,6 @@ public class EntityLogBrowser extends AbstractWindow {
 
         loggedEntityTable.setEnabled(false);
         cancelBtn.requestFocus();
-    }
-
-    protected Object getEntityId(Entity entity) {
-        if (entity instanceof HasUuid) {
-            return ((HasUuid) entity).getUuid();
-        }
-        Object entityId = entity.getId();
-        if (entityId instanceof IdProxy) {
-            return ((IdProxy) entityId).get();
-        }
-        return entity.getId();
     }
 
     protected class SaveAction extends AbstractAction {

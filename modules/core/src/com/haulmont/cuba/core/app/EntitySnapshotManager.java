@@ -19,7 +19,6 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
@@ -72,6 +71,9 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     @Inject
     protected ViewSerializationAPI viewSerializationAPI;
 
+    @Inject
+    protected ReferenceToEntitySupport referenceToEntitySupport;
+
     @Override
     public List<EntitySnapshot> getSnapshots(Entity entity) {
         checkCompositePrimaryKey(entity);
@@ -83,9 +85,9 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         try {
             EntityManager em = persistence.getEntityManager();
             TypedQuery<EntitySnapshot> query = em.createQuery(format(
-                    "select s from sys$EntitySnapshot s where s.%s = :entityId and s.entityMetaClass = :metaClass " +
-                            "order by s.snapshotDate desc", getEntityIdPropertyName(entity)), EntitySnapshot.class);
-            query.setParameter("entityId", getEntityId(entity));
+                    "select s from sys$EntitySnapshot s where s.entity.%s = :entityId and s.entityMetaClass = :metaClass " +
+                            "order by s.snapshotDate desc", referenceToEntitySupport.getReferenceIdPropertyName(metaClass)), EntitySnapshot.class);
+            query.setParameter("entityId", referenceToEntitySupport.getReferenceId(entity));
             query.setParameter("metaClass", metaClass.getName());
             query.setView(view);
             resultList = query.getResultList();
@@ -168,8 +170,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(metadata.getClass(entity.getClass()));
 
         EntitySnapshot snapshot = metadata.create(EntitySnapshot.class);
-
-        snapshot.setObjectEntityId(getEntityId(entity));
+        snapshot.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
         snapshot.setEntityMetaClass(metaClass.getName());
         snapshot.setViewXml(viewSerializationAPI.toJson(view, ViewSerializationOption.COMPACT_FORMAT));
         snapshot.setSnapshotXml(entitySerializationAPI.toJson(entity));
@@ -258,46 +259,9 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         return value != null && value.trim().startsWith("<");
     }
 
-    protected Object getEntityId(Entity entity) {
-        if (entity instanceof HasUuid) {
-            return ((HasUuid) entity).getUuid();
-        }
-        Object entityId = entity.getId();
-        if (entityId instanceof IdProxy) {
-            return ((IdProxy) entityId).get();
-        }
-        return entity.getId();
-    }
-
     protected void checkCompositePrimaryKey(Entity entity) {
         if (metadata.getTools().hasCompositePrimaryKey(entity.getMetaClass()) && !(entity instanceof HasUuid)) {
             throw new UnsupportedOperationException(format("Entity %s has no persistent UUID attribute", entity));
-        }
-    }
-
-    protected String getEntityIdPropertyName(Entity entity) {
-        MetaClass metaClass = entity.getMetaClass();
-        if (HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
-            return "entityId";
-        }
-        MetaProperty primaryKey = metadata.getTools().getPrimaryKeyProperty(metaClass);;
-        if (primaryKey != null) {
-            Class type = primaryKey.getJavaType();
-            if (UUID.class.equals(type)) {
-                return "entityId";
-            } else if (Long.class.equals(type)) {
-                return "longEntityId";
-            } else if (Integer.class.equals(type)) {
-                return "intEntityId";
-            } else if (String.class.equals(type)) {
-                return "stringEntityId";
-            } else {
-                throw new IllegalStateException(
-                        String.format("Unsupported primary key type: %s for %s", type.getSimpleName(), metaClass.getName()));
-            }
-        } else {
-            throw new IllegalStateException(
-                    String.format("Primary key not found for %s", metaClass.getName()));
         }
     }
 

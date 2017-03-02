@@ -18,13 +18,11 @@
 package com.haulmont.cuba.gui.app.core.categories;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.data.DataSupplier;
 import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
@@ -34,19 +32,16 @@ import java.util.TreeMap;
 
 public class CategoryEditor extends AbstractEditor<Category> {
     @Inject
-    protected DataSupplier dataSupplier;
-
+    protected DataManager dataManager;
     @Inject
     protected Metadata metadata;
-
     @Inject
     protected MessageTools messageTools;
 
     @Inject
-    private LookupField entityType;
-
+    protected LookupField entityType;
     @Inject
-    private CheckBox isDefault;
+    protected CheckBox isDefault;
 
     protected Category category;
 
@@ -63,7 +58,7 @@ public class CategoryEditor extends AbstractEditor<Category> {
         Map<String, Object> options = new TreeMap<>();//the map sorts meta classes by the string key
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             String storeName = metadata.getTools().getStoreName(metaClass);
-            if (BaseUuidEntity.class.isAssignableFrom(metaClass.getJavaClass()) && Stores.isMain(storeName)) {
+            if (Stores.isMain(storeName)) {
                 options.put(messageTools.getDetailedEntityCaption(metaClass), metaClass);
             }
         }
@@ -85,17 +80,17 @@ public class CategoryEditor extends AbstractEditor<Category> {
         isDefault.setValue(BooleanUtils.isTrue(category.getIsDefault()));
         isDefault.addValueChangeListener(e -> {
             if (Boolean.TRUE.equals(e.getValue())) {
-                LoadContext categoriesContext = new LoadContext(category.getClass());
-                LoadContext.Query query = categoriesContext.setQueryString("select c from sys$Category c where c.entityType= :entityType and not c.id=:id");
-                categoriesContext.setView("category.defaultEdit");
-                query.setParameter("entityType", category.getEntityType());
-                query.setParameter("id", category.getId());
-                List<Category> categories = dataSupplier.loadList(categoriesContext);
-                for (Category cat : categories) {
+                LoadContext<Category> lc = new LoadContext<>(Category.class)
+                        .setView("category.defaultEdit");
+                lc.setQueryString("select c from sys$Category c where c.entityType = :entityType and not c.id = :id")
+                        .setParameter("entityType", category.getEntityType())
+                        .setParameter("id", category.getId());
+                List<Category> result = dataManager.loadList(lc);
+                for (Category cat : result) {
                     cat.setIsDefault(false);
                 }
-                CommitContext commitContext = new CommitContext(categories);
-                dataSupplier.commit(commitContext);
+                CommitContext commitCtx = new CommitContext(result);
+                dataManager.commit(commitCtx);
                 category.setIsDefault(true);
             } else if (Boolean.FALSE.equals(e.getValue())) {
                 category.setIsDefault(false);

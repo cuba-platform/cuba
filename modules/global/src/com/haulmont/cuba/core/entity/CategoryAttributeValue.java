@@ -17,10 +17,12 @@
 
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.*;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -55,14 +57,22 @@ public class CategoryAttributeValue extends StandardEntity {
     @Column(name = "DATE_VALUE")
     private Date dateValue;
 
-    @Column(name = "ENTITY_ID")
-    private UUID entityId;
+    @Embedded
+    @EmbeddedParameters(nullAllowed = false)
+    private ReferenceToEntity entity;
 
-    @Column(name = "ENTITY_VALUE")
-    private UUID entityValue;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name="entityId", column=@Column(name="ENTITY_VALUE")),
+            @AttributeOverride(name="stringEntityId", column=@Column(name="STRING_ENTITY_VALUE")),
+            @AttributeOverride(name="intEntityId", column=@Column(name="INT_ENTITY_VALUE")),
+            @AttributeOverride(name="longEntityId", column=@Column(name="LONG_ENTITY_VALUE"))
+    })
+    @EmbeddedParameters(nullAllowed = false)
+    private ReferenceToEntity entityValue;
 
     @Transient
-    private BaseUuidEntity transientEntityValue;
+    private BaseGenericIdEntity transientEntityValue;
 
     @OneToMany(mappedBy = "parent")
     @OnDelete(DeletePolicy.CASCADE)
@@ -75,6 +85,13 @@ public class CategoryAttributeValue extends StandardEntity {
     @Transient
     private List<Object> transientCollectionValue;
 
+    @PostConstruct
+    public void init() {
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        entity = metadata.create(ReferenceToEntity.class);
+        entityValue = metadata.create(ReferenceToEntity.class);
+    }
+
     public void setCategoryAttribute(CategoryAttribute categoryAttribute) {
         this.categoryAttribute = categoryAttribute;
     }
@@ -83,20 +100,12 @@ public class CategoryAttributeValue extends StandardEntity {
         return categoryAttribute;
     }
 
-    public UUID getEntityId() {
-        return entityId;
+    public ReferenceToEntity getEntity() {
+        return entity;
     }
 
-    public void setEntityId(UUID entityId) {
-        this.entityId = entityId;
-    }
-
-    public UUID getEntityValue() {
-        return entityValue;
-    }
-
-    public void setEntityValue(UUID entityValue) {
-        this.entityValue = entityValue;
+    public void setEntity(ReferenceToEntity entity) {
+        this.entity = entity;
     }
 
     public String getStringValue() {
@@ -147,11 +156,19 @@ public class CategoryAttributeValue extends StandardEntity {
         this.code = code;
     }
 
-    public BaseUuidEntity getTransientEntityValue() {
+    public ReferenceToEntity getEntityValue() {
+        return entityValue;
+    }
+
+    public void setEntityValue(ReferenceToEntity entityValue) {
+        this.entityValue = entityValue;
+    }
+
+    public BaseGenericIdEntity getTransientEntityValue() {
         return transientEntityValue;
     }
 
-    public void setTransientEntityValue(BaseUuidEntity transientEntityValue) {
+    public void setTransientEntityValue(BaseGenericIdEntity transientEntityValue) {
         this.transientEntityValue = transientEntityValue;
     }
 
@@ -186,8 +203,8 @@ public class CategoryAttributeValue extends StandardEntity {
             intValue = null;
             doubleValue = null;
             booleanValue = null;
-            entityValue = null;
             dateValue = null;
+            entityValue.setObjectEntityId(null);
             transientEntityValue = null;
             transientCollectionValue = null;
         } else if (value instanceof Date) {
@@ -198,11 +215,11 @@ public class CategoryAttributeValue extends StandardEntity {
             setDoubleValue((Double) value);
         } else if (value instanceof Boolean) {
             setBooleanValue((Boolean) value);
-        } else if (value instanceof UUID) {
-            setEntityValue((UUID) value);
-        } else if (value instanceof HasUuid) {
-            setEntityValue(((HasUuid) value).getUuid());
-            setTransientEntityValue((BaseUuidEntity) value);
+        } else if (value instanceof BaseGenericIdEntity) {
+            ReferenceToEntitySupport referenceToEntitySupport = AppBeans.get(ReferenceToEntitySupport.class);
+            Object referenceId = referenceToEntitySupport.getReferenceId((BaseGenericIdEntity) value);
+            entityValue.setObjectEntityId(referenceId);
+            setTransientEntityValue((BaseGenericIdEntity) value);
         } else if (value instanceof String) {
             setStringValue((String) value);
         } else if (value instanceof List) {
@@ -230,5 +247,21 @@ public class CategoryAttributeValue extends StandardEntity {
         }
 
         return null;
+    }
+
+    public void setObjectEntityId(Object entityId) {
+        entity.setObjectEntityId(entityId);
+    }
+
+    public Object getObjectEntityId() {
+        return entity.getObjectEntityId();
+    }
+
+    public void setObjectEntityValueId(Object entityId) {
+        entityValue.setObjectEntityId(entityId);
+    }
+
+    public Object getObjectEntityValueId() {
+        return entityValue.getObjectEntityId();
     }
 }

@@ -19,17 +19,26 @@ create table SYS_ATTR_VALUE (
     DELETED_BY varchar2(50),
     CATEGORY_ATTR_ID varchar2(32) not null,
     ENTITY_ID varchar2(32),
+    STRING_ENTITY_ID varchar2(255),
+    INT_ENTITY_ID integer,
+    LONG_ENTITY_ID number,
     STRING_VALUE varchar2(4000),
     INTEGER_VALUE integer,
     DOUBLE_VALUE numeric,
     DATE_VALUE timestamp,
     BOOLEAN_VALUE char(1),
     ENTITY_VALUE varchar2(32),
+    STRING_ENTITY_VALUE varchar2(255),
+    INT_ENTITY_VALUE integer,
+    LONG_ENTITY_VALUE number,
     CODE varchar2(100),
     PARENT_ID varchar2(32),
     primary key(ID)
 )^
 create index IDX_SYS_ATTR_VALUE_ENTITY on SYS_ATTR_VALUE(ENTITY_ID)^
+create index IDX_SYS_ATTR_VALUE_SENTITY on SYS_ATTR_VALUE(STRING_ENTITY_ID)^
+create index IDX_SYS_ATTR_VALUE_IENTITY on SYS_ATTR_VALUE(INT_ENTITY_ID)^
+create index IDX_SYS_ATTR_VALUE_LENTITY on SYS_ATTR_VALUE(LONG_ENTITY_ID)^
 
 create table SYS_CATEGORY (
     ID varchar2(32) not null,
@@ -72,6 +81,9 @@ create table SYS_CATEGORY_ATTR (
     DEFAULT_DATE_IS_CURRENT char(1),
     DEFAULT_BOOLEAN char(1),
     DEFAULT_ENTITY_VALUE varchar2(32),
+    DEFAULT_STR_ENTITY_VALUE varchar2(255),
+    DEFAULT_INT_ENTITY_VALUE integer,
+    DEFAULT_LONG_ENTITY_VALUE number,
     ENUMERATION varchar2(500),
     ORDER_NO integer,
     SCREEN varchar2(255),

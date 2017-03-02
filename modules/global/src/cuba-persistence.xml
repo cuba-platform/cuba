@@ -64,6 +64,8 @@
         <class>com.haulmont.cuba.core.entity.JmxInstance</class>
         <class>com.haulmont.cuba.security.entity.RememberMeToken</class>
 
+        <class>com.haulmont.cuba.core.entity.ReferenceToEntity</class>
+
         <class>com.haulmont.cuba.core.entity.dummy.DummyCategorizedEntity</class>
     </persistence-unit>
 </persistence>

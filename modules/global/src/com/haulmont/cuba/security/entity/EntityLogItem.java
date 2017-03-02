@@ -19,9 +19,14 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.ReferenceToEntity;
+import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
@@ -80,17 +85,9 @@ public class EntityLogItem extends BaseUuidEntity {
     @Column(name = "ENTITY", length = 100)
     private String entity;
 
-    @Column(name = "ENTITY_ID")
-    private UUID entityId;
-
-    @Column(name = "STRING_ENTITY_ID", length = 255)
-    private String stringEntityId;
-
-    @Column(name = "INT_ENTITY_ID")
-    private Integer intEntityId;
-
-    @Column(name = "LONG_ENTITY_ID")
-    private Long longEntityId;
+    @Embedded
+    @EmbeddedParameters(nullAllowed = false)
+    private ReferenceToEntity entityRef;
 
     @Transient
     @MetaProperty
@@ -99,20 +96,18 @@ public class EntityLogItem extends BaseUuidEntity {
     @Column(name = "CHANGES")
     private String changes;
 
+    @PostConstruct
+    public void init() {
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        entityRef = metadata.create(ReferenceToEntity.class);
+    }
+
     public String getEntity() {
         return entity;
     }
 
     public void setEntity(String entity) {
         this.entity = entity;
-    }
-
-    public UUID getEntityId() {
-        return entityId;
-    }
-
-    public void setEntityId(UUID entityId) {
-        this.entityId = entityId;
     }
 
     public Date getEventTs() {
@@ -155,61 +150,22 @@ public class EntityLogItem extends BaseUuidEntity {
         this.changes = changes;
     }
 
-    public String getStringEntityId() {
-        return stringEntityId;
+    public ReferenceToEntity getEntityRef() {
+        return entityRef;
     }
 
-    public void setStringEntityId(String stringEntityId) {
-        this.stringEntityId = stringEntityId;
+    public void setEntityRef(ReferenceToEntity entityRef) {
+        this.entityRef = entityRef;
     }
 
-    public Integer getIntEntityId() {
-        return intEntityId;
-    }
-
-    public void setIntEntityId(Integer intEntityId) {
-        this.intEntityId = intEntityId;
-    }
-
-    public Long getLongEntityId() {
-        return longEntityId;
-    }
-
-    public void setLongEntityId(Long longEntityId) {
-        this.longEntityId = longEntityId;
-    }
-
-    public void setObjectEntityId(Object objectEntityId) {
-        if (objectEntityId instanceof UUID) {
-            setEntityId((UUID) objectEntityId);
-        } else if (objectEntityId instanceof Long) {
-            setLongEntityId((Long) objectEntityId);
-        } else if (objectEntityId instanceof Integer) {
-            setIntEntityId((Integer) objectEntityId);
-        } else if (objectEntityId instanceof String) {
-            setStringEntityId((String) objectEntityId);
-        } else if (objectEntityId == null) {
-            setEntityId(null);
-            setLongEntityId(null);
-            setIntEntityId(null);
-            setStringEntityId(null);
-        } else {
-            throw new IllegalArgumentException(
-                    String.format("Unsupported primary key type: %s", objectEntityId.getClass().getSimpleName()));
+    public void setObjectEntityId(Object entity) {
+        if (entityRef == null) {
+            entityRef = AppBeans.get(Metadata.class).create(ReferenceToEntity.class);
         }
+        entityRef.setObjectEntityId(entity);
     }
 
     public Object getObjectEntityId() {
-        if (entityId != null) {
-            return entityId;
-        } else if (longEntityId != null) {
-            return longEntityId;
-        } else if (intEntityId != null) {
-            return intEntityId;
-        } else if (stringEntityId != null) {
-            return stringEntityId;
-        } else {
-            return null;
-        }
+        return entityRef == null ? null : entityRef.getObjectEntityId();
     }
 }
