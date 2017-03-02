@@ -116,11 +116,7 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
 
                     categoryAttributeValue = metadata.create(CategoryAttributeValue.class);
                     categoryAttributeValue.setValue(newValue);
-
-                    ReferenceToEntity referenceToEntity = metadata.create(ReferenceToEntity.class);
-                    referenceToEntity.setObjectEntityId(referenceToEntitySupport.getReferenceId(this));
-                    categoryAttributeValue.setReferenceToEntity(referenceToEntity);
-
+                    categoryAttributeValue.setObjectEntityId(referenceToEntitySupport.getReferenceId(this));
                     categoryAttributeValue.setCode(attributeCode);
                     DynamicAttributes dynamicAttributesBean = AppBeans.get(DynamicAttributes.NAME);
                     categoryAttributeValue.setCategoryAttribute(

@@ -17,10 +17,12 @@
 
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.*;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -56,7 +58,8 @@ public class CategoryAttributeValue extends StandardEntity {
     private Date dateValue;
 
     @Embedded
-    private ReferenceToEntity referenceToEntity;
+    @EmbeddedParameters(nullAllowed = false)
+    private ReferenceToEntity entity;
 
     @Embedded
     @AttributeOverrides({
@@ -65,7 +68,8 @@ public class CategoryAttributeValue extends StandardEntity {
             @AttributeOverride(name="intEntityId", column=@Column(name="INT_ENTITY_VALUE")),
             @AttributeOverride(name="longEntityId", column=@Column(name="LONG_ENTITY_VALUE"))
     })
-    private ReferenceToEntity referenceToEntityValue;
+    @EmbeddedParameters(nullAllowed = false)
+    private ReferenceToEntity entityValue;
 
     @Transient
     private BaseGenericIdEntity transientEntityValue;
@@ -81,6 +85,13 @@ public class CategoryAttributeValue extends StandardEntity {
     @Transient
     private List<Object> transientCollectionValue;
 
+    @PostConstruct
+    public void init() {
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        entity = metadata.create(ReferenceToEntity.class);
+        entityValue = metadata.create(ReferenceToEntity.class);
+    }
+
     public void setCategoryAttribute(CategoryAttribute categoryAttribute) {
         this.categoryAttribute = categoryAttribute;
     }
@@ -89,12 +100,12 @@ public class CategoryAttributeValue extends StandardEntity {
         return categoryAttribute;
     }
 
-    public ReferenceToEntity getReferenceToEntity() {
-        return referenceToEntity;
+    public ReferenceToEntity getEntity() {
+        return entity;
     }
 
-    public void setReferenceToEntity(ReferenceToEntity referenceToEntity) {
-        this.referenceToEntity = referenceToEntity;
+    public void setEntity(ReferenceToEntity entity) {
+        this.entity = entity;
     }
 
     public String getStringValue() {
@@ -145,12 +156,12 @@ public class CategoryAttributeValue extends StandardEntity {
         this.code = code;
     }
 
-    public ReferenceToEntity getReferenceToEntityValue() {
-        return referenceToEntityValue;
+    public ReferenceToEntity getEntityValue() {
+        return entityValue;
     }
 
-    public void setReferenceToEntityValue(ReferenceToEntity referenceToEntityValue) {
-        this.referenceToEntityValue = referenceToEntityValue;
+    public void setEntityValue(ReferenceToEntity entityValue) {
+        this.entityValue = entityValue;
     }
 
     public BaseGenericIdEntity getTransientEntityValue() {
@@ -193,7 +204,7 @@ public class CategoryAttributeValue extends StandardEntity {
             doubleValue = null;
             booleanValue = null;
             dateValue = null;
-            referenceToEntityValue = null;
+            entityValue.setObjectEntityId(null);
             transientEntityValue = null;
             transientCollectionValue = null;
         } else if (value instanceof Date) {
@@ -205,13 +216,9 @@ public class CategoryAttributeValue extends StandardEntity {
         } else if (value instanceof Boolean) {
             setBooleanValue((Boolean) value);
         } else if (value instanceof BaseGenericIdEntity) {
-            if (referenceToEntityValue == null) {
-                Metadata metadata = AppBeans.get(Metadata.class);
-                referenceToEntityValue = metadata.create(ReferenceToEntity.class);
-            }
             ReferenceToEntitySupport referenceToEntitySupport = AppBeans.get(ReferenceToEntitySupport.class);
             Object referenceId = referenceToEntitySupport.getReferenceId((BaseGenericIdEntity) value);
-            referenceToEntityValue.setObjectEntityId(referenceId);
+            entityValue.setObjectEntityId(referenceId);
             setTransientEntityValue((BaseGenericIdEntity) value);
         } else if (value instanceof String) {
             setStringValue((String) value);
@@ -240,5 +247,21 @@ public class CategoryAttributeValue extends StandardEntity {
         }
 
         return null;
+    }
+
+    public void setObjectEntityId(Object entityId) {
+        entity.setObjectEntityId(entityId);
+    }
+
+    public Object getObjectEntityId() {
+        return entity.getObjectEntityId();
+    }
+
+    public void setObjectEntityValueId(Object entityId) {
+        entityValue.setObjectEntityId(entityId);
+    }
+
+    public Object getObjectEntityValueId() {
+        return entityValue.getObjectEntityId();
     }
 }

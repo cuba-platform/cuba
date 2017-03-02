@@ -20,11 +20,13 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.ReferenceToEntity;
+import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
@@ -84,6 +86,7 @@ public class EntityLogItem extends BaseUuidEntity {
     private String entity;
 
     @Embedded
+    @EmbeddedParameters(nullAllowed = false)
     private ReferenceToEntity entityRef;
 
     @Transient
@@ -92,6 +95,12 @@ public class EntityLogItem extends BaseUuidEntity {
 
     @Column(name = "CHANGES")
     private String changes;
+
+    @PostConstruct
+    public void init() {
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        entityRef = metadata.create(ReferenceToEntity.class);
+    }
 
     public String getEntity() {
         return entity;

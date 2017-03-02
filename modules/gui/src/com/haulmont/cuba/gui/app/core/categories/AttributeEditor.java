@@ -45,6 +45,7 @@ import com.haulmont.cuba.gui.components.filter.edit.FilterEditor;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.AbstractDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -260,6 +261,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 } else {
                     attribute.setObjectDefaultEntityId(null);
                 }
+                ((AbstractDatasource)attributeDs).modified(attribute);
             });
             entityLookupAction = defaultEntityField.addLookupAction();
             defaultEntityField.addClearAction();

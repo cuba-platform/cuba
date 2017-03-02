@@ -301,10 +301,8 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             CategoryAttributeValue childCAV = metadata.create(CategoryAttributeValue.class);
             childCAV.setParent(categoryAttributeValue);
             childCAV.setValue(value);
-            if (categoryAttributeValue.getReferenceToEntity() != null) {
-                ReferenceToEntity referenceToEntity = metadata.create(ReferenceToEntity.class);
-                metadata.getTools().copy(categoryAttributeValue.getReferenceToEntity(), referenceToEntity);
-                childCAV.setReferenceToEntity(referenceToEntity);
+            if (categoryAttributeValue.getObjectEntityId() != null) {
+                childCAV.setObjectEntityId(categoryAttributeValue.getObjectEntityId());
             }
             childCAV.setCode(categoryAttributeValue.getCode());
             childCAV.setCategoryAttribute(categoryAttributeValue.getCategoryAttribute());
@@ -347,7 +345,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     protected void handleAttributeValuesForIds(MetaClass metaClass, List<Object> currentIds, Multimap<Object, CategoryAttributeValue> attributeValuesForEntity) {
         if (CollectionUtils.isNotEmpty(currentIds)) {
             for (CategoryAttributeValue attributeValue : loadAttributeValues(metaClass, currentIds)) {
-                attributeValuesForEntity.put(attributeValue.getReferenceToEntity().getObjectEntityId(), attributeValue);
+                attributeValuesForEntity.put(attributeValue.getObjectEntityId(), attributeValue);
             }
         }
     }
@@ -363,11 +361,11 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
             TypedQuery<CategoryAttributeValue> query;
             if (HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
-                query = em.createQuery(format("select cav from sys$CategoryAttributeValue cav where cav.referenceToEntity.%s in :ids and cav.parent is null",
+                query = em.createQuery(format("select cav from sys$CategoryAttributeValue cav where cav.entity.%s in :ids and cav.parent is null",
                         referenceToEntitySupport.getReferenceIdPropertyName(metaClass)),
                         CategoryAttributeValue.class);
             } else {
-                query = em.createQuery(format("select cav from sys$CategoryAttributeValue cav where cav.referenceToEntity.%s in :ids " +
+                query = em.createQuery(format("select cav from sys$CategoryAttributeValue cav where cav.entity.%s in :ids " +
                                 "and cav.categoryAttribute.categoryEntityType = :entityType and cav.parent is null",
                         referenceToEntitySupport.getReferenceIdPropertyName(metaClass)),
                         CategoryAttributeValue.class);
@@ -378,7 +376,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             List<CategoryAttributeValue> resultList = query.getResultList();
 
             List<CategoryAttributeValue> cavsOfEntityType = resultList.stream()
-                    .filter(cav -> cav.getReferenceToEntityValue() != null && cav.getReferenceToEntityValue().getObjectEntityId() != null)
+                    .filter(cav -> cav.getObjectEntityValueId() != null)
                     .collect(Collectors.toList());
 
             List<CategoryAttributeValue> cavsOfCollectionType = resultList.stream()
@@ -434,7 +432,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             try {
                 Class<?> aClass = Class.forName(className);
                 MetaClass metaClass = metadata.getClass(aClass);
-                entitiesIdsToBeLoaded.put(metaClass, cav.getReferenceToEntityValue().getObjectEntityId());
+                entitiesIdsToBeLoaded.put(metaClass, cav.getObjectEntityValueId());
                 cavByType.put(metaClass, cav);
             } catch (ClassNotFoundException e) {
                 log.error("Class {} not found", className);
@@ -449,12 +447,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             Collection<Object> ids = entry.getValue();
 
             if (!ids.isEmpty()) {
-                String pkName;
-                if (metadata.getTools().hasCompositePrimaryKey(metaClass) && HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
-                    pkName = "uuid";
-                } else {
-                    pkName = metadata.getTools().getPrimaryKeyName(metaClass);
-                }
+                String pkName = referenceToEntitySupport.getPrimaryKeyForLoadingEntity(metaClass);
                 List<BaseGenericIdEntity> entitiesValues = em.createQuery(format("select e from %s e where e.%s in :ids", metaClass.getName(), pkName))
                         .setParameter("ids", ids)
                         .setView(metaClass.getJavaClass(), View.MINIMAL)
@@ -466,7 +459,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             }
 
             for (CategoryAttributeValue cav : cavByType.get(metaClass)) {
-                cav.setTransientEntityValue(idToEntityMap.get(cav.getReferenceToEntityValue().getObjectEntityId()));
+                cav.setTransientEntityValue(idToEntityMap.get(cav.getObjectEntityValueId()));
             }
         }
     }

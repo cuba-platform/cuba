@@ -21,6 +21,7 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
+import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
@@ -28,6 +29,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import java.util.Date;
@@ -65,7 +67,14 @@ public class EntitySnapshot extends BaseUuidEntity implements Creatable {
     private User author;
 
     @Embedded
+    @EmbeddedParameters(nullAllowed = false)
     private ReferenceToEntity entity;
+
+    @PostConstruct
+    public void init() {
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        entity = metadata.create(ReferenceToEntity.class);
+    }
 
     @Override
     public Date getCreateTs() {
@@ -158,9 +167,6 @@ public class EntitySnapshot extends BaseUuidEntity implements Creatable {
     }
 
     public void setObjectEntityId(Object entityId) {
-        if (entity == null) {
-            entity = AppBeans.get(Metadata.class).create(ReferenceToEntity.class);
-        }
         entity.setObjectEntityId(entityId);
     }
 }

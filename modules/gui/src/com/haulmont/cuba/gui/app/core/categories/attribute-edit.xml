@@ -25,8 +25,7 @@
         <datasource
                 id="attributeDs"
                 class="com.haulmont.cuba.core.entity.CategoryAttribute"
-                view="category.edit"
-                >
+                view="category.edit">
         </datasource>
         <collectionDatasource id="screensDs" class="com.haulmont.cuba.gui.app.core.categories.ScreenAndComponent"
                               allowCommit="false" refreshMode="NEVER"/>
