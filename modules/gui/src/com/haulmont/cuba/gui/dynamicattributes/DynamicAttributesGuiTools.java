@@ -21,14 +21,9 @@ import com.google.common.base.Strings;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.Categorized;
-import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
@@ -39,6 +34,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +42,8 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.lang.String.format;
 
 @Component(DynamicAttributesGuiTools.NAME)
 public class DynamicAttributesGuiTools {
@@ -62,6 +60,12 @@ public class DynamicAttributesGuiTools {
 
     @Inject
     protected Metadata metadata;
+
+    @Inject
+    protected ReferenceToEntitySupport referenceToEntitySupport;
+
+    @Inject
+    protected DataManager dataManager;
 
     /**
      * Enforce the datasource to change modified status if dynamic attribute is changed
@@ -165,7 +169,17 @@ public class DynamicAttributesGuiTools {
             }
 
             if (categoryAttribute.getDefaultValue() != null) {
-                item.setValue(code, categoryAttribute.getDefaultValue());
+                if (BooleanUtils.isTrue(categoryAttribute.getIsEntity())) {
+                    MetaClass entityMetaClass = metadata.getClassNN(categoryAttribute.getJavaClassForEntity());
+                    LoadContext<Entity> lc = new LoadContext<>(entityMetaClass).setView(View.MINIMAL);
+                    String pkName = referenceToEntitySupport.getPrimaryKeyForLoadingEntity(entityMetaClass);
+                    lc.setQueryString(format("select e from %s e where e.%s = :entityId", entityMetaClass.getName(), pkName))
+                            .setParameter("entityId", categoryAttribute.getDefaultValue());
+                    Entity defaultEntity = dataManager.load(lc);
+                    item.setValue(code, defaultEntity);
+                } else {
+                    item.setValue(code, categoryAttribute.getDefaultValue());
+                }
             } else if (Boolean.TRUE.equals(categoryAttribute.getDefaultDateIsCurrent())) {
                 item.setValue(code, currentTimestamp);
             }
