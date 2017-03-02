@@ -369,9 +369,14 @@ public class EntityManagerImpl implements EntityManager {
                 }
             } else if (metadataTools.isEmbedded(srcProperty)) {
                 Entity srcRef = (Entity) value;
-                Entity newRef = (Entity) metadata.create(srcProperty.getRange().asClass().getJavaClass());
-                dest.setValue(name, newRef);
-                deepCopyIgnoringNulls(srcRef, newRef);
+                Entity destRef = dest.getValue(name);
+                if (destRef != null) {
+                    deepCopyIgnoringNulls(srcRef, destRef);
+                } else {
+                    Entity newRef = (Entity) metadata.create(srcProperty.getRange().asClass().getJavaClass());
+                    dest.setValue(name, newRef);
+                    deepCopyIgnoringNulls(srcRef, newRef);
+                }
             } else {
                 dest.setValue(name, value);
             }

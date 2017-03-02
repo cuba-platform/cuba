@@ -183,7 +183,7 @@ public class EntityLogTest {
         try {
             EntityManager em = cont.persistence().getEntityManager();
             TypedQuery<EntityLogItem> query = em.createQuery(
-                    "select i from sec$EntityLog i where i.entity = ?1 and i.entityId = ?2", EntityLogItem.class);
+                    "select i from sec$EntityLog i where i.entity = ?1 and i.entityRef.entityId = ?2", EntityLogItem.class);
             query.setParameter(1, "sec$User");
             query.setParameter(2, userId);
             items = query.getResultList();
@@ -220,7 +220,7 @@ public class EntityLogTest {
         try {
             EntityManager em = cont.persistence().getEntityManager();
             TypedQuery<EntityLogItem> query = em.createQuery(
-                    "select i from sec$EntityLog i where i.entity = ?1 and i.entityId = ?2", EntityLogItem.class);
+                    "select i from sec$EntityLog i where i.entity = ?1 and i.entityRef.entityId = ?2", EntityLogItem.class);
             query.setParameter(1, "sec$Role");
             query.setParameter(2, roleId);
             items = query.getResultList();
@@ -321,7 +321,7 @@ public class EntityLogTest {
         try {
             EntityManager em = cont.persistence().getEntityManager();
             TypedQuery<EntityLogItem> query = em.createQuery(
-                    "select i from sec$EntityLog i where i.entity = ?1 and i.entityId = ?2 order by i.eventTs desc", EntityLogItem.class);
+                    "select i from sec$EntityLog i where i.entity = ?1 and i.entityRef.entityId = ?2 order by i.eventTs desc", EntityLogItem.class);
             query.setParameter(1, "sec$User");
             query.setParameter(2, userId);
             items = query.getResultList();

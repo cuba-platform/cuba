@@ -357,7 +357,8 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
             View view = new View(viewRepository.getView(CategoryAttributeValue.class, View.LOCAL), null, false)
                     .addProperty("categoryAttribute", new View(viewRepository.getView(CategoryAttribute.class, View.LOCAL), null, false)
-                            .addProperty("category"));
+                            .addProperty("category")
+                            .addProperty("defaultEntity", viewRepository.getView(ReferenceToEntity.class, View.LOCAL)));
 
             TypedQuery<CategoryAttributeValue> query;
             if (HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {

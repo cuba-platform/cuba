@@ -171,7 +171,7 @@ public class EntityManagerTest {
         Transaction tx = cont.persistence().createTransaction();
         try {
             EntityManager em = cont.persistence().getEntityManager();
-            EntitySnapshot entitySnapshot = new EntitySnapshot();
+            EntitySnapshot entitySnapshot = cont.metadata().create(EntitySnapshot.class);
             entitySnapshot.setObjectEntityId(1);
             EntitySnapshot mergedEntitySnapshot = em.merge(entitySnapshot);
 

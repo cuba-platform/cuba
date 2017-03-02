@@ -80,7 +80,7 @@ public class NonEntityQueryTest {
             serverId = server.getId();
             em.persist(server);
 
-            EntitySnapshot entitySnapshot = new EntitySnapshot();
+            EntitySnapshot entitySnapshot = cont.metadata().create(EntitySnapshot.class);
             entitySnapshot.setSnapshotDate(new Date());
             entitySnapshot.setAuthor(userSession.getCurrentOrSubstitutedUser());
             entitySnapshotId = entitySnapshot.getId();
