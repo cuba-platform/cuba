@@ -46,6 +46,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CssLayout> implemen
 
     public WebScrollBoxLayout() {
         component = new CssLayout();
+        component.setWidth("100%");
         component.setPrimaryStyleName(SCROLLBOX_STYLENAME);
 
         CubaVerticalActionsLayout content = new CubaVerticalActionsLayout();
