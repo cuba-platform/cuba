@@ -166,7 +166,7 @@ select_clause
 select_item
     : select_expression (('AS')? result_variable)?;
 select_expression
-    : path_expression
+    : path_expression (('+' | '-' | '*' | '/') scalar_expression)?
     | identification_variable -> ^(T_SELECTED_ENTITY<PathNode>[$identification_variable.text])
     | scalar_expression
     | aggregate_expression
@@ -349,11 +349,11 @@ comparison_operator
     | '<='
     | '<>';
 arithmetic_expression
-    : arithmetic_term
-    | arithmetic_term ('+' | '-') arithmetic_term;
+    : arithmetic_term ('+' | '-') arithmetic_term
+    | arithmetic_term;
 arithmetic_term
-    : arithmetic_factor
-    | arithmetic_factor ( '*' | '/') arithmetic_factor;
+    : arithmetic_factor ( '*' | '/') arithmetic_factor
+    | arithmetic_factor;
 arithmetic_factor
     : (( '+' | '-'))? arithmetic_primary;
 arithmetic_primary
