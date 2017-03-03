@@ -25,6 +25,7 @@ import com.haulmont.chile.core.model.impl.SessionImpl;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.ReferenceToEntitySupport;
 import com.haulmont.cuba.security.entity.User;
 import org.junit.Assert;
 import mockit.Mock;
@@ -48,6 +49,9 @@ public class BaseGenericIdEntityTest {
 
     @Mocked
     protected Metadata metadata;
+
+    @Mocked
+    protected ReferenceToEntitySupport referenceToEntitySupport;
 
     @Before
     public void setUp() throws Exception {
@@ -85,7 +89,9 @@ public class BaseGenericIdEntityTest {
                     return (T) new User();
                 }
                 if (CategoryAttributeValue.class.equals(entityClass)) {
-                    return (T) new CategoryAttributeValue();
+                    CategoryAttributeValue attributeValue = new CategoryAttributeValue();
+                    attributeValue.setEntity(new ReferenceToEntity());
+                    return (T) attributeValue;
                 }
                 throw new IllegalArgumentException("Add support for " + entityClass.getSimpleName() + " to Mock");
             }
@@ -95,12 +101,12 @@ public class BaseGenericIdEntityTest {
             {
                 AppBeans.get(DynamicAttributes.NAME); result = dynamicAttributes;
                 AppBeans.get(Metadata.NAME); result = metadata;
+                AppBeans.get(ReferenceToEntitySupport.class); result = referenceToEntitySupport;
             }
         };
     }
 
     @Test
-    @Ignore
     public void testDynamicAttributes() throws Exception {
         User user = new User();
 
