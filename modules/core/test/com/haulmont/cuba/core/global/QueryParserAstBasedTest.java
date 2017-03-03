@@ -338,6 +338,15 @@ public class QueryParserAstBasedTest {
         System.out.println(transformer.getResult());
     }
 
+    @Test
+    public void testScalarExpressionInSelect() throws Exception {
+        DomainModel model = prepareDomainModel();
+        QueryParserAstBased transformer = new QueryParserAstBased(model,
+                "select c.int1 + c.int2 * c.int1 from sec$User u"
+        );
+        transformer.getParamNames();
+    }
+
     private DomainModel prepareDomainModel() {
         EntityBuilder builder = new EntityBuilder();
         builder.startNewEntity("sec$GroupHierarchy");
@@ -360,6 +369,8 @@ public class QueryParserAstBasedTest {
         builder = new EntityBuilder();
         builder.startNewEntity("sec$User");
         builder.addStringAttribute("login");
+        builder.addSingleValueAttribute(Integer.class,"int1");
+        builder.addSingleValueAttribute(Integer.class,"int2");
         builder.addReferenceAttribute("group", "sec$Group");
         JpqlEntityModel userEntity = builder.produce();
 
