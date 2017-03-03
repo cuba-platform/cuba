@@ -184,12 +184,22 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
 
     @Override
     public String getCaption() {
-        return delegate.getCaption();
+        if (delegate.isBorderVisible()) {
+            return delegate.getCaption();
+        } else {
+            return component.getCaption();
+        }
     }
 
     @Override
     public void setCaption(String caption) {
-        delegate.setCaption(caption);
+        if (delegate.isBorderVisible()) {
+            delegate.setCaption(caption);
+            component.setCaption(null);
+        } else {
+            component.setCaption(caption);
+            delegate.setCaption(null);
+        }
     }
 
     @Override
@@ -362,7 +372,12 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
 
     @Override
     public void setBorderVisible(boolean visible) {
+        if (delegate.isBorderVisible() == visible)
+            return;
         delegate.setBorderVisible(visible);
+
+        String caption = visible ? component.getCaption() : delegate.getCaption();
+        setCaption(caption);
     }
 
     @Override
