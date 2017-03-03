@@ -20,7 +20,6 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
-import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.Group;
@@ -163,22 +162,6 @@ public class EntityManagerTest {
         } finally {
             tx.end();
             cont.deleteRecord("SEC_USER", newUserId);
-        }
-    }
-
-    @Test
-    public void testMergeEmbedded() throws Exception {
-        Transaction tx = cont.persistence().createTransaction();
-        try {
-            EntityManager em = cont.persistence().getEntityManager();
-            EntitySnapshot entitySnapshot = new EntitySnapshot();
-            entitySnapshot.setObjectEntityId(1);
-            EntitySnapshot mergedEntitySnapshot = em.merge(entitySnapshot);
-
-            assertNotNull(mergedEntitySnapshot.getEntity());
-            assertEquals(1, mergedEntitySnapshot.getEntity().getObjectEntityId());
-        } finally {
-            tx.end();
         }
     }
 
