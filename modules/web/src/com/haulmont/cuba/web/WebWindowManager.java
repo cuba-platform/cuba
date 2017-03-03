@@ -171,7 +171,7 @@ public class WebWindowManager extends WindowManager {
                     || openMode == OpenMode.THIS_TAB) {
                 // show in tabsheet
                 Layout layout = (Layout) openInfo.getData();
-                TabSheet webTabsheet = getConfiguredWorkArea().getTabbedWindowContainer();
+                TabSheet webTabsheet = getConfiguredWorkArea(createWorkAreaContext(window)).getTabbedWindowContainer();
                 webTabsheet.setSelectedTab(layout);
             }
         }
@@ -202,7 +202,7 @@ public class WebWindowManager extends WindowManager {
                 com.vaadin.ui.Window dialog = (com.vaadin.ui.Window) openInfo.getData();
                 dialog.setCaption(formattedCaption);
             } else {
-                if (getConfiguredWorkArea().getMode() == AppWorkArea.Mode.SINGLE) {
+                if (getConfiguredWorkArea(createWorkAreaContext(window)).getMode() == AppWorkArea.Mode.SINGLE) {
                     return;
                 }
 
@@ -211,7 +211,7 @@ public class WebWindowManager extends WindowManager {
                     return;
                 }
 
-                TabSheet tabSheet = getConfiguredWorkArea().getTabbedWindowContainer();
+                TabSheet tabSheet = getConfiguredWorkArea(createWorkAreaContext(window)).getTabbedWindowContainer();
                 TabSheet.Tab tab = tabSheet.getTab(tabContent);
                 if (tab == null) {
                     return;
@@ -315,7 +315,7 @@ public class WebWindowManager extends WindowManager {
         switch (targetOpenType.getOpenMode()) {
             case NEW_TAB:
             case NEW_WINDOW:
-                final WebAppWorkArea workArea = getConfiguredWorkArea();
+                final WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
                 workArea.switchTo(AppWorkArea.State.WINDOW_CONTAINER);
 
                 if (workArea.getMode() == AppWorkArea.Mode.SINGLE) {
@@ -373,7 +373,7 @@ public class WebWindowManager extends WindowManager {
                 break;
 
             case THIS_TAB:
-                getConfiguredWorkArea().switchTo(AppWorkArea.State.WINDOW_CONTAINER);
+                getConfiguredWorkArea(createWorkAreaContext(window)).switchTo(AppWorkArea.State.WINDOW_CONTAINER);
 
                 component = showWindowThisTab(window, caption, description);
                 break;
@@ -450,7 +450,7 @@ public class WebWindowManager extends WindowManager {
     protected Component showWindowNewTab(final Window window, final boolean multipleOpen) {
         getDialogParams().reset();
 
-        final WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs();
+        final WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs(window);
         breadCrumbs.addListener(
                 new WindowBreadCrumbs.Listener() {
                     @Override
@@ -494,7 +494,7 @@ public class WebWindowManager extends WindowManager {
         component.setSizeFull();
         layout.addComponent(component);
 
-        WebAppWorkArea workArea = getConfiguredWorkArea();
+        WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
 
         if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
             layout.addStyleName("c-app-tabbed-window");
@@ -593,7 +593,7 @@ public class WebWindowManager extends WindowManager {
     protected Component showWindowThisTab(final Window window, final String caption, final String description) {
         getDialogParams().reset();
 
-        WebAppWorkArea workArea = getConfiguredWorkArea();
+        WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
 
         Layout layout;
         if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
@@ -654,7 +654,7 @@ public class WebWindowManager extends WindowManager {
         return layout;
     }
 
-    protected WebAppWorkArea getConfiguredWorkArea() {
+    protected WebAppWorkArea getConfiguredWorkArea(@Nullable WorkAreaContext workAreaContext) {
         Window.TopLevelWindow topLevelWindow = ui.getTopLevelWindow();
 
         if (topLevelWindow instanceof Window.MainWindow) {
@@ -757,8 +757,8 @@ public class WebWindowManager extends WindowManager {
         return vWindow;
     }
 
-    protected WindowBreadCrumbs createWindowBreadCrumbs() {
-        WindowBreadCrumbs windowBreadCrumbs = new WindowBreadCrumbs(getConfiguredWorkArea());
+    protected WindowBreadCrumbs createWindowBreadCrumbs(Window window) {
+        WindowBreadCrumbs windowBreadCrumbs = new WindowBreadCrumbs(getConfiguredWorkArea(createWorkAreaContext(window)));
         windowBreadCrumbs.setVisible(webConfig.getShowBreadCrumbs());
         stacks.put(windowBreadCrumbs, new Stack<>());
         return windowBreadCrumbs;
@@ -961,7 +961,7 @@ public class WebWindowManager extends WindowManager {
                 final Layout layout = (Layout) openInfo.getData();
                 layout.removeComponent(WebComponentsHelper.getComposition(window));
 
-                WebAppWorkArea workArea = getConfiguredWorkArea();
+                WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
 
                 if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
                     CubaTabSheet tabSheet = workArea.getTabbedWindowContainer();
@@ -1003,7 +1003,7 @@ public class WebWindowManager extends WindowManager {
                 final Component component = WebComponentsHelper.getComposition(currentWindow);
                 component.setSizeFull();
 
-                WebAppWorkArea workArea = getConfiguredWorkArea();
+                WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
 
                 layout.removeComponent(WebComponentsHelper.getComposition(window));
                 if (app.getConnection().isConnected()) {
@@ -1411,7 +1411,7 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     protected Window getWindow(Integer hashCode) {
-        AppWorkArea workArea = getConfiguredWorkArea();
+        AppWorkArea workArea = getConfiguredWorkArea(null);
         if (workArea == null || workArea.getMode() == AppWorkArea.Mode.SINGLE) {
             return null;
         }
@@ -1511,7 +1511,7 @@ public class WebWindowManager extends WindowManager {
                             initTabShortcuts();
 
                             // listener used only once
-                            getConfiguredWorkArea().removeStateChangeListener(this);
+                            getConfiguredWorkArea(createWorkAreaContext(topLevelWindow)).removeStateChangeListener(this);
                         }
                     }
                 });
@@ -1525,18 +1525,18 @@ public class WebWindowManager extends WindowManager {
         Window.TopLevelWindow topLevelWindow = ui.getTopLevelWindow();
         CubaOrderedActionsLayout actionsLayout = topLevelWindow.unwrap(CubaOrderedActionsLayout.class);
 
-        if (getConfiguredWorkArea().getMode() == AppWorkArea.Mode.TABBED) {
-            actionsLayout.addShortcutListener(createNextWindowTabShortcut());
-            actionsLayout.addShortcutListener(createPreviousWindowTabShortcut());
+        if (getConfiguredWorkArea(createWorkAreaContext(topLevelWindow)).getMode() == AppWorkArea.Mode.TABBED) {
+            actionsLayout.addShortcutListener(createNextWindowTabShortcut(topLevelWindow));
+            actionsLayout.addShortcutListener(createPreviousWindowTabShortcut(topLevelWindow));
         }
-        actionsLayout.addShortcutListener(createCloseShortcut());
+        actionsLayout.addShortcutListener(createCloseShortcut(topLevelWindow));
     }
 
     protected boolean hasDialogWindows() {
         return !ui.getWindows().isEmpty();
     }
 
-    public ShortcutListener createCloseShortcut() {
+    public ShortcutListener createCloseShortcut(Window.TopLevelWindow topLevelWindow) {
         String closeShortcut = clientConfig.getCloseShortcut();
         KeyCombination combination = KeyCombination.create(closeShortcut);
 
@@ -1544,7 +1544,7 @@ public class WebWindowManager extends WindowManager {
                 KeyCombination.Modifier.codes(combination.getModifiers())) {
             @Override
             public void handleAction(Object sender, Object target) {
-                WebAppWorkArea workArea = getConfiguredWorkArea();
+                WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(topLevelWindow));
                 if (workArea.getState() != AppWorkArea.State.WINDOW_CONTAINER) {
                     return;
                 }
@@ -1583,7 +1583,7 @@ public class WebWindowManager extends WindowManager {
         };
     }
 
-    public ShortcutListener createNextWindowTabShortcut() {
+    public ShortcutListener createNextWindowTabShortcut(Window.TopLevelWindow topLevelWindow) {
         String nextTabShortcut = clientConfig.getNextTabShortcut();
         KeyCombination combination = KeyCombination.create(nextTabShortcut);
 
@@ -1591,7 +1591,7 @@ public class WebWindowManager extends WindowManager {
                 KeyCombination.Modifier.codes(combination.getModifiers())) {
             @Override
             public void handleAction(Object sender, Object target) {
-                TabSheet tabSheet = getConfiguredWorkArea().getTabbedWindowContainer();
+                TabSheet tabSheet = getConfiguredWorkArea(createWorkAreaContext(topLevelWindow)).getTabbedWindowContainer();
 
                 if (tabSheet != null && !hasDialogWindows() && tabSheet.getComponentCount() > 1) {
                     Component selectedTabComponent = tabSheet.getSelectedTab();
@@ -1608,7 +1608,7 @@ public class WebWindowManager extends WindowManager {
         };
     }
 
-    public ShortcutListener createPreviousWindowTabShortcut() {
+    public ShortcutListener createPreviousWindowTabShortcut(Window.TopLevelWindow topLevelWindow) {
         String previousTabShortcut = clientConfig.getPreviousTabShortcut();
         KeyCombination combination = KeyCombination.create(previousTabShortcut);
 
@@ -1616,7 +1616,7 @@ public class WebWindowManager extends WindowManager {
                 KeyCombination.Modifier.codes(combination.getModifiers())) {
             @Override
             public void handleAction(Object sender, Object target) {
-                TabSheet tabSheet = getConfiguredWorkArea().getTabbedWindowContainer();
+                TabSheet tabSheet = getConfiguredWorkArea(createWorkAreaContext(topLevelWindow)).getTabbedWindowContainer();
 
                 if (tabSheet != null && !hasDialogWindows() && tabSheet.getComponentCount() > 1) {
                     Component selectedTabComponent = tabSheet.getSelectedTab();
@@ -1689,5 +1689,19 @@ public class WebWindowManager extends WindowManager {
                 }
             }
         }
+    }
+
+    @Nullable
+    protected WorkAreaContext createWorkAreaContext(WindowInfo windowInfo) {
+        return null;
+    }
+
+    @Nullable
+    protected WorkAreaContext createWorkAreaContext(Window window) {
+        return null;
+    }
+
+    public interface WorkAreaContext {
+
     }
 }
