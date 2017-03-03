@@ -49,15 +49,17 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
-    public void getResult_noChangesMade_withJoinAndAsField() throws RecognitionException {
+    public void getResult_noChangesMade_withJoinAndAsAndMemberField() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
         JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name");
         builder.startNewEntity("Player");
         builder.addReferenceAttribute("as", "Team");
+        builder.addReferenceAttribute("member", "Team");
         JpqlEntityModel playerEntity = builder.produce();
         DomainModel model = new DomainModel(playerEntity, teamEntity);
 
         assertTransformsToSame(model, "SELECT p FROM Player p JOIN p.as t");
+        assertTransformsToSame(model, "SELECT p FROM Player p JOIN p.member t");
     }
 
     @Test
