@@ -34,13 +34,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import javax.persistence.MappedSuperclass;
 import java.io.IOException;
@@ -118,7 +118,7 @@ public class PermissionConfig {
                     walkMenu(item, n);
                 }
             } else {
-                if (!"-".equals(info.getId())) {
+                if (!info.isSeparator()) {
                     Node<BasicPermissionTarget> n = new Node<>(new BasicPermissionTarget("item:" + id, caption, id));
                     node.addChild(n);
                 }

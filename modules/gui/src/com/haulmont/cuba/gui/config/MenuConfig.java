@@ -50,7 +50,7 @@ public class MenuConfig {
     public static final String NAME = "cuba_MenuConfig";
 
     public static final String MENU_CONFIG_XML_PROP = "cuba.menuConfig";
-    
+
     protected List<MenuItem> rootItems = new ArrayList<>();
 
     @Inject
@@ -141,6 +141,7 @@ public class MenuConfig {
     }
 
     protected void loadMenuItems(Element parentElement, MenuItem parentItem) {
+        //noinspection unchecked
         for (Element element : ((List<Element>) parentElement.elements())) {
             MenuItem menuItem = null;
             MenuItem currentParentItem = parentItem;
@@ -178,11 +179,6 @@ public class MenuConfig {
                 loadExpanded(element, menuItem);
                 loadDescription(element, menuItem);
                 loadMenuItems(element, menuItem);
-
-//                if (menuItem.getChildren().isEmpty()) {
-                    // do not add empty branches
-                    //menuItem = null;
-//                }
             } else if ("item".equals(element.getName())) {
                 String id = element.attributeValue("id");
                 if (!StringUtils.isBlank(id)) {
@@ -250,7 +246,7 @@ public class MenuConfig {
             if (before)
                 items.add(i, menuItem);
             else
-                items.add(i+1, menuItem);
+                items.add(i + 1, menuItem);
         }
     }
 

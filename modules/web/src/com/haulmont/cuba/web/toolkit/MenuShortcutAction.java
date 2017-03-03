@@ -17,26 +17,26 @@
 package com.haulmont.cuba.web.toolkit;
 
 import com.haulmont.cuba.gui.components.KeyCombination;
+import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.MenuBar;
 
 public class MenuShortcutAction extends ShortcutListener {
 
     private static final long serialVersionUID = -5416777300893219886L;
 
-    protected MenuBar.MenuItem menuItem;
+    protected AppMenu.MenuItem menuItem;
 
-    public MenuShortcutAction(MenuBar.MenuItem menuItem, String caption, int kc, int... m) {
+    public MenuShortcutAction(AppMenu.MenuItem menuItem, String caption, int kc, int... m) {
         super(caption, kc, m);
         this.menuItem = menuItem;
     }
 
-    public MenuShortcutAction(MenuBar.MenuItem menuItem, String caption, KeyCombination key) {
+    public MenuShortcutAction(AppMenu.MenuItem menuItem, String caption, KeyCombination key) {
         this(menuItem, caption, key.getKey().getCode(), KeyCombination.getShortcutModifiers(key.getModifiers()));
     }
 
     @Override
     public void handleAction(Object sender, Object target) {
-        menuItem.getCommand().menuSelected(menuItem);
+        menuItem.getCommand().accept(menuItem);
     }
 }

@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +64,7 @@ public class MenuBuilder {
     }
 
     private void createMenuBarItem(JMenuBar menuBar, MenuItem item) {
-        String caption = MenuConfig.getMenuItemCaption(item.getId());
+        String caption = menuConfig.getItemCaption(item.getId());
         if (!item.getChildren().isEmpty() || item.isMenu()) {
             final JMenu jMenu = new JMenu(caption);
             jMenu.addMenuListener(new MenuListener() {
@@ -122,12 +121,8 @@ public class MenuBuilder {
 
     private void createSubMenu(JMenu jMenu, MenuItem item) {
         List<MenuItem> itemChildren = new LinkedList<>(item.getChildren());
-        CollectionUtils.filter(itemChildren, new Predicate() {
-            @Override
-            public boolean evaluate(Object object) {
-                return ((MenuItem) object).isPermitted(userSession);
-            }
-        });
+        CollectionUtils.filter(itemChildren, object ->
+                ((MenuItem) object).isPermitted(userSession));
 
         List<MenuItemContainer> items = new ArrayList<>();
 
@@ -137,14 +132,14 @@ public class MenuBuilder {
                 if (child.isSeparator()) {
                     items.add(new MenuItemContainer());
                 } else {
-                    JMenuItem jMenuItem = new JMenuItem(MenuConfig.getMenuItemCaption(child.getId()));
+                    JMenuItem jMenuItem = new JMenuItem(menuConfig.getItemCaption(child.getId()));
                     jMenuItem.setName(child.getId());
                     assignCommand(jMenuItem, child);
                     assignShortcut(jMenuItem, child);
                     items.add(new MenuItemContainer(jMenuItem));
                 }
             } else {
-                JMenu jChildMenu = new JMenu(MenuConfig.getMenuItemCaption(child.getId()));
+                JMenu jChildMenu = new JMenu(menuConfig.getItemCaption(child.getId()));
                 createSubMenu(jChildMenu, child);
                 if (!isMenuEmpty(jChildMenu)) {
                     items.add(new MenuItemContainer(jChildMenu));

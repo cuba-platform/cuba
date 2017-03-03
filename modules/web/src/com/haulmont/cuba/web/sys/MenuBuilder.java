@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2017 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,16 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.haulmont.cuba.web.sys;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.TestIdManager;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.config.*;
@@ -30,58 +29,70 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.MenuBar;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Main menu builder.
- *
  */
+@Component(MenuBuilder.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class MenuBuilder {
+    public static final String NAME = "cuba_AppMenuBuilder";
 
-    private Logger log = LoggerFactory.getLogger(MenuBuilder.class);
+    private final Logger log = LoggerFactory.getLogger(MenuBuilder.class);
 
+    @Inject
     protected UserSession session;
 
-    protected CubaMenuBar menuBar;
+    @Inject
+    protected MenuConfig menuConfig;
 
-    protected Window.TopLevelWindow topLevelWindow;
+    @Inject
+    protected WindowConfig windowConfig;
 
-    protected MenuConfig menuConfig = AppBeans.get(MenuConfig.NAME);
+    protected AppMenu appMenu;
 
-    protected UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
-
-    // call MenuBuilder after attaching menubar to UI
-    public MenuBuilder(AppMenu menu) {
-        this.session = uss.getUserSession();
-        this.menuBar = (CubaMenuBar) WebComponentsHelper.unwrap(menu);
-        this.topLevelWindow = ((AppUI) menuBar.getUI()).getTopLevelWindow();
+    public MenuBuilder() {
     }
 
-    public void build() {
+    public void build(AppMenu appMenu) {
+        this.appMenu = appMenu;
+
+        Window window = ComponentsHelper.getWindowImplementation(appMenu);
+        if (window == null) {
+            throw new IllegalStateException("AppMenu is not belong to Window");
+        }
+
         List<MenuItem> rootItems = menuConfig.getRootItems();
         for (MenuItem menuItem : rootItems) {
             if (menuItem.isPermitted(session)) {
-                createMenuBarItem(menuBar, menuItem);
+                createMenuBarItem(window, menuItem);
             }
         }
-        removeExtraSeparators(menuBar);
+        removeExtraSeparators();
     }
 
-    protected void removeExtraSeparators(MenuBar menuBar) {
-        for (MenuBar.MenuItem item : new ArrayList<>(menuBar.getItems())) {
+    protected void removeExtraSeparators() {
+        for (AppMenu.MenuItem item : new ArrayList<>(appMenu.getMenuItems())) {
             removeExtraSeparators(item);
             if (isMenuItemEmpty(item))
-                menuBar.removeItem(item);
+                appMenu.removeMenuItem(item);
         }
     }
 
-    protected void removeExtraSeparators(MenuBar.MenuItem item) {
+    protected void removeExtraSeparators(AppMenu.MenuItem item) {
         if (!item.hasChildren())
             return;
 
@@ -89,12 +100,12 @@ public class MenuBuilder {
         do {
             done = true;
             if (item.hasChildren()) {
-                List<MenuBar.MenuItem> children = new ArrayList<>(item.getChildren());
+                List<AppMenu.MenuItem> children = new ArrayList<>(item.getChildren());
                 for (int i = 0; i < children.size(); i++) {
-                    MenuBar.MenuItem child = children.get(i);
+                    AppMenu.MenuItem child = children.get(i);
                     removeExtraSeparators(child);
                     if (isMenuItemEmpty(child) && (i == 0 || i == children.size() - 1 || isMenuItemEmpty(children.get(i + 1)))) {
-                        item.removeChild(child);
+                        item.removeChildItem(child);
                         done = false;
                     }
                 }
@@ -102,44 +113,61 @@ public class MenuBuilder {
         } while (!done);
     }
 
-    protected void createMenuBarItem(MenuBar menuBar, MenuItem item) {
+    protected void createMenuBarItem(Window webWindow, MenuItem item) {
         if (item.isPermitted(session)) {
-            MenuBar.MenuItem menuItem = menuBar.addItem(MenuConfig.getMenuItemCaption(item.getId()), createMenuBarCommand(item));
-            assignShortcut(menuItem, item);
-            createSubMenu(menuItem, item, session);
+            AppMenu.MenuItem menuItem = appMenu.createMenuItem(item.getId(), menuConfig.getItemCaption(item.getId()),
+                    null, createMenuBarCommand(item));
+
+            assignShortcut(webWindow, menuItem, item);
             assignTestId(menuItem, item);
             assignStyleName(menuItem, item);
             assignIcon(menuItem, item);
             assignDescription(menuItem, item);
-            if (isMenuItemEmpty(menuItem)) {
-                menuBar.removeItem(menuItem);
+
+            createSubMenu(webWindow, menuItem, item, session);
+
+            if (!isMenuItemEmpty(menuItem)) {
+                appMenu.addMenuItem(menuItem);
             }
         }
     }
 
-    protected void createSubMenu(MenuBar.MenuItem vItem, MenuItem item, UserSession session) {
+    protected void createSubMenu(Window webWindow, AppMenu.MenuItem vItem, MenuItem item, UserSession session) {
         if (item.isPermitted(session) && !item.getChildren().isEmpty()) {
             for (MenuItem child : item.getChildren()) {
                 if (child.getChildren().isEmpty()) {
                     if (child.isPermitted(session)) {
-                        MenuBar.MenuItem menuItem = (child.isSeparator()) ? vItem.addSeparator() : vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), createMenuBarCommand(child));
-                        assignShortcut(menuItem, child);
+                        if (child.isSeparator()) {
+                            vItem.addChildItem(appMenu.createSeparator());
+                            continue;
+                        }
+
+                        AppMenu.MenuItem menuItem = appMenu.createMenuItem(child.getId(),
+                                menuConfig.getItemCaption(child.getId()), null, createMenuBarCommand(child));
+
+                        assignShortcut(webWindow, menuItem, child);
                         assignTestId(menuItem, child);
                         assignDescription(menuItem, child);
                         assignIcon(menuItem, child);
                         assignStyleName(menuItem, child);
+
+                        vItem.addChildItem(menuItem);
                     }
                 } else {
                     if (child.isPermitted(session)) {
-                        MenuBar.MenuItem menuItem = vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), null);
-                        assignShortcut(menuItem, child);
-                        createSubMenu(menuItem, child, session);
+                        AppMenu.MenuItem menuItem = appMenu.createMenuItem(child.getId(),
+                                menuConfig.getItemCaption(child.getId()), null, null);
+
+                        assignShortcut(webWindow, menuItem, child);
                         assignTestId(menuItem, child);
                         assignDescription(menuItem, child);
                         assignIcon(menuItem, child);
                         assignStyleName(menuItem, child);
-                        if (isMenuItemEmpty(menuItem)) {
-                            vItem.removeChild(menuItem);
+
+                        createSubMenu(webWindow, menuItem, child, session);
+
+                        if (!isMenuItemEmpty(menuItem)) {
+                            vItem.addChildItem(menuItem);
                         }
                     }
                 }
@@ -147,16 +175,17 @@ public class MenuBuilder {
         }
     }
 
-    protected MenuBar.Command createMenuBarCommand(final MenuItem item) {
-        if (!item.getChildren().isEmpty() || item.isMenu())     //check item is menu
+    protected Consumer<AppMenu.MenuItem> createMenuBarCommand(final MenuItem item) {
+        if (CollectionUtils.isNotEmpty(item.getChildren()) || item.isMenu())     //check item is menu
             return null;
 
         WindowInfo windowInfo = null;
-        final WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
-        try {
-            windowInfo = windowConfig.getWindowInfo(item.getId());
-        } catch (NoSuchScreenException e) {
-            log.error("Invalid screen ID for menu item: " + item.getId());
+        if (!item.isSeparator()) {
+            try {
+                windowInfo = windowConfig.getWindowInfo(item.getId());
+            } catch (NoSuchScreenException e) {
+                log.error("Invalid screen ID for menu item: " + item.getId());
+            }
         }
 
         final MenuCommand command;
@@ -166,36 +195,39 @@ public class MenuBuilder {
             command = null;
         }
 
-        return new com.vaadin.ui.MenuBar.Command() {
-            @Override
-            public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
-                if (command != null) {
-                    command.execute();
+        return selectedItem -> {
+            if (command != null) {
+                command.execute();
+            } else {
+                if (item.getParent() != null) {
+                    throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId(),
+                            "Parent menu ID", item.getParent().getId());
                 } else {
-                    if (item.getParent() != null) {
-                        throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId(),
-                                "Parent menu ID", item.getParent().getId());
-                    } else {
-                        throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId());
-                    }
+                    throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId());
                 }
             }
         };
     }
 
-    protected boolean isMenuItemEmpty(MenuBar.MenuItem menuItem) {
+    protected boolean isMenuItemEmpty(AppMenu.MenuItem menuItem) {
         return !menuItem.hasChildren() && menuItem.getCommand() == null;
     }
 
-    protected void assignShortcut(MenuBar.MenuItem menuItem, MenuItem item) {
-        if (item.getShortcut() != null && menuItem.getCommand() != null) {
-            MenuShortcutAction shortcut = new MenuShortcutAction(menuItem, "shortcut_" + item.getId(), item.getShortcut());
-            topLevelWindow.unwrap(AbstractComponent.class).addShortcutListener(shortcut);
-            menuBar.setShortcut(menuItem, item.getShortcut());
+    protected void assignShortcut(Window webWindow, AppMenu.MenuItem menuItem, MenuItem item) {
+        KeyCombination itemShortcut = item.getShortcut();
+        if (itemShortcut != null) {
+            ShortcutListener shortcut = new MenuShortcutAction(menuItem, "shortcut_" + item.getId(), item.getShortcut());
+
+            AbstractComponent windowImpl = webWindow.unwrap(AbstractComponent.class);
+            windowImpl.addShortcutListener(shortcut);
+
+            appMenu.setMenuItemShortcutCaption(menuItem, itemShortcut.format());
         }
     }
 
-    protected void assignTestId(MenuBar.MenuItem menuItem, MenuItem conf) {
+    protected void assignTestId(AppMenu.MenuItem menuItem, MenuItem conf) {
+        CubaMenuBar menuBar = (CubaMenuBar) WebComponentsHelper.unwrap(appMenu);
+
         if (menuBar.getId() != null && menuBar.getCubaId() != null && !conf.isSeparator()) {
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
 
@@ -203,26 +235,25 @@ public class MenuBuilder {
             String testId = menuBar.getId() + "_" + id;
             testIdManager.reserveId(testId);
 
-            menuBar.setTestId(menuItem, testId);
-            menuBar.setCubaId(menuItem, conf.getId());
+            menuItem.setTestId(testId);
         }
     }
 
-    protected void assignStyleName(MenuBar.MenuItem menuItem, MenuItem conf) {
+    protected void assignStyleName(AppMenu.MenuItem menuItem, MenuItem conf) {
         if (conf.getStylename() != null) {
             menuItem.setStyleName("ms " + conf.getStylename());
         }
     }
 
-    protected void assignDescription(MenuBar.MenuItem menuItem, MenuItem conf) {
+    protected void assignDescription(AppMenu.MenuItem menuItem, MenuItem conf) {
         if (conf.getDescription() != null) {
             menuItem.setDescription(conf.getDescription());
         }
     }
 
-    protected void assignIcon(MenuBar.MenuItem menuItem, MenuItem conf) {
+    protected void assignIcon(AppMenu.MenuItem menuItem, MenuItem conf) {
         if (conf.getIcon() != null) {
-            menuItem.setIcon(WebComponentsHelper.getIcon(conf.getIcon()));
+            menuItem.setIcon(conf.getIcon());
         }
     }
 }

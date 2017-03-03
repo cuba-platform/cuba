@@ -17,12 +17,15 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.web.toolkit.ui.client.menubar.CubaMenuBarState;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
+import com.vaadin.server.Resource;
+import com.vaadin.ui.MenuBar;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CubaMenuBar extends com.vaadin.ui.MenuBar {
@@ -51,10 +54,6 @@ public class CubaMenuBar extends com.vaadin.ui.MenuBar {
         }
     }
 
-    public void setShortcut(MenuItem item, KeyCombination shortcut) {
-        setShortcut(item, shortcut.format());
-    }
-
     public void setShortcut(MenuItem item, String str) {
         if (shortcuts == null) {
             shortcuts = new HashMap<>();
@@ -66,17 +65,18 @@ public class CubaMenuBar extends com.vaadin.ui.MenuBar {
         shortcuts.put(item, str);
     }
 
-    public void clearShortcut(MenuItem item) {
-        if (shortcuts != null) {
-            shortcuts.remove(item);
-        }
-    }
-
     public void setTestId(MenuItem item, String id) {
         if (testIds == null) {
             testIds = new HashMap<>();
         }
         testIds.put(item, id);
+    }
+
+    public String getTestId(MenuItem item) {
+        if (testIds != null) {
+            return testIds.get(item);
+        }
+        return null;
     }
 
     public void setCubaId(MenuItem item, String id) {
@@ -106,5 +106,54 @@ public class CubaMenuBar extends com.vaadin.ui.MenuBar {
                 target.addAttribute("cid", idValue);
             }
         }
+    }
+
+    public MenuItem createMenuItem(String caption, Resource icon, Command command) {
+        return new MenuItem(caption, icon, command) {
+            @Override
+            public List<MenuItem> getChildren() {
+                if (itsChildren == null) {
+                    itsChildren = new ArrayList<>();
+                }
+
+                return itsChildren;
+            }
+        };
+    }
+
+    public void addMenuItem(MenuItem item) {
+        if (item.getText() == null) {
+            throw new IllegalArgumentException("MenuItem caption cannot be null");
+        }
+        menuItems.add(item);
+
+        markAsDirty();
+    }
+
+    public void addMenuItem(MenuItem item, int index) {
+        if (item.getText() == null) {
+            throw new IllegalArgumentException("MenuItem caption cannot be null");
+        }
+        menuItems.add(index, item);
+
+        markAsDirty();
+    }
+
+    public void removeMenuItem(MenuItem item) {
+        removeItem(item);
+    }
+
+    public List<MenuItem> getMenuItems() {
+        return menuItems;
+    }
+
+    public boolean hasMenuItems() {
+        return !menuItems.isEmpty();
+    }
+
+    public MenuItem createSeparator() {
+        MenuBar.MenuItem menuItem = createMenuItem("", null, null);
+        setMenuItemSeparator(menuItem, true);
+        return menuItem;
     }
 }
