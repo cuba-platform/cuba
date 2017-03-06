@@ -54,7 +54,6 @@ import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -107,7 +106,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     protected SelectionMode selectionMode;
 
-    protected CssLayout componentComposition;
+    protected GridComposition componentComposition;
     protected HorizontalLayout topPanel;
     protected ButtonsPanel buttonsPanel;
     protected RowsCount rowsCount;
@@ -267,8 +266,9 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             }
         });
 
-        componentComposition = new CssLayout();
+        componentComposition = new GridComposition();
         componentComposition.addStyleName("c-data-grid-composition");
+        componentComposition.setGrid(component);
         componentComposition.addComponent(component);
         componentComposition.setWidthUndefined();
 
@@ -1199,30 +1199,6 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     @Override
     public void scrollToEnd() {
         component.scrollToEnd();
-    }
-
-    @Override
-    public void setHeight(String height) {
-        super.setHeight(height);
-
-        if (getHeight() < 0) {
-            component.setHeightUndefined();
-            component.setHeightMode(HeightMode.UNDEFINED);
-        } else {
-            component.setHeight(100, Sizeable.Unit.PERCENTAGE);
-            component.setHeightMode(HeightMode.CSS);
-        }
-    }
-
-    @Override
-    public void setWidth(String width) {
-        super.setWidth(width);
-
-        if (getWidth() < 0) {
-            component.setWidthUndefined();
-        } else {
-            component.setWidth(100, Sizeable.Unit.PERCENTAGE);
-        }
     }
 
     @Override
@@ -3054,6 +3030,42 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             }
 
             menuItem.setText(caption);
+        }
+    }
+
+    protected static class GridComposition extends CssLayout {
+        protected Grid grid;
+
+        public Grid getGrid() {
+            return grid;
+        }
+
+        public void setGrid(Grid grid) {
+            this.grid = grid;
+        }
+
+        @Override
+        public void setHeight(String height) {
+            super.setHeight(height);
+
+            if (getHeight() < 0) {
+                grid.setHeightUndefined();
+                grid.setHeightMode(HeightMode.UNDEFINED);
+            } else {
+                grid.setHeight(100, Unit.PERCENTAGE);
+                grid.setHeightMode(HeightMode.CSS);
+            }
+        }
+
+        @Override
+        public void setWidth(String width) {
+            super.setWidth(width);
+
+            if (getWidth() < 0) {
+                grid.setWidthUndefined();
+            } else {
+                grid.setWidth(100, Unit.PERCENTAGE);
+            }
         }
     }
 }
