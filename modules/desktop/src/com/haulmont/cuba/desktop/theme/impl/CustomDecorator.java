@@ -25,15 +25,14 @@ import java.util.Set;
 
 public class CustomDecorator implements ComponentDecorator {
 
-    private String className;
+    private Class decoratorClass;
 
     public CustomDecorator(String className) {
-        this.className = className;
+        this.decoratorClass = AppBeans.get(Scripting.class).loadClassNN(className);
     }
 
     @Override
     public void decorate(Object component, Set<String> state) {
-        Class decoratorClass = AppBeans.get(Scripting.class).loadClassNN(className);
         try {
             ComponentDecorator delegate = (ComponentDecorator) decoratorClass.newInstance();
             delegate.decorate(component, state);
