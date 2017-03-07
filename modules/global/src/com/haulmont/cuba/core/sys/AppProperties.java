@@ -98,6 +98,7 @@ public class AppProperties {
                         "cuba.rest.servicesConfig",
                         "cuba.windowConfig",
                         "cuba.menuConfig",
+                        "cuba.themeConfig",
                         "cuba.permissionConfig",
                         "cuba.web.componentsConfig",
                         "cuba.web.widgetSet"
@@ -116,6 +117,7 @@ public class AppProperties {
                 configPropertyNames.addAll(Arrays.asList(
                         "cuba.windowConfig",
                         "cuba.menuConfig",
+                        "cuba.themeConfig",
                         "cuba.permissionConfig"
                 ));
                 break;
@@ -125,14 +127,14 @@ public class AppProperties {
     }
 
     /**
-     * @return all property names defined in the set of <code>app.properties</code> files
+     * @return all property names defined in the set of {@code app.properties} files
      */
     public String[] getPropertyNames() {
         return properties.keySet().toArray(new String[properties.size()]);
     }
 
     /**
-     * Get property value defined in the set of <code>app.properties</code> files.
+     * Get property value defined in the set of {@code app.properties} files.
      *
      * @param key property key
      * @return property value or null if the key is not found
