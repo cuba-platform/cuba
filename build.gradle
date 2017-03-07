@@ -667,13 +667,15 @@ configure(webToolkitModule) {
         }
     }
 
-    task deploy(dependsOn: buildWidgetSet) << {
-        delete {
-            "$cuba.tomcat.dir/webapps/cuba/VAADIN/widgetsets"
-        }
-        copy {
-            from "$buildDir/web"
-            into "$cuba.tomcat.dir/webapps/cuba"
+    task deploy(dependsOn: buildWidgetSet) {
+        doLast {
+            delete {
+                "$cuba.tomcat.dir/webapps/cuba/VAADIN/widgetsets"
+            }
+            copy {
+                from "$buildDir/web"
+                into "$cuba.tomcat.dir/webapps/cuba"
+            }
         }
     }
 
@@ -798,23 +800,27 @@ configure(idpModule) {
         archives webArchive
     }
 
-    task deploy(dependsOn: assemble) << {
-        delete {
-            "$cuba.tomcat.dir/webapps/cuba/idp"
-        }
-        copy {
-            from "$projectDir/web"
-            into "$cuba.tomcat.dir/webapps/cuba"
+    task deploy(dependsOn: assemble) {
+        doLast {
+            delete {
+                "$cuba.tomcat.dir/webapps/cuba/idp"
+            }
+            copy {
+                from "$projectDir/web"
+                into "$cuba.tomcat.dir/webapps/cuba"
+            }
         }
     }
 }
 
 task restart(dependsOn: ['stop', ':cuba-core:deploy', ':cuba-web:deploy', ':cuba-web-toolkit:deploy'],
-        description: 'Redeploys applications and restarts local Tomcat') << {
-    ant.waitfor(maxwait: 6, maxwaitunit: 'second', checkevery: 2, checkeveryunit: 'second') {
-        not {
-            socket(server: 'localhost', port: '8787')
+             description: 'Redeploys applications and restarts local Tomcat') {
+    doLast {
+        ant.waitfor(maxwait: 6, maxwaitunit: 'second', checkevery: 2, checkeveryunit: 'second') {
+            not {
+                socket(server: 'localhost', port: '8787')
+            }
         }
+        start.execute()
     }
-    start.execute()
 }
