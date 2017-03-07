@@ -340,16 +340,20 @@ public class DsContextImpl implements DsContextImplementation {
         MetaProperty metaProperty = datasource.getProperty();
         if (masterDs != null && metaProperty != null) {
             MetaProperty inverseProp = metaProperty.getInverse();
-            if (inverseProp != null) {
+            if (inverseProp != null && !inverseProp.getRange().getCardinality().isMany()) {
                 MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(inverseProp.getDomain());
                 if (metaClass.equals(datasource.getMetaClass())
                         && (PersistenceHelper.isLoaded(entity, inverseProp.getName())
                         && entity.getValue(inverseProp.getName()) != null)) // replace master only if it's already set
                 {
-                    Object masterItem;
+                    Object masterItem = null;
                     if (masterDs instanceof CollectionDatasource) {
-                        Object id = ((Entity) entity.getValue(inverseProp.getName())).getId();
-                        masterItem = ((CollectionDatasource) masterDs).getItem(id);
+                        Entity value = entity.getValue(inverseProp.getName());
+                        if (value != null) {
+                            Object id = value.getId();
+                            //noinspection unchecked
+                            masterItem = ((CollectionDatasource) masterDs).getItem(id);
+                        }
                     } else {
                         masterItem = masterDs.getItem();
                     }
