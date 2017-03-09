@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 
 /**
  * Strategy class for work with {@link StaticServerSelector}.
- * Does not sorts the list of servers - this is a legacy behavior for platform version < 6.5.
+ * Does not sorts the list of servers - this is a legacy behavior for platform version &lt; 6.5.
  */
 public class NoopServerSorter implements Consumer<List<String>> {
 
