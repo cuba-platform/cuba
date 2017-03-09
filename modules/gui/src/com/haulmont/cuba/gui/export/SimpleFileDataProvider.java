@@ -20,9 +20,8 @@ package com.haulmont.cuba.gui.export;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
+import com.haulmont.cuba.core.sys.remoting.ServerSelector;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -34,10 +33,10 @@ import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
-import java.util.Iterator;
 
 /**
  * Data provider for File on name and path
@@ -50,7 +49,7 @@ public class SimpleFileDataProvider implements ExportDataProvider {
     protected String filePath;
     protected InputStream inputStream;
 
-    protected ClusterInvocationSupport clusterInvocationSupport = AppBeans.get(ClusterInvocationSupport.NAME);
+    protected ServerSelector serverSelector = AppBeans.get(ServerSelector.NAME);
 
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
@@ -66,10 +65,15 @@ public class SimpleFileDataProvider implements ExportDataProvider {
     @Override
     public InputStream provide() {
         if (filePath == null)
-            throw new IllegalArgumentException("Null file path");
+            throw new IllegalStateException("File path is null");
 
-        for (Iterator<String> iterator = clusterInvocationSupport.getUrlList().iterator(); iterator.hasNext(); ) {
-            String url = iterator.next() + fileDownloadContext +
+        Object context = serverSelector.initContext();
+        String selectedUrl = serverSelector.getUrl(context);
+        if (selectedUrl == null) {
+            throw new RuntimeException(String.format("Unable to download file '%s': no available server URLs", filePath));
+        }
+        while (true) {
+            String url = selectedUrl + fileDownloadContext +
                     "?s=" + userSessionSource.getUserSession().getId() +
                     "&p=" + encodeUTF8(filePath);
 
@@ -89,34 +93,34 @@ public class SimpleFileDataProvider implements ExportDataProvider {
                         break;
                     } else {
                         log.debug("Unable to download file from " + url + "\nHttpEntity is null");
-                        if (iterator.hasNext())
-                            log.debug("Trying next URL");
-                        else
-                            throw new RuntimeException(
-                                    new FileStorageException(FileStorageException.Type.IO_EXCEPTION, filePath)
-                            );
+                        selectedUrl = failAndGetNextUrl(context);
+                        if (selectedUrl == null)
+                            throw new RuntimeException(String.format("Unable to download file '%s': HttpEntity is null", filePath));
                     }
                 } else {
                     log.debug("Unable to download file from " + url + "\n" + httpResponse.getStatusLine());
-                    if (iterator.hasNext())
-                        log.debug("Trying next URL");
-                    else
-                        throw new RuntimeException(
-                                new FileStorageException(FileStorageException.Type.fromHttpStatus(httpStatus), filePath)
-                        );
+                    selectedUrl = failAndGetNextUrl(context);
+                    if (selectedUrl == null)
+                        throw new RuntimeException(String.format("Unable to download file '%s': HTTP status is %d", filePath, httpStatus));
                 }
             } catch (IOException ex) {
                 log.debug("Unable to download file from " + url + "\n" + ex);
-                if (iterator.hasNext())
-                    log.debug("Trying next URL");
-                else
-                    throw new RuntimeException(
-                            new FileStorageException(FileStorageException.Type.IO_EXCEPTION, filePath, ex)
-                    );
+                selectedUrl = failAndGetNextUrl(context);
+                if (selectedUrl == null)
+                    throw new RuntimeException(String.format("Unable to download file '%s'", filePath), ex);
             }
         }
 
         return inputStream;
+    }
+
+    @Nullable
+    private String failAndGetNextUrl(Object context) {
+        serverSelector.fail(context);
+        String url = serverSelector.getUrl(context);
+        if (url != null)
+            log.debug("Trying next URL");
+        return url;
     }
 
     protected String encodeUTF8(String str) {

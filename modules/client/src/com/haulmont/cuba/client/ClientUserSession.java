@@ -35,7 +35,10 @@ public class ClientUserSession extends UserSession implements ClientBasedSession
 
     private static final long serialVersionUID = -5358664165808633540L;
 
-    protected volatile boolean authenticated = false; // indicates whether user passed authentication
+    /**
+     * Indicates whether the user has been authenticated. It is false for anonymous session.
+     */
+    protected volatile boolean authenticated = false;
 
     public ClientUserSession(UserSession src) {
         super(src);
@@ -91,10 +94,16 @@ public class ClientUserSession extends UserSession implements ClientBasedSession
         }
     }
 
+    /**
+     * @see #authenticated
+     */
     public boolean isAuthenticated() {
         return authenticated;
     }
 
+    /**
+     * @see #authenticated
+     */
     public void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
     }

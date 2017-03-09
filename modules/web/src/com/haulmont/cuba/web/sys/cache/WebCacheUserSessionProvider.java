@@ -32,14 +32,29 @@ public class WebCacheUserSessionProvider implements CacheUserSessionProvider {
     protected LoginService loginService;
 
     @Inject
-    protected WebAuthConfig webAuthConfig;
+    protected WebAuthConfig config;
+
+    protected volatile UserSession systemSession;
 
     @Override
     public UserSession getUserSession() {
-        String trustedClientPassword = webAuthConfig.getTrustedClientPassword();
+        if (systemSession == null) {
+            initSystemSession();
+        } else {
+            UserSession session = loginService.getSession(systemSession.getId());
+            if (session == null) {
+                systemSession = null;
+                initSystemSession();
+            }
+        }
+        return systemSession;
+    }
 
+    protected synchronized void initSystemSession() {
+        if (systemSession != null)
+            return;
         try {
-            return loginService.getSystemSession(trustedClientPassword);
+            systemSession = loginService.getSystemSession(config.getTrustedClientPassword());
         } catch (LoginException e) {
             throw new IllegalStateException("Unable to login with trusted client password", e);
         }

@@ -23,8 +23,8 @@ import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.core.sys.remoting.LocalFileExchangeService;
+import com.haulmont.cuba.core.sys.remoting.ServerSelector;
 import com.haulmont.restapi.exception.RestAPIException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -39,13 +39,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.UUID;
 
 /**
@@ -58,9 +58,9 @@ public class FileDownloadController {
     private Logger log = LoggerFactory.getLogger(FileDownloadController.class);
 
     // Using injection by name here, because an application project can define several instances
-    // of ClusterInvocationSupport type to work with different middleware blocks
-    @Resource(name = ClusterInvocationSupport.NAME)
-    protected ClusterInvocationSupport clusterInvocationSupport;
+    // of ServerSelector type to work with different middleware blocks
+    @Resource(name = ServerSelector.NAME)
+    protected ServerSelector serverSelector;
 
     @Inject
     protected UserSessionSource userSessionSource;
@@ -112,8 +112,15 @@ public class FileDownloadController {
 
     protected void downloadWithServletAndWriteResponse(FileDescriptor fd, HttpServletResponse response) throws IOException {
         ServletOutputStream os = response.getOutputStream();
-        for (Iterator<String> iterator = clusterInvocationSupport.getUrlList().iterator(); iterator.hasNext(); ) {
-            String url = iterator.next() + "/download" +
+        Object context = serverSelector.initContext();
+        String selectedUrl = serverSelector.getUrl(context);
+        if (selectedUrl == null) {
+            throw new RestAPIException("Unable to download file from FileStorage",
+                    "Unable to download file from FileStorage: " + fd.getId(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        while (true) {
+            String url = selectedUrl + "/download" +
                     "?s=" + userSessionSource.getUserSession().getId() +
                     "&f=" + fd.getId().toString();
 
@@ -131,43 +138,31 @@ public class FileDownloadController {
                         return;
                     } else {
                         log.debug("Unable to download file from {}. HttpEntity is null", url);
-                        if (iterator.hasNext()) {
-                            log.debug("Trying next URL");
-                        } else {
-                            log.error("Unable to download file from FileStorage: {}", fd.getId());
-                            throw new RestAPIException("Unable to download file from FileStorage",
-                                    "Unable to download file from FileStorage: " + fd.getId(),
-                                    HttpStatus.INTERNAL_SERVER_ERROR);
-                        }
+                        selectedUrl = failAndGetNextUrl(context, fd, null);
                     }
                 } else {
                     log.debug("Unable to download file from {} {}", url, httpResponse.getStatusLine());
-                    if (iterator.hasNext()) {
-                        log.debug("Trying next URL");
-                    } else {
-                        log.error("Unable to download file from FileStorage: {}", fd.getId());
-                        throw new RestAPIException("Unable to download file from FileStorage",
-                                "Unable to download file from FileStorage: " + fd.getId(),
-                                HttpStatus.INTERNAL_SERVER_ERROR);
-                    }
+                    selectedUrl = failAndGetNextUrl(context, fd, null);
                 }
             } catch (IOException ex) {
                 log.debug("Unable to download file from {} {}", url, ex);
-                if (iterator.hasNext()) {
-                    log.debug("Trying next URL");
-                } else {
-                    log.error("Unable to download file from FileStorage: {}", fd.getId(), ex);
-                    throw new RestAPIException("Unable to download file from FileStorage",
-                            "Unable to download file from FileStorage: " + fd.getId(),
-                            HttpStatus.INTERNAL_SERVER_ERROR);
-                }
+                selectedUrl = failAndGetNextUrl(context, fd, ex);
             }
         }
+    }
 
-        log.error("Unable to download file from FileStorage: {}", fd.getId());
-        throw new RestAPIException("Unable to download file from FileStorage",
-                "Unable to download file from FileStorage: " + fd.getId(),
-                HttpStatus.INTERNAL_SERVER_ERROR);
+    private String failAndGetNextUrl(Object context, FileDescriptor fd, @Nullable Exception ex) {
+        serverSelector.fail(context);
+        String url = serverSelector.getUrl(context);
+        if (url != null) {
+            log.debug("Trying next URL");
+            return url;
+        } else {
+            log.error("Unable to download file from FileStorage: {}", fd.getId(), ex);
+            throw new RestAPIException("Unable to download file from FileStorage",
+                    "Unable to download file from FileStorage: " + fd.getId(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     protected String getContentType(FileDescriptor fd) {

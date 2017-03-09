@@ -22,7 +22,7 @@ import com.haulmont.cuba.client.sys.MessagesClientImpl;
 import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
+import com.haulmont.cuba.core.sys.remoting.ServerSelector;
 import com.haulmont.cuba.desktop.exception.ExceptionHandlers;
 import com.haulmont.cuba.desktop.gui.SessionMessagesNotifier;
 import com.haulmont.cuba.desktop.sys.*;
@@ -59,8 +59,10 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class App implements ConnectionListener {
@@ -487,23 +489,13 @@ public class App implements ConnectionListener {
         panel.setBorder(BorderFactory.createLineBorder(Color.gray));
         panel.setPreferredSize(new Dimension(0, 20));
 
-        ClusterInvocationSupport clusterInvocationSupport = AppBeans.get(ClusterInvocationSupport.NAME);
-        String url = clusterInvocationSupport.getUrlList().isEmpty() ? "?" : clusterInvocationSupport.getUrlList().get(0);
+        ServerSelector serverSelector = AppBeans.get(ServerSelector.NAME);
+        String url = serverSelector.getUrl(serverSelector.initContext());
+        if (url == null)
+            url = "?";
 
         final JLabel connectionStateLab = new JLabel(
                 messages.formatMessage(AppConfig.getMessagesPack(), "statusBar.connected", getUserFriendlyConnectionUrl(url)));
-
-        clusterInvocationSupport.addListener(
-                new ClusterInvocationSupport.Listener() {
-                    @Override
-                    public void urlListChanged(List<String> newUrlList) {
-                        String url = newUrlList.isEmpty() ? "?" : newUrlList.get(0);
-                        connectionStateLab.setText(
-                                messages.formatMessage(AppConfig.getMessagesPack(),
-                                        "statusBar.connected", getUserFriendlyConnectionUrl(url)));
-                    }
-                }
-        );
 
         panel.add(connectionStateLab, BorderLayout.WEST);
 

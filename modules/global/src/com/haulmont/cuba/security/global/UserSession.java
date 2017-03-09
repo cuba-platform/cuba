@@ -22,6 +22,8 @@ import com.haulmont.cuba.core.sys.UserInvocationContext;
 import com.haulmont.cuba.security.entity.*;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,6 +57,8 @@ public class UserSession implements Serializable {
 
     protected Map<String, Serializable> attributes;
 
+    protected transient Map<String, Object> localAttributes;
+
     /**
      * INTERNAL
      */
@@ -81,6 +85,7 @@ public class UserSession implements Serializable {
 
         constraints = ArrayListMultimap.create();
         attributes = new ConcurrentHashMap<>();
+        localAttributes = new ConcurrentHashMap<>();
     }
 
     /**
@@ -107,6 +112,12 @@ public class UserSession implements Serializable {
         constraints = src.constraints;
         attributes = src.attributes;
         roleTypes = src.roleTypes;
+        localAttributes = src.localAttributes;
+    }
+
+    private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+        stream.defaultReadObject();
+        localAttributes = new ConcurrentHashMap<>();
     }
 
     /**
@@ -442,8 +453,49 @@ public class UserSession implements Serializable {
      * User session attribute names. Attribute is a named serializable object bound to session.
      */
     public Collection<String> getAttributeNames() {
-        //noinspection unchecked
-        return new ArrayList(attributes.keySet());
+        return new ArrayList<>(attributes.keySet());
+    }
+
+    /**
+     * Get local attribute. Local attribute is a named object bound to session. Unlike normal user session attributes,
+     * local attributes are not passed between tiers and not replicated in cluster.
+     *
+     * @param name attribute name
+     * @return attribute value or null if attribute with the given name is not found
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getLocalAttribute(String name) {
+        return (T) localAttributes.get(name);
+    }
+
+    /**
+     * Remove local attribute. Local attribute is a named object bound to session. Unlike normal user session attributes,
+     * local attributes are not passed between tiers and not replicated in cluster.
+     *
+     * @param name attribute name
+     */
+    public void removeLocalAttribute(String name) {
+        localAttributes.remove(name);
+    }
+
+    /**
+     * Set local attribute. Local attribute is a named object bound to session. Unlike normal user session attributes,
+     * local attributes are not passed between tiers and not replicated in cluster.
+     *
+     * @param name  attribute name
+     * @param value attribute value
+     */
+    public void setLocalAttribute(String name, Object value) {
+        localAttributes.put(name, value);
+    }
+
+    /**
+     * Local attribute names. Local attribute is a named object bound to session. Unlike normal user session attributes,
+     * local attributes are not passed between tiers and not replicated in cluster.
+     */
+    public Collection<String> getLocalAttributeNames() {
+        return new ArrayList<>(localAttributes.keySet());
     }
 
     /**

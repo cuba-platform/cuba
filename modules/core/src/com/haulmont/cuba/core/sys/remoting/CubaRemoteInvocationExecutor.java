@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.core.sys.UserInvocationContext;
+import com.haulmont.cuba.core.sys.remoting.staticselector.StaticServerSelector;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
@@ -44,10 +45,9 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
 
     private final Logger log = LoggerFactory.getLogger(CubaRemoteInvocationExecutor.class);
 
+    private volatile ServerSelector serverSelector;
+
     private UserSessionManager userSessionManager;
-
-    private volatile ClusterInvocationSupport clusterInvocationSupport;
-
     private Configuration configuration;
     private GlobalConfig globalConfig;
 
@@ -71,8 +71,7 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
                     if (StringUtils.isNotBlank(sessionProviderUrl)) {
                         log.debug("User session {} not found, trying to get it from {}", sessionId, sessionProviderUrl);
                         try {
-                            HttpServiceProxy proxyFactory = new HttpServiceProxy(
-                                    getClusterInvocationSupport(sessionProviderUrl));
+                            HttpServiceProxy proxyFactory = new HttpServiceProxy(getServerSelector(sessionProviderUrl));
                             proxyFactory.setServiceUrl("cuba_LoginService");
                             proxyFactory.setServiceInterface(LoginService.class);
                             proxyFactory.afterPropertiesSet();
@@ -115,17 +114,17 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
         return result;
     }
 
-    private ClusterInvocationSupport getClusterInvocationSupport(String sessionProviderUrl) {
-        if (clusterInvocationSupport == null) {
+    private ServerSelector getServerSelector(String sessionProviderUrl) {
+        if (serverSelector == null) {
             synchronized (this) {
-                if (clusterInvocationSupport == null) {
-                    ClusterInvocationSupport result = new ClusterInvocationSupport();
+                if (serverSelector == null) {
+                    StaticServerSelector result = new StaticServerSelector();
                     result.setBaseUrl(sessionProviderUrl);
                     result.init();
-                    clusterInvocationSupport = result;
+                    serverSelector = result;
                 }
             }
         }
-        return clusterInvocationSupport;
+        return serverSelector;
     }
 }

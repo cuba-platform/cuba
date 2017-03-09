@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
+import com.haulmont.cuba.core.sys.remoting.ServerSelector;
 import com.haulmont.cuba.core.sys.remoting.LocalFileExchangeService;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -36,6 +36,8 @@ import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -52,7 +54,7 @@ public class FileDataProvider implements ExportDataProvider {
     protected FileDescriptor fileDescriptor;
     protected InputStream inputStream;
 
-    protected ClusterInvocationSupport clusterInvocationSupport = AppBeans.get(ClusterInvocationSupport.NAME);
+    protected ServerSelector serverSelector = AppBeans.get(ServerSelector.NAME);
 
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
@@ -86,8 +88,17 @@ public class FileDataProvider implements ExportDataProvider {
     }
 
     protected void downloadWithServlet() {
-        for (Iterator<String> iterator = clusterInvocationSupport.getUrlList().iterator(); iterator.hasNext(); ) {
-            String url = iterator.next() + fileDownloadContext +
+        Object context = serverSelector.initContext();
+        String selectedUrl = serverSelector.getUrl(context);
+        if (selectedUrl == null) {
+            throw new RuntimeException(
+                    "Unable to download file from FileStorage: no available server URLs",
+                    new FileStorageException(FileStorageException.Type.IO_EXCEPTION,
+                            fileDescriptor.getName())
+            );
+        }
+        while (true) {
+            String url = selectedUrl + fileDownloadContext +
                     "?s=" + userSessionSource.getUserSession().getId() +
                     "&f=" + fileDescriptor.getId().toString();
 
@@ -108,9 +119,8 @@ public class FileDataProvider implements ExportDataProvider {
                         break;
                     } else {
                         log.debug("Unable to download file from {}\nHttpEntity is null", url);
-                        if (iterator.hasNext()) {
-                            log.debug("Trying next URL");
-                        } else {
+                        selectedUrl = failAndGetNextUrl(context);
+                        if (selectedUrl == null) {
                             throw new RuntimeException(
                                     "Unable to download file from FileStorage",
                                     new FileStorageException(FileStorageException.Type.IO_EXCEPTION,
@@ -120,9 +130,8 @@ public class FileDataProvider implements ExportDataProvider {
                     }
                 } else {
                     log.debug("Unable to download file from {}\n{}", url, httpResponse.getStatusLine());
-                    if (iterator.hasNext()) {
-                        log.debug("Trying next URL");
-                    } else {
+                    selectedUrl = failAndGetNextUrl(context);
+                    if (selectedUrl == null) {
                         throw new RuntimeException(
                                 "Unable to download file from FileStorage",
                                 new FileStorageException(FileStorageException.Type.fromHttpStatus(httpStatus),
@@ -132,9 +141,8 @@ public class FileDataProvider implements ExportDataProvider {
                 }
             } catch (IOException ex) {
                 log.debug("Unable to download file from {}\n{}", url, ex);
-                if (iterator.hasNext()) {
-                    log.debug("Trying next URL");
-                } else {
+                selectedUrl = failAndGetNextUrl(context);
+                if (selectedUrl == null) {
                     throw new RuntimeException(
                             "Unable to download file from FileStorage",
                             new FileStorageException(FileStorageException.Type.IO_EXCEPTION,
@@ -143,5 +151,14 @@ public class FileDataProvider implements ExportDataProvider {
                 }
             }
         }
+    }
+
+    @Nullable
+    private String failAndGetNextUrl(Object context) {
+        serverSelector.fail(context);
+        String url = serverSelector.getUrl(context);
+        if (url != null)
+            log.debug("Trying next URL");
+        return url;
     }
 }

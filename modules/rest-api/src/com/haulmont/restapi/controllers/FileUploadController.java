@@ -21,8 +21,8 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.core.sys.remoting.LocalFileExchangeService;
+import com.haulmont.cuba.core.sys.remoting.ServerSelector;
 import com.haulmont.restapi.data.FileInfo;
 import com.haulmont.restapi.exception.RestAPIException;
 import org.apache.commons.io.FilenameUtils;
@@ -51,7 +51,6 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.Iterator;
 
 /**
  * REST API controller that is used for uploading files
@@ -63,9 +62,9 @@ public class FileUploadController {
     private Logger log = LoggerFactory.getLogger(FileUploadController.class);
 
     // Using injection by name here, because an application project can define several instances
-    // of ClusterInvocationSupport type to work with different middleware blocks
-    @Resource(name = ClusterInvocationSupport.NAME)
-    protected ClusterInvocationSupport clusterInvocationSupport;
+    // of ServerSelector type to work with different middleware blocks
+    @Resource(name = ServerSelector.NAME)
+    protected ServerSelector serverSelector;
 
     @Inject
     protected UserSessionSource userSessionSource;
@@ -178,8 +177,13 @@ public class FileUploadController {
     }
 
     protected void uploadWithServlet(InputStream is, FileDescriptor fd) throws FileStorageException {
-        for (Iterator<String> iterator = clusterInvocationSupport.getUrlList().iterator(); iterator.hasNext(); ) {
-            String url = iterator.next()
+        Object context = serverSelector.initContext();
+        String selectedUrl = serverSelector.getUrl(context);
+        if (selectedUrl == null) {
+            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fd.getName());
+        }
+        while (true) {
+            String url = selectedUrl
                     + "/upload"
                     + "?s=" + userSessionSource.getUserSession().getId()
                     + "&f=" + fd.toUrlParam();
@@ -196,20 +200,25 @@ public class FileUploadController {
                     break;
                 } else {
                     log.error("Unable to upload file to {} {}", url, response.getStatusLine());
-                    if (statusCode == org.apache.http.HttpStatus.SC_NOT_FOUND && iterator.hasNext()) {
-                        log.debug("Trying next URL");
-                    } else {
+                    selectedUrl = failAndGetNextUrl(context);
+                    if (selectedUrl == null)
                         throw new FileStorageException(FileStorageException.Type.fromHttpStatus(statusCode), fd.getName());
-                    }
                 }
             } catch (Exception e) {
                 log.error("Unable to upload file to {}", url, e);
-                if (iterator.hasNext()) {
-                    log.debug("Trying next URL");
-                } else {
+                selectedUrl = failAndGetNextUrl(context);
+                if (selectedUrl == null)
                     throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fd.getName(), e);
-                }
             }
         }
+    }
+
+    @Nullable
+    private String failAndGetNextUrl(Object context) {
+        serverSelector.fail(context);
+        String url = serverSelector.getUrl(context);
+        if (url != null)
+            log.debug("Trying next URL");
+        return url;
     }
 }

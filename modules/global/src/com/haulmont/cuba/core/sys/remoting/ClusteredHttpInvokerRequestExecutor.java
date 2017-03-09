@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.sys.remoting;
 
 import com.google.common.io.CountingInputStream;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientConfiguration;
 import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
@@ -25,36 +26,45 @@ import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationResult;
 import org.springframework.util.StopWatch;
 
-import java.io.*;
+import javax.annotation.Nullable;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.List;
 
 /**
  * HttpInvokerRequestExecutor that executes a request on a server which is selected according to the current cluster
- * topology, provided by {@link ClusterInvocationSupport}.
+ * topology, provided by {@link ServerSelector}.
  */
 public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerRequestExecutor {
 
-    private ClusterInvocationSupport support;
+    private ServerSelector serverSelector;
 
-    public ClusteredHttpInvokerRequestExecutor(ClusterInvocationSupport support) {
-        this.support = support;
-        setConnectTimeout(support.getConnectTimeout());
-        setReadTimeout(support.getReadTimeout());
+    public ClusteredHttpInvokerRequestExecutor(ServerSelector serverSelector) {
+        this.serverSelector = serverSelector;
+
+        String connectTimeoutProp = AppContext.getProperty("cuba.connectionTimeout");
+        setConnectTimeout(connectTimeoutProp == null ? -1 : Integer.parseInt(connectTimeoutProp));
+
+        String readTimeoutProp = AppContext.getProperty("cuba.connectionReadTimeout");
+        setReadTimeout(readTimeoutProp == null ? -1 : Integer.parseInt(readTimeoutProp));
     }
 
     @Override
     protected RemoteInvocationResult doExecuteRequest(HttpInvokerClientConfiguration config, ByteArrayOutputStream baos)
             throws IOException, ClassNotFoundException {
-        List<String> urlList = support.getUrlList(config.getServiceUrl());
-        if (urlList.isEmpty())
+
+        RemoteInvocationResult result;
+
+        Object context = serverSelector.initContext();
+        String url = currentServiceUrl(serverSelector.getUrl(context), config);
+        if (url == null)
             throw new IllegalStateException("URL list is empty");
 
-        RemoteInvocationResult result = null;
-        for (int i = 0; i < urlList.size(); i++) {
-            String url = urlList.get(i);
+        while (true) {
             HttpURLConnection con = openConnection(url);
             try {
                 StopWatch sw = new StopWatch();
@@ -64,9 +74,9 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
                 validateResponse(config, con);
                 CountingInputStream responseInputStream = new CountingInputStream(readResponseBody(config, con));
                 sw.stop();
-                if (i > 0) {
-                    support.updateUrlPriority(url);
-                }
+
+                serverSelector.success(context);
+
                 sw.start("reading time");
                 try (ObjectInputStream ois = createObjectInputStream(decorateInputStream(responseInputStream), config.getCodebaseUrl())) {
                     result = doReadRemoteInvocationResult(ois);
@@ -80,8 +90,10 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
             } catch (IOException e) {
                 logger.info(String.format("Invocation of %s failed: %s", url, e));
 
-                if (i < urlList.size() - 1) {
-                    logger.info("Trying to invoke the next available URL: " + urlList.get(i + 1));
+                serverSelector.fail(context);
+                url = currentServiceUrl(serverSelector.getUrl(context), config);
+                if (url != null) {
+                    logger.info("Trying to invoke the next available URL: " + url);
                     continue;
                 }
                 logger.info("No more URL available");
@@ -89,6 +101,11 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
             }
         }
         return result;
+    }
+
+    @Nullable
+    protected String currentServiceUrl(String url, HttpInvokerClientConfiguration config) {
+        return url == null ? null :  url + "/" + config.getServiceUrl();
     }
 
     protected HttpURLConnection openConnection(String serviceUrl) throws IOException {

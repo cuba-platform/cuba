@@ -32,14 +32,29 @@ public class PortalCacheUserSessionProvider implements CacheUserSessionProvider 
     protected LoginService loginService;
 
     @Inject
-    protected PortalConfig portalConfig;
+    protected PortalConfig config;
+
+    protected volatile UserSession systemSession;
 
     @Override
     public UserSession getUserSession() {
-        String trustedClientPassword = portalConfig.getTrustedClientPassword();
+        if (systemSession == null) {
+            initSystemSession();
+        } else {
+            UserSession session = loginService.getSession(systemSession.getId());
+            if (session == null) {
+                systemSession = null;
+                initSystemSession();
+            }
+        }
+        return systemSession;
+    }
 
+    protected synchronized void initSystemSession() {
+        if (systemSession != null)
+            return;
         try {
-            return loginService.getSystemSession(trustedClientPassword);
+            systemSession = loginService.getSystemSession(config.getTrustedClientPassword());
         } catch (LoginException e) {
             throw new IllegalStateException("Unable to login with trusted client password", e);
         }

@@ -26,10 +26,10 @@ import java.lang.reflect.InvocationTargetException;
 
 public class HttpServiceProxy extends HttpInvokerProxyFactoryBean {
 
-    public HttpServiceProxy(ClusterInvocationSupport support) {
+    public HttpServiceProxy(ServerSelector selector) {
         setRemoteInvocationFactory(new CubaRemoteInvocationFactory());
 
-        ClusteredHttpInvokerRequestExecutor executor = new ClusteredHttpInvokerRequestExecutor(support);
+        ClusteredHttpInvokerRequestExecutor executor = new ClusteredHttpInvokerRequestExecutor(selector);
         executor.setBeanClassLoader(getBeanClassLoader());
         setHttpInvokerRequestExecutor(executor);
     }

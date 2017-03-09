@@ -39,7 +39,7 @@ public class RemoteProxyBeanCreator implements BeanFactoryPostProcessor, Applica
 
     protected Map<String, String> substitutions;
 
-    protected ClusterInvocationSupport support;
+    protected ServerSelector serverSelector;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -53,13 +53,13 @@ public class RemoteProxyBeanCreator implements BeanFactoryPostProcessor, Applica
         this.substitutions = substitutions;
     }
 
-    public void setClusterInvocationSupport(ClusterInvocationSupport clusterInvocationSupport) {
-        this.support = clusterInvocationSupport;
+    public void setServerSelector(ServerSelector serverSelector) {
+        this.serverSelector = serverSelector;
     }
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        log.info("Configuring remote proxy beans for " + support.getBaseUrl() + ": " + services.keySet());
+        log.info("Configuring remote proxy beans: " + services.keySet());
 
         BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
 
@@ -69,7 +69,7 @@ public class RemoteProxyBeanCreator implements BeanFactoryPostProcessor, Applica
             String serviceUrl = name;
             String serviceInterface = entry.getValue();
             BeanDefinition definition = new RootBeanDefinition(HttpServiceProxy.class);
-            definition.getConstructorArgumentValues().addIndexedArgumentValue(0, support);
+            definition.getConstructorArgumentValues().addIndexedArgumentValue(0, serverSelector);
             MutablePropertyValues propertyValues = definition.getPropertyValues();
             propertyValues.add("serviceUrl", serviceUrl);
             propertyValues.add("serviceInterface", serviceInterface);

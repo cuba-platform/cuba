@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
+import com.haulmont.cuba.core.sys.remoting.ServerSelector;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -45,6 +45,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
@@ -55,7 +56,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 import java.util.UUID;
 
 /**
@@ -74,8 +74,8 @@ public class FileDownloadController {
     @Inject
     protected UserSessionService userSessionService;
 
-    @Resource(name = ClusterInvocationSupport.NAME)
-    protected ClusterInvocationSupport clusterInvocationSupport;
+    @Resource(name = ServerSelector.NAME)
+    protected ServerSelector serverSelector;
 
     protected String fileDownloadContext;
 
@@ -142,8 +142,14 @@ public class FileDownloadController {
         InputStream is = null;
         ServletOutputStream os = response.getOutputStream();
         try {
-            for (Iterator<String> iterator = clusterInvocationSupport.getUrlList().iterator(); iterator.hasNext(); ) {
-                String url = iterator.next() + fileDownloadContext +
+            Object context = serverSelector.initContext();
+            String selectedUrl = serverSelector.getUrl(context);
+            if (selectedUrl == null) {
+                log.debug("Unable to download file: no available server URLs");
+                error(response);
+            }
+            while (selectedUrl != null) {
+                String url = selectedUrl + fileDownloadContext +
                         "?s=" + userSession.getId() +
                         "&f=" + fd.getId().toString();
 
@@ -160,32 +166,22 @@ public class FileDownloadController {
                     if (httpStatus == HttpStatus.SC_OK) {
                         HttpEntity httpEntity = httpResponse.getEntity();
                         if (httpEntity != null) {
+                            serverSelector.success(context);
                             is = httpEntity.getContent();
                             IOUtils.copy(is, os);
                             os.flush();
                             break;
                         } else {
                             log.debug("Unable to download file from " + url + "\nHttpEntity is null");
-                            if (iterator.hasNext())
-                                log.debug("Trying next URL");
-                            else
-                                error(response);
+                            selectedUrl = failAndGetNextUrl(context, response);
                         }
                     } else {
                         log.debug("Unable to download file from " + url + "\n" + httpResponse.getStatusLine());
-                        if (iterator.hasNext()) {
-                            log.debug("Trying next URL");
-                        } else {
-                            error(response);
-                        }
+                        selectedUrl = failAndGetNextUrl(context, response);
                     }
                 } catch (IOException ex) {
                     log.debug("Unable to download file from " + url + "\n" + ex);
-                    if (iterator.hasNext()) {
-                        log.debug("Trying next URL");
-                    } else {
-                        error(response);
-                    }
+                    selectedUrl = failAndGetNextUrl(context, response);
                 } finally {
                     IOUtils.closeQuietly(is);
 
@@ -195,6 +191,17 @@ public class FileDownloadController {
         } finally {
             IOUtils.closeQuietly(os);
         }
+    }
+
+    @Nullable
+    private String failAndGetNextUrl(Object context, HttpServletResponse response) throws IOException {
+        serverSelector.fail(context);
+        String url = serverSelector.getUrl(context);
+        if (url != null)
+            log.debug("Trying next URL");
+        else
+            error(response);
+        return url;
     }
 
     protected UserSession getSession(HttpServletRequest request, HttpServletResponse response) throws IOException {

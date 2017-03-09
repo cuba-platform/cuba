@@ -20,8 +20,8 @@ package com.haulmont.cuba.gui.upload;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.core.sys.remoting.LocalFileExchangeService;
+import com.haulmont.cuba.core.sys.remoting.ServerSelector;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpResponse;
@@ -67,9 +67,9 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
     protected String tempDir;
 
     // Using injection by name here, because an application project can define several instances
-    // of ClusterInvocationSupport type to work with different middleware blocks
-    @Resource(name = ClusterInvocationSupport.NAME)
-    protected ClusterInvocationSupport clusterInvocationSupport;
+    // of ServerSelector type to work with different middleware blocks
+    @Resource(name = ServerSelector.NAME)
+    protected ServerSelector serverSelector;
 
     @Inject
     protected UuidSource uuidSource;
@@ -287,9 +287,16 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         }
     }
 
-    private void uploadWithServlet(UUID fileId, FileDescriptor fileDescr, UploadToStorageProgressListener listener, File file) throws FileStorageException, InterruptedIOException {
-        for (Iterator<String> iterator = clusterInvocationSupport.getUrlList().iterator(); iterator.hasNext(); ) {
-            String url = iterator.next()
+    private void uploadWithServlet(UUID fileId, FileDescriptor fileDescr, UploadToStorageProgressListener listener, File file)
+            throws FileStorageException, InterruptedIOException {
+
+        Object context = serverSelector.initContext();
+        String selectedUrl = serverSelector.getUrl(context);
+        if (selectedUrl == null) {
+            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getName());
+        }
+        while (true) {
+            String url = selectedUrl
                     + CORE_FILE_UPLOAD_CONTEXT
                     + "?s=" + userSessionSource.getUserSession().getId()
                     + "&f=" + fileDescr.toUrlParam();
@@ -315,26 +322,31 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
                     break;
                 } else {
                     log.debug("Unable to upload file to " + url + "\n" + response.getStatusLine());
-                    if (statusCode == HttpStatus.SC_NOT_FOUND && iterator.hasNext()) {
-                        log.debug("Trying next URL");
-                    } else {
+                    selectedUrl = failAndGetNextUrl(context);
+                    if (selectedUrl == null)
                         throw new FileStorageException(FileStorageException.Type.fromHttpStatus(statusCode), fileDescr.getName());
-                    }
                 }
             } catch (InterruptedIOException e) {
                 log.trace("Uploading has been interrupted");
                 throw e;
             } catch (IOException e) {
                 log.debug("Unable to upload file to " + url + "\n" + e);
-                if (iterator.hasNext()) {
-                    log.debug("Trying next URL");
-                } else {
+                selectedUrl = failAndGetNextUrl(context);
+                if (selectedUrl == null)
                     throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getName(), e);
-                }
             } finally {
                 connectionManager.shutdown();
             }
         }
+    }
+
+    @Nullable
+    private String failAndGetNextUrl(Object context) {
+        serverSelector.fail(context);
+        String url = serverSelector.getUrl(context);
+        if (url != null)
+            log.debug("Trying next URL");
+        return url;
     }
 
     @Override

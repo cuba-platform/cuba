@@ -25,7 +25,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
+import com.haulmont.cuba.core.sys.remoting.ServerSelector;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -42,6 +42,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -51,7 +52,6 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.PrintWriter;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.UUID;
 
 @Controller
@@ -71,8 +71,8 @@ public class FileUploadController {
     @Inject
     protected Metadata metadata;
 
-    @Resource(name = ClusterInvocationSupport.NAME)
-    protected ClusterInvocationSupport clusterInvocationSupport;
+    @Resource(name = ServerSelector.NAME)
+    protected ServerSelector serverSelector;
 
     protected static final String CORE_FILE_UPLOAD_CONTEXT = "/upload";
 
@@ -116,8 +116,13 @@ public class FileUploadController {
 
     protected void uploadToMiddleware(UserSession userSession, InputStream is, FileDescriptor fd)
             throws FileStorageException, InterruptedIOException {
-        for (Iterator<String> iterator = clusterInvocationSupport.getUrlList().iterator(); iterator.hasNext(); ) {
-            String url = iterator.next()
+        Object context = serverSelector.initContext();
+        String selectedUrl = serverSelector.getUrl(context);
+        if (selectedUrl == null) {
+            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fd.getName());
+        }
+        while (true) {
+            String url = selectedUrl
                     + CORE_FILE_UPLOAD_CONTEXT
                     + "?s=" + userSession.getId()
                     + "&f=" + fd.toUrlParam();
@@ -134,9 +139,8 @@ public class FileUploadController {
                     break;
                 } else {
                     log.debug("Unable to upload file to " + url + "\n" + coreResponse.getStatusLine());
-                    if (statusCode == HttpStatus.SC_NOT_FOUND && iterator.hasNext())
-                        log.debug("Trying next URL");
-                    else
+                    selectedUrl = failAndGetNextUrl(context);
+                    if (selectedUrl == null)
                         throw new FileStorageException(FileStorageException.Type.fromHttpStatus(statusCode), fd.getName());
                 }
             } catch (InterruptedIOException e) {
@@ -144,14 +148,22 @@ public class FileUploadController {
                 throw e;
             } catch (IOException e) {
                 log.debug("Unable to upload file to " + url + "\n" + e);
-                if (iterator.hasNext())
-                    log.debug("Trying next URL");
-                else
+                selectedUrl = failAndGetNextUrl(context);
+                if (selectedUrl == null)
                     throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fd.getName(), e);
             } finally {
                 client.getConnectionManager().shutdown();
             }
         }
+    }
+
+    @Nullable
+    private String failAndGetNextUrl(Object context) {
+        serverSelector.fail(context);
+        String url = serverSelector.getUrl(context);
+        if (url != null)
+            log.debug("Trying next URL");
+        return url;
     }
 
     protected void saveFileDescriptor(FileDescriptor fd) {

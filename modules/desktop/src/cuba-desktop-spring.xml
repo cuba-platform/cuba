@@ -47,14 +47,16 @@
 
     <!-- Remote stubs -->
 
-    <bean id="cuba_clusterInvocationSupport" class="com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport"
-          init-method="init">
+    <bean id="cuba_ServerSorter" class="com.haulmont.cuba.core.sys.remoting.staticselector.RandomServerSorter"/>
+
+    <bean id="cuba_ServerSelector" class="com.haulmont.cuba.core.sys.remoting.staticselector.StaticServerSelector" init-method="init">
         <property name="baseUrl" value="${cuba.connectionUrlList}"/>
+        <property name="serverSorter" ref="cuba_ServerSorter"/>
         <property name="servletPath" value="remoting"/>
     </bean>
 
     <bean id="cuba_proxyCreator" class="com.haulmont.cuba.core.sys.remoting.RemoteProxyBeanCreator">
-        <property name="clusterInvocationSupport" ref="cuba_clusterInvocationSupport"/>
+        <property name="serverSelector" ref="cuba_ServerSelector"/>
         <property name="remoteServices">
             <map>
                 <entry key="cuba_LoginService" value="com.haulmont.cuba.security.app.LoginService"/>
