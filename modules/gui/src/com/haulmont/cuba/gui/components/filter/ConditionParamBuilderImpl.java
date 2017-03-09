@@ -94,7 +94,8 @@ public class ConditionParamBuilderImpl implements ConditionParamBuilder{
         @Override
         public Param.Builder getParamBuilder(AbstractCondition condition) {
             Param.Builder builder = super.getParamBuilder(condition);
-            MetaProperty metaProperty = condition.getDatasource().getMetaClass().getProperty(condition.getName());
+            MetaPropertyPath propertyPath = condition.getDatasource().getMetaClass().getPropertyPath(condition.getName());
+            MetaProperty metaProperty = propertyPath != null ? propertyPath.getMetaProperty() : null;
             if (!condition.getUnary())
                 builder.setJavaClass(condition.getJavaClass())
                         .setProperty(metaProperty);
