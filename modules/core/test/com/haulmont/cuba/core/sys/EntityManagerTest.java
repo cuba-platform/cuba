@@ -23,7 +23,9 @@ import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.Group;
+import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.After;
 import org.junit.Before;
@@ -162,6 +164,71 @@ public class EntityManagerTest {
         } finally {
             tx.end();
             cont.deleteRecord("SEC_USER", newUserId);
+        }
+    }
+
+    @Test
+    public void testMergeWithOneToManyCollection() throws Exception {
+        User user = null;
+        UserRole userRole1 = null, userRole2 = null;
+        Role role1 = null, role2 = null;
+        try {
+            //creates user with one role
+            Transaction tx = cont.persistence().createTransaction();
+            try {
+                EntityManager em = cont.persistence().getEntityManager();
+                user = new User();
+                user.setName("testMerge1");
+                user.setLogin("testMerge1");
+                user.setPassword("testMerge1");
+                user.setGroup(em.getReference(Group.class, groupId));
+
+                em.persist(user);
+
+                role1 = new Role();
+                role1.setName("role1");
+                em.persist(role1);
+
+                role2 = new Role();
+                role2.setName("role2");
+                em.persist(role2);
+
+                userRole1 = new UserRole();
+                userRole1.setRole(role1);
+                userRole1.setUser(user);
+                em.persist(userRole1);
+
+                tx.commit();
+            } finally {
+                tx.end();
+            }
+            //creates new user role and merge it
+            tx = cont.persistence().createTransaction();
+            try {
+                EntityManager em = cont.persistence().getEntityManager();
+                userRole2 = new UserRole();
+                userRole2.setRole(role2);
+                userRole2.setUser(user);
+                em.merge(userRole2);
+                tx.commit();
+            } finally {
+                tx.end();
+            }
+            //check user versions, version shouldn't be changed
+            tx = cont.persistence().createTransaction();
+            try {
+                EntityManager em = cont.persistence().getEntityManager();
+                assertEquals((Integer) 1, em.find(User.class, user.getId()).getVersion());
+                tx.commit();
+            } finally {
+                tx.end();
+            }
+        } finally {
+            cont.deleteRecord(userRole1);
+            cont.deleteRecord(userRole2);
+            cont.deleteRecord(user);
+            cont.deleteRecord(role1);
+            cont.deleteRecord(role2);
         }
     }
 
