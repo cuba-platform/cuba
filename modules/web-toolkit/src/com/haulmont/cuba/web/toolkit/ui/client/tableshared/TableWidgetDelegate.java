@@ -20,10 +20,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
@@ -79,14 +75,11 @@ public class TableWidgetDelegate {
     public String tableSortDescendingLabel;
 
     public void requestFocus(final String itemKey, final String columnKey) {
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-                try {
-                    setFocus(itemKey, columnKey);
-                } catch (Exception e) {
-                    VConsole.error(e);
-                }
+        Scheduler.get().scheduleDeferred(() -> {
+            try {
+                setFocus(itemKey, columnKey);
+            } catch (Exception e) {
+                VConsole.error(e);
             }
         });
     }
@@ -111,11 +104,19 @@ public class TableWidgetDelegate {
             this.presentationsEditorPopup.setOwner(table);
             this.presentationsEditorPopup.setWidget(this.presentationsMenu);
 
-            this.presentationsEditorPopup.addCloseHandler(new CloseHandler<PopupPanel>() {
-                @Override
-                public void onClose(CloseEvent<PopupPanel> event) {
-                    presentationsEditorPopup = null;
+            // Store the currently focused element, which will be re-focused when
+            // context menu is closed
+            Element focusedElement = WidgetUtil.getFocusedElement();
+
+            this.presentationsEditorPopup.addCloseHandler(e -> {
+                Element currentFocus = WidgetUtil.getFocusedElement();
+                if (focusedElement != null && (currentFocus == null
+                        || presentationsEditorPopup.getElement().isOrHasChild(currentFocus)
+                        || RootPanel.getBodyElement().equals(currentFocus))) {
+                    focusedElement.focus();
                 }
+
+                presentationsEditorPopup = null;
             });
 
             this.presentationsEditorPopup.setAutoHideEnabled(true);
@@ -198,15 +199,23 @@ public class TableWidgetDelegate {
             }
         }
 
+        // Store the currently focused element, which will be re-focused when
+        // context menu is closed
+        Element focusedElement = WidgetUtil.getFocusedElement();
+
         this.customContextMenuPopup = Tools.createCubaTableContextMenu();
         this.customContextMenuPopup.setOwner(table);
         this.customContextMenuPopup.setWidget(this.customContextMenu);
 
-        this.customContextMenuPopup.addCloseHandler(new CloseHandler<PopupPanel>() {
-            @Override
-            public void onClose(CloseEvent<PopupPanel> event) {
-                customContextMenuPopup = null;
+        this.customContextMenuPopup.addCloseHandler(e -> {
+            Element currentFocus = WidgetUtil.getFocusedElement();
+            if (focusedElement != null && (currentFocus == null
+                    || customContextMenuPopup.getElement().isOrHasChild(currentFocus)
+                    || RootPanel.getBodyElement().equals(currentFocus))) {
+                focusedElement.focus();
             }
+
+            customContextMenuPopup = null;
         });
 
         Tools.showPopup(this.customContextMenuPopup, left, top);
@@ -221,15 +230,24 @@ public class TableWidgetDelegate {
                 }
             }
 
+            // Store the currently focused element, which will be re-focused when
+            // context menu is closed
+            Element focusedElement = WidgetUtil.getFocusedElement();
+
             this.customPopupOverlay = Tools.createCubaTablePopup(this.customPopupAutoClose);
             this.customPopupOverlay.setOwner(table);
             this.customPopupOverlay.setWidget(this.customPopupWidget);
 
-            this.customPopupOverlay.addCloseHandler(new CloseHandler<PopupPanel>() {
-                @Override
-                public void onClose(CloseEvent<PopupPanel> event) {
-                    customPopupOverlay = null;
+            this.customPopupOverlay.addCloseHandler(e -> {
+
+                Element currentFocus = WidgetUtil.getFocusedElement();
+                if (focusedElement != null && (currentFocus == null
+                        || customPopupOverlay.getElement().isOrHasChild(currentFocus)
+                        || RootPanel.getBodyElement().equals(currentFocus))) {
+                    focusedElement.focus();
                 }
+
+                customPopupOverlay = null;
             });
 
             Tools.showPopup(this.customPopupOverlay, this.lastClickClientX, this.lastClickClientY);
@@ -253,40 +271,31 @@ public class TableWidgetDelegate {
         sortDirectionMenu.add(sortByDescendingButton);
         sortDirectionMenu.add(sortClearSortButton);
 
-        sortByDescendingButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                updateVariable("sortcolumn", columnId, false);
-                updateVariable( "sortascending", false, false);
+        sortByDescendingButton.addClickHandler(event -> {
+            updateVariable("sortcolumn", columnId, false);
+            updateVariable( "sortascending", false, false);
 
-                tableWidget.getRowRequestHandler().deferRowFetch(); // some validation +
-                // defer 250ms
-                tableWidget.getRowRequestHandler().cancel(); // instead of waiting
-                tableWidget.getRowRequestHandler().run(); // run immediately
-                sortDirectionPopup.hide();
-            }
+            tableWidget.getRowRequestHandler().deferRowFetch(); // some validation +
+            // defer 250ms
+            tableWidget.getRowRequestHandler().cancel(); // instead of waiting
+            tableWidget.getRowRequestHandler().run(); // run immediately
+            sortDirectionPopup.hide();
         });
 
-        sortByAscendingButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                updateVariable("sortcolumn", columnId, false);
-                updateVariable("sortascending", true, false);
+        sortByAscendingButton.addClickHandler(event -> {
+            updateVariable("sortcolumn", columnId, false);
+            updateVariable("sortascending", true, false);
 
-                tableWidget.getRowRequestHandler().deferRowFetch(); // some validation +
-                // defer 250ms
-                tableWidget.getRowRequestHandler().cancel(); // instead of waiting
-                tableWidget.getRowRequestHandler().run(); // run immediately
-                sortDirectionPopup.hide();
-            }
+            tableWidget.getRowRequestHandler().deferRowFetch(); // some validation +
+            // defer 250ms
+            tableWidget.getRowRequestHandler().cancel(); // instead of waiting
+            tableWidget.getRowRequestHandler().run(); // run immediately
+            sortDirectionPopup.hide();
         });
 
-        sortClearSortButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                updateVariable( "resetsortorder", columnId, true);
-                sortDirectionPopup.hide();
-            }
+        sortClearSortButton.addClickHandler(event -> {
+            updateVariable( "resetsortorder", columnId, true);
+            sortDirectionPopup.hide();
         });
 
         sortDirectionMenu.addStyleName("c-table-contextmenu");
