@@ -2387,10 +2387,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 }
             }
 
-            if (columnConf.getWidth() != null) {
-                columnComponent.setWidth(columnConf.getWidth() + "px");
-            } else if (!(columnComponent instanceof CheckBox)) {
-                columnComponent.setWidth("100%");
+            if (!(columnComponent instanceof CheckBox)) {
+                columnComponent.setWidthFull();
             }
 
             if (columnComponent instanceof BelongToFrame) {
