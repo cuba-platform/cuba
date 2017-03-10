@@ -42,6 +42,8 @@ apply(plugin: 'maven')
 apply(plugin: 'idea')
 apply(plugin: 'cuba')
 
+bom.load file('modules/global/src/com/haulmont/cuba/bom.properties')
+
 cuba {
     artifact {
         group = 'com.haulmont.cuba'
