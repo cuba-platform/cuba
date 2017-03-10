@@ -42,7 +42,6 @@ import java.util.*;
 
 /**
  * Window for generic filter edit
- *
  */
 public class FilterEditor extends AbstractWindow {
 
@@ -54,6 +53,9 @@ public class FilterEditor extends AbstractWindow {
 
     @Inject
     protected ConditionsDs conditionsDs;
+
+    @Inject
+    protected GridLayout filterPropertiesGrid;
 
     @Inject
     protected TextField filterName;
@@ -117,8 +119,7 @@ public class FilterEditor extends AbstractWindow {
     protected Boolean useShortConditionForm;
 
     protected final List<String> componentsToHideInShortForm = Arrays.asList("hiddenLabel", "hidden",
-            "requiredLabel", "required", "widthLabel", "width", //"defaultValueLayoutLabel", "defaultValueLayout",
-            "captionLabel", "caption");
+            "requiredLabel", "required", "widthLabel", "width", "captionLabel", "caption");
 
     public interface Companion {
         void showComponentName(WindowManager windowManager, String title, String message);
@@ -142,6 +143,7 @@ public class FilterEditor extends AbstractWindow {
             throw new RuntimeException("Filter entity was not passed to filter editor");
         }
         filter = (Filter) params.get("filter");
+
         ConditionsTree paramConditions = (ConditionsTree) params.get("conditions");
         conditions = paramConditions.createCopy();
         refreshConditionsDs();
@@ -234,34 +236,26 @@ public class FilterEditor extends AbstractWindow {
             }
         });
 
-        addConditionHelper = new AddConditionHelper(filter, new AddConditionHelper.Handler() {
-            @Override
-            public void handle(AbstractCondition condition) {
-                AbstractCondition item = conditionsDs.getItem();
-                if (item != null && item instanceof GroupCondition) {
-                    Node<AbstractCondition> newNode = new Node<>(condition);
-                    Node<AbstractCondition> selectedNode = conditions.getNode(item);
-                    selectedNode.addChild(newNode);
-                    refreshConditionsDs();
-                    conditionsTree.expand(item.getId());
-                } else {
-                    conditions.getRootNodes().add(new Node<>(condition));
-                    refreshConditionsDs();
-                }
-                conditionsTree.setSelected(condition);
+        addConditionHelper = new AddConditionHelper(filter, condition -> {
+            AbstractCondition item = conditionsDs.getItem();
+            if (item != null && item instanceof GroupCondition) {
+                Node<AbstractCondition> newNode = new Node<>(condition);
+                Node<AbstractCondition> selectedNode = conditions.getNode(item);
+                selectedNode.addChild(newNode);
+                refreshConditionsDs();
+                conditionsTree.expand(item.getId());
+            } else {
+                conditions.getRootNodes().add(new Node<>(condition));
+                refreshConditionsDs();
             }
+            conditionsTree.setSelected(condition);
         });
 
         FilterHelper filterHelper = AppBeans.get(FilterHelper.class);
         filterHelper.initConditionsDragAndDrop(conditionsTree, conditions);
 
         if (Boolean.TRUE.equals(useShortConditionForm)) {
-            filterName.setVisible(false);
-            filterNameLabel.setVisible(false);
-            availableForAllCb.setVisible(false);
-            availableForAllLabel.setVisible(false);
-            defaultCb.setVisible(false);
-            defaultLabel.setVisible(false);
+            filterPropertiesGrid.setVisible(false);
         }
     }
 

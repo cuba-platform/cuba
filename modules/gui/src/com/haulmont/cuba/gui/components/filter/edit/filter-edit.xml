@@ -38,7 +38,7 @@
     <layout spacing="true" expand="mainLayout">
         <hbox id="mainLayout" spacing="true" expand="leftPanel" width="100%">
             <vbox id="leftPanel" height="100%" spacing="true" expand="conditionsTree">
-                <grid spacing="true" width="100%">
+                <grid id="filterPropertiesGrid" spacing="true" width="100%">
                     <columns>
                         <column/>
                         <column flex="1"/>

@@ -387,8 +387,6 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
     @SuppressWarnings("unchecked")
     @Override
     public void setDatasource(final Datasource datasource) {
-        Preconditions.checkNotNullArgument(datasource, "datasource is null");
-
         if (this.datasource != null) {
             throw new UnsupportedOperationException("Changing datasource is not supported by the FieldGroup component");
         }

@@ -16,9 +16,11 @@
  */
 
 @mixin cuba-report-wizard {
-  .report-wizard-top-separator {
+  .report-wizard-tip-label {
+    padding-top: $v-layout-spacing-vertical;
+    padding-bottom: $v-layout-spacing-vertical;
     border-top: valo-border();
-    line-height: 0;
+    border-bottom: valo-border();
   }
 
   .v-textfield-hidden-field{

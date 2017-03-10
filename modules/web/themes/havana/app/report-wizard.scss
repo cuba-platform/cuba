@@ -16,8 +16,10 @@
  */
 
 @mixin cuba-report-wizard {
-
-  .report-wizard-top-separator {
+  .report-wizard-tip-label {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: #A5C4E0 1px solid;
     border-top: #A5C4E0 1px solid;
   }
 
