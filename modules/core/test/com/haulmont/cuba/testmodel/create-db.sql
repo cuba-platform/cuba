@@ -344,3 +344,54 @@ create table TEST_JOINED_LONGID_BAR (
     primary key (ID),
     constraint FK_TEST_JOINED_LONGID_BAR foreign key (ID) references TEST_JOINED_LONGID_BASE(ID)
 )^
+
+----------------------------------------------------------------------------------------------------------------
+
+create table TEST_FETCH_SAME_MAIN_ENTITY (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    DESCRIPTION varchar(255),
+    primary key (ID)
+)^
+
+create table TEST_FETCH_SAME_LINK_A_ENTITY (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    DESCRIPTION varchar(255),
+    MAIN_ENTITY_ID varchar(36),
+    constraint FK_A_MAIN_ENTITY_ID foreign key (MAIN_ENTITY_ID) references TEST_FETCH_SAME_MAIN_ENTITY(ID),
+    primary key (ID)
+)^
+
+create table TEST_FETCH_SAME_LINK_B_ENTITY (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    DESCRIPTION varchar(255),
+    MAIN_ENTITY_ID varchar(36),
+    LINK_A_ENTITY_ID varchar(36),
+    constraint FK_B_MAIN_ENTITY_ID foreign key (MAIN_ENTITY_ID) references TEST_FETCH_SAME_MAIN_ENTITY(ID),
+    constraint FK_LINK_A_ENTITY_ID foreign key (LINK_A_ENTITY_ID) references TEST_FETCH_SAME_LINK_A_ENTITY(ID),
+    primary key (ID)
+)^
+

@@ -46,5 +46,8 @@
         <class>com.haulmont.cuba.testmodel.multiplelinks.LinkEntity</class>
         <class>com.haulmont.cuba.testmodel.sales.Customer</class>
         <class>com.haulmont.cuba.testmodel.sales.Order</class>
+        <class>com.haulmont.cuba.testmodel.fetchsameentity.FetchSameMainEntity</class>
+        <class>com.haulmont.cuba.testmodel.fetchsameentity.FetchSameLinkAEntity</class>
+        <class>com.haulmont.cuba.testmodel.fetchsameentity.FetchSameLinkBEntity</class>
     </persistence-unit>
 </persistence>
