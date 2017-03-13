@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
@@ -65,7 +66,7 @@ import static java.lang.String.format;
  */
 public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected static final Multimap<PropertyType, String> FIELDS_VISIBLE_FOR_DATATYPES = ArrayListMultimap.create();
-    protected static final Set<String> ALWAYS_VISIBLE_FIELDS = new HashSet<>(Arrays.asList("name", "code", "required", "dataType", "isCollection"));
+    protected static final Set<String> ALWAYS_VISIBLE_FIELDS = Sets.newHashSet("name", "code", "required", "dataType", "isCollection");
     protected static final String WHERE = " where ";
 
     static {
@@ -254,6 +255,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
         attributeFieldGroup.addCustomField("defaultEntityId", (datasource, propertyId) -> {
             defaultEntityField = factory.createComponent(PickerField.class);
+            defaultEntityField.setCaption(messages.getMessage(CategoryAttribute.class, "CategoryAttribute.defaultEntityId"));
             defaultEntityField.addValueChangeListener(e -> {
                 Entity entity = (Entity) e.getValue();
                 if (entity != null) {
