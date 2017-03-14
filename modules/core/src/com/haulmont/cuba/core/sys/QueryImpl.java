@@ -241,16 +241,16 @@ public class QueryImpl<T> implements TypedQuery<T> {
         Set<String> paramNames = Sets.newHashSet(parser.getParamNames());
         for (Iterator<Param> iterator = params.iterator(); iterator.hasNext(); ) {
             Param param = iterator.next();
-            if (param.isNamedParam()) {
-                String paramName = (String) param.name;
-                paramNames.remove(paramName);
-                if (param.value instanceof String) {
-                    String strValue = (String) param.value;
-                    if (strValue.startsWith("(?i)")) {
-                        result = replaceCaseInsensitiveParam(result, paramName);
-                        param.value = strValue.substring(4).toLowerCase();
-                    }
+            String paramName = param.name.toString();
+            if (param.value instanceof String) {
+                String strValue = (String) param.value;
+                if (strValue.startsWith("(?i)")) {
+                    result = replaceCaseInsensitiveParam(result, paramName);
+                    param.value = strValue.substring(4).toLowerCase();
                 }
+            }
+            if (param.isNamedParam()) {
+                paramNames.remove(paramName);
                 if (param.value instanceof Collection) {
                     Collection collectionValue = (Collection) param.value;
                     if (collectionValue.isEmpty()) {

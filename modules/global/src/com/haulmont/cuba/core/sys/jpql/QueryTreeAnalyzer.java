@@ -186,7 +186,8 @@ public class QueryTreeAnalyzer {
         return conditionNodes.stream()
                 .filter((SimpleConditionNode n) -> {
                     ParameterNode parameter = (ParameterNode) n.getFirstChildWithType(JPA2Lexer.T_PARAMETER);
-                    return parameter != null && parameter.getChild(0).getText().contains(paramName);
+                    return parameter != null && (parameter.getChild(0).getText().contains(paramName) ||
+                            parameter.getChildCount() > 1 && paramName.equals(parameter.getChild(1).getText()));
                 }).collect(Collectors.toList());
     }
 
