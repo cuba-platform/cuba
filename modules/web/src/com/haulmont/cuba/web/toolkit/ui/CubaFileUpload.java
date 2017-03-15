@@ -142,12 +142,6 @@ public class CubaFileUpload extends CubaAbstractUploadComponent
         }
     }
 
-    @Override
-    public void focus() {
-        // Overridden only to make public
-        super.focus();
-    }
-
     /**
      * Returns the icon's alt text.
      *

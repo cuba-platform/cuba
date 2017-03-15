@@ -239,6 +239,16 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
         return component.hasMenuItems();
     }
 
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
+
     protected static class MenuItemWrapper extends CubaSideMenu.MenuItem {
         protected MenuItem menuItem;
 

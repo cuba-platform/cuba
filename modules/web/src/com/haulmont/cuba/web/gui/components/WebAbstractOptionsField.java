@@ -137,6 +137,16 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     }
 
     @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
+
+    @Override
     public void setOptionsMap(Map<String, ?> options) {
         if (metaProperty != null && metaProperty.getRange().isEnum()) {
             List constants = Arrays.asList(metaProperty.getRange().asEnumeration().getJavaClass().getEnumConstants());

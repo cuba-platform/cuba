@@ -44,6 +44,8 @@ public abstract class AbstractUploadFieldLoader<T extends UploadField> extends A
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
 
+        loadTabIndex(resultComponent, element);
+
         loadAccept(resultComponent, element);
 
         loadPermittedExtensions(resultComponent, element);

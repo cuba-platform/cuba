@@ -27,6 +27,13 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 public abstract class AbstractOptionsBaseLoader<T extends OptionsField> extends AbstractFieldLoader<T> {
+    @Override
+    public void loadComponent() {
+        super.loadComponent();
+
+        loadTabIndex(resultComponent, element);
+    }
+
     protected void loadCaptionProperty(T component, Element element) {
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {

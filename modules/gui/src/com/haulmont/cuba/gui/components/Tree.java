@@ -22,7 +22,9 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import javax.annotation.Nullable;
 
 public interface Tree<E extends Entity> extends ListComponent<E>, Component.Editable, Component.HasButtonsPanel,
-        Component.HasCaption, Component.HasIcon, LookupComponent {
+                                                Component.HasCaption, Component.HasIcon, LookupComponent,
+                                                Component.Focusable {
+
     String NAME = "tree";
 
     void expandTree();

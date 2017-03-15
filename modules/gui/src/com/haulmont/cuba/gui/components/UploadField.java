@@ -19,7 +19,8 @@ package com.haulmont.cuba.gui.components;
 
 import java.util.Set;
 
-public interface UploadField extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon {
+public interface UploadField extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon,
+                                     Component.Focusable {
 
     abstract class FileUploadEvent {
         private final String fileName;

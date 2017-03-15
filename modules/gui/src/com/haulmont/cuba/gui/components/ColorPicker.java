@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.gui.components;
 
-public interface ColorPicker extends Field  {
+public interface ColorPicker extends Field, Component.Focusable {
 
     String NAME = "colorPicker";
 

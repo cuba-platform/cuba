@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.DatePicker;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,14 +31,21 @@ public class DatePickerLoader extends AbstractFieldLoader<DatePicker> {
     public void createComponent() {
         resultComponent = (DatePicker) factory.createComponent(DatePicker.NAME);
         loadId(resultComponent, element);
-
-        loadRangeStart();
-        loadRangeEnd();
-
-        loadResolution();
     }
 
-    protected void loadResolution() {
+    @Override
+    public void loadComponent() {
+        super.loadComponent();
+
+        loadTabIndex(resultComponent, element);
+
+        loadRangeStart(resultComponent, element);
+        loadRangeEnd(resultComponent, element);
+
+        loadResolution(resultComponent, element);
+    }
+
+    protected void loadResolution(DatePicker resultComponent, Element element) {
         final String resolution = element.attributeValue("resolution");
         if (StringUtils.isNotEmpty(resolution)) {
             DatePicker.Resolution res = DatePicker.Resolution.valueOf(resolution);
@@ -45,7 +53,7 @@ public class DatePickerLoader extends AbstractFieldLoader<DatePicker> {
         }
     }
 
-    protected void loadRangeStart() {
+    protected void loadRangeStart(DatePicker resultComponent, Element element) {
         String rangeStart = element.attributeValue("rangeStart");
         if (StringUtils.isNotEmpty(rangeStart)) {
             try {
@@ -59,7 +67,7 @@ public class DatePickerLoader extends AbstractFieldLoader<DatePicker> {
         }
     }
 
-    protected void loadRangeEnd() {
+    protected void loadRangeEnd(DatePicker resultComponent, Element element) {
         String rangeEnd = element.attributeValue("rangeEnd");
         if (StringUtils.isNotEmpty(rangeEnd)) {
             try {

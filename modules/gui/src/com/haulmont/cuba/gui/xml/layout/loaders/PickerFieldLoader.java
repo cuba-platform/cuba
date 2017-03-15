@@ -37,6 +37,8 @@ public class PickerFieldLoader extends AbstractFieldLoader<PickerField> {
     public void loadComponent() {
         super.loadComponent();
 
+        loadTabIndex(resultComponent, element);
+
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {
             resultComponent.setCaptionMode(CaptionMode.PROPERTY);

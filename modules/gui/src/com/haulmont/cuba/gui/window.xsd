@@ -762,9 +762,14 @@
         <xs:attribute name="captionProperty" type="xs:string"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="hasTabIndex">
+        <xs:attribute name="tabIndex" type="xs:int"/>
+    </xs:attributeGroup>
+
     <xs:attributeGroup name="isTableComponent">
         <xs:attributeGroup ref="hasEditable"/>
         <xs:attributeGroup ref="hasSettings"/>
+        <xs:attributeGroup ref="hasTabIndex"/>
 
         <xs:attribute name="multiselect" type="xs:boolean"/>
         <xs:attribute name="sortable" type="xs:boolean"/>
@@ -960,6 +965,7 @@
     <xs:complexType name="checkBoxComponent">
         <xs:complexContent>
             <xs:extension base="baseComponent">
+                <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="hasDatasource"/>
             </xs:extension>
@@ -983,6 +989,7 @@
                 <xs:attribute name="rangeStart" type="xs:string"/>
                 <xs:attribute name="rangeEnd" type="xs:string"/>
 
+                <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="hasDatasource"/>
             </xs:extension>
@@ -1020,6 +1027,8 @@
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" maxOccurs="unbounded" type="validatorType"/>
                 </xs:sequence>
+
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1144,6 +1153,8 @@
 
                 <xs:attribute name="resolution" type="dateFieldResolution"/>
                 <xs:attribute name="dateFormat" type="xs:string"/>
+
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1168,6 +1179,8 @@
                 <xs:attribute name="hsvVisible" type="xs:boolean"/>
                 <xs:attribute name="historyVisible" type="xs:boolean"/>
                 <xs:attribute name="defaultCaptionEnabled" type="xs:boolean"/>
+
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1181,6 +1194,8 @@
                 </xs:sequence>
                 <xs:attribute name="showSeconds" type="xs:boolean"/>
                 <xs:attribute name="timeFormat" type="xs:string"/>
+
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1215,6 +1230,8 @@
                 <xs:attribute name="nullOptionVisible" type="xs:boolean"/>
                 <xs:attribute name="newOptionHandler" type="xs:string"/>
                 <xs:attribute name="inputPrompt" type="resourceString"/>
+
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1236,6 +1253,8 @@
                 <xs:attribute name="minSearchStringLength" type="xs:integer"/>
                 <xs:attribute name="mode" type="searchMode"/>
                 <xs:attribute name="escapeValueForLike" type="xs:boolean"/>
+
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1249,6 +1268,7 @@
                 <xs:attribute name="suggestionsLimit" type="xs:integer"/>
                 
                 <xs:attributeGroup ref="hasCaptionSource"/>
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1263,6 +1283,7 @@
                 </xs:sequence>
 
                 <xs:attribute name="metaClass" type="xs:string"/>
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1277,6 +1298,7 @@
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasCaptionSource"/>
+                <xs:attributeGroup ref="hasTabIndex"/>
 
                 <xs:attribute name="metaClass" type="xs:string"/>
                 <xs:attribute name="stylename" type="pickerFieldStylename"/>
@@ -1294,8 +1316,11 @@
                 </xs:sequence>
 
                 <xs:attribute name="stylename" type="lookupPickerFieldStylename"/>
+
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
+                <xs:attributeGroup ref="hasTabIndex"/>
+
                 <xs:attribute name="refreshOptionsOnLookupClose" type="xs:boolean"/>
                 <xs:attribute name="nullOptionVisible" type="xs:boolean"/>
                 <xs:attribute name="filterMode" type="filterMode"/>
@@ -1317,6 +1342,7 @@
 
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
+                <xs:attributeGroup ref="hasTabIndex"/>
 
                 <xs:attribute name="metaClass" type="xs:string"/>
 
@@ -1336,8 +1362,11 @@
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
                 </xs:sequence>
+
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasOptions"/>
+                <xs:attributeGroup ref="hasTabIndex"/>
+
                 <xs:attribute name="multiselect" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
@@ -1368,6 +1397,7 @@
                 <xs:attributeGroup ref="hasRequirements"/>
                 <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="isUploadComponent"/>
+                <xs:attributeGroup ref="hasTabIndex"/>
 
                 <xs:attribute name="showClearButton" type="xs:boolean"/>
                 <xs:attribute name="clearButtonCaption" type="resourceString"/>
@@ -1389,6 +1419,8 @@
         <xs:complexContent>
             <xs:extension base="baseComponent">
                 <xs:attributeGroup ref="isUploadComponent"/>
+
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1421,6 +1453,8 @@
                 </xs:sequence>
 
                 <xs:attribute name="multiselect" type="xs:boolean"/>
+
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1435,6 +1469,8 @@
 
                 <xs:attribute name="focusable" type="xs:boolean"/>
                 <xs:attribute name="disableOnClick" type="xs:boolean"/>
+
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1456,8 +1492,9 @@
                 </xs:sequence>
 
                 <xs:attribute name="showActionIcons" type="xs:boolean"/>
-
                 <xs:attribute name="focusable" type="xs:boolean"/>
+
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1473,6 +1510,8 @@
                 <xs:attribute name="minimizedValue" type="resourceString"/>
                 <xs:attribute name="captionAsHtml" type="xs:boolean"/>
                 <xs:attribute name="hideOnMouseOut" type="xs:boolean"/>
+
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1628,6 +1667,7 @@
                 <xs:attribute name="textSelectionEnabled" type="xs:boolean"/>
 
                 <xs:attributeGroup ref="hasSettings"/>
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1706,6 +1746,7 @@
         <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasEditState"/>
         <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasTabIndex"/>
 
         <xs:attribute name="width" type="componentSize"/>
 
@@ -1806,6 +1847,7 @@
 
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasDatasourceProp"/>
+                <xs:attributeGroup ref="hasTabIndex"/>
 
                 <xs:attribute name="refreshOptionsOnLookupClose" type="xs:boolean"/>
                 <xs:attribute name="position" type="tokenListPosition"/>
@@ -1831,6 +1873,7 @@
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasTabIndex"/>
     </xs:complexType>
 
     <!-- TwinColumn -->
@@ -1845,6 +1888,7 @@
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasRequirements"/>
+                <xs:attributeGroup ref="hasTabIndex"/>
 
                 <xs:attribute name="leftColumnCaption" type="resourceString"/>
                 <xs:attribute name="rightColumnCaption" type="resourceString"/>
@@ -1972,6 +2016,8 @@
                 </xs:sequence>
 
                 <xs:attribute name="stylename" type="tabsheetStylename"/>
+
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2000,6 +2046,8 @@
                 </xs:sequence>
 
                 <xs:attribute name="stylename" type="accordionStylename"/>
+
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2109,6 +2157,8 @@
                 <xs:attribute name="for" type="xs:string" use="required"/>
                 <xs:attribute name="exclude" type="xs:string"/>
                 <xs:attribute name="focusable" type="xs:boolean"/>
+
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2130,6 +2180,8 @@
                 <xs:attribute name="for" type="xs:string" use="required"/>
                 <xs:attribute name="exclude" type="xs:string"/>
                 <xs:attribute name="focusable" type="xs:boolean"/>
+
+                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

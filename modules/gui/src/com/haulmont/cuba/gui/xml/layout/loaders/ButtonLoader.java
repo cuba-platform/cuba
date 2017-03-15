@@ -72,6 +72,8 @@ public class ButtonLoader extends AbstractComponentLoader<Button> {
         loadHeight(resultComponent, element);
         loadAlign(resultComponent, element);
 
+        loadTabIndex(resultComponent, element);
+
         loadInvoke(resultComponent, enabled, visible, element);
 
         loadFocusable(resultComponent, element);

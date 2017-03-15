@@ -19,7 +19,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ColorPicker;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.toolkit.ui.CubaColorPicker;
 import com.haulmont.cuba.web.toolkit.ui.converters.ColorStringConverter;
 
@@ -260,5 +259,15 @@ public class WebColorPicker extends WebAbstractField<CubaColorPicker> implements
     @Override
     public boolean isHistoryVisible() {
         return component.isHistoryVisible();
+    }
+
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
     }
 }

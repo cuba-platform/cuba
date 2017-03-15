@@ -219,6 +219,11 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
             field.setRequiredError(requiredMsg);
         }
 
+        String tabIndex = element.attributeValue("tabIndex");
+        if (StringUtils.isNotEmpty(tabIndex)) {
+            field.setTabIndex(Integer.parseInt(tabIndex));
+        }
+
         return field;
     }
 

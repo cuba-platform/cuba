@@ -31,10 +31,9 @@ import java.util.Locale;
 
 import static com.haulmont.cuba.gui.components.Component.MouseEventDetails.MouseButton;
 
-public interface DataGrid<E extends Entity>
-        extends
-        ListComponent<E>, Component.HasButtonsPanel, Component.HasCaption, Component.HasIcon,
-        Component.HasRowsCount, Component.HasSettings, LookupComponent {
+public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.HasButtonsPanel, Component.HasCaption,
+                                                    Component.HasIcon, Component.HasRowsCount, Component.HasSettings,
+                                                    LookupComponent, Component.Focusable {
 
     String NAME = "dataGrid";
 

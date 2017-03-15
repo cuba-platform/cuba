@@ -197,6 +197,16 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
         component.setShortcut(((MenuItemImpl) menuItem).getDelegateItem(), shortcut);
     }
 
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
+
     protected static class MenuItemImpl implements MenuItem {
         protected WebAppMenu menu;
         protected String id;

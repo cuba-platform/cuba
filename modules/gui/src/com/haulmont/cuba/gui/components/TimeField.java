@@ -18,7 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import java.util.Date;
 
-public interface TimeField extends Field {
+public interface TimeField extends Field, Component.Focusable {
     String NAME = "timeField";
 
     boolean getShowSeconds();

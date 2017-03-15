@@ -24,7 +24,8 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
 
-public interface TokenList extends Field, Component.BelongToFrame, Component.HasCaption, Component.Editable {
+public interface TokenList extends Field, Component.BelongToFrame, Component.HasCaption, Component.Editable,
+                                   Component.Focusable {
 
     String NAME = "tokenList";
 

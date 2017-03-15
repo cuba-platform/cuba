@@ -68,6 +68,8 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     protected boolean parentEnabled = true;
 
+    protected int tabIndex = 0; // just stub
+
     protected String debugId;
 
     // lazily initialized list
@@ -487,5 +489,15 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     @Override
     public void setIcon(String icon) {
         // do nothing
+    }
+
+    // Just stub
+    public int getTabIndex() {
+        return tabIndex;
+    }
+
+    // Just stub
+    public void setTabIndex(int tabIndex) {
+        this.tabIndex = tabIndex;
     }
 }

@@ -17,9 +17,9 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.multiupload;
 
-import com.vaadin.shared.AbstractComponentState;
+import com.vaadin.shared.ui.TabIndexState;
 
-public class CubaMultiUploadState extends AbstractComponentState {
+public class CubaMultiUploadState extends TabIndexState {
 
     public static final String BUTTON_IMAGE_KEY = "buttonImage";
 

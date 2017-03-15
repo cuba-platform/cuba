@@ -433,6 +433,16 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         return Collections.singleton(getValue());
     }
 
+    @Override
+    public int getTabIndex() {
+        return component.getField().getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.getField().setTabIndex(tabIndex);
+    }
+
     protected class PickerButton extends WebButton {
         public PickerButton() {
         }

@@ -24,7 +24,7 @@ import java.util.Map;
  *
  * WARNING: for internal use only!
  */
-public interface ListEditor extends Field {
+public interface ListEditor extends Field, Component.Focusable {
 
     String NAME = "listEditor";
 

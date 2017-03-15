@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.DateField;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import javax.persistence.TemporalType;
 import java.text.ParseException;
@@ -41,6 +42,8 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
     @Override
     public void loadComponent() {
         super.loadComponent();
+
+        loadTabIndex(resultComponent, element);
 
         TemporalType tt = null;
         if (resultComponent.getMetaProperty() != null) {
@@ -89,11 +92,11 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
         }
         resultComponent.setDateFormat(formatStr);
 
-        loadRangeStart();
-        loadRangeEnd();
+        loadRangeStart(resultComponent, element);
+        loadRangeEnd(resultComponent, element);
     }
 
-    protected void loadRangeStart() {
+    protected void loadRangeStart(DateField resultComponent, Element element) {
         String rangeStart = element.attributeValue("rangeStart");
         if (StringUtils.isNotEmpty(rangeStart)) {
             try {
@@ -106,7 +109,7 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
         }
     }
 
-    protected void loadRangeEnd() {
+    protected void loadRangeEnd(DateField resultComponent, Element element) {
         String rangeEnd = element.attributeValue("rangeEnd");
         if (StringUtils.isNotEmpty(rangeEnd)) {
             try {

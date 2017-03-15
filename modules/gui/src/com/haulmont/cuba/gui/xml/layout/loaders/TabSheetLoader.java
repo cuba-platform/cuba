@@ -76,6 +76,8 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
 
+        loadTabIndex(resultComponent, element);
+
         @SuppressWarnings("unchecked")
         List<Element> tabElements = element.elements("tab");
         for (Element tabElement : tabElements) {

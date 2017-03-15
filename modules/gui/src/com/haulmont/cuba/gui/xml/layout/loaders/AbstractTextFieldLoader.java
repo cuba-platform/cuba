@@ -22,6 +22,13 @@ import org.dom4j.Element;
 
 public abstract class AbstractTextFieldLoader<T extends TextInputField> extends AbstractFieldLoader<T> {
 
+    @Override
+    public void loadComponent() {
+        super.loadComponent();
+
+        loadTabIndex(resultComponent, element);
+    }
+
     protected void loadTrimming(TextInputField.TrimSupported component, Element element) {
         String trim = element.attributeValue("trim");
         if (StringUtils.isNotEmpty(trim)) {

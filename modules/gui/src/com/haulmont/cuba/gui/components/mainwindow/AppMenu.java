@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
-public interface AppMenu extends Component.BelongToFrame {
+public interface AppMenu extends Component.BelongToFrame, Component.Focusable {
 
     String NAME = "menu";
 

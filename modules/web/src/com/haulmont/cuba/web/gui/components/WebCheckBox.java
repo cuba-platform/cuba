@@ -79,4 +79,14 @@ public class WebCheckBox extends WebAbstractField<com.vaadin.ui.CheckBox> implem
     public boolean isChecked() {
         return Boolean.TRUE.equals(getValue());
     }
+
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
 }

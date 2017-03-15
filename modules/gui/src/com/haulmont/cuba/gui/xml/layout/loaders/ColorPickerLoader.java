@@ -33,6 +33,8 @@ public class ColorPickerLoader extends AbstractFieldLoader<ColorPicker>{
     public void loadComponent() {
         super.loadComponent();
 
+        loadTabIndex(resultComponent, element);
+
         loadHSVVisibility(resultComponent, element);
         loadRGBVisibility(resultComponent, element);
         loadSwatchesVisibility(resultComponent, element);

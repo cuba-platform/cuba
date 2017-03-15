@@ -39,8 +39,7 @@ import java.util.*;
  */
 @JavaScript(value = "vaadin://resources/swfobject/swfobject-2.2.js")
 @Deprecated
-public class CubaMultiUpload extends CubaAbstractUploadComponent
-        implements LegacyComponent {
+public class CubaMultiUpload extends CubaAbstractUploadComponent implements LegacyComponent {
 
     private List<UploadListener> uploadListeners = new ArrayList<>();
 
@@ -429,6 +428,18 @@ public class CubaMultiUpload extends CubaAbstractUploadComponent
 
     @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
+    }
+
+    @Override
+    public int getTabIndex() {
+        return getState(false).tabIndex;
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        if (tabIndex != getTabIndex()) {
+            getState().tabIndex = tabIndex;
+        }
     }
 
     /**

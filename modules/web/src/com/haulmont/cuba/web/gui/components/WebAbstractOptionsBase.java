@@ -30,7 +30,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
-public class WebAbstractOptionsBase<T extends com.vaadin.ui.AbstractSelect> extends WebAbstractOptionsField<T> {
+public abstract class WebAbstractOptionsBase<T extends com.vaadin.ui.AbstractSelect> extends WebAbstractOptionsField<T> {
 
     @Override
     public void setOptionsDatasource(CollectionDatasource datasource) {
@@ -134,7 +134,7 @@ public class WebAbstractOptionsBase<T extends com.vaadin.ui.AbstractSelect> exte
 
     @SuppressWarnings({"unchecked"})
     @Override
-    public <T> T getValue() {
+    public <V> V getValue() {
         if (optionsDatasource != null) {
             final Object key = super.getValue();
             return getValueFromKey(key);

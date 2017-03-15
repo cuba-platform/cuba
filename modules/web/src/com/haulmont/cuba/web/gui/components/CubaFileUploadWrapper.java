@@ -47,7 +47,7 @@ public class CubaFileUploadWrapper extends CustomField {
         initLayout(uploadButton);
     }
 
-    private void initLayout(UploadComponent uploadComponent) {
+    protected void initLayout(UploadComponent uploadComponent) {
         this.uploadButton = uploadComponent;
 
         container = new HorizontalLayout();
@@ -304,5 +304,16 @@ public class CubaFileUploadWrapper extends CustomField {
             }
         }
         return superError;
+    }
+
+    @Override
+    public int getTabIndex() {
+        return uploadButton.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        uploadButton.setTabIndex(tabIndex);
+        clearButton.setTabIndex(tabIndex);
     }
 }

@@ -357,4 +357,14 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
         Object newValue = getValue();
         fireValueChanged(newValue);
     }
+
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
 }

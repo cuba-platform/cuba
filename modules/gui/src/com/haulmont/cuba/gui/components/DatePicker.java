@@ -18,7 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import java.util.Date;
 
-public interface DatePicker extends Field {
+public interface DatePicker extends Field, Component.Focusable {
     String NAME = "datePicker";
 
     enum Resolution {

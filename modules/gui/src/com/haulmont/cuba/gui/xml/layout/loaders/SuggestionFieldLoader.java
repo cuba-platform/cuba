@@ -33,6 +33,8 @@ public class SuggestionFieldLoader extends AbstractFieldLoader<SuggestionField> 
     public void loadComponent() {
         super.loadComponent();
 
+        loadTabIndex(resultComponent, element);
+
         loadAsyncSearchDelayMs(resultComponent, element);
         loadMinSearchStringLength(resultComponent, element);
         loadSuggestionsLimit(resultComponent, element);

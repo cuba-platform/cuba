@@ -23,7 +23,8 @@ import org.dom4j.Element;
 import java.util.Collection;
 import java.util.EventObject;
 
-public interface Accordion extends Component.Container, Component.BelongToFrame, Component.HasCaption, Component.HasIcon {
+public interface Accordion extends Component.Container, Component.BelongToFrame, Component.HasCaption,
+                                   Component.HasIcon, Component.Focusable {
     String NAME = "accordion";
 
     /**

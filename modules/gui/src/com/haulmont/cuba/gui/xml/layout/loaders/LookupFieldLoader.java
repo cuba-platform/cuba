@@ -43,6 +43,8 @@ public class LookupFieldLoader extends AbstractFieldLoader<LookupField> {
     public void loadComponent() {
         super.loadComponent();
 
+        loadTabIndex(resultComponent, element);
+
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {
             resultComponent.setCaptionMode(CaptionMode.PROPERTY);
@@ -90,10 +92,10 @@ public class LookupFieldLoader extends AbstractFieldLoader<LookupField> {
 
         String newOptionHandlerMethod = element.attributeValue("newOptionHandler");
         if (StringUtils.isNotEmpty(newOptionHandlerMethod)) {
+            // todo artamonov use PostWrap task here
             context.addPostInitTask((context1, window) -> {
                 Method newOptionHandler;
                 try {
-                    // todo use method handle
                     Class<? extends Frame> windowClass = window.getClass();
                     newOptionHandler = windowClass.getMethod(newOptionHandlerMethod, LookupField.class, String.class);
                 } catch (NoSuchMethodException e) {

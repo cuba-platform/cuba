@@ -554,6 +554,16 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         }
     }
 
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
+
     public class CubaTokenList extends CustomField {
 
         protected VerticalLayout composition;

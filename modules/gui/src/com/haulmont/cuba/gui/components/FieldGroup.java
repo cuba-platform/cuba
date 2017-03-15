@@ -120,6 +120,8 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         private Datasource datasource;
         private String requiredError;
         private MetaPropertyPath metaPropertyPath;
+
+        private Integer tabIndex;
         
         private boolean custom;
         private boolean required;
@@ -246,6 +248,14 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
 
         public void setMetaPropertyPath(MetaPropertyPath metaPropertyPath) {
             this.metaPropertyPath = metaPropertyPath;
+        }
+
+        public Integer getTabIndex() {
+            return tabIndex;
+        }
+
+        public void setTabIndex(Integer tabIndex) {
+            this.tabIndex = tabIndex;
         }
 
         @Override

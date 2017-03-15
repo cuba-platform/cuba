@@ -45,7 +45,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     protected com.vaadin.ui.Component vPopupComponent;
     protected boolean showActionIcons;
 
-    protected List<Action> actionOrder = new LinkedList<>();
+    protected List<Action> actionOrder = new ArrayList<>(3);
     protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     public WebPopupButton() {
@@ -82,13 +82,13 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     }
 
     @Override
-    public boolean isFocusable() {
-        return __isFocusable();
+    public int getTabIndex() {
+        return component.getTabIndex();
     }
 
     @Override
-    public void setFocusable(boolean focusable) {
-        __setFocusable(focusable);
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
     }
 
     public void setPopupComponent(Component component) {

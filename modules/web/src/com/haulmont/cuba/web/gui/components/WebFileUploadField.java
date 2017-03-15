@@ -666,4 +666,14 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     public String getUploadButtonDescription() {
         return component.getUploadButtonDescription();
     }
+
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
 }

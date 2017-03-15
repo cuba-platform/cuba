@@ -52,7 +52,7 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
 
     protected List<Action> initializedActions = new ArrayList<>();
     protected final JLabel captionLabel;
-    private final JLabel rightIcon;
+    protected final JLabel rightIcon;
 
     public DesktopPopupButton() {
         popup = new JPopupMenu();
@@ -449,6 +449,15 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
 
         @Override
         public void setFocusable(boolean focusable) {
+        }
+
+        @Override
+        public int getTabIndex() {
+            return 0;
+        }
+
+        @Override
+        public void setTabIndex(int tabIndex) {
         }
 
         @Override

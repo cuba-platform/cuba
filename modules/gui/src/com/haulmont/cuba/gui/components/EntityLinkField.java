@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public interface EntityLinkField extends Field {
+public interface EntityLinkField extends Field, Component.Focusable {
 
     String NAME = "entityLinkField";
 
@@ -65,12 +65,10 @@ public interface EntityLinkField extends Field {
     void setOwner(ListComponent owner);
 
     interface EntityLinkClickHandler {
-
         void onClick(EntityLinkField field);
     }
 
     interface ScreenCloseListener {
-
         void windowClosed(Window window, String actionId);
     }
 }

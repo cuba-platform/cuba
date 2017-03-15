@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -33,11 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- */
 @Component(ListEditorDelegate.NAME)
-@Scope("prototype")
-public class ListEditorDelegateImpl implements ListEditorDelegate{
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+public class ListEditorDelegateImpl implements ListEditorDelegate {
 
     @Inject
     protected ComponentsFactory componentsFactory;
@@ -267,6 +266,11 @@ public class ListEditorDelegateImpl implements ListEditorDelegate{
         } else {
             layout.remove(clearBtn);
         }
+    }
+
+    @Override
+    public TextField getDisplayValuesField() {
+        return displayValuesField;
     }
 
     protected void addClearBtn() {

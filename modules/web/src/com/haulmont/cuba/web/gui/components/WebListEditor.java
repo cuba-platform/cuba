@@ -163,6 +163,16 @@ public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor
         return delegate.getValue();
     }
 
+    @Override
+    public int getTabIndex() {
+        return delegate.getDisplayValuesField().getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        delegate.getDisplayValuesField().setTabIndex(tabIndex);
+    }
+
     public class CubaListEditor extends CustomField<List> {
 
         private final Component content;

@@ -32,7 +32,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.server.UserError;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Time;
@@ -51,8 +50,6 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
 
     protected DateField.Resolution resolution;
 
-    protected Logger log = LoggerFactory.getLogger(WebTimeField.class);
-
     public WebTimeField() {
         UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
 
@@ -67,13 +64,10 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
 
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
-        component.addValidator(new com.vaadin.data.Validator() {
-            @Override
-            public void validate(Object value) throws InvalidValueException {
-                if (!(!(value instanceof String) || checkStringValue((String) value))) {
-                    component.markAsDirty();
-                    throw new InvalidValueException("Unable to parse value: " + value);
-                }
+        component.addValidator(value -> {
+            if (!(!(value instanceof String) || checkStringValue((String) value))) {
+                component.markAsDirty();
+                throw new com.vaadin.data.Validator.InvalidValueException("Unable to parse value: " + value);
             }
         });
         attachListener(component);
@@ -94,12 +88,13 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
                             return new Time(date.getTime());
                         }
                         if (targetType == java.sql.Date.class) {
-                            log.warn("Do not use java.sql.Date with time field");
+                            LoggerFactory.getLogger(WebTimeField.class).warn("Do not use java.sql.Date with time field");
                             return new java.sql.Date(date.getTime());
                         }
                         return date;
                     } catch (Exception e) {
-                        log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
+                        LoggerFactory.getLogger(WebTimeField.class)
+                                .debug("Unable to parse value of component {}:\n{}", getId(), e.getMessage());
                         throw new ConversionException("Invalid value");
                     }
                 } else
@@ -188,7 +183,8 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
             try {
                 return new SimpleDateFormat(timeFormat).parse((String) value);
             } catch (ParseException e) {
-                log.debug("Unable to parse value of component {}\n{}", getId(), e.getMessage());
+                LoggerFactory.getLogger(WebTimeField.class)
+                        .debug("Unable to parse value of component {}\n{}", getId(), e.getMessage());
                 return null;
             }
         } else {
@@ -303,7 +299,7 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
                                         component.setComponentError(null);
                                     return date;
                                 } catch (Exception e) {
-                                    log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
+                                    LoggerFactory.getLogger(WebTimeField.class).debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
                                     component.setComponentError(new UserError("Invalid value"));
                                     return null;
                                 }
@@ -315,5 +311,15 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
                 };
             }
         };
+    }
+
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
     }
 }

@@ -292,6 +292,13 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         loadWidth(component, element, null);
     }
 
+    protected void loadTabIndex(Component.Focusable component, Element element) {
+        String tabIndex = element.attributeValue("tabIndex");
+        if (StringUtils.isNotEmpty(tabIndex)) {
+            component.setTabIndex(Integer.parseInt(tabIndex));
+        }
+    }
+
     protected void loadSettingsEnabled(Component.HasSettings component, Element element) {
         String settingsEnabled = element.attributeValue("settingsEnabled");
         if (StringUtils.isNotEmpty(settingsEnabled)) {

@@ -208,6 +208,16 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
         return component.getValue();
     }
 
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
+
     protected class SourceCodeEditorSuggester implements org.vaadin.aceeditor.Suggester {
         @Override
         public List<Suggestion> getSuggestions(String text, int cursor) {

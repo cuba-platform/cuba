@@ -31,7 +31,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.dom4j.Element;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -56,7 +55,6 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
 
     protected Alignment alignment = Alignment.TOP_LEFT;
     protected String icon;
-    protected int tabIndex = 0;
 
     private EventRouter eventRouter;
 
@@ -293,35 +291,6 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
     public void requestFocus() {
         if (component instanceof com.vaadin.ui.Component.Focusable) {
             ((com.vaadin.ui.Component.Focusable) component).focus();
-        }
-    }
-
-    @Nullable
-    protected com.vaadin.ui.Component.Focusable getFocusableComponent() {
-        if (getComposition() instanceof com.vaadin.ui.Component.Focusable) {
-            return (com.vaadin.ui.Component.Focusable) getComposition();
-        }
-        return null;
-    }
-
-    protected boolean __isFocusable() {
-        return getFocusableComponent() != null && getFocusableComponent().getTabIndex() >= 0;
-    }
-
-    protected void __setFocusable(boolean focusable) {
-        if (getFocusableComponent() != null) {
-            if (focusable) {
-                if (tabIndex != getFocusableComponent().getTabIndex()) {
-                    if (getFocusableComponent().getTabIndex() < 0) {
-                        getFocusableComponent().setTabIndex(tabIndex);
-                    } else {
-                        tabIndex = getFocusableComponent().getTabIndex();
-                    }
-                }
-            } else {
-                tabIndex = getFocusableComponent().getTabIndex();
-                getFocusableComponent().setTabIndex(-1);
-            }
         }
     }
 

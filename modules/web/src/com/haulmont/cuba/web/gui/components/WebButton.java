@@ -138,13 +138,13 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
     }
 
     @Override
-    public boolean isFocusable() {
-        return __isFocusable();
+    public int getTabIndex() {
+        return component.getTabIndex();
     }
 
     @Override
-    public void setFocusable(boolean focusable) {
-        __setFocusable(focusable);
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
     }
 
     @Override

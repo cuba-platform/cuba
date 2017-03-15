@@ -402,4 +402,14 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
             owner.requestFocus();
         }
     }
+
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
 }

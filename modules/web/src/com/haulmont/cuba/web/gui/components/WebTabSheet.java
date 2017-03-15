@@ -131,6 +131,16 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         }
     }
 
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
+
     protected class Tab implements TabSheet.Tab {
         private String name;
         private Component tabComponent;

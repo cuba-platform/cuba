@@ -19,4 +19,8 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.vaadin.ui.AbstractComponent;
 
 public abstract class CubaAbstractUploadComponent extends AbstractComponent implements UploadComponent {
+    @Override
+    public void focus() {
+        super.focus();
+    }
 }

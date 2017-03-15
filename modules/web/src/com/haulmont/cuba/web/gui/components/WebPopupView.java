@@ -22,24 +22,17 @@ import com.haulmont.cuba.gui.components.PopupView;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> implements PopupView {
     protected Component popupContent;
     protected String minimizedValue;
-
-    protected List<PopupVisibilityListener> popupVisibilityListeners;
 
     public WebPopupView() {
         component = new com.vaadin.ui.PopupView(new EmptyContent());
 
         component.addPopupVisibilityListener(e -> {
-            if (popupVisibilityListeners != null) {
-                for (PopupVisibilityListener popupVisibilityListener : new ArrayList<>(popupVisibilityListeners)) {
-                    popupVisibilityListener.popupVisibilityChange(new PopupVisibilityEvent(WebPopupView.this));
-                }
-            }
+            PopupVisibilityEvent event = new PopupVisibilityEvent(WebPopupView.this);
+
+            getEventRouter().fireEvent(PopupVisibilityListener.class, PopupVisibilityListener::popupVisibilityChange, event);
         });
     }
 
@@ -145,19 +138,12 @@ public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> 
 
     @Override
     public void addPopupVisibilityListener(PopupVisibilityListener listener) {
-        if (popupVisibilityListeners == null) {
-            popupVisibilityListeners = new ArrayList<>();
-        }
-        if (!popupVisibilityListeners.contains(listener)) {
-            popupVisibilityListeners.add(listener);
-        }
+        getEventRouter().addListener(PopupVisibilityListener.class, listener);
     }
 
     @Override
     public void removePopupVisibilityListener(PopupVisibilityListener listener) {
-        if (popupVisibilityListeners != null) {
-            popupVisibilityListeners.remove(listener);
-        }
+        getEventRouter().removeListener(PopupVisibilityListener.class, listener);
     }
 
     protected class EmptyContent implements com.vaadin.ui.PopupView.Content {

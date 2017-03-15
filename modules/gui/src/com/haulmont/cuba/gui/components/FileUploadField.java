@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.UUID;
 
-public interface FileUploadField extends UploadField, Field {
+public interface FileUploadField extends UploadField, Field, Component.Focusable {
     String NAME = "upload";
 
     /**

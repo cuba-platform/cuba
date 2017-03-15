@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.components;
 
 import java.util.EventObject;
 
-public interface TextInputField extends Field {
+public interface TextInputField extends Field, Component.Focusable {
 
     /**
      * Defines case conversion for text input fields,

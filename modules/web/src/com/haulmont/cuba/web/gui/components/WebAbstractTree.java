@@ -464,4 +464,14 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
     public Action getEnterPressAction() {
         return enterPressAction;
     }
+
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
 }

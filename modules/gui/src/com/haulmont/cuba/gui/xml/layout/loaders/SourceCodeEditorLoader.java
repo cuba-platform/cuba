@@ -32,6 +32,8 @@ public class SourceCodeEditorLoader extends AbstractFieldLoader<SourceCodeEditor
     public void loadComponent() {
         super.loadComponent();
 
+        loadTabIndex(resultComponent, element);
+
         loadMode(resultComponent, element);
 
         String showGutter = element.attributeValue("showGutter");

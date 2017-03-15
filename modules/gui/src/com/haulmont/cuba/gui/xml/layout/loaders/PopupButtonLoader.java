@@ -44,6 +44,8 @@ public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
 
         loadWidth(resultComponent, element);
 
+        loadTabIndex(resultComponent, element);
+
         loadShowActionIcons(resultComponent, element);
         loadActions(resultComponent, element);
 

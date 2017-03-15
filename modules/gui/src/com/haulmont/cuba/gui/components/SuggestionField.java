@@ -22,7 +22,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import java.util.List;
 import java.util.Map;
 
-public interface SuggestionField extends Field {
+public interface SuggestionField extends Field, Component.Focusable {
 
     String NAME = "suggestionField";
 

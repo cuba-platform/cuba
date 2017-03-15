@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.ui.Component;
 
-public interface UploadComponent extends Component {
+public interface UploadComponent extends Component, Component.Focusable {
     String getAccept();
     void setAccept(String accept);
 

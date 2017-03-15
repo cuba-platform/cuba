@@ -32,8 +32,9 @@ public interface ListEditorDelegate {
 
     HBoxLayout getLayout();
 
-    List getValue();
+    TextField getDisplayValuesField();
 
+    List getValue();
     void setValue(List newValue);
 
     ListEditor.ItemType getItemType();
@@ -41,41 +42,32 @@ public interface ListEditorDelegate {
     void setItemType(ListEditor.ItemType itemType);
 
     String getEntityName();
-
     void setEntityName(String entityName);
 
     String getLookupScreen();
-
     void setLookupScreen(String lookupScreen);
 
     boolean isUseLookupField();
-
     void setUseLookupField(boolean useLookupField);
 
     List<?> getOptionsList();
-
     void setOptionsList(List<?> optionsList);
 
     Map<String, Object> getOptionsMap();
-
     void setOptionsMap(Map<String, Object> optionsMap);
 
     Class<? extends Enum> getEnumClass();
-
     void setEnumClass(Class<? extends Enum> enumClass);
 
     void setDisplayDescription(boolean displayDescription);
 
     String getEntityJoinClause();
-
     void setEntityJoinClause(String entityJoinClause);
 
     String getEntityWhereClause();
-
     void setEntityWhereClause(String entityWhereClause);
 
     boolean isEditable();
-
     void setEditable(boolean editable);
 
     void setClearButtonVisible(boolean visible);

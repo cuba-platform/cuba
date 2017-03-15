@@ -16,7 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface CheckBox extends Field {
+public interface CheckBox extends Field, Component.Focusable {
     String NAME = "checkBox";
 
     @SuppressWarnings("unchecked")

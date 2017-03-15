@@ -571,4 +571,15 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
         component.setCompositionReadOnly(!editable);
     }
+
+    @Override
+    public int getTabIndex() {
+        return dateField.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        dateField.setTabIndex(tabIndex);
+        timeField.setTabIndex(tabIndex);
+    }
 }

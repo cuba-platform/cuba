@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 /**
  * Side menu component that shows items as collapsible multi level list.
  */
-public interface SideMenu extends Component.BelongToFrame {
+public interface SideMenu extends Component.BelongToFrame, Component.Focusable {
 
     String NAME = "sideMenu";
 

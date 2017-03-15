@@ -2100,6 +2100,16 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         return joinedStyle;
     }
 
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
+
     protected class DataGridDsWrapper extends IndexedCollectionDsWrapper {
 
         public DataGridDsWrapper(CollectionDatasource.Indexed datasource, Collection<MetaPropertyPath> properties) {

@@ -146,6 +146,16 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
         }
     }
 
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
+
     protected class Tab implements Accordion.Tab {
         private String name;
         private Component tabComponent;

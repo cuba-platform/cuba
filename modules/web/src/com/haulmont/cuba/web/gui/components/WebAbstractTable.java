@@ -576,6 +576,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.setContextMenuEnabled(contextMenuEnabled);
     }
 
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
+
     protected void setTablePresentations(TablePresentations tablePresentations) {
         component.setPresentations(tablePresentations);
     }

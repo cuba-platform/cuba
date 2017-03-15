@@ -85,6 +85,8 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
         loadAlign(resultComponent, element);
         loadResponsive(resultComponent, element);
 
+        loadTabIndex(resultComponent, element);
+
         if (!userSessionSource.getUserSession().isSpecificPermitted(BulkEditor.PERMISSION)) {
             resultComponent.setVisible(false);
         }

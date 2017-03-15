@@ -515,11 +515,33 @@ public interface Component {
         /**
          * Is component focusable?
          */
-        boolean isFocusable();
+        default boolean isFocusable() {
+            return getTabIndex() >= 0;
+        }
         /**
          * Set component focusability
          */
-        void setFocusable(boolean focusable);
+        default void setFocusable(boolean focusable) {
+            setTabIndex(-1);
+        }
+
+        /**
+         * Gets the <i>tabulator index</i> of the {@code HasTabIndex} component.
+         *
+         * @return tab index set for the {@code HasTabIndex} component
+         */
+        int getTabIndex();
+
+        /**
+         * Sets the <i>tabulator index</i> of the {@code Focusable} component.
+         * The tab index property is used to specify the order in which the
+         * fields are focused when the user presses the Tab key. Components with
+         * a defined tab index are focused sequentially first, and then the
+         * components with no tab index.
+         *
+         * @param tabIndex tab index
+         */
+        void setTabIndex(int tabIndex);
     }
 
     /**

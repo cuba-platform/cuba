@@ -37,6 +37,8 @@ public class SuggestionPickerFieldLoader extends AbstractFieldLoader<SuggestionP
     public void loadComponent() {
         super.loadComponent();
 
+        loadTabIndex(resultComponent, element);
+
         loadMetaClass(resultComponent, element);
 
         loadCaptionProperty(resultComponent, element);

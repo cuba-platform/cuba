@@ -22,7 +22,10 @@ import com.haulmont.cuba.gui.components.RichTextArea;
 import com.haulmont.cuba.web.toolkit.ui.CubaRichTextArea;
 import com.haulmont.cuba.web.toolkit.ui.client.richtextarea.CubaRichTextAreaState;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class WebRichTextArea extends WebAbstractField<CubaRichTextArea> implements RichTextArea {
 
@@ -45,9 +48,8 @@ public class WebRichTextArea extends WebAbstractField<CubaRichTextArea> implemen
 
     protected Map<String, String> loadLabels() {
         Map<String, String> labels = new HashMap<>();
-        Messages messages = AppBeans.get(Messages.NAME);
 
-        Collection<String> locales = new ArrayList<>(Arrays.asList(
+        Collection<String> locales = Arrays.asList(
                 CubaRichTextAreaState.RICH_TEXT_AREA_FOREGROUND_LABEL,
                 CubaRichTextAreaState.RICH_TEXT_AREA_BACKGROUND_LABEL,
                 CubaRichTextAreaState.RICH_TEXT_AREA_BLACK_LABEL,
@@ -77,12 +79,23 @@ public class WebRichTextArea extends WebAbstractField<CubaRichTextArea> implemen
                 CubaRichTextAreaState.RICH_TEXT_AREA_CREATELINK_LABEL,
                 CubaRichTextAreaState.RICH_TEXT_AREA_REMOVELINK_LABEL,
                 CubaRichTextAreaState.RICH_TEXT_AREA_REMOVEFORMAT_LABEL
-        ));
+        );
 
+        Messages messages = AppBeans.get(Messages.NAME);
         for (String locale : locales) {
             labels.put(locale, messages.getMainMessage(locale));
         }
 
         return labels;
+    }
+
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
     }
 }

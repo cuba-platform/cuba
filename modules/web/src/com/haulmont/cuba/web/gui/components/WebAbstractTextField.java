@@ -196,6 +196,16 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
         }
     }
 
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
+
     protected class TextFieldStringToDatatypeConverter extends StringToDatatypeConverter {
         public TextFieldStringToDatatypeConverter(Datatype datatype) {
             super(datatype);

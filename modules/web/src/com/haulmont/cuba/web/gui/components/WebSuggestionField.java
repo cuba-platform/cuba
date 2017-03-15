@@ -290,4 +290,14 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
     public void setSearchExecutor(SearchExecutor searchExecutor) {
         this.searchExecutor = searchExecutor;
     }
+
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
 }

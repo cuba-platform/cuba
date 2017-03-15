@@ -481,6 +481,9 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
             if (!fieldConf.isEditable() || !isEditable()) {
                 cubaField.setEditable(false);
             }
+            if (cubaField instanceof Focusable && fieldConf.getTabIndex() != null) {
+                ((Focusable) cubaField).setTabIndex(fieldConf.getTabIndex());
+            }
         }
 
         if (fieldComponent instanceof HasFormatter) {
