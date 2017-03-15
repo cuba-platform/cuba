@@ -48,8 +48,8 @@
                         <field id="joinClause" width="100%" custom="true"/>
                         <field id="whereClause" width="100%" rows="3" custom="true"/>
                         <field id="width" width="100%">
-                            <validator class="com.haulmont.cuba.gui.components.validators.PatternValidator"
-                                       pattern="^(\d*(\.\d+)?)(%|px)?$" message="msg://widthValidationMsg"/>
+                            <validator class="com.haulmont.cuba.gui.app.core.categories.SizeWithUnitValidator"
+                                       message="msg://widthValidationMsg"/>
                         </field>
                         <field id="rowsCount" width="100%">
                             <validator class="com.haulmont.cuba.gui.components.validators.IntegerValidator"
