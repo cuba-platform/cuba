@@ -52,6 +52,7 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
         assignXmlDescriptor(resultComponent, element);
         assignFrame(resultComponent);
 
+        loadAlign(resultComponent, element);
         loadVisible(resultComponent, element);
         loadEnable(resultComponent, element);
         loadStyleName(resultComponent, element);
