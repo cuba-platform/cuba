@@ -22,11 +22,11 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
+import com.haulmont.cuba.web.toolkit.ui.CubaScrollBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractOrderedLayout;
-import com.vaadin.ui.CssLayout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -34,7 +34,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class WebScrollBoxLayout extends WebAbstractComponent<CssLayout> implements ScrollBoxLayout {
+public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxLayout> implements ScrollBoxLayout {
 
     protected static final String SCROLLBOX_CONTENT_STYLENAME = "c-scrollbox-content";
     protected static final String SCROLLBOX_STYLENAME = "c-scrollbox";
@@ -45,7 +45,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CssLayout> implemen
     protected ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
 
     public WebScrollBoxLayout() {
-        component = new CssLayout();
+        component = new CubaScrollBoxLayout();
         component.setWidth("100%");
         component.setPrimaryStyleName(SCROLLBOX_STYLENAME);
 

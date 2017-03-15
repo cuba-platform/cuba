@@ -29,10 +29,6 @@ import com.haulmont.cuba.core.sys.logging.LoggingHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.CheckBox;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.export.ExportDisplay;
@@ -43,10 +39,11 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.JmxRemoteLoggingAPI;
+import com.haulmont.cuba.web.toolkit.ui.CubaScrollBoxLayout;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.ComboBox;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -201,14 +198,14 @@ public class ServerLogWindow extends AbstractWindow {
 
         ComboBox comboBox = (ComboBox) WebComponentsHelper.unwrap(logFileNameField);
         comboBox.addShortcutListener(new ShortcutListener("", ShortcutAction.KeyCode.D,
-                new int[] {ShortcutAction.ModifierKey.CTRL, ShortcutAction.ModifierKey.SHIFT}) {
+                new int[]{ShortcutAction.ModifierKey.CTRL, ShortcutAction.ModifierKey.SHIFT}) {
             @Override
             public void handleAction(Object sender, Object target) {
                 downloadLog();
             }
         });
         comboBox.addShortcutListener(new ShortcutListener("", ShortcutAction.KeyCode.S,
-                new int[] {ShortcutAction.ModifierKey.CTRL, ShortcutAction.ModifierKey.SHIFT}) {
+                new int[]{ShortcutAction.ModifierKey.CTRL, ShortcutAction.ModifierKey.SHIFT}) {
             @Override
             public void handleAction(Object sender, Object target) {
                 showLogTail();
@@ -306,10 +303,7 @@ public class ServerLogWindow extends AbstractWindow {
             showNotification(getMessage("log.notSelected"), NotificationType.HUMANIZED);
         }
 
-        Panel vlogContainer = (Panel) WebComponentsHelper.unwrap(logContainer);
-
-        int scrollPos = vlogContainer.getScrollTop() + 30000;
-        vlogContainer.setScrollTop(scrollPos);
+        logContainer.unwrap(CubaScrollBoxLayout.class).setScrollTop(30000);
     }
 
     public void getLoggerLevel() {
@@ -417,7 +411,7 @@ public class ServerLogWindow extends AbstractWindow {
                 if (size <= LogArchiver.LOG_TAIL_FOR_PACKING_SIZE && availableContexts.size() == 1) {
                     LogDataProvider dataProvider = new LogDataProvider(selectedConnection, fileName, availableContexts.get(0), false);
                     dataProvider.obtainUrl();
-                    
+
                     ExportDisplay exportDisplay = AppConfig.createExportDisplay(this);
                     exportDisplay.show(dataProvider, fileName + ".zip");
                 } else {
