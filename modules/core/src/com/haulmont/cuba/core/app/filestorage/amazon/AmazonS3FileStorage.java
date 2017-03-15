@@ -43,7 +43,7 @@ import java.util.Map;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-public class AmazonS3FileStorage implements FileStorageAPI {
+public class AmazonS3FileStorage implements FileStorageAPI<FileDescriptor> {
 
     @Inject
     protected AmazonS3Config amazonS3Config;

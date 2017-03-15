@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.app;
 
 import com.google.common.collect.Lists;
+import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.*;
@@ -571,7 +572,7 @@ public class EmailerTest {
 
         assertNull(attachment.getContent());
         assertNotNull(attachment.getContentFile());
-        FileStorageAPI fileStorage = AppBeans.get(FileStorageAPI.NAME);
+        FileStorageAPI<FileDescriptor> fileStorage = AppBeans.get(FileStorageAPI.NAME);
         byte[] actualBytes = fileStorage.loadFile(attachment.getContentFile());
         assertByteArrayEquals(expectedBytes, actualBytes);
     }

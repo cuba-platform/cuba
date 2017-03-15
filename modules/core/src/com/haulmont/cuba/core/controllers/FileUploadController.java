@@ -47,7 +47,7 @@ public class FileUploadController {
     private UserSessionManager userSessionManager;
 
     @Inject
-    private FileStorageAPI fileStorage;
+    private FileStorageAPI<FileDescriptor> fileStorage;
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public void upload(HttpServletRequest request, HttpServletResponse response) throws IOException {
