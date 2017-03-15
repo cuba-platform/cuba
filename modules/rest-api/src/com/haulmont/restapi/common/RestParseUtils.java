@@ -86,6 +86,14 @@ public class RestParseUtils {
             return entitySerializationAPI.entityFromJson(value, metadata.getClassNN(clazz));
         }
         if (Collection.class.isAssignableFrom(clazz)) {
+            //if type argument for the collection is defined and is not entity, then do the basic deserialization
+            if (argumentTypeClass != null) {
+                if (!Entity.class.isAssignableFrom(argumentTypeClass)) {
+                    return deserialize(value, clazz);
+                }
+            }
+            //if type argument for the collection is defined and is entity or if there is no type argument then try to
+            //deserialize entities collection
             MetaClass metaClass = argumentTypeClass != null ? metadata.getClass(argumentTypeClass) : null;
             return entitySerializationAPI.entitiesCollectionFromJson(value, metaClass != null ? metaClass : null);
         }
@@ -93,6 +101,11 @@ public class RestParseUtils {
     }
 
     public Object deserializePOJO(String json, Class clazz) {
+        Gson gson = new Gson();
+        return gson.fromJson(json, clazz);
+    }
+
+    public Object deserialize(String json, Class clazz) {
         Gson gson = new Gson();
         return gson.fromJson(json, clazz);
     }
