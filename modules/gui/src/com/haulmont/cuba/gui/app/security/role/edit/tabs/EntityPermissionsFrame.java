@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.Security;
@@ -168,7 +169,8 @@ public class EntityPermissionsFrame extends AbstractFrame {
         }
 
         public boolean applicableToEntity(Class javaClass) {
-            return true;
+            MetaClass metaClass = metadata.getClass(javaClass);
+            return userSession.isEntityOpPermitted(metaClass, operation);
         }
     }
 
@@ -314,7 +316,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
                         "createAllowCheck", "createDenyCheck") {
                     @Override
                     public boolean applicableToEntity(Class javaClass) {
-                        return javaClass.isAnnotationPresent(Entity.class);
+                        return javaClass.isAnnotationPresent(Entity.class) && super.applicableToEntity(javaClass);
                     }
                 },
                 new EntityOperationControl(EntityOp.READ, "readPermissionVariant", "readOpLabel",
@@ -325,7 +327,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
                         "deleteAllowCheck", "deleteDenyCheck") {
                     @Override
                     public boolean applicableToEntity(Class javaClass) {
-                        return javaClass.isAnnotationPresent(Entity.class);
+                        return javaClass.isAnnotationPresent(Entity.class) && super.applicableToEntity(javaClass);
                     }
                 }
         };
@@ -340,7 +342,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
     protected void updateEditPane(OperationPermissionTarget item, Set selected) {
         if (item != null) {
             if (selected.size() == 1) {
-                String name = item.getMetaClassName();
+                String name = item.getEntityMetaClassName();
                 String localName = item.getLocalName();
 
                 selectedTargetCaption.setVisible(true);

@@ -18,6 +18,7 @@
 package com.haulmont.cuba.gui.app.security.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
@@ -37,21 +38,25 @@ public class MultiplePermissionTarget extends AbstractPermissionTarget
 
     @MetaProperty(mandatory = true)
     private List<AttributeTarget> permissions = new LinkedList<>();
-    private Class entityClass;
 
     @MetaProperty(mandatory = true)
     protected String localName;
 
     @MetaProperty(mandatory = true)
-    protected String metaClassName;
+    protected String entityMetaClassName;
+
+    private MetaClass entityMetaClass;
+    private Class entityClass;
 
     public MultiplePermissionTarget(Class entityClass, String id, String caption, String permissionValue) {
         super(id, caption);
         Metadata metadata = AppBeans.get(Metadata.class);
         Messages messages = AppBeans.get(Messages.class);
+        MetaClass metaclass = metadata.getClassNN(entityClass);
 
-        this.localName = messages.getTools().getEntityCaption(metadata.getClassNN(entityClass));
-        this.metaClassName = metadata.getClassNN(entityClass).getName();
+        this.entityMetaClass = metaclass;
+        this.entityMetaClassName = metaclass.getName();
+        this.localName = messages.getTools().getEntityCaption(metaclass);
         this.entityClass = entityClass;
         this.caption = caption;
         this.permissionValue = permissionValue;
@@ -61,8 +66,12 @@ public class MultiplePermissionTarget extends AbstractPermissionTarget
         return localName;
     }
 
-    public String getMetaClassName() {
-        return metaClassName;
+    public String getEntityMetaClassName() {
+        return entityMetaClassName;
+    }
+
+    public MetaClass getEntityMetaClass() {
+        return entityMetaClass;
     }
 
     @Override

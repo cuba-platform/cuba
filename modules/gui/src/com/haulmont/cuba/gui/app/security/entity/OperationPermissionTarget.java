@@ -45,8 +45,9 @@ public class OperationPermissionTarget extends AbstractPermissionTarget
     protected String localName;
 
     @MetaProperty(mandatory = true)
-    protected String metaClassName;
+    protected String entityMetaClassName;
 
+    protected MetaClass entityMetaClass;
     private Class entityClass;
 
     public OperationPermissionTarget(Class entityClass, String id, String caption, String permissionValue) {
@@ -55,8 +56,9 @@ public class OperationPermissionTarget extends AbstractPermissionTarget
         Messages messages = AppBeans.get(Messages.class);
         MetaClass metaclass = metadata.getClassNN(entityClass);
 
+        this.entityMetaClass = metaclass;
+        this.entityMetaClassName = metaclass.getName();
         this.localName = messages.getTools().getEntityCaption(metaclass);
-        this.metaClassName = metaclass.getName();
         this.permissionValue = permissionValue;
         this.entityClass = entityClass;
     }
@@ -127,8 +129,12 @@ public class OperationPermissionTarget extends AbstractPermissionTarget
         return localName;
     }
 
-    public String getMetaClassName() {
-        return metaClassName;
+    public String getEntityMetaClassName() {
+        return entityMetaClassName;
+    }
+
+    public MetaClass getEntityMetaClass() {
+        return entityMetaClass;
     }
 
     @Override

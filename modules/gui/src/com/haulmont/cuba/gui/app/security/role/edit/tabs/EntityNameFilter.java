@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
-import com.google.common.base.Predicate;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.CheckBox;
@@ -27,6 +26,7 @@ import com.haulmont.cuba.gui.app.security.entity.EntityPermissionTarget;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
+import java.util.function.Predicate;
 
 public class EntityNameFilter<T extends AssignableTarget> implements Predicate<T> {
 
@@ -46,7 +46,7 @@ public class EntityNameFilter<T extends AssignableTarget> implements Predicate<T
     }
 
     @Override
-    public boolean apply(@Nullable T target) {
+    public boolean test(@Nullable T target) {
         if (target != null) {
             if (Boolean.TRUE.equals(assignedOnlyCheckBox.getValue()) && !target.isAssigned()) {
                 return false;

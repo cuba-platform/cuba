@@ -17,19 +17,43 @@
 
 package com.haulmont.cuba.gui.app.security.ds;
 
+import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
+import com.haulmont.cuba.security.global.UserSession;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ScreenPermissionTreeDatasource extends BasicPermissionTreeDatasource {
 
     protected PermissionConfig permissionConfig = AppBeans.get(PermissionConfig.class);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+    protected UserSessionSource uss = AppBeans.get(UserSessionSource.class);
 
     @Override
     public Tree<BasicPermissionTarget> getPermissions() {
-        return permissionConfig.getScreens(userSessionSource.getLocale());
+        Tree<BasicPermissionTarget> allPermissions = permissionConfig.getScreens(userSessionSource.getLocale());
+        return filterPermitted(allPermissions);
+    }
+
+    private Tree<BasicPermissionTarget> filterPermitted(Tree<BasicPermissionTarget> permissions) {
+        UserSession session = uss.getUserSession();
+        List<Node<BasicPermissionTarget>> newRootNodes = permissions.getRootNodes().stream()
+                .map(root -> filterNode(session, root))
+                .collect(Collectors.toCollection(LinkedList::new));
+        return new Tree<>(newRootNodes);
+    }
+
+    private Node<BasicPermissionTarget> filterNode(UserSession session, Node<BasicPermissionTarget> rootNode) {
+        Node<BasicPermissionTarget> filteredRootNode = new Node<>(rootNode.getData());
+        rootNode.getChildren().stream()
+                .filter(child -> session.isScreenPermitted(child.getData().getPermissionValue()))
+                .forEach(child -> filteredRootNode.addChild(filterNode(session, child)));
+        return filteredRootNode;
     }
 }

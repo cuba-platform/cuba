@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.gui.app.security.ds;
 
-import com.google.common.base.Predicate;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.app.security.entity.AttributePermissionVariant;
@@ -26,13 +26,16 @@ import com.haulmont.cuba.gui.app.security.role.edit.PropertyPermissionValue;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImpl<MultiplePermissionTarget, String> {
 
@@ -40,7 +43,30 @@ public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImp
 
     protected Predicate<MultiplePermissionTarget> permissionsFilter;
 
+    /**
+     * Filters out entities which user doesn't have permission to any CRUD operation for
+     */
+    protected Predicate<MultiplePermissionTarget> permittedEntityFilter;
+
     protected CollectionDatasource<Permission, UUID> permissionDs;
+
+    protected UserSessionSource userSessionSource;
+
+    public MultiplePermissionTargetsDatasource() {
+        userSessionSource = AppBeans.get(UserSessionSource.class);
+        UserSession session = userSessionSource.getUserSession();
+        permittedEntityFilter = target -> {
+            if (target == null) {
+                return false;
+            }
+
+            MetaClass metaClass = target.getEntityMetaClass();
+            return session.isEntityOpPermitted(metaClass, EntityOp.READ)
+                    || session.isEntityOpPermitted(metaClass, EntityOp.CREATE)
+                    || session.isEntityOpPermitted(metaClass, EntityOp.DELETE)
+                    || session.isEntityOpPermitted(metaClass, EntityOp.UPDATE);
+        };
+    }
 
     @Override
     public boolean isModified() {
@@ -70,11 +96,10 @@ public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImp
 
         clear();
 
-        for (MultiplePermissionTarget target : targets) {
-            if ((permissionsFilter == null) || (permissionsFilter.apply(target))) {
-                data.put(target.getId(), target);
-            }
-        }
+        targets.stream()
+                .filter(permittedEntityFilter)
+                .filter(t -> permissionsFilter == null || permissionsFilter.test(t))
+                .forEach(t -> data.put(t.getId(), t));
     }
 
     private void loadPermissionVariants(final MultiplePermissionTarget target) {

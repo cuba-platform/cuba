@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.gui.app.security.ds;
 
-import com.google.common.base.Predicate;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionValue;
@@ -28,12 +28,14 @@ import com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.PermissionVariant;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<OperationPermissionTarget, String> {
 
@@ -41,12 +43,30 @@ public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<
 
     protected Predicate<OperationPermissionTarget> permissionsFilter;
 
+    /**
+     * Filters out entities which user doesn't have permission to any CRUD operation for
+     */
+    protected Predicate<OperationPermissionTarget> permittedEntityFilter;
+
     protected CollectionDatasource<Permission, UUID> permissionDs;
 
     protected UserSessionSource userSessionSource;
 
     public EntityPermissionTargetsDatasource() {
         userSessionSource = AppBeans.get(UserSessionSource.NAME);
+
+        UserSession session = userSessionSource.getUserSession();
+        permittedEntityFilter = target -> {
+            if (target == null) {
+                return false;
+            }
+
+            MetaClass metaClass = target.getEntityMetaClass();
+            return session.isEntityOpPermitted(metaClass, EntityOp.READ)
+                    || session.isEntityOpPermitted(metaClass, EntityOp.CREATE)
+                    || session.isEntityOpPermitted(metaClass, EntityOp.DELETE)
+                    || session.isEntityOpPermitted(metaClass, EntityOp.UPDATE);
+        };
     }
 
     @Override
@@ -70,18 +90,17 @@ public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<
                     attachListener(cloneTarget);
                     targets.add(cloneTarget);
                 } catch (CloneNotSupportedException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("Can't clone permission target", e);
                 }
             }
         }
 
         data.clear();
 
-        for (OperationPermissionTarget target : targets) {
-            if ((permissionsFilter == null) || (permissionsFilter.apply(target))) {
-                data.put(target.getId(), target);
-            }
-        }
+        targets.stream()
+                .filter(permittedEntityFilter)
+                .filter(t -> permissionsFilter == null || permissionsFilter.test(t))
+                .forEach(t -> data.put(t.getId(), t));
     }
 
     private void loadPermissionVariants(OperationPermissionTarget target) {

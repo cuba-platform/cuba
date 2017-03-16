@@ -17,19 +17,52 @@
 
 package com.haulmont.cuba.gui.app.security.ds;
 
+import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
+import com.haulmont.cuba.security.global.UserSession;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SpecificPermissionTreeDatasource extends BasicPermissionTreeDatasource {
 
     protected PermissionConfig permissionConfig = AppBeans.get(PermissionConfig.class);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+    protected UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+
+    protected static final String CATEGORY_PREFIX = "category:";
 
     @Override
     public Tree<BasicPermissionTarget> getPermissions() {
-        return permissionConfig.getSpecific(userSessionSource.getLocale());
+        Tree<BasicPermissionTarget> allPermissions = permissionConfig.getSpecific(userSessionSource.getLocale());
+        return filterPermitted(allPermissions);
+    }
+
+    private Tree<BasicPermissionTarget> filterPermitted(Tree<BasicPermissionTarget> permissions) {
+        UserSession session = uss.getUserSession();
+        List<Node<BasicPermissionTarget>> newRootNodes = permissions.getRootNodes().stream()
+                .map(root -> filterNode(session, root))
+                .filter(root -> root.getNumberOfChildren() > 0) //empty nodes
+                .collect(Collectors.toCollection(LinkedList::new));
+        return new Tree<>(newRootNodes);
+    }
+
+    private Node<BasicPermissionTarget> filterNode(UserSession session, Node<BasicPermissionTarget> rootNode) {
+        Node<BasicPermissionTarget> filteredRootNode = new Node<>(rootNode.getData());
+        rootNode.getChildren().stream()
+                .filter(child -> session.isSpecificPermitted(child.getData().getPermissionValue()))
+                .map(child -> filterNode(session, child))
+                .filter(child -> child.getNumberOfChildren() > 0 || !isCategory(child.getData())) //filtering out empty categories
+                .forEach(filteredRootNode::addChild);
+        return filteredRootNode;
+    }
+
+    private boolean isCategory(BasicPermissionTarget target) {
+        return target.getId().startsWith(CATEGORY_PREFIX);
     }
 }

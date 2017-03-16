@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.Security;
@@ -29,10 +30,7 @@ import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.security.entity.PermissionType;
-import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -214,9 +212,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
                 if (activeVariant != AttributePermissionVariant.HIDE)
                     hideCheckBox.setValue(false);
 
-                allModifyCheck.setValue(item.isAllModified());
-                allReadOnlyCheck.setValue(item.isAllReadOnly());
-                allHideCheck.setValue(item.isAllHide());
+                allModifyCheck.setValue(isAllModified());
+                allReadOnlyCheck.setValue(isAllReadOnly());
+                allHideCheck.setValue(isAllHide());
 
                 // todo enforce property change instead of item
                 attributeTargetsDs.updateItem(item);
@@ -226,9 +224,12 @@ public class AttributePermissionsFrame extends AbstractFrame {
         }
 
         public void markTargetPermission(AttributePermissionVariant permissionVariant) {
+            if (!permissionApplicable(permissionVariant)) {
+                return;
+            }
+
             item.assignPermissionVariant(attributeName, permissionVariant);
             String permissionValue = item.getPermissionValue() + Permission.TARGET_PATH_DELIMETER + attributeName;
-
             if (permissionVariant != AttributePermissionVariant.NOTSET) {
                 // Create permission
                 int value = PermissionUiHelper.getPermissionValue(permissionVariant);
@@ -248,6 +249,13 @@ public class AttributePermissionsFrame extends AbstractFrame {
                     propertyPermissionsDs.removeItem(permission);
                 }
             }
+        }
+
+        private boolean permissionApplicable(AttributePermissionVariant permissionVariant) {
+            return permissionVariant == AttributePermissionVariant.NOTSET
+                    || (permissionVariant == AttributePermissionVariant.MODIFY && modifyCheckBox.isEditable())
+                    || (permissionVariant == AttributePermissionVariant.READ_ONLY && readOnlyCheckBox.isEditable())
+                    || (permissionVariant == AttributePermissionVariant.HIDE && hideCheckBox.isEditable());
         }
     }
 
@@ -290,7 +298,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
             String name = null;
             String localName = null;
             if (itemExists) {
-                name = item.getMetaClassName();
+                name = item.getEntityMetaClassName();
                 localName = item.getLocalName();
             }
 
@@ -352,23 +360,49 @@ public class AttributePermissionsFrame extends AbstractFrame {
                 // todo enforce value change
                 propertyPermissionsTable.repaint();
 
-                allModifyCheck.setValue(item.isAllModified());
-                allReadOnlyCheck.setValue(item.isAllReadOnly());
-                allHideCheck.setValue(item.isAllHide());
+                allModifyCheck.setValue(isAllModified());
+                allReadOnlyCheck.setValue(isAllReadOnly());
+                allHideCheck.setValue(isAllHide());
             }
 
             itemChanging = false;
         });
     }
 
+    private boolean isAllModified() {
+        return permissionControls.stream().allMatch(c -> c.modifyCheckBox.getValue() || !c.modifyCheckBox.isEditable());
+    }
+
+    private boolean isAllReadOnly() {
+        return permissionControls.stream().allMatch(c -> c.readOnlyCheckBox.getValue() || !c.readOnlyCheckBox.isEditable());
+    }
+
+    private boolean isAllHide() {
+        return permissionControls.stream().allMatch(c -> c.hideCheckBox.getValue() || !c.hideCheckBox.isEditable());
+    }
+
     protected void applyPermissions(boolean editable) {
         allHideCheck.setEditable(editable);
         allModifyCheck.setEditable(editable);
         allReadOnlyCheck.setEditable(editable);
+
+        MetaClass metaClass = attributeTargetsDs.getItem().getEntityMetaClass();
         for (AttributePermissionControl attributePermissionControl : permissionControls) {
             attributePermissionControl.getHideCheckBox().setEditable(editable);
-            attributePermissionControl.getModifyCheckBox().setEditable(editable);
+            attributePermissionControl.getHideCheckBox().setEnabled(editable);
+
             attributePermissionControl.getReadOnlyCheckBox().setEditable(editable);
+            attributePermissionControl.getReadOnlyCheckBox().setEnabled(editable);
+
+            String attributeName = attributePermissionControl.getAttributeName();
+            if (userSession.isEntityAttrPermitted(metaClass, attributeName, EntityAttrAccess.MODIFY)) {
+                boolean canUpdateEntity = userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE);
+                attributePermissionControl.getModifyCheckBox().setEditable(canUpdateEntity && editable);
+                attributePermissionControl.getModifyCheckBox().setEnabled(canUpdateEntity && editable);
+            } else {
+                attributePermissionControl.getModifyCheckBox().setEditable(false);
+                attributePermissionControl.getModifyCheckBox().setEnabled(false);
+            }
         }
     }
 
@@ -404,7 +438,13 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
     private void initPermissionControls(MultiplePermissionTarget item, GridLayout editGrid) {
         int i = 0;
+
+        MetaClass metaClass = item.getEntityMetaClass();
         for (AttributeTarget target : item.getPermissions()) {
+            if (!userSession.isEntityAttrPermitted(metaClass, target.getId(), EntityAttrAccess.VIEW)) {
+                continue;
+            }
+
             AttributePermissionControl control = new AttributePermissionControl(item, target.getId());
             int gridRow = i + 2;
 
