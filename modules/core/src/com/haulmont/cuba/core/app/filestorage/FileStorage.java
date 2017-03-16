@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.io.*;
@@ -57,10 +58,17 @@ public class FileStorage implements FileStorageAPI {
     @Inject
     protected Configuration configuration;
 
+    protected boolean isImmutableFileStorage;
+
     protected ExecutorService writeExecutor = Executors.newFixedThreadPool(5,
             new ThreadFactoryBuilder().setNameFormat("FileStorageWriter-%d").build());
 
     protected volatile File[] storageRoots;
+
+    @PostConstruct
+    public void init() {
+        this.isImmutableFileStorage = configuration.getConfig(ServerConfig.class).getImmutableFileStorage();
+    }
 
     /**
      * INTERNAL. Don't use in application code.
@@ -97,23 +105,15 @@ public class FileStorage implements FileStorageAPI {
 
         // Store to primary storage
 
-        if (roots.length == 0) {
-            log.error("No storage directories defined");
-            throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, fileDescr.getId().toString());
-        }
-        if (!roots[0].exists()) {
-            log.error("Inaccessible primary storage at {}", roots[0]);
-            throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, fileDescr.getId().toString());
-        }
+        checkStorageDefined(roots, fileDescr);
+        checkPrimaryStorageAccessible(roots, fileDescr);
 
         File dir = getStorageDir(roots[0], fileDescr);
         dir.mkdirs();
-        if (!dir.exists())
-            throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, dir.getAbsolutePath());
+        checkDirectoryExists(dir);
 
         final File file = new File(dir, getFileName(fileDescr));
-        if (file.exists())
-            throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
+        checkFileExists(file);
 
         long size = 0;
         OutputStream os = null;
@@ -160,6 +160,30 @@ public class FileStorage implements FileStorageAPI {
         }
 
         return size;
+    }
+
+    protected void checkFileExists(File file) throws FileStorageException {
+        if (file.exists() && isImmutableFileStorage)
+            throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
+    }
+
+    protected void checkDirectoryExists(File dir) throws FileStorageException {
+        if (!dir.exists())
+            throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, dir.getAbsolutePath());
+    }
+
+    protected void checkPrimaryStorageAccessible(File[] roots, FileDescriptor fileDescr) throws FileStorageException {
+        if (!roots[0].exists()) {
+            log.error("Inaccessible primary storage at {}", roots[0]);
+            throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, fileDescr.getId().toString());
+        }
+    }
+
+    protected void checkStorageDefined(File[] roots, FileDescriptor fileDescr) throws FileStorageException {
+        if (roots.length == 0) {
+            log.error("No storage directories defined");
+            throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, fileDescr.getId().toString());
+        }
     }
 
     @Override

@@ -97,6 +97,15 @@ public interface ServerConfig extends Config {
     String getFileStorageDir();
 
     /**
+     * An immutable file storage throws exception on attempt to write an existing file.
+     *
+     * @return  whether file storage is immutable.
+     */
+    @Property("cuba.immutableFileStorage")
+    @DefaultBoolean(true)
+    boolean getImmutableFileStorage();
+
+    /**
      * @return Scheduled tasks execution control.
      */
     @Property("cuba.schedulingActive")
