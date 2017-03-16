@@ -69,6 +69,16 @@ public class WebSuggestionPickerField extends WebSuggestionField implements Sugg
         return pickerField.getCaption();
     }
 
+    @Override
+    public void setDescription(String description) {
+        pickerField.setDescription(description);
+    }
+
+    @Override
+    public String getDescription() {
+        return pickerField.getDescription();
+    }
+
     protected void initValueSync(final WebPickerField.Picker picker) {
         component.addValueChangeListener(e -> {
             if (updateComponentValue)
