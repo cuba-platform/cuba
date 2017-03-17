@@ -42,12 +42,6 @@ public class EmbeddedLoader extends AbstractComponentLoader<Embedded> {
     public void loadComponent() {
         assignFrame(resultComponent);
 
-        String typeAttribute = element.attributeValue("type");
-        if (StringUtils.isNotEmpty(typeAttribute)) {
-            Embedded.Type type = Embedded.Type.valueOf(typeAttribute);
-            resultComponent.setType(type);
-        }
-
         String relativeSrc = element.attributeValue("relativeSrc");
         if (StringUtils.isNotEmpty(relativeSrc)) {
             resultComponent.setRelativeSource(relativeSrc);
@@ -79,6 +73,12 @@ public class EmbeddedLoader extends AbstractComponentLoader<Embedded> {
                 throw new GuiDevelopmentException("Illegal src attribute value. 'url://' or 'file://' or theme:// prefix expected",
                         context.getFullFrameId(), "src", srcAttr);
             }
+        }
+
+        String typeAttribute = element.attributeValue("type");
+        if (StringUtils.isNotEmpty(typeAttribute)) {
+            Embedded.Type type = Embedded.Type.valueOf(typeAttribute);
+            resultComponent.setType(type);
         }
 
         loadVisible(resultComponent, element);
