@@ -26,6 +26,9 @@ import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import org.springframework.context.annotation.Scope;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.haulmont.cuba.gui.export.ExcelExporter.ExportMode;
 
 /**
@@ -194,13 +197,16 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
     protected void export(ExportMode exportMode) {
         ExcelExporter exporter = new ExcelExporter();
         if (listComponent instanceof Table) {
-            Table table = (Table) listComponent;
+            Table<?> table = (Table) listComponent;
             exporter.exportTable(table, table.getNotCollapsedColumns(), display, exportMode);
         }
 
         if (listComponent instanceof DataGrid) {
-            DataGrid dataGrid = (DataGrid) listComponent;
-            exporter.exportDataGrid(dataGrid, dataGrid.getVisibleColumns(), display, exportMode);
+            DataGrid<?> dataGrid = (DataGrid) listComponent;
+            List<DataGrid.Column> columns = dataGrid.getVisibleColumns().stream()
+                    .filter(col -> !col.isCollapsed())
+                    .collect(Collectors.toList());
+            exporter.exportDataGrid(dataGrid, columns, display, exportMode);
         }
     }
 
