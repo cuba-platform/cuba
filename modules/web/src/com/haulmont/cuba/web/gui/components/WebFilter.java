@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
@@ -66,12 +65,6 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
 
     @Override
     public void setDatasource(CollectionDatasource datasource) {
-        Preconditions.checkNotNullArgument(datasource, "datasource is null");
-
-        if (delegate.getDatasource() != null) {
-            throw new UnsupportedOperationException("Changing datasource is not supported by the Filter component");
-        }
-
         delegate.setDatasource(datasource);
     }
 
