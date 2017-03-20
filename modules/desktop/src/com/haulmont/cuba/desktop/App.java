@@ -22,7 +22,7 @@ import com.haulmont.cuba.client.sys.MessagesClientImpl;
 import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.remoting.ServerSelector;
+import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
 import com.haulmont.cuba.desktop.exception.ExceptionHandlers;
 import com.haulmont.cuba.desktop.gui.SessionMessagesNotifier;
 import com.haulmont.cuba.desktop.sys.*;

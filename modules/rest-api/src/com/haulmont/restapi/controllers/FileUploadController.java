@@ -22,7 +22,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.LocalFileExchangeService;
-import com.haulmont.cuba.core.sys.remoting.ServerSelector;
+import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
 import com.haulmont.restapi.data.FileInfo;
 import com.haulmont.restapi.exception.RestAPIException;
 import org.apache.commons.io.FilenameUtils;

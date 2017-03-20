@@ -19,7 +19,10 @@ package com.haulmont.cuba.core.sys.remoting;
 
 import com.google.common.io.CountingInputStream;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
 import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientConfiguration;
 import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
 import org.springframework.remoting.support.RemoteInvocation;
@@ -43,6 +46,8 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
 
     private ServerSelector serverSelector;
 
+    private Logger log = LoggerFactory.getLogger(ClusteredHttpInvokerRequestExecutor.class);
+
     public ClusteredHttpInvokerRequestExecutor(ServerSelector serverSelector) {
         this.serverSelector = serverSelector;
 
@@ -62,7 +67,7 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
         Object context = serverSelector.initContext();
         String url = currentServiceUrl(serverSelector.getUrl(context), config);
         if (url == null)
-            throw new IllegalStateException("URL list is empty");
+            throw new IllegalStateException("Server URL list is empty");
 
         while (true) {
             HttpURLConnection con = openConnection(url);
@@ -82,21 +87,21 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
                     result = doReadRemoteInvocationResult(ois);
                 }
                 sw.stop();
-                if (logger.isDebugEnabled()) {
-                    logger.debug(String.format("Receiving HTTP invoker response for service at [%s], with size %s, %s", config.getServiceUrl(),
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Receiving HTTP invoker response for service at [%s], with size %s, %s", config.getServiceUrl(),
                             responseInputStream.getCount(), printStopWatch(sw)));
                 }
                 break;
             } catch (IOException e) {
-                logger.info(String.format("Invocation of %s failed: %s", url, e));
+                log.info(String.format("Invocation of %s failed: %s", url, e));
 
                 serverSelector.fail(context);
                 url = currentServiceUrl(serverSelector.getUrl(context), config);
                 if (url != null) {
-                    logger.info("Trying to invoke the next available URL: " + url);
+                    log.info("Trying to invoke the next available URL: " + url);
                     continue;
                 }
-                logger.info("No more URL available");
+                log.info("No more URL available");
                 throw e;
             }
         }

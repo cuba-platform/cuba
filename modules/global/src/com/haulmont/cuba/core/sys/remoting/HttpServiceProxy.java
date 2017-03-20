@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.sys.remoting;
 
 import com.haulmont.cuba.core.global.RemoteException;
+import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 import org.springframework.remoting.support.RemoteInvocationResult;
 import org.springframework.remoting.support.RemoteInvocationUtils;

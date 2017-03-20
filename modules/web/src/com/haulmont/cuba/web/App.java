@@ -33,6 +33,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.auth.CubaAuthProvider;
 import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
+import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.settings.WebSettingsClient;
@@ -549,26 +550,32 @@ public abstract class App {
      * @param runWhenLoggedOut runnable that will be invoked if user decides to logout
      */
     public void logout(@Nullable Runnable runWhenLoggedOut) {
-        Window.TopLevelWindow topLevelWindow = getTopLevelWindow();
-        if (topLevelWindow != null) {
-            topLevelWindow.saveSettings();
+        try {
+            Window.TopLevelWindow topLevelWindow = getTopLevelWindow();
+            if (topLevelWindow != null) {
+                topLevelWindow.saveSettings();
 
-            WebWindowManager wm = (WebWindowManager) topLevelWindow.getWindowManager();
-            wm.checkModificationsAndCloseAll(() -> {
+                WebWindowManager wm = (WebWindowManager) topLevelWindow.getWindowManager();
+                wm.checkModificationsAndCloseAll(() -> {
+                    Connection connection = getConnection();
+                    connection.logout();
+
+                    if (runWhenLoggedOut != null) {
+                        runWhenLoggedOut.run();
+                    }
+                });
+            } else {
                 Connection connection = getConnection();
                 connection.logout();
 
                 if (runWhenLoggedOut != null) {
                     runWhenLoggedOut.run();
                 }
-            });
-        } else {
-            Connection connection = getConnection();
-            connection.logout();
-
-            if (runWhenLoggedOut != null) {
-                runWhenLoggedOut.run();
             }
+        } catch (Exception e) {
+            log.error("Error on logout", e);
+            String url = ControllerUtils.getLocationWithoutParams() + "?restartApp";
+            AppUI.getCurrent().getPage().open(url, "_self");
         }
     }
 }

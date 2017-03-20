@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.core.sys.remoting.ServerSelector;
+import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.core.sys.remoting.staticselector;
+package com.haulmont.cuba.core.sys.remoting.discovery;
 
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;

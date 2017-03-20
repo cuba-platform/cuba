@@ -21,7 +21,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.core.sys.remoting.ServerSelector;
+import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;

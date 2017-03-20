@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.core.sys.remoting.staticselector;
+package com.haulmont.cuba.core.sys.remoting.discovery;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
 /**
  * Strategy class for work with {@link StaticServerSelector}.
- * Sorts the list of servers randomly.
+ * Does not sorts the list of servers - this is a legacy behavior for platform version &lt; 6.5.
  */
-public class RandomServerSorter implements Consumer<List<String>> {
+public class NoopServerSorter implements Consumer<List<String>> {
 
     @Override
     public void accept(List<String> strings) {
-        Collections.shuffle(strings);
+        // no sorting
     }
 }

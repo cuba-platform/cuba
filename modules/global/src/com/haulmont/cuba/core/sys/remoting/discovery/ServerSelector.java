@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.core.sys.remoting;
+package com.haulmont.cuba.core.sys.remoting.discovery;
 
 import javax.annotation.Nullable;
 

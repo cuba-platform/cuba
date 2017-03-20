@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.core.sys.remoting.staticselector;
+package com.haulmont.cuba.core.sys.remoting.discovery;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.core.sys.remoting.ServerSelector;
 import com.haulmont.cuba.security.global.ClientBasedSession;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,24 +32,24 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 
 /**
- * Implementation of the {@link ServerSelector} interface working with static list of cluster members.
+ * Abstract implementation of the {@link ServerSelector} interface providing selection of the same server for all
+ * requests in a user session.
  */
-public class StaticServerSelector implements ServerSelector {
+public abstract class StickySessionServerSelector implements ServerSelector {
 
-    private Logger log = LoggerFactory.getLogger(StaticServerSelector.class);
+    private Logger log = LoggerFactory.getLogger(StickySessionServerSelector.class);
 
-    private String servletPath = "remoting";
-    private String baseUrl;
-    private Consumer<List<String>> serverSorter;
+    protected String servletPath = "remoting";
 
-    private List<String> urls = new ArrayList<>();
-    private Set<String> failedUrls = new CopyOnWriteArraySet<>();
+    protected Consumer<List<String>> serverSorter;
 
-    private ThreadLocal<List<String>> lastNoSessionUrls = new ThreadLocal<>();
+    protected Set<String> failedUrls = new CopyOnWriteArraySet<>();
 
-    private static final String SESSION_ATTR = StaticServerSelector.class.getName() + ".lastSessionUrls";
+    protected ThreadLocal<List<String>> lastNoSessionUrls = new ThreadLocal<>();
 
-    private static class Context {
+    protected static final String SESSION_ATTR = StickySessionServerSelector.class.getName() + ".lastSessionUrls";
+
+    protected static class Context {
         private List<String> urls;
         private String lastUrl;
 
@@ -72,29 +70,14 @@ public class StaticServerSelector implements ServerSelector {
         this.servletPath = servletPath;
     }
 
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
     public void setServerSorter(Consumer<List<String>> serverSorter) {
         this.serverSorter = serverSorter;
     }
 
-    public void init() {
-        if (baseUrl == null)
-            throw new IllegalStateException("baseUrl is null");
-        String[] strings = baseUrl.split("[,;]");
-        for (String string : strings) {
-            if (!StringUtils.isBlank(string)) {
-                urls.add(string + "/" + servletPath);
-            }
-        }
-        log.debug("Server URLs: {}", urls);
-    }
+    /**
+     * Must be implemented in concrete classes to return a list of available servers.
+     */
+    public abstract List<String> getUrls();
 
     @Override
     public Object initContext() {
@@ -140,7 +123,7 @@ public class StaticServerSelector implements ServerSelector {
     }
 
     private List<String> sortUrls() {
-        List<String> list = new ArrayList<>(urls);
+        List<String> list = new ArrayList<>(getUrls());
         if (serverSorter != null) {
             serverSorter.accept(list);
         }

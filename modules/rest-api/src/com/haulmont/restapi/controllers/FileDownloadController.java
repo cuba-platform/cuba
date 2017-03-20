@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.LocalFileExchangeService;
-import com.haulmont.cuba.core.sys.remoting.ServerSelector;
+import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
 import com.haulmont.restapi.exception.RestAPIException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;

@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
+import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;

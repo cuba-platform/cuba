@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.remoting.ServerSelector;
+import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
 import com.haulmont.cuba.core.sys.remoting.LocalFileExchangeService;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -37,10 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 

@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.GlobalConfig;
@@ -77,6 +78,10 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener, O
 
     public ClusterManager() {
         AppContext.addListener(this);
+    }
+
+    public JChannel getChannel() {
+        return channel;
     }
 
     @PostConstruct
@@ -186,10 +191,12 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener, O
         try {
             String configName = AppContext.getProperty("cuba.cluster.jgroupsConfig");
             if (configName == null) {
-                log.error("No property 'cuba.cluster.jgroupsConfig' specified");
-                return;
+                log.info("Property 'cuba.cluster.jgroupsConfig' is not specified, using jgroups.xml");
+                configName = "jgroups.xml";
             }
             stream = resources.getResource(configName).getInputStream();
+
+            initJGroupsProperties();
 
             channel = new JChannel(XmlConfigurator.getInstance(stream));
             channel.setDiscardOwnMessages(true); // do not receive a copy of our own messages
@@ -202,6 +209,18 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener, O
             throw new RuntimeException("Error starting cluster", e);
         } finally {
             IOUtils.closeQuietly(stream);
+        }
+    }
+
+    protected void initJGroupsProperties() {
+        for (String name : AppContext.getPropertyNames()) {
+            if (name.startsWith("jgroups.")) {
+                String systemProp = System.getProperty(name);
+                if (Strings.isNullOrEmpty(systemProp)) {
+                    //noinspection ConstantConditions
+                    System.setProperty(name, AppContext.getProperty(name));
+                }
+            }
         }
     }
 
