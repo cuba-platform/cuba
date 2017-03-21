@@ -31,16 +31,16 @@ public class DbPropertiesTest {
         DbProperties dbProperties = new DbProperties(null);
         Assert.assertNull(dbProperties.getProperties());
 
-        dbProperties = new DbProperties("jdbc:jtds:sqlserver://localhost/refapp_6");
+        dbProperties = new DbProperties("jdbc:sqlserver://localhost");
         Assert.assertNull(dbProperties.getProperties());
     }
 
     @Test
     public void testWithParamsPostgres() {
-        DbProperties dbProperties = new DbProperties("jdbc:jtds:sqlserver://localhost/refapp_6;currentSchema=Person");
+        DbProperties dbProperties = new DbProperties("jdbc:sqlserver://localhost;databaseName=refapp_6;currentSchema=Person");
         Map<String, String> properties = dbProperties.getProperties();
         Assert.assertNotNull(properties);
-        Assert.assertTrue(properties.size() == 1);
+        Assert.assertTrue(properties.size() == 2);
         Assert.assertTrue("Person".equals(properties.get("currentSchema")));
 
         dbProperties = new DbProperties("jdbc:postgresql://localhost/refapp_6?currentSchema=Person");
@@ -60,10 +60,10 @@ public class DbPropertiesTest {
 
     @Test
     public void testWithParamsMssql() {
-        DbProperties dbProperties = new DbProperties("jdbc:jtds:sqlserver://localhost/refapp_6;currentSchema=Person");
+        DbProperties dbProperties = new DbProperties("jdbc:sqlserver://localhost;databaseName=refapp_6;currentSchema=Person");
         Map<String, String> properties = dbProperties.getProperties();
         Assert.assertNotNull(properties);
-        Assert.assertTrue(properties.size() == 1);
+        Assert.assertTrue(properties.size() == 2);
         Assert.assertTrue("Person".equals(properties.get("currentSchema")));
         Assert.assertTrue("Person".equals(dbProperties.getCurrentSchemaProperty()));
 

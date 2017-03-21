@@ -168,7 +168,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
                         dbDriver = "org.postgresql.Driver";
                         break;
                     case "mssql":
-                        dbDriver = "net.sourceforge.jtds.jdbc.Driver";
+                        dbDriver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
                         break;
                     case "oracle":
                         dbDriver = "oracle.jdbc.OracleDriver";
