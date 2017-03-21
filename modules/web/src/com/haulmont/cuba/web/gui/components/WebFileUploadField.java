@@ -89,7 +89,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
         attachListener(component);
     }
 
-    private void initComponent() {
+    protected void initComponent() {
         component = new CubaFileUploadWrapper(uploadButton) {
             @Override
             protected void onSetInternalValue(Object newValue) {
