@@ -121,8 +121,13 @@
     }
   }
 
+  .dropzone-container {
+    border: 2px dashed $v-font-color;
+  }
+
   .v-layout.#{$primary-stylename}-dropzone {
     position: relative;
+    border: 0;
 
     &:before {
       @include box-defaults;
@@ -165,17 +170,5 @@
     & > div {
       opacity: 0.4;
     }
-  }
-
-  .v-slot-dropzone-description {
-    border: 2px dashed #cccccc;
-  }
-
-  .c-fileupload-dropzone:after {
-    visibility: hidden;
-  }
-
-  .dropzone-container.c-fileupload-dropzone .dropzone-description {
-    border: none;
   }
 }
