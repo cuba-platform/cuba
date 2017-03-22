@@ -15,18 +15,6 @@
  */
 
 @mixin cuba-report-templates {
-  .v-slot-c-upload-dropzone-description {
-    border: 2px dashed $v-font-color;
-  }
-
-  .c-static-drop-zone.c-fileupload-dropzone .c-upload-dropzone-description {
-    border: none;
-  }
-
-  .c-static-drop-zone.c-fileupload-dropzone .v-label {
-    display: none;
-  }
-
   .c-report-upload-invisible {
     display: none;
   }
