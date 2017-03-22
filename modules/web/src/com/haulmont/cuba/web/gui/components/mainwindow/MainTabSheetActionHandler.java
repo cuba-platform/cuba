@@ -30,7 +30,8 @@ import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
-import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
+import com.haulmont.cuba.web.toolkit.ui.HasTabSheetBehaviour;
+import com.haulmont.cuba.web.toolkit.ui.TabSheetBehaviour;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
@@ -53,9 +54,9 @@ public class MainTabSheetActionHandler implements Action.Handler {
     protected com.vaadin.event.Action restoreToDefaults;
 
     protected boolean initialized = false;
-    protected CubaTabSheet tabSheet;
+    protected HasTabSheetBehaviour tabSheet;
 
-    public MainTabSheetActionHandler(CubaTabSheet tabSheet) {
+    public MainTabSheetActionHandler(HasTabSheetBehaviour tabSheet) {
         this.tabSheet = tabSheet;
     }
 
@@ -104,13 +105,14 @@ public class MainTabSheetActionHandler implements Action.Handler {
 
     @Override
     public void handleAction(Action action, Object sender, Object target) {
+        TabSheetBehaviour tabSheetBehaviour = tabSheet.getTabSheetBehaviour();
         if (initialized) {
             if (closeCurrentTab == action) {
-                tabSheet.closeTab((com.vaadin.ui.Component) target);
+                tabSheetBehaviour.closeTab((com.vaadin.ui.Component) target);
             } else if (closeOtherTabs == action) {
-                tabSheet.closeOtherTabs((com.vaadin.ui.Component) target);
+                tabSheetBehaviour.closeOtherTabs((com.vaadin.ui.Component) target);
             } else if (closeAllTabs == action) {
-                tabSheet.closeAllTabs();
+                tabSheetBehaviour.closeAllTabs();
             } else if (showInfo == action) {
                 showInfo(target);
             } else if (analyzeLayout == action) {

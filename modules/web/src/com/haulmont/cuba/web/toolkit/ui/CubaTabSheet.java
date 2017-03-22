@@ -24,13 +24,16 @@ import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.CubaTabSheetServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.CubaTabSheetState;
 import com.vaadin.event.Action;
 import com.vaadin.server.KeyMapper;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.TabSheet;
 import fi.jasoft.dragdroplayouts.DDTabSheet;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 
-public class CubaTabSheet extends DDTabSheet implements Action.Container {
+public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTabSheetBehaviour {
 
     private static final long serialVersionUID = -2956008661221108673L;
 
@@ -42,13 +45,16 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container {
 
     protected Map<Component, TabCloseHandler> closeHandlers = null;
 
+    protected Map<String, Tab> tabIds = new HashMap<>();
+
+    protected TabSheetBehaviour behaviour;
+
     protected CubaTabSheetServerRpc rpc = new CubaTabSheetServerRpc() {
         @Override
         public void onTabContextMenu(int tabIndex) {
             Tab tab = getTab(tabIndex);
             if (tab != null) {
-                Component actionTarget = tab.getComponent();
-                HashSet<Action> actions = getActions(actionTarget);
+                HashSet<Action> actions = getActions(CubaTabSheet.this.getActionTarget(tab));
 
                 if (!actions.isEmpty()) {
                     actionMapper = new KeyMapper<>();
@@ -76,7 +82,7 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container {
                     Action action = actionMapper.get(actionKey);
                     Action.Handler[] handlers = actionHandlers.toArray(new Action.Handler[actionHandlers.size()]);
                     for (Action.Handler handler : handlers) {
-                        handler.handleAction(action, this, actionTarget);
+                        handler.handleAction(action, this, CubaTabSheet.this.getActionTarget(tab));
                     }
 
                     // forget all painted actions after perform one
@@ -86,22 +92,25 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container {
         }
     };
 
+    protected Component getActionTarget(Tab tab) {
+        return tab.getComponent();
+    }
+
     public CubaTabSheet() {
         registerRpc(rpc);
 
         setShim(false);
 
-        setCloseHandler(new CloseHandler() {
-            @Override
-            public void onTabClose(com.vaadin.ui.TabSheet tabsheet, Component tabContent) {
-                if (closeHandlers != null) {
-                    TabCloseHandler closeHandler = closeHandlers.get(tabContent);
-                    if (closeHandler != null) {
-                        closeHandler.onClose(CubaTabSheet.this, tabContent);
-                    }
+        setCloseHandler((tabsheet, tabContent) -> {
+            if (closeHandlers != null) {
+                TabCloseHandler closeHandler = closeHandlers.get(tabContent);
+                if (closeHandler != null) {
+                    closeHandler.onClose(CubaTabSheet.this, tabContent);
                 }
             }
         });
+
+        behaviour = new TabSheetBehaviourImpl(this);
     }
 
     protected HashSet<Action> getActions(Component actionTarget) {
@@ -240,6 +249,11 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container {
         closeHandlers.put(tabContent, closeHandler);
     }
 
+    @Override
+    public TabSheetBehaviour getTabSheetBehaviour() {
+        return behaviour;
+    }
+
     public interface TabCloseHandler {
         void onClose(com.vaadin.ui.TabSheet tabSheet, Component tabContent);
     }
@@ -252,5 +266,143 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container {
     public void closeAllTabs() {
         WebWindowManager windowManager = App.getInstance().getWindowManager();
         windowManager.closeAllTabbedWindows();
+    }
+
+    protected static class TabSheetBehaviourImpl implements TabSheetBehaviour {
+
+        protected final CubaTabSheet tabSheet;
+
+        public TabSheetBehaviourImpl(CubaTabSheet tabSheet) {
+            this.tabSheet = tabSheet;
+        }
+
+        @Override
+        public void setTabCaption(String tabId, String caption) {
+            tabSheet.tabIds.get(tabId).setCaption(caption);
+        }
+
+        @Override
+        public void setTabDescription(String tabId, String description) {
+            tabSheet.tabIds.get(tabId).setDescription(description);
+        }
+
+        @Override
+        public void closeTab(Component target) {
+            tabSheet.closeTab(target);
+        }
+
+        @Override
+        public void closeOtherTabs(Component target) {
+            tabSheet.closeOtherTabs(target);
+        }
+
+        @Override
+        public void closeAllTabs() {
+            tabSheet.closeAllTabs();
+        }
+
+        @Override
+        public Component getTabComponent(String tabId) {
+            return tabSheet.tabIds.get(tabId).getComponent();
+        }
+
+        @Override
+        public void setTabIcon(String tabId, Resource icon) {
+            tabSheet.tabIds.get(tabId).setIcon(icon);
+        }
+
+        @Override
+        public void setTabClosable(String tabId, boolean closable) {
+            tabSheet.tabIds.get(tabId).setClosable(closable);
+        }
+
+        @Override
+        public void setSelectedTab(String tabId) {
+            tabSheet.setSelectedTab(tabSheet.tabIds.get(tabId));
+        }
+
+        @Override
+        public void addTab(Component component, String tabId) {
+            TabSheet.Tab tab = tabSheet.addTab(component);
+
+            tab.setId(tabId);
+            tabSheet.tabIds.put(tabId, tab);
+        }
+
+        @Override
+        public String getTab(Component component) {
+            return tabSheet.getTab(component).getId();
+        }
+
+        @Override
+        public String getTab(int position) {
+            return tabSheet.getTab(position).getId();
+        }
+
+        @Override
+        public Component getSelectedTab() {
+            return tabSheet.getSelectedTab();
+        }
+
+        @Override
+        public void setSelectedTab(Component component) {
+            tabSheet.setSelectedTab(component);
+        }
+
+        @Override
+        public void replaceComponent(Component oldComponent, Component newComponent) {
+            tabSheet.replaceComponent(oldComponent, newComponent);
+        }
+
+        @Override
+        public void removeComponent(Component component) {
+            tabSheet.removeComponent(component);
+        }
+
+        @Override
+        public Component getPreviousTab(Component tab) {
+            return tabSheet.getPreviousTab(tab);
+        }
+
+        @Override
+        public void setTabTestId(String tabId, String testId) {
+            tabSheet.setTestId(tabSheet.tabIds.get(tabId), testId);
+        }
+
+        @Override
+        public void setTabCubaId(String tabId, String id) {
+            tabSheet.setCubaId(tabSheet.tabIds.get(tabId), id);
+        }
+
+        @Override
+        public void setTabCloseHandler(Component tabContent, BiConsumer<HasTabSheetBehaviour, Component> closeHandler) {
+            tabSheet.setTabCloseHandler(tabContent, (tabSheet1, tabContent1) ->
+                    closeHandler.accept(tabSheet, tabContent));
+        }
+
+        @Override
+        public int getTabPosition(String tabId) {
+            return tabSheet.getTabPosition(tabSheet.tabIds.get(tabId));
+        }
+
+        @Override
+        public int getComponentCount() {
+            return tabSheet.getComponentCount();
+        }
+
+        @Override
+        public void moveTab(Component c, int position) {
+            tabSheet.moveTab(c, position);
+        }
+
+        @Override
+        public void focus() {
+            tabSheet.focus();
+        }
+
+        @Override
+        public void silentCloseTabAndSelectPrevious(Component tab) {
+            tabSheet.silentCloseTabAndSelectPrevious(tab);
+        }
     }
 }

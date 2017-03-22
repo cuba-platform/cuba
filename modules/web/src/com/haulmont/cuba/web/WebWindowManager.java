@@ -23,6 +23,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.SilentException;
+import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.ScreenHistorySupport;
@@ -51,8 +52,8 @@ import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
 import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
-import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
+import com.haulmont.cuba.web.toolkit.ui.TabSheetBehaviour;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
@@ -63,7 +64,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.*;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -103,6 +103,8 @@ public class WebWindowManager extends WindowManager {
     protected ScreenProfiler screenProfiler;
     @Inject
     protected ThemeConstantsManager themeConstantsManager;
+    @Inject
+    protected UuidSource uuidSource;
 
     protected final Map<ComponentContainer, WindowBreadCrumbs> tabs = new HashMap<>();
     protected final Map<WindowBreadCrumbs, Stack<Pair<Window, Integer>>> stacks = new HashMap<>();
@@ -171,7 +173,8 @@ public class WebWindowManager extends WindowManager {
                     || openMode == OpenMode.THIS_TAB) {
                 // show in tabsheet
                 Layout layout = (Layout) openInfo.getData();
-                TabSheet webTabsheet = getConfiguredWorkArea(createWorkAreaContext(window)).getTabbedWindowContainer();
+                TabSheetBehaviour webTabsheet = getConfiguredWorkArea(createWorkAreaContext(window))
+                        .getTabbedWindowContainer().getTabSheetBehaviour();
                 webTabsheet.setSelectedTab(layout);
             }
         }
@@ -211,19 +214,20 @@ public class WebWindowManager extends WindowManager {
                     return;
                 }
 
-                TabSheet tabSheet = getConfiguredWorkArea(createWorkAreaContext(window)).getTabbedWindowContainer();
-                TabSheet.Tab tab = tabSheet.getTab(tabContent);
-                if (tab == null) {
+                TabSheetBehaviour tabSheet = getConfiguredWorkArea(createWorkAreaContext(window))
+                        .getTabbedWindowContainer().getTabSheetBehaviour();
+                String tabId = tabSheet.getTab(tabContent);
+                if (tabId == null) {
                     return;
                 }
 
-                tab.setCaption(formattedCaption);
+                tabSheet.setTabCaption(tabId, formattedCaption);
 
                 String formattedDescription = formatTabDescription(caption, description);
                 if (!StringUtils.equals(formattedDescription, formattedCaption)) {
-                    tab.setDescription(formattedDescription);
+                    tabSheet.setTabDescription(tabId, formattedDescription);
                 } else {
-                    tab.setDescription(null);
+                    tabSheet.setTabDescription(tabId, null);
                 }
             }
         }
@@ -347,10 +351,10 @@ public class WebWindowManager extends WindowManager {
                         selectWindowTab(((Window.Wrapper) oldBreadCrumbs.getCurrentWindow()).getWrappedWindow());
 
                         int tabPosition = -1;
-                        final TabSheet tabSheet = workArea.getTabbedWindowContainer();
-                        TabSheet.Tab oldWindowTab = tabSheet.getTab(tab);
-                        if (oldWindowTab != null) {
-                            tabPosition = tabSheet.getTabPosition(oldWindowTab);
+                        final TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
+                        String tabId = tabSheet.getTab(tab);
+                        if (tabId != null) {
+                            tabPosition = tabSheet.getTabPosition(tabId);
                         }
 
                         final int finalTabPosition = tabPosition;
@@ -405,7 +409,7 @@ public class WebWindowManager extends WindowManager {
      */
     protected void moveWindowTab(WebAppWorkArea workArea, Window window, int position) {
         // move tab to
-        CubaTabSheet tabSheet = workArea.getTabbedWindowContainer();
+        TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
 
         if (position >= 0 && position < tabSheet.getComponentCount()) {
             WindowOpenInfo openInfo = windowOpenMode.get(window);
@@ -422,9 +426,9 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    protected void moveFocus(TabSheet tabSheet, TabSheet.Tab tab) {
+    protected void moveFocus(TabSheetBehaviour tabSheet, String tabId) {
         //noinspection SuspiciousMethodCalls
-        Window window = tabs.get(tab.getComponent()).getCurrentWindow();
+        Window window = tabs.get(tabSheet.getTabComponent(tabId)).getCurrentWindow();
 
         if (window != null) {
             boolean focused = false;
@@ -498,9 +502,9 @@ public class WebWindowManager extends WindowManager {
 
         if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
             layout.addStyleName("c-app-tabbed-window");
-            CubaTabSheet tabSheet = workArea.getTabbedWindowContainer();
+            TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
 
-            TabSheet.Tab newTab;
+            String tabId;
             Integer hashCode = getWindowHashCode(window);
             ComponentContainer tab = null;
             if (hashCode != null) {
@@ -510,30 +514,32 @@ public class WebWindowManager extends WindowManager {
                 tabSheet.replaceComponent(tab, layout);
                 tabSheet.removeComponent(tab);
                 tabs.put(layout, breadCrumbs);
-                newTab = tabSheet.getTab(layout);
+                tabId = tabSheet.getTab(layout);
             } else {
                 tabs.put(layout, breadCrumbs);
 
-                newTab = tabSheet.addTab(layout);
+                tabId = "tab_" + uuidSource.createUuid();
+
+                tabSheet.addTab(layout, tabId);
 
                 if (ui.isTestMode()) {
                     String id = "tab_" + window.getId();
 
-                    tabSheet.setTestId(newTab, ui.getTestIdManager().getTestId(id));
-                    tabSheet.setCubaId(newTab, id);
+                    tabSheet.setTabTestId(tabId, ui.getTestIdManager().getTestId(id));
+                    tabSheet.setTabCubaId(tabId, id);
                 }
             }
             String formattedCaption = formatTabCaption(window.getCaption(), window.getDescription());
-            newTab.setCaption(formattedCaption);
+            tabSheet.setTabCaption(tabId, formattedCaption);
             String formattedDescription = formatTabDescription(window.getCaption(), window.getDescription());
             if (!StringUtils.equals(formattedCaption, formattedDescription)) {
-                newTab.setDescription(formattedDescription);
+                tabSheet.setTabDescription(tabId, formattedDescription);
             } else {
-                newTab.setDescription(null);
+                tabSheet.setTabDescription(tabId, null);
             }
 
-            newTab.setIcon(WebComponentsHelper.getIcon(window.getIcon()));
-            newTab.setClosable(true);
+            tabSheet.setTabIcon(tabId, WebComponentsHelper.getIcon(window.getIcon()));
+            tabSheet.setTabClosable(tabId, true);
             tabSheet.setTabCloseHandler(layout, (targetTabSheet, tabContent) -> {
                 //noinspection SuspiciousMethodCalls
                 WindowBreadCrumbs breadCrumbs1 = tabs.get(tabContent);
@@ -597,7 +603,7 @@ public class WebWindowManager extends WindowManager {
 
         Layout layout;
         if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
-            TabSheet tabSheet = workArea.getTabbedWindowContainer();
+            TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
             layout = (Layout) tabSheet.getSelectedTab();
         } else {
             layout = (Layout) workArea.getSingleWindowContainer().getComponent(0);
@@ -634,19 +640,19 @@ public class WebWindowManager extends WindowManager {
         breadCrumbs.addWindow(window);
 
         if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
-            TabSheet tabSheet = workArea.getTabbedWindowContainer();
-            TabSheet.Tab tab = tabSheet.getTab(layout);
+            TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
+            String tabId = tabSheet.getTab(layout);
             String formattedCaption = formatTabCaption(caption, description);
-            tab.setCaption(formattedCaption);
+            tabSheet.setTabCaption(tabId, formattedCaption);
             String formattedDescription = formatTabDescription(caption, description);
 
             if (!StringUtils.equals(formattedCaption, formattedDescription)) {
-                tab.setDescription(formattedDescription);
+                tabSheet.setTabDescription(tabId, formattedDescription);
             } else {
-                tab.setDescription(null);
+                tabSheet.setTabDescription(tabId, null);
             }
 
-            tab.setIcon(WebComponentsHelper.getIcon(window.getIcon()));
+            tabSheet.setTabIcon(tabId, WebComponentsHelper.getIcon(window.getIcon()));
         } else {
             layout.markAsDirtyRecursive();
         }
@@ -964,7 +970,7 @@ public class WebWindowManager extends WindowManager {
                 WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
 
                 if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
-                    CubaTabSheet tabSheet = workArea.getTabbedWindowContainer();
+                    TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
                     tabSheet.silentCloseTabAndSelectPrevious(layout);
                     tabSheet.removeComponent(layout);
                 } else {
@@ -1010,19 +1016,19 @@ public class WebWindowManager extends WindowManager {
                     layout.addComponent(component);
 
                     if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
-                        TabSheet tabSheet = workArea.getTabbedWindowContainer();
-                        TabSheet.Tab tab = tabSheet.getTab(layout);
+                        TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
+                        String tabId = tabSheet.getTab(layout);
                         String formattedCaption = formatTabCaption(currentWindow.getCaption(), currentWindow.getDescription());
-                        tab.setCaption(formattedCaption);
+                        tabSheet.setTabCaption(tabId, formattedCaption);
                         String formattedDescription = formatTabDescription(currentWindow.getCaption(), currentWindow.getDescription());
 
                         if (!StringUtils.equals(formattedCaption, formattedDescription)) {
-                            tab.setDescription(formattedDescription);
+                            tabSheet.setTabDescription(tabId, formattedDescription);
                         } else {
-                            tab.setDescription(null);
+                            tabSheet.setTabDescription(tabId, null);
                         }
 
-                        tab.setIcon(WebComponentsHelper.getIcon(currentWindow.getIcon()));
+                        tabSheet.setTabIcon(tabId, WebComponentsHelper.getIcon(currentWindow.getIcon()));
                     }
                 }
                 fireListeners(window, !tabs.isEmpty());
@@ -1550,7 +1556,7 @@ public class WebWindowManager extends WindowManager {
                 }
 
                 if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
-                    CubaTabSheet tabSheet = workArea.getTabbedWindowContainer();
+                    TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
                     if (tabSheet != null) {
                         Layout layout = (Layout) tabSheet.getSelectedTab();
                         if (layout != null) {
@@ -1591,18 +1597,19 @@ public class WebWindowManager extends WindowManager {
                 KeyCombination.Modifier.codes(combination.getModifiers())) {
             @Override
             public void handleAction(Object sender, Object target) {
-                TabSheet tabSheet = getConfiguredWorkArea(createWorkAreaContext(topLevelWindow)).getTabbedWindowContainer();
+                TabSheetBehaviour tabSheet = getConfiguredWorkArea(createWorkAreaContext(topLevelWindow))
+                        .getTabbedWindowContainer().getTabSheetBehaviour();
 
                 if (tabSheet != null && !hasDialogWindows() && tabSheet.getComponentCount() > 1) {
                     Component selectedTabComponent = tabSheet.getSelectedTab();
-                    TabSheet.Tab selectedTab = tabSheet.getTab(selectedTabComponent);
-                    int tabPosition = tabSheet.getTabPosition(selectedTab);
+                    String tabId = tabSheet.getTab(selectedTabComponent);
+                    int tabPosition = tabSheet.getTabPosition(tabId);
                     int newTabPosition = (tabPosition + 1) % tabSheet.getComponentCount();
 
-                    TabSheet.Tab newTab = tabSheet.getTab(newTabPosition);
-                    tabSheet.setSelectedTab(newTab);
+                    String newTabId = tabSheet.getTab(newTabPosition);
+                    tabSheet.setSelectedTab(newTabId);
 
-                    moveFocus(tabSheet, newTab);
+                    moveFocus(tabSheet, newTabId);
                 }
             }
         };
@@ -1616,18 +1623,19 @@ public class WebWindowManager extends WindowManager {
                 KeyCombination.Modifier.codes(combination.getModifiers())) {
             @Override
             public void handleAction(Object sender, Object target) {
-                TabSheet tabSheet = getConfiguredWorkArea(createWorkAreaContext(topLevelWindow)).getTabbedWindowContainer();
+                TabSheetBehaviour tabSheet = getConfiguredWorkArea(createWorkAreaContext(topLevelWindow))
+                        .getTabbedWindowContainer().getTabSheetBehaviour();
 
                 if (tabSheet != null && !hasDialogWindows() && tabSheet.getComponentCount() > 1) {
                     Component selectedTabComponent = tabSheet.getSelectedTab();
-                    TabSheet.Tab selectedTab = tabSheet.getTab(selectedTabComponent);
-                    int tabPosition = tabSheet.getTabPosition(selectedTab);
+                    String selectedTabId = tabSheet.getTab(selectedTabComponent);
+                    int tabPosition = tabSheet.getTabPosition(selectedTabId);
                     int newTabPosition = (tabSheet.getComponentCount() + tabPosition - 1) % tabSheet.getComponentCount();
 
-                    TabSheet.Tab newTab = tabSheet.getTab(newTabPosition);
-                    tabSheet.setSelectedTab(newTab);
+                    String newTabId = tabSheet.getTab(newTabPosition);
+                    tabSheet.setSelectedTab(newTabId);
 
-                    moveFocus(tabSheet, newTab);
+                    moveFocus(tabSheet, newTabId);
                 }
             }
         };

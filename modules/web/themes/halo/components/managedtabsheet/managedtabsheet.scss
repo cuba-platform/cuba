@@ -1,0 +1,57 @@
+$c-managed-tabsheet-tabbar-height: $v-unit-size + round($v-unit-size/6) + 2*first-number($v-border);
+
+@mixin managed-tabsheet($primary-stylename: c-managed-tabsheet) {
+  // we rarely hide first tab but often hide other tabs
+  // unlike Vaadin we always show margin between tabs
+  .#{$primary-stylename}-tabitemcell[aria-hidden="true"] + td .v-caption {
+    margin-left: round($v-unit-size/2);
+  }
+
+  .#{$primary-stylename}-tabitemcell .v-caption .v-icon + .v-captiontext {
+    margin-left: ceil($v-unit-size/10);
+  }
+
+  .#{$primary-stylename} > .v-tabsheet {
+    .v-tabsheet-content {
+      display: none;
+    }
+  }
+
+  .#{$primary-stylename} {
+    & > .c-managed-tab {
+      background-color: rgb(255, 255, 255);
+      height: auto !important;
+    }
+
+    .hidden-tab {
+      display: none;
+    }
+
+    .visible-tab {
+      display: block;
+    }
+  }
+
+  .#{$primary-stylename}.v-has-width.v-has-height {
+    position: relative !important;
+
+    .hidden-tab,
+    .visible-tab {
+      top: $c-managed-tabsheet-tabbar-height;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      position: absolute;
+    }
+
+    .hidden-tab {
+      display: block;
+      visibility: hidden;
+    }
+
+    .visible-tab {
+      display: block;
+      visibility: visible;
+    }
+  }
+}

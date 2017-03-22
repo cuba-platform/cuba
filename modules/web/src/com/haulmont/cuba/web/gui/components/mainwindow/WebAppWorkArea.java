@@ -19,15 +19,16 @@ package com.haulmont.cuba.web.gui.components.mainwindow;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.toolkit.ui.CubaSingleModeContainer;
-import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
+import com.haulmont.cuba.web.toolkit.ui.*;
 import com.vaadin.event.Action;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.ui.Component;
@@ -61,7 +62,9 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
     protected State state = State.INITIAL_LAYOUT;
 
     protected VBoxLayout initialLayout;
-    protected CubaTabSheet tabbedContainer;
+
+    protected HasTabSheetBehaviour tabbedContainer;
+
     protected CubaSingleModeContainer singleContainer;
 
     // lazy initialized listeners list
@@ -193,22 +196,39 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         }
     }
 
-    protected CubaTabSheet createTabbedModeContainer() {
-        CubaTabSheet tabSheet = new CubaTabSheet();
-        tabSheet.setDragMode(LayoutDragMode.CLONE);
-        tabSheet.setDropHandler(new TabSheetReorderingDropHandler());
-        tabSheet.setHeight("100%");
-        tabSheet.setStyleName(TABBED_CONTAINER_STYLENAME);
-        tabSheet.addStyleName(ValoTheme.TABSHEET_FRAMED);
-        tabSheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
+    protected HasTabSheetBehaviour createTabbedModeContainer() {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        WebConfig webConfig = configuration.getConfig(WebConfig.class);
 
-        Action.Handler actionHandler = createTabSheetActionHandler(tabSheet);
-        tabSheet.addActionHandler(actionHandler);
+        if (webConfig.getMainTabSheetMode() == MainTabSheetMode.DEFAULT) {
+            CubaTabSheet cubaTabSheet = new CubaTabSheet();
 
-        return tabSheet;
+            tabbedContainer = cubaTabSheet;
+
+            cubaTabSheet.setDragMode(LayoutDragMode.CLONE);
+            cubaTabSheet.setDropHandler(new TabSheetReorderingDropHandler());
+            Action.Handler actionHandler = createTabSheetActionHandler(cubaTabSheet);
+            cubaTabSheet.addActionHandler(actionHandler);
+        } else {
+            CubaManagedTabSheet cubaManagedTabSheet = new CubaManagedTabSheet();
+
+            tabbedContainer = cubaManagedTabSheet;
+
+            cubaManagedTabSheet.setDragMode(LayoutDragMode.CLONE);
+            cubaManagedTabSheet.setDropHandler(new TabSheetReorderingDropHandler());
+            Action.Handler actionHandler = createTabSheetActionHandler(cubaManagedTabSheet);
+            cubaManagedTabSheet.addActionHandler(actionHandler);
+        }
+
+        tabbedContainer.setHeight("100%");
+        tabbedContainer.setStyleName(TABBED_CONTAINER_STYLENAME);
+        tabbedContainer.addStyleName(ValoTheme.TABSHEET_FRAMED);
+        tabbedContainer.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
+
+        return tabbedContainer;
     }
 
-    protected Action.Handler createTabSheetActionHandler(CubaTabSheet tabSheet) {
+    protected Action.Handler createTabSheetActionHandler(HasTabSheetBehaviour tabSheet) {
         return new MainTabSheetActionHandler(tabSheet);
     }
 
@@ -219,7 +239,7 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         return boxLayout;
     }
 
-    public CubaTabSheet getTabbedWindowContainer() {
+    public HasTabSheetBehaviour getTabbedWindowContainer() {
         return tabbedContainer;
     }
 

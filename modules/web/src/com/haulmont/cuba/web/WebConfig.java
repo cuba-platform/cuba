@@ -24,6 +24,8 @@ import com.haulmont.cuba.core.config.defaults.*;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.type.StringListTypeFactory;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
+import com.haulmont.cuba.web.toolkit.ui.MainTabSheetMode;
+import com.haulmont.cuba.web.toolkit.ui.MainTabSheetModeFactory;
 
 import java.util.List;
 
@@ -307,4 +309,15 @@ public interface WebConfig extends Config {
     @Property("cuba.web.pageInitialScale")
     @DefaultString("0.8")
     String getPageInitialScale();
+
+    /**
+     * Sets whether default {@link com.haulmont.cuba.web.toolkit.ui.CubaTabSheet} or
+     * {@link com.haulmont.cuba.web.toolkit.ui.CubaManagedTabSheet} will be used in AppWorkArea.
+     *
+     * @return one of {@link MainTabSheetMode} values
+     */
+    @Property("cuba.web.mainTabSheetMode")
+    @Default("DEFAULT")
+    @Factory(factory = MainTabSheetModeFactory.class)
+    MainTabSheetMode getMainTabSheetMode();
 }

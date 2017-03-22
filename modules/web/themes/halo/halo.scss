@@ -37,6 +37,7 @@
 @import "components/datagrid/datagrid";
 @import "components/groupbox/groupbox";
 @import "components/tabsheet/tabsheet";
+@import "components/managedtabsheet/managedtabsheet";
 @import "components/textfield/textfield";
 @import "components/textarea/textarea";
 @import "components/tokenlist/tokenlist";
@@ -112,6 +113,7 @@
   @include halo-checkbox;
   @include halo-datagrid;
   @include halo-tabsheet;
+  @include managed-tabsheet;
   @include halo-datefield;
   @include halo-datepicker;
   @include halo-splitpanel;
