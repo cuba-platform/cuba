@@ -52,8 +52,9 @@
                                        message="msg://widthValidationMsg"/>
                         </field>
                         <field id="rowsCount" width="100%">
-                            <validator class="com.haulmont.cuba.gui.components.validators.IntegerValidator"
-                                       onlyPositive="true" message="msg://rowsCountValidationMsg"/>
+                            <validator class="com.haulmont.cuba.gui.components.validators.RangeValidator"
+                                       valueType="java.lang.Integer" minValue="1" maxValue="40"
+                                       message="msg://rowsCountValidationMsg"/>
                         </field>
                         <field id="defaultEntityId" custom="true" width="100%"/>
 
@@ -76,7 +77,7 @@
                                 caption="msg://targetScreensTable.remove"/>
                     </buttonsPanel>
                     <columns>
-                        <column id="screen" editable="true" custom="true" caption="msg://sys$ScreenAndComponent.screen"/>
+                        <column id="screen" editable="true" caption="msg://sys$ScreenAndComponent.screen"/>
                         <column id="component" editable="true" caption="msg://sys$ScreenAndComponent.component"/>
                     </columns>
                     <rows datasource="screensDs"/>
