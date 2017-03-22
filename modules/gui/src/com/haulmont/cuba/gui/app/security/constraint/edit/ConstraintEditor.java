@@ -248,24 +248,24 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
     }
 
     public void getJoinClauseHelp() {
-        getDialogOptions()
-                .setModal(false)
-                .setWidth(600);
-        showMessageDialog(getMessage("joinClause"), getMessage("joinClauseHelp"), MessageType.CONFIRMATION_HTML);
+        showMessageDialog(getMessage("joinClause"), getMessage("joinClauseHelp"),
+                MessageType.CONFIRMATION_HTML
+                        .modal(false)
+                        .width(600));
     }
 
     public void getWhereClauseHelp() {
-        getDialogOptions()
-                .setModal(false)
-                .setWidth(600);
-        showMessageDialog(getMessage("whereClause"), getMessage("whereClauseHelp"), MessageType.CONFIRMATION_HTML);
+        showMessageDialog(getMessage("whereClause"), getMessage("whereClauseHelp"),
+                MessageType.CONFIRMATION_HTML
+                        .modal(false)
+                        .width(600));
     }
 
     public void getGroovyScriptHelp() {
-        getDialogOptions()
-                .setModal(false)
-                .setWidth(600);
-        showMessageDialog(getMessage("groovyScript"), getMessage("groovyScriptHelp"), MessageType.CONFIRMATION_HTML);
+        showMessageDialog(getMessage("groovyScript"), getMessage("groovyScriptHelp"),
+                MessageType.CONFIRMATION_HTML
+                        .modal(false)
+                        .width(600));
     }
 
     public void openWizard() {
