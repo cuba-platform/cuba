@@ -23,6 +23,8 @@ import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.web.WebConfig;
 
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 /**
@@ -69,6 +71,7 @@ public class UserSettingsTools {
         userSettingService.saveSetting(ClientType.WEB, "appWindowMode", mode.name());
     }
 
+    @Nonnull
     public String loadAppWindowTheme() {
         String s = userSettingService.loadSetting(ClientType.WEB, "appWindowTheme");
         if (s != null) {

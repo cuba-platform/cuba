@@ -499,9 +499,7 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
 
         if (userSession instanceof ClientUserSession && ((ClientUserSession) userSession).isAuthenticated()) {
             // load theme from user settings
-            String themeName = webConfig.getAppWindowTheme();
-
-            themeName = userSettingsTools.loadAppWindowTheme() == null ? themeName : userSettingsTools.loadAppWindowTheme();
+            String themeName = userSettingsTools.loadAppWindowTheme();
 
             if (!Objects.equals(themeName, getTheme())) {
                 // check theme support
