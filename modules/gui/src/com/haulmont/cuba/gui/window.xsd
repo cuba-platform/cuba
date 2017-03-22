@@ -619,6 +619,28 @@
         </xs:union>
     </xs:simpleType>
 
+    <xs:simpleType name="shortcut">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="${TABLE_EDIT_SHORTCUT}"/>
+                    <xs:enumeration value="${COMMIT_SHORTCUT}"/>
+                    <xs:enumeration value="${CLOSE_SHORTCUT}"/>
+                    <xs:enumeration value="${FILTER_APPLY_SHORTCUT}"/>
+                    <xs:enumeration value="${FILTER_SELECT_SHORTCUT}"/>
+                    <xs:enumeration value="${NEXT_TAB_SHORTCUT}"/>
+                    <xs:enumeration value="${PREVIOUS_TAB_SHORTCUT}"/>
+                    <xs:enumeration value="${PICKER_LOOKUP_SHORTCUT}"/>
+                    <xs:enumeration value="${PICKER_OPEN_SHORTCUT}"/>
+                    <xs:enumeration value="${PICKER_CLEAR_SHORTCUT}"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
     <xs:simpleType name="tableStylename">
         <xs:union>
             <xs:simpleType>
@@ -905,7 +927,7 @@
         <xs:attributeGroup ref="hasIcon"/>
 
         <xs:attribute name="invoke" type="xs:string"/>
-        <xs:attribute name="shortcut" type="xs:string"/>
+        <xs:attribute name="shortcut" type="shortcut"/>
     </xs:complexType>
 
     <xs:complexType name="componentAction">
@@ -918,7 +940,7 @@
         <xs:attribute name="openType" type="openType"/>
         <xs:attribute name="trackSelection" type="xs:boolean"/>
         <xs:attribute name="invoke" type="xs:string"/>
-        <xs:attribute name="shortcut" type="xs:string"/>
+        <xs:attribute name="shortcut" type="shortcut"/>
         <xs:attribute name="constraintOperationType" type="constraintOperationType"/>
         <xs:attribute name="constraintCode" type="xs:string"/>
     </xs:complexType>

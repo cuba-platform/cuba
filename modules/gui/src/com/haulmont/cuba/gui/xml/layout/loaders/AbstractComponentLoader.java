@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.Datatype;
@@ -25,6 +26,8 @@ import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
@@ -40,18 +43,32 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.reflect.MethodUtils;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map;
+import java.util.function.Function;
 
 public abstract class AbstractComponentLoader<T extends Component> implements ComponentLoader<T> {
 
-    protected static final String SHORTCUT_CONFIG_VALUE_REGEXP = "\\$\\{([a-zA-Z.]*)\\}";
+    protected static final Map<String, Function<ClientConfig, String>> shortcutAliases =
+            ImmutableMap.<String, Function<ClientConfig, String>>builder()
+                    .put("TABLE_EDIT_SHORTCUT", ClientConfig::getTableEditShortcut)
+                    .put("COMMIT_SHORTCUT", ClientConfig::getCommitShortcut)
+                    .put("CLOSE_SHORTCUT", ClientConfig::getCloseShortcut)
+                    .put("FILTER_APPLY_SHORTCUT", ClientConfig::getFilterApplyShortcut)
+                    .put("FILTER_SELECT_SHORTCUT", ClientConfig::getFilterSelectShortcut)
+                    .put("NEXT_TAB_SHORTCUT", ClientConfig::getNextTabShortcut)
+                    .put("PREVIOUS_TAB_SHORTCUT", ClientConfig::getPreviousTabShortcut)
+                    .put("PICKER_LOOKUP_SHORTCUT", ClientConfig::getPickerLookupShortcut)
+                    .put("PICKER_OPEN_SHORTCUT", ClientConfig::getPickerOpenShortcut)
+                    .put("PICKER_CLEAR_SHORTCUT", ClientConfig::getPickerClearShortcut)
+                    .build();
+
     protected Locale locale;
     protected String messagesPack;
     protected Context context;
@@ -63,6 +80,8 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     protected Scripting scripting = AppBeans.get(Scripting.NAME);
     protected Resources resources = AppBeans.get(Resources.NAME);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+    protected Configuration configuration = AppBeans.get(Configuration.NAME);
+    protected ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 
     protected ThemeConstants themeConstants;
     protected ComponentsFactory factory;
@@ -394,6 +413,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected Field.Validator loadValidator(Element validatorElement) {
         final String className = validatorElement.attributeValue("class");
         final String scriptPath = validatorElement.attributeValue("script");
@@ -483,9 +503,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         String trackSelection = element.attributeValue("trackSelection");
 
         String shortcut = StringUtils.trimToNull(element.attributeValue("shortcut"));
-        if (shortcutIsConfigValue(shortcut)) {
-            shortcut = getShortcutFromConfig(shortcut);
-        }
+        shortcut = loadShortcut(shortcut);
 
         if (Boolean.parseBoolean(trackSelection)) {
             return new DeclarativeTrackingAction(
@@ -514,28 +532,87 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
     }
 
-    protected boolean shortcutIsConfigValue(String shortcut) {
-        if (StringUtils.isNotEmpty(shortcut)) {
-            Pattern pattern = Pattern.compile(SHORTCUT_CONFIG_VALUE_REGEXP);
-            return pattern.matcher(shortcut).matches();
+    protected String loadShortcut(String shortcut) {
+        if (StringUtils.isNotEmpty(shortcut) && shortcut.startsWith("${") && shortcut.endsWith("}")) {
+            String fqnShortcut = loadShortcutFromFQNConfig(shortcut);
+            if (fqnShortcut != null) {
+                return fqnShortcut;
+            }
+
+            String configShortcut = loadShortcutFromConfig(shortcut);
+            if (configShortcut != null) {
+                return configShortcut;
+            }
+
+            String aliasShortcut = loadShortcutFromAlias(shortcut);
+            if (aliasShortcut != null)
+                return aliasShortcut;
         }
-        return false;
+        return shortcut;
     }
 
-    protected String getShortcutFromConfig(String configString) {
-        if (StringUtils.isNotEmpty(configString)) {
-            Pattern pattern = Pattern.compile(SHORTCUT_CONFIG_VALUE_REGEXP);
-            Matcher matcher = pattern.matcher(configString);
-            if (matcher.matches()) {
-                String shortcutPropertyKey = matcher.group(1);
+    protected String loadShortcutFromFQNConfig(String shortcut) {
+        if (shortcut.contains("#")) {
+            String[] splittedShortcut = shortcut.split("#");
+            if (splittedShortcut.length != 2) {
+                String message = "An error occurred while loading shortcut: incorrect format of shortcut.";
+                throw new GuiDevelopmentException(message, context.getFullFrameId());
+            }
 
-                String shortcut = AppContext.getProperty(shortcutPropertyKey);
-                if (StringUtils.isNotEmpty(shortcut)) {
-                    return shortcut;
-                } else {
-                    String message = String.format("Action shortcut property \"%s\" doesn't exist", shortcutPropertyKey);
+            String fqnConfigName = splittedShortcut[0].substring(2);
+            String methodName = splittedShortcut[1].substring(0, splittedShortcut[1].length() - 1);
+
+            //noinspection unchecked
+            Class<Config> configClass = (Class<Config>) scripting.loadClass(fqnConfigName);
+            if (configClass != null) {
+                Config config = configuration.getConfig(configClass);
+
+                try {
+                    String shortcutValue = (String) MethodUtils.invokeMethod(config, methodName, null);
+                    if (StringUtils.isNotEmpty(shortcutValue)) {
+                        return shortcutValue;
+                    }
+                } catch (NoSuchMethodException e) {
+                    String message = String.format("An error occurred while loading shortcut: " +
+                            "can't find method \"%s\" in \"%s\"", methodName, fqnConfigName);
+                    throw new GuiDevelopmentException(message, context.getFullFrameId());
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    String message = String.format("An error occurred while loading shortcut: " +
+                            "can't invoke method \"%s\" in \"%s\"", methodName, fqnConfigName);
                     throw new GuiDevelopmentException(message, context.getFullFrameId());
                 }
+            } else {
+                String message = String.format("An error occurred while loading shortcut: " +
+                        "can't find config interface \"%s\"", fqnConfigName);
+                throw new GuiDevelopmentException(message, context.getFullFrameId());
+            }
+        }
+        return null;
+    }
+
+    protected String loadShortcutFromAlias(String shortcut) {
+        if (shortcut.endsWith("_SHORTCUT}")) {
+            String alias = shortcut.substring(2, shortcut.length() - 1);
+            if (shortcutAliases.containsKey(alias)) {
+                return shortcutAliases.get(alias).apply(clientConfig);
+            } else {
+                String message = String.format("An error occurred while loading shortcut. " +
+                        "Can't find shortcut for alias \"%s\"", alias);
+                throw new GuiDevelopmentException(message, context.getFullFrameId());
+            }
+        }
+        return null;
+    }
+
+    protected String loadShortcutFromConfig(String shortcut) {
+        if (shortcut.contains(".")) {
+            String shortcutPropertyKey = shortcut.substring(2, shortcut.length() - 1);
+            String shortcutValue = AppContext.getProperty(shortcutPropertyKey);
+            if (StringUtils.isNotEmpty(shortcutValue)) {
+                return shortcutValue;
+            } else {
+                String message = String.format("Action shortcut property \"%s\" doesn't exist", shortcutPropertyKey);
+                throw new GuiDevelopmentException(message, context.getFullFrameId());
             }
         }
         return null;
