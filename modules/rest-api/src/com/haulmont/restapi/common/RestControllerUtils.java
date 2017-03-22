@@ -16,6 +16,7 @@
 
 package com.haulmont.restapi.common;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
@@ -25,7 +26,9 @@ import com.haulmont.cuba.core.global.EntityAttributeVisitor;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.Security;
+import com.haulmont.restapi.config.RestJsonTransformations;
 import com.haulmont.restapi.exception.RestAPIException;
+import com.haulmont.restapi.transform.JsonTransformationDirection;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -45,6 +48,9 @@ public class RestControllerUtils {
 
     @Inject
     protected MetadataTools metadataTools;
+
+    @Inject
+    protected RestJsonTransformations restJsonTransformations;
 
     /**
      * Finds metaClass by entityName. Throws a RestAPIException if metaClass not found
@@ -67,6 +73,16 @@ public class RestControllerUtils {
      */
     public void applyAttributesSecurity(Entity entity) {
         metadataTools.traverseAttributes(entity, new FillingInaccessibleAttributesVisitor());
+    }
+
+    public String transformEntityNameIfRequired(String entityName, String modelVersion, JsonTransformationDirection direction) {
+        return Strings.isNullOrEmpty(modelVersion) ? entityName :
+            restJsonTransformations.getTransformer(entityName, modelVersion, direction).getTransformedEntityName();
+    }
+
+    public String transformJsonIfRequired(String entityName, String modelVersion, JsonTransformationDirection direction, String json) {
+        return Strings.isNullOrEmpty(modelVersion) ? json :
+            restJsonTransformations.getTransformer(entityName, modelVersion, direction).transformJson(json);
     }
 
     private class FillingInaccessibleAttributesVisitor implements EntityAttributeVisitor {

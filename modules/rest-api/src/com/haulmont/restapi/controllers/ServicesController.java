@@ -39,8 +39,9 @@ public class ServicesController {
     @PostMapping("/{serviceName}/{methodName}")
     public ResponseEntity<String> invokeServiceMethodPost(@PathVariable String serviceName,
                                                           @PathVariable String methodName,
+                                                          @RequestParam(required = false) String modelVersion,
                                                           @RequestBody(required = false) String paramsJson) {
-        ServicesControllerManager.ServiceCallResult result = servicesControllerManager.invokeServiceMethodPost(serviceName, methodName, paramsJson);
+        ServicesControllerManager.ServiceCallResult result = servicesControllerManager.invokeServiceMethodPost(serviceName, methodName, paramsJson, modelVersion);
         HttpStatus status;
         if (result == null) {
             status = HttpStatus.NO_CONTENT;
@@ -55,8 +56,9 @@ public class ServicesController {
     @GetMapping("/{serviceName}/{methodName}")
     public ResponseEntity<String> invokeServiceMethodGet(@PathVariable String serviceName,
                                                          @PathVariable String methodName,
+                                                         @RequestParam(required = false) String modelVersion,
                                                          @RequestParam Map<String, String> paramsMap) {
-        ServicesControllerManager.ServiceCallResult result = servicesControllerManager.invokeServiceMethodGet(serviceName, methodName, paramsMap);
+        ServicesControllerManager.ServiceCallResult result = servicesControllerManager.invokeServiceMethodGet(serviceName, methodName, paramsMap, modelVersion);
         HttpStatus status;
         if (result == null) {
             status = HttpStatus.NO_CONTENT;

@@ -32,6 +32,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.exception.RestAPIException;
 import com.haulmont.restapi.config.RestQueriesConfiguration;
+import com.haulmont.restapi.transform.JsonTransformationDirection;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -74,8 +75,10 @@ public class QueriesControllerManager {
                                @Nullable String view,
                                @Nullable Boolean returnNulls,
                                @Nullable Boolean dynamicAttributes,
+                               @Nullable String version,
                                Map<String, String> params) {
         LoadContext<Entity> ctx;
+        entityName = restControllerUtils.transformEntityNameIfRequired(entityName, version, JsonTransformationDirection.FROM_VERSION);
         try {
             ctx = createQueryLoadContext(entityName, queryName, limit, offset, params);
         } catch (ClassNotFoundException | ParseException e) {
@@ -94,12 +97,16 @@ public class QueriesControllerManager {
         serializationOptions.add(EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
         if (BooleanUtils.isTrue(returnNulls)) serializationOptions.add(EntitySerializationOption.SERIALIZE_NULLS);
 
-        return entitySerializationAPI.toJson(entities, ctx.getView(), serializationOptions.toArray(new EntitySerializationOption[0]));
+        String json = entitySerializationAPI.toJson(entities, ctx.getView(), serializationOptions.toArray(new EntitySerializationOption[0]));
+        json = restControllerUtils.transformJsonIfRequired(entityName, version, JsonTransformationDirection.TO_VERSION, json);
+        return json;
     }
 
     public String getCount(String entityName,
                            String queryName,
+                           String version,
                            Map<String, String> params) {
+        entityName = restControllerUtils.transformEntityNameIfRequired(entityName, version, JsonTransformationDirection.FROM_VERSION);
         LoadContext<Entity> ctx;
         try {
             ctx = createQueryLoadContext(entityName, queryName, null, null, params);

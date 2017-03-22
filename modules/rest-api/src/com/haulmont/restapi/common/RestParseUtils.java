@@ -23,6 +23,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.restapi.transform.JsonTransformationDirection;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -43,9 +44,12 @@ public class RestParseUtils {
     protected EntitySerializationAPI entitySerializationAPI;
 
     @Inject
+    protected RestControllerUtils restControllerUtils;
+
+    @Inject
     protected Metadata metadata;
 
-    public Object toObject(Type type, String value) throws ParseException {
+    public Object toObject(Type type, String value, String modelVersion) throws ParseException {
         Class clazz;
         Class argumentTypeClass = null;
         if (type instanceof Class) {
@@ -94,8 +98,13 @@ public class RestParseUtils {
             }
             //if type argument for the collection is defined and is entity or if there is no type argument then try to
             //deserialize entities collection
-            MetaClass metaClass = argumentTypeClass != null ? metadata.getClass(argumentTypeClass) : null;
-            return entitySerializationAPI.entitiesCollectionFromJson(value, metaClass != null ? metaClass : null);
+            MetaClass metaClass = null;
+            if (argumentTypeClass != null) {
+                metaClass = metadata.getClassNN(argumentTypeClass);
+                String entityName = restControllerUtils.transformEntityNameIfRequired(metaClass.getName(), modelVersion, JsonTransformationDirection.TO_VERSION);
+                value = restControllerUtils.transformJsonIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION, value);
+            }
+            return entitySerializationAPI.entitiesCollectionFromJson(value, metaClass);
         }
         return deserializePOJO(value, clazz);
     }

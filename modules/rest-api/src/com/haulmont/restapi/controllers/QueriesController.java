@@ -48,11 +48,12 @@ public class QueriesController {
                                @RequestParam(required = false) Boolean returnNulls,
                                @RequestParam(required = false) Boolean dynamicAttributes,
                                @RequestParam(required = false) Boolean returnCount,
+                               @RequestParam(required = false) String modelVersion,
                                @RequestParam Map<String, String> params) {
-        String resultJson = queriesControllerManager.executeQuery(entityName, queryName, limit, offset, view, returnNulls, dynamicAttributes, params);
+        String resultJson = queriesControllerManager.executeQuery(entityName, queryName, limit, offset, view, returnNulls, dynamicAttributes, modelVersion, params);
         ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(HttpStatus.OK);
         if (BooleanUtils.isTrue(returnCount)) {
-            String count = queriesControllerManager.getCount(entityName, queryName, params);
+            String count = queriesControllerManager.getCount(entityName, queryName, modelVersion, params);
             responseBuilder.header("X-Total-Count", count);
         }
         return responseBuilder.body(resultJson);
@@ -61,8 +62,9 @@ public class QueriesController {
     @GetMapping(value = "/{entityName}/{queryName}/count", produces = "text/plain;charset=UTF-8")
     public String getCount(@PathVariable String entityName,
                            @PathVariable String queryName,
+                           @RequestParam(required = false) String modelVersion,
                            @RequestParam Map<String, String> params) throws ClassNotFoundException, ParseException {
-        return queriesControllerManager.getCount(entityName, queryName, params);
+        return queriesControllerManager.getCount(entityName, queryName, modelVersion, params);
     }
 
     @GetMapping("/{entityName}")

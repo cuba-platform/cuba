@@ -22,14 +22,17 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.common.RestParseUtils;
 import com.haulmont.restapi.config.RestServicesConfiguration;
 import com.haulmont.restapi.exception.RestAPIException;
+import com.haulmont.restapi.transform.JsonTransformationDirection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -40,6 +43,7 @@ import javax.inject.Inject;
 import javax.validation.ValidationException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.*;
@@ -65,21 +69,25 @@ public class ServicesControllerManager {
     @Inject
     protected RestControllerUtils restControllerUtils;
 
+    @Inject
+    protected Metadata metadata;
+
     protected Logger log = LoggerFactory.getLogger(ServicesControllerManager.class);
 
     @Nullable
-    public ServiceCallResult invokeServiceMethodGet(String serviceName, String methodName, Map<String, String> paramsMap) {
+    public ServiceCallResult invokeServiceMethodGet(String serviceName, String methodName, Map<String, String> paramsMap, String modelVersion) {
+        paramsMap.remove("modelVersion");
         List<String> paramNames = new ArrayList<>(paramsMap.keySet());
         List<String> paramValuesStr = new ArrayList<>(paramsMap.values());
-        return _invokeServiceMethod(serviceName, methodName, paramNames, paramValuesStr);
+        return _invokeServiceMethod(serviceName, methodName, paramNames, paramValuesStr, modelVersion);
     }
 
     @Nullable
-    public ServiceCallResult invokeServiceMethodPost(String serviceName, String methodName, String paramsJson) {
+    public ServiceCallResult invokeServiceMethodPost(String serviceName, String methodName, String paramsJson, String modelVersion) {
         Map<String, String> paramsMap = parseParamsJson(paramsJson);
         List<String> paramNames = new ArrayList<>(paramsMap.keySet());
         List<String> paramValuesStr = new ArrayList<>(paramsMap.values());
-        return _invokeServiceMethod(serviceName, methodName, paramNames, paramValuesStr);
+        return _invokeServiceMethod(serviceName, methodName, paramNames, paramValuesStr, modelVersion);
     }
 
     public Collection<RestServicesConfiguration.RestServiceInfo> getServiceInfos() {
@@ -119,7 +127,8 @@ public class ServicesControllerManager {
     }
 
     @Nullable
-    protected ServiceCallResult _invokeServiceMethod(String serviceName, String methodName, List<String> paramNames, List<String> paramValuesStr) {
+    protected ServiceCallResult _invokeServiceMethod(String serviceName, String methodName, List<String> paramNames,
+                                                     List<String> paramValuesStr, String modelVersion) {
         Object service = AppBeans.get(serviceName);
         Method serviceMethod = restServicesConfiguration.getServiceMethod(serviceName, methodName, paramNames);
         if (serviceMethod == null) {
@@ -131,7 +140,7 @@ public class ServicesControllerManager {
         Type[] types = serviceMethod.getGenericParameterTypes();
         for (int i = 0; i < types.length; i++) {
             try {
-                paramValues.add(restParseUtils.toObject(types[i], paramValuesStr.get(i)));
+                paramValues.add(restParseUtils.toObject(types[i], paramValuesStr.get(i), modelVersion));
             } catch (ParseException e) {
                 log.error("Error on parsing service param value", e);
                 throw new RestAPIException("Invalid parameter value",
@@ -163,14 +172,27 @@ public class ServicesControllerManager {
             String entityJson = entitySerializationAPI.toJson(entity,
                     null,
                     EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
+            entityJson = restControllerUtils.transformJsonIfRequired(entity.getMetaClass().getName(),
+                    modelVersion, JsonTransformationDirection.TO_VERSION, entityJson);
             return new ServiceCallResult(entityJson, true);
         } else if (Collection.class.isAssignableFrom(methodReturnType)) {
-            if (isEntitiesCollection((Collection) methodResult)) {
+            Class returnTypeArgument = getMethodReturnTypeArgument(serviceMethod);
+            if ((returnTypeArgument != null && Entity.class.isAssignableFrom(returnTypeArgument))
+                    || isEntitiesCollection((Collection) methodResult)) {
                 Collection<? extends Entity> entities = (Collection<? extends Entity>) methodResult;
                 entities.forEach(entity -> restControllerUtils.applyAttributesSecurity(entity));
                 String entitiesJson = entitySerializationAPI.toJson(entities,
                         null,
                         EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
+                if (returnTypeArgument != null) {
+                    MetaClass metaClass = metadata.getClass(returnTypeArgument);
+                    if (metaClass != null) {
+                        entitiesJson = restControllerUtils.transformJsonIfRequired(metaClass.getName(), modelVersion,
+                                JsonTransformationDirection.TO_VERSION, entitiesJson);
+                    } else {
+                        log.error("MetaClass for service collection parameter type {} not found", returnTypeArgument);
+                    }
+                }
                 return new ServiceCallResult(entitiesJson, true);
             } else {
                 return new ServiceCallResult(restParseUtils.serialize(methodResult), true);
@@ -183,6 +205,19 @@ public class ServicesControllerManager {
                 return new ServiceCallResult(restParseUtils.serializePOJO(methodResult, methodReturnType), true);
             }
         }
+    }
+
+    @Nullable
+    protected Class getMethodReturnTypeArgument(Method serviceMethod) {
+        Class returnTypeArgument = null;
+        Type genericReturnType = serviceMethod.getGenericReturnType();
+        if (genericReturnType instanceof ParameterizedType) {
+            Type[] actualTypeArguments = ((ParameterizedType) genericReturnType).getActualTypeArguments();
+            if (actualTypeArguments.length > 0) {
+                returnTypeArgument = (Class) actualTypeArguments[0];
+            }
+        }
+        return returnTypeArgument;
     }
 
     protected boolean isEntitiesCollection(Collection collection) {

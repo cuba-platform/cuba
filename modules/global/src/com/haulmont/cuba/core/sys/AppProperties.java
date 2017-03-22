@@ -96,6 +96,7 @@ public class AppProperties {
                         "cuba.restServicesConfig",
                         "cuba.rest.queriesConfig",
                         "cuba.rest.servicesConfig",
+                        "cuba.rest.jsonTransformationConfig",
                         "cuba.windowConfig",
                         "cuba.menuConfig",
                         "cuba.themeConfig",
@@ -110,7 +111,8 @@ public class AppProperties {
                         "cuba.restSpringContextConfig",
                         "cuba.restServicesConfig",
                         "cuba.rest.servicesConfig",
-                        "cuba.rest.queriesConfig"
+                        "cuba.rest.queriesConfig",
+                        "cuba.rest.jsonTransformationConfig"
                 ));
                 break;
             case "desktop":

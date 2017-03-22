@@ -31,7 +31,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import java.text.ParseException;
 import java.util.HashMap;
 
 /**
@@ -52,8 +51,9 @@ public class EntitiesController {
                              @PathVariable String entityId,
                              @RequestParam(required = false) String view,
                              @RequestParam(required = false) Boolean returnNulls,
-                             @RequestParam(required = false) Boolean dynamicAttributes) {
-        return entitiesControllerManager.loadEntity(entityName, entityId, view, returnNulls, dynamicAttributes);
+                             @RequestParam(required = false) Boolean dynamicAttributes,
+                             @RequestParam(required = false) String modelVersion) {
+        return entitiesControllerManager.loadEntity(entityName, entityId, view, returnNulls, dynamicAttributes, modelVersion);
     }
 
     @GetMapping("/{entityName}")
@@ -64,11 +64,12 @@ public class EntitiesController {
                                    @RequestParam(required = false) String sort,
                                    @RequestParam(required = false) Boolean returnNulls,
                                    @RequestParam(required = false) Boolean returnCount,
-                                   @RequestParam(required = false) Boolean dynamicAttributes) {
-        String resultJson = entitiesControllerManager.loadEntitiesList(entityName, view, limit, offset, sort, returnNulls, dynamicAttributes);
+                                   @RequestParam(required = false) Boolean dynamicAttributes,
+                                   @RequestParam(required = false) String modelVersion) {
+        String resultJson = entitiesControllerManager.loadEntitiesList(entityName, view, limit, offset, sort, returnNulls, dynamicAttributes, modelVersion);
         ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(HttpStatus.OK);
         if (BooleanUtils.isTrue(returnCount)) {
-            String count = queriesControllerManager.getCount(entityName, RestQueriesConfiguration.ALL_ENTITIES_QUERY_NAME, new HashMap<>());
+            String count = queriesControllerManager.getCount(entityName, RestQueriesConfiguration.ALL_ENTITIES_QUERY_NAME, modelVersion, new HashMap<>());
             responseBuilder.header("X-Total-Count", count);
         }
         return responseBuilder.body(resultJson);
@@ -77,8 +78,9 @@ public class EntitiesController {
     @PostMapping("/{entityName}")
     public ResponseEntity<String> createEntity(@RequestBody String entityJson,
                                                @PathVariable String entityName,
+                                               @RequestParam(required = false) String modelVersion,
                                                HttpServletRequest request) {
-        CreatedEntityInfo entityInfo = entitiesControllerManager.createEntity(entityJson, entityName);
+        CreatedEntityInfo entityInfo = entitiesControllerManager.createEntity(entityJson, entityName, modelVersion);
 
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString())
                 .path("/{id}")
@@ -92,14 +94,16 @@ public class EntitiesController {
     @PutMapping("/{entityName}/{entityId}")
     public String updateEntity(@RequestBody String entityJson,
                              @PathVariable String entityName,
-                             @PathVariable String entityId) {
-        CreatedEntityInfo entityInfo = entitiesControllerManager.updateEntity(entityJson, entityName, entityId);
+                             @PathVariable String entityId,
+                             @RequestParam(required = false) String modelVersion) {
+        CreatedEntityInfo entityInfo = entitiesControllerManager.updateEntity(entityJson, entityName, entityId, modelVersion);
         return entityInfo.getJson();
     }
 
     @DeleteMapping(path = "/{entityName}/{entityId}")
     public void deleteEntity(@PathVariable String entityName,
-                             @PathVariable String entityId) {
-        entitiesControllerManager.deleteEntity(entityName, entityId);
+                             @PathVariable String entityId,
+                             @RequestParam(required = false) String modelVersion) {
+        entitiesControllerManager.deleteEntity(entityName, entityId, modelVersion);
     }
 }

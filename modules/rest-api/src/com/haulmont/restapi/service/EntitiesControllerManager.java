@@ -36,6 +36,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.data.CreatedEntityInfo;
 import com.haulmont.restapi.exception.RestAPIException;
+import com.haulmont.restapi.transform.JsonTransformationDirection;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -86,9 +87,11 @@ public class EntitiesControllerManager {
                              String entityId,
                              @Nullable String view,
                              @Nullable Boolean returnNulls,
-                             @Nullable Boolean dynamicAttributes) {
-        MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
+                             @Nullable Boolean dynamicAttributes,
+                             @Nullable String modelVersion) {
 
+        entityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
+        MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanReadEntity(metaClass);
 
         LoadContext<Entity> ctx = new LoadContext<>(metaClass);
@@ -110,8 +113,9 @@ public class EntitiesControllerManager {
 
         restControllerUtils.applyAttributesSecurity(entity);
 
-        return entitySerializationAPI.toJson(entity, null, serializationOptions.toArray(new EntitySerializationOption[0]));
-
+        String json = entitySerializationAPI.toJson(entity, null, serializationOptions.toArray(new EntitySerializationOption[0]));
+        json = restControllerUtils.transformJsonIfRequired(entityName, modelVersion, JsonTransformationDirection.TO_VERSION, json);
+        return json;
     }
 
     public String loadEntitiesList(String entityName,
@@ -120,7 +124,9 @@ public class EntitiesControllerManager {
                                    @Nullable Integer offset,
                                    @Nullable String sort,
                                    @Nullable Boolean returnNulls,
-                                   @Nullable Boolean dynamicAttributes) {
+                                   @Nullable Boolean dynamicAttributes,
+                                   @Nullable String modelVersion) {
+        entityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
         MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanReadEntity(metaClass);
 
@@ -163,12 +169,18 @@ public class EntitiesControllerManager {
         serializationOptions.add(EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
         if (BooleanUtils.isTrue(returnNulls)) serializationOptions.add(EntitySerializationOption.SERIALIZE_NULLS);
 
-        return entitySerializationAPI.toJson(entities, view, serializationOptions.toArray(new EntitySerializationOption[0]));
+        String json = entitySerializationAPI.toJson(entities, view, serializationOptions.toArray(new EntitySerializationOption[0]));
+        json = restControllerUtils.transformJsonIfRequired(entityName, modelVersion, JsonTransformationDirection.TO_VERSION, json);
+        return json;
     }
 
-    public CreatedEntityInfo createEntity(String entityJson, String entityName) {
-        MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
+    public CreatedEntityInfo createEntity(String entityJson, String entityName, String modelVersion) {
+        String transformedEntityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
+        MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
         checkCanCreateEntity(metaClass);
+
+        entityJson = restControllerUtils.transformJsonIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION, entityJson);
+
         //todo MG catch invalid json
         Entity entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
 
@@ -176,7 +188,7 @@ public class EntitiesControllerManager {
         Set<ConstraintViolation<Entity>> violations = validator.validate(entity, Default.class, RestApiChecks.class);
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(
-                    "Validation failed on entity creation through REST-API for " + entityName, violations);
+                    "Validation failed on entity creation through REST-API for " + transformedEntityName, violations);
         }
 
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
@@ -189,13 +201,15 @@ public class EntitiesControllerManager {
         }
 
         //if many entities were created (because of @Composition references) we must find the main entity
-        return getMainEntityInfo(importedEntities, metaClass);
+        return getMainEntityInfo(importedEntities, metaClass, modelVersion);
     }
 
     public CreatedEntityInfo updateEntity(String entityJson,
                                           String entityName,
-                                          String entityId) {
-        MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
+                                          String entityId,
+                                          String modelVersion) {
+        String transformedEntityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
+        MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
         checkCanUpdateEntity(metaClass);
         Object id = getIdFromString(entityId, metaClass);
 
@@ -203,7 +217,8 @@ public class EntitiesControllerManager {
         @SuppressWarnings("unchecked")
         Entity existingEntity = dataManager.load(loadContext);
 
-        checkEntityIsNotNull(entityName, entityId, existingEntity);
+        checkEntityIsNotNull(transformedEntityName, entityId, existingEntity);
+        entityJson = restControllerUtils.transformJsonIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION, entityJson);
         Entity entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
         if (entity instanceof BaseGenericIdEntity) {
             //noinspection unchecked
@@ -214,7 +229,7 @@ public class EntitiesControllerManager {
         Set<ConstraintViolation<Entity>> violations = validator.validate(entity, Default.class, RestApiChecks.class);
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(
-                    "Validation failed on entity creation through REST-API for " + entityName, violations);
+                    "Validation failed on entity creation through REST-API for " + transformedEntityName, violations);
         }
 
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
@@ -226,12 +241,14 @@ public class EntitiesControllerManager {
         }
         //there may be multiple entities in importedEntities (because of @Composition references), so we must find
         // the main entity that will be returned
-        return getMainEntityInfo(importedEntities, metaClass);
+        return getMainEntityInfo(importedEntities, metaClass, modelVersion);
     }
 
     public void deleteEntity(String entityName,
-                             String entityId) {
-        MetaClass metaClass = metadata.getClass(entityName);
+                             String entityId,
+                             String modelVersion) {
+        entityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
+        MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanDeleteEntity(metaClass);
         Object id = getIdFromString(entityId, metaClass);
         Entity entity = dataManager.load(new LoadContext<>(metaClass).setId(id));
@@ -301,7 +318,7 @@ public class EntitiesControllerManager {
      * Finds entity with given metaClass and converts it to JSON.
      */
     @Nullable
-    protected CreatedEntityInfo getMainEntityInfo(Collection<Entity> importedEntities, MetaClass metaClass) {
+    protected CreatedEntityInfo getMainEntityInfo(Collection<Entity> importedEntities, MetaClass metaClass, String version) {
         Entity mainEntity = null;
         if (importedEntities.size() > 1) {
             Optional<Entity> first = importedEntities.stream().filter(e -> e.getMetaClass().equals(metaClass)).findFirst();
@@ -311,7 +328,9 @@ public class EntitiesControllerManager {
         }
 
         if (mainEntity != null) {
-            return new CreatedEntityInfo(mainEntity.getId(), entitySerializationAPI.toJson(mainEntity));
+            String json = entitySerializationAPI.toJson(mainEntity);
+            json = restControllerUtils.transformJsonIfRequired(metaClass.getName(), version, JsonTransformationDirection.TO_VERSION, json);
+            return new CreatedEntityInfo(mainEntity.getId(), json);
         }
         return null;
     }
