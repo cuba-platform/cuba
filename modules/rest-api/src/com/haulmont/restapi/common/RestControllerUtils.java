@@ -22,10 +22,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.EntityAttributeVisitor;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.restapi.config.RestJsonTransformations;
 import com.haulmont.restapi.exception.RestAPIException;
 import com.haulmont.restapi.transform.JsonTransformationDirection;
@@ -52,6 +49,9 @@ public class RestControllerUtils {
     @Inject
     protected RestJsonTransformations restJsonTransformations;
 
+    @Inject
+    protected ViewRepository viewRepository;
+
     /**
      * Finds metaClass by entityName. Throws a RestAPIException if metaClass not found
      */
@@ -64,6 +64,19 @@ public class RestControllerUtils {
         }
 
         return metaClass;
+    }
+
+    /**
+     * Finds a view for a given metaClass. Throws a RestAPIException if view not found
+     */
+    public View getView(MetaClass metaClass, String viewName) {
+        try {
+            return viewRepository.getView(metaClass, viewName);
+        } catch (ViewNotFoundException e) {
+            throw new RestAPIException("View not found",
+                    String.format("View %s for entity %s not found", viewName, metaClass.getName()),
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
     /**

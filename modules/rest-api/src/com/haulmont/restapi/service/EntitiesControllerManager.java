@@ -85,7 +85,7 @@ public class EntitiesControllerManager {
 
     public String loadEntity(String entityName,
                              String entityId,
-                             @Nullable String view,
+                             @Nullable String viewName,
                              @Nullable Boolean returnNulls,
                              @Nullable Boolean dynamicAttributes,
                              @Nullable String modelVersion) {
@@ -98,7 +98,8 @@ public class EntitiesControllerManager {
         Object id = getIdFromString(entityId, metaClass);
         ctx.setId(id);
 
-        if (!Strings.isNullOrEmpty(view)) {
+        if (!Strings.isNullOrEmpty(viewName)) {
+            View view = restControllerUtils.getView(metaClass, viewName);
             ctx.setView(view);
         }
 
@@ -156,7 +157,7 @@ public class EntitiesControllerManager {
 
         View view = null;
         if (!Strings.isNullOrEmpty(viewName)) {
-            view = metadata.getViewRepository().getView(metaClass, viewName);
+            view = restControllerUtils.getView(metaClass, viewName);
             ctx.setView(view);
         }
 
@@ -181,8 +182,12 @@ public class EntitiesControllerManager {
 
         entityJson = restControllerUtils.transformJsonIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION, entityJson);
 
-        //todo MG catch invalid json
-        Entity entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
+        Entity entity;
+        try {
+            entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
+        } catch (Exception e) {
+            throw new RestAPIException("Cannot deserialize an entity from JSON", "", HttpStatus.BAD_REQUEST);
+        }
 
         Validator validator = beanValidation.getValidator();
         Set<ConstraintViolation<Entity>> violations = validator.validate(entity, Default.class, RestApiChecks.class);
@@ -219,7 +224,14 @@ public class EntitiesControllerManager {
 
         checkEntityIsNotNull(transformedEntityName, entityId, existingEntity);
         entityJson = restControllerUtils.transformJsonIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION, entityJson);
-        Entity entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
+
+        Entity entity;
+        try {
+            entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
+        } catch (Exception e) {
+            throw new RestAPIException("Cannot deserialize an entity from JSON", "", HttpStatus.BAD_REQUEST);
+        }
+
         if (entity instanceof BaseGenericIdEntity) {
             //noinspection unchecked
             ((BaseGenericIdEntity) entity).setId(id);
@@ -257,21 +269,27 @@ public class EntitiesControllerManager {
     }
 
     private Object getIdFromString(String entityId, MetaClass metaClass) {
-        MetaProperty primaryKeyProperty = metadata.getTools().getPrimaryKeyProperty(metaClass);
-        Class<?> declaringClass = primaryKeyProperty.getJavaType();
-        Object id;
-        if (BaseDbGeneratedIdEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
-            id = IdProxy.of(Long.valueOf(entityId));
-        } else if (UUID.class.isAssignableFrom(declaringClass)) {
-            id = UUID.fromString(entityId);
-        } else if (Integer.class.isAssignableFrom(declaringClass)) {
-            id = Integer.valueOf(entityId);
-        } else if (Long.class.isAssignableFrom(declaringClass)) {
-            id = Long.valueOf(entityId);
-        } else {
-            id = entityId;
+        try {
+            MetaProperty primaryKeyProperty = metadata.getTools().getPrimaryKeyProperty(metaClass);
+            Class<?> declaringClass = primaryKeyProperty.getJavaType();
+            Object id;
+            if (BaseDbGeneratedIdEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
+                id = IdProxy.of(Long.valueOf(entityId));
+            } else if (UUID.class.isAssignableFrom(declaringClass)) {
+                id = UUID.fromString(entityId);
+            } else if (Integer.class.isAssignableFrom(declaringClass)) {
+                id = Integer.valueOf(entityId);
+            } else if (Long.class.isAssignableFrom(declaringClass)) {
+                id = Long.valueOf(entityId);
+            } else {
+                id = entityId;
+            }
+            return id;
+        } catch (Exception e) {
+            throw new RestAPIException("Invalid entity ID",
+                    String.format("Cannot convert %s into valid entity ID", entityId),
+                    HttpStatus.BAD_REQUEST);
         }
-        return id;
     }
 
     protected void checkEntityIsNotNull(String entityName, String entityId, Entity entity) {

@@ -72,7 +72,7 @@ public class QueriesControllerManager {
                                String queryName,
                                @Nullable Integer limit,
                                @Nullable Integer offset,
-                               @Nullable String view,
+                               @Nullable String viewName,
                                @Nullable Boolean returnNulls,
                                @Nullable Boolean dynamicAttributes,
                                @Nullable String version,
@@ -87,8 +87,10 @@ public class QueriesControllerManager {
         ctx.setLoadDynamicAttributes(BooleanUtils.isTrue(dynamicAttributes));
 
         //override default view defined in queries config
-        if (!Strings.isNullOrEmpty(view)) {
-            ctx.setView(view);
+        if (!Strings.isNullOrEmpty(viewName)) {
+            MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
+            restControllerUtils.getView(metaClass, viewName);
+            ctx.setView(viewName);
         }
         List<Entity> entities = dataManager.loadList(ctx);
         entities.forEach(entity -> restControllerUtils.applyAttributesSecurity(entity));

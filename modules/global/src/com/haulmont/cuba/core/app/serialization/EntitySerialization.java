@@ -452,7 +452,7 @@ public class EntitySerialization implements EntitySerializationAPI {
                             Enum enumValue = Enum.valueOf((Class<Enum>) propertyType, stringValue);
                             entity.setValue(propertyName, enumValue);
                         } catch (Exception e) {
-                            log.error(String.format("An error occurred while parsing enum. Class [%s]. Value [%s].", propertyType, stringValue), e);
+                            throw new EntitySerializationException(String.format("An error occurred while parsing enum. Class [%s]. Value [%s].", propertyType, stringValue));
                         }
                     } else if (propertyRange.isClass()) {
                         if (Entity.class.isAssignableFrom(propertyType)) {

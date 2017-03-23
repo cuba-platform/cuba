@@ -141,10 +141,10 @@ public class ServicesControllerManager {
         for (int i = 0; i < types.length; i++) {
             try {
                 paramValues.add(restParseUtils.toObject(types[i], paramValuesStr.get(i), modelVersion));
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 log.error("Error on parsing service param value", e);
                 throw new RestAPIException("Invalid parameter value",
-                        "",
+                        "Invalid parameter value for " + paramNames.get(i),
                         HttpStatus.BAD_REQUEST);
             }
         }

@@ -72,7 +72,15 @@ public class FileDownloadController {
     public void downloadFile(@PathVariable String fileDescriptorId,
                              @RequestParam(required = false) Boolean attachment,
                              HttpServletResponse response) {
-        LoadContext<FileDescriptor> ctx = LoadContext.create(FileDescriptor.class).setId(UUID.fromString(fileDescriptorId));
+        UUID uuid;
+        try {
+            uuid = UUID.fromString(fileDescriptorId);
+        } catch (IllegalArgumentException e) {
+            throw new RestAPIException("Invalid entity ID",
+                    String.format("Cannot convert %s into valid entity ID", fileDescriptorId),
+                    HttpStatus.BAD_REQUEST);
+        }
+        LoadContext<FileDescriptor> ctx = LoadContext.create(FileDescriptor.class).setId(uuid);
         FileDescriptor fd = dataService.load(ctx);
         if (fd == null) {
             throw new RestAPIException("File not found", "File not found. Id: " + fileDescriptorId, HttpStatus.NOT_FOUND);
