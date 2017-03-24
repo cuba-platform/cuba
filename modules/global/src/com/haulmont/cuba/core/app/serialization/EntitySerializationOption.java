@@ -23,12 +23,6 @@ package com.haulmont.cuba.core.app.serialization;
 public enum EntitySerializationOption {
 
     /**
-     * Specifies that entity identifiers are in the following format: "{entityName}-{entityId}". Otherwise just an
-     * identifier is a value of the {@code id} property
-     */
-    COMPLEX_ID_FORMAT,
-
-    /**
      * If an entity occurs in object graph several times, then the second and next occurrences will be replaced just
      * with a JSON object with the single field - entity identified.
      */

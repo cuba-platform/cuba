@@ -74,8 +74,7 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     @Override
     public byte[] exportEntities(Collection<? extends Entity> entities) {
-        String json = entitySerialization.toJson(entities, null, EntitySerializationOption.COMPLEX_ID_FORMAT,
-                EntitySerializationOption.COMPACT_REPEATED_ENTITIES);
+        String json = entitySerialization.toJson(entities, null,EntitySerializationOption.COMPACT_REPEATED_ENTITIES);
         byte[] jsonBytes = json.getBytes();
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -135,7 +134,7 @@ public class EntityImportExport implements EntityImportExportAPI {
                     String json = new String(readBytesFromEntry(archiveReader));
                     entities = entitySerialization.entitiesCollectionFromJson(json,
                             null,
-                            EntitySerializationOption.COMPLEX_ID_FORMAT, EntitySerializationOption.COMPACT_REPEATED_ENTITIES);
+                            EntitySerializationOption.COMPACT_REPEATED_ENTITIES);
                     result.addAll(importEntities(entities, view));
                 }
             } catch (IOException e) {

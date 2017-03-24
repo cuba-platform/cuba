@@ -119,7 +119,8 @@ public class EntitySerialization implements EntitySerializationAPI {
                                                                        @Nullable MetaClass metaClass,
                                                                        EntitySerializationOption... options) {
         context.remove();
-        Type collectionType = new TypeToken<Collection<Entity>>(){}.getType();
+        Type collectionType = new TypeToken<Collection<Entity>>() {
+        }.getType();
         return createGsonForDeserialization(metaClass, options).fromJson(json, collectionType);
     }
 
@@ -160,7 +161,6 @@ public class EntitySerialization implements EntitySerializationAPI {
 
     protected class EntitySerializer implements JsonSerializer<Entity> {
 
-        protected boolean complexIdFormat;
         protected boolean compactRepeatedEntities = false;
         protected boolean serializeInstanceName;
         protected View view;
@@ -169,8 +169,6 @@ public class EntitySerialization implements EntitySerializationAPI {
             this.view = view;
             if (options != null) {
                 for (EntitySerializationOption option : options) {
-                    if (option == EntitySerializationOption.COMPLEX_ID_FORMAT)
-                        complexIdFormat = true;
                     if (option == EntitySerializationOption.COMPACT_REPEATED_ENTITIES)
                         compactRepeatedEntities = true;
                     if (option == EntitySerializationOption.SERIALIZE_INSTANCE_NAME)
@@ -188,14 +186,13 @@ public class EntitySerialization implements EntitySerializationAPI {
             JsonObject jsonObject = new JsonObject();
             MetaClass metaClass = entity.getMetaClass();
             if (!metadataTools.isEmbeddable(metaClass)) {
-                if (!complexIdFormat) {
-                    jsonObject.addProperty(ENTITY_NAME_PROP, metaClass.getName());
-                }
+                jsonObject.addProperty(ENTITY_NAME_PROP, metaClass.getName());
                 if (serializeInstanceName) {
                     String instanceName = null;
                     try {
                         instanceName = entity.getInstanceName();
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                    }
                     jsonObject.addProperty(INSTANCE_NAME_PROP, instanceName);
                 }
                 writeIdField(entity, jsonObject);
@@ -231,9 +228,13 @@ public class EntitySerialization implements EntitySerializationAPI {
                     metadataTools.getPrimaryKeyProperty(entity.getMetaClass());
             if (primaryKeyProperty == null)
                 throw new EntitySerializationException("Primary key property not found for entity " + entity.getMetaClass());
-            Datatype idDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
-            String idValue = complexIdFormat ? entity.getMetaClass().getName() + "-" + idDatatype.format(entity.getId()) : idDatatype.format(entity.getId());
-            jsonObject.addProperty("id", idValue);
+            if (metadataTools.hasCompositePrimaryKey(entity.getMetaClass())) {
+                JsonObject serializedIdEntity = serializeEntity((Entity) entity.getId(), null, Collections.emptySet());
+                jsonObject.add("id", serializedIdEntity);
+            } else {
+                Datatype idDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
+                jsonObject.addProperty("id", idDatatype.format(entity.getId()));
+            }
         }
 
         protected boolean propertyWritingAllowed(MetaProperty metaProperty, Entity entity) {
@@ -324,17 +325,10 @@ public class EntitySerialization implements EntitySerializationAPI {
 
     protected class EntityDeserializer implements JsonDeserializer<Entity> {
 
-        protected boolean complexIdFormat = false;
         protected MetaClass metaClass;
 
         public EntityDeserializer(MetaClass metaClass, EntitySerializationOption... options) {
             this.metaClass = metaClass;
-            if (options != null) {
-                for (EntitySerializationOption option : options) {
-                    if (option == EntitySerializationOption.COMPLEX_ID_FORMAT)
-                        complexIdFormat = true;
-                }
-            }
         }
 
         @Override
@@ -343,56 +337,68 @@ public class EntitySerialization implements EntitySerializationAPI {
         }
 
         protected Entity readEntity(JsonObject jsonObject, @Nullable MetaClass metaClass) {
-            Entity entity;
-            JsonPrimitive idPrimitive = jsonObject.getAsJsonPrimitive("id");
-            if (complexIdFormat) {
-                if (idPrimitive == null) {
-                    throw new EntitySerializationException("id property not found in json");
-                }
-                String idValue = idPrimitive.getAsString();
-                EntityLoadInfo entityLoadInfo = EntityLoadInfo.parse(idValue);
-                if (entityLoadInfo == null) {
-                    throw new EntitySerializationException("Entity info " + idValue + " cannot be parsed");
-                }
-                entity = metadata.create(entityLoadInfo.getMetaClass());
-                clearFields(entity);
-                entity.setValue("id", entityLoadInfo.getId());
+            Object pkValue = null;
+            EntityLoadInfo entityLoadInfo = null;
+            MetaClass resultMetaClass = metaClass;
+            JsonElement idJsonElement = jsonObject.get("id");
+
+            JsonPrimitive entityNameJsonPrimitive = jsonObject.getAsJsonPrimitive(ENTITY_NAME_PROP);
+            if (entityNameJsonPrimitive != null) {
+                String entityName = entityNameJsonPrimitive.getAsString();
+                resultMetaClass = metadata.getClass(entityName);
             } else {
-                MetaClass resultMetaClass = metaClass;
-                JsonPrimitive entityNameJsonPrimitive = jsonObject.getAsJsonPrimitive(ENTITY_NAME_PROP);
-                if (entityNameJsonPrimitive != null) {
-                    String entityName = entityNameJsonPrimitive.getAsString();
-                    resultMetaClass = metadata.getClass(entityName);
-                }
-
-                if (resultMetaClass == null) {
-                    throw new EntitySerializationException("Cannot deserialize an entity. MetaClass is not defined");
-                }
-
-                entity = metadata.create(resultMetaClass);
-                clearFields(entity);
-                if (idPrimitive != null) {
-                    String idString = idPrimitive.getAsString();
-                    MetaProperty primaryKeyProperty = metadataTools.getPrimaryKeyProperty(resultMetaClass);
-                    if (primaryKeyProperty == null)
-                        throw new EntitySerializationException("Primary key property not found for entity " + resultMetaClass);
-                    Datatype idDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
-                    try {
-                        Object pkValue = idDatatype.parse(idString);
-                        if (entity instanceof BaseDbGeneratedIdEntity) {
-                            pkValue = IdProxy.of((Long) pkValue);
-                            JsonPrimitive uuidPrimitive = jsonObject.getAsJsonPrimitive("uuid");
-                            if (uuidPrimitive != null) {
-                                UUID uuid = UUID.fromString(uuidPrimitive.getAsString());
-                                ((IdProxy) pkValue).setUuid(uuid);
-                            }
-                            ((BaseDbGeneratedIdEntity) entity).setId((IdProxy) pkValue);
-                        } else {
-                            entity.setValue("id", pkValue);
-                        }
-                    } catch (ParseException e) {
-                        throw new EntitySerializationException(e);
+                //fallback to platform version 6.4 where entity id format might be like this: sec$User-c838be0a-96d0-4ef4-a7c0-dff348347f93
+                //could be used by EntityImportExport. In next major release this check can be removed
+                if (idJsonElement != null && idJsonElement.isJsonPrimitive() && metaClass == null) {
+                    JsonPrimitive idPrimitive = jsonObject.getAsJsonPrimitive("id");
+                    entityLoadInfo = EntityLoadInfo.parse(idPrimitive.getAsString());
+                    if (entityLoadInfo != null) {
+                        resultMetaClass = entityLoadInfo.getMetaClass();
                     }
+                }
+            }
+
+            if (resultMetaClass == null) {
+                throw new EntitySerializationException("Cannot deserialize an entity. MetaClass is not defined");
+            }
+
+            Entity entity = metadata.create(resultMetaClass);
+            clearFields(entity);
+
+            if (entityLoadInfo != null) {
+                //fallback to platform version 6.4
+                pkValue = entityLoadInfo.getId();
+            } else if (idJsonElement != null) {
+                MetaProperty primaryKeyProperty = metadataTools.getPrimaryKeyProperty(resultMetaClass);
+                if (primaryKeyProperty != null) {
+                    if (metadataTools.hasCompositePrimaryKey(resultMetaClass)) {
+                        MetaClass pkMetaClass = primaryKeyProperty.getRange().asClass();
+                        pkValue = readEntity(idJsonElement.getAsJsonObject(), pkMetaClass);
+                    } else {
+                        String idString = idJsonElement.getAsJsonPrimitive().getAsString();
+                        Datatype idDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
+                        try {
+                            pkValue = idDatatype.parse(idString);
+                            if (entity instanceof BaseDbGeneratedIdEntity) {
+                                pkValue = IdProxy.of((Long) pkValue);
+                                JsonPrimitive uuidPrimitive = jsonObject.getAsJsonPrimitive("uuid");
+                                if (uuidPrimitive != null) {
+                                    UUID uuid = UUID.fromString(uuidPrimitive.getAsString());
+                                    ((IdProxy) pkValue).setUuid(uuid);
+                                }
+                            }
+                        } catch (ParseException e) {
+                            throw new EntitySerializationException(e);
+                        }
+                    }
+                }
+            }
+
+            if (pkValue != null) {
+                if (pkValue instanceof IdProxy && entity instanceof BaseDbGeneratedIdEntity) {
+                    ((BaseDbGeneratedIdEntity) entity).setId((IdProxy) pkValue);
+                } else {
+                    entity.setValue("id", pkValue);
                 }
             }
 
@@ -523,7 +529,7 @@ public class EntitySerialization implements EntitySerializationAPI {
             }
         }
 
-        protected void fetchDynamicAttributes(Entity entity){
+        protected void fetchDynamicAttributes(Entity entity) {
             if (entity instanceof BaseGenericIdEntity) {
                 LoadContext<BaseGenericIdEntity> loadContext = new LoadContext<>(entity.getMetaClass());
                 loadContext.setId(entity.getId()).setLoadDynamicAttributes(true);
@@ -536,7 +542,5 @@ public class EntitySerialization implements EntitySerializationAPI {
                 }
             }
         }
-
     }
-
 }
