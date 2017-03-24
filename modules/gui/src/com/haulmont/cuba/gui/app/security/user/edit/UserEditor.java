@@ -248,121 +248,131 @@ public class UserEditor extends AbstractEditor<User> {
         user.setUserRoles(newRoles);
     }
 
-    protected void initCustomFields(final boolean isNew) {
-        fieldGroupLeft.addCustomField("passw", (datasource, propertyId) -> {
-            passwField = factory.createComponent(PasswordField.class);
-            if (isNew) {
-                passwField.setRequiredMessage(getMessage("passwMsg"));
+    protected void initCustomFields(boolean isNew) {
+        createPasswordFields(isNew);
 
-                Companion companion = getCompanion();
-                if (companion != null) {
-                    companion.initPasswordField(passwField);
-                } else {
-                    passwField.setRequired(true);
+        createLanguageLookup();
+
+        createTimeZoneField();
+
+        createGroupField();
+    }
+
+    protected void createTimeZoneField() {
+        FieldGroup.FieldConfig timeZoneFc = fieldGroupRight.getFieldNN("timeZone");
+
+        HBoxLayout hbox = factory.createComponent(HBoxLayout.class);
+        hbox.setSpacing(true);
+
+        timeZoneLookup = factory.createComponent(LookupField.class);
+
+        timeZoneLookup.setDatasource(timeZoneFc.getTargetDatasource(), timeZoneFc.getProperty());
+        timeZoneLookup.setRequired(false);
+
+        MetaClass userMetaClass = userDs.getMetaClass();
+        timeZoneLookup.setEditable(fieldGroupRight.isEditable()
+                && security.isEntityAttrUpdatePermitted(userMetaClass, timeZoneFc.getProperty()));
+
+        Map<String, Object> options = new TreeMap<>();
+        for (String id : TimeZone.getAvailableIDs()) {
+            TimeZone timeZone = TimeZone.getTimeZone(id);
+            options.put(timeZones.getDisplayNameLong(timeZone), id);
+        }
+        timeZoneLookup.setOptionsMap(options);
+
+        hbox.add(timeZoneLookup);
+
+        CheckBox autoDetectField = factory.createComponent(CheckBox.class);
+        autoDetectField.setDatasource(timeZoneFc.getTargetDatasource(), "timeZoneAuto");
+        autoDetectField.setCaption(messages.getMainMessage("timeZone.auto"));
+        autoDetectField.setDescription(messages.getMainMessage("timeZone.auto.descr"));
+        autoDetectField.setAlignment(Alignment.MIDDLE_RIGHT);
+
+        autoDetectField.setEditable(fieldGroupRight.isEditable()
+                && security.isEntityAttrUpdatePermitted(userMetaClass, "timeZoneAuto"));
+
+        hbox.add(autoDetectField);
+        hbox.expand(timeZoneLookup);
+
+        timeZoneFc.setComponent(hbox);
+    }
+
+    protected void createGroupField() {
+        FieldGroup.FieldConfig groupFc = fieldGroupRight.getFieldNN("group");
+
+        PickerField pickerField = factory.createComponent(PickerField.class);
+
+        pickerField.setDatasource(groupFc.getTargetDatasource(), groupFc.getProperty());
+        pickerField.setRequired(true);
+        pickerField.setRequiredMessage(getMessage("groupMsg"));
+
+        PickerField.LookupAction action = new PickerField.LookupAction(pickerField) {
+            @Nullable
+            @Override
+            public Map<String, Object> getLookupScreenParams() {
+                if (getItem().getGroup() != null) {
+                    return ParamsMap.of("selectedGroup", getItem().getGroup());
                 }
-                passwField.addValueChangeListener(e ->
-                        ((DatasourceImplementation) userDs).setModified(true)
-                );
+                return super.getLookupScreenParams();
+            }
+        };
+        action.setLookupScreenOpenType(OpenType.DIALOG);
+        pickerField.addAction(action);
+
+        groupFc.setComponent(pickerField);
+    }
+
+    protected void createPasswordFields(boolean isNew) {
+        passwField = factory.createComponent(PasswordField.class);
+        if (isNew) {
+            passwField.setRequiredMessage(getMessage("passwMsg"));
+
+            Companion companion = getCompanion();
+            if (companion != null) {
+                companion.initPasswordField(passwField);
             } else {
-                passwField.setVisible(false);
+                passwField.setRequired(true);
             }
-            return passwField;
-        });
+            passwField.addValueChangeListener(e ->
+                    ((DatasourceImplementation) userDs).setModified(true)
+            );
+        } else {
+            passwField.setVisible(false);
+        }
+        fieldGroupLeft.getFieldNN("passw").setComponent(passwField);
 
-        fieldGroupLeft.addCustomField("confirmPassw", (datasource, propertyId) -> {
-            confirmPasswField = factory.createComponent(PasswordField.class);
-            if (isNew) {
-                confirmPasswField.setRequiredMessage(getMessage("confirmPasswMsg"));
+        confirmPasswField = factory.createComponent(PasswordField.class);
+        if (isNew) {
+            confirmPasswField.setRequiredMessage(getMessage("confirmPasswMsg"));
 
-                Companion companion = getCompanion();
-                if (companion != null) {
-                    companion.initPasswordField(confirmPasswField);
-                } else {
-                    confirmPasswField.setRequired(true);
-                }
-                confirmPasswField.addValueChangeListener(e ->
-                        ((DatasourceImplementation) userDs).setModified(true)
-                );
+            Companion companion = getCompanion();
+            if (companion != null) {
+                companion.initPasswordField(confirmPasswField);
             } else {
-                confirmPasswField.setVisible(false);
+                confirmPasswField.setRequired(true);
             }
-            return confirmPasswField;
-        });
+            confirmPasswField.addValueChangeListener(e ->
+                    ((DatasourceImplementation) userDs).setModified(true)
+            );
+        } else {
+            confirmPasswField.setVisible(false);
+        }
+        fieldGroupLeft.getFieldNN("confirmPassw").setComponent(confirmPasswField);
+    }
 
-        fieldGroupRight.addCustomField("language", (datasource, propertyId) -> {
-            languageLookup = factory.createComponent(LookupField.class);
+    protected void createLanguageLookup() {
+        languageLookup = factory.createComponent(LookupField.class);
+        FieldGroup.FieldConfig languageLookupFc = fieldGroupRight.getFieldNN("language");
+        languageLookup.setDatasource(languageLookupFc.getTargetDatasource(), languageLookupFc.getProperty());
+        languageLookup.setRequired(false);
 
-            languageLookup.setDatasource(datasource, propertyId);
-            languageLookup.setRequired(false);
-
-            Map<String, Locale> locales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
-            Map<String, Object> options = new TreeMap<>();
-            for (Map.Entry<String, Locale> entry : locales.entrySet()) {
-                options.put(entry.getKey(), messages.getTools().localeToString(entry.getValue()));
-            }
-            languageLookup.setOptionsMap(options);
-            return languageLookup;
-        });
-
-        fieldGroupRight.addCustomField("timeZone", (datasource, propertyId) -> {
-            HBoxLayout hbox = factory.createComponent(HBoxLayout.class);
-            hbox.setSpacing(true);
-
-            timeZoneLookup = factory.createComponent(LookupField.class);
-
-            timeZoneLookup.setDatasource(datasource, propertyId);
-            timeZoneLookup.setRequired(false);
-
-            MetaClass userMetaClass = userDs.getMetaClass();
-            timeZoneLookup.setEditable(fieldGroupRight.isEditable()
-                    && security.isEntityAttrUpdatePermitted(userMetaClass, propertyId));
-
-            Map<String, Object> options = new TreeMap<>();
-            for (String id : TimeZone.getAvailableIDs()) {
-                TimeZone timeZone = TimeZone.getTimeZone(id);
-                options.put(timeZones.getDisplayNameLong(timeZone), id);
-            }
-            timeZoneLookup.setOptionsMap(options);
-
-            hbox.add(timeZoneLookup);
-
-            CheckBox autoDetectField = factory.createComponent(CheckBox.class);
-            autoDetectField.setDatasource(datasource, "timeZoneAuto");
-            autoDetectField.setCaption(messages.getMainMessage("timeZone.auto"));
-            autoDetectField.setDescription(messages.getMainMessage("timeZone.auto.descr"));
-            autoDetectField.setAlignment(Alignment.MIDDLE_RIGHT);
-
-            autoDetectField.setEditable(fieldGroupRight.isEditable()
-                    && security.isEntityAttrUpdatePermitted(userMetaClass, "timeZoneAuto"));
-
-            hbox.add(autoDetectField);
-
-            hbox.expand(timeZoneLookup);
-
-            return hbox;
-        });
-
-        fieldGroupRight.addCustomField("group", (datasource, propertyId) -> {
-            PickerField pickerField = factory.createComponent(PickerField.class);
-            pickerField.setDatasource(datasource, propertyId);
-            pickerField.setRequired(true);
-            pickerField.setRequiredMessage(getMessage("groupMsg"));
-
-            PickerField.LookupAction action = new PickerField.LookupAction(pickerField) {
-                @Nullable
-                @Override
-                public Map<String, Object> getLookupScreenParams() {
-                    if (getItem().getGroup() != null) {
-                        return ParamsMap.of("selectedGroup", getItem().getGroup());
-                    }
-                    return super.getLookupScreenParams();
-                }
-            };
-            action.setLookupScreenOpenType(OpenType.DIALOG);
-            pickerField.addAction(action);
-
-            return pickerField;
-        });
+        Map<String, Locale> locales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
+        Map<String, Object> options = new TreeMap<>();
+        for (Map.Entry<String, Locale> entry : locales.entrySet()) {
+            options.put(entry.getKey(), messages.getTools().localeToString(entry.getValue()));
+        }
+        languageLookup.setOptionsMap(options);
+        languageLookupFc.setComponent(languageLookup);
     }
 
     @Override

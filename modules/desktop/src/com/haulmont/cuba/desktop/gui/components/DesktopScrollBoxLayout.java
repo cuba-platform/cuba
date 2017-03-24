@@ -342,13 +342,6 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        if (isEnabled() != enabled) {
-            super.setEnabled(enabled);
-        }
-    }
-
-    @Override
     public void updateEnabled() {
         super.updateEnabled();
 

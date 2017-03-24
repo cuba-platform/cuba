@@ -26,6 +26,7 @@ import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Frame;
 import org.apache.commons.collections.CollectionUtils;
@@ -75,12 +76,34 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     // lazily initialized list
     protected List<String> styles;
 
+    protected String caption;
+
     protected C getImpl() {
         return impl;
     }
 
     protected String getSwingPropertyId() {
         return SWING_PROPERTY_ID;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public void setCaption(String caption) {
+        if (!Objects.equals(getCaption(), caption)) {
+            this.caption = caption;
+
+            setCaptionToComponent(caption);
+
+            if (this instanceof Field
+                    && parent instanceof DesktopFieldGroup) {
+                ((DesktopFieldGroup) parent).updateCaptionText(this);
+            }
+        }
+    }
+
+    protected void setCaptionToComponent(String caption) {
     }
 
     @Override
@@ -180,9 +203,11 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     public void setEnabled(boolean enabled) {
         DesktopBackgroundWorker.checkSwingUIAccess();
 
-        this.enabled = enabled;
+        if (this.enabled != enabled) {
+            this.enabled = enabled;
 
-        updateEnabled();
+            updateEnabled();
+        }
     }
 
     @Override
@@ -199,6 +224,10 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
         getComposition().setEnabled(isEnabledWithParent());
 
         requestContainerUpdate();
+
+        if (parent instanceof DesktopFieldGroup) {
+            ((DesktopFieldGroup) parent).updateChildEnabled(this);
+        }
     }
 
     protected boolean isEnabledWithParent() {

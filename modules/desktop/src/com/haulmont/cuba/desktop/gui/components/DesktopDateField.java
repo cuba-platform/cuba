@@ -67,7 +67,6 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     protected JXDatePicker datePicker;
     protected DesktopTimeField timeField;
     protected boolean valid = true;
-    protected String caption;
 
     protected Object prevValue = null;
     protected boolean editable = true;
@@ -463,11 +462,6 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     }
 
     @Override
-    public boolean isEditable() {
-        return datePicker.isEditable();
-    }
-
-    @Override
     public void updateEnabled() {
         super.updateEnabled();
 
@@ -476,25 +470,17 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     }
 
     @Override
-    public void setEditable(boolean editable) {
-        this.editable = editable;
+    protected void setEditableToComponent(boolean editable) {
         datePicker.setEditable(editable);
         timeField.setEditable(editable);
         updateMissingValueState();
     }
 
     @Override
-    public String getCaption() {
-        return caption;
-    }
+    protected void setCaptionToComponent(String caption) {
+        super.setCaptionToComponent(caption);
 
-    @Override
-    public void setCaption(String caption) {
-        if (!ObjectUtils.equals(this.caption, caption)) {
-            this.caption = caption;
-
-            requestContainerUpdate();
-        }
+        requestContainerUpdate();
     }
 
     @Override

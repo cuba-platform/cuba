@@ -81,9 +81,6 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     protected boolean lookup = false;
 
     protected boolean clearEnabled = true;
-
-    protected boolean editable = true;
-
     protected boolean simple = false;
 
     protected boolean multiselect;
@@ -505,14 +502,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     }
 
     @Override
-    public boolean isEditable() {
-        return editable;
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        this.editable = editable;
-
+    protected void setEditableToComponent(boolean editable) {
         component.refreshComponent();
     }
 

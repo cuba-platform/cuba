@@ -152,8 +152,9 @@ public class DesktopLookupPickerField extends DesktopLookupField implements Look
     }
 
     @Override
-    public void setEditable(boolean editable) {
-        super.setEditable(editable);
+    protected void setEditableToComponent(boolean editable) {
+        super.setEditableToComponent(editable);
+
         pickerField.setEditable(editable);
     }
 

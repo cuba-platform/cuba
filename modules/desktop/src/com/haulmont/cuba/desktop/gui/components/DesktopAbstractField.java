@@ -27,9 +27,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.BeanValidation;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.components.Field;
-import com.haulmont.cuba.gui.components.RequiredValueMissingException;
-import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.components.validators.BeanValidator;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -47,6 +45,8 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
 
     protected List<ValueChangeListener> listeners = new ArrayList<>();
 
+    protected boolean editable = true;
+
     protected boolean required;
     protected String requiredMessage;
 
@@ -58,6 +58,8 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
 
     protected MetaProperty metaProperty;
     protected MetaPropertyPath metaPropertyPath;
+    
+    protected EditableChangeListener parentEditableChangeListener;
 
     @Override
     public void addListener(ValueListener listener) {
@@ -210,6 +212,30 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
     }
 
     @Override
+    public boolean isEditable() {
+        return editable;
+    }
+
+    @Override
+    public void setEditable(boolean editable) {
+        if (this.editable == editable) {
+            return;
+        }
+
+        this.editable = editable;
+
+        boolean parentEditable = true;
+        if (parent instanceof Editable) {
+            parentEditable = ((Editable) parent).isEditable();
+        }
+        boolean finalEditable = parentEditable && editable;
+
+        setEditableToComponent(finalEditable);
+    }
+
+    protected abstract void setEditableToComponent(boolean editable);
+
+    @Override
     protected String getAlternativeDebugId() {
         if (id != null) {
             return id;
@@ -235,5 +261,26 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
         Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
 
         return metaPropertyPath;
+    }
+
+    @Override
+    public void setParent(com.haulmont.cuba.gui.components.Component parent) {
+        if (this.parent instanceof EditableChangeNotifier
+                && parentEditableChangeListener != null) {
+            ((EditableChangeNotifier) this.parent).removeEditableChangeListener(parentEditableChangeListener);
+
+            parentEditableChangeListener = null;
+        }
+
+        super.setParent(parent);
+
+        if (parent instanceof EditableChangeNotifier) {
+            parentEditableChangeListener = event -> {
+                boolean parentEditable = event.getSource().isEditable();
+                boolean finalEditable = parentEditable && editable;
+                setEditableToComponent(finalEditable);
+            };
+            ((EditableChangeNotifier) parent).addEditableChangeListener(parentEditableChangeListener);
+        }
     }
 }

@@ -52,15 +52,12 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
     protected BasicEventList<Object> items = new BasicEventList<>();
     protected SearchAutoCompleteSupport<Object> autoComplete;
-    protected String caption;
 
     protected boolean resetValueState = false;
     protected boolean enterHandling = false;
     protected boolean popupItemSelectionHandling = false;
     protected boolean settingValue;
     protected boolean disableActionListener = false;
-
-    protected boolean editable = true;
 
     protected Mode mode = Mode.CASE_SENSITIVE;
     protected boolean escapeValueForLike = false;
@@ -499,17 +496,10 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     }
 
     @Override
-    public String getCaption() {
-        return caption;
-    }
+    protected void setCaptionToComponent(String caption) {
+        super.setCaptionToComponent(caption);
 
-    @Override
-    public void setCaption(String caption) {
-        if (!ObjectUtils.equals(this.caption, caption)) {
-            this.caption = caption;
-
-            requestContainerUpdate();
-        }
+        requestContainerUpdate();
     }
 
     @Override
@@ -550,27 +540,19 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     }
 
     @Override
-    public boolean isEditable() {
-        return editable;
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        if (this.editable && !editable) {
+    protected void setEditableToComponent(boolean editable) {
+        if (!editable) {
             composition.remove(comboBox);
             composition.add(textField, BorderLayout.CENTER);
             impl = textField;
 
             updateTextField();
-        } else if (!this.editable && editable) {
+        } else {
             composition.remove(textField);
             composition.add(comboBox, BorderLayout.CENTER);
 
             impl = comboBox;
         }
-        // #PL-4040
-        // CAUTION do not set editable to combobox
-        this.editable = editable;
 
         updateMissingValueState();
         requestContainerUpdate();

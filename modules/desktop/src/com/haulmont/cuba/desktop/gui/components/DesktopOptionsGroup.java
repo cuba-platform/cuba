@@ -44,8 +44,6 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
     private Orientation orientation = Orientation.VERTICAL;
     private MigLayout layout;
 
-    private boolean editable = true;
-
     private boolean enabled = true;
 
     protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
@@ -334,15 +332,6 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
     }
 
     @Override
-    public String getCaption() {
-        return null;
-    }
-
-    @Override
-    public void setCaption(String caption) {
-    }
-
-    @Override
     public String getDescription() {
         return null;
     }
@@ -372,15 +361,10 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
     }
 
     @Override
-    public boolean isEditable() {
-        return editable;
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        this.editable = editable;
-        for (JToggleButton button : items.values())
+    protected void setEditableToComponent(boolean editable) {
+        for (JToggleButton button : items.values()) {
             button.setEnabled(enabled && editable);
+        }
     }
 
     @Override

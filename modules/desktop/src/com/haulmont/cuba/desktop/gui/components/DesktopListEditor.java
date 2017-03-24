@@ -28,8 +28,6 @@ import javax.swing.*;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public class DesktopListEditor extends DesktopAbstractField<JPanel> implements ListEditor {
 
     private final ListEditorDelegate delegate;
@@ -183,17 +181,6 @@ public class DesktopListEditor extends DesktopAbstractField<JPanel> implements L
 
     @Override
     public void setDatasource(Datasource datasource, String property) {
-
-    }
-
-    @Override
-    public String getCaption() {
-        return null;
-    }
-
-    @Override
-    public void setCaption(String caption) {
-
     }
 
     @Override
@@ -203,16 +190,10 @@ public class DesktopListEditor extends DesktopAbstractField<JPanel> implements L
 
     @Override
     public void setDescription(String description) {
-
     }
 
     @Override
-    public void setEditable(boolean editable) {
+    protected void setEditableToComponent(boolean editable) {
         delegate.setEditable(editable);
-    }
-
-    @Override
-    public boolean isEditable() {
-        return delegate.isEditable();
     }
 }

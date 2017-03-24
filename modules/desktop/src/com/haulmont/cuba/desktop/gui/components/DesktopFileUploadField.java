@@ -24,7 +24,10 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.backgroundwork.BackgroundWorkProgressWindow;
@@ -314,12 +317,9 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
     }
 
     @Override
-    public String getCaption() {
-        return impl.getCaption();
-    }
-
-    @Override
-    public void setCaption(String caption) {
+    protected void setCaptionToComponent(String caption) {
+        super.setCaptionToComponent(caption);
+        
         impl.setCaption(caption);
         requestContainerUpdate();
     }
@@ -348,12 +348,7 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
     }
 
     @Override
-    public boolean isEditable() {
-        return impl.isEditable();
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
+    protected void setEditableToComponent(boolean editable) {
         impl.setEditable(editable);
     }
 
@@ -667,8 +662,8 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
     }
 
     /*
-    * Upload button
-    */
+     * Upload button
+     */
     @Override
     public String getUploadButtonCaption() {
         return impl.getUploadButtonCaption();
@@ -700,8 +695,8 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
     }
 
     /*
-    * Clear button
-    */
+     * Clear button
+     */
     @Override
     public void setShowClearButton(boolean showClearButton) {
         impl.setShowClearButton(showClearButton);

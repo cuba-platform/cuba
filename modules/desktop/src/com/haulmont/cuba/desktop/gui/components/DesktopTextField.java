@@ -89,20 +89,13 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
+    protected void setEditableToComponent(boolean editable) {
+        super.setEditableToComponent(editable);
 
         refreshInputPrompt();
     }
 
-    @Override
-    public void setEditable(boolean editable) {
-        super.setEditable(editable);
-
-        refreshInputPrompt();
-    }
-
-    private void refreshInputPrompt() {
+    protected void refreshInputPrompt() {
         if (StringUtils.isNotBlank(inputPrompt)) {
             if (isEnabledWithParent() && isEditable()) {
                 // Save old tooltipText value to use it later

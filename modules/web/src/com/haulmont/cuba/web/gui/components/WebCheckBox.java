@@ -20,6 +20,8 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -28,7 +30,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import java.util.Collection;
 
 public class WebCheckBox extends WebAbstractField<com.vaadin.ui.CheckBox> implements CheckBox {
-
     public WebCheckBox() {
         this.component = new CubaCheckBox();
         component.setImmediate(true);
@@ -88,5 +89,14 @@ public class WebCheckBox extends WebAbstractField<com.vaadin.ui.CheckBox> implem
     @Override
     public void setTabIndex(int tabIndex) {
         component.setTabIndex(tabIndex);
+    }
+
+    @Override
+    public void setParent(Component parent) {
+        super.setParent(parent);
+
+        if (parent instanceof FieldGroup) {
+            ((CubaCheckBox) component).setCaptionManagedByLayout(true);
+        }
     }
 }

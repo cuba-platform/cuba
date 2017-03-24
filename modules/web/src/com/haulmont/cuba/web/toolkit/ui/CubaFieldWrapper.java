@@ -18,12 +18,10 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.ui.CustomField;
 
 /**
- * Simple wrapper for Cuba components which does not contain Vaadin Field
- *
+ * Simple wrapper for Cuba components which does not contain Vaadin Field.
  */
 public class CubaFieldWrapper extends CustomField {
 
@@ -36,7 +34,7 @@ public class CubaFieldWrapper extends CustomField {
 
     @Override
     protected com.vaadin.ui.Component initContent() {
-        return WebComponentsHelper.getComposition(component);
+        return component.unwrapComposition(com.vaadin.ui.Component.class);
     }
 
     @Override

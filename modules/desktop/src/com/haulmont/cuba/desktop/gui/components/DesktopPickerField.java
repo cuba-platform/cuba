@@ -69,7 +69,6 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
     protected int modifiersMask;
     protected Map<Action, List<KeyStroke>> keyStrokesMap = new HashMap<>();
 
-    protected String caption;
     protected boolean updatingInstance;
 
     protected Metadata metadata = AppBeans.get(Metadata.NAME);
@@ -376,17 +375,10 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
     }
 
     @Override
-    public String getCaption() {
-        return caption;
-    }
+    protected void setCaptionToComponent(String caption) {
+        super.setCaptionToComponent(caption);
 
-    @Override
-    public void setCaption(String caption) {
-        if (!ObjectUtils.equals(this.caption, caption)) {
-            this.caption = caption;
-
-            requestContainerUpdate();
-        }
+        requestContainerUpdate();
     }
 
     @Override
@@ -405,13 +397,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
     }
 
     @Override
-    public boolean isEditable() {
-        return editable;
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        this.editable = editable;
+    protected void setEditableToComponent(boolean editable) {
         for (Action action : actionsOrder) {
             if (action instanceof StandardAction) {
                 ((StandardAction) action).setEditable(isEditable());

@@ -128,12 +128,7 @@ public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> impl
     }
 
     @Override
-    public boolean isEditable() {
-        return wrapper.isEditable();
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
+    protected void setEditableToComponent(boolean editable) {
         wrapper.setEditable(editable);
     }
 

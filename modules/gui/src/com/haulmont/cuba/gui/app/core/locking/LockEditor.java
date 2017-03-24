@@ -54,6 +54,8 @@ public class LockEditor extends AbstractEditor {
     @Named("fieldGroup.timeoutSec")
     protected TextField timeoutSecField;
 
+    protected LookupField entityNameLookupField;
+
     @Override
     public void init(Map<String, Object> params) {
         Map<String, Object> options = new TreeMap<>();
@@ -65,18 +67,16 @@ public class LockEditor extends AbstractEditor {
             }
         }
 
-        fieldGroup.addCustomField("entity", (datasource, propertyId) -> {
-            LookupField nameLookupField = componentsFactory.createComponent(LookupField.class);
-            nameLookupField.setDatasource(lockDescriptorDs, "name");
-            nameLookupField.setOptionsMap(options);
+        entityNameLookupField = componentsFactory.createComponent(LookupField.class);
+        entityNameLookupField.setDatasource(lockDescriptorDs, "name");
+        entityNameLookupField.setOptionsMap(options);
+        entityNameLookupField.setCaption(messages.getMessage(LockDescriptor.class, "LockDescriptor.name"));
 
-            return nameLookupField;
-        });
-        fieldGroup.setFieldCaption("entity", messages.getMessage(LockDescriptor.class, "LockDescriptor.name"));
+        fieldGroup.getFieldNN("entity").setComponent(entityNameLookupField);
 
         if (((LockDescriptor) WindowParams.ITEM.getEntity(params)).getName() != null) {
             nameTypeOptionsGroup.setVisible(false);
-            fieldGroup.setVisible("entity", false);
+            entityNameLookupField.setVisible(false);
             nameField.setEditable(false);
             timeoutSecField.requestFocus();
         } else {
@@ -84,12 +84,12 @@ public class LockEditor extends AbstractEditor {
             nameTypeOptionsGroup.addValueChangeListener(e -> {
                 if (LockDescriptorNameType.ENTITY.equals(e.getValue())) {
                     nameField.setVisible(false);
-                    fieldGroup.setVisible("entity", true);
-                    fieldGroup.getFieldComponent("entity").requestFocus();
+                    entityNameLookupField.setVisible(true);
+                    entityNameLookupField.requestFocus();
                 } else {
                     nameField.setVisible(true);
                     nameField.requestFocus();
-                    fieldGroup.setVisible("entity", false);
+                    entityNameLookupField.setVisible(false);
                 }
             });
 

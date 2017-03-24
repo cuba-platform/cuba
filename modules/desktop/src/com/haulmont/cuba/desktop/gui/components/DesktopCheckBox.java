@@ -23,6 +23,8 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
@@ -36,11 +38,8 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
     protected boolean updatingInstance;
     protected Object prevValue;
 
-    protected boolean editable = true;
-
     protected Datasource.ItemChangeListener itemChangeListener;
     protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
-
 
     public DesktopCheckBox() {
         impl = new JCheckBox();
@@ -148,13 +147,21 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
     }
 
     @Override
-    public String getCaption() {
-        return impl.getText();
+    protected void setCaptionToComponent(String caption) {
+        super.setCaptionToComponent(caption);
+
+        if (!(parent instanceof FieldGroup)) {
+            impl.setText(caption);
+        }
     }
 
     @Override
-    public void setCaption(String caption) {
-        impl.setText(caption);
+    public void setParent(Component parent) {
+        super.setParent(parent);
+
+        if (parent instanceof FieldGroup) {
+            impl.setText(null);
+        }
     }
 
     @Override
@@ -169,14 +176,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
     }
 
     @Override
-    public boolean isEditable() {
-        return editable;
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        this.editable = editable;
-
+    protected void setEditableToComponent(boolean editable) {
         updateEnabled();
     }
 

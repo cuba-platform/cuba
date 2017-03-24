@@ -138,6 +138,17 @@
         </xs:union>
     </xs:simpleType>
 
+    <xs:simpleType name="fieldGroupFieldInlineMode">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="APPLY_DEFAULTS"/>
+                    <xs:enumeration value="CUSTOM"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
     <xs:simpleType name="dialogSize">
         <xs:union>
             <xs:simpleType>
@@ -1759,11 +1770,16 @@
     <!-- FieldGroup.FieldConfig -->
     <xs:complexType name="fieldGroupField">
         <xs:sequence>
+            <xs:group ref="layoutOrComponent"/>
+            
             <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
             <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
         </xs:sequence>
 
-        <xs:attributeGroup ref="requiresId"/>
+        <xs:attributeGroup ref="hasId"/>
+        <xs:attribute name="property" type="xs:string"/>
+
+        <xs:attribute name="inlineAttachMode" type="fieldGroupFieldInlineMode"/>
 
         <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasEditState"/>
@@ -1831,6 +1847,8 @@
 
                 <xs:attribute name="datasource" type="xs:string"/>
                 <xs:attribute name="border" type="borderMode"/>
+
+                <xs:attribute name="fieldFactoryBean" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

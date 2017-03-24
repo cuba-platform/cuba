@@ -508,6 +508,32 @@ public interface Component {
     }
 
     /**
+     * Event that is fired when "editable" property of Editable component has been changed.
+     */
+    class EditableChangeEvent extends EventObject {
+        public EditableChangeEvent(Component.Editable source) {
+            super(source);
+        }
+
+        @Override
+        public Component.Editable getSource() {
+            return (Editable) super.getSource();
+        }
+    }
+
+    interface EditableChangeListener {
+        void editableChanged(EditableChangeEvent event);
+    }
+
+    /**
+     * Component that fires EditableChangeEvent events.
+     */
+    interface EditableChangeNotifier {
+        void addEditableChangeListener(EditableChangeListener listener);
+        void removeEditableChangeListener(EditableChangeListener listener);
+    }
+
+    /**
      * Component supporting "focusable" state.
      * Focusable means that component can be focused by TAB button.
      */

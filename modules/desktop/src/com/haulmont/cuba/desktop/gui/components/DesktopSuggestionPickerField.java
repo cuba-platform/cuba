@@ -18,8 +18,9 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.SuggestionPickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 
@@ -150,8 +151,9 @@ public class DesktopSuggestionPickerField extends DesktopSuggestionField impleme
     }
 
     @Override
-    public void setEditable(boolean editable) {
-        super.setEditable(editable);
+    protected void setEditableToComponent(boolean editable) {
+        super.setEditableToComponent(editable);
+
         pickerField.setEditable(editable);
     }
 

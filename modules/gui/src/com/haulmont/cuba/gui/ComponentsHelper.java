@@ -84,7 +84,10 @@ public abstract class ComponentsHelper {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
 
-                return ((FieldGroup) innerComponent).getFieldComponent(subPath);
+                FieldGroup fieldGroup = (FieldGroup) innerComponent;
+                FieldGroup.FieldConfig field = fieldGroup.getField(subPath);
+
+                return field != null ? field.getComponent() : null;
             }
             return null;
         }
@@ -113,7 +116,10 @@ public abstract class ComponentsHelper {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
 
-                return ((FieldGroup) innerComponent).getFieldComponent(subPath);
+                FieldGroup fieldGroup = (FieldGroup) innerComponent;
+                FieldGroup.FieldConfig field = fieldGroup.getField(subPath);
+
+                return field != null ? field.getComponent() : null;
             }
             return null;
         }
@@ -148,7 +154,10 @@ public abstract class ComponentsHelper {
                     final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                     String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
 
-                    return ((FieldGroup) innerComponent).getFieldComponent(subPath);
+                    FieldGroup fieldGroup = (FieldGroup) innerComponent;
+                    FieldGroup.FieldConfig field = fieldGroup.getField(subPath);
+
+                    return field != null ? field.getComponent() : null;
                 }
                 return null;
             }

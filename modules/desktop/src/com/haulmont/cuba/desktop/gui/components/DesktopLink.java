@@ -82,12 +82,9 @@ public class DesktopLink extends DesktopAbstractComponent<JXHyperlink> implement
     }
 
     @Override
-    public String getCaption() {
-        return impl.getText();
-    }
+    protected void setCaptionToComponent(String caption) {
+        super.setCaptionToComponent(caption);
 
-    @Override
-    public void setCaption(String caption) {
         impl.setText(caption);
     }
 

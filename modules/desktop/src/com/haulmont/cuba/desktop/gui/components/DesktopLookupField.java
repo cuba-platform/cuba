@@ -468,17 +468,10 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     }
 
     @Override
-    public String getCaption() {
-        return caption;
-    }
+    protected void setCaptionToComponent(String caption) {
+        super.setCaptionToComponent(caption);
 
-    @Override
-    public void setCaption(String caption) {
-        if (!ObjectUtils.equals(this.caption, caption)) {
-            this.caption = caption;
-
-            requestContainerUpdate();
-        }
+        requestContainerUpdate();
     }
 
     @Override
@@ -537,27 +530,19 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     }
 
     @Override
-    public boolean isEditable() {
-        return editable;
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        if (this.editable && !editable) {
+    protected void setEditableToComponent(boolean editable) {
+        if (!editable) {
             composition.remove(comboBox);
             composition.add(textField, BorderLayout.CENTER);
             impl = textField;
 
             updateTextField();
-        } else if (!this.editable && editable) {
+        } else {
             composition.remove(textField);
             composition.add(comboBox, BorderLayout.CENTER);
 
             impl = comboBox;
         }
-        // #PL-4040
-        // CAUTION do not set editable to combobox
-        this.editable = editable;
 
         updateMissingValueState();
         requestContainerUpdate();

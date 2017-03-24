@@ -42,7 +42,6 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
     protected Map<Component, Pair<JPanel, BoxLayoutAdapter>> wrappers = new HashMap<>();
 
     protected boolean scheduledRepaint = false;
-    protected String caption;
 
     public DesktopGridLayout() {
         impl = new JPanel();
@@ -373,13 +372,6 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        if (isEnabled() != enabled) {
-            super.setEnabled(enabled);
-        }
-    }
-
-    @Override
     public void updateEnabled() {
         super.updateEnabled();
 
@@ -389,16 +381,6 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
                 ((DesktopAbstractComponent) component).setParentEnabled(resultEnabled);
             }
         }
-    }
-
-    @Override
-    public String getCaption() {
-        return caption;
-    }
-
-    @Override
-    public void setCaption(String caption) {
-        this.caption = caption;
     }
 
     @Override

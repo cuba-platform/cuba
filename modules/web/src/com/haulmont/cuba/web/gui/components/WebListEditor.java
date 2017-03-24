@@ -174,7 +174,6 @@ public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor
     }
 
     public class CubaListEditor extends CustomField<List> {
-
         private final Component content;
 
         public CubaListEditor(HBoxLayout mainLayout) {
@@ -187,13 +186,13 @@ public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor
         }
 
         @Override
-        public Class getType() {
+        public Class<List> getType() {
             return List.class;
         }
     }
 
     @Override
-    public void setEditable(boolean editable) {
+    protected void setEditableToComponent(boolean editable) {
         delegate.setEditable(editable);
     }
 

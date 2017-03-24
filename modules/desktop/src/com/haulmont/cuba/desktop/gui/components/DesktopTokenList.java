@@ -90,8 +90,6 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
 
     protected boolean clearEnabled = true;
 
-    protected boolean editable = true;
-
     protected boolean simple = false;
 
     protected AfterLookupCloseHandler afterLookupCloseHandler;
@@ -554,14 +552,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     }
 
     @Override
-    public boolean isEditable() {
-        return editable;
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        this.editable = editable;
-
+    protected void setEditableToComponent(boolean editable) {
         rootPanel.refreshComponent();
     }
 
@@ -891,8 +882,6 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
 
         private DesktopHBox editor;
 
-        private String caption;
-
         private Map<Instance, TokenListLabel> itemComponents = new HashMap<>();
         private Map<TokenListLabel, Instance> componentItems = new HashMap<>();
 
@@ -966,15 +955,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
                 }
             }
         }
-
-        public String getCaption() {
-            return caption;
-        }
-
-        public void setCaption(String caption) {
-            this.caption = caption;
-        }
-
+        
         public void refreshComponent() {
             if (editor != null) {
                 remove(editor);

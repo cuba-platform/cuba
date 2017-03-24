@@ -29,7 +29,6 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -228,8 +227,8 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
     }
 
     @Override
-    public void setEditable(boolean editable) {
-        super.setEditable(editable);
+    protected void setEditableToComponent(boolean editable) {
+        super.setEditableToComponent(editable);
         pickerField.setEditable(editable);
     }
 

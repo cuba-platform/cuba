@@ -45,7 +45,6 @@ public abstract class DesktopAbstractBox
     protected Map<Component, Pair<JPanel, BoxLayoutAdapter>> wrappers = new HashMap<>();
 
     protected boolean scheduledRepaint = false;
-    protected String caption;
 
     public DesktopAbstractBox() {
         impl = new JPanel();
@@ -411,13 +410,6 @@ public abstract class DesktopAbstractBox
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        if (isEnabled() != enabled) {
-            super.setEnabled(enabled);
-        }
-    }
-
-    @Override
     public void updateEnabled() {
         super.updateEnabled();
 
@@ -427,16 +419,6 @@ public abstract class DesktopAbstractBox
                 ((DesktopAbstractComponent) component).setParentEnabled(resultEnabled);
             }
         }
-    }
-
-    @Override
-    public String getCaption() {
-        return caption;
-    }
-
-    @Override
-    public void setCaption(String caption) {
-        this.caption = caption;
     }
 
     @Override

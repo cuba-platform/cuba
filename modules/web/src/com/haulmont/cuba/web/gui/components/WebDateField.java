@@ -551,21 +551,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     }
 
     @Override
-    public boolean isEditable() {
-        return editable;
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        if (this.editable == editable) {
-            return;
-        }
-        this.editable = editable;
-
-        setEditableInternal(editable);
-    }
-
-    protected void setEditableInternal(boolean editable) {
+    protected void setEditableToComponent(boolean editable) {
         timeField.setEditable(editable);
         dateField.setReadOnly(!editable);
 

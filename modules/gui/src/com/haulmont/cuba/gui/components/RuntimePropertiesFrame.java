@@ -162,11 +162,12 @@ public class RuntimePropertiesFrame extends AbstractWindow {
             newRuntimeFieldGroup.removeField(field);
         }
 
-        final java.util.List<FieldGroup.FieldConfig> fields = createFieldsForAttributes();
+        final java.util.List<FieldGroup.FieldConfig> fields = createFieldsForAttributes(newRuntimeFieldGroup);
         addFieldsToFieldGroup(newRuntimeFieldGroup, fields);
 
         if (!newRuntimeFieldGroup.getFields().isEmpty()) {
             newRuntimeFieldGroup.setDatasource(ds);
+            newRuntimeFieldGroup.bind();
         }
 
         initCustomFields(newRuntimeFieldGroup, newRuntimeFieldGroup.getFields(), ds);
@@ -204,12 +205,13 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         }
     }
 
-    protected java.util.List<FieldGroup.FieldConfig> createFieldsForAttributes() {
+    protected java.util.List<FieldGroup.FieldConfig> createFieldsForAttributes(FieldGroup newRuntimeFieldGroup) {
         @SuppressWarnings("unchecked")
         Collection<DynamicAttributesMetaProperty> metaProperties = rds.getPropertiesFilteredByCategory();
         java.util.List<FieldGroup.FieldConfig> fields = new ArrayList<>();
         for (DynamicAttributesMetaProperty property : metaProperties) {
-            FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(property.getName());
+            FieldGroup.FieldConfig field = newRuntimeFieldGroup.createField(property.getName());
+            field.setProperty(property.getName());
             CategoryAttribute attribute = property.getAttribute();
             if (attribute != null) {
                 field.setCaption(attribute.getName());

@@ -17,73 +17,73 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.bali.util.Preconditions;
-import com.haulmont.chile.core.model.MetaClass;
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.desktop.sys.vcl.ToolTipButton;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DsContext;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         implements FieldGroup, AutoExpanding, Component.UiPermissionAware {
 
+    public static final String DEFAULT_FIELD_WIDTH = "200px";
+
+    protected String description;
+
     protected MigLayout layout;
     protected Datasource datasource;
-    protected int rows;
+    protected CollapsiblePanel collapsiblePanel;
+
+    protected int rows = 0;
     protected int cols = 1;
 
     protected boolean editable = true;
-
     protected boolean borderVisible = false;
 
-    protected Map<String, FieldConfig> fields = new LinkedHashMap<>();
-    protected Map<FieldConfig, Integer> fieldsColumn = new HashMap<>();
-    protected Map<FieldConfig, Component> fieldComponents = new LinkedHashMap<>();
-    protected Map<FieldConfig, JLabel> fieldLabels = new HashMap<>();
-    protected Map<FieldConfig, ToolTipButton> fieldTooltips = new HashMap<>();
-    protected Map<Integer, List<FieldConfig>> columnFields = new HashMap<>();
-    protected Map<FieldConfig, CustomFieldGenerator> generators = new HashMap<>();
-    protected AbstractFieldFactory fieldFactory = new FieldFactory();
+    protected FieldCaptionAlignment captionAlignment;
 
-    protected Set<FieldConfig> readOnlyFields = new HashSet<>();
-    protected Set<FieldConfig> disabledFields = new HashSet<>();
-
-    protected CollapsiblePanel collapsiblePanel;
-
-    protected Security security = AppBeans.get(Security.NAME);
-    protected MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+    protected Map<String, FieldConfig> fields = new HashMap<>();
+    protected List<List<FieldConfig>> columnFieldMapping = new ArrayList<>();
+    {
+        columnFieldMapping.add(new ArrayList<>());
+    }
 
     protected Map<Integer, Integer> columnFieldCaptionWidth = null;
     protected int fieldCaptionWidth = -1;
 
     protected boolean requestUpdateCaptionWidth = false;
+
+    protected List<EditableChangeListener> editableChangeListeners = new ArrayList<>();
+
+    protected FieldGroupFieldFactory fieldFactory;
 
     public DesktopFieldGroup() {
         LC lc = new LC();
@@ -101,17 +101,33 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         collapsiblePanel.setBorderVisible(false);
 
         setWidth(Component.AUTO_SIZE);
+
+        fieldFactory = AppBeans.get(FieldGroupFieldFactory.NAME);
+    }
+
+    /**
+     * @return flat list of column fields
+     */
+    protected List<FieldConfig> getColumnOrderedFields() {
+        return columnFieldMapping.stream()
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public FieldConfig createField(String id) {
+        return new FieldConfigImpl(id);
     }
 
     @Override
     public List<FieldConfig> getFields() {
-        return new ArrayList<>(fields.values());
+        return getColumnOrderedFields();
     }
 
     @Override
-    public FieldConfig getField(String id) {
+    public FieldConfig getField(String fieldId) {
         for (final Map.Entry<String, FieldConfig> entry : fields.entrySet()) {
-            if (entry.getKey().equals(id)) {
+            if (entry.getKey().equals(fieldId)) {
                 return entry.getValue();
             }
         }
@@ -119,77 +135,127 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
     }
 
     @Override
-    public Component getFieldComponent(String id) {
-        FieldConfig fc = getField(id);
-        return getFieldComponent(fc);
-    }
+    public FieldConfig getFieldNN(String fieldId) {
+        FieldConfig fieldConfig = fields.get(fieldId);
+        if (fieldConfig == null) {
+            throw new IllegalArgumentException("Unable to find field with id " + fieldId);
+        }
 
-    @Override
-    public Component getFieldComponent(FieldConfig fieldConfig) {
-        return fieldComponents.get(fieldConfig);
+        return fieldConfig;
     }
 
     @Override
     public List<Component> getOwnComponents() {
-        return new ArrayList<>(fieldComponents.values());
-    }
-
-    private void fillColumnFields(int col, FieldConfig field) {
-        List<FieldConfig> fields = columnFields.get(col);
-        if (fields == null) {
-            fields = new ArrayList<>();
-
-            columnFields.put(col, fields);
-        }
-        fields.add(field);
+        return getColumnOrderedFields().stream()
+                .filter(FieldConfig::isBound)
+                .map(FieldConfig::getComponent)
+                .collect(Collectors.toList());
     }
 
     @Override
     public void addField(FieldConfig field) {
-        if (cols == 0) {
-            cols = 1;
-        }
         addField(field, 0);
     }
 
     @Override
-    public void addField(FieldConfig field, int col) {
-        if (col < 0 || col >= cols) {
-            throw new IllegalStateException(String.format("Illegal column number %s, available amount of columns is %s",
-                    col, cols));
+    public void addField(FieldConfig fc, int colIndex) {
+        checkArgument(!fields.containsKey(fc.getId()), "Field is alredy registered");
+        checkArgument(this == ((FieldConfigImpl) fc).getOwner(), "Field is not belong to this FieldGroup");
+
+        if (colIndex < 0 || colIndex >= getColumns()) {
+            throw new IllegalArgumentException(String.format("Illegal column number %s, available amount of columns is %s",
+                    colIndex, getColumns()));
         }
-        fields.put(field.getId(), field);
-        fieldsColumn.put(field, col);
-        fillColumnFields(col, field);
+
+        addFieldInternal(fc, colIndex, -1);
     }
 
     @Override
-    public void removeField(FieldConfig field) {
-        if (fields.remove(field.getId()) != null) {
-            Integer col = fieldsColumn.get(field);
+    public void addField(FieldConfig fc, int colIndex, int rowIndex) {
+        checkArgument(!fields.containsKey(fc.getId()), "Field is alredy registered");
+        checkArgument(this == ((FieldConfigImpl) fc).getOwner(), "Field is not belong to this FieldGroup");
 
-            final List<FieldConfig> fields = columnFields.get(col);
-            fields.remove(field);
-            fieldsColumn.remove(field);
+        if (colIndex < 0 || colIndex >= getColumns()) {
+            throw new IllegalArgumentException(String.format("Illegal column number %s, available amount of columns is %s",
+                    colIndex, getColumns()));
+        }
+        List<FieldConfig> colFields = columnFieldMapping.get(colIndex);
+        if (rowIndex < 0 || rowIndex > colFields.size()) {
+            throw new IllegalArgumentException(String.format("Illegal column number %s, available amount of columns is %s",
+                    colIndex, getColumns()));
+        }
+
+        addFieldInternal(fc, colIndex, rowIndex);
+    }
+
+    protected void addFieldInternal(FieldConfig fc, int colIndex, int rowIndex) {
+        List<FieldConfig> colFields = columnFieldMapping.get(colIndex);
+        if (rowIndex == -1) {
+            rowIndex = colFields.size();
+        }
+
+        fields.put(fc.getId(), fc);
+        colFields.add(rowIndex, fc);
+
+        FieldConfigImpl fci = (FieldConfigImpl) fc;
+
+        fci.setColumn(colIndex);
+        fci.setManaged(true);
+
+        if (fc.getComponent() != null) {
+            managedFieldComponentAssigned(fci, fci.getAttachMode());
+        }
+    }
+
+    @Override
+    public void removeField(String fieldId) {
+        removeField(getFieldNN(fieldId));
+    }
+
+    @Override
+    public void removeField(FieldConfig fc) {
+        checkArgument(this == ((FieldConfigImpl) fc).getOwner(), "Field is not belong to this FieldGroup");
+
+        if (fields.values().contains(fc)) {
+            int colIndex = ((FieldConfigImpl) fc).getColumn();
+            columnFieldMapping.get(colIndex).remove(fc);
+            fields.remove(fc.getId());
+
+            if (fc.isBound()) {
+                reattachColumnFields(colIndex);
+
+                this.rows = detectRowsCount();
+            }
+
+            ((FieldConfigImpl) fc).setManaged(false);
+
+            if (fc.getComponent() != null) {
+                fc.getComponent().setParent(null);
+            }
         }
     }
 
     @Override
     public void requestFocus() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                for (Component component : fieldComponents.values()) {
-                    if (component.isEnabled() && component.isVisible()) {
-                        JComponent jComponent = DesktopComponentsHelper.unwrap(component);
-                        if (jComponent.isFocusable()) {
-                            jComponent.requestFocus();
-                            break;
-                        }
-                    }
-                }
+        for (FieldConfig fc : getColumnOrderedFields()) {
+            Component component = fc.getComponent();
+            if (component != null
+                    && component.isEnabled()
+                    && component.isVisible()
+                    && component instanceof Focusable
+                    && ((Focusable) component).isFocusable()) {
+
+                component.requestFocus();
+                break;
             }
-        });
+        }
+    }
+
+    @Override
+    public void requestFocus(String fieldId) {
+        FieldConfig field = getFieldNN(fieldId);
+        Component componentField = field.getComponentNN();
+        componentField.requestFocus();
     }
 
     @Override
@@ -199,209 +265,259 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
 
     @Override
     public void setDatasource(final Datasource datasource) {
+        if (this.datasource != null) {
+            throw new UnsupportedOperationException("Changing datasource is not supported by the FieldGroup component");
+        }
+
         this.datasource = datasource;
 
-        if (!this.fields.isEmpty()) {
-            rows = rowsCount();
-        } else if (datasource != null) {
-            LoggerFactory.getLogger(DesktopFieldGroup.class).warn("Field group does not have fields");
-        }
-
         assignAutoDebugId();
-
-        createFields();
     }
 
     @Override
-    public boolean isRequired(FieldConfig field) {
-        Component component = fieldComponents.get(field);
-        return component instanceof com.haulmont.cuba.gui.components.Field && ((com.haulmont.cuba.gui.components.Field) component).isRequired();
+    public void bind() {
+        bindDeclarativeFieldConfigs();
     }
 
-    @Override
-    public void setRequired(FieldConfig field, boolean required, String message) {
-        Component component = fieldComponents.get(field);
-        if (component instanceof Field) {
-            ((Field) component).setRequired(required);
-            ((Field) component).setRequiredMessage(message);
+    protected void bindDeclarativeFieldConfigs() {
+        List<Integer> reattachColumns = new ArrayList<>();
+
+        for (FieldConfig fc : getColumnOrderedFields()) {
+            if (!fc.isCustom() && !fc.isBound()) {
+                FieldConfigImpl fci = (FieldConfigImpl) fc;
+
+                Datasource targetDs = fc.getTargetDatasource();
+                if (targetDs == null) {
+                    throw new IllegalStateException(String.format("Unable to get datasource for field '%s'", id));
+                }
+
+                FieldGroupFieldFactory.GeneratedField generatedField = fieldFactory.createField(fc);
+                Component fieldComponent = generatedField.getComponent();
+
+                fci.assignComponent(fieldComponent);
+                fci.setAttachMode(generatedField.getAttachMode());
+
+                DesktopAbstractComponent fieldImpl = (DesktopAbstractComponent) fieldComponent;
+                fci.setComposition(fieldImpl);
+
+                if (fci.getDescription() != null) {
+                    ToolTipButton tooltipBtn = new ToolTipButton();
+                    tooltipBtn.setVisible(fieldComponent.isVisible());
+                    tooltipBtn.setToolTipText(fci.getDescription());
+                    fci.setToolTipButton(new ToolTipButton());
+                } else {
+                    fci.setToolTipButton(null);
+                }
+
+                assignTypicalAttributes(fieldComponent);
+
+                if (generatedField.getAttachMode() == FieldAttachMode.APPLY_DEFAULTS) {
+                    applyFieldDefaults(fci);
+                }
+
+                int columnIndex = fci.getColumn();
+                if (!reattachColumns.contains(columnIndex)) {
+                    reattachColumns.add(columnIndex);
+                }
+            }
+        }
+
+        if (!reattachColumns.isEmpty()) {
+            this.rows = detectRowsCount();
+
+            for (Integer reattachColumnIndex : reattachColumns) {
+                reattachColumnFields(reattachColumnIndex);
+            }
         }
     }
 
-    @Override
-    public boolean isRequired(String fieldId) {
-        FieldConfig field = fields.get(fieldId);
-        return field != null && isRequired(field);
-    }
+    protected void reattachColumnFields(int colIndex) {
+        fields.values().stream()
+                .filter(FieldConfig::isBound)
+                .map(fieldConfig -> ((FieldConfigImpl) fieldConfig))
+                .filter(fci -> fci.getColumn() == colIndex)
+                .forEach(fci -> {
+                    impl.remove(fci.getCompositionNN().getComposition());
+                    if (fci.getLabel() != null) {
+                        impl.remove(fci.getLabel());
+                    }
+                    if (fci.getToolTipButton() != null) {
+                        impl.remove(fci.getToolTipButton());
+                    }
+                });
 
-    @Override
-    public void setRequired(String fieldId, boolean required, String message) {
-        FieldConfig field = fields.get(fieldId);
-        if (field != null) {
-            setRequired(field, required, message);
+        List<FieldConfig> columnFCs = columnFieldMapping.get(colIndex);
+        int insertRowIndex = 0;
+        for (FieldConfig fc : columnFCs) {
+            if (fc.isBound()) {
+                FieldConfigImpl fci = (FieldConfigImpl) fc;
+
+                Component fieldComponent = fci.getComponentNN();
+                JComponent composition = fieldComponent.unwrapComposition(JComponent.class);
+
+                JLabel label = fci.getLabel();
+                if (label != null) {
+                    int preferredCaptionWidth = getPreferredCaptionWidth(colIndex);
+                    if (preferredCaptionWidth > 0) {
+                        label.setPreferredSize(new Dimension(preferredCaptionWidth, 25));
+                        label.setMaximumSize(new Dimension(preferredCaptionWidth, 25));
+                        label.setMinimumSize(new Dimension(preferredCaptionWidth, 25));
+                    } else {
+                        label.setPreferredSize(new Dimension(label.getPreferredSize().width, 25));
+                    }
+                    label.setVisible(fieldComponent.isVisible());
+
+                    CC labelCc = new CC();
+                    MigLayoutHelper.applyAlignment(labelCc, Alignment.TOP_LEFT);
+
+                    impl.add(label, labelCc.cell(colIndex * 3, insertRowIndex, 1, 1));
+                }
+
+                if (Strings.isNullOrEmpty(fci.getDescription())) {
+                    fci.setToolTipButton(null);
+                } else if (fci.getToolTipButton() == null) {
+                    ToolTipButton toolTipButton = new ToolTipButton();
+                    toolTipButton.setToolTipText(fci.getDescription());
+                    toolTipButton.setVisible(fieldComponent.isVisible());
+                    fci.setToolTipButton(toolTipButton);
+                }
+
+                ToolTipButton toolTipButton = fci.getToolTipButton();
+                if (toolTipButton != null) {
+                    toolTipButton.setVisible(fieldComponent.isVisible());
+                    DesktopToolTipManager.getInstance().registerTooltip(toolTipButton);
+                    impl.add(toolTipButton, new CC().cell(colIndex * 3 + 2, insertRowIndex, 1, 1).alignY("top"));
+                }
+
+                CC cell = new CC().cell(colIndex * 3 + 1, insertRowIndex, 1, 1);
+
+                MigLayoutHelper.applyWidth(cell, (int) fieldComponent.getWidth(), fieldComponent.getWidthUnits(), false);
+                MigLayoutHelper.applyHeight(cell, (int) fieldComponent.getHeight(), fieldComponent.getHeightUnits(), false);
+                MigLayoutHelper.applyAlignment(cell, fieldComponent.getAlignment());
+
+                composition.putClientProperty(getSwingPropertyId(), fci.getId());
+                impl.add(composition, cell);
+
+                insertRowIndex++;
+            }
         }
+
+        impl.validate();
+        impl.repaint();
     }
 
-    @Override
-    public void setRequired(FieldConfig field, boolean required) {
-        Component component = fieldComponents.get(field);
-        if (component instanceof Field) {
-            ((Field) component).setRequired(required);
+    protected int detectRowsCount() {
+        int rowsCount = 0;
+        for (List<FieldConfig> fields : columnFieldMapping) {
+            long boundCount = fields.stream()
+                    .filter(FieldConfig::isBound)
+                    .count();
+
+            rowsCount = (int) Math.max(rowsCount, boundCount);
         }
+        return Math.max(rowsCount, 1);
     }
 
-    @Override
-    public String getRequiredMessage(FieldConfig field) {
-        Component component = fieldComponents.get(field);
-        if (component instanceof com.haulmont.cuba.gui.components.Field) {
-            return ((Field) component).getRequiredMessage();
-        }
-        return null;
-    }
+    protected void managedFieldComponentAssigned(FieldConfigImpl fci, FieldAttachMode mode) {
+        DesktopAbstractComponent fieldImpl = (DesktopAbstractComponent) fci.getComponentNN();
+        fci.setComposition(fieldImpl);
 
-    @Override
-    public void setRequiredMessage(FieldConfig field, String message) {
-        Component component = fieldComponents.get(field);
-        if (component instanceof Field) {
-            ((Field) component).setRequiredMessage(message);
-        }
-    }
-
-    @Override
-    public void setRequired(String fieldId, boolean required) {
-        FieldConfig field = fields.get(fieldId);
-        if (field != null) {
-            setRequired(field, required);
-        }
-    }
-
-    @Override
-    public String getRequiredMessage(String fieldId) {
-        FieldConfig field = fields.get(fieldId);
-        if (field != null) {
-            return getRequiredMessage(field);
-        }
-        return null;
-    }
-
-    @Override
-    public void setRequiredMessage(String fieldId, String message) {
-        FieldConfig field = fields.get(fieldId);
-        if (field != null) {
-            setRequiredMessage(field, message);
-        }
-    }
-
-    @Override
-    public void addValidator(FieldConfig field, Field.Validator validator) {
-        Component component = fieldComponents.get(field);
-        if (component instanceof Field) {
-            ((Field) component).addValidator(validator);
-        }
-    }
-
-    @Override
-    public void addValidator(String fieldId, Field.Validator validator) {
-        FieldConfig field = fields.get(fieldId);
-        if (fieldId != null) {
-            addValidator(field, validator);
-        }
-    }
-
-    @Override
-    public boolean isEditable(FieldConfig field) {
-        return !readOnlyFields.contains(field);
-    }
-
-    @Override
-    public void setEditable(FieldConfig field, boolean editable) {
-        doSetEditable(field, editable);
-
-        if (editable) {
-            readOnlyFields.remove(field);
+        if (fci.getDescription() != null) {
+            ToolTipButton tooltipBtn = new ToolTipButton();
+            tooltipBtn.setVisible(fci.getComponentNN().isVisible());
+            tooltipBtn.setToolTipText(fci.getDescription());
+            fci.setToolTipButton(new ToolTipButton());
         } else {
-            readOnlyFields.add(field);
+            fci.setToolTipButton(null);
         }
-    }
 
-    protected void doSetEditable(FieldConfig field, boolean editable) {
-        Component component = fieldComponents.get(field);
-        if (component instanceof Editable) {
-            ((Editable) component).setEditable(editable);
+        assignTypicalAttributes(fci.getComponentNN());
+
+        if (mode == FieldAttachMode.APPLY_DEFAULTS) {
+            applyFieldDefaults(fci);
         }
-        if (fieldLabels.containsKey(field)) {
-            fieldLabels.get(field).setEnabled(editable && isEnabledWithParent());
-        }
+
+        this.rows = detectRowsCount();
+
+        reattachColumnFields(fci.getColumn());
     }
 
-    @Override
-    public boolean isEditable(String fieldId) {
-        FieldConfig field = fields.get(fieldId);
-        return field != null && isEditable(field);
-    }
+    protected void applyFieldDefaults(FieldConfigImpl fci) {
+        Component fieldComponent = fci.getComponentNN();
 
-    @Override
-    public void setEditable(String fieldId, boolean editable) {
-        FieldConfig field = fields.get(fieldId);
-        if (field != null) {
-            setEditable(field, editable);
-        }
-    }
+        if (fieldComponent instanceof Field) {
+            Field cubaField = (Field) fieldComponent;
 
-    @Override
-    public boolean isEnabled(FieldConfig field) {
-        Component component = fieldComponents.get(field);
-        return component != null && component.isEnabled();
-    }
+            if (fci.getTargetCaption() != null && cubaField.getCaption() == null) {
+                cubaField.setCaption(fci.getTargetCaption());
+            }
+            if (fci.getTargetDescription() != null && StringUtils.isEmpty(cubaField.getDescription())) {
+                cubaField.setDescription(fci.getTargetDescription());
+            }
+            if (fci.getTargetRequired() != null) {
+                cubaField.setRequired(fci.getTargetRequired());
+            }
+            if (fci.getTargetRequiredMessage() != null && cubaField.getRequiredMessage() == null) {
+                cubaField.setRequiredMessage(fci.getTargetRequiredMessage());
+            }
+            if (fci.getTargetEditable() != null) {
+                cubaField.setEditable(fci.getTargetEditable());
+            }
+            if (fci.getTargetVisible() != null) {
+                cubaField.setVisible(fci.getTargetVisible());
+            }
+            if (cubaField instanceof Component.Focusable && fci.getTargetTabIndex() != null) {
+                ((Component.Focusable) cubaField).setTabIndex(fci.getTargetTabIndex());
+            }
+            for (Field.Validator validator : fci.getTargetValidators()) {
+                cubaField.addValidator(validator);
+            }
 
-    @Override
-    public void setEnabled(FieldConfig field, boolean enabled) {
-        doSetEnabled(field, enabled);
-
-        if (enabled) {
-            disabledFields.remove(field);
+            if (fci.getTargetWidth() != null) {
+                fieldComponent.setWidth(fci.getTargetWidth());
+            } else {
+                fieldComponent.setWidth(DEFAULT_FIELD_WIDTH);
+            }
         } else {
-            disabledFields.add(field);
+            DesktopAbstractComponent composition = fci.getCompositionNN();
+            if (fci.getTargetCaption() != null) {
+                fci.getLabel().setText(fci.getTargetCaption());
+            }
+            if (fci.getTargetVisible() != null) {
+                composition.setVisible(fci.getTargetVisible());
+            }
+            if (fci.getTargetWidth() != null) {
+                composition.setWidth(fci.getTargetWidth());
+            } else {
+                composition.setWidth(DEFAULT_FIELD_WIDTH);
+            }
+        }
+
+        if (fieldComponent instanceof Component.HasFormatter && fci.getTargetFormatter() != null) {
+            ((Component.HasFormatter) fieldComponent).setFormatter(fci.getTargetFormatter());
+        }
+
+        if (StringUtils.isNotEmpty(fci.getTargetStylename())) {
+            fieldComponent.setStyleName(fci.getTargetStylename());
+        }
+
+        App app = App.getInstance();
+        if (app != null && app.isTestMode()) {
+            fci.getCompositionNN().getComposition().setName(fci.getId());
         }
     }
 
-    protected void doSetEnabled(FieldConfig field, boolean enabled) {
-        Component component = fieldComponents.get(field);
-        if (component != null) {
-            component.setEnabled(enabled);
-        }
-        if (fieldLabels.containsKey(field)) {
-            fieldLabels.get(field).setEnabled(enabled && isEnabledWithParent());
-        }
-    }
+    protected void doSetParentEnabled(FieldConfig fc, boolean enabled) {
+        if (fc.getComponent() != null) {
+            Component component = fc.getComponent();
+            if (component instanceof DesktopAbstractComponent) {
+                ((DesktopAbstractComponent) component).setParentEnabled(enabled);
+            }
 
-    protected void doSetParentEnabled(FieldConfig field, boolean enabled) {
-        Component component = fieldComponents.get(field);
-        if (component instanceof DesktopAbstractComponent) {
-            ((DesktopAbstractComponent) component).setParentEnabled(enabled);
-        }
-        if (fieldLabels.containsKey(field)) {
-            fieldLabels.get(field).setEnabled(enabled);
-        }
-    }
-
-    @Override
-    public boolean isEnabled(String fieldId) {
-        FieldConfig field = fields.get(fieldId);
-        return field != null && isEnabled(field);
-    }
-
-    @Override
-    public void setEnabled(String fieldId, boolean enabled) {
-        FieldConfig field = fields.get(fieldId);
-        if (field != null) {
-            setEnabled(field, enabled);
-        }
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        if (isEnabled() != enabled) {
-            super.setEnabled(enabled);
+            FieldConfigImpl fci = (FieldConfigImpl) fc;
+            if (fci.getLabel() != null) {
+                fci.getLabel().setEnabled(enabled);
+            }
         }
     }
 
@@ -410,38 +526,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         super.updateEnabled();
 
         for (FieldConfig field : fields.values()) {
-            doSetParentEnabled(field, parentEnabled && enabled && !disabledFields.contains(field));
-        }
-    }
-
-    @Override
-    public boolean isVisible(FieldConfig field) {
-        Component component = fieldComponents.get(field);
-        return component != null && component.isVisible() && isVisible();
-    }
-
-    @Override
-    public void setVisible(FieldConfig field, boolean visible) {
-        Component component = fieldComponents.get(field);
-        if (component != null) {
-            component.setVisible(visible);
-        }
-        if (fieldLabels.containsKey(field)) {
-            fieldLabels.get(field).setVisible(visible);
-        }
-    }
-
-    @Override
-    public boolean isVisible(String fieldId) {
-        FieldConfig field = fields.get(fieldId);
-        return field != null && isVisible(field);
-    }
-
-    @Override
-    public void setVisible(String fieldId, boolean visible) {
-        FieldConfig field = fields.get(fieldId);
-        if (field != null) {
-            setVisible(field, visible);
+            doSetParentEnabled(field, parentEnabled && enabled);
         }
     }
 
@@ -457,87 +542,14 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
     }
 
     @Override
-    public Object getFieldValue(FieldConfig field) {
-        Component component = fieldComponents.get(field);
-        if (component instanceof HasValue) {
-            return ((HasValue) component).getValue();
-        }
-        return null;
-    }
-
-    @Override
-    public void setFieldValue(FieldConfig field, Object value) {
-        Component component = fieldComponents.get(field);
-        if (component instanceof HasValue) {
-            ((HasValue) component).setValue(value);
-        }
-    }
-
-    @Override
-    public Object getFieldValue(String fieldId) {
-        FieldConfig field = getField(fieldId);
-        if (field == null) {
-            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
-        }
-        return getFieldValue(field);
-    }
-
-    @Override
-    public void setFieldValue(String fieldId, Object value) {
-        FieldConfig field = getField(fieldId);
-        if (field == null) {
-            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
-        }
-        setFieldValue(field, value);
-    }
-
-    @Override
-    public void requestFocus(String fieldId) {
-        FieldConfig field = getField(fieldId);
-        if (field == null) {
-            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
-        }
-        final Component fieldComponent = fieldComponents.get(field);
-        if (fieldComponent != null) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    fieldComponent.requestFocus();
-                }
-            });
-        }
-    }
-
-    @Override
-    public String getFieldCaption(String fieldId) {
-        FieldConfig field = getField(fieldId);
-        if (field == null) {
-            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
-        }
-
-        JLabel label = fieldLabels.get(field);
-        if (label == null) {
-            throw new IllegalStateException(String.format("Label for field '%s' not found", fieldId));
-        }
-        return label.getText();
-    }
-
-    @Override
-    public void setFieldCaption(String fieldId, String caption) {
-        FieldConfig field = getField(fieldId);
-        if (field == null) {
-            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
-        }
-
-        JLabel label = fieldLabels.get(field);
-        if (label == null) {
-            throw new IllegalStateException(String.format("Label for field '%s' not found", fieldId));
-        }
-        label.setText(caption);
+    public FieldCaptionAlignment getCaptionAlignment() {
+        return captionAlignment;
     }
 
     @Override
     public void setCaptionAlignment(FieldCaptionAlignment captionAlignment) {
+        this.captionAlignment = captionAlignment;
+        
         log.warn("setCaptionAlignment not implemented for desktop");
     }
 
@@ -574,23 +586,20 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
 
     protected void updateCaptionWidths() {
         if (!requestUpdateCaptionWidth) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    requestUpdateCaptionWidth = false;
+            SwingUtilities.invokeLater(() -> {
+                requestUpdateCaptionWidth = false;
 
-                    for (FieldConfig fieldConfig : fields.values()) {
-                        JLabel label = fieldLabels.get(fieldConfig);
-                        Integer col = fieldsColumn.get(fieldConfig);
+                for (FieldConfig fieldConfig : fields.values()) {
+                    JLabel label = ((FieldConfigImpl) fieldConfig).getLabel();
 
-                        if (col != null && label != null) {
-                            int preferredCaptionWidth = getPreferredCaptionWidth(col);
+                    if (label != null) {
+                        int col = ((FieldConfigImpl) fieldConfig).getColumn();
+                        int preferredCaptionWidth = getPreferredCaptionWidth(col);
 
-                            if (preferredCaptionWidth > 0) {
-                                label.setPreferredSize(new Dimension(preferredCaptionWidth, 25));
-                                label.setMaximumSize(new Dimension(preferredCaptionWidth, 25));
-                                label.setMinimumSize(new Dimension(preferredCaptionWidth, 25));
-                            }
+                        if (preferredCaptionWidth > 0) {
+                            label.setPreferredSize(new Dimension(preferredCaptionWidth, 25));
+                            label.setMaximumSize(new Dimension(preferredCaptionWidth, 25));
+                            label.setMinimumSize(new Dimension(preferredCaptionWidth, 25));
                         }
                     }
                 }
@@ -611,22 +620,60 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         return preferredCaptionWidth;
     }
 
-    protected int rowsCount() {
-        int rowsCount = 0;
-        for (final List<FieldConfig> fields : columnFields.values()) {
-            rowsCount = Math.max(rowsCount, fields.size());
-        }
-        return rowsCount;
-    }
-
     @Override
     public int getColumns() {
         return cols;
     }
 
+    public int getRows() {
+        return rows;
+    }
+
+    public DesktopAbstractComponent getCellComponent(int colIndex, int rowIndex) {
+        if (colIndex < 0 || colIndex >= getColumns()) {
+            throw new IllegalArgumentException(String.format("Illegal column number %s, available amount of columns is %s",
+                    colIndex, getColumns()));
+        }
+        List<FieldConfig> colFields = columnFieldMapping.get(colIndex);
+        if (rowIndex < 0 || rowIndex > colFields.size()) {
+            throw new IllegalArgumentException(String.format("Illegal column number %s, available amount of columns is %s",
+                    colIndex, getColumns()));
+        }
+
+        for (FieldConfig fieldConfig : fields.values()) {
+            DesktopAbstractComponent composition = ((FieldConfigImpl) fieldConfig).getComposition();
+            if (composition != null) {
+                JComponent jComponent = composition.getComposition();
+                Object componentConstraints = layout.getComponentConstraints(jComponent);
+                if (componentConstraints instanceof CC) {
+                    CC cc = (CC) componentConstraints;
+                    if (cc.getCellY() == rowIndex) {
+                        int ccColIndex = (cc.getCellX() - 1) / 3;
+                        if (colIndex == ccColIndex) {
+                            return composition;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
-    public void setColumns(int cols) {
-        this.cols = cols;
+    public void setColumns(int columns) {
+        if (this.cols != columns) {
+            this.cols = columns;
+
+            List<List<FieldConfig>> oldColumnFields = this.columnFieldMapping;
+            this.columnFieldMapping = new ArrayList<>();
+            for (int i = 0; i < columns; i++) {
+                if (i < oldColumnFields.size()) {
+                    columnFieldMapping.add(oldColumnFields.get(i));
+                } else {
+                    columnFieldMapping.add(new ArrayList<>());
+                }
+            }
+        }
     }
 
     @Override
@@ -639,6 +686,16 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
     }
 
     @Override
+    public FieldGroupFieldFactory getFieldFactory() {
+        return fieldFactory;
+    }
+
+    @Override
+    public void setFieldFactory(FieldGroupFieldFactory fieldFactory) {
+        this.fieldFactory = fieldFactory;
+    }
+
+    @Override
     public void addCustomField(String fieldId, CustomFieldGenerator fieldGenerator) {
         FieldConfig field = getField(fieldId);
         if (field == null) {
@@ -648,167 +705,15 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
     }
 
     @Override
-    public void addCustomField(FieldConfig field, CustomFieldGenerator fieldGenerator) {
-        if (!field.isCustom()) {
-            throw new IllegalStateException(String.format("Field '%s' must be custom", field.getId()));
-        }
-        generators.put(field, fieldGenerator);
-        // immediately create field, even before postInit()
-        createFieldComponent(field);
-    }
-
-    protected void createFields() {
-        impl.removeAll();
-        for (FieldConfig field : fields.values()) {
-            if (field.isCustom()) {
-                continue; // custom field is generated in another method
-            }
-
-            createFieldComponent(field);
-        }
-    }
-
-    protected void createFieldComponent(FieldConfig fieldConfig) {
-        int col = fieldsColumn.get(fieldConfig);
-        int row = columnFields.get(col).indexOf(fieldConfig);
-
-        Datasource ds;
-        if (fieldConfig.getDatasource() != null) {
-            ds = fieldConfig.getDatasource();
-        } else {
-            ds = datasource;
+    public void addCustomField(FieldConfig fc, CustomFieldGenerator fieldGenerator) {
+        if (!fc.isCustom()) {
+            throw new IllegalStateException(String.format("Field '%s' must be defined as custom", fc.getId()));
         }
 
-        boolean repaintRequired = false;
+        FieldConfigImpl fci = (FieldConfigImpl) fc;
 
-        // Remove all part of old component from target cell
-        Component oldComponent = fieldComponents.get(fieldConfig);
-        if (oldComponent != null) {
-            impl.remove(DesktopComponentsHelper.getComposition(oldComponent));
-            repaintRequired = true;
-        }
-        JLabel oldLabel = fieldLabels.get(fieldConfig);
-        if (oldLabel != null) {
-            impl.remove(oldLabel);
-        }
-        ToolTipButton oldTooltip = fieldTooltips.get(fieldConfig);
-        if (oldTooltip != null) {
-            impl.remove(oldTooltip);
-        }
-
-        String caption = null;
-        String description = null;
-
-        CustomFieldGenerator generator = generators.get(fieldConfig);
-        if (generator == null) {
-            generator = createDefaultGenerator(fieldConfig);
-        }
-
-        Component fieldComponent = generator.generateField(ds, fieldConfig.getId());
-
-        if (fieldComponent instanceof Field) { // do not create caption for buttons etc.
-            Field cubaField = (Field) fieldComponent;
-
-            caption = getDefaultCaption(fieldConfig, ds);
-
-            if (StringUtils.isNotEmpty(cubaField.getCaption())) {
-                caption = cubaField.getCaption();     // custom field has manually set caption
-            }
-
-            description = fieldConfig.getDescription();
-            if (StringUtils.isNotEmpty(cubaField.getDescription())) {
-                description = cubaField.getDescription();  // custom field has manually set description
-            } else if (StringUtils.isNotEmpty(description)) {
-                cubaField.setDescription(description);
-            }
-
-            if (!cubaField.isRequired()) {
-                cubaField.setRequired(fieldConfig.isRequired());
-            }
-            if (fieldConfig.getRequiredError() != null) {
-                cubaField.setRequiredMessage(fieldConfig.getRequiredError());
-            }
-
-            if (cubaField.isEditable()) {
-                cubaField.setEditable(fieldConfig.isEditable());
-            }
-        } else if (!(fieldComponent instanceof HasCaption)) {
-            // if component does not support caption
-            caption = getDefaultCaption(fieldConfig, ds);
-        }
-
-        if (fieldComponent instanceof HasFormatter) {
-            ((HasFormatter) fieldComponent).setFormatter(fieldConfig.getFormatter());
-        }
-
-        // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check
-        if (/*f.getWidth() == -1f &&*/ fieldConfig.getWidth() != null) {
-            fieldComponent.setWidth(fieldConfig.getWidth());
-        } else {
-            fieldComponent.setWidth(DEFAULT_FIELD_WIDTH);
-        }
-
-        applyPermissions(fieldComponent);
-
-        JLabel label = new JLabel(caption);
-
-        int preferredCaptionWidth = getPreferredCaptionWidth(col);
-        if (preferredCaptionWidth > 0) {
-            label.setPreferredSize(new Dimension(preferredCaptionWidth, 25));
-            label.setMaximumSize(new Dimension(preferredCaptionWidth, 25));
-            label.setMinimumSize(new Dimension(preferredCaptionWidth, 25));
-        } else {
-            label.setPreferredSize(new Dimension(label.getPreferredSize().width, 25));
-        }
-
-        label.setVisible(fieldComponent.isVisible());
-        CC labelCc = new CC();
-        MigLayoutHelper.applyAlignment(labelCc, Alignment.TOP_LEFT);
-
-        impl.add(label, labelCc.cell(col * 3, row, 1, 1));
-        fieldLabels.put(fieldConfig, label);
-
-        if (description != null && !(fieldComponent instanceof CheckBox)) {
-            fieldConfig.setDescription(description);
-            ToolTipButton tooltipBtn = new ToolTipButton();
-            tooltipBtn.setVisible(fieldComponent.isVisible());
-            tooltipBtn.setToolTipText(description);
-            DesktopToolTipManager.getInstance().registerTooltip(tooltipBtn);
-            impl.add(tooltipBtn, new CC().cell(col * 3 + 2, row, 1, 1).alignY("top"));
-            fieldTooltips.put(fieldConfig, tooltipBtn);
-        }
-        fieldComponents.put(fieldConfig, fieldComponent);
-        assignTypicalAttributes(fieldComponent);
-        JComponent jComponent = DesktopComponentsHelper.getComposition(fieldComponent);
-        CC cell = new CC().cell(col * 3 + 1, row, 1, 1);
-
-        MigLayoutHelper.applyWidth(cell, (int) fieldComponent.getWidth(), fieldComponent.getWidthUnits(), false);
-        MigLayoutHelper.applyHeight(cell, (int) fieldComponent.getHeight(), fieldComponent.getHeightUnits(), false);
-        MigLayoutHelper.applyAlignment(cell, fieldComponent.getAlignment());
-
-        jComponent.putClientProperty(getSwingPropertyId(), fieldConfig.getId());
-        impl.add(jComponent, cell);
-
-        if (fieldComponent instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
-            ((DesktopAbstractComponent) fieldComponent).setParentEnabled(false);
-            label.setEnabled(false);
-        }
-
-        if (repaintRequired) {
-            impl.validate();
-            impl.repaint();
-        }
-
-        String stylename = fieldConfig.getStyleName();
-        if (StringUtils.isNotEmpty(stylename)) {
-            fieldComponent.setStyleName(stylename);
-        }
-
-        if (App.getInstance().isTestMode()) {
-            jComponent.setName(fieldConfig.getId());
-        }
-
-        fieldComponent.setParent(this);
+        Component fieldComponent = fieldGenerator.generateField(fc.getTargetDatasource(), fci.getTargetProperty());
+        fc.setComponent(fieldComponent);
     }
 
     @Override
@@ -816,43 +721,14 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         super.setId(id);
 
         if (id != null && App.getInstance().isTestMode()) {
-            final List<FieldConfig> fieldConfs = getFields();
-            for (final FieldConfig fieldConf : fieldConfs) {
-                Component fieldComponent = getFieldComponent(fieldConf.getId());
+            for (FieldConfig fc : fields.values()) {
+                Component fieldComponent = fc.getComponent();
                 if (fieldComponent != null) {
                     JComponent jComponent = DesktopComponentsHelper.getComposition(fieldComponent);
                     if (jComponent != null) {
-                        jComponent.setName(fieldConf.getId());
+                        jComponent.setName(fc.getId());
                     }
                 }
-            }
-        }
-    }
-
-    protected String getDefaultCaption(FieldConfig fieldConfig, Datasource fieldDatasource) {
-        String caption = fieldConfig.getCaption();
-        if (caption == null) {
-            String propertyId = fieldConfig.getId();
-            MetaPropertyPath propertyPath =
-                    fieldDatasource != null ? fieldDatasource.getMetaClass().getPropertyPath(propertyId) : null;
-
-            if (propertyPath != null) {
-                MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(propertyPath);
-                String propertyName = propertyPath.getMetaProperty().getName();
-                caption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
-            }
-        }
-        return caption;
-    }
-
-    protected void applyPermissions(Component c) {
-        if (c instanceof DatasourceComponent) {
-            DatasourceComponent dsComponent = (DatasourceComponent) c;
-            MetaPropertyPath propertyPath = dsComponent.getMetaPropertyPath();
-            if (propertyPath != null) {
-                MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
-                dsComponent.setEditable(dsComponent.isEditable()
-                        && security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()));
             }
         }
     }
@@ -864,22 +740,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
                 belongToFrame.setFrame(getFrame());
             }
         }
-    }
-
-    protected CustomFieldGenerator createDefaultGenerator(final FieldConfig field) {
-        return new CustomFieldGenerator() {
-            @Override
-            public Component generateField(Datasource datasource, String propertyId) {
-                Component component = fieldFactory.createField(datasource, propertyId, field.getXmlDescriptor());
-                if (component instanceof HasFormatter) {
-                    ((HasFormatter) component).setFormatter(field.getFormatter());
-                }
-                if (component instanceof DesktopCheckBox) {
-                    component.setAlignment(Alignment.MIDDLE_LEFT);
-                }
-                return component;
-            }
-        };
+        c.setParent(this);
     }
 
     @Override
@@ -889,10 +750,13 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
 
     @Override
     public void setEditable(boolean editable) {
-        this.editable = editable;
+        if (editable != isEditable()) {
+            this.editable = editable;
 
-        for (FieldConfig field : fields.values()) {
-            doSetEditable(field, editable && !readOnlyFields.contains(field));
+            EditableChangeEvent event = new EditableChangeEvent(this);
+            for (EditableChangeListener listener : new ArrayList<>(editableChangeListeners)) {
+                listener.editableChanged(event);
+            }
         }
     }
 
@@ -908,15 +772,12 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
 
     @Override
     public String getDescription() {
-        return null;
+        return description;
     }
 
     @Override
     public void setDescription(String description) {
-    }
-
-    public Collection<Component> getComponents() {
-        return fieldComponents.values();
+        this.description = description;
     }
 
     @Override
@@ -952,13 +813,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
 
         Map<Component.Validatable, ValidationException> problemFields = null; // lazily initialized
 
-        for (Map.Entry<FieldConfig, Component> componentEntry : fieldComponents.entrySet()) {
-            FieldConfig field = componentEntry.getKey();
-            Component fieldComponent = componentEntry.getValue();
+        // validate column by column
+        List<FieldConfig> fieldsByColumns = getColumnOrderedFields();
 
-            if (!isEditable(field) || !isEnabled(field) || !isVisible(field)) {
-                continue;
-            }
+        for (FieldConfig fc : fieldsByColumns) {
+            Component fieldComponent = fc.getComponent();
 
             // If has valid state
             if ((fieldComponent instanceof Validatable) &&
@@ -996,22 +855,44 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
     }
 
     public void updateCaptionVisibility(DesktopAbstractComponent child) {
-        FieldConfig field = fieldComponents.entrySet().stream()
-                .filter(entry -> entry.getValue() == child)
+        FieldConfig field = fields.values().stream()
+                .filter(entry -> entry.getComponent() == child)
                 .findFirst()
-                .map(Map.Entry::getKey)
                 .orElse(null);
 
-        if (fieldLabels.containsKey(field)) {
-            fieldLabels.get(field).setVisible(child.isComponentVisible());
+        FieldConfigImpl fci = (FieldConfigImpl) field;
+        if (fci != null && fci.getLabel() != null) {
+            fci.getLabel().setVisible(child.isComponentVisible());
+        }
+    }
+
+    public void updateCaptionText(DesktopAbstractComponent child) {
+        FieldConfig field = fields.values().stream()
+                .filter(entry -> entry.getComponent() == child)
+                .findFirst()
+                .orElse(null);
+
+        FieldConfigImpl fci = (FieldConfigImpl) field;
+        if (fci != null && fci.getLabel() != null) {
+            fci.getLabel().setText(child.getCaption());
+        }
+    }
+
+    public void updateChildEnabled(DesktopAbstractComponent child) {
+        FieldConfig field = fields.values().stream()
+                .filter(entry -> entry.getComponent() == child)
+                .findFirst()
+                .orElse(null);
+
+        FieldConfigImpl fci = (FieldConfigImpl) field;
+        if (fci != null && fci.getLabel() != null) {
+            fci.getLabel().setEnabled(child.isEnabledWithParent());
         }
     }
 
     @Override
     public void applyPermission(UiPermissionDescriptor permissionDescriptor) {
-        Preconditions.checkNotNullArgument(permissionDescriptor);
-
-        final Logger log = LoggerFactory.getLogger(DesktopFieldGroup.class);
+        checkNotNullArgument(permissionDescriptor);
 
         final String subComponentId = permissionDescriptor.getSubComponentId();
         final UiPermissionValue permissionValue = permissionDescriptor.getPermissionValue();
@@ -1021,72 +902,651 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
             final FieldGroup.FieldConfig field = getField(subComponentId);
             if (field != null) {
                 if (permissionValue == UiPermissionValue.HIDE) {
-                    setVisible(field, false);
+                    field.setVisible(false);
                 } else if (permissionValue == UiPermissionValue.READ_ONLY) {
-                    setEditable(field, false);
+                    field.setEditable(false);
                 }
             } else {
-                log.info(String.format("Couldn't find component %s in window %s", subComponentId, screenId));
+                log.info("Couldn't find suitable component {} in window {} for UI security rule", subComponentId, screenId);
             }
         } else {
             final String actionHolderComponentId = permissionDescriptor.getActionHolderComponentId();
-            final Component fieldComponent = getFieldComponent(actionHolderComponentId);
-            if (fieldComponent != null) {
-                final String actionId = permissionDescriptor.getActionId();
-                if (fieldComponent instanceof Component.SecuredActionsHolder) {
-                    ActionsPermissions permissions =
-                            ((Component.SecuredActionsHolder) fieldComponent).getActionsPermissions();
-                    if (permissionValue == UiPermissionValue.HIDE) {
-                        permissions.addHiddenActionPermission(actionId);
-                    } else if (permissionValue == UiPermissionValue.READ_ONLY) {
-                        permissions.addDisabledActionPermission(actionId);
-                    }
-                } else {
-                    log.warn(String.format("Couldn't apply permission on action %s for component %s in window %s",
-                            actionId, actionHolderComponentId, screenId));
-                }
-            } else {
-                log.info(String.format("Couldn't find component %s in window %s", actionHolderComponentId, screenId));
+            FieldConfig fieldConfig = getField(actionHolderComponentId);
+            if (fieldConfig == null
+                    || fieldConfig.getComponent() == null
+                    || !((fieldConfig.getComponent() instanceof Component.SecuredActionsHolder))) {
+                log.info("Couldn't find suitable component {} in window {} for UI security rule", actionHolderComponentId, screenId);
+                return;
+            }
+
+            Component fieldComponent = fieldConfig.getComponent();
+            String actionId = permissionDescriptor.getActionId();
+            ActionsPermissions permissions = ((SecuredActionsHolder) fieldComponent).getActionsPermissions();
+            if (permissionValue == UiPermissionValue.HIDE) {
+                permissions.addHiddenActionPermission(actionId);
+            } else if (permissionValue == UiPermissionValue.READ_ONLY) {
+                permissions.addDisabledActionPermission(actionId);
             }
         }
     }
 
-    protected class FieldFactory extends AbstractFieldFactory {
+    @Override
+    public void addEditableChangeListener(EditableChangeListener listener) {
+        checkNotNullArgument(listener);
 
-        @Override
-        protected CollectionDatasource getOptionsDatasource(Datasource datasource, String property) {
-            final FieldConfig field = fields.get(property);
+        if (!editableChangeListeners.contains(listener)) {
+            editableChangeListeners.add(listener);
+        }
+    }
 
-            Element descriptor = field.getXmlDescriptor();
-            String optDsName = descriptor == null ? null : descriptor.attributeValue("optionsDatasource");
+    @Override
+    public void removeEditableChangeListener(EditableChangeListener listener) {
+        checkNotNullArgument(listener);
 
-            if (StringUtils.isNotBlank(optDsName)) {
-                DsContext dsContext = DesktopFieldGroup.this.getFrame().getDsContext();
-                CollectionDatasource optDs = findDatasourceRecursively(dsContext, optDsName);
-                if (optDs == null) {
-                    throw new IllegalStateException("Options datasource not found: " + optDsName);
-                }
-                return optDs;
-            }
+        editableChangeListeners.remove(listener);
+    }
 
-            return null;
+    public class FieldConfigImpl implements FieldConfig {
+        protected String id;
+        protected Element xmlDescriptor;
+        protected int column;
+
+        protected Component component;
+        protected DesktopAbstractComponent composition;
+        protected JLabel label = new JLabel();
+        protected ToolTipButton toolTipButton;
+
+        protected boolean managed = false;
+
+        protected String targetWidth;
+        protected String targetStylename;
+        protected Datasource targetDatasource;
+        protected Boolean targetRequired;
+        protected Boolean targetEditable;
+        protected Boolean targetEnabled;
+        protected Boolean targetVisible;
+        protected String targetProperty;
+        protected Integer targetTabIndex;
+        protected String targetRequiredMessage;
+        protected CollectionDatasource targetOptionsDatasource;
+        protected String targetCaption;
+        protected String targetDescription;
+        protected Formatter targetFormatter;
+        protected boolean isTargetCustom;
+
+        protected List<Field.Validator> targetValidators = new ArrayList<>(0);
+        protected FieldAttachMode attachMode = FieldAttachMode.APPLY_DEFAULTS;
+
+        public FieldConfigImpl(String id) {
+            this.id = id;
         }
 
-        private CollectionDatasource findDatasourceRecursively(DsContext dsContext, String dsName) {
-            if (dsContext == null) {
-                return null;
+        @Override
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public boolean isBound() {
+            return component != null;
+        }
+
+        public FieldGroup getOwner() {
+            return DesktopFieldGroup.this;
+        }
+
+        @Override
+        public String getWidth() {
+            if (composition != null && isWrapped()) {
+                return ComponentsHelper.getComponentWidth(composition);
+            }
+            if (component != null) {
+                return ComponentsHelper.getComponentWidth(component);
+            }
+            return targetWidth;
+        }
+
+        @Override
+        public void setWidth(String width) {
+            if (composition != null && isWrapped()) {
+                composition.setWidth(width);
+            } else if (component != null) {
+                component.setWidth(width);
+            } else {
+                targetWidth = width;
+            }
+        }
+
+        @Override
+        public String getStyleName() {
+            if (component != null) {
+                return component.getStyleName();
+            }
+            return targetStylename;
+        }
+
+        @Override
+        public void setStyleName(String stylename) {
+            if (component != null) {
+                component.setStyleName(stylename);
+
+                if (composition != null && isWrapped()) {
+                    composition.setStyleName(stylename);
+                }
+            } else {
+                this.targetStylename = stylename;
+            }
+        }
+
+        protected boolean isWrapped() {
+            return component != null && !(component instanceof Field);
+        }
+
+        @Override
+        public Datasource getTargetDatasource() {
+            if (component instanceof DatasourceComponent) {
+                return ((DatasourceComponent) component).getDatasource();
+            }
+            if (targetDatasource != null) {
+                return targetDatasource;
+            }
+            return DesktopFieldGroup.this.datasource;
+        }
+
+        @Override
+        public Datasource getDatasource() {
+            if (component instanceof DatasourceComponent) {
+                return ((DatasourceComponent) component).getDatasource();
             }
 
-            Datasource datasource = dsContext.get(dsName);
-            if (datasource != null && datasource instanceof CollectionDatasource) {
-                return (CollectionDatasource) datasource;
+            return targetDatasource;
+        }
+
+        @Override
+        public void setDatasource(Datasource datasource) {
+            checkState(this.component == null, "FieldConfig is already bound to component");
+
+            this.targetDatasource = datasource;
+        }
+
+        @Override
+        public Boolean isRequired() {
+            if (component instanceof Field) {
+                return ((Field) component).isRequired();
+            }
+            return targetRequired;
+        }
+
+        @Override
+        public void setRequired(Boolean required) {
+            if (component instanceof Field) {
+                checkNotNullArgument(required, "Unable to reset required flag for the bound FieldConfig");
+
+                ((Field) component).setRequired(required);
             } else {
-                if (dsContext.getParent() != null) {
-                    return findDatasourceRecursively(dsContext.getParent(), dsName);
-                } else {
-                    return null;
+                this.targetRequired = required;
+            }
+        }
+
+        @Override
+        public Boolean isEditable() {
+            if (component instanceof Editable) {
+                return ((Field) component).isEditable();
+            }
+            return targetEditable;
+        }
+
+        @Override
+        public void setEditable(Boolean editable) {
+            if (component instanceof Editable) {
+                checkNotNullArgument(editable, "Unable to reset editable flag for the bound FieldConfig");
+
+                ((Editable) component).setEditable(editable);
+            } else {
+                this.targetEditable = editable;
+            }
+        }
+
+        @Override
+        public Boolean isEnabled() {
+            if (component != null) {
+                return component.isEnabled();
+            }
+            return targetEnabled;
+        }
+
+        @Override
+        public void setEnabled(Boolean enabled) {
+            if (component != null) {
+                checkNotNullArgument(enabled, "Unable to reset enabled flag for the bound FieldConfig");
+
+                component.setEnabled(enabled);
+
+                if (composition != null && isWrapped()) {
+                    composition.setEnabled(enabled);
+                }
+            } else {
+                this.targetEnabled = enabled;
+            }
+        }
+
+        @Override
+        public Boolean isVisible() {
+            if (component != null) {
+                return component.isVisible();
+            }
+            return targetVisible;
+        }
+
+        @Override
+        public void setVisible(Boolean visible) {
+            if (component != null) {
+                checkNotNullArgument(visible, "Unable to reset visible flag for the bound FieldConfig");
+
+                component.setVisible(visible);
+
+                if (composition != null && isWrapped()) {
+                    composition.setVisible(visible);
+                }
+            } else {
+                this.targetVisible = visible;
+            }
+        }
+
+        @Override
+        public String getProperty() {
+            if (component instanceof DatasourceComponent) {
+                MetaPropertyPath metaPropertyPath = ((DatasourceComponent) component).getMetaPropertyPath();
+                return metaPropertyPath != null ? metaPropertyPath.toString() : null;
+            }
+            return targetProperty;
+        }
+
+        @Override
+        public void setProperty(String property) {
+            checkState(this.component == null, "Unable to change property for bound FieldConfig");
+
+            this.targetProperty = property;
+        }
+
+        @Override
+        public Integer getTabIndex() {
+            return targetTabIndex;
+        }
+
+        @Override
+        public void setTabIndex(Integer tabIndex) {
+            if (component instanceof Focusable) {
+                checkNotNullArgument(tabIndex, "Unable to reset tabIndex for the bound FieldConfig");
+
+                ((Focusable) component).setTabIndex(tabIndex);
+            } else {
+                this.targetTabIndex = tabIndex;
+            }
+        }
+
+        @Override
+        public String getRequiredError() {
+            return getRequiredMessage();
+        }
+
+        @Override
+        public void setRequiredError(String requiredError) {
+            setRequiredMessage(requiredError);
+        }
+
+        @Override
+        public boolean isCustom() {
+            return isTargetCustom;
+        }
+
+        @Override
+        public void setCustom(boolean custom) {
+            checkState(this.component == null, "Unable to change custom flag for bound FieldConfig");
+
+            this.isTargetCustom = custom;
+        }
+
+        @Override
+        public String getRequiredMessage() {
+            if (component instanceof Field) {
+                return ((Field) component).getRequiredMessage();
+            }
+            return targetRequiredMessage;
+        }
+
+        @Override
+        public void setRequiredMessage(String requiredMessage) {
+            if (component instanceof Field) {
+                ((Field) component).setRequiredMessage(requiredMessage);
+            } else {
+                this.targetRequiredMessage = requiredMessage;
+            }
+        }
+
+        @Nullable
+        @Override
+        public Component getComponent() {
+            return component;
+        }
+
+        @Override
+        public Component getComponentNN() {
+            if (component == null) {
+                throw new IllegalStateException("FieldConfig is not bound to a Component");
+            }
+            return component;
+        }
+
+        @Override
+        public void setComponent(Component component) {
+            checkState(this.component == null, "Unable to change component for bound FieldConfig");
+
+            this.component = component;
+
+            if (managed && component != null) {
+                managedFieldComponentAssigned(this, FieldAttachMode.APPLY_DEFAULTS);
+            }
+        }
+
+        @Override
+        public void setComponent(Component component, FieldAttachMode mode) {
+            checkState(this.component == null, "Unable to change component for bound FieldConfig");
+
+            this.attachMode = mode;
+            this.component = component;
+
+            if (managed && component != null) {
+                managedFieldComponentAssigned(this, mode);
+            }
+        }
+
+        public void assignComponent(Component component) {
+            checkState(this.component == null, "Unable to change component for bound FieldConfig");
+
+            this.component = component;
+        }
+
+        public void setAttachMode(FieldAttachMode attachMode) {
+            this.attachMode = attachMode;
+        }
+
+        @Override
+        public void addValidator(Field.Validator validator) {
+            if (component instanceof Field) {
+                ((Field) component).addValidator(validator);
+            } else {
+                if (!targetValidators.contains(validator)) {
+                    targetValidators.add(validator);
                 }
             }
+        }
+
+        @Override
+        public void removeValidator(Field.Validator validator) {
+            if (component instanceof Field) {
+                ((Field) component).removeValidator(validator);
+            }
+            targetValidators.remove(validator);
+        }
+
+        @Override
+        public void setOptionsDatasource(CollectionDatasource optionsDatasource) {
+            if (component instanceof OptionsField) {
+                ((OptionsField) component).setOptionsDatasource(optionsDatasource);
+            } else {
+                this.targetOptionsDatasource = optionsDatasource;
+            }
+        }
+
+        @Override
+        public CollectionDatasource getOptionsDatasource() {
+            if (component instanceof OptionsField) {
+                return ((OptionsField) component).getOptionsDatasource();
+            }
+            return targetOptionsDatasource;
+        }
+
+        @Override
+        public String getCaption() {
+            if (component instanceof Field) {
+                return ((Field) component).getCaption();
+            }
+            if (composition != null && isWrapped()) {
+                return label.getText();
+            }
+            return targetCaption;
+        }
+
+        @Override
+        public void setCaption(String caption) {
+            if (component instanceof Field) {
+                ((Field) component).setCaption(caption);
+            } else if (composition != null && isWrapped()) {
+                label.setText(caption);
+            } else {
+                this.targetCaption = caption;
+            }
+        }
+
+        @Override
+        public String getDescription() {
+            if (component instanceof Field) {
+                return ((Field) component).getDescription();
+            }
+            return targetDescription;
+        }
+
+        @Override
+        public void setDescription(String description) {
+            if (component instanceof Field) {
+                ((Field) component).setDescription(description);
+            } else {
+                this.targetDescription = description;
+            }
+        }
+
+        @Override
+        public Formatter getFormatter() {
+            if (component instanceof HasFormatter) {
+                return ((HasFormatter) component).getFormatter();
+            }
+            return targetFormatter;
+        }
+
+        @Override
+        public void setFormatter(Formatter formatter) {
+            if (component instanceof HasFormatter) {
+                ((HasFormatter) component).setFormatter(formatter);
+            } else {
+                this.targetFormatter = formatter;
+            }
+        }
+
+        @Override
+        public Element getXmlDescriptor() {
+            return xmlDescriptor;
+        }
+
+        @Override
+        public void setXmlDescriptor(Element element) {
+            this.xmlDescriptor = element;
+        }
+
+        public int getColumn() {
+            return column;
+        }
+
+        public void setColumn(int column) {
+            this.column = column;
+        }
+
+        @Nullable
+        public DesktopAbstractComponent getComposition() {
+            return composition;
+        }
+
+        public DesktopAbstractComponent getCompositionNN() {
+            if (composition == null) {
+                throw new IllegalStateException("FieldConfig is not bound to a Component");
+            }
+            return composition;
+        }
+
+        public void setComposition(DesktopAbstractComponent composition) {
+            checkState(this.composition == null, "Unable to change composition for bound FieldConfig");
+
+            this.composition = composition;
+
+            if (isWrapped()) {
+                if (targetCaption != null) {
+                    label.setText(targetCaption);
+                }
+            }
+        }
+
+        public boolean isManaged() {
+            return managed;
+        }
+
+        public void setManaged(boolean managed) {
+            this.managed = managed;
+        }
+
+        public String getTargetWidth() {
+            return targetWidth;
+        }
+
+        public void setTargetWidth(String targetWidth) {
+            this.targetWidth = targetWidth;
+        }
+
+        public String getTargetStylename() {
+            return targetStylename;
+        }
+
+        public void setTargetStylename(String targetStylename) {
+            this.targetStylename = targetStylename;
+        }
+
+        public void setTargetDatasource(Datasource targetDatasource) {
+            this.targetDatasource = targetDatasource;
+        }
+
+        public Boolean getTargetRequired() {
+            return targetRequired;
+        }
+
+        public void setTargetRequired(Boolean targetRequired) {
+            this.targetRequired = targetRequired;
+        }
+
+        public Boolean getTargetEditable() {
+            return targetEditable;
+        }
+
+        public void setTargetEditable(Boolean targetEditable) {
+            this.targetEditable = targetEditable;
+        }
+
+        public Boolean getTargetEnabled() {
+            return targetEnabled;
+        }
+
+        public void setTargetEnabled(Boolean targetEnabled) {
+            this.targetEnabled = targetEnabled;
+        }
+
+        public Boolean getTargetVisible() {
+            return targetVisible;
+        }
+
+        public void setTargetVisible(Boolean targetVisible) {
+            this.targetVisible = targetVisible;
+        }
+
+        public String getTargetProperty() {
+            return targetProperty;
+        }
+
+        public void setTargetProperty(String targetProperty) {
+            this.targetProperty = targetProperty;
+        }
+
+        public Integer getTargetTabIndex() {
+            return targetTabIndex;
+        }
+
+        public void setTargetTabIndex(Integer targetTabIndex) {
+            this.targetTabIndex = targetTabIndex;
+        }
+
+        public String getTargetRequiredMessage() {
+            return targetRequiredMessage;
+        }
+
+        public void setTargetRequiredMessage(String targetRequiredMessage) {
+            this.targetRequiredMessage = targetRequiredMessage;
+        }
+
+        public CollectionDatasource getTargetOptionsDatasource() {
+            return targetOptionsDatasource;
+        }
+
+        public void setTargetOptionsDatasource(CollectionDatasource targetOptionsDatasource) {
+            this.targetOptionsDatasource = targetOptionsDatasource;
+        }
+
+        public String getTargetCaption() {
+            return targetCaption;
+        }
+
+        public void setTargetCaption(String targetCaption) {
+            this.targetCaption = targetCaption;
+        }
+
+        public String getTargetDescription() {
+            return targetDescription;
+        }
+
+        public void setTargetDescription(String targetDescription) {
+            this.targetDescription = targetDescription;
+        }
+
+        public Formatter getTargetFormatter() {
+            return targetFormatter;
+        }
+
+        public void setTargetFormatter(Formatter targetFormatter) {
+            this.targetFormatter = targetFormatter;
+        }
+
+        public List<Field.Validator> getTargetValidators() {
+            return targetValidators;
+        }
+
+        public void setTargetValidators(List<Field.Validator> targetValidators) {
+            this.targetValidators = targetValidators;
+        }
+
+        public FieldAttachMode getAttachMode() {
+            return attachMode;
+        }
+
+        public JLabel getLabel() {
+            return label;
+        }
+
+        public void setLabel(JLabel label) {
+            this.label = label;
+        }
+
+        public ToolTipButton getToolTipButton() {
+            return toolTipButton;
+        }
+
+        public void setToolTipButton(ToolTipButton toolTipButton) {
+            this.toolTipButton = toolTipButton;
         }
     }
 }

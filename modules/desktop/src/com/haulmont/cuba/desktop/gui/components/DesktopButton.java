@@ -37,7 +37,6 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
     protected Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
 
     protected Action action;
-    protected String caption;
     protected String icon;
 
     protected long responseEndTs = 0;
@@ -144,13 +143,9 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
     }
 
     @Override
-    public String getCaption() {
-        return caption;
-    }
+    protected void setCaptionToComponent(String caption) {
+        super.setCaptionToComponent(caption);
 
-    @Override
-    public void setCaption(String caption) {
-        this.caption = caption;
         impl.setText(caption == null ? "" : caption);
     }
 

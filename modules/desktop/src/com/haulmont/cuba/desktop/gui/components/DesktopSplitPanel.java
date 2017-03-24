@@ -348,13 +348,6 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        if (isEnabled() != enabled) {
-            super.setEnabled(enabled);
-        }
-    }
-
-    @Override
     public void updateEnabled() {
         super.updateEnabled();
 

@@ -245,8 +245,9 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
     }
 
     @Override
-    public void setEditable(boolean editable) {
-        super.setEditable(editable);
+    protected void setEditableToComponent(boolean editable) {
+        super.setEditableToComponent(editable);
+
         pickerField.setEditable(editable);
     }
 

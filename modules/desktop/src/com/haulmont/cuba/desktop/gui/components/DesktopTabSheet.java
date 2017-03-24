@@ -846,13 +846,6 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        if (isEnabled() != enabled) {
-            super.setEnabled(enabled);
-        }
-    }
-
-    @Override
     public void updateEnabled() {
         super.updateEnabled();
 

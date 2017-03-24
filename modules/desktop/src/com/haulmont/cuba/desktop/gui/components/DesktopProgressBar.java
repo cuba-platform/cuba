@@ -35,7 +35,6 @@ public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> i
     protected boolean editable = true;
     protected List<ValueChangeListener> valueChangeListeners = new ArrayList<>();
     protected Object prevValue;
-    protected String caption;
 
     private static final int WHOLE_PROGRESS = 100;
 
@@ -129,16 +128,6 @@ public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> i
 
     protected float convertValueFromSwing(int progress) {
         return (float) progress / (float) WHOLE_PROGRESS;
-    }
-
-    @Override
-    public String getCaption() {
-        return caption;
-    }
-
-    @Override
-    public void setCaption(String caption) {
-        this.caption = caption;
     }
 
     @Override

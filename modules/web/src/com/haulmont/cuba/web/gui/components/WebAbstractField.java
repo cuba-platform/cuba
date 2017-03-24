@@ -28,10 +28,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.BeanValidation;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.components.Field;
-import com.haulmont.cuba.gui.components.RequiredValueMissingException;
-import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.ValidationFailedException;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.compatibility.ComponentValueListenerWrapper;
 import com.haulmont.cuba.gui.components.validators.BeanValidator;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -49,7 +46,8 @@ import java.util.List;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 
-public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> extends WebAbstractComponent<T> implements Field {
+public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField>
+        extends WebAbstractComponent<T> implements Field {
 
     protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 4;
 
@@ -61,10 +59,13 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> ex
 
     protected Object prevValue;
 
+    protected boolean editable = true;
+
     protected ItemWrapper itemWrapper;
 
     protected Datasource.ItemChangeListener<Entity> securityItemChangeListener;
     protected WeakItemChangeListener securityWeakItemChangeListener;
+    protected EditableChangeListener parentEditableChangeListener;
 
     @Override
     public Datasource getDatasource() {
@@ -234,12 +235,49 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField> ex
     }
 
     @Override
+    public void setParent(Component parent) {
+        if (this.parent instanceof EditableChangeNotifier
+                && parentEditableChangeListener != null) {
+            ((EditableChangeNotifier) this.parent).removeEditableChangeListener(parentEditableChangeListener);
+
+            parentEditableChangeListener = null;
+        }
+
+        super.setParent(parent);
+
+        if (parent instanceof EditableChangeNotifier) {
+            parentEditableChangeListener = event -> {
+                boolean parentEditable = event.getSource().isEditable();
+                boolean finalEditable = parentEditable && editable;
+                setEditableToComponent(finalEditable);
+            };
+            ((EditableChangeNotifier) parent).addEditableChangeListener(parentEditableChangeListener);
+        }
+    }
+
+    @Override
     public boolean isEditable() {
-        return !component.isReadOnly();
+        return editable;
     }
 
     @Override
     public void setEditable(boolean editable) {
+        if (this.editable == editable) {
+            return;
+        }
+
+        this.editable = editable;
+
+        boolean parentEditable = true;
+        if (parent instanceof Editable) {
+            parentEditable = ((Editable) parent).isEditable();
+        }
+        boolean finalEditable = parentEditable && editable;
+
+        setEditableToComponent(finalEditable);
+    }
+
+    protected void setEditableToComponent(boolean editable) {
         component.setReadOnly(!editable);
     }
 

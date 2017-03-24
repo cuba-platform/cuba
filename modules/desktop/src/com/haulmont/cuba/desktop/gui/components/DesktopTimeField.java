@@ -56,9 +56,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     private boolean updatingInstance;
     private Datasource datasource;
     private Object prevValue;
-    private String caption;
     private DateField.Resolution resolution;
-    private boolean editable = true;
 
     protected static final int DEFAULT_DIGIT_WIDTH = 23;
     private int digitWidth;
@@ -259,17 +257,10 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     }
 
     @Override
-    public String getCaption() {
-        return caption;
-    }
+    protected void setCaptionToComponent(String caption) {
+        super.setCaptionToComponent(caption);
 
-    @Override
-    public void setCaption(String caption) {
-        if (!ObjectUtils.equals(this.caption, caption)) {
-            this.caption = caption;
-
-            requestContainerUpdate();
-        }
+        requestContainerUpdate();
     }
 
     @Override
@@ -377,14 +368,9 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     }
 
     @Override
-    public boolean isEditable() {
-        return impl.isEditable();
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        this.editable = editable;
+    protected void setEditableToComponent(boolean editable) {
         impl.setEditable(editable);
+
         updateMissingValueState();
     }
 

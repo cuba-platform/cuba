@@ -18,6 +18,7 @@
 package com.haulmont.cuba.desktop.sys.vcl;
 
 import com.haulmont.cuba.desktop.App;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -29,28 +30,28 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
  * Panel with border and collapse/expand button
- *
  */
 public class CollapsiblePanel extends JPanel {
 
-    private static final int COLLAPSED_HEIGHT = 10;
+    protected static final int COLLAPSED_HEIGHT = 10;
 
-    private boolean expanded = true;
-    private boolean collapsable = false;
+    protected boolean expanded = true;
+    protected boolean collapsable = false;
 
-    private JComponent composition;
-    private JButton titleBtn;
+    protected JComponent composition;
+    protected JButton titleBtn;
 
-    private boolean borderVisible = true;
+    protected boolean borderVisible = true;
 
-    private Dimension preferredSize;
+    protected Dimension preferredSize;
 
-    private java.util.List<Runnable> postPaintActions = new LinkedList<>();
+    protected java.util.List<Runnable> postPaintActions = new LinkedList<>();
 
     public interface CollapseListener extends java.util.EventListener {
 
@@ -146,12 +147,28 @@ public class CollapsiblePanel extends JPanel {
         return super.getPreferredSize();
     }
 
-    private void loadIcons() {
-        expandedIcon = App.getInstance().getResources().getIcon("components/groupbox/item-expanded.png");
-        collapsedIcon = App.getInstance().getResources().getIcon("components/groupbox/item-collapsed.png");
+    protected void loadIcons() {
+        App app = App.getInstance();
+        if (app != null) {
+            expandedIcon = app.getResources().getIcon("components/groupbox/item-expanded.png");
+            collapsedIcon = app.getResources().getIcon("components/groupbox/item-collapsed.png");
+        } else {
+            // fallback for unit tests
+            expandedIcon = readIcon("components/groupbox/item-expanded.png");
+            collapsedIcon = readIcon("components/groupbox/item-collapsed.png");
+        }
     }
 
-    private void expandPanel() {
+    protected ImageIcon readIcon(String iconPath) {
+        try {
+            String iconResourcePath = "/com/haulmont/cuba/desktop/res/nimbus/" + iconPath;
+            return new ImageIcon(IOUtils.toByteArray(getClass().getResourceAsStream(iconResourcePath)));
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to read icon", e);
+        }
+    }
+
+    protected void expandPanel() {
         composition.setVisible(true);
 
         postPaintActions.add(new Runnable() {
@@ -313,7 +330,7 @@ public class CollapsiblePanel extends JPanel {
         }
     }
 
-    private void fireExpandListeners() {
+    protected void fireExpandListeners() {
         if (collapseListeners != null) {
             for (final CollapsiblePanel.CollapseListener collapseListener : collapseListeners) {
                 collapseListener.expanded();
@@ -321,7 +338,7 @@ public class CollapsiblePanel extends JPanel {
         }
     }
 
-    private void fireCollapseListeners() {
+    protected void fireCollapseListeners() {
         if (collapseListeners != null) {
             for (final CollapsiblePanel.CollapseListener collapseListener : collapseListeners) {
                 collapseListener.collapsed();
@@ -329,7 +346,7 @@ public class CollapsiblePanel extends JPanel {
         }
     }
 
-    private class CollapsibleTitledBorder extends TitledBorder {
+    protected class CollapsibleTitledBorder extends TitledBorder {
 
         private JButton titleComponent;
 

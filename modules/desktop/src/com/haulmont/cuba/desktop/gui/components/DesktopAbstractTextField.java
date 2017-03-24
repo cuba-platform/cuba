@@ -23,7 +23,6 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
@@ -59,14 +58,10 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
 
     protected Datasource datasource;
 
-    protected boolean editable = true;
-
     protected int maxLength;
     protected boolean trimming = true;
 
-    protected String caption;
-
-    protected Locale locale = AppBeans.<UserSessionSource>get(UserSessionSource.NAME).getLocale();
+    protected Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
     protected DefaultValueFormatter valueFormatter;
 
     protected Datasource.ItemChangeListener itemChangeListener;
@@ -112,13 +107,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     }
 
     @Override
-    public boolean isEditable() {
-        return editable;
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        this.editable = editable;
+    protected void setEditableToComponent(boolean editable) {
         if (impl != null) {
             impl.setEditable(editable);
             updateMissingValueState();
@@ -135,17 +124,10 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     }
 
     @Override
-    public String getCaption() {
-        return caption;
-    }
+    protected void setCaptionToComponent(String caption) {
+        super.setCaptionToComponent(caption);
 
-    @Override
-    public void setCaption(String caption) {
-        if (!ObjectUtils.equals(this.caption, caption)) {
-            this.caption = caption;
-
-            requestContainerUpdate();
-        }
+        requestContainerUpdate();
     }
 
     @Override
