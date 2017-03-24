@@ -20,6 +20,8 @@
 
   .#{$primary-stylename}-popup {
     font-size: $v-font-size;
+    font-family: $v-font-family;
+    font-weight: $v-font-weight;
   }
 
   .#{$primary-stylename}.icon-only .v-popup-indicator {
