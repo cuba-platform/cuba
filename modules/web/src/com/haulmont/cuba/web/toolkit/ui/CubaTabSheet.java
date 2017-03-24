@@ -16,6 +16,8 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ClientAction;
@@ -45,7 +47,7 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
 
     protected Map<Component, TabCloseHandler> closeHandlers = null;
 
-    protected Map<String, Tab> tabIds = new HashMap<>();
+    protected BiMap<String, Tab> tabIds = HashBiMap.create();
 
     protected TabSheetBehaviour behaviour;
 
@@ -77,7 +79,6 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
         public void performAction(int tabIndex, String actionKey) {
             Tab tab = getTab(tabIndex);
             if (tab != null) {
-                Component actionTarget = tab.getComponent();
                 if (actionMapper != null) {
                     Action action = actionMapper.get(actionKey);
                     Action.Handler[] handlers = actionHandlers.toArray(new Action.Handler[actionHandlers.size()]);
@@ -325,13 +326,13 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
         public void addTab(Component component, String tabId) {
             TabSheet.Tab tab = tabSheet.addTab(component);
 
-            tab.setId(tabId);
             tabSheet.tabIds.put(tabId, tab);
         }
 
         @Override
         public String getTab(Component component) {
-            return tabSheet.getTab(component).getId();
+            Tab tab = tabSheet.getTab(component);
+            return tabSheet.tabIds.inverse().get(tab);
         }
 
         @Override

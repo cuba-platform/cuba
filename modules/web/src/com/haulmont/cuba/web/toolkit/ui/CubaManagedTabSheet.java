@@ -137,63 +137,8 @@ public class CubaManagedTabSheet extends CssLayout
         return behaviour;
     }
 
-    protected Tab findEnabledTabAfterRemoved(int removedTabIndex) {
-        for (int i = removedTabIndex; i < tabComponents.size(); i++) {
-            Tab tab = getTab(i);
-            if (tab.isEnabled()) {
-                return (Tab) tabComponents.get(i);
-            }
-        }
-
-        for (int i = removedTabIndex - 1; i >= 0; i--) {
-            Tab tab = getTab(i);
-            if (tab.isEnabled()) {
-                return (Tab) tabComponents.get(i);
-            }
-        }
-
-        return null;
-    }
-
-    public void removeTab(Tab tab) {
-        Component component = tab.getComponent();
-
-        if (component != null && tabComponents.contains(component)) {
-            int componentIndex = tabComponents.indexOf(component);
-
-            tabComponents.remove(component);
-            Tab removedTab = tabs.remove(component);
-            removeComponent((Component) tab);
-
-            //noinspection RedundantCast
-            Component tabComponent = getTabComponent((Component) removedTab);
-            tabbedHeader.removeTab(tabbedHeader.getTab(tabComponent));
-
-            if (removedTab.equals(selected)) {
-                if (tabComponents.isEmpty()) {
-                    setSelected(null);
-                } else {
-                    Tab nextTab = findEnabledTabAfterRemoved(componentIndex);
-                    if (nextTab != null) {
-                        setSelected((Component) nextTab);
-                    }
-                }
-            }
-        }
-    }
-
     public Tab addTab(Component c, String caption, Resource icon) {
         return addTab(c, caption, icon, tabComponents.size());
-    }
-
-    public Tab addTab(Component component, int position) {
-        Tab result = tabs.get(component);
-
-        if (result == null) {
-            result = addTab(component, component.getCaption(), component.getIcon(), position);
-        }
-
-        return result;
     }
 
     public Tab addTab(Component tabComponent, String caption, Resource icon, int position) {
@@ -202,7 +147,6 @@ public class CubaManagedTabSheet extends CssLayout
 
         TabImpl tab = new TabImpl(tabComponent);
         tab.setSizeFull();
-        addComponent(tab);
 
         Label tabbarTabComponent = new Label();
         tabToContentMap.put(tabbarTabComponent, tab);
@@ -210,6 +154,8 @@ public class CubaManagedTabSheet extends CssLayout
 
         TabSheet.Tab tabbarTab = tabbedHeader.addTab(tabbarTabComponent, caption, icon, position);
         tab.setTabbarTab(tabbarTab);
+
+        addComponent(tab);
 
         tabbedHeader.setVisible(true);
 
@@ -232,12 +178,6 @@ public class CubaManagedTabSheet extends CssLayout
             return getTab(tabComponents.get(position));
         } else {
             return null;
-        }
-    }
-
-    public void setSelectedTab(Component c) {
-        if (c != null && tabComponents.contains(c) && !c.equals(selected)) {
-            setSelected(c);
         }
     }
 
@@ -452,6 +392,8 @@ public class CubaManagedTabSheet extends CssLayout
 
     public class TabImpl extends CssLayout implements Tab {
 
+        protected String id;
+
         protected static final String MANAGED_TAB_STYLENAME = "c-managed-tab";
 
         protected CloseHandler closeHandler;
@@ -478,12 +420,12 @@ public class CubaManagedTabSheet extends CssLayout
 
         @Override
         public void setId(String id) {
-            tabbarTab.setId(id);
+            this.id = id;
         }
 
         @Override
         public String getId() {
-            return tabbarTab.getId();
+            return id;
         }
 
         @Override
@@ -615,7 +557,8 @@ public class CubaManagedTabSheet extends CssLayout
 
         @Override
         public String getTab(Component component) {
-            return ((TabImpl) tabSheet.tabs.get(component)).getTabbarTab().getId();
+            TabImpl tab = (TabImpl) tabSheet.tabs.get(component);
+            return tab.getId();
         }
 
         @Override
