@@ -21,6 +21,9 @@
   .#{$primary-stylename}-popup {
     box-shadow: none;
     padding: 0;
+    font-size: $v-font-size;
+    font-family: $v-font-family;
+    font-weight: $v-font-weight;
   }
 
   .v-disabled.v-button.v-selected {
