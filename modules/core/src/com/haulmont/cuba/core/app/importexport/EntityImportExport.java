@@ -101,7 +101,7 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     @Override
     public String exportEntitiesToJSON(Collection<? extends Entity> entities) {
-        return entitySerialization.toJson(entities, null, EntitySerializationOption.COMPLEX_ID_FORMAT,
+        return entitySerialization.toJson(entities, null,
                 EntitySerializationOption.COMPACT_REPEATED_ENTITIES, EntitySerializationOption.PRETTY_PRINT);
     }
 
@@ -138,7 +138,7 @@ public class EntityImportExport implements EntityImportExportAPI {
         Collection<Entity> result = new ArrayList<>();
         Collection<? extends Entity> entities = entitySerialization.entitiesCollectionFromJson(json,
                 null,
-                EntitySerializationOption.COMPLEX_ID_FORMAT, EntitySerializationOption.COMPACT_REPEATED_ENTITIES);
+                EntitySerializationOption.COMPACT_REPEATED_ENTITIES);
         result.addAll(importEntities(entities, view));
         return result;
     }
