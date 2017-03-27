@@ -46,6 +46,7 @@ public class RestParseUtils {
     protected Metadata metadata;
 
     public Object toObject(Type type, String value) throws ParseException {
+        if (value == null) return null;
         Class clazz;
         Class argumentTypeClass = null;
         if (type instanceof Class) {
