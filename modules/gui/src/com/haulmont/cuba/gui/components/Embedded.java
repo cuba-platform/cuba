@@ -44,7 +44,7 @@ public interface Embedded extends Component, Component.BelongToFrame, Component.
     /**
      * Allows to use relative source for Embedded.
      * <p>Example:
-     * <p>Put the file <code>hello.html</code> with some content into <code>${catalina.home}/webapps/yourAppName/VAADIN/</code>.
+     * <p>Put the file <code>hello.html</code> with some content into <code>${catalina.base}/webapps/yourAppName/VAADIN/</code>.
      *
      * <pre><code>
      * embedded.setRelativeSource("VAADIN/hello.html");

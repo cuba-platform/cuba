@@ -44,7 +44,7 @@
         <param-value>
             classpath:cuba-portal-app.properties
             /WEB-INF/local.app.properties
-            "file:${catalina.home}/conf/cuba-portal/local.app.properties"
+            "file:${catalina.base}/conf/cuba-portal/local.app.properties"
         </param-value>
     </context-param>
 
