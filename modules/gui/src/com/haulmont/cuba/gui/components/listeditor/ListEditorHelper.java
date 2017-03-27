@@ -55,6 +55,8 @@ public class ListEditorHelper {
                 return Datatypes.get(DoubleDatatype.NAME).format(v);
             case ENUM:
                 return AppBeans.get(Messages.class).getMessage((Enum) v);
+            case UUID:
+                return Datatypes.get(UUIDDatatype.NAME).format(v);
             default:
                 throw new IllegalStateException("Unknown item type");
         }
