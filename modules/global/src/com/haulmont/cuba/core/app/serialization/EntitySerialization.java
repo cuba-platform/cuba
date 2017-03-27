@@ -17,6 +17,8 @@
 
 package com.haulmont.cuba.core.app.serialization;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.haulmont.chile.core.datatypes.Datatype;
@@ -73,9 +75,9 @@ public class EntitySerialization implements EntitySerializationAPI {
      * Class is used for storing a collection of entities already processed during the serialization.
      */
     protected class EntitySerializationContext {
-        protected Map<Object, Entity> processedEntities = new HashMap<>();
+        protected Table<Object, MetaClass, Entity> processedEntities = HashBasedTable.create();
 
-        protected Map<Object, Entity> getProcessedEntities() {
+        protected Table<Object, MetaClass, Entity> getProcessedEntities() {
             return processedEntities;
         }
     }
@@ -200,9 +202,9 @@ public class EntitySerialization implements EntitySerializationAPI {
                 }
                 writeIdField(entity, jsonObject);
                 if (compactRepeatedEntities) {
-                    Map<Object, Entity> processedObjects = context.get().getProcessedEntities();
-                    if (!processedObjects.containsKey(entity.getId())) {
-                        processedObjects.put(entity.getId(), entity);
+                    Table<Object, MetaClass, Entity> processedObjects = context.get().getProcessedEntities();
+                    if (processedObjects.get(entity.getId(), metaClass) == null) {
+                        processedObjects.put(entity.getId(), metaClass, entity);
                         writeFields(entity, jsonObject, view, cyclicReferences);
                     }
                 } else {
@@ -413,12 +415,12 @@ public class EntitySerialization implements EntitySerializationAPI {
                 }
             }
 
-            Map<Object, Entity> processedEntities = context.get().getProcessedEntities();
-            Entity processedEntity = processedEntities.get(entity.getId());
+            Table<Object, MetaClass, Entity> processedEntities = context.get().getProcessedEntities();
+            Entity processedEntity = processedEntities.get(entity.getId(), resultMetaClass);
             if (processedEntity != null) {
                 entity = processedEntity;
             } else {
-                processedEntities.put(entity.getId(), entity);
+                processedEntities.put(entity.getId(), resultMetaClass, entity);
                 readFields(jsonObject, entity);
             }
             return entity;
