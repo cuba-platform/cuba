@@ -79,7 +79,7 @@ public class EntityInspectorEditor extends AbstractWindow {
     protected BoxLayout runtimePane;
 
     @Inject
-    protected BoxLayout tablesBox;
+    protected TabSheet tablesTabSheet;
 
     @Inject
     protected ComponentsFactory componentsFactory;
@@ -716,10 +716,6 @@ public class EntityInspectorEditor extends AbstractWindow {
         vbox.setWidth("100%");
         CollectionDatasource propertyDs = (CollectionDatasource) datasources.get(childMeta.getName());
 
-        Label label = componentsFactory.createComponent(Label.class);
-        label.setValue(getPropertyCaption(metaClass, childMeta));
-        label.setStyleName("h2");
-
         Table table = componentsFactory.createComponent(Table.class);
         table.setMultiSelect(true);
         table.setFrame(frame);
@@ -760,10 +756,11 @@ public class EntityInspectorEditor extends AbstractWindow {
         table.setRowsCount(rowsCount);
         table.setWidth("100%");
         vbox.setHeight(themeConstants.get("cuba.gui.EntityInspectorEditor.tableContainer.height"));
-        vbox.add(label);
         vbox.add(table);
         vbox.expand(table);
-        tablesBox.add(vbox);
+        vbox.setMargin(true);
+        TabSheet.Tab tab = tablesTabSheet.addTab(childMeta.toString(), vbox);
+        tab.setCaption(getPropertyCaption(metaClass, childMeta));
         tables.add(table);
     }
 
