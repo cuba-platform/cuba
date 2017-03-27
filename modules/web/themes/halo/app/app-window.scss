@@ -15,6 +15,9 @@
  *
  */
 
+$cuba-app-menubar-padding-top: round($v-unit-size/8) !default;
+$cuba-app-menubar-padding-bottom: round($v-unit-size/8) !default;
+
 // Application Window styles
 @mixin cuba-application-window {
   .v-tabsheet.c-main-tabsheet {
@@ -47,8 +50,8 @@
     @include valo-gradient();
     @include box-shadow(valo-bevel-and-shadow($bevel: $v-bevel, $shadow: $v-shadow, $background-color: $v-background-color, $gradient: $v-gradient));
 
-    padding-top: round($v-unit-size/8);
-    padding-bottom: round($v-unit-size/8);
+    padding-top: $cuba-app-menubar-padding-top;
+    padding-bottom: $cuba-app-menubar-padding-bottom;
   }
 
   .v-button.c-ftsfield-button,

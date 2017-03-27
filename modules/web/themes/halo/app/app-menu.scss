@@ -36,6 +36,11 @@ $cuba-default-menubar-background: #1c1e20 !default;
 $cuba-menubar-background-color: get-menu-background-color($v-app-background-color) !default;
 $cuba-menubar-border-color: get-menu-border-color($v-app-background-color) !default;
 
+$cuba-menubar-submenu-padding: 0px !default;
+$cuba-menubar-menuitem-text-color: #adaeb0 !default;
+$cuba-menubar-text-color: #adaeb0 !default;
+$cuba-menubar-menuitem-text-selected-color: #e8e8e8 !default;
+
 @mixin cuba-menubar {
   .c-main-menu.v-menubar {
     border: 0;
@@ -75,6 +80,7 @@ $cuba-menubar-border-color: get-menu-border-color($v-app-background-color) !defa
     display: table;
     overflow: hidden;
     white-space: nowrap;
+    padding: $cuba-menubar-submenu-padding;
 
     .v-menubar-menuitem {
       display: table-row;
@@ -183,7 +189,7 @@ $cuba-menubar-border-color: get-menu-border-color($v-app-background-color) !defa
         .v-menubar-menuitem-more-item,
         .v-menubar-menuitem-caption,
         .v-menubar-menuitem-shortcut {
-          color: #adaeb0;
+          color: $cuba-menubar-menuitem-text-color;
         }
 
         .v-menubar-menuitem:hover .v-menubar-menuitem-caption,
@@ -192,16 +198,16 @@ $cuba-menubar-border-color: get-menu-border-color($v-app-background-color) !defa
         .v-menubar-menuitem-selected .v-menubar-menuitem-caption,
         .v-menubar-menuitem-selected .v-menubar-menuitem-shortcut,
         .v-menubar-menuitem-selected.v-menubar-menuitem-more-item {
-          color: #e8e8e8;
+          color: $cuba-menubar-menuitem-text-selected-color;
         }
       }
 
       .c-user-select-label {
-        color: #adaeb0;
+        color: $cuba-menubar-text-color;
       }
 
       .c-user-timezone-label {
-        color: #adaeb0;
+        color: $cuba-menubar-text-color;
       }
 
       .c-ftsfield {
@@ -221,7 +227,7 @@ $cuba-menubar-border-color: get-menu-border-color($v-app-background-color) !defa
       .c-ftsfield-button,
       .c-logout-button,
       .c-newwindow-button {
-        color: #adaeb0;
+        color: $cuba-menubar-text-color;
       }
 
       .c-ftsfield-button:hover,
@@ -230,7 +236,7 @@ $cuba-menubar-border-color: get-menu-border-color($v-app-background-color) !defa
       .c-newwindow-button:hover,
       .c-logout-button:focus,
       .c-newwindow-button:focus {
-        color: #e8e8e8;
+        color: $cuba-menubar-menuitem-text-selected-color;
       }
     }
   }
