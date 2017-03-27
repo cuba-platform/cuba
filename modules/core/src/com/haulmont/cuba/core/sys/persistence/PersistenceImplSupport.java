@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.sys.persistence;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.listener.AfterCompleteTransactionListener;
@@ -88,6 +89,10 @@ public class PersistenceImplSupport implements ApplicationContextAware {
     protected List<AfterCompleteTransactionListener> afterCompleteTxListeners;
 
     private static Logger log = LoggerFactory.getLogger(PersistenceImplSupport.class.getName());
+
+    protected static Set<Entity> createEntitySet() {
+        return Sets.newIdentityHashSet();
+    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -171,13 +176,13 @@ public class PersistenceImplSupport implements ApplicationContextAware {
     }
 
     protected void traverseEntities(ContainerResourceHolder container, EntityVisitor visitor) {
-        beforeStore(container, visitor, container.getAllInstances(), new HashSet<>());
+        beforeStore(container, visitor, container.getAllInstances(), createEntitySet());
     }
 
     protected void beforeStore(ContainerResourceHolder container, EntityVisitor visitor,
                                Collection<Entity> instances, Set<Entity> processed) {
         boolean possiblyChanged = false;
-        Set<Entity> withoutPossibleChanges = new HashSet<>();
+        Set<Entity> withoutPossibleChanges = createEntitySet();
         for (Entity instance : instances) {
             processed.add(instance);
 
@@ -245,7 +250,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
 
             Set<Entity> instances = unitOfWorkMap.get(unitOfWork);
             if (instances == null) {
-                instances = new HashSet<>();
+                instances = createEntitySet();
                 unitOfWorkMap.put(unitOfWork, instances);
             }
             instances.add(instance);
@@ -256,7 +261,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         }
 
         protected Collection<Entity> getAllInstances() {
-            Set<Entity> set = new HashSet<>();
+            Set<Entity> set = createEntitySet();
             for (Set<Entity> instances : unitOfWorkMap.values()) {
                 set.addAll(instances);
             }

@@ -45,6 +45,8 @@ public class IdProxy extends Number implements Serializable {
 
     private Long value;
 
+    private IdProxy copy;
+
     IdProxy(BaseDbGeneratedIdEntity entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
         this.entity = entity;
@@ -80,13 +82,18 @@ public class IdProxy extends Number implements Serializable {
      * @return a copy of this IdProxy cleaned from a reference to entity
      */
     public IdProxy copy() {
-        IdProxy copy = new IdProxy();
-        if (value != null)
-            copy.value = value;
-        else if (entity != null && entity.getDbGeneratedId() != null)
-            copy.value = entity.getDbGeneratedId();
-        copy.uuid = uuid;
-        copy.hashCode = hashCode;
+        if (copy == null
+                || !Objects.equals(value, copy.value)
+                || !Objects.equals(uuid, copy.uuid)
+                || (copy.value == null && entity != null && entity.getDbGeneratedId() != null)) {
+            copy = new IdProxy();
+            if (value != null)
+                copy.value = value;
+            else if (entity != null && entity.getDbGeneratedId() != null)
+                copy.value = entity.getDbGeneratedId();
+            copy.uuid = uuid;
+            copy.hashCode = hashCode;
+        }
         return copy;
     }
 
