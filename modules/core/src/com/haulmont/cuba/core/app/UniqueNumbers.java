@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.regex.Pattern;
 
 /**
  * Provides unique numbers based on database sequences.
@@ -58,6 +59,8 @@ public class UniqueNumbers implements UniqueNumbersAPI {
     protected Set<String> existingSequences = new HashSet<>();
 
     protected SequenceSupport sequenceSupport;
+
+    public static final Pattern SEQ_PATTERN = Pattern.compile("[a-zA-Z0-9_]+");
 
     @PostConstruct
     public void init() {
@@ -222,6 +225,8 @@ public class UniqueNumbers implements UniqueNumbersAPI {
     protected String getSequenceName(String domain) {
         if (StringUtils.isBlank(domain))
             throw new IllegalArgumentException("Sequence name can not be blank");
+        if (!SEQ_PATTERN.matcher(domain).matches())
+            throw new IllegalArgumentException("Invalid sequence name: '" + domain + "'. It can contain only alphanumeric characters and underscores");
 
         return "seq_un_" + domain;
     }
