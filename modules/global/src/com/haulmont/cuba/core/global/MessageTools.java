@@ -33,6 +33,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Utility class to provide common functionality related to localized messages.
@@ -163,12 +164,17 @@ public class MessageTools {
      * @return a localized name of an entity with given locale or default if null. Messages pack must be located in the same package as entity.
      */
     public String getEntityCaption(MetaClass metaClass, @Nullable Locale locale) {
-        String className = metaClass.getJavaClass().getSimpleName();
+        Function<MetaClass, String> getMessage = locale != null ?
+            mc -> messages.getMessage(mc.getJavaClass(), mc.getJavaClass().getSimpleName(), locale) :
+            mc -> messages.getMessage(mc.getJavaClass(), mc.getJavaClass().getSimpleName());
 
-        if (locale != null) {
-            return messages.getMessage(metaClass.getJavaClass(), className, locale);
+        String message = getMessage.apply(metaClass);
+        if (metaClass.getJavaClass().getSimpleName().equals(message)) {
+            MetaClass original = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+            if (original != null)
+                return getMessage.apply(original);
         }
-        return messages.getMessage(metaClass.getJavaClass(), className);
+        return message;
     }
 
     /**
