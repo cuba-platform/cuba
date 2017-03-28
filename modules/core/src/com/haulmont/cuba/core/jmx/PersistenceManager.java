@@ -36,15 +36,15 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import javax.persistence.Table;
 import java.io.File;
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 @Component("cuba_PersistenceManagerMBean")
 public class PersistenceManager implements PersistenceManagerMBean {
@@ -263,23 +263,25 @@ public class PersistenceManager implements PersistenceManagerMBean {
 
         try {
             log.info("Refreshing statistics for " + entityName);
+
+            Consumer<MetaClass> refreshStatisticsForEntity = mc -> {
+                MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(mc);
+                Class javaClass = originalMetaClass.getJavaClass();
+                Table annotation = (Table) javaClass.getAnnotation(Table.class);
+                if (annotation != null) {
+                    persistenceManager.refreshStatisticsForEntity(originalMetaClass.getName());
+                }
+            };
+
             if ("all".equals(entityName)) {
                 for (MetaClass metaClass : metadata.getSession().getClasses()) {
-                    Class javaClass = metaClass.getJavaClass();
-                    Table annotation = (Table) javaClass.getAnnotation(Table.class);
-                    if (annotation != null) {
-                        persistenceManager.refreshStatisticsForEntity(metaClass.getName());
-                    }
+                    refreshStatisticsForEntity.accept(metaClass);
                 }
             } else {
                 MetaClass metaClass = metadata.getSession().getClass(entityName);
                 if (metaClass == null)
                     return "MetaClass not found: " + entityName;
-                Class javaClass = metaClass.getJavaClass();
-                Table annotation = (Table) javaClass.getAnnotation(Table.class);
-                if (annotation != null) {
-                    persistenceManager.refreshStatisticsForEntity(metaClass.getName());
-                }
+                refreshStatisticsForEntity.accept(metaClass);
             }
             return "Done";
         } catch (Exception e) {

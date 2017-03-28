@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.EntityStatistics;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import org.slf4j.Logger;
@@ -299,16 +300,31 @@ public class PersistenceManager implements PersistenceManagerAPI {
     @Override
     public void refreshStatisticsForEntity(String name) {
         log.debug("Refreshing statistics for entity " + name);
-        Transaction tx = persistence.createTransaction();
+        MetaClass metaClass = metadata.getClassNN(name);
+        String storeName = metadata.getTools().getStoreName(metaClass);
+        if (storeName == null) {
+            log.debug("Entity " + name + " is not persistent, ignoring it");
+            return;
+        }
+        Transaction tx = persistence.createTransaction(storeName);
         try {
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = persistence.getEntityManager(storeName);
 
             Query q = em.createQuery("select count(e) from " + name + " e");
             Long count = (Long) q.getSingleResult();
 
-            EntityStatistics es = getEntityStatisticsInstance(name, em);
-            es.setInstanceCount(count);
-            getStatisticsCache().put(name, es);
+            EntityStatistics entityStatistics;
+            if (Stores.isMain(storeName)) {
+                entityStatistics = getEntityStatisticsInstance(name, em);
+                entityStatistics.setInstanceCount(count);
+            } else {
+                entityStatistics = persistence.callInTransaction(mainDsEm -> {
+                    EntityStatistics es = getEntityStatisticsInstance(name, mainDsEm);
+                    es.setInstanceCount(count);
+                    return es;
+                });
+            }
+            getStatisticsCache().put(name, entityStatistics);
 
             tx.commit();
         } finally {
