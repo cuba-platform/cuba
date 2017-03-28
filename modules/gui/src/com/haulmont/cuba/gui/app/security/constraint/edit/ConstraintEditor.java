@@ -148,7 +148,7 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
     }
 
     protected void setupVisibility() {
-        Constraint item = (Constraint) getItem();
+        Constraint item = getItem();
         asList(groovyScript, groovyScriptLabel, groovyScriptHelp)
                 .forEach(component -> component.setVisible(item.getCheckType().memory()));
         asList(joinClause, joinClauseLabel, joinClauseHelp, whereClause, whereClauseLabel, whereClauseHelp)
@@ -281,7 +281,7 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
         WindowInfo windowInfo = windowConfig.getWindowInfo("filterEditor");
 
         Map<String, Object> params = new HashMap<>();
-        Constraint constraint = (Constraint) getItem();
+        Constraint constraint = getItem();
         final Filter fakeFilter = fakeFilterSupport.createFakeFilter();
         final FilterEntity filterEntity = fakeFilterSupport.createFakeFilterEntity(constraint.getFilterXml());
         final ConditionsTree conditionsTree = fakeFilterSupport.createFakeConditionsTree(fakeFilter, filterEntity);
@@ -301,7 +301,7 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
                 Element element = Dom4j.readDocument(filterEntity.getXml()).getRootElement();
                 com.haulmont.cuba.core.global.filter.FilterParser filterParser = new com.haulmont.cuba.core.global.filter.FilterParser(element);
 
-                Constraint item = (Constraint) getItem();
+                Constraint item = getItem();
                 if (item.getCheckType().database()) {
                     String jpql = new SecurityJpqlGenerator().generateJpql(filterParser.getRoot());
                     constraint.setWhereClause(jpql);
