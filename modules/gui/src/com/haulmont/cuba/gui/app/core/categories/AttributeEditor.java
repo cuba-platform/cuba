@@ -383,6 +383,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         if (attribute.getDataType() == PropertyType.ENTITY) {
             if (StringUtils.isNotBlank(attribute.getEntityClass())) {
                 defaultEntityField.setEditable(true);
+                whereField.setEditable(true);
+                joinField.setEditable(true);
                 Class entityClass = attribute.getJavaClassForEntity();
                 MetaClass metaClass = metadata.getClass(entityClass);
                 defaultEntityField.setMetaClass(metaClass);
@@ -392,6 +394,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 dynamicAttributesGuiTools.initEntityPickerField(defaultEntityField, attribute);
             } else {
                 defaultEntityField.setEditable(false);
+                whereField.setEditable(false);
+                joinField.setEditable(false);
             }
 
             if (Boolean.TRUE.equals(attribute.getLookup())) {
