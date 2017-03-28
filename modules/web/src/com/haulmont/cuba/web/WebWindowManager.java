@@ -1262,8 +1262,11 @@ public class WebWindowManager extends WindowManager {
             Button button = WebComponentsHelper.createButton();
             button.setCaption(action.getCaption());
             button.addClickListener(event -> {
-                action.actionPerform(null);
-                ui.removeWindow(window);
+                try {
+                    action.actionPerform(null);
+                } finally {
+                    ui.removeWindow(window);
+                }
             });
 
             if (StringUtils.isNotEmpty(action.getIcon())) {

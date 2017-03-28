@@ -219,7 +219,17 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
                         new DialogAction(Type.OK, Status.PRIMARY) {
                             @Override
                             public void actionPerform(Component component) {
-                                remove(selected);
+                                try {
+                                    remove(selected);
+                                } finally {
+                                    target.requestFocus();
+                                    try {
+                                        //noinspection unchecked
+                                        target.setSelected(selected);
+                                    } catch (Exception e) {
+                                        // ignore
+                                    }
+                                }
                             }
                         },
                         new DialogAction(Type.CANCEL) {
