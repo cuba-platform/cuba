@@ -368,7 +368,7 @@ public class UserManagementServiceBean implements UserManagementService {
             EntityManager em = persistence.getEntityManager();
             User user = em.find(User.class, userSessionSource.getUserSession().getUser().getId(), "user.timeZone");
             if (user == null)
-                throw new EntityAccessException();
+                throw new EntityAccessException(User.class, userSessionSource.getUserSession().getUser().getId());
             tx.commit();
             return new UserTimeZone(user.getTimeZone(), Boolean.TRUE.equals(user.getTimeZoneAuto()));
         } finally {
@@ -384,7 +384,7 @@ public class UserManagementServiceBean implements UserManagementService {
             EntityManager em = persistence.getEntityManager();
             User user = em.find(User.class, userSessionSource.getUserSession().getUser().getId(), "user.timeZone");
             if (user == null)
-                throw new EntityAccessException();
+                throw new EntityAccessException(User.class, userSessionSource.getUserSession().getUser().getId());
             user.setTimeZone(timeZone.name);
             user.setTimeZoneAuto(timeZone.auto);
             tx.commit();
@@ -399,7 +399,7 @@ public class UserManagementServiceBean implements UserManagementService {
             EntityManager em = persistence.getEntityManager();
             User user = em.find(User.class, userSessionSource.getUserSession().getUser().getId(), "user.locale");
             if (user == null)
-                throw new EntityAccessException();
+                throw new EntityAccessException(User.class, userSessionSource.getUserSession().getUser().getId());
             tx.commit();
             return user.getLanguage();
         }
@@ -414,7 +414,7 @@ public class UserManagementServiceBean implements UserManagementService {
             EntityManager em = persistence.getEntityManager();
             User user = em.find(User.class, userId, "user.locale");
             if (user == null)
-                throw new EntityAccessException();
+                throw new EntityAccessException(User.class, userId);
 
             user.setLanguage(locale);
             tx.commit();
@@ -428,7 +428,7 @@ public class UserManagementServiceBean implements UserManagementService {
             EntityManager em = persistence.getEntityManager();
             User user = em.find(User.class, userId, CHANGE_PASSWORD_VIEW);
             if (user == null) {
-                throw new EntityAccessException();
+                throw new EntityAccessException(User.class, userId);
             }
 
             user.setPassword(newPasswordHash);

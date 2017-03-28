@@ -144,6 +144,9 @@ public class EditorWindowDelegate extends WindowDelegate {
             ds.setLoadDynamicAttributes(true);
         }
 
+        Class<? extends Entity> entityClass = item.getClass();
+        Object entityId = item.getId();
+
         if (parentDs != null) {
             if (!PersistenceHelper.isNew(item)
                     && !parentDs.getItemsToCreate().contains(item) && !parentDs.getItemsToUpdate().contains(item)
@@ -163,7 +166,7 @@ public class EditorWindowDelegate extends WindowDelegate {
         }
 
         if (item == null) {
-            throw new EntityAccessException();
+            throw new EntityAccessException(entityClass, entityId);
         }
 
         if (PersistenceHelper.isNew(item)

@@ -835,7 +835,7 @@ public class Param {
         q.setParameter("id", categoryAttrId);
         CategoryAttribute categoryAttribute = dataService.load(context);
         if (categoryAttribute == null) {
-            throw new EntityAccessException();
+            throw new EntityAccessException(CategoryAttribute.class, categoryAttrId);
         }
 
         runtimeEnum = new LinkedList<>();

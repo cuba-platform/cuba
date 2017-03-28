@@ -86,7 +86,7 @@ public class DataManagerClientImpl implements DataManager {
 
         E reloaded = load(context);
         if (reloaded == null)
-            throw new EntityAccessException();
+            throw new EntityAccessException(metaClass, entity.getId());
 
         return reloaded;
     }
