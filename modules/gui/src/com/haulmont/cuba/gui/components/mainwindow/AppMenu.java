@@ -199,17 +199,6 @@ public interface AppMenu extends Component.BelongToFrame, Component.Focusable {
         void setStyleName(String styleName);
 
         /**
-         * @return test id
-         */
-        String getTestId();
-        /**
-         * Set "cuba-id" value for UI testing.
-         *
-         * @param testId test id
-         */
-        void setTestId(String testId);
-
-        /**
          * @return item command
          */
         Consumer<AppMenu.MenuItem> getCommand();

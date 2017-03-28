@@ -21,11 +21,13 @@ import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.mainwindow.SideMenu;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.sys.SideMenuBuilder;
 import com.haulmont.cuba.web.theme.HaloTheme;
 import com.haulmont.cuba.web.toolkit.ui.CubaSideMenu;
+import com.vaadin.server.ClientConnector;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -50,6 +52,19 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
                 sidePanel.removeStyleName(HaloTheme.SIDEMENU_PANEL_OPEN);
             }
         });
+
+        component.addAttachListener(this::handleAttach);
+    }
+
+    protected void handleAttach(ClientConnector.AttachEvent attachEvent) {
+        AppUI appUi = (AppUI) component.getUI();
+        if (appUi == null || !appUi.isTestMode()) {
+            return;
+        }
+
+        for (CubaSideMenu.MenuItem vMenuItem : component.getMenuItems()) {
+            assignCubaId(((MenuItemWrapper) vMenuItem).getMenuItem());
+        }
     }
 
     @Override
@@ -169,6 +184,14 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
         return menuItem;
     }
 
+    protected void assignCubaId(MenuItem menuItem) {
+        AppUI ui = (AppUI) component.getUI();
+        if (ui == null || !ui.isTestMode())
+            return;
+
+        ((MenuItemImpl) menuItem).setCubaId(menuItem.getId());
+    }
+
     @Override
     public void addMenuItem(MenuItem menuItem) {
         checkNotNullArgument(menuItem);
@@ -177,6 +200,8 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
 
         component.addMenuItem(((MenuItemImpl) menuItem).getDelegateItem());
         registerMenuItem(menuItem);
+
+        assignCubaId(menuItem);
     }
 
     protected void registerMenuItem(MenuItem menuItem) {
@@ -195,6 +220,8 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
 
         component.addMenuItem(((MenuItemImpl) menuItem).getDelegateItem(), index);
         registerMenuItem(menuItem);
+
+        assignCubaId(menuItem);
     }
 
     @Override
@@ -384,14 +411,12 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
             delegateItem.setBadgeText(badgeText);
         }
 
-        @Override
-        public String getTestId() {
-            return delegateItem.getTestId();
+        protected String getCubaId() {
+            return delegateItem.getCubaId();
         }
 
-        @Override
-        public void setTestId(String testId) {
-            delegateItem.setTestId(testId);
+        protected void setCubaId(String cubaId) {
+            delegateItem.setCubaId(cubaId);
         }
 
         @Override

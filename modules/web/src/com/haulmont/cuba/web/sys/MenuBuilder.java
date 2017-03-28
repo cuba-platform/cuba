@@ -19,16 +19,12 @@ package com.haulmont.cuba.web.sys;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.NoSuchScreenException;
-import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
-import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.collections.CollectionUtils;
@@ -119,7 +115,6 @@ public class MenuBuilder {
                     null, createMenuBarCommand(item));
 
             assignShortcut(webWindow, menuItem, item);
-            assignTestId(menuItem, item);
             assignStyleName(menuItem, item);
             assignIcon(menuItem, item);
             assignDescription(menuItem, item);
@@ -146,7 +141,6 @@ public class MenuBuilder {
                                 menuConfig.getItemCaption(child.getId()), null, createMenuBarCommand(child));
 
                         assignShortcut(webWindow, menuItem, child);
-                        assignTestId(menuItem, child);
                         assignDescription(menuItem, child);
                         assignIcon(menuItem, child);
                         assignStyleName(menuItem, child);
@@ -159,7 +153,6 @@ public class MenuBuilder {
                                 menuConfig.getItemCaption(child.getId()), null, null);
 
                         assignShortcut(webWindow, menuItem, child);
-                        assignTestId(menuItem, child);
                         assignDescription(menuItem, child);
                         assignIcon(menuItem, child);
                         assignStyleName(menuItem, child);
@@ -222,20 +215,6 @@ public class MenuBuilder {
             windowImpl.addShortcutListener(shortcut);
 
             appMenu.setMenuItemShortcutCaption(menuItem, itemShortcut.format());
-        }
-    }
-
-    protected void assignTestId(AppMenu.MenuItem menuItem, MenuItem conf) {
-        CubaMenuBar menuBar = (CubaMenuBar) WebComponentsHelper.unwrap(appMenu);
-
-        if (menuBar.getId() != null && menuBar.getCubaId() != null && !conf.isSeparator()) {
-            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
-
-            String id = testIdManager.normalize(conf.getId());
-            String testId = menuBar.getId() + "_" + id;
-            testIdManager.reserveId(testId);
-
-            menuItem.setTestId(testId);
         }
     }
 

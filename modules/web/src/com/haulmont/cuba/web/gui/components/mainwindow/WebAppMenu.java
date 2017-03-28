@@ -18,11 +18,14 @@
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.sys.MenuBuilder;
 import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
+import com.vaadin.server.ClientConnector;
 import com.vaadin.ui.MenuBar;
 import org.apache.commons.lang.StringUtils;
 
@@ -45,6 +48,19 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
     public WebAppMenu() {
         component = new CubaMenuBar();
         component.addStyleName(MENU_STYLENAME);
+
+        component.addAttachListener(this::handleAttach);
+    }
+
+    protected void handleAttach(ClientConnector.AttachEvent event) {
+        AppUI appUi = (AppUI) component.getUI();
+        if (appUi == null || !appUi.isTestMode()) {
+            return;
+        }
+
+        for (Map.Entry<String, MenuItem> entry : allItemsIds.entrySet()) {
+            assignTestIds(entry.getValue(), entry.getKey());
+        }
     }
 
     @Override
@@ -96,6 +112,21 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
         return menuItem;
     }
 
+    protected void assignTestIds(MenuItem menuItem, String id) {
+        AppUI ui = (AppUI) component.getUI();
+        if (ui == null || !ui.isTestMode())
+            return;
+
+        MenuBar.MenuItem delegateItem = ((MenuItemImpl) menuItem).getDelegateItem();
+        component.setCubaId(delegateItem, id);
+
+        TestIdManager testIdManager = ui.getTestIdManager();
+        String testId = component.getId() + "_" + id;
+        testIdManager.reserveId(testId);
+
+        component.setTestId(delegateItem, testId);
+    }
+
     @Override
     public void addMenuItem(MenuItem menuItem) {
         checkNotNullArgument(menuItem);
@@ -104,6 +135,8 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
 
         component.addMenuItem(((MenuItemImpl) menuItem).getDelegateItem());
         registerMenuItem(menuItem);
+
+        assignTestIds(menuItem, menuItem.getId());
     }
 
     @Override
@@ -114,6 +147,8 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
 
         component.addMenuItem(((MenuItemImpl) menuItem).getDelegateItem(), index);
         registerMenuItem(menuItem);
+
+        assignTestIds(menuItem, menuItem.getId());
     }
 
     protected void registerMenuItem(MenuItem menuItem) {
@@ -289,16 +324,6 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
         @Override
         public void setStyleName(String styleName) {
             delegateItem.setStyleName(styleName);
-        }
-
-        @Override
-        public String getTestId() {
-            return menu.component.getTestId(delegateItem);
-        }
-
-        @Override
-        public void setTestId(String testId) {
-            menu.component.setTestId(delegateItem, testId);
         }
 
         @Override

@@ -20,13 +20,11 @@ import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.NoSuchScreenException;
-import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.SideMenu;
 import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.AppUI;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
 import org.slf4j.Logger;
@@ -117,7 +115,6 @@ public class SideMenuBuilder {
                     menuConfig.getItemCaption(item.getId()), null, createMenuBarCommand(item));
 
             createSubMenu(webWindow, menu, menuItem, item, session);
-            assignTestId(menu, menuItem, item);
             assignStyleName(menuItem, item);
             assignIcon(menuItem, item);
             assignDescription(menuItem, item);
@@ -142,7 +139,6 @@ public class SideMenuBuilder {
                     SideMenu.MenuItem menuItem = menu.createMenuItem(child.getId(),
                             menuConfig.getItemCaption(child.getId()));
 
-                    assignTestId(menu, menuItem, child);
                     assignDescription(menuItem, child);
                     assignIcon(menuItem, child);
                     assignStyleName(menuItem, child);
@@ -205,18 +201,6 @@ public class SideMenuBuilder {
 
     protected boolean isMenuItemEmpty(SideMenu.MenuItem menuItem) {
         return !menuItem.hasChildren() && menuItem.getCommand() == null;
-    }
-
-    protected void assignTestId(SideMenu menu, SideMenu.MenuItem menuItem, MenuItem conf) {
-        if (menu.getId() != null && !conf.isSeparator()) {
-            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
-
-            String id = testIdManager.normalize(conf.getId());
-            String testId = menu.getId() + "_" + id;
-            testIdManager.reserveId(testId);
-
-            menuItem.setTestId(testId);
-        }
     }
 
     protected void assignStyleName(SideMenu.MenuItem menuItem, MenuItem conf) {

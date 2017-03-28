@@ -282,17 +282,6 @@ public interface SideMenu extends Component.BelongToFrame, Component.Focusable {
         void setBadgeText(String badgeText);
 
         /**
-         * @return test id
-         */
-        String getTestId();
-        /**
-         * Set "cuba-id" value for UI testing.
-         *
-         * @param testId test id
-         */
-        void setTestId(String testId);
-
-        /**
          * @return item command
          */
         Consumer<MenuItem> getCommand();
