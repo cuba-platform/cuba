@@ -43,6 +43,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -1654,7 +1655,7 @@ public class DesktopWindow implements Window, Component.Disposable,
         }
     }
 
-    public static class Lookup extends DesktopWindow implements Window.Lookup {
+    public static class Lookup extends DesktopWindow implements Window.Lookup, LookupComponent.LookupSelectionChangeListener {
 
         private Component lookupComponent;
         private Handler handler;
@@ -1662,6 +1663,7 @@ public class DesktopWindow implements Window, Component.Disposable,
         private SelectListener selectListener;
 
         private JPanel container;
+        private JButton selectBtn;
 
         public Lookup() {
             Configuration configuration = AppBeans.get(Configuration.NAME);
@@ -1682,10 +1684,25 @@ public class DesktopWindow implements Window, Component.Disposable,
 
         @Override
         public void setLookupComponent(Component lookupComponent) {
+            if (this.lookupComponent instanceof LookupSelectionChangeNotifier) {
+                LookupSelectionChangeNotifier selectionChangeNotifier = (LookupSelectionChangeNotifier) this.lookupComponent;
+                selectionChangeNotifier.removeLookupValueChangeListener(this);
+
+                selectBtn.setEnabled(true);
+            }
+
             this.lookupComponent = lookupComponent;
 
             if (lookupComponent instanceof LookupComponent) {
                 ((LookupComponent) lookupComponent).setLookupSelectHandler(this::fireSelectAction);
+
+                if (lookupComponent instanceof LookupSelectionChangeNotifier) {
+                    LookupSelectionChangeNotifier selectionChangeNotifier =
+                            (LookupSelectionChangeNotifier) lookupComponent;
+                    selectionChangeNotifier.addLookupValueChangeListener(this);
+
+                    selectBtn.setEnabled(!selectionChangeNotifier.getLookupSelectedItems().isEmpty());
+                }
             }
         }
 
@@ -1710,7 +1727,7 @@ public class DesktopWindow implements Window, Component.Disposable,
         }
 
         protected void fireSelectAction() {
-            if (selectListener != null) {
+            if (selectListener != null && selectBtn.isEnabled()) {
                 selectListener.actionPerformed(null);
             }
         }
@@ -1739,7 +1756,7 @@ public class DesktopWindow implements Window, Component.Disposable,
 
             selectListener = new SelectListener();
 
-            JButton selectBtn = new JButton(messages.getMessage(AppConfig.getMessagesPack(), "actions.Select"));
+            selectBtn = new JButton(messages.getMessage(AppConfig.getMessagesPack(), "actions.Select"));
             selectBtn.setIcon(App.getInstance().getResources().getIcon("icons/ok.png"));
             selectBtn.addActionListener(selectListener);
             DesktopComponentsHelper.adjustSize(selectBtn);
@@ -1802,6 +1819,11 @@ public class DesktopWindow implements Window, Component.Disposable,
         @Override
         protected JComponent getContainer() {
             return container;
+        }
+
+        @Override
+        public void lookupValueChanged(LookupComponent.LookupSelectionChangeEvent event) {
+            selectBtn.setEnabled(!event.getSource().getLookupSelectedItems().isEmpty());
         }
 
         private class SelectListener implements ActionListener {

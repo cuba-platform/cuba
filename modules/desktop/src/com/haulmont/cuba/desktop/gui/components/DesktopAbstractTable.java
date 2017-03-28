@@ -82,7 +82,7 @@ import static com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper.c
 
 public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
         extends DesktopAbstractActionsHolderComponent<C>
-        implements Table<E> {
+        implements Table<E>, LookupComponent.LookupSelectionChangeNotifier {
 
     protected static final int DEFAULT_ROW_MARGIN = 4;
 
@@ -152,6 +152,8 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
     protected CollectionDsActionsNotifier collectionDsActionsNotifier;
+
+    protected List<LookupSelectionChangeListener> lookupSelectionChangeListeners = new ArrayList<>();
 
     protected DesktopAbstractTable() {
         shortcutsDelegate.setAllowEnterShortcut(false);
@@ -1105,6 +1107,12 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
                                 // in this case item change event will not be generated
                                 refreshActionsState();
                             }
+                        }
+
+                        LookupSelectionChangeEvent selectionChangeEvent =
+                                new LookupSelectionChangeEvent(DesktopAbstractTable.this);
+                        for (LookupSelectionChangeListener listener : lookupSelectionChangeListeners) {
+                            listener.lookupValueChanged(selectionChangeEvent);
                         }
                     }
                 }
@@ -2368,6 +2376,18 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     @Override
     public void setDescription(String description) {
         impl.setToolTipText(description);
+    }
+
+    @Override
+    public void addLookupValueChangeListener(LookupSelectionChangeListener listener) {
+        if (!lookupSelectionChangeListeners.contains(listener)) {
+            lookupSelectionChangeListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeLookupValueChangeListener(LookupSelectionChangeListener listener) {
+        lookupSelectionChangeListeners.remove(listener);
     }
 
     /**

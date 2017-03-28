@@ -88,7 +88,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhancedTable, E extends Entity>
         extends WebAbstractList<T, E>
-        implements Table<E> {
+        implements Table<E>, LookupComponent.LookupSelectionChangeNotifier {
 
     private static final String HAS_TOP_PANEL_STYLENAME = "has-top-panel";
 
@@ -653,6 +653,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     refreshActionsState();
                 }
             }
+
+            LookupSelectionChangeEvent selectionChangeEvent = new LookupSelectionChangeEvent(this);
+            getEventRouter().fireEvent(LookupSelectionChangeListener.class,
+                    LookupSelectionChangeListener::lookupValueChanged, selectionChangeEvent);
         });
 
         component.addShortcutListener(new ShortcutListener("tableEnter", com.vaadin.event.ShortcutAction.KeyCode.ENTER, null) {
@@ -2917,5 +2921,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     @Override
     public void setDescription(String description) {
         component.setDescription(description);
+    }
+
+    @Override
+    public void addLookupValueChangeListener(LookupSelectionChangeListener listener) {
+        getEventRouter().addListener(LookupSelectionChangeListener.class, listener);
+    }
+
+    @Override
+    public void removeLookupValueChangeListener(LookupSelectionChangeListener listener) {
+        getEventRouter().removeListener(LookupSelectionChangeListener.class, listener);
     }
 }

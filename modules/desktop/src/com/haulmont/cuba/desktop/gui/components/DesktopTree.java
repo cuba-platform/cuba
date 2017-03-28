@@ -47,8 +47,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
+import java.util.List;
 
-public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderComponent<JTree> implements Tree<E> {
+public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderComponent<JTree>
+        implements Tree<E>, LookupComponent.LookupSelectionChangeNotifier {
 
     protected String hierarchyProperty;
     protected HierarchicalDatasource<Entity<Object>, Object> datasource;
@@ -72,6 +74,8 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
     protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
 
     protected CollectionDsActionsNotifier collectionDsActionsNotifier;
+
+    protected List<LookupSelectionChangeListener> lookupSelectionChangeListeners = new ArrayList<>();
 
     public DesktopTree() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
@@ -580,6 +584,18 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
         super.attachAction(action);
     }
 
+    @Override
+    public void addLookupValueChangeListener(LookupSelectionChangeListener listener) {
+        if (!lookupSelectionChangeListeners.contains(listener)) {
+            lookupSelectionChangeListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeLookupValueChangeListener(LookupSelectionChangeListener listener) {
+        lookupSelectionChangeListeners.remove(listener);
+    }
+
     protected class SelectionListener implements TreeSelectionListener {
 
         @SuppressWarnings("unchecked")
@@ -619,6 +635,11 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
                         refreshActionsState();
                     }
                 }
+            }
+
+            LookupSelectionChangeEvent selectionChangeEvent = new LookupSelectionChangeEvent(DesktopTree.this);
+            for (LookupSelectionChangeListener listener : lookupSelectionChangeListeners) {
+                listener.lookupValueChanged(selectionChangeEvent);
             }
         }
     }

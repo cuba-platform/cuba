@@ -72,9 +72,10 @@ import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
+import static com.haulmont.cuba.gui.components.Component.SecuredActionsHolder;
 
 public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid>
-        implements DataGrid<E>, com.haulmont.cuba.gui.components.Component.SecuredActionsHolder {
+        implements DataGrid<E>, SecuredActionsHolder, LookupComponent.LookupSelectionChangeNotifier {
 
     protected static final String HAS_TOP_PANEL_STYLE_NAME = "has-top-panel";
     protected static final String TEXT_SELECTION_ENABLED_STYLE = "text-selection-enabled";
@@ -188,7 +189,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         containerWrapper = new GeneratedPropertyContainer(component.getContainerDataSource());
         component.setContainerDataSource(containerWrapper);
 
-        component.addSelectionListener((com.vaadin.event.SelectionEvent.SelectionListener) event -> {
+        component.addSelectionListener(event -> {
             if (datasource == null) {
                 return;
             }
@@ -219,9 +220,13 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                     refreshActionsState();
                 }
             }
+
+            LookupSelectionChangeEvent selectionChangeEvent = new LookupSelectionChangeEvent(this);
+            getEventRouter().fireEvent(LookupSelectionChangeListener.class,
+                    LookupSelectionChangeListener::lookupValueChanged, selectionChangeEvent);
         });
 
-        component.addShortcutListener(new ShortcutListener("datadGridEnter", KeyCode.ENTER, null) {
+        component.addShortcutListener(new ShortcutListener("dataGridEnter", KeyCode.ENTER, null) {
             @Override
             public void handleAction(Object sender, Object target) {
                 if (target == WebDataGrid.this.component) {
@@ -2108,6 +2113,16 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     @Override
     public void setTabIndex(int tabIndex) {
         component.setTabIndex(tabIndex);
+    }
+
+    @Override
+    public void addLookupValueChangeListener(LookupSelectionChangeListener listener) {
+        getEventRouter().addListener(LookupSelectionChangeListener.class, listener);
+    }
+
+    @Override
+    public void removeLookupValueChangeListener(LookupSelectionChangeListener listener) {
+        getEventRouter().removeListener(LookupSelectionChangeListener.class, listener);
     }
 
     protected class DataGridDsWrapper extends IndexedCollectionDsWrapper {

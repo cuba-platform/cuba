@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import java.util.Collection;
+import java.util.EventObject;
 
 /**
  * A component which can be set as lookup component for a screen.
@@ -32,4 +33,27 @@ public interface LookupComponent extends Component {
      * @return items selected in lookup component
      */
     Collection getLookupSelectedItems();
+
+    /**
+     * Component that fires {@link LookupSelectionChangeEvent} when lookup selected items set is changed.
+     */
+    interface LookupSelectionChangeNotifier extends LookupComponent {
+        void addLookupValueChangeListener(LookupSelectionChangeListener listener);
+        void removeLookupValueChangeListener(LookupSelectionChangeListener listener);
+    }
+
+    class LookupSelectionChangeEvent extends EventObject {
+        public LookupSelectionChangeEvent(LookupComponent source) {
+            super(source);
+        }
+
+        @Override
+        public LookupComponent getSource() {
+            return (LookupComponent) super.getSource();
+        }
+    }
+
+    interface LookupSelectionChangeListener {
+        void lookupValueChanged(LookupSelectionChangeEvent event);
+    }
 }

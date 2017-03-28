@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -1600,7 +1601,7 @@ public class WebWindow implements Window, Component.Wrapper,
         }
     }
 
-    public static class Lookup extends WebWindow implements Window.Lookup {
+    public static class Lookup extends WebWindow implements Window.Lookup, LookupComponent.LookupSelectionChangeListener {
 
         private Handler handler;
 
@@ -1631,11 +1632,31 @@ public class WebWindow implements Window, Component.Wrapper,
 
         @Override
         public void setLookupComponent(Component lookupComponent) {
+            if (this.lookupComponent instanceof LookupSelectionChangeNotifier) {
+                LookupSelectionChangeNotifier lvChangeNotifier = (LookupSelectionChangeNotifier) this.lookupComponent;
+                lvChangeNotifier.removeLookupValueChangeListener(this);
+
+                selectButton.setEnabled(true);
+            }
+
             this.lookupComponent = lookupComponent;
 
             if (lookupComponent instanceof LookupComponent) {
                 ((LookupComponent) lookupComponent).setLookupSelectHandler(this::fireSelectAction);
+
+                if (lookupComponent instanceof LookupSelectionChangeNotifier) {
+                    LookupSelectionChangeNotifier lvChangeNotifier =
+                            (LookupSelectionChangeNotifier) lookupComponent;
+                    lvChangeNotifier.addLookupValueChangeListener(this);
+
+                    selectButton.setEnabled(!lvChangeNotifier.getLookupSelectedItems().isEmpty());
+                }
             }
+        }
+
+        @Override
+        public void lookupValueChanged(LookupComponent.LookupSelectionChangeEvent event) {
+            selectButton.setEnabled(!event.getSource().getLookupSelectedItems().isEmpty());
         }
 
         @Override
@@ -1664,8 +1685,9 @@ public class WebWindow implements Window, Component.Wrapper,
         }
 
         protected void fireSelectAction() {
-            if (selectAction != null)
+            if (selectAction != null && selectButton.isEnabled()) {
                 selectAction.buttonClick(null);
+            }
         }
 
         @Override
@@ -1701,12 +1723,9 @@ public class WebWindow implements Window, Component.Wrapper,
 
             cancelButton = WebComponentsHelper.createButton();
             cancelButton.setCaption(messages.getMainMessage("actions.Cancel"));
-            cancelButton.addClickListener(new Button.ClickListener() {
-                @Override
-                public void buttonClick(Button.ClickEvent event) {
-                    close("cancel");
-                }
-            });
+            cancelButton.addClickListener(event ->
+                    close("cancel")
+            );
             cancelButton.setStyleName("c-window-action-button");
             cancelButton.setIcon(WebComponentsHelper.getIcon("icons/cancel.png"));
             if (isTestMode) {

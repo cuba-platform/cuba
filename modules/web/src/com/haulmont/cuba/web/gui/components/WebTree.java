@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.LookupComponent;
 import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -41,7 +42,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
+public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> implements LookupComponent.LookupSelectionChangeNotifier {
 
     protected String hierarchyProperty;
     protected CaptionMode captionMode = CaptionMode.ITEM;
@@ -96,6 +97,10 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
                     }
                 }
             }
+
+            LookupSelectionChangeEvent lvChangeEvent = new LookupSelectionChangeEvent(this);
+            getEventRouter().fireEvent(LookupSelectionChangeListener.class,
+                    LookupSelectionChangeListener::lookupValueChanged, lvChangeEvent);
         });
 
         initComponent(component);
@@ -287,5 +292,15 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> {
 
             this.doubleClickAction = action;
         }
+    }
+
+    @Override
+    public void addLookupValueChangeListener(LookupSelectionChangeListener listener) {
+        getEventRouter().addListener(LookupSelectionChangeListener.class, listener);
+    }
+
+    @Override
+    public void removeLookupValueChangeListener(LookupSelectionChangeListener listener) {
+        getEventRouter().removeListener(LookupSelectionChangeListener.class, listener);
     }
 }
