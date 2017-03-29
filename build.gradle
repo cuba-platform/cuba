@@ -81,13 +81,14 @@ def webAuthModule = project(':cuba-web-auth')
 def webToolkitModule = project(':cuba-web-toolkit')
 def webModule = project(':cuba-web')
 def idpModule = project(':cuba-idp')
+def uberJarModule = project(':cuba-uberjar')
 
 def webModuleThemesModule = project(':cuba-web-themes')
 def coreTestsModule = project(':cuba-core-tests')
 def clientTestsModule = project(':cuba-client-tests')
 
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
-           webModule, desktopModule, portalModule, webAuthModule, restApiModule, idpModule]) {
+           webModule, desktopModule, portalModule, webAuthModule, restApiModule, idpModule, uberJarModule]) {
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
@@ -812,6 +813,18 @@ configure(idpModule) {
                 into "$cuba.tomcat.dir/webapps/cuba"
             }
         }
+    }
+}
+
+configure(uberJarModule) {
+    dependencies {
+        compile(bom['org.eclipse.jetty:jetty-server'])
+        compile(bom['org.eclipse.jetty:jetty-webapp'])
+        compile(bom['org.eclipse.jetty:jetty-plus'])
+        compile(bom['org.eclipse.jetty:jetty-jndi'])
+        compile(bom['commons-cli:commons-cli'])
+        compile(bom['commons-io:commons-io'])
+        compile(bom['com.google.guava:guava'])
     }
 }
 

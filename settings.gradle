@@ -17,7 +17,7 @@
 
 include(':cuba-shared-lib', ':cuba-global', ':cuba-core', 'cuba-core-tests', ':cuba-client', ':cuba-client-tests',
         ':cuba-gui', ':cuba-web-toolkit', ':cuba-web', ':cuba-web-themes', ':cuba-desktop', ':cuba-portal',':cuba-web-auth',
-        ':cuba-rest-api', ':cuba-idp')
+        ':cuba-rest-api', ':cuba-idp', ':cuba-uberjar')
 rootProject.name = 'cuba'
 project(':cuba-shared-lib').projectDir = new File(settingsDir, 'modules/shared-lib')
 project(':cuba-global').projectDir = new File(settingsDir, 'modules/global')
@@ -34,3 +34,4 @@ project(':cuba-web-auth').projectDir = new File(settingsDir, 'modules/web-auth')
 project(':cuba-web-themes').projectDir = new File(settingsDir, 'modules/web/themes')
 project(':cuba-rest-api').projectDir = new File(settingsDir, 'modules/rest-api')
 project(':cuba-idp').projectDir = new File(settingsDir, 'modules/idp')
+project(':cuba-uberjar').projectDir = new File(settingsDir, 'modules/uberjar')

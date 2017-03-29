@@ -45,6 +45,7 @@
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
           lazy-init="false">
         <property name="persistenceXmlLocation" value="file:${cuba.dataDir}/persistence.xml"/>
+        <property name="persistenceUnitRootLocation" value="file:${cuba.dataDir}"/>
         <property name="dataSource" ref="cubaDataSource"/>
         <property name="jpaVendorAdapter" ref="jpaVendorAdapter"/>
     </bean>

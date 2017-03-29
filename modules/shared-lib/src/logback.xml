@@ -81,6 +81,8 @@
 
     <logger name="org.apache" level="INFO"/>
 
+    <logger name="org.eclipse.jetty" level="INFO"/>
+
     <!-- Begin Perf4J  -->
 
     <logger name="org.perf4j.TimingLogger" level="OFF"/>

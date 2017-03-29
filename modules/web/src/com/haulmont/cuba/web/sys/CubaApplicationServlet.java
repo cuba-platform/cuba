@@ -40,11 +40,13 @@ import javax.servlet.http.HttpSession;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
 
 /**
  * Main CUBA web-application servlet
@@ -312,5 +314,17 @@ public class CubaApplicationServlet extends VaadinServlet {
                     className.lastIndexOf('.'));
         }
         return pkgName;
+    }
+
+    @Override
+    protected boolean isAllowedVAADINResourceUrl(HttpServletRequest request,
+                                                 URL resourceUrl) {
+        String resourcePath = resourceUrl.getPath();
+        if ("jar".equals(resourceUrl.getProtocol())) {
+            if (resourcePath.contains("!/ubercontent/VAADIN/")) {
+                return true;
+            }
+        }
+        return isAllowedVAADINResourceUrl(request, resourceUrl);
     }
 }
