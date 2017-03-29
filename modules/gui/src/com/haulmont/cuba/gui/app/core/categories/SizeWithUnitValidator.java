@@ -26,7 +26,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SizeWithUnitValidator implements Field.Validator {
-    public static final String SIZE_PATTERN = "^(-?\\d*(?:\\.\\d+)?)(%|px)?$";
+    public static final String SIZE_PATTERN = "^(-?\\d+(?:\\.\\d+)?)(%|px)?$";
+    public static final int MAX_SIZE_PERCENTS = 100;
+    public static final int MAX_SIZE_PIXELS = 1920;
 
     protected String messagesPack;
     protected String message;
@@ -80,11 +82,11 @@ public class SizeWithUnitValidator implements Field.Validator {
 
         String symbol = matcher.group(2);
         if ("%".equals(symbol)) {
-            if (size < 1 || size > 100) {
+            if (size < 1 || size > MAX_SIZE_PERCENTS) {
                 throw new ValidationException(messages.loadString(messagesPack, message));
             }
         } else if ("px".equals(symbol) || symbol == null) {
-            if (size < 1 || size > 1920) {
+            if (size < 1 || size > MAX_SIZE_PIXELS) {
                 throw new ValidationException(messages.loadString(messagesPack, message));
             }
         }
