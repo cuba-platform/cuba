@@ -253,6 +253,8 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
             applyFieldDefaults(fci);
         }
 
+        assignDebugId(fci, fieldImpl);
+
         component.setRows(detectRowsCount());
 
         reattachColumnFields(fci.getColumn());
