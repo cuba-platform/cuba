@@ -22,7 +22,10 @@ import com.haulmont.cuba.gui.components.calendar.CalendarEventProvider;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import javax.annotation.Nullable;
+import java.time.DayOfWeek;
+import java.time.Month;
 import java.util.Date;
+import java.util.Map;
 import java.util.TimeZone;
 
 public interface Calendar extends Component.BelongToFrame, Component.HasCaption, Component.HasIcon {
@@ -133,6 +136,29 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
      */
     boolean isNavigationButtonsVisible();
 
+    /**
+     * @return {@link DayOfWeek} values matched to localized day names
+     */
+    Map<DayOfWeek, String> getDayNames();
+
+    /**
+     * Sets localized Calendar day names.
+     *
+     * @param dayNames {@link DayOfWeek} values matched to localized day names
+     */
+    void setDayNames(Map<DayOfWeek, String> dayNames);
+
+    /**
+     * @return {@link Month} values matched to localized month names
+     */
+    Map<Month, String> getMonthNames();
+
+    /**
+     * Sets localized Calendar month names.
+     *
+     * @param monthNames {@link Month} values matched to localized month names
+     */
+    void setMonthNames(Map<Month, String> monthNames);
 
     void addDateClickListener(CalendarDateClickListener listener);
     void removeDateClickListener(CalendarDateClickListener listener);

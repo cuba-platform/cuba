@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
@@ -28,9 +29,12 @@ import com.haulmont.cuba.web.gui.components.calendar.CalendarEventProviderWrappe
 import com.haulmont.cuba.web.gui.components.calendar.CalendarEventWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaCalendar;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
+import org.apache.commons.collections.CollectionUtils;
 
-import java.util.Date;
-import java.util.TimeZone;
+import java.time.DayOfWeek;
+import java.time.Month;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements Calendar {
     private CollectionDatasource datasource;
@@ -45,7 +49,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
         component = createComponent();
 
         Messages messages = AppBeans.get(Messages.NAME);
-        String [] monthNamesShort = new String[12];
+        String[] monthNamesShort = new String[12];
         monthNamesShort[0] = messages.getMainMessage("calendar.januaryCaption");
         monthNamesShort[1] = messages.getMainMessage("calendar.februaryCaption");
         monthNamesShort[2] = messages.getMainMessage("calendar.marchCaption");
@@ -60,7 +64,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
         monthNamesShort[11] = messages.getMainMessage("calendar.decemberCaption");
         component.setMonthNamesShort(monthNamesShort);
 
-        String [] dayNamesShort = new String[7];
+        String[] dayNamesShort = new String[7];
         dayNamesShort[0] = messages.getMainMessage("calendar.sundayCaption");
         dayNamesShort[1] = messages.getMainMessage("calendar.mondayCaption");
         dayNamesShort[2] = messages.getMainMessage("calendar.tuesdayCaption");
@@ -499,5 +503,55 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
         } else {
             removeStyleName("navbuttons-disabled");
         }
+    }
+
+    @Override
+    public Map<DayOfWeek, String> getDayNames() {
+        List<String> days = Arrays.asList(component.getDayNamesShort());
+
+        return days.stream().collect(Collectors.toMap(
+                (String d) -> DayOfWeek.of(days.indexOf(d) + 1),
+                d -> d
+        ));
+    }
+
+    @Override
+    public void setDayNames(Map<DayOfWeek, String> dayNames) {
+        Preconditions.checkNotNullArgument(dayNames);
+
+        if (!CollectionUtils.isEqualCollection(Arrays.asList(DayOfWeek.values()), dayNames.keySet())) {
+            throw new IllegalArgumentException("Day names map doesn't contain all required values");
+        }
+
+        String[] days = Arrays.stream(DayOfWeek.values())
+                .map(dayNames::get)
+                .toArray(String[]::new);
+
+        component.setDayNamesShort(days);
+    }
+
+    @Override
+    public Map<Month, String> getMonthNames() {
+        List<String> months = Arrays.asList(component.getMonthNamesShort());
+
+        return months.stream().collect(Collectors.toMap(
+                (String m) -> Month.of(months.indexOf(m) + 1),
+                m -> m
+        ));
+    }
+
+    @Override
+    public void setMonthNames(Map<Month, String> monthNames) {
+        Preconditions.checkNotNullArgument(monthNames);
+
+        if (!CollectionUtils.isEqualCollection(Arrays.asList(Month.values()), monthNames.keySet())) {
+            throw new IllegalArgumentException("Month names map doesn't contain all required values");
+        }
+
+        String[] months = Arrays.stream(Month.values())
+                .map(monthNames::get)
+                .toArray(String[]::new);
+
+        component.setMonthNamesShort(months);
     }
 }
