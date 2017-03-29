@@ -325,6 +325,6 @@ public class CubaApplicationServlet extends VaadinServlet {
                 return true;
             }
         }
-        return isAllowedVAADINResourceUrl(request, resourceUrl);
+        return super.isAllowedVAADINResourceUrl(request, resourceUrl);
     }
 }
