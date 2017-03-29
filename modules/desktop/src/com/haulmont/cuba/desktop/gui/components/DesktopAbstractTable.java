@@ -221,6 +221,28 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
                 }
         );
 
+        ColumnControlButton columnControlButton = new ColumnControlButton(impl) {
+            @Override
+            protected ColumnVisibilityAction createColumnVisibilityAction(TableColumn column) {
+                ColumnVisibilityAction columnVisibilityAction = super.createColumnVisibilityAction(column);
+
+                columnVisibilityAction.addPropertyChangeListener(evt -> {
+                    ColumnVisibilityAction action = (ColumnVisibilityAction) evt.getSource();
+
+                    String columnName = action.getActionCommand();
+                    boolean collapsed = !((boolean) evt.getNewValue());
+
+                    Column col = getColumn(columnName);
+                    if (col != null) {
+                        col.setCollapsed(collapsed);
+                    }
+                });
+
+                return columnVisibilityAction;
+            }
+        };
+        impl.setColumnControl(columnControlButton);
+
         impl.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "enter");
         impl.getActionMap().put("enter", new AbstractAction() {
             @Override
@@ -820,7 +842,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
                 focused = impl.isFocusOwner();
                 selectionBackup.set(selectedItems);
 
-                JViewport viewport = (JViewport)impl.getParent();
+                JViewport viewport = (JViewport) impl.getParent();
                 Point scrollPoint = viewport.getViewPosition();
                 scrollRowIndex = impl.rowAtPoint(scrollPoint);
             }
@@ -973,7 +995,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
             if (component instanceof Flushable) {
                 ((Flushable) component).flushValue();
             } else if (component instanceof java.awt.Container) {
-                for(Component child : ((java.awt.Container) component).getComponents()){
+                for (Component child : ((java.awt.Container) component).getComponents()) {
                     flush(child);
                 }
             }
@@ -1751,7 +1773,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
         impl.setEnabled(isEnabledWithParent());
 
         if (buttonsPanel != null) {
-            ((DesktopButtonsPanel)buttonsPanel).setParentEnabled(isEnabledWithParent());
+            ((DesktopButtonsPanel) buttonsPanel).setParentEnabled(isEnabledWithParent());
         }
     }
 
@@ -2333,12 +2355,12 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     }
 
     @Override
-    public void setColumnHeaderVisible(boolean visible){
+    public void setColumnHeaderVisible(boolean visible) {
         columnHeaderVisible = visible;
     }
 
     @Override
-    public boolean isColumnHeaderVisible(){
+    public boolean isColumnHeaderVisible() {
         return columnHeaderVisible;
     }
 
@@ -2497,7 +2519,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
             setLineWrap(true);
             setWrapStyleWord(true);
             setOpaque(true);
-            setBorder(new EmptyBorder(0,0,0,0));
+            setBorder(new EmptyBorder(0, 0, 0, 0));
         }
 
         @Override

@@ -695,6 +695,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.setSizeFull();
 
         component.setCellStyleGenerator(createStyleGenerator());
+
+        component.addColumnCollapseListener(this::handleColumnCollapsed);
     }
 
     protected WebTableFieldFactory createFieldFactory() {
@@ -2931,5 +2933,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     @Override
     public void removeLookupValueChangeListener(LookupSelectionChangeListener listener) {
         getEventRouter().removeListener(LookupSelectionChangeListener.class, listener);
+    }
+
+    protected void handleColumnCollapsed(com.vaadin.ui.Table.ColumnCollapseEvent event) {
+        Object propertyId = event.getPropertyId();
+        boolean columnCollapsed = component.isColumnCollapsed(propertyId);
+
+        columns.get(propertyId).setCollapsed(columnCollapsed);
     }
 }
