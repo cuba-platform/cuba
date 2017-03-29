@@ -21,7 +21,9 @@ import java.util.List;
 public interface DbUpdater {
     String NAME = "cuba_DbUpdater";
 
-    void updateDatabase();
+    boolean dbInitialized() throws DbInitializationException;
 
-    List<String> findUpdateDatabaseScripts() throws DBNotInitializedException;
+    void updateDatabase() throws DbInitializationException;
+
+    List<String> findUpdateDatabaseScripts() throws DbInitializationException;
 }

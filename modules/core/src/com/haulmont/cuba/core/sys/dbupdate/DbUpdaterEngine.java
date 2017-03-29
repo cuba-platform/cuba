@@ -19,7 +19,7 @@ package com.haulmont.cuba.core.sys.dbupdate;
 
 import com.haulmont.bali.db.DbUtils;
 import com.haulmont.bali.db.QueryRunner;
-import com.haulmont.cuba.core.sys.DBNotInitializedException;
+import com.haulmont.cuba.core.sys.DbInitializationException;
 import com.haulmont.cuba.core.sys.DbUpdater;
 import com.haulmont.cuba.core.sys.PostUpdateScripts;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
@@ -81,7 +81,7 @@ public class DbUpdaterEngine implements DbUpdater {
     }
 
     @Override
-    public void updateDatabase() {
+    public void updateDatabase() throws DbInitializationException {
         if (dbInitialized())
             doUpdate();
         else
@@ -89,11 +89,11 @@ public class DbUpdaterEngine implements DbUpdater {
     }
 
     @Override
-    public List<String> findUpdateDatabaseScripts() throws DBNotInitializedException {
+    public List<String> findUpdateDatabaseScripts() throws DbInitializationException {
         List<String> list = new ArrayList<>();
         if (dbInitialized()) {
             if (!changelogTableExists) {
-                throw new DBNotInitializedException(
+                throw new DbInitializationException(
                         "Unable to determine required updates because SYS_DB_CHANGELOG table doesn't exist");
             } else {
                 List<ScriptResource> files = getUpdateScripts();
@@ -106,7 +106,7 @@ public class DbUpdaterEngine implements DbUpdater {
                 }
             }
         } else {
-            throw new DBNotInitializedException(
+            throw new DbInitializationException(
                     "Unable to determine required updates because SEC_USER table doesn't exist");
         }
         return list;
@@ -147,7 +147,7 @@ public class DbUpdaterEngine implements DbUpdater {
         return path.substring(indexOfDir + dir.length() + 1).replaceAll("^/+", "");
     }
 
-    protected boolean dbInitialized() {
+    public boolean dbInitialized() throws DbInitializationException {
         log.trace("Checking if the database is initialized");
         Connection connection = null;
         try {
@@ -169,7 +169,7 @@ public class DbUpdaterEngine implements DbUpdater {
             }
             return found;
         } catch (SQLException e) {
-            throw new RuntimeException("An error occurred while checking database", e);
+            throw new DbInitializationException(true, "Error connecting to database: " + e.getMessage(), e);
         } finally {
             if (connection != null)
                 try {

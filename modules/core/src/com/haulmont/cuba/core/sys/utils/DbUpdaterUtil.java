@@ -19,7 +19,7 @@ package com.haulmont.cuba.core.sys.utils;
 
 import com.haulmont.cuba.core.sys.AppComponents;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.DBNotInitializedException;
+import com.haulmont.cuba.core.sys.DbInitializationException;
 import com.haulmont.cuba.core.sys.dbupdate.DbUpdaterEngine;
 import com.haulmont.cuba.core.sys.dbupdate.ScriptResource;
 import org.apache.commons.cli.*;
@@ -230,7 +230,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
                         updatesAvailable = true;
                     } else
                         log.info("No available updates found for database");
-                } catch (DBNotInitializedException e) {
+                } catch (DbInitializationException e) {
                     log.warn("Database not initialized");
                     return;
                 }

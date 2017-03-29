@@ -27,7 +27,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.QueryParser;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
-import com.haulmont.cuba.core.sys.DBNotInitializedException;
+import com.haulmont.cuba.core.sys.DbInitializationException;
 import com.haulmont.cuba.core.sys.DbUpdater;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import com.haulmont.cuba.security.app.Authenticated;
@@ -179,7 +179,7 @@ public class PersistenceManager implements PersistenceManagerMBean {
                 return sb.toString();
             } else
                 return "No updates available";
-        } catch (DBNotInitializedException e) {
+        } catch (DbInitializationException e) {
             return e.getMessage();
         } catch (Throwable e) {
             return ExceptionUtils.getStackTrace(e);

@@ -34,11 +34,9 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -48,7 +46,7 @@ import java.util.*;
  * @see com.haulmont.cuba.security.app.LoginServiceBean
  */
 @Component(LoginWorker.NAME)
-public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordered {
+public class LoginWorkerBean implements LoginWorker {
 
     private final Logger log = LoggerFactory.getLogger(LoginWorkerBean.class);
 
@@ -414,16 +412,17 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
 
     @Override
     public UserSession getSession(UUID sessionId) {
-        try {
-            //noinspection UnnecessaryLocalVariable
-            UserSession session = userSessionManager.getSession(sessionId);
-            return session;
-        } catch (RuntimeException e) {
-            if (e instanceof NoUserSessionException)
-                return null;
-            else
-                throw e;
+        UserSession session = userSessionManager.findSession(sessionId);
+        if (session == null && sessionId.equals(configuration.getConfig(GlobalConfig.class).getAnonymousSessionId())) {
+            synchronized (this) {
+                session = userSessionManager.findSession(sessionId);
+                if (session == null) {
+                    initializeAnonymousSession();
+                    session = userSessionManager.findSession(sessionId);
+                }
+            }
         }
+        return session;
     }
 
     @Override
@@ -499,13 +498,8 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
         }
     }
 
-    @PostConstruct
-    public void init() {
-        AppContext.addListener(this);
-    }
-
     protected void initializeAnonymousSession() {
-        log.debug("Initialize anonymous session");
+        log.info("Initializing anonymous session");
 
         try {
             UserSession session = loginAnonymous();
@@ -514,19 +508,5 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
         } catch (LoginException e) {
             log.error("Unable to login anonymous session", e);
         }
-    }
-
-    @Override
-    public void applicationStarted() {
-        initializeAnonymousSession();
-    }
-
-    @Override
-    public void applicationStopped() {
-    }
-
-    @Override
-    public int getOrder() {
-        return LOWEST_PLATFORM_PRECEDENCE - 110;
     }
 }

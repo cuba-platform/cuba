@@ -190,7 +190,7 @@ public class ServerInfo implements ServerInfoAPI, AppContext.Listener, Ordered {
                 );
             }
         } catch (Exception e) {
-            log.error("Unable to update SYS_SERVER: {}", e);
+            log.error("Unable to update SYS_SERVER: {}", e.toString());
         }
     }
 

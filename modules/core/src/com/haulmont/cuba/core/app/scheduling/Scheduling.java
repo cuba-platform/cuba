@@ -147,7 +147,12 @@ public class Scheduling implements SchedulingAPI {
 
     @Override
     public boolean isActive() {
-        return configuration.getConfig(ServerConfig.class).getSchedulingActive();
+        try {
+            return configuration.getConfig(ServerConfig.class).getSchedulingActive();
+        } catch (Exception e) {
+            log.error("Unable to find out if scheduling is active: {}", e.toString());
+            return false;
+        }
     }
 
     @Override

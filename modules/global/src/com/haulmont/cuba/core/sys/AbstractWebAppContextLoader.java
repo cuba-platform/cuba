@@ -26,6 +26,8 @@ import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -73,9 +75,17 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
 
             AppContext.Internals.startContext();
             log.info("AppContext initialized");
-        } catch (Throwable e) {
+        } catch (RuntimeException e) {
             log.error("Error initializing application", e);
-            throw new RuntimeException(e);
+            try {
+                ApplicationContext springContext = AppContext.getApplicationContext();
+                if (springContext != null) {
+                    ((ConfigurableApplicationContext) springContext).close();
+                }
+            } catch (Exception e1) {
+                log.debug("Error closing application context: {}", e1.toString());
+            }
+            throw e;
         }
     }
 

@@ -56,6 +56,7 @@ public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler impleme
                         Thread.sleep(200);
                     } catch (InterruptedException e) {
                         t.interrupt();
+                        return;
                     }
                 }
                 super.beforeExecute(t, r);
