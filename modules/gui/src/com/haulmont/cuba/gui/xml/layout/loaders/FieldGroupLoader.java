@@ -167,8 +167,8 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                     loadValidators(resultComponent, field);
                     loadRequired(resultComponent, field);
                     loadEnable(resultComponent, field);
-                    loadVisible(resultComponent, field);
                 }
+                loadVisible(resultComponent, field);
                 loadEditable(resultComponent, field);
             }
         }
@@ -643,7 +643,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
         if (!field.isCustom() && BooleanUtils.isNotFalse(field.isEditable())) {
             MetaClass metaClass = getMetaClass(resultComponent, field);
-            MetaPropertyPath propertyPath = metaClass.getPropertyPath(field.getProperty());
+            MetaPropertyPath propertyPath = metadataTools.resolveMetaPropertyPath(metaClass, field.getProperty());
 
             checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
 
@@ -664,7 +664,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
         if (!field.isCustom() && BooleanUtils.isNotFalse(field.isVisible())) {
             MetaClass metaClass = getMetaClass(resultComponent, field);
-            MetaPropertyPath propertyPath = metaClass.getPropertyPath(field.getProperty());
+            MetaPropertyPath propertyPath = metadataTools.resolveMetaPropertyPath(metaClass, field.getProperty());
 
             checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
 
