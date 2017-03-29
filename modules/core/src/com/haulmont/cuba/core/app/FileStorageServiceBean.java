@@ -44,7 +44,7 @@ public class FileStorageServiceBean implements FileStorageService {
     }
 
     @Override
-    public boolean fileExists(FileDescriptor fileDescr) {
+    public boolean fileExists(FileDescriptor fileDescr) throws FileStorageException {
         return fileStorageAPI.fileExists(fileDescr);
     }
 }

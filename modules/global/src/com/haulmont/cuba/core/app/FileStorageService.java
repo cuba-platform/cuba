@@ -35,5 +35,5 @@ public interface FileStorageService {
 
     byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException;
 
-    boolean fileExists(FileDescriptor fileDescr);
+    boolean fileExists(FileDescriptor fileDescr) throws FileStorageException;
 }

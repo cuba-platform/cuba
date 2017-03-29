@@ -20,6 +20,7 @@ package com.haulmont.cuba.core.sys.remoting;
 import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.RuntimeFileStorageException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -35,7 +36,7 @@ public class LocalFileExchangeServiceBean implements LocalFileExchangeService {
         try {
             fileStorage.saveStream(fileDescriptor, inputStream);
         } catch (FileStorageException e) {
-            throw new RuntimeException("An error occurred while saving file", e);
+            throw new RuntimeFileStorageException("An error occurred while saving file", e);
         }
     }
 
@@ -45,7 +46,7 @@ public class LocalFileExchangeServiceBean implements LocalFileExchangeService {
             InputStream inputStream = fileStorage.openStream(fileDescriptor);
             return inputStream;
         } catch (FileStorageException e) {
-            throw new RuntimeException("An error occurred while loading file", e);
+            throw new RuntimeFileStorageException("An error occurred while loading file", e);
         }
     }
 }

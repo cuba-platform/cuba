@@ -513,15 +513,20 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
                     try {
                         return new FileInputStream(file);
                     } catch (FileNotFoundException e) {
-                        log.error("Unable to get content of " + file, e);
+                        log.error("Unable to get content of {}", file, e);
                     }
                     return null;
                 }
 
                 FileStorageService fileStorageService = AppBeans.get(FileStorageService.NAME);
 
-                if (fileStorageService.fileExists(fileDescriptor)) {
-                    return new FileDataProvider(fileDescriptor).provide();
+                try {
+                    if (fileStorageService.fileExists(fileDescriptor)) {
+                        return new FileDataProvider(fileDescriptor).provide();
+                    }
+                } catch (FileStorageException e) {
+                    log.error("Unable to get content of {}", fileDescriptor, e);
+                    return null;
                 }
                 break;
             case IMMEDIATE:

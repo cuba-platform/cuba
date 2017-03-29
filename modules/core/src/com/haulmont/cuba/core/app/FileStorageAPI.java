@@ -23,10 +23,8 @@ import java.io.InputStream;
 
 /**
  * Interface to store and load files defined by {@link FileDescriptor}s.
- *
  */
 public interface FileStorageAPI {
-
     String NAME = "cuba_FileStorage";
 
     /**
@@ -80,5 +78,5 @@ public interface FileStorageAPI {
      * @return           true if the file denoted by this file descriptor exists
      * @throws IllegalArgumentException if arguments are incorrect
      */
-    boolean fileExists(FileDescriptor fileDescr);
+    boolean fileExists(FileDescriptor fileDescr) throws FileStorageException;
 }
