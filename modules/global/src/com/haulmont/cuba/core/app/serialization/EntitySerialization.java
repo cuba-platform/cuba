@@ -354,7 +354,7 @@ public class EntitySerialization implements EntitySerializationAPI {
             } else {
                 //fallback to platform version 6.4 where entity id format might be like this: sec$User-c838be0a-96d0-4ef4-a7c0-dff348347f93
                 //could be used by EntityImportExport. In next major release this check can be removed
-                if (idJsonElement != null && idJsonElement.isJsonPrimitive() && metaClass == null) {
+                if (idJsonElement != null && idJsonElement.isJsonPrimitive()) {
                     JsonPrimitive idPrimitive = jsonObject.getAsJsonPrimitive("id");
                     entityLoadInfo = EntityLoadInfo.parse(idPrimitive.getAsString());
                     if (entityLoadInfo != null) {
