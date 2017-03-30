@@ -296,31 +296,33 @@ public class DataManagerBean implements DataManager {
                         continue;
                     }
                     String relatedPropertyName = relatedProperties.get(0);
-                    Entity refEntity = entity.getValue(property.getName());
-                    if (refEntity == null) {
-                        entity.setValue(relatedPropertyName, null);
-                    } else {
-                        Object refEntityId = refEntity.getId();
-                        if (refEntityId instanceof IdProxy) {
-                            Long realId = ((IdProxy) refEntityId).get();
-                            if (realId == null) {
-                                if (allEntities.stream().anyMatch(e -> e.getId().equals(refEntityId))) {
-                                    repeatRequired = true;
+                    if (PersistenceHelper.isLoaded(entity, relatedPropertyName)) {
+                        Entity refEntity = entity.getValue(property.getName());
+                        if (refEntity == null) {
+                            entity.setValue(relatedPropertyName, null);
+                        } else {
+                            Object refEntityId = refEntity.getId();
+                            if (refEntityId instanceof IdProxy) {
+                                Long realId = ((IdProxy) refEntityId).get();
+                                if (realId == null) {
+                                    if (allEntities.stream().anyMatch(e -> e.getId().equals(refEntityId))) {
+                                        repeatRequired = true;
+                                    } else {
+                                        log.warn("No entity with ID={} in the context, skip handling different data store", refEntityId);
+                                    }
                                 } else {
-                                    log.warn("No entity with ID={} in the context, skip handling different data store", refEntityId);
+                                    entity.setValue(relatedPropertyName, realId);
+                                }
+                            } else if (refEntityId instanceof EmbeddableEntity) {
+                                MetaProperty relatedProperty = metaClass.getPropertyNN(relatedPropertyName);
+                                if (!relatedProperty.getRange().isClass()) {
+                                    log.warn("PK of entity referenced by {} is a EmbeddableEntity, but related property {} is not", property, relatedProperty);
+                                } else {
+                                    entity.setValue(relatedPropertyName, metadataTools.copy((Entity) refEntityId));
                                 }
                             } else {
-                                entity.setValue(relatedPropertyName, realId);
+                                entity.setValue(relatedPropertyName, refEntityId);
                             }
-                        } else if (refEntityId instanceof EmbeddableEntity) {
-                            MetaProperty relatedProperty = metaClass.getPropertyNN(relatedPropertyName);
-                            if (!relatedProperty.getRange().isClass()) {
-                                log.warn("PK of entity referenced by {} is a EmbeddableEntity, but related property {} is not", property, relatedProperty);
-                            } else {
-                                entity.setValue(relatedPropertyName, metadataTools.copy((Entity) refEntityId));
-                            }
-                        } else {
-                            entity.setValue(relatedPropertyName, refEntityId);
                         }
                     }
                 }
