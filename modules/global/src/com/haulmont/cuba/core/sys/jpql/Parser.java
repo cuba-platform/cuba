@@ -54,6 +54,11 @@ public class Parser {
         JPA2Parser parser = createParser(join);
         JPA2Parser.join_section_return aReturn = parser.join_section();
         CommonTree tree = (CommonTree) aReturn.getTree();
+        if (tree == null) {
+            parser = createParser("join " + join);
+            aReturn = parser.join_section();
+            tree = (CommonTree) aReturn.getTree();
+        }
         if (tree instanceof JoinVariableNode) {
             checkTreeForExceptions(join, tree);
             return Collections.singletonList((JoinVariableNode) tree);
@@ -62,7 +67,7 @@ public class Parser {
                     .filter(node -> node instanceof JoinVariableNode)
                     .map(JoinVariableNode.class::cast)
                     .collect(Collectors.toList());
-            joins.stream().forEach(node -> checkTreeForExceptions(join, tree));
+            checkTreeForExceptions(join, tree);
             return joins;
         }
     }
