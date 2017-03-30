@@ -47,7 +47,11 @@ public class RestControllerExceptionHandler {
     @ExceptionHandler(RestAPIException.class)
     @ResponseBody
     public ResponseEntity<ErrorInfo> handleRestAPIException(RestAPIException e) {
-        log.info("RestAPIException: {}, {}", e.getMessage(), e.getDetails());
+        if (e.getCause() == null) {
+            log.info("RestAPIException: {}, {}", e.getMessage(), e.getDetails());
+        } else {
+            log.error("RestAPIException: {}, {}", e.getMessage(), e.getDetails(), e.getCause());
+        }
         ErrorInfo errorInfo = new ErrorInfo(e.getMessage(), e.getDetails());
         return new ResponseEntity<>(errorInfo, e.getHttpStatus());
     }

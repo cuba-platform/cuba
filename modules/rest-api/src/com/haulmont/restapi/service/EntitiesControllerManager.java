@@ -18,7 +18,6 @@ package com.haulmont.restapi.service;
 
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.importexport.EntityImportException;
 import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
@@ -47,6 +46,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import javax.validation.groups.Default;
+import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -186,7 +186,7 @@ public class EntitiesControllerManager {
         try {
             entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
         } catch (Exception e) {
-            throw new RestAPIException("Cannot deserialize an entity from JSON", "", HttpStatus.BAD_REQUEST);
+            throw new RestAPIException("Cannot deserialize an entity from JSON", "", HttpStatus.BAD_REQUEST, e);
         }
 
         Validator validator = beanValidation.getValidator();
@@ -202,7 +202,7 @@ public class EntitiesControllerManager {
         try {
             importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
         } catch (EntityImportException e) {
-            throw new RestAPIException("Entity creation failed", e.getMessage(), HttpStatus.BAD_REQUEST);
+            throw new RestAPIException("Entity creation failed", e.getMessage(), HttpStatus.BAD_REQUEST, e);
         }
 
         //if many entities were created (because of @Composition references) we must find the main entity
@@ -229,7 +229,7 @@ public class EntitiesControllerManager {
         try {
             entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
         } catch (Exception e) {
-            throw new RestAPIException("Cannot deserialize an entity from JSON", "", HttpStatus.BAD_REQUEST);
+            throw new RestAPIException("Cannot deserialize an entity from JSON", "", HttpStatus.BAD_REQUEST, e);
         }
 
         if (entity instanceof BaseGenericIdEntity) {
@@ -249,7 +249,7 @@ public class EntitiesControllerManager {
         try {
             importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
         } catch (EntityImportException e) {
-            throw new RestAPIException("Entity update failed", e.getMessage(), HttpStatus.BAD_REQUEST);
+            throw new RestAPIException("Entity update failed", e.getMessage(), HttpStatus.BAD_REQUEST, e);
         }
         //there may be multiple entities in importedEntities (because of @Composition references), so we must find
         // the main entity that will be returned
@@ -270,19 +270,21 @@ public class EntitiesControllerManager {
 
     private Object getIdFromString(String entityId, MetaClass metaClass) {
         try {
-            MetaProperty primaryKeyProperty = metadata.getTools().getPrimaryKeyProperty(metaClass);
-            Class<?> declaringClass = primaryKeyProperty.getJavaType();
             Object id;
             if (BaseDbGeneratedIdEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
                 id = IdProxy.of(Long.valueOf(entityId));
-            } else if (UUID.class.isAssignableFrom(declaringClass)) {
-                id = UUID.fromString(entityId);
-            } else if (Integer.class.isAssignableFrom(declaringClass)) {
-                id = Integer.valueOf(entityId);
-            } else if (Long.class.isAssignableFrom(declaringClass)) {
-                id = Long.valueOf(entityId);
             } else {
-                id = entityId;
+                Method getIdMethod =  metaClass.getJavaClass().getMethod("getId");
+                Class<?> idClass = getIdMethod.getReturnType();
+                if (UUID.class.isAssignableFrom(idClass)) {
+                    id = UUID.fromString(entityId);
+                } else if (Integer.class.isAssignableFrom(idClass)) {
+                    id = Integer.valueOf(entityId);
+                } else if (Long.class.isAssignableFrom(idClass)) {
+                    id = Long.valueOf(entityId);
+                } else {
+                    id = entityId;
+                }
             }
             return id;
         } catch (Exception e) {

@@ -373,27 +373,40 @@ public class EntitySerialization implements EntitySerializationAPI {
             if (entityLoadInfo != null) {
                 //fallback to platform version 6.4
                 pkValue = entityLoadInfo.getId();
-            } else if (idJsonElement != null) {
+            } else {
                 MetaProperty primaryKeyProperty = metadataTools.getPrimaryKeyProperty(resultMetaClass);
                 if (primaryKeyProperty != null) {
-                    if (metadataTools.hasCompositePrimaryKey(resultMetaClass)) {
-                        MetaClass pkMetaClass = primaryKeyProperty.getRange().asClass();
-                        pkValue = readEntity(idJsonElement.getAsJsonObject(), pkMetaClass);
-                    } else {
-                        String idString = idJsonElement.getAsJsonPrimitive().getAsString();
-                        Datatype idDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
-                        try {
-                            pkValue = idDatatype.parse(idString);
-                            if (entity instanceof BaseDbGeneratedIdEntity) {
-                                pkValue = IdProxy.of((Long) pkValue);
-                                JsonPrimitive uuidPrimitive = jsonObject.getAsJsonPrimitive("uuid");
-                                if (uuidPrimitive != null) {
-                                    UUID uuid = UUID.fromString(uuidPrimitive.getAsString());
-                                    ((IdProxy) pkValue).setUuid(uuid);
+                    if (idJsonElement != null) {
+                        if (metadataTools.hasCompositePrimaryKey(resultMetaClass)) {
+                            MetaClass pkMetaClass = primaryKeyProperty.getRange().asClass();
+                            pkValue = readEntity(idJsonElement.getAsJsonObject(), pkMetaClass);
+                        } else {
+                            String idString = idJsonElement.getAsJsonPrimitive().getAsString();
+                            try {
+                                Datatype pkDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
+                                pkValue = pkDatatype.parse(idString);
+                                if (entity instanceof BaseDbGeneratedIdEntity) {
+                                    pkValue = IdProxy.of((Long) pkValue);
+                                    JsonPrimitive uuidPrimitive = jsonObject.getAsJsonPrimitive("uuid");
+                                    if (uuidPrimitive != null) {
+                                        UUID uuid = UUID.fromString(uuidPrimitive.getAsString());
+                                        ((IdProxy) pkValue).setUuid(uuid);
+                                    }
                                 }
+                            } catch (ParseException e) {
+                                throw new EntitySerializationException(e);
                             }
-                        } catch (ParseException e) {
-                            throw new EntitySerializationException(e);
+                        }
+                    } else if (!"id".equals(primaryKeyProperty.getName())){
+                        //pk may be in another field, not "id"
+                        JsonElement pkElement = jsonObject.get(primaryKeyProperty.getName());
+                        if (pkElement.isJsonPrimitive()) {
+                            try {
+                                Datatype pkDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
+                                pkValue = pkDatatype.parse(pkElement.getAsJsonPrimitive().getAsString());
+                            } catch (ParseException e) {
+                                throw new EntitySerializationException(e);
+                            }
                         }
                     }
                 }
@@ -420,7 +433,9 @@ public class EntitySerialization implements EntitySerializationAPI {
             if (processedEntity != null) {
                 entity = processedEntity;
             } else {
-                processedEntities.put(entity.getId(), resultMetaClass, entity);
+                if (entity.getId() != null) {
+                    processedEntities.put(entity.getId(), resultMetaClass, entity);
+                }
                 readFields(jsonObject, entity);
             }
             return entity;
