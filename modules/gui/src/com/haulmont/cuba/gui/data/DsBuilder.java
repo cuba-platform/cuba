@@ -527,34 +527,85 @@ public class DsBuilder {
         return datasource;
     }
 
+    /**
+     * Build a {@link ValueCollectionDatasourceImpl} with the standard implementation.
+     */
     public ValueCollectionDatasourceImpl buildValuesCollectionDatasource() {
-        ValueCollectionDatasourceImpl datasource = createValueCollectionDatasource();
-        datasource.setup(dsContext, dataSupplier, id, metaClass, null);
-        if (maxResults > 0)
-            datasource.setMaxResults(maxResults);
-        datasource.setSoftDeletion(softDeletion);
-        registerDatasource(datasource);
-        return datasource;
+        try {
+            ValueCollectionDatasourceImpl datasource = dsClass == null ?
+                    createValueCollectionDatasource() : (ValueCollectionDatasourceImpl) dsClass.newInstance();
+            datasource.setup(dsContext, dataSupplier, id, metaClass, null);
+            if (maxResults > 0)
+                datasource.setMaxResults(maxResults);
+            datasource.setSoftDeletion(softDeletion);
+            registerDatasource(datasource);
+            return datasource;
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    /**
+     * Build a {@link ValueCollectionDatasourceImpl} with the specified implementation class.
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T buildValuesCollectionDatasource(Class<T> datasourceClass) {
+        setDsClass(datasourceClass);
+        return (T) buildValuesCollectionDatasource();
+    }
+
+    /**
+     * Build a {@link ValueGroupDatasourceImpl} with the standard implementation.
+     */
     public ValueGroupDatasourceImpl buildValuesGroupDatasource() {
-        ValueGroupDatasourceImpl datasource = createValueGroupDatasource();
-        datasource.setup(dsContext, dataSupplier, id, metaClass, null);
-        if (maxResults > 0)
-            datasource.setMaxResults(maxResults);
-        datasource.setSoftDeletion(softDeletion);
-        registerDatasource(datasource);
-        return datasource;
+        try {
+            ValueGroupDatasourceImpl datasource = dsClass == null ?
+                    createValueGroupDatasource() : (ValueGroupDatasourceImpl) dsClass.newInstance();
+            datasource.setup(dsContext, dataSupplier, id, metaClass, null);
+            if (maxResults > 0)
+                datasource.setMaxResults(maxResults);
+            datasource.setSoftDeletion(softDeletion);
+            registerDatasource(datasource);
+            return datasource;
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public ValueHierarchicalDatasourceImpl buildValuesHierarchicalDatasourceImpl() {
-        ValueHierarchicalDatasourceImpl datasource = createValueHierarchicalDatasource();
-        datasource.setup(dsContext, dataSupplier, id, metaClass, null);
-        if (maxResults > 0)
-            datasource.setMaxResults(maxResults);
-        datasource.setSoftDeletion(softDeletion);
-        registerDatasource(datasource);
-        return datasource;
+    /**
+     * Build a {@link ValueGroupDatasourceImpl} with the specified implementation class.
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T buildValuesGroupDatasource(Class<T> datasourceClass) {
+        setDsClass(datasourceClass);
+        return (T) buildValuesGroupDatasource();
+    }
+
+    /**
+     * Build a {@link ValueHierarchicalDatasourceImpl} with the standard implementation.
+     */
+    public ValueHierarchicalDatasourceImpl buildValuesHierarchicalDatasource() {
+        try {
+            ValueHierarchicalDatasourceImpl datasource = dsClass == null ?
+                    createValueHierarchicalDatasource() : (ValueHierarchicalDatasourceImpl) dsClass.newInstance();
+            datasource.setup(dsContext, dataSupplier, id, metaClass, null);
+            if (maxResults > 0)
+                datasource.setMaxResults(maxResults);
+            datasource.setSoftDeletion(softDeletion);
+            registerDatasource(datasource);
+            return datasource;
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Build a {@link ValueHierarchicalDatasourceImpl} with the specified implementation class.
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T buildValuesHierarchicalDatasource(Class<T> datasourceClass) {
+        setDsClass(datasourceClass);
+        return (T) buildValuesHierarchicalDatasource();
     }
 
     private void registerDatasource(Datasource datasource) {

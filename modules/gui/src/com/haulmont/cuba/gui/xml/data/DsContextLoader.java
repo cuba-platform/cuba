@@ -506,7 +506,7 @@ public class DsContextLoader {
         String id = getDatasourceId(element);
         builder.reset().setMetaClass(metadata.getClassNN(KeyValueEntity.class)).setId(id);
 
-        ValueHierarchicalDatasourceImpl datasource = builder.buildValuesHierarchicalDatasourceImpl();
+        ValueHierarchicalDatasourceImpl datasource = builder.buildValuesHierarchicalDatasource();
 
         String maxResults = element.attributeValue("maxResults");
         if (!StringUtils.isEmpty(maxResults))
