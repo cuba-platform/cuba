@@ -416,6 +416,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         if (attribute.getDataType() == PropertyType.DATE) {
             if (Boolean.TRUE.equals(attribute.getDefaultDateIsCurrent())) {
                 attributeFieldGroup.setVisible("defaultDate", false);
+                attributeFieldGroup.setFieldValue("defaultDate", null);
             } else {
                 attributeFieldGroup.setVisible("defaultDate", true);
             }
