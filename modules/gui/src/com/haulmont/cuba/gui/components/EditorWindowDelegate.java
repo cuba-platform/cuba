@@ -186,6 +186,18 @@ public class EditorWindowDelegate extends WindowDelegate {
         }
 
         ds.setItem(item);
+
+        if (PersistenceHelper.isNew(item)) {
+            // The new item may contain references which were created in initNewItem() and are also new. Below we
+            // make sure that they will be saved on commit.
+            for (Datasource datasource : ds.getDsContext().getAll()) {
+                if (datasource instanceof NestedDatasource && ((NestedDatasource) datasource).getMaster() == ds) {
+                    if (datasource.getItem() != null && PersistenceHelper.isNew(datasource.getItem()))
+                        ((DatasourceImplementation) datasource).modified(datasource.getItem());
+                }
+            }
+        }
+
         ((DatasourceImplementation) ds).setModified(false);
 
         Security security = AppBeans.get(Security.NAME);
