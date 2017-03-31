@@ -68,11 +68,7 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
         Datasource targetDs = fc.getTargetDatasource();
 
         MetaClass metaClass = targetDs.getMetaClass();
-        MetaPropertyPath mpp = metaClass.getPropertyPath(fc.getProperty());
-
-        if (mpp == null && DynamicAttributesUtils.isDynamicAttribute(fc.getProperty())) {
-            mpp = DynamicAttributesUtils.getMetaPropertyPath(metaClass, fc.getProperty());
-        }
+        MetaPropertyPath mpp = resolveMetaPropertyPath(metaClass, fc.getProperty());
 
         if (mpp != null) {
             Range mppRange = mpp.getRange();
@@ -288,7 +284,7 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
 
     protected GeneratedField createEntityField(FieldGroup.FieldConfig fc) {
         MetaClass metaClass = fc.getTargetDatasource().getMetaClass();
-        MetaPropertyPath mpp = metaClass.getPropertyPath(fc.getProperty());
+        MetaPropertyPath mpp = resolveMetaPropertyPath(metaClass, fc.getProperty());
 
         String linkAttribute = null;
         if (fc.getXmlDescriptor() != null) {
@@ -372,5 +368,15 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
                 linkField.setScreenOpenType(openType);
             }
         }
+    }
+
+    protected MetaPropertyPath resolveMetaPropertyPath(MetaClass metaClass, String property) {
+        MetaPropertyPath mpp = metaClass.getPropertyPath(property);
+
+        if (mpp == null && DynamicAttributesUtils.isDynamicAttribute(property)) {
+            mpp = DynamicAttributesUtils.getMetaPropertyPath(metaClass, property);
+        }
+
+        return mpp;
     }
 }
