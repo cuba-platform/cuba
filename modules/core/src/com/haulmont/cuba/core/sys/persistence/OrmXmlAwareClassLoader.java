@@ -17,10 +17,12 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.springframework.util.ClassUtils;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,6 +30,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.CodeSource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -61,7 +64,7 @@ public class OrmXmlAwareClassLoader extends URLClassLoader {
 
     @Nullable
     protected URL getOrmXmlUrl(String name) {
-        if (name.equals("orm.xml")) {
+        if ("orm.xml".equals(name)) {
             Path path = Paths.get(workDir, name);
             if (Files.exists(path)) {
                 try {
@@ -69,6 +72,13 @@ public class OrmXmlAwareClassLoader extends URLClassLoader {
                 } catch (MalformedURLException e) {
                     throw new RuntimeException("Error converting path '" + path + "' to URL", e);
                 }
+            }
+        }
+        boolean isUberJar = Boolean.parseBoolean(AppContext.getProperty("cuba.uberJar"));
+        if ("".equals(name) && isUberJar) {
+            CodeSource codeSource = getClass().getProtectionDomain().getCodeSource();
+            if (codeSource != null) {
+                return codeSource.getLocation();
             }
         }
         return null;
