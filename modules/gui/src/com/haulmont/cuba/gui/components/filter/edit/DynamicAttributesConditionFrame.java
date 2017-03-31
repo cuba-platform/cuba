@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.ReferenceToEntitySupport;
 import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Label;
@@ -70,6 +71,9 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
 
     @Inject
     protected MessageTools messageTools;
+
+    @Inject
+    protected ReferenceToEntitySupport referenceToEntitySupport;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -138,10 +142,12 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);
         paramName = paramBuilder.createParamName(condition);
 
+        String cavEntityId = referenceToEntitySupport.getReferenceIdPropertyName(condition.getDatasource().getMetaClass());
+
         String where;
         if (op == Op.NOT_EMPTY) {
             where = "(exists (select " + cavAlias + " from sys$CategoryAttributeValue " + cavAlias +
-                    " where " + cavAlias + ".entityId=" +
+                    " where " + cavAlias + ".entity." + cavEntityId + "=" +
                     "{E}" +
                     propertyPath +
                     ".id and " + cavAlias + ".categoryAttribute.id='" +
@@ -149,7 +155,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         } else {
             String valueFieldName = "stringValue";
             if (Entity.class.isAssignableFrom(javaClass))
-                valueFieldName = "entityValue";
+                valueFieldName = "entityValue." + referenceToEntitySupport.getReferenceIdPropertyName(metadata.getClassNN(javaClass)) ;
             else if (String.class.isAssignableFrom(javaClass))
                 valueFieldName = "stringValue";
             else if (Integer.class.isAssignableFrom(javaClass))
@@ -169,7 +175,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
                     if (Op.IN.equals(op) || Op.NOT_IN.equals(op))
                         paramStr = " ( ? ) ";
 
-                where = cavAlias + ".entityId=" +
+                where = cavAlias + ".entity." + cavEntityId + "=" +
                         "{E}" +
                         propertyPath +
                         ".id and " + cavAlias + "." +
@@ -181,7 +187,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
                 where = where.replace("?", ":" + paramName);
             } else {
                 where = "(exists (select " + cavAlias + " from sys$CategoryAttributeValue " + cavAlias +
-                        " where " + cavAlias + ".entityId=" + "{E}" + propertyPath +".id and "
+                        " where " + cavAlias + ".entity." + cavEntityId + "=" + "{E}" + propertyPath + ".id and "
                         + cavAlias + "." + valueFieldName + " = :" + paramName + " and " +
                         cavAlias + ".categoryAttribute.id='" + attributeLookup.<CategoryAttribute>getValue().getId() + "'))";
             }
