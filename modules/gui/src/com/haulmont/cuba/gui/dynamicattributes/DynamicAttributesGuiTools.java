@@ -30,7 +30,7 @@ import com.haulmont.cuba.core.entity.Categorized;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.commonlookup.CommonLookupController;
 import com.haulmont.cuba.gui.components.PickerField;
@@ -200,24 +200,29 @@ public class DynamicAttributesGuiTools {
         }
         MetaClass metaClass = metadata.getClassNN(javaClass);
         PickerField.LookupAction lookupAction = (PickerField.LookupAction) pickerField.getAction(PickerField.LookupAction.NAME);
-        if (!Strings.isNullOrEmpty(categoryAttribute.getJoinClause()) || !Strings.isNullOrEmpty(categoryAttribute.getWhereClause())) {
+        if (!Strings.isNullOrEmpty(categoryAttribute.getJoinClause())
+                || !Strings.isNullOrEmpty(categoryAttribute.getWhereClause())) {
             lookupAction = createLookupAction(pickerField, categoryAttribute.getJoinClause(), categoryAttribute.getWhereClause());
             pickerField.addAction(lookupAction);
         }
 
+        if (lookupAction == null) {
+            lookupAction = pickerField.addLookupAction();
+        }
+
         String screen = categoryAttribute.getScreen();
-        if (StringUtils.isBlank(screen)) {
+        if (StringUtils.isNotBlank(screen)) {
+            lookupAction.setLookupScreen(screen);
+        } else {
             screen = windowConfig.getBrowseScreenId(metaClass);
             if (windowConfig.findWindowInfo(screen) != null) {
                 lookupAction.setLookupScreen(screen);
-                lookupAction.setLookupScreenOpenType(WindowManager.OpenType.THIS_TAB);
+                lookupAction.setLookupScreenOpenType(OpenType.THIS_TAB);
             } else {
                 lookupAction.setLookupScreen(CommonLookupController.SCREEN_ID);
                 lookupAction.setLookupScreenParams(ParamsMap.of(CommonLookupController.CLASS_PARAMETER, metaClass));
-                lookupAction.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
+                lookupAction.setLookupScreenOpenType(OpenType.DIALOG);
             }
-        } else {
-            lookupAction.setLookupScreen(screen);
         }
     }
 
