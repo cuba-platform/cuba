@@ -2324,6 +2324,7 @@
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="maxResults" type="xs:int"/>
         <xs:attribute name="store" type="xs:string"/>
+        <xs:attribute name="datasourceClass" type="xs:string"/>
     </xs:complexType>
 
     <!-- ValueGroupDatasource -->
@@ -2342,6 +2343,7 @@
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="maxResults" type="xs:int"/>
         <xs:attribute name="store" type="xs:string"/>
+        <xs:attribute name="datasourceClass" type="xs:string"/>
     </xs:complexType>
 
     <!-- ValueHierarchicalDatasource -->
@@ -2361,6 +2363,7 @@
         <xs:attribute name="maxResults" type="xs:int"/>
         <xs:attribute name="store" type="xs:string"/>
         <xs:attribute name="hierarchyProperty" type="xs:string"/>
+        <xs:attribute name="datasourceClass" type="xs:string"/>
     </xs:complexType>
 
     <xs:complexType name="valueDatasourcePropertiesType">

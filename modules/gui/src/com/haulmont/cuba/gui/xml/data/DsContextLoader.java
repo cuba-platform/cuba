@@ -464,7 +464,9 @@ public class DsContextLoader {
         String id = getDatasourceId(element);
         builder.reset().setMetaClass(metadata.getClassNN(KeyValueEntity.class)).setId(id);
 
-        ValueCollectionDatasourceImpl datasource = builder.buildValuesCollectionDatasource();
+        ValueCollectionDatasourceImpl datasource = builder
+                .setDsClass(getDatasourceClass(element))
+                .buildValuesCollectionDatasource();
 
         String maxResults = element.attributeValue("maxResults");
         if (!StringUtils.isEmpty(maxResults))
@@ -485,7 +487,9 @@ public class DsContextLoader {
         String id = getDatasourceId(element);
         builder.reset().setMetaClass(metadata.getClassNN(KeyValueEntity.class)).setId(id);
 
-        ValueGroupDatasourceImpl datasource = builder.buildValuesGroupDatasource();
+        ValueGroupDatasourceImpl datasource = builder
+                .setDsClass(getDatasourceClass(element))
+                .buildValuesGroupDatasource();
 
         String maxResults = element.attributeValue("maxResults");
         if (!StringUtils.isEmpty(maxResults))
@@ -506,7 +510,9 @@ public class DsContextLoader {
         String id = getDatasourceId(element);
         builder.reset().setMetaClass(metadata.getClassNN(KeyValueEntity.class)).setId(id);
 
-        ValueHierarchicalDatasourceImpl datasource = builder.buildValuesHierarchicalDatasource();
+        ValueHierarchicalDatasourceImpl datasource = builder
+                .setDsClass(getDatasourceClass(element))
+                .buildValuesHierarchicalDatasource();
 
         String maxResults = element.attributeValue("maxResults");
         if (!StringUtils.isEmpty(maxResults))
