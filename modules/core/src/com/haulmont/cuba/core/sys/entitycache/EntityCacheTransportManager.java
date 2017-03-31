@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.core.sys.entitycache;
 
-import com.haulmont.cuba.core.app.ClusterManager;
+import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.global.AppBeans;
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
@@ -37,7 +37,7 @@ public class EntityCacheTransportManager extends BroadcastTransportManager {
 
     protected EntityCacheConnection createConnection() throws RemoteCommandManagerException {
         try {
-            ClusterManager clusterManager = AppBeans.get(ClusterManager.class);
+            ClusterManagerAPI clusterManager = AppBeans.get(ClusterManagerAPI.class);
             return new EntityCacheConnection(this.rcm, clusterManager);
         } catch (Exception ex) {
             throw new RemoteCommandManagerException(ex.getMessage());

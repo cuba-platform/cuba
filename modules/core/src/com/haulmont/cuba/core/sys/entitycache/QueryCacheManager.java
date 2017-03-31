@@ -23,7 +23,7 @@ import com.haulmont.chile.core.model.MetadataObject;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.app.ClusterListenerAdapter;
-import com.haulmont.cuba.core.app.ClusterManager;
+import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
@@ -47,7 +47,7 @@ public class QueryCacheManager {
     @Inject
     protected QueryCacheConfig queryCacheConfig;
     @Inject
-    protected ClusterManager clusterManager;
+    protected ClusterManagerAPI clusterManager;
     @Inject
     protected Persistence persistence;
     @Inject

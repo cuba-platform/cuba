@@ -20,7 +20,7 @@ package com.haulmont.cuba.core.sys.entitycache;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.ClusterListenerAdapter;
-import com.haulmont.cuba.core.app.ClusterManager;
+import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -37,9 +37,9 @@ public class EntityCacheConnection extends BroadcastRemoteConnection {
 
     protected Metadata metadata;
     protected QueryCacheManager queryCacheManager;
-    protected ClusterManager clusterManager;
+    protected ClusterManagerAPI clusterManager;
 
-    public EntityCacheConnection(RemoteCommandManager rcm, ClusterManager clusterManager) {
+    public EntityCacheConnection(RemoteCommandManager rcm, ClusterManagerAPI clusterManager) {
         super(rcm);
         this.metadata = AppBeans.get(Metadata.NAME);
         this.queryCacheManager = AppBeans.get(QueryCacheManager.NAME);
