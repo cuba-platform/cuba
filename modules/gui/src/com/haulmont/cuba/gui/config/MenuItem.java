@@ -35,6 +35,10 @@ public class MenuItem {
     private List<MenuItem> children = new ArrayList<>();
 
     private String id;
+    private String screen;
+    private String runnableClass;
+    private String bean;
+    private String beanMethod;
     private String stylename;
     private String icon;
     private String description;
@@ -151,5 +155,37 @@ public class MenuItem {
 
     public void setExpanded(boolean expanded) {
         this.expanded = expanded;
+    }
+
+    public String getScreen() {
+        return screen;
+    }
+
+    public void setScreen(String screen) {
+        this.screen = screen;
+    }
+
+    public String getRunnableClass() {
+        return runnableClass;
+    }
+
+    public void setRunnableClass(String runnableClass) {
+        this.runnableClass = runnableClass;
+    }
+
+    public String getBean() {
+        return bean;
+    }
+
+    public void setBean(String bean) {
+        this.bean = bean;
+    }
+
+    public String getBeanMethod() {
+        return beanMethod;
+    }
+
+    public void setBeanMethod(String beanMethod) {
+        this.beanMethod = beanMethod;
     }
 }

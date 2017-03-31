@@ -20,9 +20,9 @@ package com.haulmont.cuba.desktop.sys;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareActionListener;
-import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.components.KeyCombination;
-import com.haulmont.cuba.gui.config.*;
+import com.haulmont.cuba.gui.config.MenuCommand;
+import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.security.global.UserSession;
@@ -98,15 +98,7 @@ public class MenuBuilder {
     }
 
     private void assignCommand(final JMenuItem jMenuItem, MenuItem item) {
-        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
-        WindowInfo windowInfo;
-        try {
-            windowInfo = windowConfig.getWindowInfo(item.getId());
-        } catch (NoSuchScreenException e) {
-            return;
-        }
-
-        final MenuCommand command = new MenuCommand(item, windowInfo);
+        final MenuCommand command = new MenuCommand(item);
         jMenuItem.addActionListener(new ValidationAwareActionListener() {
             @Override
             public void actionPerformedAfterValidation(ActionEvent e) {
@@ -114,7 +106,7 @@ public class MenuBuilder {
 
                 StringBuilder menuPath = new StringBuilder();
                 formatMenuPath(item, menuPath);
-                userActionsLog.trace("Window {} was opened using menu item {}", windowInfo.getId(), menuPath.toString());
+                userActionsLog.trace("Action \"{}\" was performed using menu item {}", command.getCommandDescription(), menuPath.toString());
             }
         });
     }

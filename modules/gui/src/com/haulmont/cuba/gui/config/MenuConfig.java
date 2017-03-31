@@ -65,8 +65,8 @@ public class MenuConfig {
 
     /**
      * Localized menu item caption.
-     * @param id screen ID as defined in <code>screens.xml</code>
      *
+     * @param id screen ID as defined in <code>screens.xml</code>
      * @deprecated Use {@link MenuConfig#getItemCaption(String)}
      */
     @Deprecated
@@ -180,14 +180,10 @@ public class MenuConfig {
                 loadDescription(element, menuItem);
                 loadMenuItems(element, menuItem);
             } else if ("item".equals(element.getName())) {
-                String id = element.attributeValue("id");
-                if (!StringUtils.isBlank(id)) {
-                    menuItem = new MenuItem(currentParentItem, id);
-                    menuItem.setDescriptor(element);
-                    loadIcon(element, menuItem);
-                    loadShortcut(menuItem, element);
-                    loadStylename(element, menuItem);
-                    loadDescription(element, menuItem);
+                menuItem = createMenuItem(element, currentParentItem);
+
+                if (menuItem == null) {
+                    continue;
                 }
             } else if ("separator".equals(element.getName())) {
                 String id = element.attributeValue("id");
@@ -207,6 +203,69 @@ public class MenuConfig {
             } else {
                 addItem(rootItems, menuItem, nextToItem, before);
             }
+        }
+    }
+
+    protected MenuItem createMenuItem(Element element, MenuItem currentParentItem) {
+        String id = element.attributeValue("id");
+
+        String idFromActions;
+
+        String screen = element.attributeValue("screen");
+        idFromActions = StringUtils.isNotEmpty(screen) ? screen : null;
+
+        String runnableClass = element.attributeValue("class");
+        checkDuplicateAction(idFromActions, runnableClass);
+        idFromActions = StringUtils.isNotEmpty(runnableClass) ? runnableClass : idFromActions;
+
+        String bean = element.attributeValue("bean");
+        String beanMethod = element.attributeValue("beanMethod");
+
+        if (StringUtils.isNotEmpty(bean) && StringUtils.isEmpty(beanMethod) ||
+                StringUtils.isEmpty(bean) && StringUtils.isNotEmpty(beanMethod)) {
+            throw new IllegalStateException("Both bean and beanMethod should be defined.");
+        }
+
+        checkDuplicateAction(idFromActions, bean, beanMethod);
+
+        String fqn = bean + "#" + beanMethod;
+        idFromActions = StringUtils.isNotEmpty(bean) && StringUtils.isNotEmpty(beanMethod) ? fqn : idFromActions;
+
+        if (StringUtils.isEmpty(id) && StringUtils.isEmpty(idFromActions)) {
+            throw new IllegalStateException("MenuItem should have at least one action");
+        }
+
+        if (StringUtils.isEmpty(id) && StringUtils.isNotEmpty(idFromActions)) {
+            id = idFromActions;
+        }
+
+        if (StringUtils.isNotEmpty(id) && StringUtils.isEmpty(idFromActions)) {
+            screen = id;
+        }
+
+        MenuItem menuItem = new MenuItem(currentParentItem, id);
+
+        menuItem.setScreen(screen);
+        menuItem.setRunnableClass(runnableClass);
+        menuItem.setBean(bean);
+        menuItem.setBeanMethod(beanMethod);
+
+        menuItem.setDescriptor(element);
+        loadIcon(element, menuItem);
+        loadShortcut(menuItem, element);
+        loadStylename(element, menuItem);
+        loadDescription(element, menuItem);
+
+        return menuItem;
+    }
+
+    protected void checkDuplicateAction(String menuItemId, String... actionDefinition) {
+        boolean actionDefined = true;
+        for (String s : actionDefinition) {
+            actionDefined &= StringUtils.isNotEmpty(s);
+        }
+        if (StringUtils.isNotEmpty(menuItemId) && actionDefined) {
+            throw new IllegalStateException("MenuItem can't have more than one action.");
         }
     }
 

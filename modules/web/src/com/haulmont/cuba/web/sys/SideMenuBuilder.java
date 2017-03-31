@@ -17,13 +17,14 @@
 package com.haulmont.cuba.web.sys;
 
 import com.google.common.base.Strings;
-import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.SideMenu;
-import com.haulmont.cuba.gui.config.*;
+import com.haulmont.cuba.gui.config.MenuCommand;
+import com.haulmont.cuba.gui.config.MenuConfig;
+import com.haulmont.cuba.gui.config.MenuItem;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.security.global.UserSession;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
@@ -171,32 +172,10 @@ public class SideMenuBuilder {
         if (!item.getChildren().isEmpty() || item.isMenu())     //check item is menu
             return null;
 
-        WindowInfo windowInfo = null;
-        try {
-            windowInfo = windowConfig.getWindowInfo(item.getId());
-        } catch (NoSuchScreenException e) {
-            log.error("Invalid screen ID for menu item: " + item.getId());
-        }
+        MenuCommand command = new MenuCommand(item);
 
-        final MenuCommand command;
-        if (windowInfo != null) {
-            command = new MenuCommand(item, windowInfo);
-        } else {
-            command = null;
-        }
-
-        return event -> {
-            if (command != null) {
+        return event ->
                 command.execute();
-            } else {
-                if (item.getParent() != null) {
-                    throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId(),
-                            "Parent menu ID", item.getParent().getId());
-                } else {
-                    throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId());
-                }
-            }
-        };
     }
 
     protected boolean isMenuItemEmpty(SideMenu.MenuItem menuItem) {

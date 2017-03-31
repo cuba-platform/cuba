@@ -16,13 +16,15 @@
 
 package com.haulmont.cuba.web.sys;
 
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
-import com.haulmont.cuba.gui.config.*;
+import com.haulmont.cuba.gui.config.MenuCommand;
+import com.haulmont.cuba.gui.config.MenuConfig;
+import com.haulmont.cuba.gui.config.MenuItem;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.vaadin.event.ShortcutListener;
@@ -57,6 +59,9 @@ public class MenuBuilder {
 
     @Inject
     protected WindowConfig windowConfig;
+
+    @Inject
+    protected Scripting scripting;
 
     protected AppMenu appMenu;
 
@@ -172,34 +177,10 @@ public class MenuBuilder {
         if (CollectionUtils.isNotEmpty(item.getChildren()) || item.isMenu())     //check item is menu
             return null;
 
-        WindowInfo windowInfo = null;
-        if (!item.isSeparator()) {
-            try {
-                windowInfo = windowConfig.getWindowInfo(item.getId());
-            } catch (NoSuchScreenException e) {
-                log.error("Invalid screen ID for menu item: " + item.getId());
-            }
-        }
+        MenuCommand menuCommand = new MenuCommand(item);
 
-        final MenuCommand command;
-        if (windowInfo != null) {
-            command = new MenuCommand(item, windowInfo);
-        } else {
-            command = null;
-        }
-
-        return selectedItem -> {
-            if (command != null) {
-                command.execute();
-            } else {
-                if (item.getParent() != null) {
-                    throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId(),
-                            "Parent menu ID", item.getParent().getId());
-                } else {
-                    throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId());
-                }
-            }
-        };
+        return menuItem ->
+                menuCommand.execute();
     }
 
     protected boolean isMenuItemEmpty(AppMenu.MenuItem menuItem) {

@@ -56,6 +56,10 @@
             <xs:element type="permissionsType" name="permissions" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
         <xs:attribute type="xs:string" name="id"/>
+        <xs:attribute type="xs:string" name="screen"/>
+        <xs:attribute type="xs:string" name="class"/>
+        <xs:attribute type="xs:string" name="bean"/>
+        <xs:attribute type="xs:string" name="beanMethod"/>
         <xs:attribute type="openTypeType" name="openType"/>
         <xs:attribute type="xs:boolean" name="resizable"/>
         <xs:attribute type="xs:string" name="shortcut"/>
