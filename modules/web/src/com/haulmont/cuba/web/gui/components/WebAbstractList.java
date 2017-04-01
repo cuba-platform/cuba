@@ -102,7 +102,7 @@ public abstract class WebAbstractList<T extends AbstractSelect, E extends Entity
         Set itemIds = new HashSet();
         for (Entity item : items) {
             if (!datasource.containsItem(item.getId())) {
-                throw new IllegalStateException("Datasource doesn't contain items");
+                throw new IllegalStateException("Datasource doesn't contain item to select: " + item);
             }
             itemIds.add(item.getId());
         }
