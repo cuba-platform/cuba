@@ -25,7 +25,6 @@ import com.haulmont.cuba.gui.AppConfig;
 
 /**
  * {@link AppContext} loader of the web client application.
- *
  */
 public class WebAppContextLoader extends AbstractWebAppContextLoader {
 
@@ -39,6 +38,8 @@ public class WebAppContextLoader extends AbstractWebAppContextLoader {
         super.beforeInitAppContext();
 
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
+
+        AppContext.Internals.setSecurityContextHolder(new WebVaadinCompatibleSecurityContextHolder());
     }
 
     @Override

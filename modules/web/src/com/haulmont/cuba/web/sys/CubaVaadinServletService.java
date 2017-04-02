@@ -22,7 +22,6 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.ScreenProfiler;
@@ -157,9 +156,7 @@ public class CubaVaadinServletService extends VaadinServletService {
         List<RequestHandler> cubaRequestHandlers = new ArrayList<>();
 
         for (RequestHandler handler : requestHandlers) {
-            if (handler instanceof ServletUIInitHandler) {
-                cubaRequestHandlers.add(new CubaServletUiInitHandler());
-            } else if (handler instanceof UidlRequestHandler) {
+            if (handler instanceof UidlRequestHandler) {
                 // replace UidlRequestHandler with CubaUidlRequestHandler
                 cubaRequestHandlers.add(new CubaUidlRequestHandler());
             } else if (handler instanceof PublishedFileHandler) {
@@ -174,10 +171,8 @@ public class CubaVaadinServletService extends VaadinServletService {
                 cubaRequestHandlers.add(new CubaHeartbeatHandler());
             } else if (handler instanceof FileUploadHandler) {
                 // add support for jquery file upload
-                cubaRequestHandlers.add(new ExtFileUploadHandler());
+                cubaRequestHandlers.add(new FileUploadHandler());
                 cubaRequestHandlers.add(new CubaFileUploadHandler());
-            } else if (handler instanceof ConnectorResourceHandler) {
-                cubaRequestHandlers.add(new CubaConnectorResourceHandler());
             } else {
                 cubaRequestHandlers.add(handler);
             }
@@ -186,40 +181,19 @@ public class CubaVaadinServletService extends VaadinServletService {
         return cubaRequestHandlers;
     }
 
-    protected static boolean withUserSession(VaadinSession session, RequestHandlerAction<Boolean> handler) throws IOException {
-        UserSession userSession = session.getAttribute(UserSession.class);
-        if (userSession != null) {
-            AppContext.setSecurityContext(new SecurityContext(userSession));
-        }
-
-        try {
-            return handler.handle();
-        } finally {
-            AppContext.setSecurityContext(null);
-        }
-    }
-
     // Add ability to load JS and CSS resources from VAADIN directory
     protected static class CubaPublishedFileHandler extends PublishedFileHandler {
         @Override
         protected InputStream getApplicationResourceAsStream(Class<?> contextClass, String fileName) {
-            return VaadinServlet.getCurrent().getServletContext().getResourceAsStream("/VAADIN/" + fileName);
-        }
-    }
-
-    // For com.vaadin.ui.Upload instances
-    protected static class ExtFileUploadHandler extends FileUploadHandler {
-        @Override
-        public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
-                throws IOException {
-            return withUserSession(session, () -> super.handleRequest(session, request, response));
+            ServletContext servletContext = VaadinServlet.getCurrent().getServletContext();
+            return servletContext.getResourceAsStream("/VAADIN/" + fileName);
         }
     }
 
     // Add support for CubaFileUpload component with XHR upload mechanism
     protected static class CubaFileUploadHandler extends FileUploadHandler {
 
-        private Logger log = LoggerFactory.getLogger(CubaFileUploadHandler.class);
+        private final Logger log = LoggerFactory.getLogger(CubaFileUploadHandler.class);
 
         @Override
         protected boolean isSuitableUploadComponent(ClientConnector source) {
@@ -252,19 +226,12 @@ public class CubaVaadinServletService extends VaadinServletService {
             writer.write(json.toJson());
             writer.close();
         }
-
-        @Override
-        public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
-                throws IOException {
-            return withUserSession(session, () -> super.handleRequest(session, request, response));
-        }
     }
 
     /**
      * Add ability to redirect to base application URL if we have unparsable path tail
      */
     protected static class CubaServletBootstrapHandler extends ServletBootstrapHandler {
-
         @Override
         public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
                 throws IOException {
@@ -284,37 +251,28 @@ public class CubaVaadinServletService extends VaadinServletService {
 
     // Add ability to handle hearbeats in App
     protected static class CubaHeartbeatHandler extends HeartbeatHandler {
-        private Logger log = LoggerFactory.getLogger(CubaHeartbeatHandler.class);
+        private final Logger log = LoggerFactory.getLogger(CubaHeartbeatHandler.class);
 
         @Override
         public boolean synchronizedHandleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
                 throws IOException {
-            return withUserSession(session, () -> {
-                boolean result = super.synchronizedHandleRequest(session, request, response);
+            boolean result = super.synchronizedHandleRequest(session, request, response);
 
-                if (log.isTraceEnabled()) {
-                    log.trace("Handle heartbeat {} {}", request.getRemoteHost(), request.getRemoteAddr());
-                }
+            if (log.isTraceEnabled()) {
+                log.trace("Handle heartbeat {} {}", request.getRemoteHost(), request.getRemoteAddr());
+            }
 
-                if (result && App.isBound()) {
-                    App.getInstance().onHeartbeat();
-                }
+            if (result && App.isBound()) {
+                App.getInstance().onHeartbeat();
+            }
 
-                return result;
-            });
+            return result;
         }
     }
 
     // Set security context to AppContext for normal UI requests
     protected static class CubaUidlRequestHandler extends UidlRequestHandler {
-
         protected ScreenProfiler profiler = AppBeans.get(ScreenProfiler.NAME);
-
-        @Override
-        public boolean synchronizedHandleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
-                throws IOException {
-            return withUserSession(session, () -> super.synchronizedHandleRequest(session, request, response));
-        }
 
         @Override
         protected UidlWriter createUidlWriter() {
@@ -332,24 +290,6 @@ public class CubaVaadinServletService extends VaadinServletService {
                     }
                 }
             };
-        }
-    }
-
-    // Set security context to AppContext for UI init requests
-    protected static class CubaServletUiInitHandler extends ServletUIInitHandler {
-        @Override
-        public boolean synchronizedHandleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
-                throws IOException {
-            return withUserSession(session, () -> super.synchronizedHandleRequest(session, request, response));
-        }
-    }
-
-    // Set security context to AppContext for connector resources
-    protected static class CubaConnectorResourceHandler extends ConnectorResourceHandler {
-        @Override
-        public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
-                throws IOException {
-            return withUserSession(session, () -> super.handleRequest(session, request, response));
         }
     }
 
@@ -391,9 +331,5 @@ public class CubaVaadinServletService extends VaadinServletService {
         } else {
             return super.createVaadinSession(request);
         }
-    }
-
-    protected interface RequestHandlerAction<T> {
-        T handle() throws IOException;
     }
 }

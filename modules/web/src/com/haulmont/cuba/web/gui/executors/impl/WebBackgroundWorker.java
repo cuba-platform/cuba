@@ -25,7 +25,6 @@ import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.executors.impl.TaskExecutor;
 import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
-import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
@@ -135,32 +134,6 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
     }
 
-    protected static void withUserSessionAsync(UI ui, Runnable handler) {
-        ui.access(() ->
-                executeOnUiThread(ui, handler)
-        );
-    }
-
-    protected static void withUserSessionInvoke(UI ui, Runnable handler) {
-        ui.accessSynchronously(() ->
-                executeOnUiThread(ui, handler)
-        );
-    }
-
-    protected static void executeOnUiThread(UI ui, Runnable handler) {
-        SecurityContext oldSecurityContext = AppContext.getSecurityContext();
-        try {
-            UserSession userSession = ui.getSession().getAttribute(UserSession.class);
-            if (userSession != null) {
-                AppContext.setSecurityContext(new SecurityContext(userSession));
-            }
-
-            handler.run();
-        } finally {
-            AppContext.setSecurityContext(oldSecurityContext);
-        }
-    }
-
     private class WebTaskExecutor<T, V> implements TaskExecutor<T, V>, Callable<V> {
 
         private AppUI ui;
@@ -194,7 +167,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
             this.future = new FutureTask<V>(this) {
                 @Override
                 protected void done() {
-                    withUserSessionAsync(() ->
+                    WebTaskExecutor.this.ui.access(() ->
                             handleDone()
                     );
                 }
@@ -242,7 +215,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         @Override
         public final void handleProgress(T... changes) {
             if (changes != null) {
-                withUserSessionAsync(() ->
+                ui.access(() ->
                         process(Arrays.asList(changes))
                 );
             }
@@ -367,7 +340,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
         @Override
         public final void startExecution() {
             // Start thread
-            executorService.execute(() -> future.run());
+            executorService.execute(() ->
+                    future.run()
+            );
         }
 
         @Override
@@ -403,10 +378,6 @@ public class WebBackgroundWorker implements BackgroundWorker {
         public FutureTask<V> getFuture() {
             return future;
         }
-
-        protected final void withUserSessionAsync(Runnable handler) {
-            WebBackgroundWorker.withUserSessionAsync(ui, handler);
-        }
     }
 
     private static class WebUIAccessor implements UIAccessor {
@@ -418,12 +389,12 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         @Override
         public void access(Runnable runnable) {
-            WebBackgroundWorker.withUserSessionAsync(ui, runnable);
+            ui.access(runnable);
         }
 
         @Override
         public void accessSynchronously(Runnable runnable) {
-            WebBackgroundWorker.withUserSessionInvoke(ui, runnable);
+            ui.accessSynchronously(runnable);
         }
     }
 }
