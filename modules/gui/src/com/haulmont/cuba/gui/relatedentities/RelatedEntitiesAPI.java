@@ -35,7 +35,7 @@ public interface RelatedEntitiesAPI {
      * @param metaClass        metaClass of single entity from <code>selectedEntities</code>
      * @param metaProperty     chosen field to find related entities. Can be obtained from <code>metaClass</code>
      */
-    void openRelatedScreen(Set<Entity> selectedEntities, MetaClass metaClass, MetaProperty metaProperty);
+    void openRelatedScreen(Set<? extends Entity> selectedEntities, MetaClass metaClass, MetaProperty metaProperty);
 
     /**
      * Shows found related entities in chosen screen.
@@ -46,7 +46,28 @@ public interface RelatedEntitiesAPI {
      * @param descriptor       descriptor contains screen id, {@link com.haulmont.cuba.gui.WindowManager.OpenType} and
      *                         generated filter caption
      */
-    void openRelatedScreen(Set<Entity> selectedEntities, MetaClass metaClass, MetaProperty metaProperty,
+    void openRelatedScreen(Set<? extends Entity> selectedEntities, MetaClass metaClass, MetaProperty metaProperty,
+                           RelatedScreenDescriptor descriptor);
+
+    /**
+     * Shows found related entities in default browse screen.
+     *
+     * @param selectedEntities set of entities which represents one side of relation
+     * @param clazz            class of single entity from <code>selectedEntities</code>
+     * @param property         chosen field to find related entities
+     */
+    void openRelatedScreen(Set<? extends Entity> selectedEntities, Class clazz, String property);
+
+    /**
+     * Shows found related entities in chosen screen.
+     *
+     * @param selectedEntities set of entities which represents one side of relation
+     * @param clazz            class of single entity from <code>selectedEntities</code>
+     * @param property         chosen field to find related entities
+     * @param descriptor       descriptor contains screen id, {@link com.haulmont.cuba.gui.WindowManager.OpenType} and
+     *                         generated filter caption
+     */
+    void openRelatedScreen(Set<? extends Entity> selectedEntities, Class clazz, String property,
                            RelatedScreenDescriptor descriptor);
 
     class RelatedScreenDescriptor {
@@ -63,6 +84,9 @@ public interface RelatedEntitiesAPI {
 
         public RelatedScreenDescriptor(String screenId) {
             this(screenId, WindowManager.OpenType.THIS_TAB);
+        }
+
+        public RelatedScreenDescriptor() {
         }
 
         public String getScreenId() {

@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.relatedentities;
 
 import com.haulmont.bali.datastruct.Node;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
@@ -90,14 +91,16 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
     protected ConditionParamBuilder paramBuilder;
 
     @Override
-    public void openRelatedScreen(Set<Entity> selectedEntities, MetaClass metaClass, MetaProperty metaProperty) {
-        openRelatedScreen(selectedEntities, metaClass, metaProperty,
-                new RelatedScreenDescriptor(null, WindowManager.OpenType.THIS_TAB));
+    public void openRelatedScreen(Set<? extends Entity> selectedEntities, MetaClass metaClass, MetaProperty metaProperty) {
+        openRelatedScreen(selectedEntities, metaClass, metaProperty, new RelatedScreenDescriptor());
     }
 
     @Override
-    public void openRelatedScreen(Set<Entity> selectedEntities, MetaClass metaClass, MetaProperty metaProperty,
+    public void openRelatedScreen(Set<? extends Entity> selectedEntities, MetaClass metaClass, MetaProperty metaProperty,
                                   RelatedScreenDescriptor descriptor) {
+        Preconditions.checkNotNullArgument(metaClass, "MetaClass can't be null");
+        Preconditions.checkNotNullArgument(metaProperty, "MetaProperty can't be null");
+
         WindowManager windowManager = windowManagerProvider.get();
         if (!selectedEntities.isEmpty()) {
             Map<String, Object> params = new HashMap<>();
@@ -105,12 +108,14 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
             WindowParams.DISABLE_AUTO_REFRESH.set(params, true);
             WindowParams.DISABLE_RESUME_SUSPENDED.set(params, true);
 
-            if (descriptor.getScreenParams() != null) {
+            if (descriptor != null && descriptor.getScreenParams() != null) {
                 params.putAll(descriptor.getScreenParams());
             }
 
-            String screen = descriptor.getScreenId();
-            if (StringUtils.isEmpty(screen)) {
+            String screen;
+            if (descriptor != null && StringUtils.isNotEmpty(descriptor.getScreenId())) {
+                screen = descriptor.getScreenId();
+            } else {
                 screen = windowConfig.getBrowseScreenId(metaProperty.getRange().asClass());
             }
 
@@ -120,7 +125,13 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
                 throw new IllegalStateException(message);
             }
 
-            Window window = windowManager.openWindow(windowConfig.getWindowInfo(screen), descriptor.getOpenType(), params);
+
+            WindowManager.OpenType openType = WindowManager.OpenType.THIS_TAB;
+            if (descriptor != null) {
+                openType = descriptor.getOpenType();
+            }
+
+            Window window = windowManager.openWindow(windowConfig.getWindowInfo(screen), openType, params);
 
             boolean found = ComponentsHelper.walkComponents(window, screenComponent -> {
                 if (!(screenComponent instanceof Filter)) {
@@ -147,7 +158,26 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
         }
     }
 
-    protected void applyFilter(Filter component, Set<Entity> selectedParents, RelatedScreenDescriptor descriptor, MetaDataDescriptor metaDataDescriptor) {
+    @Override
+    public void openRelatedScreen(Set<? extends Entity> selectedEntities, Class clazz, String property) {
+        openRelatedScreen(selectedEntities, clazz, property, new RelatedScreenDescriptor());
+    }
+
+    @Override
+    public void openRelatedScreen(Set<? extends Entity> selectedEntities, Class clazz, String property, RelatedScreenDescriptor descriptor) {
+        Preconditions.checkNotNullArgument(clazz, "Class can't be null");
+
+        if (StringUtils.isEmpty(property)) {
+            throw new IllegalArgumentException("Property can't be null");
+        }
+
+        MetaClass metaClass = metadata.getClassNN(clazz);
+        MetaProperty metaProperty = metaClass.getPropertyNN(property);
+
+        openRelatedScreen(selectedEntities, metaClass, metaProperty, descriptor);
+    }
+
+    protected void applyFilter(Filter component, Set<? extends Entity> selectedParents, RelatedScreenDescriptor descriptor, MetaDataDescriptor metaDataDescriptor) {
         FilterEntity filterEntity = metadata.create(FilterEntity.class);
         filterEntity.setComponentId(ComponentsHelper.getFilterComponentPath(component));
 
@@ -168,7 +198,7 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
         component.apply(true);
     }
 
-    protected String getRelatedEntitiesFilterXml(MetaClass relatedMetaCLass, Set<Entity> selectedEntities, Filter component, MetaDataDescriptor descriptor) {
+    protected String getRelatedEntitiesFilterXml(MetaClass relatedMetaCLass, Set<? extends Entity> selectedEntities, Filter component, MetaDataDescriptor descriptor) {
         ConditionsTree tree = new ConditionsTree();
 
         String filterComponentPath = ComponentsHelper.getFilterComponentPath(component);
@@ -338,7 +368,7 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
         return condition;
     }
 
-    protected List<Object> getRelatedIds(Set<Entity> selectedParents, MetaDataDescriptor descriptor) {
+    protected List<Object> getRelatedIds(Set<? extends Entity> selectedParents, MetaDataDescriptor descriptor) {
         if (selectedParents.isEmpty()) {
             return Collections.emptyList();
         } else {
@@ -354,7 +384,7 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
         }
     }
 
-    protected List<Object> getParentIds(Set<Entity> selectedParents) {
+    protected List<Object> getParentIds(Set<? extends Entity> selectedParents) {
         if (selectedParents.isEmpty()) {
             return Collections.emptyList();
         } else {
