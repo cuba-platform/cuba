@@ -54,7 +54,7 @@ import java.util.Map;
  *
  * @see LookupPickerField
  */
-public interface PickerField extends Field, Component.ActionsHolder, LookupComponent, Component.Focusable {
+public interface PickerField extends Field, Component.ActionsHolder, Component.Buffered, LookupComponent, Component.Focusable {
 
     String NAME = "pickerField";
 

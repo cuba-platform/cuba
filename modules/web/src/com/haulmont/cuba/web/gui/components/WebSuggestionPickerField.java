@@ -251,4 +251,29 @@ public class WebSuggestionPickerField extends WebSuggestionField implements Sugg
     public Collection getLookupSelectedItems() {
         return Collections.singleton(getValue());
     }
+
+    @Override
+    public void commit() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void discard() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isBuffered() {
+        return false;
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        throw new UnsupportedOperationException("Buffered mode isn't supported");
+    }
+
+    @Override
+    public boolean isModified() {
+        throw new UnsupportedOperationException();
+    }
 }

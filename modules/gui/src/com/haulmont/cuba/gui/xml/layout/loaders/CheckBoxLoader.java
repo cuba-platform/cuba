@@ -25,4 +25,11 @@ public class CheckBoxLoader extends AbstractFieldLoader<CheckBox> {
         resultComponent = (CheckBox) factory.createComponent(CheckBox.NAME);
         loadId(resultComponent, element);
     }
+
+    @Override
+    public void loadComponent() {
+        super.loadComponent();
+
+        loadBuffered(resultComponent, element);
+    }
 }

@@ -633,6 +633,33 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         return new Dimension(110, DesktopComponentsHelper.FIELD_HEIGHT);
     }
 
+    @Override
+    public void commit() {
+        // do nothing
+    }
+
+    @Override
+    public void discard() {
+        // do nothing
+    }
+
+    @Override
+    public boolean isBuffered() {
+        // do nothing
+        return false;
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        // do nothing
+    }
+
+    @Override
+    public boolean isModified() {
+        // do nothing
+        return false;
+    }
+
     public class FocusableComposition extends JPanel implements FocusableComponent, Flushable {
 
         @Override

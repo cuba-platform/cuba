@@ -227,6 +227,34 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
     }
 
     @Override
+    public void commit() {
+        super.commit();
+        pickerField.commit();
+    }
+
+    @Override
+    public void discard() {
+        super.discard();
+        pickerField.discard();
+    }
+
+    @Override
+    public boolean isBuffered() {
+        return pickerField.isBuffered();
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        super.setBuffered(buffered);
+        pickerField.setBuffered(buffered);
+    }
+
+    @Override
+    public boolean isModified() {
+        return pickerField.isModified();
+    }
+
+    @Override
     protected void setEditableToComponent(boolean editable) {
         super.setEditableToComponent(editable);
         pickerField.setEditable(editable);

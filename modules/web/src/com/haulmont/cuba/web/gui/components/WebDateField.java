@@ -75,6 +75,8 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     protected Datasource.ItemChangeListener itemChangeListener;
     protected WeakItemChangeListener weakItemChangeListener;
 
+    protected boolean buffered = false;
+
     public WebDateField() {
         innerLayout = new com.vaadin.ui.CssLayout();
         innerLayout.setPrimaryStyleName("c-datefield-layout");
@@ -300,6 +302,58 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         updateInstance();
     }
 
+    @Override
+    public void commit() {
+        if (updatingInstance) {
+            return;
+        }
+
+        updatingInstance = true;
+        try {
+            if (datasource != null && metaPropertyPath != null) {
+                Date value = constructDate();
+
+                if (datasource.getItem() != null) {
+                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+                    setModified(false);
+                }
+            }
+        } finally {
+            updatingInstance = false;
+        }
+
+        Object newValue = getValue();
+        fireValueChanged(newValue);
+    }
+
+    @Override
+    public void discard() {
+        if (datasource != null && datasource.getItem() != null) {
+            Date value = getEntityValue(datasource.getItem());
+            setValueToFields(toUserDate(value));
+            fireValueChanged(value);
+        }
+    }
+
+    @Override
+    public boolean isBuffered() {
+        return buffered;
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        this.buffered = buffered;
+    }
+
+    @Override
+    public boolean isModified() {
+        return dateField.isModified();
+    }
+
+    protected void setModified(boolean modified) {
+        dateField.setModified(modified);
+    }
+
     protected Date toUserDate(Date date) {
         return timeZone == null ? date : timeZones.convert(date, TimeZone.getDefault(), timeZone);
     }
@@ -358,8 +412,13 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             if (datasource != null && metaPropertyPath != null) {
                 Date value = constructDate();
 
-                if (datasource.getItem() != null) {
-                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+                if (!isBuffered()) {
+                    if (datasource.getItem() != null) {
+                        InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+                        setModified(false);
+                    }
+                } else {
+                    setModified(true);
                 }
             }
         } finally {
@@ -436,7 +495,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
                 if (updatingInstance) {
                     return;
                 }
-                if (e.getProperty().equals(metaPropertyPath.toString())) {
+                if (!isBuffered() && e.getProperty().equals(metaPropertyPath.toString())) {
                     setValueToFields(toUserDate((Date) e.getValue()));
                     fireValueChanged(e.getValue());
                 }

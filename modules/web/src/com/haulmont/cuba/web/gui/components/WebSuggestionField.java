@@ -300,4 +300,29 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
     public void setTabIndex(int tabIndex) {
         component.setTabIndex(tabIndex);
     }
+
+    @Override
+    public void commit() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void discard() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isBuffered() {
+        return false;
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        throw new UnsupportedOperationException("Buffered mode isn't supported");
+    }
+
+    @Override
+    public boolean isModified() {
+        throw new UnsupportedOperationException();
+    }
 }

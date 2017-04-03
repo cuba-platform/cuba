@@ -92,6 +92,8 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
         }
         resultComponent.setDateFormat(formatStr);
 
+        loadBuffered(resultComponent, element);
+
         loadRangeStart(resultComponent, element);
         loadRangeEnd(resultComponent, element);
     }

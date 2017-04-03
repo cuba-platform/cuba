@@ -59,6 +59,8 @@ public class PickerFieldLoader extends AbstractFieldLoader<PickerField> {
                 resultComponent.addClearAction();
             }
         }
+
+        loadBuffered(resultComponent, element);
     }
 
     @Override

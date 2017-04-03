@@ -61,6 +61,8 @@ public class LookupFieldLoader extends AbstractFieldLoader<LookupField> {
             resultComponent.setPageLength(Integer.parseInt(pageLength));
         }
 
+        loadBuffered(resultComponent, element);
+
         loadTextInputAllowed();
         loadInputPrompt(resultComponent, element);
 

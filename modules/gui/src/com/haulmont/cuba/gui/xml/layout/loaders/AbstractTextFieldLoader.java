@@ -26,6 +26,7 @@ public abstract class AbstractTextFieldLoader<T extends TextInputField> extends 
     public void loadComponent() {
         super.loadComponent();
 
+        loadBuffered(resultComponent, element);
         loadTabIndex(resultComponent, element);
     }
 

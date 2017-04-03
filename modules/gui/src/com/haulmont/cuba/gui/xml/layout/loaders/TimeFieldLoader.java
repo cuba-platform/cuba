@@ -43,6 +43,8 @@ public class TimeFieldLoader extends AbstractFieldLoader<TimeField> {
         if (StringUtils.isNotEmpty(showSeconds)) {
             resultComponent.setShowSeconds(Boolean.parseBoolean(showSeconds));
         }
+
+        loadBuffered(resultComponent, element);
     }
 
     @Override

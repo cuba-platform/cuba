@@ -691,6 +691,47 @@ public interface Component {
         void validate() throws ValidationException;
     }
 
+    interface Buffered {
+        /**
+         * Updates all changes since the previous commit to the data source.
+         */
+        void commit();
+
+        /**
+         * Discards all changes since last commit. The object updates its value from the data source.
+         */
+        void discard();
+
+        /**
+         * @return {@code true} if buffered mode is on, {@code false} otherwise
+         */
+        boolean isBuffered();
+
+        /**
+         * Sets the buffered mode.
+         * <p>
+         * When in buffered mode, an internal buffer will be used to store changes
+         * until {@link #commit()} is called. Calling {@link #discard()} will revert
+         * the internal buffer to the value of the data source.
+         * <p>
+         * When in non-buffered mode both read and write operations will be done
+         * directly on the data source. In this mode the {@link #commit()} and
+         * {@link #discard()} methods serve no purpose.
+         *
+         * @param buffered {@code true} if buffered mode should be turned on, {@code false} otherwise
+         */
+        void setBuffered(boolean buffered);
+
+        /**
+         * Tests if the value stored in the object has been modified since it was
+         * last updated from the data source.
+         *
+         * @return {@code true} if the value in the object has been modified
+         *         since the last data source update, {@code false} if not.
+         */
+        boolean isModified();
+    }
+
     interface HasPresentations extends HasSettings {
         void usePresentations(boolean b);
         boolean isUsePresentations();

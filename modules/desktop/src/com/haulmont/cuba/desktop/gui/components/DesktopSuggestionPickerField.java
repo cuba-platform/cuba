@@ -174,6 +174,33 @@ public class DesktopSuggestionPickerField extends DesktopSuggestionField impleme
         return Collections.singleton(getValue());
     }
 
+    @Override
+    public void commit() {
+        // do nothing
+    }
+
+    @Override
+    public void discard() {
+        // do nothing
+    }
+
+    @Override
+    public boolean isBuffered() {
+        // do nothing
+        return false;
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        // do nothing
+    }
+
+    @Override
+    public boolean isModified() {
+        // do nothing
+        return false;
+    }
+
     private class Picker extends com.haulmont.cuba.desktop.sys.vcl.Picker {
         @Override
         protected void initEditor() {

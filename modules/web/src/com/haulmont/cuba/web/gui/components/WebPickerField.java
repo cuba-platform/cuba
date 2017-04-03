@@ -232,7 +232,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
             datasource.addItemChangeListener(weakItemChangeListener);
 
             itemPropertyChangeListener = e -> {
-                if (e.getProperty().equals(metaPropertyPath.toString())) {
+                if (!isBuffered() && e.getProperty().equals(metaPropertyPath.toString())) {
                     setValue(e.getValue());
                 }
             };
@@ -442,6 +442,32 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
     public void setTabIndex(int tabIndex) {
         component.getField().setTabIndex(tabIndex);
     }
+
+    @Override
+    public void commit() {
+        super.commit();
+    }
+
+    @Override
+    public void discard() {
+        super.discard();
+    }
+
+    @Override
+    public boolean isBuffered() {
+        return super.isBuffered();
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        super.setBuffered(buffered);
+    }
+
+    @Override
+    public boolean isModified() {
+        return super.isModified();
+    }
+
 
     protected class PickerButton extends WebButton {
         public PickerButton() {

@@ -386,6 +386,26 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField>
         }
     }
 
+    protected void commit() {
+        component.commit();
+    }
+
+    protected void discard() {
+        component.discard();
+    }
+
+    protected boolean isBuffered() {
+        return component.isBuffered();
+    }
+
+    protected void setBuffered(boolean buffered) {
+        component.setBuffered(buffered);
+    }
+
+    protected boolean isModified() {
+        return component.isModified();
+    }
+
     protected boolean isEmpty(Object value) {
         return value == null;
     }

@@ -59,6 +59,12 @@ public class CubaDateField extends com.vaadin.ui.DateField implements Action.Con
         return (CubaDateFieldState) super.getState(markAsDirty);
     }
 
+    public void setModified(boolean modified) {
+        if (getState(false).modified != modified) {
+            getState().modified = modified;
+        }
+    }
+
     @Override
     protected void setValue(Date newValue, boolean repaintIsNotNeeded) throws Converter.ConversionException {
         if (newValue == MARKER_DATE)

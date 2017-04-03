@@ -594,4 +594,31 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
     public Collection getLookupSelectedItems() {
         return Collections.singleton(getValue());
     }
+
+    @Override
+    public void commit() {
+        // do nothing
+    }
+
+    @Override
+    public void discard() {
+        // do nothing
+    }
+
+    @Override
+    public boolean isBuffered() {
+        // do nothing
+        return false;
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        // do nothing
+    }
+
+    @Override
+    public boolean isModified() {
+        // do nothing
+        return false;
+    }
 }

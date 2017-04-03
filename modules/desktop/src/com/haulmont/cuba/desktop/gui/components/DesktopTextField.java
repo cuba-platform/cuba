@@ -241,6 +241,33 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
         enterPressListeners.remove(listener);
     }
 
+    @Override
+    public void commit() {
+        // do nothing
+    }
+
+    @Override
+    public void discard() {
+        // do nothing
+    }
+
+    @Override
+    public boolean isBuffered() {
+        // do nothing
+        return false;
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        // do nothing
+    }
+
+    @Override
+    public boolean isModified() {
+        // do nothing
+        return false;
+    }
+
     protected class FlushableTextField extends JTextField implements Flushable {
 
         @Override

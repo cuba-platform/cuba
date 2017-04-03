@@ -783,6 +783,10 @@
         <xs:attribute name="requiredMessage" type="resourceString"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="hasBuffered">
+        <xs:attribute name="buffered" type="xs:boolean"/>
+    </xs:attributeGroup>
+
     <xs:attributeGroup name="hasDatatype">
         <xs:attribute name="datatype" type="datatypeEnum"/>
     </xs:attributeGroup>
@@ -998,6 +1002,7 @@
     <xs:complexType name="checkBoxComponent">
         <xs:complexContent>
             <xs:extension base="baseComponent">
+                <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="hasDatasource"/>
@@ -1095,6 +1100,7 @@
                     <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
                 </xs:sequence>
 
+                <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasDatatype"/>
 
                 <xs:attribute name="stylename" type="textFieldStylename"/>
@@ -1117,6 +1123,7 @@
 
                 <xs:attribute name="caseConversion" type="caseConversion"/>
 
+                <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasDatatype"/>
                 <xs:attributeGroup ref="hasSettings"/>
 
@@ -1152,6 +1159,8 @@
             <xs:extension base="baseTextComponent">
                 <xs:attribute name="mask" type="xs:string" use="required"/>
                 <xs:attribute name="valueMode" type="maskedFieldValueMode"/>
+
+                <xs:attributeGroup ref="hasBuffered"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1161,6 +1170,8 @@
             <xs:extension base="baseTextComponent">
                 <xs:attribute name="maxLength" type="xs:int"/>
                 <xs:attribute name="autocomplete" type="xs:boolean"/>
+
+                <xs:attributeGroup ref="hasBuffered"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1168,7 +1179,9 @@
     <!-- RichTextArea -->
     <xs:complexType name="richTextAreaComponent">
         <xs:complexContent>
-            <xs:extension base="baseTextComponent"/>
+            <xs:extension base="baseTextComponent">
+                <xs:attributeGroup ref="hasBuffered"/>
+            </xs:extension>
         </xs:complexContent>
     </xs:complexType>
 
@@ -1187,6 +1200,7 @@
                 <xs:attribute name="resolution" type="dateFieldResolution"/>
                 <xs:attribute name="dateFormat" type="xs:string"/>
 
+                <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
@@ -1228,6 +1242,7 @@
                 <xs:attribute name="showSeconds" type="xs:boolean"/>
                 <xs:attribute name="timeFormat" type="xs:string"/>
 
+                <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
@@ -1250,6 +1265,8 @@
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
                 </xs:sequence>
+
+                <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
 
@@ -1277,6 +1294,7 @@
                     <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
                 </xs:sequence>
 
+                <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
 
@@ -1330,6 +1348,7 @@
                     <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
                 </xs:sequence>
 
+                <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
 
@@ -1350,6 +1369,7 @@
 
                 <xs:attribute name="stylename" type="lookupPickerFieldStylename"/>
 
+                <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
@@ -1373,6 +1393,7 @@
                     <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
                 </xs:sequence>
 
+                <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
@@ -1771,7 +1792,7 @@
     <xs:complexType name="fieldGroupField">
         <xs:sequence>
             <xs:group ref="layoutOrComponent"/>
-            
+
             <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
             <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
         </xs:sequence>

@@ -386,6 +386,33 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
         return timeFormat.contains("a");
     }
 
+    @Override
+    public void commit() {
+        // do nothing
+    }
+
+    @Override
+    public void discard() {
+        // do nothing
+    }
+
+    @Override
+    public boolean isBuffered() {
+        // do nothing
+        return false;
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        // do nothing
+    }
+
+    @Override
+    public boolean isModified() {
+        // do nothing
+        return false;
+    }
+
     protected class FieldListener implements FocusListener, KeyListener {
         private static final int ENTER_CODE = 10;
 
