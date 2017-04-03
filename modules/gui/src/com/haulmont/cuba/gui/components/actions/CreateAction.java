@@ -32,7 +32,9 @@ import org.springframework.context.annotation.Scope;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Standard list action to create a new entity instance.
@@ -56,8 +58,13 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
     protected WindowManager.OpenType openType;
 
     protected String windowId;
+
     protected Map<String, Object> windowParams;
+    protected Supplier<Map<String, Object>> windowParamsSupplier;
+
     protected Map<String, Object> initialValues;
+    protected Supplier<Map<String, Object>> initialValuesSupplier;
+
     protected boolean addFirst = true;
 
     protected Metadata metadata = AppBeans.get(Metadata.NAME);
@@ -243,12 +250,7 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
             }
         }
 
-        Map<String, Object> values = getInitialValues();
-        if (values != null) {
-            for (Map.Entry<String, Object> entry : values.entrySet()) {
-                item.setValue(entry.getKey(), entry.getValue());
-            }
-        }
+        setInitialValuesToItem(item);
 
         Datasource parentDs = null;
         if (datasource instanceof PropertyDatasource) {
@@ -258,16 +260,48 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
             }
         }
 
-        Map<String, Object> params = getWindowParams();
-        if (params == null) {
-            params = Collections.emptyMap();
-        }
+        Map<String, Object> params = prepareWindowParams();
 
         internalOpenEditor(datasource, item, parentDs, params);
     }
 
+    protected Map<String, Object> prepareWindowParams() {
+        Map<String, Object> windowParams = getWindowParams();
+        Map<String, Object> supplierParams = null;
+        if (windowParamsSupplier != null) {
+            supplierParams = windowParamsSupplier.get();
+        }
+
+        Map<String, Object> params = Collections.emptyMap();
+        if (supplierParams != null || windowParams != null) {
+            params = new HashMap<>();
+            params.putAll(windowParams != null ? windowParams : Collections.emptyMap());
+            params.putAll(supplierParams != null ? supplierParams : Collections.emptyMap());
+        }
+        return params;
+    }
+
+    protected void setInitialValuesToItem(Entity item) {
+        Map<String, Object> values = getInitialValues();
+        if (values != null) {
+            for (Map.Entry<String, Object> entry : values.entrySet()) {
+                item.setValue(entry.getKey(), entry.getValue());
+            }
+        }
+
+        if (initialValuesSupplier != null) {
+            Map<String, Object> supplierValues = initialValuesSupplier.get();
+            if (supplierValues != null) {
+                for (Map.Entry<String, Object> entry : supplierValues.entrySet()) {
+                    item.setValue(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+    }
+
     @SuppressWarnings("unchecked")
-    protected void internalOpenEditor(CollectionDatasource datasource, Entity newItem, Datasource parentDs, Map<String, Object> params) {
+    protected void internalOpenEditor(CollectionDatasource datasource, Entity newItem, Datasource parentDs,
+                                      Map<String, Object> params) {
         Window.Editor window = target.getFrame().openEditor(getWindowId(), newItem, getOpenType(), params, parentDs);
 
         if (editorCloseListener == null) {
@@ -346,10 +380,24 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
     }
 
     /**
-     * @param windowParams  editor screen parameters
+     * @param windowParams editor screen parameters
      */
     public void setWindowParams(Map<String, Object> windowParams) {
         this.windowParams = windowParams;
+    }
+
+    /**
+     * @return supplier that provides editor screen parameters
+     */
+    public Supplier<Map<String, Object>> getWindowParamsSupplier() {
+        return windowParamsSupplier;
+    }
+
+    /**
+     * @param windowParamsSupplier supplier that provides editor screen parameters
+     */
+    public void setWindowParamsSupplier(Supplier<Map<String, Object>> windowParamsSupplier) {
+        this.windowParamsSupplier = windowParamsSupplier;
     }
 
     /**
@@ -364,6 +412,20 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
      */
     public void setInitialValues(Map<String, Object> initialValues) {
         this.initialValues = initialValues;
+    }
+
+    /**
+     * @return supplier that provides map of initial values for attributes of created entity
+     */
+    public Supplier<Map<String, Object>> getInitialValuesSupplier() {
+        return initialValuesSupplier;
+    }
+
+    /**
+     * @param initialValuesSupplier supplier that provides map of initial values for attributes of created entity
+     */
+    public void setInitialValuesSupplier(Supplier<Map<String, Object>> initialValuesSupplier) {
+        this.initialValuesSupplier = initialValuesSupplier;
     }
 
     /**
@@ -383,7 +445,6 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
     public void setAddFirst(boolean addFirst) {
         this.addFirst = addFirst;
     }
-
 
     /**
      * Hook invoked after the editor was committed and closed

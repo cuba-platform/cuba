@@ -23,7 +23,10 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import org.springframework.context.annotation.Scope;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Standard list action to refresh a list of entities.
@@ -46,6 +49,7 @@ public class RefreshAction extends BaseAction {
     protected ListComponent owner;
 
     protected Map<String, Object> refreshParams;
+    protected Supplier<Map<String, Object>> refreshParamsSupplier;
 
     protected Runnable beforeRefreshHandler;
     protected Runnable afterRefreshHandler;
@@ -101,7 +105,20 @@ public class RefreshAction extends BaseAction {
         }
 
         CollectionDatasource datasource = owner.getDatasource();
-        Map<String, Object> params = getRefreshParams();
+
+        Map<String, Object> refreshParams = getRefreshParams();
+        Map<String, Object> supplierParams = null;
+        if (refreshParamsSupplier != null) {
+            supplierParams = refreshParamsSupplier.get();
+        }
+
+        Map<String, Object> params = null;
+        if (supplierParams != null || refreshParams != null) {
+            params = new HashMap<>();
+            params.putAll(refreshParams != null ? refreshParams : Collections.emptyMap());
+            params.putAll(supplierParams != null ? supplierParams : Collections.emptyMap());
+        }
+
         if (params != null) {
             datasource.refresh(params);
         } else {
@@ -125,6 +142,20 @@ public class RefreshAction extends BaseAction {
      */
     public void setRefreshParams(Map<String, Object> refreshParams) {
         this.refreshParams = refreshParams;
+    }
+
+    /**
+     * @return supplier that provides parameters for {@link CollectionDatasource#refresh(java.util.Map)} method
+     */
+    public Supplier<Map<String, Object>> getRefreshParamsSupplier() {
+        return refreshParamsSupplier;
+    }
+
+    /**
+     * @param refreshParamsSupplier supplier that provides parameters for {@link CollectionDatasource#refresh(java.util.Map)} method
+     */
+    public void setRefreshParamsSupplier(Supplier<Map<String, Object>> refreshParamsSupplier) {
+        this.refreshParamsSupplier = refreshParamsSupplier;
     }
 
     public Runnable getBeforeRefreshHandler() {

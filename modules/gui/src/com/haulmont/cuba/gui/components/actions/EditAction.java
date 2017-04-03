@@ -36,8 +36,10 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import org.springframework.context.annotation.Scope;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Standard list action to edit an entity instance.
@@ -62,6 +64,7 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
 
     protected String windowId;
     protected Map<String, Object> windowParams;
+    protected Supplier<Map<String, Object>> windowParamsSupplier;
 
     // Set default caption only once
     protected boolean captionInitialized = false;
@@ -217,13 +220,26 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
                 }
             }
 
-            Map<String, Object> params = getWindowParams();
-            if (params == null) {
-                params = Collections.emptyMap();
-            }
+            Map<String, Object> params = prepareWindowParams();
 
             internalOpenEditor(datasource, datasource.getItem(), parentDs, params);
         }
+    }
+
+    protected Map<String, Object> prepareWindowParams() {
+        Map<String, Object> windowParams = getWindowParams();
+        Map<String, Object> supplierParams = null;
+        if (windowParamsSupplier != null) {
+            supplierParams = windowParamsSupplier.get();
+        }
+
+        Map<String, Object> params = Collections.emptyMap();
+        if (supplierParams != null || windowParams != null) {
+            params = new HashMap<>();
+            params.putAll(windowParams != null ? windowParams : Collections.emptyMap());
+            params.putAll(supplierParams != null ? supplierParams : Collections.emptyMap());
+        }
+        return params;
     }
 
     protected void internalOpenEditor(CollectionDatasource datasource, Entity existingItem,
@@ -307,6 +323,20 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      */
     public void setWindowParams(Map<String, Object> windowParams) {
         this.windowParams = windowParams;
+    }
+
+    /**
+     * @return supplier that provides editor screen parameters
+     */
+    public Supplier<Map<String, Object>> getWindowParamsSupplier() {
+        return windowParamsSupplier;
+    }
+
+    /**
+     * @param windowParamsSupplier supplier that provides editor screen parameters
+     */
+    public void setWindowParamsSupplier(Supplier<Map<String, Object>> windowParamsSupplier) {
+        this.windowParamsSupplier = windowParamsSupplier;
     }
 
     /**

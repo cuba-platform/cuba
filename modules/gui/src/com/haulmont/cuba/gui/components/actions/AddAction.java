@@ -22,7 +22,10 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ListComponent;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -34,8 +37,10 @@ import org.springframework.context.annotation.Scope;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Standard list action adding an entity instance to list from a lookup screen.
@@ -60,7 +65,10 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
     protected AfterAddHandler afterAddHandler;
 
     protected String windowId;
+
     protected Map<String, Object> windowParams;
+    protected Supplier<Map<String, Object>> windowParamsSupplier;
+
     protected Security security = AppBeans.get(Security.NAME);
 
     protected BeforeActionPerformedHandler beforeActionPerformedHandler;
@@ -201,9 +209,7 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
                 return;
         }
 
-        Map<String, Object> params = getWindowParams();
-        if (params == null)
-            params = new HashMap<>();
+        Map<String, Object> params = prepareWindowParams();
 
         Window.Lookup.Handler handler = getHandler();
         Window.Lookup.Handler itemsHandler = handler != null ? handler : new DefaultHandler();
@@ -213,6 +219,22 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
             // move focus to owner
             target.requestFocus();
         });
+    }
+
+    protected Map<String, Object> prepareWindowParams() {
+        Map<String, Object> windowParams = getWindowParams();
+        Map<String, Object> supplierParams = null;
+        if (windowParamsSupplier != null) {
+            supplierParams = windowParamsSupplier.get();
+        }
+
+        Map<String, Object> params = Collections.emptyMap();
+        if (supplierParams != null || windowParams != null) {
+            params = new HashMap<>();
+            params.putAll(windowParams != null ? windowParams : Collections.emptyMap());
+            params.putAll(supplierParams != null ? supplierParams : Collections.emptyMap());
+        }
+        return params;
     }
 
     /**
@@ -268,14 +290,28 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
     }
 
     /**
-     * @return  lookup screen parameters
+     * @return lookup screen parameters
      */
     public Map<String, Object> getWindowParams() {
         return windowParams;
     }
 
     /**
-     * @param windowParams  lookup screen parameters
+     * @return supplier that provides lookup screen parameters
+     */
+    public Supplier<Map<String, Object>> getWindowParamsSupplier() {
+        return windowParamsSupplier;
+    }
+
+    /**
+     * @param windowParamsSupplier supplier that provides lookup screen parameters
+     */
+    public void setWindowParamsSupplier(Supplier<Map<String, Object>> windowParamsSupplier) {
+        this.windowParamsSupplier = windowParamsSupplier;
+    }
+
+    /**
+     * @param windowParams lookup screen parameters
      */
     public void setWindowParams(Map<String, Object> windowParams) {
         this.windowParams = windowParams;
@@ -284,7 +320,6 @@ public class AddAction extends BaseAction implements Action.HasOpenType, Action.
     public interface AfterAddHandler {
         void handle(Collection items);
     }
-
 
     @Override
     public BeforeActionPerformedHandler getBeforeActionPerformedHandler() {
