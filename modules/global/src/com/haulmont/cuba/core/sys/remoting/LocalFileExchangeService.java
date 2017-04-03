@@ -29,7 +29,7 @@ import java.io.InputStream;
 public interface LocalFileExchangeService {
     String NAME = "cuba_LocalFileExchangeService";
 
-    void uploadFile(InputStream inputStream, FileDescriptor fileDescriptor);
+    void uploadFile(@ByPassSerialization InputStream inputStream, FileDescriptor fileDescriptor);
 
-    InputStream downloadFile(FileDescriptor fileDescriptor);
+    @ByPassSerialization InputStream downloadFile(FileDescriptor fileDescriptor);
 }

@@ -20,20 +20,17 @@ package com.haulmont.cuba.web.sys.remoting;
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.core.sys.remoting.*;
 import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
-import com.haulmont.cuba.core.sys.remoting.LocalServiceDirectory;
-import com.haulmont.cuba.core.sys.remoting.LocalServiceInvocation;
-import com.haulmont.cuba.core.sys.remoting.LocalServiceInvocationResult;
-import com.haulmont.cuba.core.sys.remoting.LocalServiceInvoker;
 import com.haulmont.cuba.security.global.ClientBasedSession;
 import com.haulmont.cuba.security.global.UserSession;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.remoting.support.RemoteAccessor;
 
-import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.util.UUID;
 
@@ -101,6 +98,7 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
             if (invoker == null)
                 throw new IllegalArgumentException(String.format("Service %s is not registered in LocalServiceDirectory", entryName));
 
+            Parameter[] parameters = method.getParameters();
             Class<?>[] parameterTypes = method.getParameterTypes();
             String[] parameterTypeNames = new String[parameterTypes.length];
             for (int i = 0; i < parameterTypes.length; i++) {
@@ -116,12 +114,15 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
                 argumentsData = new byte[args.length][];
                 notSerializableArguments = new Object[args.length];
                 for (int i = 0; i < args.length; i++) {
-                    if (args[i] instanceof Serializable) {
-                        Serializable arg = (Serializable) args[i];
+                    Parameter parameter = parameters[i];
+                    Object arg = args[i];
+                    if (canByPassSerialization(parameter)) {
+                        notSerializableArguments[i] = args[i];
+                        argumentsData[i] = null;
+                    } else if (arg != null) {
                         argumentsData[i] = SerializationSupport.serialize(arg);
                     } else {
                         argumentsData[i] = null;
-                        notSerializableArguments[i] = args[i];
                     }
                 }
             }
@@ -142,6 +143,7 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
                     invocation.setClientInfo(session.getClientInfo());
                 }
             }
+            invocation.setByPassSerializationResult(canByPassMethodResult(method));
 
             LocalServiceInvocationResult result = invoker.invoke(invocation);
             AppContext.setSecurityContext(AppContext.getSecurityContext());//need reset application name in LogMDC for the current thread
@@ -164,6 +166,14 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
                 }
                 return data;
             }
+        }
+
+        private boolean canByPassSerialization(Parameter parameter) {
+            return parameter.getAnnotation(ByPassSerialization.class) != null;
+        }
+
+        private boolean canByPassMethodResult(Method method) {
+            return method.getAnnotation(ByPassSerialization.class) != null;
         }
     }
 }

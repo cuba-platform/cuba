@@ -23,7 +23,6 @@ import com.haulmont.cuba.core.sys.UserInvocationContext;
 import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
 import org.apache.commons.lang.ClassUtils;
 
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Locale;
@@ -94,10 +93,10 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
             Method method = target.getClass().getMethod(invocation.getMethodName(), parameterTypes);
             Object data = method.invoke(target, arguments);
 
-            if (data instanceof Serializable) {
-                result.setData(SerializationSupport.serialize(data));
-            } else {
+            if (invocation.canByPassSerializationResult()) {
                 result.setNotSerializableData(data);
+            } else {
+                result.setData(SerializationSupport.serialize(data));
             }
             return result;
         } catch (Throwable t) {
