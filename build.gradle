@@ -487,6 +487,7 @@ configure(webModule) {
         compile(bom['org.vaadin.addons:aceeditor'])
         compile(bom['org.vaadin.addons:dragdroplayouts'])
         compile(bom['com.vaadin.addon:vaadin-context-menu'])
+        compile(bom['de.datenhahn.vaadin:componentrenderer'])
 
         provided(bom['org.apache.tomcat:tomcat-servlet-api'])
 

@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
@@ -133,7 +134,26 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     protected final List<HeaderRow> headerRows = new ArrayList<>();
     protected final List<FooterRow> footerRows = new ArrayList<>();
 
+    protected static Map<Class<? extends Renderer>, Class<? extends Renderer>> rendererClasses;
+
     protected boolean showIconsForPopupMenuActions;
+
+    static {
+        ImmutableMap.Builder<Class<? extends Renderer>, Class<? extends Renderer>> builder =
+                new ImmutableMap.Builder<>();
+
+        builder.put(DataGrid.TextRenderer.class, WebTextRenderer.class);
+        builder.put(DataGrid.HtmlRenderer.class, WebHtmlRenderer.class);
+        builder.put(DataGrid.ProgressBarRenderer.class, WebProgressBarRenderer.class);
+        builder.put(DataGrid.DateRenderer.class, WebDateRenderer.class);
+        builder.put(DataGrid.NumberRenderer.class, WebNumberRenderer.class);
+        builder.put(DataGrid.ButtonRenderer.class, WebButtonRenderer.class);
+        builder.put(DataGrid.ImageRenderer.class, WebImageRenderer.class);
+        builder.put(DataGrid.CheckBoxRenderer.class, WebCheckBoxRenderer.class);
+        builder.put(DataGrid.ComponentRenderer.class, WebComponentRenderer.class);
+
+        rendererClasses = builder.build();
+    }
 
     public WebDataGrid() {
         Configuration configuration = AppBeans.get(Configuration.NAME);
@@ -1710,32 +1730,17 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     @Override
     public <T extends Renderer> T createRenderer(Class<T> type) {
-        DataGrid.Renderer renderer = null;
-        if (type == DataGrid.TextRenderer.class) {
-            renderer = new WebTextRenderer();
+        Class<? extends Renderer> rendererClass = rendererClasses.get(type);
+        if (rendererClass == null) {
+            throw new IllegalStateException(String.format("Can't find renderer class for '%s'", type.getTypeName()));
         }
-        if (type == DataGrid.HtmlRenderer.class) {
-            renderer = new WebHtmlRenderer();
+
+        try {
+            return type.cast(rendererClass.newInstance());
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(String.format("Error creating the '%s' renderer instance",
+                    type.getTypeName()), e);
         }
-        if (type == DataGrid.ProgressBarRenderer.class) {
-            renderer = new WebProgressBarRenderer();
-        }
-        if (type == DataGrid.DateRenderer.class) {
-            renderer = new WebDateRenderer();
-        }
-        if (type == DataGrid.NumberRenderer.class) {
-            renderer = new WebNumberRenderer();
-        }
-        if (type == DataGrid.ButtonRenderer.class) {
-            renderer = new WebButtonRenderer();
-        }
-        if (type == DataGrid.ImageRenderer.class) {
-            renderer = new WebImageRenderer();
-        }
-        if (type == DataGrid.CheckBoxRenderer.class) {
-            renderer = new WebCheckBoxRenderer();
-        }
-        return type.cast(renderer);
     }
 
     @Override
@@ -2224,6 +2229,13 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
         protected abstract com.vaadin.ui.renderers.Renderer<T> createImplementation();
 
+        public com.vaadin.data.util.converter.Converter getConverter() {
+            // Some renderers need specific converter to be set at the same time
+            // (see com.vaadin.ui.Grid.Column.setRenderer(Renderer<T>, Converter<? extends T,?>)).
+            // Default `null` means do not use any converters
+            return null;
+        }
+
         @Override
         public void resetImplementation() {
             renderer = null;
@@ -2621,7 +2633,11 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             if (gridColumn != null) {
                 if (this.renderer != null) {
                     this.renderer.setDataGrid(owner);
-                    gridColumn.setRenderer(this.renderer.getImplementation());
+                    if (this.renderer.getConverter() != null) {
+                        gridColumn.setRenderer(this.renderer.getImplementation(), this.renderer.getConverter());
+                    } else {
+                        gridColumn.setRenderer(this.renderer.getImplementation());
+                    }
                 } else {
                     owner.setDefaultRenderer(gridColumn, getMetaProperty(), type);
                 }

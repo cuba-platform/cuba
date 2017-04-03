@@ -883,6 +883,12 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     }
 
     /**
+     * A renderer for UI components.
+     */
+    interface ComponentRenderer extends Renderer {
+    }
+
+    /**
      * Creates renderer implementation by its type.
      *
      * @param type renderer type

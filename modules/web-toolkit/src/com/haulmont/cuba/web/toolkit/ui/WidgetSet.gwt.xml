@@ -24,6 +24,7 @@
     <inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset"/>
     <inherits name="fi.jasoft.dragdroplayouts.DragDropLayoutsWidgetSet"/>
     <inherits name="com.vaadin.addon.contextmenu.WidgetSet"/>
+    <inherits name="de.datenhahn.vaadin.componentrenderer.ComponentRendererWidgetSet" />
 
     <replace-with class="com.haulmont.cuba.web.toolkit.ui.client.tooltip.CubaTooltip">
         <when-type-is class="com.vaadin.client.VTooltip"/>

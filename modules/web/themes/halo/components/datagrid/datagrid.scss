@@ -96,4 +96,25 @@
   .#{$primary-stylename}-body .#{$primary-stylename}-row {
     cursor: pointer;
   }
+
+  // styles from componentrenderers addon
+  .#{$primary-stylename}-cell > .cr-component-cell {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    height: 100%;
+    width: 100%;
+  }
+
+  .#{$primary-stylename}-editor-cells .cr-editor-field {
+    padding-left: 18px;
+    padding-right: 18px;
+    height: 100%;
+    width: 100%;
+  }
+
+  .#{$primary-stylename}-editor-cells .cr-editor-field .v-checkbox{
+    margin-left: 0;
+    margin-right: 0;
+  }
 }
