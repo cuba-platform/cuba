@@ -198,12 +198,7 @@ public class EntityImportExport implements EntityImportExportAPI {
                     .setSoftDeletion(false)
                     .setView(regularView)
                     .setId(srcEntity.getId());
-            Entity dstEntity = dataManager.load(ctx);
-
-            if (dstEntity instanceof BaseGenericIdEntity) {
-                byte[] securityToken = BaseEntityInternalAccess.getSecurityToken((BaseGenericIdEntity) srcEntity);
-                BaseEntityInternalAccess.setSecurityToken((BaseGenericIdEntity) dstEntity, securityToken);
-            }
+            Entity dstEntity = dataManager.secure().load(ctx);
 
             importEntity(srcEntity, dstEntity, importView, regularView, commitContext, referenceInfoList);
         }
