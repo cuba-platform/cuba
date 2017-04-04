@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.app.security.constraint.edit;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.*;
@@ -45,6 +46,7 @@ import com.haulmont.cuba.security.entity.ConstraintCheckType;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.dom4j.Element;
 
 import javax.inject.Inject;
@@ -116,6 +118,9 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
 
     @Inject
     protected UserManagementService userManagementService;
+
+    @Inject
+    protected Security security;
 
     protected Map<Object, String> entities;
 
@@ -317,12 +322,10 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
     }
 
     public void testConstraint() {
-        Constraint constraint = (Constraint) getItem();
+        Constraint constraint = getItem();
         String entityName = constraint.getEntityName();
         if (validateAll()) {
             String baseQueryString = "select e from " + entityName + " e";
-            String resultQueryStr = null;
-
             try {
                 QueryTransformer transformer = QueryTransformerFactory.createTransformer(baseQueryString);
                 if (StringUtils.isNotBlank(constraint.getJoinClause())) {
@@ -337,7 +340,6 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
                 datasource.setQuery(transformer.getResult());
                 datasource.refresh();
 
-                showNotification(getMessage("notification.success"), NotificationType.HUMANIZED);
             } catch (JpqlSyntaxException e) {
                 StringBuilder stringBuilder = new StringBuilder();
                 for (ErrorRec rec : e.getErrorRecs()) {
@@ -345,10 +347,35 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
                 }
                 showMessageDialog(getMessage("notification.error"),
                         formatMessage("notification.syntaxErrors", stringBuilder), MessageType.WARNING_HTML);
+                return;
             } catch (Exception e) {
+                String msg;
+                Throwable rootCause = ExceptionUtils.getRootCause(e);
+                if (rootCause == null)
+                    rootCause = e;
+                if (rootCause instanceof RemoteException) {
+                    List<RemoteException.Cause> causes = ((RemoteException) rootCause).getCauses();
+                    RemoteException.Cause cause = causes.get(causes.size() - 1);
+                    msg = cause.getThrowable() != null ? cause.getThrowable().toString() : cause.getClassName() + ": " + cause.getMessage();
+                } else {
+                    msg = rootCause.toString();
+                }
                 showMessageDialog(getMessage("notification.error"),
-                        formatMessage("notification.runtimeError", resultQueryStr, e.getMessage()), MessageType.WARNING_HTML);
+                        formatMessage("notification.runtimeError", msg), MessageType.WARNING_HTML);
+                return;
             }
+
+            if (!Strings.isNullOrEmpty(constraint.getGroovyScript())) {
+                try {
+                    security.evaluateConstraintScript(metadata.create(entityName), constraint.getGroovyScript());
+                } catch (Exception e) {
+                    showMessageDialog(getMessage("notification.error"),
+                            formatMessage("notification.scriptRuntimeError", e.toString()), MessageType.WARNING_HTML);
+                    return;
+                }
+            }
+
+            showNotification(getMessage("notification.success"), NotificationType.HUMANIZED);
         }
     }
 }

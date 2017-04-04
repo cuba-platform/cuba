@@ -207,13 +207,8 @@ public class SecurityImpl implements Security {
         String metaClassName = entity.getMetaClass().getName();
         String groovyScript = constraint.getGroovyScript();
         if (constraint.getCheckType().memory() && StringUtils.isNotBlank(groovyScript)) {
-            Map<String, Object> context = new HashMap<>();
-            context.put("__entity__", metadataTools.deepCopy(entity)); // copy to avoid implicit modification
-            context.put("parse", new MethodClosure(this, "parseValue"));
-            context.put("userSession", userSessionSource.getUserSession());
-            fillGroovyConstraintsContext(context);
             try {
-                Object o = scripting.evaluateGroovy(groovyScript.replace("{E}", "__entity__"), context);
+                Object o = evaluateConstraintScript(entity, groovyScript);
                 if (Boolean.FALSE.equals(o)) {
                     log.trace("Entity does not match security constraint. Entity class [{}]. Entity [{}]. Constraint [{}].",
                             metaClassName, entity.getId(), constraint.getCheckType());
@@ -226,6 +221,16 @@ public class SecurityImpl implements Security {
             }
         }
         return true;
+    }
+
+    @Override
+    public Object evaluateConstraintScript(Entity entity, String groovyScript) {
+        Map<String, Object> context = new HashMap<>();
+        context.put("__entity__", metadataTools.deepCopy(entity)); // copy to avoid implicit modification
+        context.put("parse", new MethodClosure(this, "parseValue"));
+        context.put("userSession", userSessionSource.getUserSession());
+        fillGroovyConstraintsContext(context);
+        return scripting.evaluateGroovy(groovyScript.replace("{E}", "__entity__"), context);
     }
 
     /**

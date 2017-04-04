@@ -141,4 +141,6 @@ public interface Security {
      * Check if there are registered memory constraints of specified {@code operationTypes} for the metaClass or it's original metaClass
      */
     boolean hasInMemoryConstraints(MetaClass metaClass, ConstraintOperationType... operationTypes);
+
+    Object evaluateConstraintScript(Entity entity, String groovyScript);
 }
