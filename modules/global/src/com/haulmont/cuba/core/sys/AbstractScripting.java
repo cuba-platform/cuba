@@ -185,42 +185,45 @@ public abstract class AbstractScripting implements Scripting {
     @Override
     public <T> T evaluateGroovy(String text, Binding binding) {
         Script script = null;
-        boolean invalidated = false;
+        Object result;
         try {
             script = getPool().borrowObject(text);
             script.setBinding(binding);
-            return (T) script.run();
+            result = script.run();
         } catch (Exception e) {
-            try {
-                getPool().invalidateObject(text, script);
-                invalidated = true;
-            } catch (Exception e1) {
-                log.warn("Error invalidating object in the pool", e1);
+            if (script != null) {
+                try {
+                    getPool().invalidateObject(text, script);
+                } catch (Exception e1) {
+                    log.warn("Error invalidating object in the pool", e1);
+                }
             }
             if (e instanceof RuntimeException)
                 throw ((RuntimeException) e);
             else
                 throw new RuntimeException("Error evaluating Groovy expression", e);
-        } finally {
-            if (script != null && !invalidated)
-                try {
-                    script.setBinding(null); // free memory
-                    getPool().returnObject(text, script);
-                } catch (Exception e) {
-                    log.warn("Error returning object into the pool", e);
-                }
         }
+        try {
+            script.setBinding(null); // free memory
+            getPool().returnObject(text, script);
+        } catch (Exception e) {
+            log.warn("Error returning object into the pool", e);
+        }
+        //noinspection unchecked
+        return (T) result;
     }
 
     @Override
     public <T> T evaluateGroovy(String text, Map<String, Object> context) {
         Binding binding = createBinding(context);
+        //noinspection unchecked
         return (T) evaluateGroovy(text, binding);
     }
 
     @Override
     public <T> T runGroovyScript(String name, Binding binding) {
         try {
+            //noinspection unchecked
             return (T) getGroovyScriptEngine().run(name, binding);
         } catch (ResourceException e) {
             // Perhaps the Groovy source not found - it is possible when we run tests. Let's try to find a
@@ -236,6 +239,7 @@ public abstract class AbstractScripting implements Scripting {
                 try {
                     Script script = (Script) scriptClass.newInstance();
                     script.setBinding(binding);
+                    //noinspection unchecked
                     return (T) script.run();
                 } catch (InstantiationException | IllegalAccessException e1) {
                     throw new RuntimeException("Error instantiating Script object", e1);
