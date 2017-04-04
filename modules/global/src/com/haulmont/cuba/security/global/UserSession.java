@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.security.global;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.sys.UserInvocationContext;
 import com.haulmont.cuba.security.entity.*;
@@ -53,7 +52,7 @@ public class UserSession implements Serializable {
     protected boolean system;
 
     protected Map<String, Integer>[] permissions;
-    protected ArrayListMultimap<String, ConstraintData> constraints;
+    protected Map<String, List<ConstraintData>> constraints;
 
     protected Map<String, Serializable> attributes;
 
@@ -83,7 +82,7 @@ public class UserSession implements Serializable {
             permissions[i] = new HashMap<>();
         }
 
-        constraints = ArrayListMultimap.create();
+        constraints = new HashMap<>();
         attributes = new ConcurrentHashMap<>();
         localAttributes = new ConcurrentHashMap<>();
     }
@@ -365,7 +364,8 @@ public class UserSession implements Serializable {
      */
     public void addConstraint(Constraint constraint) {
         String entityName = constraint.getEntityName();
-        constraints.put(entityName, new ConstraintData(constraint));
+        List<ConstraintData> list = constraints.computeIfAbsent(entityName, k -> new ArrayList<>());
+        list.add(new ConstraintData(constraint));
     }
 
     /**
@@ -373,18 +373,20 @@ public class UserSession implements Serializable {
      */
     public void removeConstraint(Constraint constraintToRemove) {
         String entityName = constraintToRemove.getEntityName();
-        List<ConstraintData> constraintData = this.constraints.get(entityName);
-        constraintData.stream()
-                .filter(constraint -> constraintToRemove.getId().equals(constraint.getId()))
-                .collect(Collectors.toList())//to avoid ConcurrentModificationException
-                .forEach(constraint -> this.constraints.remove(entityName, constraint));
+        List<ConstraintData> constraintDataList = this.constraints.get(entityName);
+        if (constraintDataList != null && !constraintDataList.isEmpty()) {
+            for (ConstraintData constraintData : new ArrayList<>(constraintDataList)) {
+                if (constraintToRemove.getId().equals(constraintData.getId()))
+                    constraintDataList.remove(constraintData);
+            }
+        }
     }
 
     /**
      * INTERNAL
      */
     public List<ConstraintData> getConstraints(String entityName) {
-        return Collections.unmodifiableList(constraints.get(entityName));
+        return Collections.unmodifiableList(constraints.getOrDefault(entityName, Collections.emptyList()));
     }
 
     /**
@@ -405,7 +407,7 @@ public class UserSession implements Serializable {
      * INTERNAL
      */
     public List<ConstraintData> getConstraints(String entityName, Predicate<ConstraintData> predicate) {
-        List<ConstraintData> list = constraints.get(entityName);
+        List<ConstraintData> list = constraints.getOrDefault(entityName, Collections.emptyList());
         return Collections.unmodifiableList(list.stream().filter(predicate).collect(Collectors.toList()));
     }
 
