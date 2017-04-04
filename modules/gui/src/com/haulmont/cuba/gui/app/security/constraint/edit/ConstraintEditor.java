@@ -20,6 +20,7 @@ package com.haulmont.cuba.gui.app.security.constraint.edit;
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.GroovyGenerator;
 import com.haulmont.cuba.core.global.filter.SecurityJpqlGenerator;
@@ -131,8 +132,8 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
         Map<String, Object> options = new TreeMap<>();
         MessageTools messageTools = AppBeans.get(MessageTools.NAME);
         entities = new HashMap<>();
-        for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
-            if (extendedEntities.getExtendedClass(metaClass) == null) {
+        for (MetaClass metaClass : metadata.getSession().getClasses()) {
+            if (extendedEntities.getExtendedClass(metaClass) == null && BaseGenericIdEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
                 MetaClass mainMetaClass = extendedEntities.getOriginalOrThisMetaClass(metaClass);
                 String originalName = mainMetaClass.getName();
                 options.put(messageTools.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", originalName);

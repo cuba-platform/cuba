@@ -39,6 +39,7 @@ import javax.inject.Inject;
 import java.text.ParseException;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static com.haulmont.cuba.security.entity.ConstraintOperationType.ALL;
 import static com.haulmont.cuba.security.entity.ConstraintOperationType.CUSTOM;
@@ -171,26 +172,35 @@ public class SecurityImpl implements Security {
 
     @Override
     public boolean hasConstraints(MetaClass metaClass) {
-        UserSession userSession = userSessionSource.getUserSession();
-        String mainMetaClassName = extendedEntities.getOriginalOrThisMetaClass(metaClass).getName();
-        return userSession.hasConstraints(mainMetaClassName);
+        List<ConstraintData> constraints = getConstraints(metaClass);
+        return !constraints.isEmpty();
     }
 
     @Override
     public boolean hasInMemoryConstraints(MetaClass metaClass, ConstraintOperationType... operationTypes) {
-        UserSession userSession = userSessionSource.getUserSession();
-        String mainMetaClassName = extendedEntities.getOriginalOrThisMetaClass(metaClass).getName();
-        List<ConstraintData> constraints = userSession.getConstraints(mainMetaClassName, constraint ->
-            constraint.getCheckType().memory() && constraint.getOperationType() != null
-                    && Arrays.asList(operationTypes).contains(constraint.getOperationType())
+        List<ConstraintData> constraints = getConstraints(metaClass, constraint ->
+                constraint.getCheckType().memory() && constraint.getOperationType() != null
+                        && Arrays.asList(operationTypes).contains(constraint.getOperationType())
         );
         return !constraints.isEmpty();
     }
 
     protected List<ConstraintData> getConstraints(MetaClass metaClass, Predicate<ConstraintData> predicate) {
+        return getConstraints(metaClass).stream()
+                .filter(predicate)
+                .collect(Collectors.toList());
+    }
+
+    protected List<ConstraintData> getConstraints(MetaClass metaClass) {
         UserSession userSession = userSessionSource.getUserSession();
-        String mainMetaClassName = extendedEntities.getOriginalOrThisMetaClass(metaClass).getName();
-        return userSession.getConstraints(mainMetaClassName, predicate);
+        MetaClass mainMetaClass = extendedEntities.getOriginalOrThisMetaClass(metaClass);
+
+        List<ConstraintData> constraints = new ArrayList<>();
+        constraints.addAll(userSession.getConstraints(mainMetaClass.getName()));
+        for (MetaClass parent : mainMetaClass.getAncestors()) {
+            constraints.addAll(userSession.getConstraints(parent.getName()));
+        }
+        return constraints;
     }
 
     protected boolean isPermitted(Entity entity, Predicate<ConstraintData> predicate) {
@@ -216,7 +226,7 @@ public class SecurityImpl implements Security {
                 }
             } catch (Exception e) {
                 log.error("An error occurred while applying constraint's Groovy script. The entity has been filtered out." +
-                          "Entity class [{}]. Entity [{}].", metaClassName, entity.getId(), e);
+                        "Entity class [{}]. Entity [{}].", metaClassName, entity.getId(), e);
                 return false;
             }
         }
@@ -236,7 +246,7 @@ public class SecurityImpl implements Security {
     /**
      * Override if you need specific context variables in Groovy constraints.
      *
-     * @param context    passed to Groovy evaluator
+     * @param context passed to Groovy evaluator
      */
     protected void fillGroovyConstraintsContext(Map<String, Object> context) {
     }
