@@ -25,7 +25,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.InputStream;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @Component(FileLoader.NAME)
@@ -40,7 +39,7 @@ public class FileLoaderImpl implements FileLoader {
 
     @Override
     public void saveStream(FileDescriptor fd, Supplier<InputStream> inputStreamSupplier,
-                           @Nullable Consumer<StreamingProgressEvent> streamingListener)
+                           @Nullable StreamingProgressListener streamingListener)
             throws FileStorageException, InterruptedException {
         fileStorageAPI.saveStream(fd, inputStreamSupplier.get());
     }

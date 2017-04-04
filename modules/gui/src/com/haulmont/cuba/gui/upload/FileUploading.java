@@ -261,9 +261,9 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         };
 
         if (listener != null) {
-            fileLoader.saveStream(fileDescr, inputStreamSupplier, e -> {
+            fileLoader.saveStream(fileDescr, inputStreamSupplier, transferredBytes -> {
                 try {
-                    listener.progressChanged(fileId, e.getTransferredBytes(), fileSize);
+                    listener.progressChanged(fileId, transferredBytes, fileSize);
                 } catch (InterruptedException ie) {
                     // if thread is already interrupted we will restore interrupted flag
                     Thread.currentThread().interrupt();
