@@ -23,7 +23,6 @@ import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 import java.util.UUID;
 
 /**
@@ -185,9 +184,9 @@ public interface FileUploadingAPI {
      * @return a new file descriptor. <b>Attention:</b> the returned {@link FileDescriptor} instance must be
      *         stored in the database separately.
      * @throws FileStorageException in case of IO problems
+     * @throws InterruptedException in case of uploading thread interrupted
      */
-    FileDescriptor putFileIntoStorage(TaskLifeCycle<Long> taskLifeCycle)
-            throws FileStorageException, InterruptedIOException;
+    FileDescriptor putFileIntoStorage(TaskLifeCycle<Long> taskLifeCycle) throws FileStorageException, InterruptedException;
 
     class FileInfo {
         private UUID id;

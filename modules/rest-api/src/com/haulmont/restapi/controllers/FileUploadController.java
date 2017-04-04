@@ -20,17 +20,10 @@ import com.google.common.base.Strings;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.remoting.LocalFileExchangeService;
 import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
 import com.haulmont.restapi.data.FileInfo;
 import com.haulmont.restapi.exception.RestAPIException;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -59,7 +52,7 @@ import java.util.Collections;
 @RequestMapping(path = "/v2/files")
 public class FileUploadController {
 
-    private Logger log = LoggerFactory.getLogger(FileUploadController.class);
+    private final Logger log = LoggerFactory.getLogger(FileUploadController.class);
 
     // Using injection by name here, because an application project can define several instances
     // of ServerSelector type to work with different middleware blocks
@@ -77,6 +70,9 @@ public class FileUploadController {
 
     @Inject
     protected DataService dataService;
+
+    @Inject
+    protected FileLoader fileLoader;
 
     /**
      * Method for simple file upload. File contents are placed in the request body. Optional file name parameter is
@@ -163,62 +159,12 @@ public class FileUploadController {
     }
 
     protected void uploadToMiddleware(InputStream is, FileDescriptor fd) throws FileStorageException {
-        String useLocalInvocation = AppContext.getProperty("cuba.useLocalServiceInvocation");
-        if (Boolean.parseBoolean(useLocalInvocation)) {
-            uploadLocally(is, fd);
-        } else {
-            uploadWithServlet(is, fd);
+        try {
+            fileLoader.saveStream(fd, new FileLoader.SingleInputStreamSupplier(is));
+        } catch (FileStorageException e) {
+            throw new RestAPIException("Unable to upload file to FileStorage",
+                    "Unable to upload file to FileStorage: " + fd.getId(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    protected void uploadLocally(InputStream is, FileDescriptor fd) {
-        AppBeans.get(LocalFileExchangeService.NAME, LocalFileExchangeService.class)
-                .uploadFile(is, fd);
-    }
-
-    protected void uploadWithServlet(InputStream is, FileDescriptor fd) throws FileStorageException {
-        Object context = serverSelector.initContext();
-        String selectedUrl = serverSelector.getUrl(context);
-        if (selectedUrl == null) {
-            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fd.getName());
-        }
-        while (true) {
-            String url = selectedUrl
-                    + "/upload"
-                    + "?s=" + userSessionSource.getUserSession().getId()
-                    + "&f=" + fd.toUrlParam();
-
-            InputStreamEntity inputStreamEntity = new InputStreamEntity(is);
-            HttpPost httpPost = new HttpPost(url);
-            httpPost.setEntity(inputStreamEntity);
-
-            CloseableHttpClient httpClient = HttpClients.createDefault();
-
-            try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-                int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode == org.apache.http.HttpStatus.SC_OK) {
-                    break;
-                } else {
-                    log.error("Unable to upload file to {} {}", url, response.getStatusLine());
-                    selectedUrl = failAndGetNextUrl(context);
-                    if (selectedUrl == null)
-                        throw new FileStorageException(FileStorageException.Type.fromHttpStatus(statusCode), fd.getName());
-                }
-            } catch (Exception e) {
-                log.error("Unable to upload file to {}", url, e);
-                selectedUrl = failAndGetNextUrl(context);
-                if (selectedUrl == null)
-                    throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fd.getName(), e);
-            }
-        }
-    }
-
-    @Nullable
-    private String failAndGetNextUrl(Object context) {
-        serverSelector.fail(context);
-        String url = serverSelector.getUrl(context);
-        if (url != null)
-            log.debug("Trying next URL");
-        return url;
     }
 }

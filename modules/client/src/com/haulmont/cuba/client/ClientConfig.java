@@ -49,6 +49,13 @@ public interface ClientConfig extends Config {
     String getFileDownloadContext();
 
     /**
+     * @return Context of the middleware file upload controller.
+     */
+    @Property("cuba.fileUploadContext")
+    @DefaultString("/upload")
+    String getFileUploadContext();
+
+    /**
      * @return Maximum size of uploaded file in megabytes.
      */
     @Property("cuba.maxUploadSizeMb")

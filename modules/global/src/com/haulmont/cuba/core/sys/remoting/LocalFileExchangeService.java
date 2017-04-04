@@ -18,18 +18,19 @@
 package com.haulmont.cuba.core.sys.remoting;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.FileStorageException;
 
 import java.io.InputStream;
 
 /**
- * The service might be used for work with filestorage, when you use local service invocation
+ * The service might be used for work with file storage, when you use local service invocation
  * (web and core are deployed to same JVM, or web and core are packaged to single WAR file)
- *
  */
 public interface LocalFileExchangeService {
     String NAME = "cuba_LocalFileExchangeService";
 
-    void uploadFile(@ByPassSerialization InputStream inputStream, FileDescriptor fileDescriptor);
+    void uploadFile(@ByPassSerialization InputStream inputStream, FileDescriptor fileDescriptor) throws FileStorageException;
 
-    @ByPassSerialization InputStream downloadFile(FileDescriptor fileDescriptor);
+    @ByPassSerialization
+    InputStream downloadFile(FileDescriptor fileDescriptor) throws FileStorageException;
 }

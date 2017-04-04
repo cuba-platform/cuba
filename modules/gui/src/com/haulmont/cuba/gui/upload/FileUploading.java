@@ -19,38 +19,28 @@ package com.haulmont.cuba.gui.upload;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.remoting.LocalFileExchangeService;
-import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.HttpClientConnectionManager;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.FileEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 @Component(FileUploadingAPI.NAME)
 public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
+
+    private final Logger log = LoggerFactory.getLogger(FileUploading.class);
 
     protected Map<UUID, File> tempFiles = new ConcurrentHashMap<>();
 
@@ -60,16 +50,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
      */
     protected static final int BUFFER_SIZE = 64 * 1024;
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
-
-    protected static final String CORE_FILE_UPLOAD_CONTEXT = "/upload";
-
     protected String tempDir;
-
-    // Using injection by name here, because an application project can define several instances
-    // of ServerSelector type to work with different middleware blocks
-    @Resource(name = ServerSelector.NAME)
-    protected ServerSelector serverSelector;
 
     @Inject
     protected UuidSource uuidSource;
@@ -78,7 +59,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
     protected TimeSource timeSource;
 
     @Inject
-    protected UserSessionSource userSessionSource;
+    protected FileLoader fileLoader;
 
     @Inject
     public void setConfiguration(Configuration configuration) {
@@ -115,9 +96,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
     }
 
     @Override
-    public UUID saveFile(InputStream stream, UploadProgressListener listener)
-            throws FileStorageException {
-
+    public UUID saveFile(InputStream stream, UploadProgressListener listener) throws FileStorageException {
         checkNotNullArgument(stream, "Null input stream for save file");
 
         UUID uuid = uuidSource.createUuid();
@@ -252,7 +231,8 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
     public void putFileIntoStorage(UUID fileId, FileDescriptor fileDescr) throws FileStorageException {
         try {
             uploadFileIntoStorage(fileId, fileDescr, null);
-        } catch (InterruptedIOException e) {
+        } catch (InterruptedException e) {
+            // should never happen
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getId().toString());
         }
 
@@ -261,7 +241,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     protected void uploadFileIntoStorage(UUID fileId, FileDescriptor fileDescr,
                                          @Nullable UploadToStorageProgressListener listener)
-            throws FileStorageException, InterruptedIOException {
+            throws FileStorageException, InterruptedException {
 
         checkNotNullArgument(fileDescr);
 
@@ -270,88 +250,33 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
             throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, fileDescr.getName());
         }
 
-        String useLocalInvocation = AppContext.getProperty("cuba.useLocalServiceInvocation");
-        if (Boolean.parseBoolean(useLocalInvocation)) {
-            uploadLocally(fileDescr, file);
-        } else {
-            uploadWithServlet(fileId, fileDescr, listener, file);
-        }
-    }
+        long fileSize = file.length();
 
-    private void uploadLocally(FileDescriptor fileDescr, File file) {
-        try (FileInputStream inputStream = new FileInputStream(file)) {
-            AppBeans.get(LocalFileExchangeService.NAME, LocalFileExchangeService.class)
-                    .uploadFile(inputStream, fileDescr);
-        } catch (IOException e) {
-            throw new RuntimeException("An error occurred while uploading file locally", e);
-        }
-    }
-
-    private void uploadWithServlet(UUID fileId, FileDescriptor fileDescr, UploadToStorageProgressListener listener, File file)
-            throws FileStorageException, InterruptedIOException {
-
-        Object context = serverSelector.initContext();
-        String selectedUrl = serverSelector.getUrl(context);
-        if (selectedUrl == null) {
-            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getName());
-        }
-        while (true) {
-            String url = selectedUrl
-                    + CORE_FILE_UPLOAD_CONTEXT
-                    + "?s=" + userSessionSource.getUserSession().getId()
-                    + "&f=" + fileDescr.toUrlParam();
-
-            HttpPost method = new HttpPost(url);
-            FileEntity entity;
-            if (listener != null) {
-                entity = new FileStorageProgressEntity(file, "application/octet-stream", fileId, listener);
-            } else {
-                entity = new FileEntity(file, ContentType.APPLICATION_OCTET_STREAM);
-            }
-
-            method.setEntity(entity);
-
-            HttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager();
-            HttpClient client = HttpClientBuilder.create()
-                    .setConnectionManager(connectionManager)
-                    .build();
+        Supplier<InputStream> inputStreamSupplier = () -> {
             try {
-                HttpResponse response = client.execute(method);
-                int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode == HttpStatus.SC_OK) {
-                    break;
-                } else {
-                    log.debug("Unable to upload file to " + url + "\n" + response.getStatusLine());
-                    selectedUrl = failAndGetNextUrl(context);
-                    if (selectedUrl == null)
-                        throw new FileStorageException(FileStorageException.Type.fromHttpStatus(statusCode), fileDescr.getName());
-                }
-            } catch (InterruptedIOException e) {
-                log.trace("Uploading has been interrupted");
-                throw e;
-            } catch (IOException e) {
-                log.debug("Unable to upload file to " + url + "\n" + e);
-                selectedUrl = failAndGetNextUrl(context);
-                if (selectedUrl == null)
-                    throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getName(), e);
-            } finally {
-                connectionManager.shutdown();
+                return new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                throw new FileLoader.InputStreamSupplierException("Temp file is not found " + file.getAbsolutePath());
             }
-        }
-    }
+        };
 
-    @Nullable
-    private String failAndGetNextUrl(Object context) {
-        serverSelector.fail(context);
-        String url = serverSelector.getUrl(context);
-        if (url != null)
-            log.debug("Trying next URL");
-        return url;
+        if (listener != null) {
+            fileLoader.saveStream(fileDescr, inputStreamSupplier, e -> {
+                try {
+                    listener.progressChanged(fileId, e.getTransferredBytes(), fileSize);
+                } catch (InterruptedException ie) {
+                    // if thread is already interrupted we will restore interrupted flag
+                    Thread.currentThread().interrupt();
+                }
+            });
+        } else {
+            fileLoader.saveStream(fileDescr, inputStreamSupplier);
+        }
     }
 
     @Override
     public FileDescriptor putFileIntoStorage(final TaskLifeCycle<Long> taskLifeCycle)
-            throws FileStorageException, InterruptedIOException {
+            throws FileStorageException, InterruptedException {
 
         checkNotNullArgument(taskLifeCycle);
 
@@ -361,12 +286,8 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         checkNotNull(fileId);
         checkNotNull(fileName);
 
-        UploadToStorageProgressListener progressListener = new UploadToStorageProgressListener() {
-            @Override
-            public void progressChanged(UUID fileId, long uploadedBytes, long totalBytes) throws InterruptedException {
+        UploadToStorageProgressListener progressListener = (fileId1, uploadedBytes, totalBytes) ->
                 taskLifeCycle.publish(uploadedBytes);
-            }
-        };
 
         FileDescriptor fileDescriptor = getFileDescriptor(fileId, fileName);
         uploadFileIntoStorage(fileId, fileDescriptor, progressListener);
