@@ -21,6 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
+ * Indicates that method argument or return type
+ * isn't serialized during local service invocation and passed by reference
  * For internal use only.
  */
 @Target({ElementType.PARAMETER, ElementType.METHOD})
