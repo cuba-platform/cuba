@@ -93,7 +93,7 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
             Method method = target.getClass().getMethod(invocation.getMethodName(), parameterTypes);
             Object data = method.invoke(target, arguments);
 
-            if (invocation.canByPassSerializationResult()) {
+            if (invocation.canResultBypassSerialization()) {
                 result.setNotSerializableData(data);
             } else {
                 result.setData(SerializationSupport.serialize(data));

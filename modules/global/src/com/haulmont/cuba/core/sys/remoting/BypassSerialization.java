@@ -27,5 +27,5 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.PARAMETER, ElementType.METHOD})
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-public @interface ByPassSerialization {
+public @interface BypassSerialization {
 }

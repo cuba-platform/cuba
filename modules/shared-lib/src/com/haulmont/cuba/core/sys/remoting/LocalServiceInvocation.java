@@ -32,7 +32,7 @@ public class LocalServiceInvocation {
     private TimeZone timeZone;
     private String address;
     private String clientInfo;
-    private boolean byPassSerializationResult;
+    private boolean resultBypassSerialization;
 
     public LocalServiceInvocation(String methodName, String[] parameterTypeNames,
                                   byte[][] argumentsData, Object[] notSerializableArguments, UUID sessionId) {
@@ -95,11 +95,11 @@ public class LocalServiceInvocation {
         this.clientInfo = clientInfo;
     }
 
-    public boolean canByPassSerializationResult() {
-        return byPassSerializationResult;
+    public boolean canResultBypassSerialization() {
+        return resultBypassSerialization;
     }
 
-    public void setByPassSerializationResult(boolean byPassSerializationResult) {
-        this.byPassSerializationResult = byPassSerializationResult;
+    public void setResultBypassSerialization(boolean resultBypassSerialization) {
+        this.resultBypassSerialization = resultBypassSerialization;
     }
 }

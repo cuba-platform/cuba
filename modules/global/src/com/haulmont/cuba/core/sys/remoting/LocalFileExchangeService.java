@@ -29,8 +29,8 @@ import java.io.InputStream;
 public interface LocalFileExchangeService {
     String NAME = "cuba_LocalFileExchangeService";
 
-    void uploadFile(@ByPassSerialization InputStream inputStream, FileDescriptor fileDescriptor) throws FileStorageException;
+    void uploadFile(@BypassSerialization InputStream inputStream, FileDescriptor fileDescriptor) throws FileStorageException;
 
-    @ByPassSerialization
+    @BypassSerialization
     InputStream downloadFile(FileDescriptor fileDescriptor) throws FileStorageException;
 }

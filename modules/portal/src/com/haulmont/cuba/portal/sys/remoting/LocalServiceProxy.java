@@ -116,7 +116,7 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
                 for (int i = 0; i < args.length; i++) {
                     Parameter parameter = parameters[i];
                     Object arg = args[i];
-                    if (canByPassSerialization(parameter)) {
+                    if (canBypassSerialization(parameter)) {
                         notSerializableArguments[i] = args[i];
                         argumentsData[i] = null;
                     } else if (arg != null) {
@@ -143,7 +143,7 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
                     invocation.setClientInfo(session.getClientInfo());
                 }
             }
-            invocation.setByPassSerializationResult(canByPassMethodResult(method));
+            invocation.setResultBypassSerialization(canMethodResultBypassSerialization(method));
 
             LocalServiceInvocationResult result = invoker.invoke(invocation);
             AppContext.setSecurityContext(AppContext.getSecurityContext());//need reset application name in LogMDC for the current thread
@@ -168,12 +168,12 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
             }
         }
 
-        private boolean canByPassSerialization(Parameter parameter) {
-            return parameter.getAnnotation(ByPassSerialization.class) != null;
+        private boolean canBypassSerialization(Parameter parameter) {
+            return parameter.getAnnotation(BypassSerialization.class) != null;
         }
 
-        private boolean canByPassMethodResult(Method method) {
-            return method.getAnnotation(ByPassSerialization.class) != null;
+        private boolean canMethodResultBypassSerialization(Method method) {
+            return method.getAnnotation(BypassSerialization.class) != null;
         }
     }
 }
