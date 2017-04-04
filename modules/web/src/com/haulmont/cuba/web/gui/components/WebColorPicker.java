@@ -19,13 +19,14 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ColorPicker;
-import com.haulmont.cuba.web.toolkit.ui.CubaColorPicker;
+import com.haulmont.cuba.web.toolkit.ui.CubaColorPickerWrapper;
 import com.haulmont.cuba.web.toolkit.ui.converters.ColorStringConverter;
 
-public class WebColorPicker extends WebAbstractField<CubaColorPicker> implements ColorPicker {
+public class WebColorPicker extends WebAbstractField<CubaColorPickerWrapper> implements ColorPicker {
 
     public WebColorPicker() {
-        component = new CubaColorPicker();
+        component = new CubaColorPickerWrapper();
+        //noinspection unchecked
         component.setConverter(new ColorStringConverter());
         attachListener(component);
         setCaptions();

@@ -82,10 +82,25 @@ public class CubaSourceCodeEditorWidget extends AceEditorWidget {
         super.setReadOnly(!enabled || readOnly);
 
         if (editor != null) {
+            Element textAreaElement = getTextAreaElement();
+
             if (enabled) {
-                getTextAreaElement().removeAttribute("disabled");
+                textAreaElement.removeAttribute("disabled");
             } else {
-                getTextAreaElement().setAttribute("disabled", "disabled");
+                textAreaElement.setAttribute("disabled", "disabled");
+            }
+
+            updateTabIndex();
+        }
+    }
+
+    protected void updateTabIndex() {
+        if (editor != null) {
+            Element textAreaElement = getTextAreaElement();
+            if (enabled && !readOnly) {
+                textAreaElement.setTabIndex(tabIndex);
+            } else {
+                textAreaElement.setTabIndex(-1);
             }
         }
     }
@@ -93,6 +108,8 @@ public class CubaSourceCodeEditorWidget extends AceEditorWidget {
     @Override
     public void setTabIndex(int index) {
         this.tabIndex = index;
+
+        updateTabIndex();
     }
 
     @Override
@@ -103,12 +120,10 @@ public class CubaSourceCodeEditorWidget extends AceEditorWidget {
     @Override
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
+
         super.setReadOnly(!this.enabled || readOnly);
-        if (readOnly) {
-            getTextAreaElement().setTabIndex(-1);
-        } else {
-            getTextAreaElement().removeAttribute("tabindex");
-        }
+
+        updateTabIndex();
     }
 
     public void setHandleTabKey(boolean handleTabKey) {

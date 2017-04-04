@@ -144,6 +144,7 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
 
         loadSelectionMode(resultComponent, element);
         loadFrozenColumnCount(resultComponent, element);
+        loadTabIndex(resultComponent, element);
     }
 
     protected void loadColumnsHidingAllowed(DataGrid component, Element element) {

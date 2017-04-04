@@ -44,6 +44,7 @@ public class TimeFieldLoader extends AbstractFieldLoader<TimeField> {
             resultComponent.setShowSeconds(Boolean.parseBoolean(showSeconds));
         }
 
+        loadTabIndex(resultComponent, element);
         loadBuffered(resultComponent, element);
     }
 

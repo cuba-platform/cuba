@@ -45,15 +45,13 @@ public class CubaMaskedFieldWidget extends VTextField {
 
     protected List<Mask> maskTest;
 
-    protected Map<Character, Mask> maskMap = new HashMap<Character, Mask>();
+    protected Map<Character, Mask> maskMap = new HashMap<>();
 
     protected boolean maskedMode = false;
 
     protected boolean sendNullRepresentation = true;
 
     protected MaskedKeyHandler keyHandler;
-
-    protected int tabIndex = 0;
 
     protected boolean focused = false;
 
@@ -88,15 +86,12 @@ public class CubaMaskedFieldWidget extends VTextField {
                 if (mask != null && nullRepresentation != null && nullRepresentation.equals(super.getText())) {
                     addStyleName("c-focus-move");
 
-                    Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                        @Override
-                        public void execute() {
-                            if (!isReadOnly() && isEnabled() && focused) {
-                                setSelectionRange(getPreviousPos(0), 0);
-                            }
-
-                            removeStyleName("c-focus-move");
+                    Scheduler.get().scheduleDeferred(() -> {
+                        if (!isReadOnly() && isEnabled() && focused) {
+                            setSelectionRange(getPreviousPos(0), 0);
                         }
+
+                        removeStyleName("c-focus-move");
                     });
                 }
             }
@@ -162,31 +157,6 @@ public class CubaMaskedFieldWidget extends VTextField {
         if (pos < 0)
             return getNextPos(pos);
         return pos;
-    }
-
-    @Override
-    public void setTabIndex(int index) {
-        if (!isReadOnly()) {
-            super.setTabIndex(index);
-        }
-
-        this.tabIndex = index;
-    }
-
-    @Override
-    public int getTabIndex() {
-        return tabIndex;
-    }
-
-    @Override
-    public void setReadOnly(boolean readOnly) {
-        super.setReadOnly(readOnly);
-
-        if (readOnly) {
-            super.setTabIndex(-1);
-        } else {
-            super.setTabIndex(tabIndex);
-        }
     }
 
     @Override
@@ -265,7 +235,7 @@ public class CubaMaskedFieldWidget extends VTextField {
 
         this.mask = mask;
         valueBuilder = new StringBuilder();
-        maskTest = new ArrayList<Mask>();
+        maskTest = new ArrayList<>();
 
         for (int i = 0; i < mask.length(); i++) {
             char c = mask.charAt(i);
@@ -282,7 +252,6 @@ public class CubaMaskedFieldWidget extends VTextField {
         }
         nullRepresentation = valueBuilder.toString();
         setText(valueBuilder.toString());
-//		updateCursor(0); // KK: commented out because leads to grab focus
     }
 
     protected boolean validateText(String text) {
