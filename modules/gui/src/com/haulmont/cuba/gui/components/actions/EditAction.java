@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
@@ -23,10 +24,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.ListComponent;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -35,10 +33,8 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.springframework.context.annotation.Scope;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -76,6 +72,8 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
     protected Window.CloseListener editorCloseListener;
 
     protected BeforeActionPerformedHandler beforeActionPerformedHandler;
+
+    protected BulkEditorIntegration bulkEditorIntegration = new BulkEditorIntegration();
 
     public interface AfterCommitHandler {
         /**
@@ -223,6 +221,34 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
             Map<String, Object> params = prepareWindowParams();
 
             internalOpenEditor(datasource, datasource.getItem(), parentDs, params);
+        } else if (selected.size() > 1 && bulkEditorIntegration.isEnabled()) {
+            boolean isBulkEditorPermitted = userSession.isSpecificPermitted(BulkEditor.PERMISSION);
+            if (isBulkEditorPermitted) {
+                // if bulk editor integration enabled and permitted for user
+
+                Map<String, Object> params = ParamsMap.of(
+                        "metaClass", target.getDatasource().getMetaClass(),
+                        "selected", selected,
+                        "exclude", bulkEditorIntegration.getExcludePropertiesRegex(),
+                        "fieldValidators", bulkEditorIntegration.getFieldValidators(),
+                        "modelValidators", bulkEditorIntegration.getModelValidators()
+                );
+
+                Window bulkEditor = target.getFrame()
+                        .openWindow("bulkEditor", bulkEditorIntegration.getOpenType(), params);
+                bulkEditor.addCloseListener(actionId -> {
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        target.getDatasource().refresh();
+                    }
+                    target.requestFocus();
+
+                    Consumer<BulkEditorCloseEvent> afterEditorCloseHandler =
+                            bulkEditorIntegration.getAfterEditorCloseHandler();
+                    if (afterEditorCloseHandler != null) {
+                        afterEditorCloseHandler.accept(new BulkEditorCloseEvent(this, bulkEditor, actionId));
+                    }
+                });
+            }
         }
     }
 
@@ -384,5 +410,107 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
     @Override
     public void setBeforeActionPerformedHandler(BeforeActionPerformedHandler handler) {
         beforeActionPerformedHandler = handler;
+    }
+
+    /**
+     * @return bulk editor integration options.
+     */
+    public BulkEditorIntegration getBulkEditorIntegration() {
+        return bulkEditorIntegration;
+    }
+
+    /**
+     * BulkEditor integration options.
+     * <br>
+     * If integration {@link BulkEditorIntegration#isEnabled()} and user selects
+     * multiple rows in {@link ListComponent} then action will show {@link BulkEditor} window.
+     */
+    public static class BulkEditorIntegration {
+        protected boolean enabled = false;
+        protected WindowManager.OpenType openType = WindowManager.OpenType.THIS_TAB;
+        protected String excludePropertiesRegex;
+        protected Map<String, Field.Validator> fieldValidators;
+        protected List<Field.Validator> modelValidators;
+        protected Consumer<BulkEditorCloseEvent> afterEditorCloseHandler;
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public BulkEditorIntegration setEnabled(boolean enabled) {
+            this.enabled = enabled;
+            return this;
+        }
+
+        public WindowManager.OpenType getOpenType() {
+            return openType;
+        }
+
+        public BulkEditorIntegration setOpenType(WindowManager.OpenType openType) {
+            this.openType = openType;
+            return this;
+        }
+
+        public String getExcludePropertiesRegex() {
+            return excludePropertiesRegex;
+        }
+
+        public BulkEditorIntegration setExcludePropertiesRegex(String excludePropertiesRegex) {
+            this.excludePropertiesRegex = excludePropertiesRegex;
+            return this;
+        }
+
+        public Map<String, Field.Validator> getFieldValidators() {
+            return fieldValidators;
+        }
+
+        public BulkEditorIntegration setFieldValidators(Map<String, Field.Validator> fieldValidators) {
+            this.fieldValidators = fieldValidators;
+            return this;
+        }
+
+        public List<Field.Validator> getModelValidators() {
+            return modelValidators;
+        }
+
+        public BulkEditorIntegration setModelValidators(List<Field.Validator> modelValidators) {
+            this.modelValidators = modelValidators;
+            return this;
+        }
+
+        public Consumer<BulkEditorCloseEvent> getAfterEditorCloseHandler() {
+            return afterEditorCloseHandler;
+        }
+
+        public void setAfterEditorCloseHandler(Consumer<BulkEditorCloseEvent> afterEditorCloseHandler) {
+            this.afterEditorCloseHandler = afterEditorCloseHandler;
+        }
+    }
+
+    /**
+     * Event that is fired when {@link BulkEditor} windows gets closed.
+     */
+    public static class BulkEditorCloseEvent extends EventObject {
+        private Window bulkEditorWindow;
+        private String actionId;
+
+        public BulkEditorCloseEvent(EditAction action, Window bulkEditorWindow, String actionId) {
+            super(action);
+            this.bulkEditorWindow = bulkEditorWindow;
+            this.actionId = actionId;
+        }
+
+        @Override
+        public EditAction getSource() {
+            return (EditAction) super.getSource();
+        }
+
+        public Window getBulkEditorWindow() {
+            return bulkEditorWindow;
+        }
+
+        public String getActionId() {
+            return actionId;
+        }
     }
 }
