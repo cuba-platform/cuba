@@ -39,8 +39,8 @@ public class EntitySnapshotServiceBean implements EntitySnapshotService {
     protected EntitySnapshotAPI snapshotAPI;
 
     @Override
-    public List<EntitySnapshot> getSnapshots(Entity entity) {
-        return snapshotAPI.getSnapshots(entity);
+    public List<EntitySnapshot> getSnapshots(MetaClass metaClass, Object id) {
+        return snapshotAPI.getSnapshots(metaClass, id);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class EntitySnapshotServiceBean implements EntitySnapshotService {
     }
 
     @Override
-    public void migrateSnapshots(Entity entity, Map<Class, Class> classMapping) {
-        snapshotAPI.migrateSnapshots(entity, classMapping);
+    public void migrateSnapshots(MetaClass metaClass, Object id, Map<Class, Class> classMapping) {
+        snapshotAPI.migrateSnapshots(metaClass, id, classMapping);
     }
 }

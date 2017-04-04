@@ -74,11 +74,14 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     @Inject
     protected ReferenceToEntitySupport referenceToEntitySupport;
 
-    @Override
-    public List<EntitySnapshot> getSnapshots(Entity entity) {
-        checkCompositePrimaryKey(entity);
-        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(entity.getMetaClass());
+    @Inject
+    protected DataManager dataManager;
 
+    @Override
+    public List<EntitySnapshot> getSnapshots(MetaClass metaClass, Object id) {
+        metaClass = extendedEntities.getOriginalOrThisMetaClass(metaClass);
+        Entity entity = dataManager.load(new LoadContext<>(metaClass).setId(id).setView(View.LOCAL));
+        checkCompositePrimaryKey(entity);
         List<EntitySnapshot> resultList = null;
         View view = metadata.getViewRepository().getView(EntitySnapshot.class, "entitySnapshot.browse");
         Transaction tx = persistence.createTransaction();
@@ -101,11 +104,10 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     }
 
     @Override
-    public void migrateSnapshots(Entity entity, Map<Class, Class> classMapping) {
-        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(entity.getMetaClass());
-
+    public void migrateSnapshots(MetaClass metaClass, Object id, Map<Class, Class> classMapping) {
+        metaClass = extendedEntities.getOriginalOrThisMetaClass(metaClass);
         // load snapshots
-        List<EntitySnapshot> snapshotList = getSnapshots(entity);
+        List<EntitySnapshot> snapshotList = getSnapshots(metaClass, id);
         Class javaClass = metaClass.getJavaClass();
 
         MetaClass mappedMetaClass = null;

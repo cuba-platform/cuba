@@ -48,7 +48,7 @@ public class EntitySnapshotsDatasource extends CustomCollectionDatasource<Entity
     protected Collection<EntitySnapshot> getEntities(Map<String, Object> params) {
         if (entity != null) {
             EntitySnapshotService snapshotService = AppBeans.get(EntitySnapshotService.NAME);
-            snapshots = snapshotService.getSnapshots(entity);
+            snapshots = snapshotService.getSnapshots(entity.getMetaClass(), entity.getId());
             return snapshots;
         }
         return Collections.emptyList();

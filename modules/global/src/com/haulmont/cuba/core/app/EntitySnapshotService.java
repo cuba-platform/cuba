@@ -39,10 +39,11 @@ public interface EntitySnapshotService {
 
     /**
      * Get snapshots for entity by id
-     * @param entity Entity
+     * @param metaClass Entity meta class
+     * @param id Entity id
      * @return Snapshot list
      */
-    List<EntitySnapshot> getSnapshots(Entity entity);
+    List<EntitySnapshot> getSnapshots(MetaClass metaClass, Object id);
 
     /**
      * Create snapshot for entity and save it to database
@@ -91,8 +92,9 @@ public interface EntitySnapshotService {
     /**
      * Translate snapshots for archival classes
      *
-     * @param entity    Entity
+     * @param metaClass    Metaclass
+     * @param id           Entity Id
      * @param classMapping Map of [OldClass -&gt; NewClass] for migration
      */
-    void migrateSnapshots(Entity entity, Map<Class, Class> classMapping);
+    void migrateSnapshots(MetaClass metaClass, Object id, Map<Class, Class> classMapping);
 }

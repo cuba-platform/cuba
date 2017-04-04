@@ -26,6 +26,9 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.UUID;
 
+/**
+ * Utility class to provide common functionality for entities with different type of primary keys
+ */
 @Component(ReferenceToEntitySupport.NAME)
 public class ReferenceToEntitySupport {
 
@@ -34,6 +37,10 @@ public class ReferenceToEntitySupport {
     @Inject
     protected Metadata metadata;
 
+    /**
+     * @param entity entity
+     * @return entity id to store in database
+     */
     public Object getReferenceId(Entity entity) {
         if (entity instanceof HasUuid) {
             return ((HasUuid) entity).getUuid();
@@ -45,6 +52,10 @@ public class ReferenceToEntitySupport {
         return entity.getId();
     }
 
+    /**
+     * @param metaClass of entity
+     * @return metaProperty name for storing corresponding primary key in the database
+     */
     public String getReferenceIdPropertyName(MetaClass metaClass) {
         if (HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
             return "entityId";
@@ -71,6 +82,10 @@ public class ReferenceToEntitySupport {
         }
     }
 
+    /**
+     * @param metaClass of entity
+     * @return metaProperty name for loading entity from database by primary key stored in the database
+     */
     public String getPrimaryKeyForLoadingEntity(MetaClass metaClass) {
         if (metadata.getTools().hasCompositePrimaryKey(metaClass) && HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
             return "uuid";
