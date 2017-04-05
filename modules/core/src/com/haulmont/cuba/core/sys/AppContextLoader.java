@@ -110,49 +110,31 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
     }
 
     protected void updateDatabase(DbUpdater updater) {
-        while (true) {
-            try {
-                updater.updateDatabase();
-                return;
-            } catch (DbInitializationException e) {
-                if (e.isRetryPossible()) {
-                    log.error("Error updating database: {}\nWaiting 5 sec and retrying...", e.toString());
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e1) {
-                        Thread.currentThread().interrupt();
-                    }
-                } else {
-                    throw new RuntimeException("Error updating database", e);
-                }
-            }
+        try {
+            updater.updateDatabase();
+        } catch (DbInitializationException e) {
+            throw new RuntimeException("\n" +
+                    "==============================================================================\n" +
+                    "ERROR: Cannot check and update database. See the stacktrace below for details.\n" +
+                    "==============================================================================", e);
         }
     }
 
     protected void checkDatabase(DbUpdater updater) {
-        while (true) {
-            try {
-                boolean initialized = updater.dbInitialized();
-                if (!initialized) {
-                    throw new IllegalStateException("\n" +
-                            "============================================================================\n" +
-                            "ERROR: Database is not initialized. Set 'cuba.automaticDatabaseUpdate'\n" +
-                            "application property to 'true' to initialize and update database on startup.\n" +
-                            "============================================================================");
-                }
-                return;
-            } catch (DbInitializationException e) {
-                if (e.isRetryPossible()) {
-                    log.error("Error connecting to database: {}\nWaiting 5 sec and retrying...", e.toString());
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e1) {
-                        Thread.currentThread().interrupt();
-                    }
-                } else {
-                    throw new RuntimeException("Error checking database", e);
-                }
+        try {
+            boolean initialized = updater.dbInitialized();
+            if (!initialized) {
+                throw new IllegalStateException("\n" +
+                        "============================================================================\n" +
+                        "ERROR: Database is not initialized. Set 'cuba.automaticDatabaseUpdate'\n" +
+                        "application property to 'true' to initialize and update database on startup.\n" +
+                        "============================================================================");
             }
+        } catch (DbInitializationException e) {
+            throw new RuntimeException("\n" +
+                    "===================================================================\n" +
+                    "ERROR: Cannot check database. See the stacktrace below for details.\n" +
+                    "===================================================================", e);
         }
     }
 }
