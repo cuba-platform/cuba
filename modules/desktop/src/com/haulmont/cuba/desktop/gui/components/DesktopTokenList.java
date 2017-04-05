@@ -955,7 +955,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
                 }
             }
         }
-        
+
         public void refreshComponent() {
             if (editor != null) {
                 remove(editor);
@@ -1148,5 +1148,14 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     @Override
     protected boolean isEmpty(Object value) {
         return super.isEmpty(value) || (value instanceof Collection && ((Collection) value).isEmpty());
+    }
+
+    @Override
+    public void requestFocus() {
+        if (simple) {
+            addButton.requestFocus();
+        } else {
+            lookupPickerField.requestFocus();
+        }
     }
 }
