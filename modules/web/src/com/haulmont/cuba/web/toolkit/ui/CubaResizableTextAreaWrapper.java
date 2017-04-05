@@ -48,6 +48,7 @@ public class CubaResizableTextAreaWrapper extends CustomField {
         setValidationVisible(false);
         setShowBufferedSourceException(false);
         setShowErrorForDisabledState(false);
+        setFocusDelegate(textArea);
 
         CubaResizableTextAreaWrapperServerRpc rpc = new CubaResizableTextAreaWrapperServerRpc() {
             String oldWidth;
