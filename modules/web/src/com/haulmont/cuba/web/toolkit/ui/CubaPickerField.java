@@ -105,6 +105,8 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
             ThemeConstants theme = App.getInstance().getThemeConstants();
             setWidth(theme.get("cuba.web.CubaPickerField.width"));
         }
+
+        setFocusDelegate(field);
     }
 
     protected void initTextField() {
