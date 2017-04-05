@@ -904,4 +904,13 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     protected boolean isEmpty(Object value) {
         return super.isEmpty(value) || (value instanceof Collection && ((Collection) value).isEmpty());
     }
+
+    @Override
+    public void requestFocus() {
+        if (simple) {
+            addButton.requestFocus();
+        } else {
+            lookupPickerField.requestFocus();
+        }
+    }
 }
