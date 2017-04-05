@@ -35,8 +35,10 @@ import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class MenuCommand {
 
@@ -51,18 +53,20 @@ public class MenuCommand {
     }
 
     protected void createCommand() {
+        Map<String, Object> params = loadParams(item.getDescriptor(), item.getScreen());
+
         if (StringUtils.isNotEmpty(item.getScreen())) {
-            command = new ScreenCommand(item.getScreen(), item.getDescriptor());
+            command = new ScreenCommand(item.getScreen(), item.getDescriptor(), params);
             return;
         }
 
         if (StringUtils.isNotEmpty(item.getRunnableClass())) {
-            command = new RunnableClassCommand(item.getRunnableClass());
+            command = new RunnableClassCommand(item.getRunnableClass(), params);
             return;
         }
 
         if (StringUtils.isNotEmpty(item.getBean())) {
-            command = new BeanCommand(item.getBean(), item.getBeanMethod());
+            command = new BeanCommand(item.getBean(), item.getBeanMethod(), params);
         }
     }
 
@@ -78,6 +82,46 @@ public class MenuCommand {
         return command.getDescription();
     }
 
+    protected Map<String, Object> loadParams(Element descriptor, String screen) {
+        Map<String, Object> params = new HashMap<>();
+        for (Element element : Dom4j.elements(descriptor, "param")) {
+            String value = element.attributeValue("value");
+            EntityLoadInfo info = EntityLoadInfo.parse(value);
+            if (info == null) {
+                if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+                    Boolean booleanValue = Boolean.valueOf(value);
+                    params.put(element.attributeValue("name"), booleanValue);
+                } else {
+                    if (value.startsWith("${") && value.endsWith("}")) {
+                        String property = AppContext.getProperty(value.substring(2, value.length() - 1));
+                        if (!StringUtils.isEmpty(property))
+                            value = property;
+                    }
+                    params.put(element.attributeValue("name"), value);
+                }
+            } else {
+                params.put(element.attributeValue("name"), loadEntityInstance(info));
+            }
+        }
+
+        if (StringUtils.isNotEmpty(screen)) {
+            String caption = AppBeans.get(MenuConfig.class).getItemCaption(screen);
+            WindowParams.CAPTION.set(params, caption);
+        }
+
+        return params;
+    }
+
+    protected Entity loadEntityInstance(EntityLoadInfo info) {
+        LoadContext ctx = new LoadContext(info.getMetaClass()).setId(info.getId());
+        if (info.getViewName() != null) {
+            ctx.setView(info.getViewName());
+        }
+
+        //noinspection unchecked
+        return AppBeans.get(DataService.class).load(ctx);
+    }
+
     protected interface MenuItemCommand extends Runnable {
 
         String getDescription();
@@ -87,16 +131,16 @@ public class MenuCommand {
 
         protected String screen;
         protected Element descriptor;
+        protected Map<String, Object> params;
 
-        protected ScreenCommand(String screen, Element descriptor) {
+        protected ScreenCommand(String screen, Element descriptor, Map<String, Object> params) {
             this.screen = screen;
             this.descriptor = descriptor;
+            this.params = params;
         }
 
         @Override
         public void run() {
-            Map<String, Object> params = loadParams(descriptor);
-
             OpenType openType = OpenType.NEW_TAB;
             String openTypeStr = descriptor.attributeValue("openType");
             if (StringUtils.isNotEmpty(openTypeStr)) {
@@ -132,18 +176,9 @@ public class MenuCommand {
 
                     entityItem = AppBeans.get(Metadata.class).create(metaClassName);
                 }
-                wm.openEditor(
-                        windowInfo,
-                        entityItem,
-                        openType,
-                        params
-                );
+                wm.openEditor(windowInfo, entityItem, openType, params);
             } else {
-                wm.openWindow(
-                        windowInfo,
-                        openType,
-                        params
-                );
+                wm.openWindow(windowInfo, openType, params);
             }
         }
 
@@ -151,61 +186,30 @@ public class MenuCommand {
         public String getDescription() {
             return String.format("Opening window: \"%s\"", screen);
         }
-
-        protected Map<String, Object> loadParams(Element descriptor) {
-            Map<String, Object> params = new HashMap<>();
-            for (Element element : Dom4j.elements(descriptor, "param")) {
-                String value = element.attributeValue("value");
-                EntityLoadInfo info = EntityLoadInfo.parse(value);
-                if (info == null) {
-                    if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
-                        Boolean booleanValue = Boolean.valueOf(value);
-                        params.put(element.attributeValue("name"), booleanValue);
-                    } else {
-                        if (value.startsWith("${") && value.endsWith("}")) {
-                            String property = AppContext.getProperty(value.substring(2, value.length() - 1));
-                            if (!StringUtils.isEmpty(property))
-                                value = property;
-                        }
-                        params.put(element.attributeValue("name"), value);
-                    }
-                } else {
-                    params.put(element.attributeValue("name"), loadEntityInstance(info));
-                }
-            }
-
-            String caption = AppBeans.get(MenuConfig.class).getItemCaption(screen);
-            WindowParams.CAPTION.set(params, caption);
-
-            return params;
-        }
-
-        protected Entity loadEntityInstance(EntityLoadInfo info) {
-            LoadContext ctx = new LoadContext(info.getMetaClass()).setId(info.getId());
-            if (info.getViewName() != null) {
-                ctx.setView(info.getViewName());
-            }
-
-            //noinspection unchecked
-            return AppBeans.get(DataService.class).load(ctx);
-        }
     }
 
     protected class BeanCommand implements MenuItemCommand {
 
         protected String bean;
         protected String beanMethod;
+        protected Map<String, Object> params;
 
-        protected BeanCommand(String bean, String beanMethod) {
+        protected BeanCommand(String bean, String beanMethod, Map<String, Object> params) {
             this.bean = bean;
             this.beanMethod = beanMethod;
+            this.params = params;
         }
 
         @Override
         public void run() {
             Object beanInstance = AppBeans.get(bean);
-
             try {
+                Method methodWithParams = MethodUtils.getAccessibleMethod(beanInstance.getClass(), beanMethod, Map.class);
+                if (methodWithParams != null) {
+                    methodWithParams.invoke(beanInstance, params);
+                    return;
+                }
+
                 MethodUtils.invokeMethod(beanInstance, beanMethod, null);
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
@@ -221,9 +225,11 @@ public class MenuCommand {
     protected class RunnableClassCommand implements MenuItemCommand {
 
         protected String runnableClass;
+        protected Map<String, Object> params;
 
-        protected RunnableClassCommand(String runnableClass) {
+        protected RunnableClassCommand(String runnableClass, Map<String, Object> params) {
             this.runnableClass = runnableClass;
+            this.params = params;
         }
 
         @Override
@@ -233,14 +239,19 @@ public class MenuCommand {
                 throw new IllegalStateException(String.format("Can't load class: %s", runnableClass));
             }
 
-            if (!Runnable.class.isAssignableFrom(clazz)) {
-                throw new IllegalStateException(String.format("%s is not instance of Runnable", runnableClass));
+            if (!Runnable.class.isAssignableFrom(clazz) && !Consumer.class.isAssignableFrom(clazz)) {
+                throw new IllegalStateException(String.format("Class \"%s\" should implement Runnable or Consumer<Map<String, Object>>", runnableClass));
             }
 
             try {
-                Object runnableInstance = clazz.newInstance();
+                Object classInstance = clazz.newInstance();
 
-                ((Runnable) runnableInstance).run();
+                if (classInstance instanceof Consumer) {
+                    ((Consumer) classInstance).accept(params);
+                    return;
+                }
+
+                ((Runnable) classInstance).run();
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new DevelopmentException(String.format("Failed to get a new instance of %s", runnableClass));
             }
