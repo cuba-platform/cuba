@@ -476,7 +476,10 @@ configure(webModule) {
         compile(bom['commons-fileupload:commons-fileupload'])
         compile(bom['org.springframework:spring-webmvc'])
 
-        compile(bom['com.vaadin:vaadin-push'])
+        compile(bom['com.vaadin:vaadin-push']) {
+            exclude(group: 'com.vaadin.external.atmosphere', module: 'atmosphere-runtime')
+        }
+        compile(bom['com.vaadin.external.atmosphere:atmosphere-runtime'])
         compile(bom['com.vaadin:vaadin-shared'])
         compile(bom['com.vaadin:vaadin-server']) {
             exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
