@@ -19,15 +19,15 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.components.Embedded;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
-import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
-import com.vaadin.server.*;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.FileResource;
+import com.vaadin.server.Resource;
+import com.vaadin.server.StreamResource;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,18 +120,10 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
     @Override
     public void setSource(String fileName, final ExportDataProvider dataProvider) {
         if (dataProvider != null) {
-            resource = new StreamResource((StreamResource.StreamSource) () -> {
-                UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
-                if (userSession != null) {
-                    AppContext.setSecurityContext(new SecurityContext(userSession));
-                }
-
-                try {
-                    return dataProvider.provide();
-                } finally {
-                    AppContext.setSecurityContext(null);
-                }
-            }, fileName);
+            resource = new StreamResource(
+                    dataProvider::provide,
+                    fileName
+            );
             component.setSource(resource);
         } else {
             resetSource();
