@@ -26,7 +26,7 @@ import java.util.function.Supplier;
  * Interface to store and load files defined by {@link FileDescriptor}s. Can be used on both middle and client tiers.
  */
 public interface FileLoader {
-    String NAME = "cuba_FileManager";
+    String NAME = "cuba_FileLoader";
 
     /**
      * Save an InputStream contents into file storage on middleware.
