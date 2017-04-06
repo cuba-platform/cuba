@@ -23,7 +23,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -56,7 +56,7 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
 
     public static final String ACTION_ID = ListActionType.EDIT.getId();
 
-    protected WindowManager.OpenType openType;
+    protected OpenType openType;
 
     protected String windowId;
     protected Map<String, Object> windowParams;
@@ -103,7 +103,7 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      * @param target    component containing this action
      * @param openType  how to open the editor screen
      */
-    public static EditAction create(ListComponent target, WindowManager.OpenType openType) {
+    public static EditAction create(ListComponent target, OpenType openType) {
         return AppBeans.getPrototype("cuba_EditAction", target, openType);
     }
 
@@ -113,7 +113,7 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      * @param openType  how to open the editor screen
      * @param id        action name
      */
-    public static EditAction create(ListComponent target, WindowManager.OpenType openType, String id) {
+    public static EditAction create(ListComponent target, OpenType openType, String id) {
         return AppBeans.getPrototype("cuba_EditAction", target, openType, id);
     }
 
@@ -122,7 +122,7 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      * @param target    component containing this action
      */
     public EditAction(ListComponent target) {
-        this(target, WindowManager.OpenType.THIS_TAB, ACTION_ID);
+        this(target, OpenType.THIS_TAB, ACTION_ID);
     }
 
     /**
@@ -130,7 +130,7 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      * @param target    component containing this action
      * @param openType  how to open the editor screen
      */
-    public EditAction(ListComponent target, WindowManager.OpenType openType) {
+    public EditAction(ListComponent target, OpenType openType) {
         this(target, openType, ACTION_ID);
     }
 
@@ -140,7 +140,7 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      * @param openType  how to open the editor screen
      * @param id        action name
      */
-    public EditAction(ListComponent target, WindowManager.OpenType openType, String id) {
+    public EditAction(ListComponent target, OpenType openType, String id) {
         super(id);
 
         this.target = target;
@@ -305,7 +305,7 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      * @return  editor screen open type
      */
     @Override
-    public WindowManager.OpenType getOpenType() {
+    public OpenType getOpenType() {
         return openType;
     }
 
@@ -313,7 +313,7 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      * @param openType  editor screen open type
      */
     @Override
-    public void setOpenType(WindowManager.OpenType openType) {
+    public void setOpenType(OpenType openType) {
         this.openType = openType;
     }
 
@@ -427,7 +427,7 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      */
     public static class BulkEditorIntegration {
         protected boolean enabled = false;
-        protected WindowManager.OpenType openType = WindowManager.OpenType.THIS_TAB;
+        protected OpenType openType = OpenType.DIALOG;
         protected String excludePropertiesRegex;
         protected Map<String, Field.Validator> fieldValidators;
         protected List<Field.Validator> modelValidators;
@@ -442,11 +442,11 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
             return this;
         }
 
-        public WindowManager.OpenType getOpenType() {
+        public OpenType getOpenType() {
             return openType;
         }
 
-        public BulkEditorIntegration setOpenType(WindowManager.OpenType openType) {
+        public BulkEditorIntegration setOpenType(OpenType openType) {
             this.openType = openType;
             return this;
         }
