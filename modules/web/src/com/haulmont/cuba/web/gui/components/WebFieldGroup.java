@@ -152,8 +152,8 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
 
     @Override
     public void addField(FieldConfig fc, int colIndex) {
-        checkArgument(!fields.containsKey(fc.getId()), "Field is alredy registered");
-        checkArgument(this == ((FieldConfigImpl) fc).getOwner(), "Field is not belong to this FieldGroup");
+        checkArgument(!fields.containsKey(fc.getId()), "Field is already registered");
+        checkArgument(this == ((FieldConfigImpl) fc).getOwner(), "Field does not belong to this FieldGroup");
 
         if (colIndex < 0 || colIndex >= component.getColumns()) {
             throw new IllegalArgumentException(String.format("Illegal column number %s, available amount of columns is %s",
@@ -165,8 +165,8 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
 
     @Override
     public void addField(FieldConfig fc, int colIndex, int rowIndex) {
-        checkArgument(!fields.containsKey(fc.getId()), "Field is alredy registered");
-        checkArgument(this == ((FieldConfigImpl) fc).getOwner(), "Field is not belong to this FieldGroup");
+        checkArgument(!fields.containsKey(fc.getId()), "Field is already registered");
+        checkArgument(this == ((FieldConfigImpl) fc).getOwner(), "Field does not belong to this FieldGroup");
 
         if (colIndex < 0 || colIndex >= component.getColumns()) {
             throw new IllegalArgumentException(String.format("Illegal column number %s, available amount of columns is %s",
