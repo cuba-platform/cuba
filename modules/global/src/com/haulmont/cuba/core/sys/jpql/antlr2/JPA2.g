@@ -463,7 +463,7 @@ nullif_expression
 
 extension_functions
     : 'CAST(' function_arg WORD ('('INT_NUMERAL (',' INT_NUMERAL)*  ')')* ')'
-    | 'EXTRACT(' date_part 'FROM' function_arg ')'
+    | 'EXTRACT(' date_part ('FROM' | ',') function_arg ')'
     | '@ENUM' '(' enum_value_literal ')' -> ^(T_ENUM_MACROS<EnumConditionNode>[$enum_value_literal.text]);
 
 fragment date_part
