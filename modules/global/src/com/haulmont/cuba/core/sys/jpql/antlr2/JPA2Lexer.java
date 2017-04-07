@@ -1,5 +1,3 @@
-// $ANTLR 3.5.2 JPA2.g 2017-03-03 18:40:01
-
 package com.haulmont.cuba.core.sys.jpql.antlr2;
 
 
