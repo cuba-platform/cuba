@@ -493,7 +493,7 @@ field
     : WORD | 'SELECT' | 'FROM' | 'GROUP' | 'ORDER' | 'MAX' | 'MIN' | 'SUM' | 'AVG' | 'COUNT' | 'AS' | 'MEMBER' | date_part;
 
 identification_variable
-    : WORD;
+    : WORD | 'GROUP';
 
 parameter_name
     : WORD ('.'  WORD)*;

@@ -467,7 +467,7 @@ public class JPA2Parser extends Parser {
 			}
 
 			// AST REWRITE
-			// elements: where_clause, select_clause, groupby_clause, orderby_clause, from_clause, having_clause
+			// elements: orderby_clause, from_clause, where_clause, having_clause, select_clause, groupby_clause
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -603,7 +603,7 @@ public class JPA2Parser extends Parser {
 			}
 
 			// AST REWRITE
-			// elements: where_clause, update_clause
+			// elements: update_clause, where_clause
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -715,7 +715,7 @@ public class JPA2Parser extends Parser {
 			}
 
 			// AST REWRITE
-			// elements: where_clause, delete_clause
+			// elements: delete_clause, where_clause
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -839,7 +839,7 @@ public class JPA2Parser extends Parser {
 			}
 
 			// AST REWRITE
-			// elements: identification_variable_declaration_or_collection_member_declaration, identification_variable_declaration
+			// elements: identification_variable_declaration, identification_variable_declaration_or_collection_member_declaration
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -1223,7 +1223,7 @@ public class JPA2Parser extends Parser {
 					int LA12_4 = input.LA(3);
 					if ( (LA12_4==JOIN) ) {
 						int LA12_3 = input.LA(4);
-						if ( (LA12_3==WORD||LA12_3==132) ) {
+						if ( (LA12_3==GROUP||LA12_3==WORD||LA12_3==132) ) {
 							alt12=1;
 						}
 						else if ( (LA12_3==FETCH) ) {
@@ -1265,7 +1265,7 @@ public class JPA2Parser extends Parser {
 				}
 				else if ( (LA12_1==JOIN) ) {
 					int LA12_3 = input.LA(3);
-					if ( (LA12_3==WORD||LA12_3==132) ) {
+					if ( (LA12_3==GROUP||LA12_3==WORD||LA12_3==132) ) {
 						alt12=1;
 					}
 					else if ( (LA12_3==FETCH) ) {
@@ -1309,7 +1309,7 @@ public class JPA2Parser extends Parser {
 				int LA12_2 = input.LA(2);
 				if ( (LA12_2==JOIN) ) {
 					int LA12_3 = input.LA(3);
-					if ( (LA12_3==WORD||LA12_3==132) ) {
+					if ( (LA12_3==GROUP||LA12_3==WORD||LA12_3==132) ) {
 						alt12=1;
 					}
 					else if ( (LA12_3==FETCH) ) {
@@ -1351,7 +1351,7 @@ public class JPA2Parser extends Parser {
 			case JOIN:
 				{
 				int LA12_3 = input.LA(2);
-				if ( (LA12_3==WORD||LA12_3==132) ) {
+				if ( (LA12_3==GROUP||LA12_3==WORD||LA12_3==132) ) {
 					alt12=1;
 				}
 				else if ( (LA12_3==FETCH) ) {
@@ -1628,7 +1628,7 @@ public class JPA2Parser extends Parser {
 			}
 
 			// AST REWRITE
-			// elements: conditional_expression, join_association_path_expression
+			// elements: join_association_path_expression, conditional_expression
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -1921,8 +1921,9 @@ public class JPA2Parser extends Parser {
 		try {
 			// JPA2.g:121:6: ( identification_variable '.' ( field '.' )* ( field )? -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) | 'TREAT(' identification_variable '.' ( field '.' )* ( field )? 'AS' subtype ')' -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) | entity_name )
 			int alt22=3;
-			int LA22_0 = input.LA(1);
-			if ( (LA22_0==WORD) ) {
+			switch ( input.LA(1) ) {
+			case WORD:
+				{
 				int LA22_1 = input.LA(2);
 				if ( (LA22_1==62) ) {
 					alt22=1;
@@ -1944,18 +1945,24 @@ public class JPA2Parser extends Parser {
 					}
 				}
 
-			}
-			else if ( (LA22_0==132) ) {
+				}
+				break;
+			case 132:
+				{
 				alt22=2;
-			}
-
-			else {
+				}
+				break;
+			case GROUP:
+				{
+				alt22=1;
+				}
+				break;
+			default:
 				if (state.backtracking>0) {state.failed=true; return retval;}
 				NoViableAltException nvae =
 					new NoViableAltException("", 22, 0, input);
 				throw nvae;
 			}
-
 			switch (alt22) {
 				case 1 :
 					// JPA2.g:121:8: identification_variable '.' ( field '.' )* ( field )?
@@ -2154,7 +2161,7 @@ public class JPA2Parser extends Parser {
 						case GROUP:
 							{
 							int LA19_3 = input.LA(2);
-							if ( (LA19_3==EOF||(LA19_3 >= GROUP && LA19_3 <= HAVING)||LA19_3==INNER||(LA19_3 >= JOIN && LA19_3 <= LEFT)||LA19_3==ORDER||LA19_3==RPAREN||LA19_3==SET||LA19_3==WORD||LA19_3==60||LA19_3==81||LA19_3==105||LA19_3==140) ) {
+							if ( (synpred21_JPA2()) ) {
 								alt19=1;
 							}
 							}
@@ -3156,15 +3163,65 @@ public class JPA2Parser extends Parser {
 					break;
 				case 111:
 					{
-					int LA27_7 = input.LA(2);
-					if ( (LA27_7==EOF||(LA27_7 >= AND && LA27_7 <= ASC)||LA27_7==DESC||(LA27_7 >= GROUP && LA27_7 <= INNER)||(LA27_7 >= JOIN && LA27_7 <= LEFT)||(LA27_7 >= NOT && LA27_7 <= ORDER)||LA27_7==RPAREN||LA27_7==SET||(LA27_7 >= 58 && LA27_7 <= 61)||LA27_7==63||(LA27_7 >= 65 && LA27_7 <= 70)||(LA27_7 >= 81 && LA27_7 <= 82)||LA27_7==93||LA27_7==95||LA27_7==98||LA27_7==101||LA27_7==105||LA27_7==109||LA27_7==111||LA27_7==123||LA27_7==130||(LA27_7 >= 139 && LA27_7 <= 140)) ) {
-						alt27=1;
-					}
-					else if ( (LA27_7==WORD) ) {
-						int LA27_11 = input.LA(3);
-						if ( (LA27_11==EOF||LA27_11==LPAREN||LA27_11==RPAREN||LA27_11==60||LA27_11==101) ) {
+					switch ( input.LA(2) ) {
+						case EOF:
+						case AND:
+						case ASC:
+						case DESC:
+						case HAVING:
+						case IN:
+						case INNER:
+						case JOIN:
+						case LEFT:
+						case NOT:
+						case OR:
+						case ORDER:
+						case RPAREN:
+						case SET:
+						case 58:
+						case 59:
+						case 60:
+						case 61:
+						case 63:
+						case 65:
+						case 66:
+						case 67:
+						case 68:
+						case 69:
+						case 70:
+						case 81:
+						case 82:
+						case 93:
+						case 95:
+						case 98:
+						case 101:
+						case 105:
+						case 109:
+						case 111:
+						case 123:
+						case 130:
+						case 139:
+						case 140:
+							{
 							alt27=1;
-						}
+							}
+							break;
+						case WORD:
+							{
+							int LA27_11 = input.LA(3);
+							if ( (LA27_11==EOF||LA27_11==LPAREN||LA27_11==RPAREN||LA27_11==60||LA27_11==101) ) {
+								alt27=1;
+							}
+							}
+							break;
+						case GROUP:
+							{
+							int LA27_12 = input.LA(3);
+							if ( (LA27_12==BY) ) {
+								alt27=1;
+							}
+							}
+							break;
 					}
 					}
 					break;
@@ -3261,7 +3318,7 @@ public class JPA2Parser extends Parser {
 			// JPA2.g:146:5: ( identification_variable | map_field_identification_variable )
 			int alt28=2;
 			int LA28_0 = input.LA(1);
-			if ( (LA28_0==WORD) ) {
+			if ( (LA28_0==GROUP||LA28_0==WORD) ) {
 				alt28=1;
 			}
 			else if ( (LA28_0==106||LA28_0==137) ) {
@@ -3401,7 +3458,7 @@ public class JPA2Parser extends Parser {
 			}
 
 			// AST REWRITE
-			// elements: identification_variable_declaration, 60, update_item, update_item, SET
+			// elements: update_item, SET, 60, identification_variable_declaration, update_item
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -3622,9 +3679,9 @@ public class JPA2Parser extends Parser {
 				{
 				int LA30_3 = input.LA(2);
 				if ( (LA30_3==64) ) {
-					int LA30_8 = input.LA(3);
-					if ( (LA30_8==INT_NUMERAL) ) {
-						int LA30_9 = input.LA(4);
+					int LA30_9 = input.LA(3);
+					if ( (LA30_9==INT_NUMERAL) ) {
+						int LA30_10 = input.LA(4);
 						if ( (synpred33_JPA2()) ) {
 							alt30=1;
 						}
@@ -3640,7 +3697,7 @@ public class JPA2Parser extends Parser {
 									input.consume();
 								}
 								NoViableAltException nvae =
-									new NoViableAltException("", 30, 9, input);
+									new NoViableAltException("", 30, 10, input);
 								throw nvae;
 							} finally {
 								input.rewind(nvaeMark);
@@ -3657,7 +3714,7 @@ public class JPA2Parser extends Parser {
 								input.consume();
 							}
 							NoViableAltException nvae =
-								new NoViableAltException("", 30, 8, input);
+								new NoViableAltException("", 30, 9, input);
 							throw nvae;
 						} finally {
 							input.rewind(nvaeMark);
@@ -3666,7 +3723,7 @@ public class JPA2Parser extends Parser {
 
 				}
 				else if ( (LA30_3==INT_NUMERAL) ) {
-					int LA30_9 = input.LA(3);
+					int LA30_10 = input.LA(3);
 					if ( (synpred33_JPA2()) ) {
 						alt30=1;
 					}
@@ -3682,7 +3739,7 @@ public class JPA2Parser extends Parser {
 								input.consume();
 							}
 							NoViableAltException nvae =
-								new NoViableAltException("", 30, 9, input);
+								new NoViableAltException("", 30, 10, input);
 							throw nvae;
 						} finally {
 							input.rewind(nvaeMark);
@@ -3735,9 +3792,9 @@ public class JPA2Parser extends Parser {
 				{
 				int LA30_5 = input.LA(2);
 				if ( (LA30_5==WORD) ) {
-					int LA30_10 = input.LA(3);
-					if ( (LA30_10==144) ) {
-						int LA30_11 = input.LA(4);
+					int LA30_11 = input.LA(3);
+					if ( (LA30_11==144) ) {
+						int LA30_12 = input.LA(4);
 						if ( (synpred33_JPA2()) ) {
 							alt30=1;
 						}
@@ -3753,7 +3810,7 @@ public class JPA2Parser extends Parser {
 									input.consume();
 								}
 								NoViableAltException nvae =
-									new NoViableAltException("", 30, 11, input);
+									new NoViableAltException("", 30, 12, input);
 								throw nvae;
 							} finally {
 								input.rewind(nvaeMark);
@@ -3770,7 +3827,7 @@ public class JPA2Parser extends Parser {
 								input.consume();
 							}
 							NoViableAltException nvae =
-								new NoViableAltException("", 30, 10, input);
+								new NoViableAltException("", 30, 11, input);
 							throw nvae;
 						} finally {
 							input.rewind(nvaeMark);
@@ -3786,6 +3843,31 @@ public class JPA2Parser extends Parser {
 						input.consume();
 						NoViableAltException nvae =
 							new NoViableAltException("", 30, 5, input);
+						throw nvae;
+					} finally {
+						input.rewind(nvaeMark);
+					}
+				}
+
+				}
+				break;
+			case GROUP:
+				{
+				int LA30_6 = input.LA(2);
+				if ( (LA30_6==62) ) {
+					alt30=1;
+				}
+				else if ( (LA30_6==EOF||LA30_6==60||LA30_6==140) ) {
+					alt30=2;
+				}
+
+				else {
+					if (state.backtracking>0) {state.failed=true; return retval;}
+					int nvaeMark = input.mark();
+					try {
+						input.consume();
+						NoViableAltException nvae =
+							new NoViableAltException("", 30, 6, input);
 						throw nvae;
 					} finally {
 						input.rewind(nvaeMark);
@@ -4037,7 +4119,7 @@ public class JPA2Parser extends Parser {
 			}
 
 			// AST REWRITE
-			// elements: select_item, DISTINCT
+			// elements: DISTINCT, select_item
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -4374,6 +4456,34 @@ public class JPA2Parser extends Parser {
 						input.consume();
 						NoViableAltException nvae =
 							new NoViableAltException("", 36, 18, input);
+						throw nvae;
+					} finally {
+						input.rewind(nvaeMark);
+					}
+				}
+
+				}
+				break;
+			case GROUP:
+				{
+				int LA36_31 = input.LA(2);
+				if ( (synpred43_JPA2()) ) {
+					alt36=1;
+				}
+				else if ( (synpred44_JPA2()) ) {
+					alt36=2;
+				}
+				else if ( (synpred45_JPA2()) ) {
+					alt36=3;
+				}
+
+				else {
+					if (state.backtracking>0) {state.failed=true; return retval;}
+					int nvaeMark = input.mark();
+					try {
+						input.consume();
+						NoViableAltException nvae =
+							new NoViableAltException("", 36, 31, input);
 						throw nvae;
 					} finally {
 						input.rewind(nvaeMark);
@@ -4854,6 +4964,21 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
+			case GROUP:
+				{
+				int LA38_31 = input.LA(2);
+				if ( (synpred49_JPA2()) ) {
+					alt38=1;
+				}
+				else if ( (synpred50_JPA2()) ) {
+					alt38=2;
+				}
+				else if ( (true) ) {
+					alt38=4;
+				}
+
+				}
+				break;
 			default:
 				if (state.backtracking>0) {state.failed=true; return retval;}
 				NoViableAltException nvae =
@@ -5024,7 +5149,7 @@ public class JPA2Parser extends Parser {
 					if ( state.backtracking==0 ) stream_RPAREN.add(char_literal123);
 
 					// AST REWRITE
-					// elements: path_expression, aggregate_expression_function_name, LPAREN, DISTINCT, RPAREN
+					// elements: DISTINCT, aggregate_expression_function_name, LPAREN, path_expression, RPAREN
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -5098,7 +5223,7 @@ public class JPA2Parser extends Parser {
 					if ( state.backtracking==0 ) stream_RPAREN.add(char_literal128);
 
 					// AST REWRITE
-					// elements: DISTINCT, LPAREN, count_argument, RPAREN, COUNT
+					// elements: LPAREN, COUNT, DISTINCT, RPAREN, count_argument
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -5255,7 +5380,7 @@ public class JPA2Parser extends Parser {
 			// JPA2.g:191:5: ( identification_variable | path_expression )
 			int alt42=2;
 			int LA42_0 = input.LA(1);
-			if ( (LA42_0==WORD) ) {
+			if ( (LA42_0==GROUP||LA42_0==WORD) ) {
 				int LA42_1 = input.LA(2);
 				if ( (LA42_1==RPAREN) ) {
 					alt42=1;
@@ -5495,7 +5620,7 @@ public class JPA2Parser extends Parser {
 			}
 
 			// AST REWRITE
-			// elements: GROUP, groupby_item, BY
+			// elements: groupby_item, BY, GROUP
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -5574,7 +5699,7 @@ public class JPA2Parser extends Parser {
 			// JPA2.g:198:5: ( path_expression | identification_variable )
 			int alt44=2;
 			int LA44_0 = input.LA(1);
-			if ( (LA44_0==WORD) ) {
+			if ( (LA44_0==GROUP||LA44_0==WORD) ) {
 				int LA44_1 = input.LA(2);
 				if ( (LA44_1==62) ) {
 					alt44=1;
@@ -5791,7 +5916,7 @@ public class JPA2Parser extends Parser {
 			}
 
 			// AST REWRITE
-			// elements: orderby_item, ORDER, BY
+			// elements: BY, ORDER, orderby_item
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -6016,6 +6141,34 @@ public class JPA2Parser extends Parser {
 				alt47=2;
 				}
 				break;
+			case GROUP:
+				{
+				int LA47_4 = input.LA(2);
+				if ( (synpred65_JPA2()) ) {
+					alt47=1;
+				}
+				else if ( (synpred66_JPA2()) ) {
+					alt47=2;
+				}
+				else if ( (synpred68_JPA2()) ) {
+					alt47=4;
+				}
+
+				else {
+					if (state.backtracking>0) {state.failed=true; return retval;}
+					int nvaeMark = input.mark();
+					try {
+						input.consume();
+						NoViableAltException nvae =
+							new NoViableAltException("", 47, 4, input);
+						throw nvae;
+					} finally {
+						input.rewind(nvaeMark);
+					}
+				}
+
+				}
+				break;
 			case INT_NUMERAL:
 			case LOWER:
 			case LPAREN:
@@ -6055,7 +6208,7 @@ public class JPA2Parser extends Parser {
 				break;
 			case COUNT:
 				{
-				int LA47_18 = input.LA(2);
+				int LA47_19 = input.LA(2);
 				if ( (synpred68_JPA2()) ) {
 					alt47=4;
 				}
@@ -6070,7 +6223,7 @@ public class JPA2Parser extends Parser {
 			case MIN:
 			case SUM:
 				{
-				int LA47_19 = input.LA(2);
+				int LA47_20 = input.LA(2);
 				if ( (synpred68_JPA2()) ) {
 					alt47=4;
 				}
@@ -6082,7 +6235,7 @@ public class JPA2Parser extends Parser {
 				break;
 			case 102:
 				{
-				int LA47_20 = input.LA(2);
+				int LA47_21 = input.LA(2);
 				if ( (synpred68_JPA2()) ) {
 					alt47=4;
 				}
@@ -6371,7 +6524,7 @@ public class JPA2Parser extends Parser {
 			if ( state.backtracking==0 ) stream_RPAREN.add(rp);
 
 			// AST REWRITE
-			// elements: subquery_from_clause, simple_select_clause, groupby_clause, 125, where_clause, having_clause
+			// elements: simple_select_clause, having_clause, 125, where_clause, subquery_from_clause, groupby_clause
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -6600,7 +6753,7 @@ public class JPA2Parser extends Parser {
 			case WORD:
 				{
 				int LA53_1 = input.LA(2);
-				if ( (LA53_1==WORD||LA53_1==81) ) {
+				if ( (LA53_1==GROUP||LA53_1==WORD||LA53_1==81) ) {
 					alt53=1;
 				}
 				else if ( (LA53_1==62) ) {
@@ -7335,7 +7488,7 @@ public class JPA2Parser extends Parser {
 			if (state.failed) return retval;
 			if ( state.backtracking==0 ) stream_simple_select_expression.add(simple_select_expression194.getTree());
 			// AST REWRITE
-			// elements: DISTINCT, simple_select_expression
+			// elements: simple_select_expression, DISTINCT
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -7548,6 +7701,21 @@ public class JPA2Parser extends Parser {
 					} finally {
 						input.rewind(nvaeMark);
 					}
+				}
+
+				}
+				break;
+			case GROUP:
+				{
+				int LA59_31 = input.LA(2);
+				if ( (synpred82_JPA2()) ) {
+					alt59=1;
+				}
+				else if ( (synpred83_JPA2()) ) {
+					alt59=2;
+				}
+				else if ( (true) ) {
+					alt59=4;
 				}
 
 				}
@@ -8114,6 +8282,40 @@ public class JPA2Parser extends Parser {
 				alt60=2;
 				}
 				break;
+			case GROUP:
+				{
+				int LA60_31 = input.LA(2);
+				if ( (synpred85_JPA2()) ) {
+					alt60=1;
+				}
+				else if ( (synpred86_JPA2()) ) {
+					alt60=2;
+				}
+				else if ( (synpred87_JPA2()) ) {
+					alt60=3;
+				}
+				else if ( (synpred88_JPA2()) ) {
+					alt60=4;
+				}
+				else if ( (synpred89_JPA2()) ) {
+					alt60=5;
+				}
+
+				else {
+					if (state.backtracking>0) {state.failed=true; return retval;}
+					int nvaeMark = input.mark();
+					try {
+						input.consume();
+						NoViableAltException nvae =
+							new NoViableAltException("", 60, 31, input);
+						throw nvae;
+					} finally {
+						input.rewind(nvaeMark);
+					}
+				}
+
+				}
+				break;
 			case 88:
 			case 89:
 			case 90:
@@ -8554,7 +8756,7 @@ public class JPA2Parser extends Parser {
 			// JPA2.g:260:5: ( simple_cond_expression -> ^( T_SIMPLE_CONDITION[] simple_cond_expression ) | '(' conditional_expression ')' )
 			int alt64=2;
 			int LA64_0 = input.LA(1);
-			if ( (LA64_0==AVG||LA64_0==COUNT||LA64_0==INT_NUMERAL||LA64_0==LOWER||(LA64_0 >= MAX && LA64_0 <= NOT)||(LA64_0 >= STRING_LITERAL && LA64_0 <= SUM)||LA64_0==WORD||LA64_0==57||LA64_0==59||LA64_0==61||LA64_0==64||(LA64_0 >= 71 && LA64_0 <= 78)||(LA64_0 >= 84 && LA64_0 <= 90)||(LA64_0 >= 99 && LA64_0 <= 100)||LA64_0==102||LA64_0==104||LA64_0==108||LA64_0==110||LA64_0==113||LA64_0==118||LA64_0==126||(LA64_0 >= 128 && LA64_0 <= 129)||(LA64_0 >= 132 && LA64_0 <= 134)||LA64_0==136||(LA64_0 >= 142 && LA64_0 <= 143)) ) {
+			if ( (LA64_0==AVG||LA64_0==COUNT||LA64_0==GROUP||LA64_0==INT_NUMERAL||LA64_0==LOWER||(LA64_0 >= MAX && LA64_0 <= NOT)||(LA64_0 >= STRING_LITERAL && LA64_0 <= SUM)||LA64_0==WORD||LA64_0==57||LA64_0==59||LA64_0==61||LA64_0==64||(LA64_0 >= 71 && LA64_0 <= 78)||(LA64_0 >= 84 && LA64_0 <= 90)||(LA64_0 >= 99 && LA64_0 <= 100)||LA64_0==102||LA64_0==104||LA64_0==108||LA64_0==110||LA64_0==113||LA64_0==118||LA64_0==126||(LA64_0 >= 128 && LA64_0 <= 129)||(LA64_0 >= 132 && LA64_0 <= 134)||LA64_0==136||(LA64_0 >= 142 && LA64_0 <= 143)) ) {
 				alt64=1;
 			}
 			else if ( (LA64_0==LPAREN) ) {
@@ -9294,9 +9496,7 @@ public class JPA2Parser extends Parser {
 				alt65=1;
 				}
 				break;
-			case 88:
-			case 89:
-			case 90:
+			case GROUP:
 				{
 				int LA65_22 = input.LA(2);
 				if ( (synpred95_JPA2()) ) {
@@ -9304,6 +9504,21 @@ public class JPA2Parser extends Parser {
 				}
 				else if ( (synpred96_JPA2()) ) {
 					alt65=2;
+				}
+				else if ( (synpred97_JPA2()) ) {
+					alt65=3;
+				}
+				else if ( (synpred98_JPA2()) ) {
+					alt65=4;
+				}
+				else if ( (synpred99_JPA2()) ) {
+					alt65=5;
+				}
+				else if ( (synpred100_JPA2()) ) {
+					alt65=6;
+				}
+				else if ( (synpred101_JPA2()) ) {
+					alt65=7;
 				}
 
 				else {
@@ -9321,14 +9536,16 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
-			case 134:
+			case 88:
+			case 89:
+			case 90:
 				{
 				int LA65_23 = input.LA(2);
 				if ( (synpred95_JPA2()) ) {
 					alt65=1;
 				}
-				else if ( (synpred97_JPA2()) ) {
-					alt65=3;
+				else if ( (synpred96_JPA2()) ) {
+					alt65=2;
 				}
 
 				else {
@@ -9346,15 +9563,14 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
-			case 59:
-			case 61:
+			case 134:
 				{
 				int LA65_24 = input.LA(2);
 				if ( (synpred95_JPA2()) ) {
 					alt65=1;
 				}
-				else if ( (synpred96_JPA2()) ) {
-					alt65=2;
+				else if ( (synpred97_JPA2()) ) {
+					alt65=3;
 				}
 
 				else {
@@ -9372,7 +9588,8 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
-			case 64:
+			case 59:
+			case 61:
 				{
 				int LA65_25 = input.LA(2);
 				if ( (synpred95_JPA2()) ) {
@@ -9397,7 +9614,7 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
-			case INT_NUMERAL:
+			case 64:
 				{
 				int LA65_26 = input.LA(2);
 				if ( (synpred95_JPA2()) ) {
@@ -9422,7 +9639,7 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
-			case 108:
+			case INT_NUMERAL:
 				{
 				int LA65_27 = input.LA(2);
 				if ( (synpred95_JPA2()) ) {
@@ -9447,7 +9664,7 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
-			case 110:
+			case 108:
 				{
 				int LA65_28 = input.LA(2);
 				if ( (synpred95_JPA2()) ) {
@@ -9472,7 +9689,7 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
-			case 78:
+			case 110:
 				{
 				int LA65_29 = input.LA(2);
 				if ( (synpred95_JPA2()) ) {
@@ -9497,7 +9714,7 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
-			case 128:
+			case 78:
 				{
 				int LA65_30 = input.LA(2);
 				if ( (synpred95_JPA2()) ) {
@@ -9522,7 +9739,7 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
-			case 113:
+			case 128:
 				{
 				int LA65_31 = input.LA(2);
 				if ( (synpred95_JPA2()) ) {
@@ -9547,7 +9764,7 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
-			case 126:
+			case 113:
 				{
 				int LA65_32 = input.LA(2);
 				if ( (synpred95_JPA2()) ) {
@@ -9572,7 +9789,7 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
-			case 104:
+			case 126:
 				{
 				int LA65_33 = input.LA(2);
 				if ( (synpred95_JPA2()) ) {
@@ -9589,6 +9806,31 @@ public class JPA2Parser extends Parser {
 						input.consume();
 						NoViableAltException nvae =
 							new NoViableAltException("", 65, 33, input);
+						throw nvae;
+					} finally {
+						input.rewind(nvaeMark);
+					}
+				}
+
+				}
+				break;
+			case 104:
+				{
+				int LA65_34 = input.LA(2);
+				if ( (synpred95_JPA2()) ) {
+					alt65=1;
+				}
+				else if ( (synpred96_JPA2()) ) {
+					alt65=2;
+				}
+
+				else {
+					if (state.backtracking>0) {state.failed=true; return retval;}
+					int nvaeMark = input.mark();
+					try {
+						input.consume();
+						NoViableAltException nvae =
+							new NoViableAltException("", 65, 34, input);
 						throw nvae;
 					} finally {
 						input.rewind(nvaeMark);
@@ -10187,7 +10429,7 @@ public class JPA2Parser extends Parser {
 			// JPA2.g:286:45: ( path_expression | input_parameter )
 			int alt69=2;
 			int LA69_0 = input.LA(1);
-			if ( (LA69_0==WORD) ) {
+			if ( (LA69_0==GROUP||LA69_0==WORD) ) {
 				alt69=1;
 			}
 			else if ( (LA69_0==NAMED_PARAMETER||LA69_0==57||LA69_0==71) ) {
@@ -10317,7 +10559,7 @@ public class JPA2Parser extends Parser {
 			// JPA2.g:289:44: ( path_expression | input_parameter )
 			int alt70=2;
 			int LA70_0 = input.LA(1);
-			if ( (LA70_0==WORD) ) {
+			if ( (LA70_0==GROUP||LA70_0==WORD) ) {
 				alt70=1;
 			}
 			else if ( (LA70_0==NAMED_PARAMETER||LA70_0==57||LA70_0==71) ) {
@@ -10447,7 +10689,7 @@ public class JPA2Parser extends Parser {
 			// JPA2.g:292:45: ( path_expression | input_parameter )
 			int alt71=2;
 			int LA71_0 = input.LA(1);
-			if ( (LA71_0==WORD) ) {
+			if ( (LA71_0==GROUP||LA71_0==WORD) ) {
 				alt71=1;
 			}
 			else if ( (LA71_0==NAMED_PARAMETER||LA71_0==57||LA71_0==71) ) {
@@ -10885,6 +11127,21 @@ public class JPA2Parser extends Parser {
 				alt75=3;
 				}
 				break;
+			case GROUP:
+				{
+				int LA75_32 = input.LA(2);
+				if ( (synpred120_JPA2()) ) {
+					alt75=1;
+				}
+				else if ( (synpred122_JPA2()) ) {
+					alt75=2;
+				}
+				else if ( (true) ) {
+					alt75=3;
+				}
+
+				}
+				break;
 			default:
 				if (state.backtracking>0) {state.failed=true; return retval;}
 				NoViableAltException nvae =
@@ -11140,7 +11397,7 @@ public class JPA2Parser extends Parser {
 			// JPA2.g:303:7: ( path_expression | type_discriminator | identification_variable )
 			int alt76=3;
 			int LA76_0 = input.LA(1);
-			if ( (LA76_0==WORD) ) {
+			if ( (LA76_0==GROUP||LA76_0==WORD) ) {
 				int LA76_1 = input.LA(2);
 				if ( (LA76_1==62) ) {
 					alt76=1;
@@ -11280,6 +11537,11 @@ public class JPA2Parser extends Parser {
 				case 71:
 					{
 					alt79=1;
+					}
+					break;
+				case GROUP:
+					{
+					alt79=4;
 					}
 					break;
 				default:
@@ -11594,6 +11856,7 @@ public class JPA2Parser extends Parser {
 			switch ( input.LA(1) ) {
 			case AVG:
 			case COUNT:
+			case GROUP:
 			case LOWER:
 			case LPAREN:
 			case MAX:
@@ -11890,7 +12153,7 @@ public class JPA2Parser extends Parser {
 				{
 				int LA84_1 = input.LA(2);
 				if ( (LA84_1==62) ) {
-					int LA84_4 = input.LA(3);
+					int LA84_5 = input.LA(3);
 					if ( (synpred136_JPA2()) ) {
 						alt84=1;
 					}
@@ -11928,6 +12191,35 @@ public class JPA2Parser extends Parser {
 			case 132:
 				{
 				alt84=3;
+				}
+				break;
+			case GROUP:
+				{
+				int LA84_4 = input.LA(2);
+				if ( (LA84_4==62) ) {
+					int LA84_6 = input.LA(3);
+					if ( (synpred136_JPA2()) ) {
+						alt84=1;
+					}
+					else if ( (true) ) {
+						alt84=3;
+					}
+
+				}
+
+				else {
+					if (state.backtracking>0) {state.failed=true; return retval;}
+					int nvaeMark = input.mark();
+					try {
+						input.consume();
+						NoViableAltException nvae =
+							new NoViableAltException("", 84, 4, input);
+						throw nvae;
+					} finally {
+						input.rewind(nvaeMark);
+					}
+				}
+
 				}
 				break;
 			default:
@@ -12290,6 +12582,31 @@ public class JPA2Parser extends Parser {
 				alt89=2;
 				}
 				break;
+			case GROUP:
+				{
+				int LA89_3 = input.LA(2);
+				if ( (LA89_3==62) ) {
+					alt89=1;
+				}
+				else if ( (LA89_3==NOT||LA89_3==111) ) {
+					alt89=2;
+				}
+
+				else {
+					if (state.backtracking>0) {state.failed=true; return retval;}
+					int nvaeMark = input.mark();
+					try {
+						input.consume();
+						NoViableAltException nvae =
+							new NoViableAltException("", 89, 3, input);
+						throw nvae;
+					} finally {
+						input.rewind(nvaeMark);
+					}
+				}
+
+				}
+				break;
 			case LPAREN:
 				{
 				alt89=3;
@@ -12389,8 +12706,9 @@ public class JPA2Parser extends Parser {
 		try {
 			// JPA2.g:328:5: ( identification_variable | input_parameter | literal )
 			int alt90=3;
-			int LA90_0 = input.LA(1);
-			if ( (LA90_0==WORD) ) {
+			switch ( input.LA(1) ) {
+			case WORD:
+				{
 				int LA90_1 = input.LA(2);
 				if ( (synpred144_JPA2()) ) {
 					alt90=1;
@@ -12399,18 +12717,26 @@ public class JPA2Parser extends Parser {
 					alt90=3;
 				}
 
-			}
-			else if ( (LA90_0==NAMED_PARAMETER||LA90_0==57||LA90_0==71) ) {
+				}
+				break;
+			case NAMED_PARAMETER:
+			case 57:
+			case 71:
+				{
 				alt90=2;
-			}
-
-			else {
+				}
+				break;
+			case GROUP:
+				{
+				alt90=1;
+				}
+				break;
+			default:
 				if (state.backtracking>0) {state.failed=true; return retval;}
 				NoViableAltException nvae =
 					new NoViableAltException("", 90, 0, input);
 				throw nvae;
 			}
-
 			switch (alt90) {
 				case 1 :
 					// JPA2.g:328:7: identification_variable
@@ -12994,6 +13320,30 @@ public class JPA2Parser extends Parser {
 				alt99=2;
 				}
 				break;
+			case GROUP:
+				{
+				int LA99_22 = input.LA(2);
+				if ( (synpred151_JPA2()) ) {
+					alt99=1;
+				}
+				else if ( (synpred154_JPA2()) ) {
+					alt99=2;
+				}
+				else if ( (synpred157_JPA2()) ) {
+					alt99=3;
+				}
+				else if ( (synpred159_JPA2()) ) {
+					alt99=4;
+				}
+				else if ( (synpred162_JPA2()) ) {
+					alt99=5;
+				}
+				else if ( (true) ) {
+					alt99=7;
+				}
+
+				}
+				break;
 			case 88:
 			case 89:
 			case 90:
@@ -13086,7 +13436,7 @@ public class JPA2Parser extends Parser {
 					// JPA2.g:336:58: ( string_expression | all_or_any_expression )
 					int alt93=2;
 					int LA93_0 = input.LA(1);
-					if ( (LA93_0==AVG||LA93_0==COUNT||(LA93_0 >= LOWER && LA93_0 <= NAMED_PARAMETER)||(LA93_0 >= STRING_LITERAL && LA93_0 <= SUM)||LA93_0==WORD||LA93_0==57||LA93_0==71||LA93_0==76||(LA93_0 >= 84 && LA93_0 <= 87)||LA93_0==100||LA93_0==102||LA93_0==118||LA93_0==129||LA93_0==133||LA93_0==136) ) {
+					if ( (LA93_0==AVG||LA93_0==COUNT||LA93_0==GROUP||(LA93_0 >= LOWER && LA93_0 <= NAMED_PARAMETER)||(LA93_0 >= STRING_LITERAL && LA93_0 <= SUM)||LA93_0==WORD||LA93_0==57||LA93_0==71||LA93_0==76||(LA93_0 >= 84 && LA93_0 <= 87)||LA93_0==100||LA93_0==102||LA93_0==118||LA93_0==129||LA93_0==133||LA93_0==136) ) {
 						alt93=1;
 					}
 					else if ( ((LA93_0 >= 79 && LA93_0 <= 80)||LA93_0==127) ) {
@@ -13155,7 +13505,7 @@ public class JPA2Parser extends Parser {
 					// JPA2.g:337:39: ( boolean_expression | all_or_any_expression )
 					int alt94=2;
 					int LA94_0 = input.LA(1);
-					if ( (LA94_0==LPAREN||LA94_0==NAMED_PARAMETER||LA94_0==WORD||LA94_0==57||LA94_0==71||LA94_0==76||(LA94_0 >= 84 && LA94_0 <= 86)||LA94_0==100||LA94_0==102||LA94_0==118||(LA94_0 >= 142 && LA94_0 <= 143)) ) {
+					if ( (LA94_0==GROUP||LA94_0==LPAREN||LA94_0==NAMED_PARAMETER||LA94_0==WORD||LA94_0==57||LA94_0==71||LA94_0==76||(LA94_0 >= 84 && LA94_0 <= 86)||LA94_0==100||LA94_0==102||LA94_0==118||(LA94_0 >= 142 && LA94_0 <= 143)) ) {
 						alt94=1;
 					}
 					else if ( ((LA94_0 >= 79 && LA94_0 <= 80)||LA94_0==127) ) {
@@ -13224,7 +13574,7 @@ public class JPA2Parser extends Parser {
 					// JPA2.g:338:34: ( enum_expression | all_or_any_expression )
 					int alt95=2;
 					int LA95_0 = input.LA(1);
-					if ( (LA95_0==LPAREN||LA95_0==NAMED_PARAMETER||LA95_0==WORD||LA95_0==57||LA95_0==71||LA95_0==84||LA95_0==86||LA95_0==118) ) {
+					if ( (LA95_0==GROUP||LA95_0==LPAREN||LA95_0==NAMED_PARAMETER||LA95_0==WORD||LA95_0==57||LA95_0==71||LA95_0==84||LA95_0==86||LA95_0==118) ) {
 						alt95=1;
 					}
 					else if ( ((LA95_0 >= 79 && LA95_0 <= 80)||LA95_0==127) ) {
@@ -13287,7 +13637,7 @@ public class JPA2Parser extends Parser {
 					// JPA2.g:339:47: ( datetime_expression | all_or_any_expression )
 					int alt96=2;
 					int LA96_0 = input.LA(1);
-					if ( (LA96_0==AVG||LA96_0==COUNT||(LA96_0 >= LPAREN && LA96_0 <= NAMED_PARAMETER)||LA96_0==SUM||LA96_0==WORD||LA96_0==57||LA96_0==71||LA96_0==76||(LA96_0 >= 84 && LA96_0 <= 86)||(LA96_0 >= 88 && LA96_0 <= 90)||LA96_0==100||LA96_0==102||LA96_0==118) ) {
+					if ( (LA96_0==AVG||LA96_0==COUNT||LA96_0==GROUP||(LA96_0 >= LPAREN && LA96_0 <= NAMED_PARAMETER)||LA96_0==SUM||LA96_0==WORD||LA96_0==57||LA96_0==71||LA96_0==76||(LA96_0 >= 84 && LA96_0 <= 86)||(LA96_0 >= 88 && LA96_0 <= 90)||LA96_0==100||LA96_0==102||LA96_0==118) ) {
 						alt96=1;
 					}
 					else if ( ((LA96_0 >= 79 && LA96_0 <= 80)||LA96_0==127) ) {
@@ -13356,7 +13706,7 @@ public class JPA2Parser extends Parser {
 					// JPA2.g:340:38: ( entity_expression | all_or_any_expression )
 					int alt97=2;
 					int LA97_0 = input.LA(1);
-					if ( (LA97_0==NAMED_PARAMETER||LA97_0==WORD||LA97_0==57||LA97_0==71) ) {
+					if ( (LA97_0==GROUP||LA97_0==NAMED_PARAMETER||LA97_0==WORD||LA97_0==57||LA97_0==71) ) {
 						alt97=1;
 					}
 					else if ( ((LA97_0 >= 79 && LA97_0 <= 80)||LA97_0==127) ) {
@@ -13451,7 +13801,7 @@ public class JPA2Parser extends Parser {
 					// JPA2.g:342:49: ( arithmetic_expression | all_or_any_expression )
 					int alt98=2;
 					int LA98_0 = input.LA(1);
-					if ( (LA98_0==AVG||LA98_0==COUNT||LA98_0==INT_NUMERAL||(LA98_0 >= LPAREN && LA98_0 <= NAMED_PARAMETER)||LA98_0==SUM||LA98_0==WORD||LA98_0==57||LA98_0==59||LA98_0==61||LA98_0==64||LA98_0==71||LA98_0==76||LA98_0==78||(LA98_0 >= 84 && LA98_0 <= 86)||LA98_0==100||LA98_0==102||LA98_0==104||LA98_0==108||LA98_0==110||LA98_0==113||LA98_0==118||LA98_0==126||LA98_0==128) ) {
+					if ( (LA98_0==AVG||LA98_0==COUNT||LA98_0==GROUP||LA98_0==INT_NUMERAL||(LA98_0 >= LPAREN && LA98_0 <= NAMED_PARAMETER)||LA98_0==SUM||LA98_0==WORD||LA98_0==57||LA98_0==59||LA98_0==61||LA98_0==64||LA98_0==71||LA98_0==76||LA98_0==78||(LA98_0 >= 84 && LA98_0 <= 86)||LA98_0==100||LA98_0==102||LA98_0==104||LA98_0==108||LA98_0==110||LA98_0==113||LA98_0==118||LA98_0==126||LA98_0==128) ) {
 						alt98=1;
 					}
 					else if ( ((LA98_0 >= 79 && LA98_0 <= 80)||LA98_0==127) ) {
@@ -13614,6 +13964,7 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
+			case GROUP:
 			case WORD:
 				{
 				int LA100_2 = input.LA(2);
@@ -14007,6 +14358,7 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
+			case GROUP:
 			case WORD:
 				{
 				int LA101_2 = input.LA(2);
@@ -14478,6 +14830,7 @@ public class JPA2Parser extends Parser {
 			// JPA2.g:360:5: ( path_expression | numeric_literal | '(' arithmetic_expression ')' | input_parameter | functions_returning_numerics | aggregate_expression | case_expression | function_invocation | extension_functions | subquery )
 			int alt103=10;
 			switch ( input.LA(1) ) {
+			case GROUP:
 			case WORD:
 				{
 				alt103=1;
@@ -14778,6 +15131,7 @@ public class JPA2Parser extends Parser {
 			// JPA2.g:371:5: ( path_expression | string_literal | input_parameter | functions_returning_strings | aggregate_expression | case_expression | function_invocation | extension_functions | subquery )
 			int alt104=9;
 			switch ( input.LA(1) ) {
+			case GROUP:
 			case WORD:
 				{
 				alt104=1;
@@ -15129,6 +15483,11 @@ public class JPA2Parser extends Parser {
 				alt105=7;
 				}
 				break;
+			case GROUP:
+				{
+				alt105=1;
+				}
+				break;
 			case LPAREN:
 				{
 				alt105=9;
@@ -15317,6 +15676,7 @@ public class JPA2Parser extends Parser {
 			// JPA2.g:391:5: ( path_expression | boolean_literal | input_parameter | case_expression | function_invocation | extension_functions | subquery )
 			int alt106=7;
 			switch ( input.LA(1) ) {
+			case GROUP:
 			case WORD:
 				{
 				alt106=1;
@@ -15537,6 +15897,11 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
+			case GROUP:
+				{
+				alt107=1;
+				}
+				break;
 			case NAMED_PARAMETER:
 			case 57:
 			case 71:
@@ -15678,7 +16043,7 @@ public class JPA2Parser extends Parser {
 			// JPA2.g:405:5: ( path_expression | simple_entity_expression )
 			int alt108=2;
 			int LA108_0 = input.LA(1);
-			if ( (LA108_0==WORD) ) {
+			if ( (LA108_0==GROUP||LA108_0==WORD) ) {
 				int LA108_1 = input.LA(2);
 				if ( (LA108_1==62) ) {
 					alt108=1;
@@ -15786,7 +16151,7 @@ public class JPA2Parser extends Parser {
 			// JPA2.g:408:5: ( identification_variable | input_parameter )
 			int alt109=2;
 			int LA109_0 = input.LA(1);
-			if ( (LA109_0==WORD) ) {
+			if ( (LA109_0==GROUP||LA109_0==WORD) ) {
 				alt109=1;
 			}
 			else if ( (LA109_0==NAMED_PARAMETER||LA109_0==57||LA109_0==71) ) {
@@ -16003,6 +16368,7 @@ public class JPA2Parser extends Parser {
 			// JPA2.g:415:15: ( general_identification_variable | path_expression | input_parameter )
 			int alt111=3;
 			switch ( input.LA(1) ) {
+			case GROUP:
 			case WORD:
 				{
 				int LA111_1 = input.LA(2);
@@ -17140,42 +17506,13 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
-			case 71:
+			case GROUP:
 				{
 				int LA121_2 = input.LA(2);
-				if ( (LA121_2==64) ) {
-					int LA121_8 = input.LA(3);
-					if ( (LA121_8==INT_NUMERAL) ) {
-						int LA121_12 = input.LA(4);
-						if ( (synpred241_JPA2()) ) {
-							alt121=3;
-						}
-						else if ( (true) ) {
-							alt121=4;
-						}
-
-					}
-
-					else {
-						if (state.backtracking>0) {state.failed=true; return retval;}
-						int nvaeMark = input.mark();
-						try {
-							for (int nvaeConsume = 0; nvaeConsume < 3 - 1; nvaeConsume++) {
-								input.consume();
-							}
-							NoViableAltException nvae =
-								new NoViableAltException("", 121, 8, input);
-							throw nvae;
-						} finally {
-							input.rewind(nvaeMark);
-						}
-					}
-
-				}
-				else if ( (LA121_2==INT_NUMERAL) ) {
+				if ( (LA121_2==62) ) {
 					int LA121_9 = input.LA(3);
-					if ( (synpred241_JPA2()) ) {
-						alt121=3;
+					if ( (synpred240_JPA2()) ) {
+						alt121=2;
 					}
 					else if ( (true) ) {
 						alt121=4;
@@ -17198,25 +17535,13 @@ public class JPA2Parser extends Parser {
 
 				}
 				break;
-			case NAMED_PARAMETER:
+			case 71:
 				{
 				int LA121_3 = input.LA(2);
-				if ( (synpred241_JPA2()) ) {
-					alt121=3;
-				}
-				else if ( (true) ) {
-					alt121=4;
-				}
-
-				}
-				break;
-			case 57:
-				{
-				int LA121_4 = input.LA(2);
-				if ( (LA121_4==WORD) ) {
-					int LA121_11 = input.LA(3);
-					if ( (LA121_11==144) ) {
-						int LA121_13 = input.LA(4);
+				if ( (LA121_3==64) ) {
+					int LA121_10 = input.LA(3);
+					if ( (LA121_10==INT_NUMERAL) ) {
+						int LA121_14 = input.LA(4);
 						if ( (synpred241_JPA2()) ) {
 							alt121=3;
 						}
@@ -17234,7 +17559,77 @@ public class JPA2Parser extends Parser {
 								input.consume();
 							}
 							NoViableAltException nvae =
-								new NoViableAltException("", 121, 11, input);
+								new NoViableAltException("", 121, 10, input);
+							throw nvae;
+						} finally {
+							input.rewind(nvaeMark);
+						}
+					}
+
+				}
+				else if ( (LA121_3==INT_NUMERAL) ) {
+					int LA121_11 = input.LA(3);
+					if ( (synpred241_JPA2()) ) {
+						alt121=3;
+					}
+					else if ( (true) ) {
+						alt121=4;
+					}
+
+				}
+
+				else {
+					if (state.backtracking>0) {state.failed=true; return retval;}
+					int nvaeMark = input.mark();
+					try {
+						input.consume();
+						NoViableAltException nvae =
+							new NoViableAltException("", 121, 3, input);
+						throw nvae;
+					} finally {
+						input.rewind(nvaeMark);
+					}
+				}
+
+				}
+				break;
+			case NAMED_PARAMETER:
+				{
+				int LA121_4 = input.LA(2);
+				if ( (synpred241_JPA2()) ) {
+					alt121=3;
+				}
+				else if ( (true) ) {
+					alt121=4;
+				}
+
+				}
+				break;
+			case 57:
+				{
+				int LA121_5 = input.LA(2);
+				if ( (LA121_5==WORD) ) {
+					int LA121_13 = input.LA(3);
+					if ( (LA121_13==144) ) {
+						int LA121_15 = input.LA(4);
+						if ( (synpred241_JPA2()) ) {
+							alt121=3;
+						}
+						else if ( (true) ) {
+							alt121=4;
+						}
+
+					}
+
+					else {
+						if (state.backtracking>0) {state.failed=true; return retval;}
+						int nvaeMark = input.mark();
+						try {
+							for (int nvaeConsume = 0; nvaeConsume < 3 - 1; nvaeConsume++) {
+								input.consume();
+							}
+							NoViableAltException nvae =
+								new NoViableAltException("", 121, 13, input);
 							throw nvae;
 						} finally {
 							input.rewind(nvaeMark);
@@ -17249,7 +17644,7 @@ public class JPA2Parser extends Parser {
 					try {
 						input.consume();
 						NoViableAltException nvae =
-							new NoViableAltException("", 121, 4, input);
+							new NoViableAltException("", 121, 5, input);
 						throw nvae;
 					} finally {
 						input.rewind(nvaeMark);
@@ -17414,7 +17809,7 @@ public class JPA2Parser extends Parser {
 				if ( (LA122_1==139) ) {
 					alt122=1;
 				}
-				else if ( (LA122_1==WORD||LA122_1==134) ) {
+				else if ( (LA122_1==GROUP||LA122_1==WORD||LA122_1==134) ) {
 					alt122=2;
 				}
 
@@ -17858,7 +18253,7 @@ public class JPA2Parser extends Parser {
 			// JPA2.g:455:5: ( path_expression | type_discriminator )
 			int alt125=2;
 			int LA125_0 = input.LA(1);
-			if ( (LA125_0==WORD) ) {
+			if ( (LA125_0==GROUP||LA125_0==WORD) ) {
 				alt125=1;
 			}
 			else if ( (LA125_0==134) ) {
@@ -18620,7 +19015,7 @@ public class JPA2Parser extends Parser {
 					if (state.failed) return retval;
 					if ( state.backtracking==0 ) stream_numeric_literal.add(numeric_literal555.getTree());
 					// AST REWRITE
-					// elements: 71, numeric_literal
+					// elements: numeric_literal, 71
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -18699,7 +19094,7 @@ public class JPA2Parser extends Parser {
 					if ( state.backtracking==0 ) stream_144.add(char_literal559);
 
 					// AST REWRITE
-					// elements: 57, WORD, 144
+					// elements: 144, 57, WORD
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -19312,30 +19707,36 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "identification_variable"
-	// JPA2.g:495:1: identification_variable : WORD ;
+	// JPA2.g:495:1: identification_variable : ( WORD | 'GROUP' );
 	public final JPA2Parser.identification_variable_return identification_variable() throws RecognitionException {
 		JPA2Parser.identification_variable_return retval = new JPA2Parser.identification_variable_return();
 		retval.start = input.LT(1);
 
 		Object root_0 = null;
 
-		Token WORD577=null;
+		Token set577=null;
 
-		Object WORD577_tree=null;
+		Object set577_tree=null;
 
 		try {
-			// JPA2.g:496:5: ( WORD )
-			// JPA2.g:496:7: WORD
+			// JPA2.g:496:5: ( WORD | 'GROUP' )
+			// JPA2.g:
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			WORD577=(Token)match(input,WORD,FOLLOW_WORD_in_identification_variable4558); if (state.failed) return retval;
-			if ( state.backtracking==0 ) {
-			WORD577_tree = (Object)adaptor.create(WORD577);
-			adaptor.addChild(root_0, WORD577_tree);
+			set577=input.LT(1);
+			if ( input.LA(1)==GROUP||input.LA(1)==WORD ) {
+				input.consume();
+				if ( state.backtracking==0 ) adaptor.addChild(root_0, (Object)adaptor.create(set577));
+				state.errorRecovery=false;
+				state.failed=false;
 			}
-
+			else {
+				if (state.backtracking>0) {state.failed=true; return retval;}
+				MismatchedSetException mse = new MismatchedSetException(null,input);
+				throw mse;
+			}
 			}
 
 			retval.stop = input.LT(-1);
@@ -19388,7 +19789,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			WORD578=(Token)match(input,WORD,FOLLOW_WORD_in_parameter_name4570); if (state.failed) return retval;
+			WORD578=(Token)match(input,WORD,FOLLOW_WORD_in_parameter_name4574); if (state.failed) return retval;
 			if ( state.backtracking==0 ) {
 			WORD578_tree = (Object)adaptor.create(WORD578);
 			adaptor.addChild(root_0, WORD578_tree);
@@ -19407,13 +19808,13 @@ public class JPA2Parser extends Parser {
 				case 1 :
 					// JPA2.g:499:13: '.' WORD
 					{
-					char_literal579=(Token)match(input,62,FOLLOW_62_in_parameter_name4573); if (state.failed) return retval;
+					char_literal579=(Token)match(input,62,FOLLOW_62_in_parameter_name4577); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
 					char_literal579_tree = (Object)adaptor.create(char_literal579);
 					adaptor.addChild(root_0, char_literal579_tree);
 					}
 
-					WORD580=(Token)match(input,WORD,FOLLOW_WORD_in_parameter_name4576); if (state.failed) return retval;
+					WORD580=(Token)match(input,WORD,FOLLOW_WORD_in_parameter_name4580); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
 					WORD580_tree = (Object)adaptor.create(WORD580);
 					adaptor.addChild(root_0, WORD580_tree);
@@ -19535,7 +19936,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			TRIM_CHARACTER582=(Token)match(input,TRIM_CHARACTER,FOLLOW_TRIM_CHARACTER_in_trim_character4606); if (state.failed) return retval;
+			TRIM_CHARACTER582=(Token)match(input,TRIM_CHARACTER,FOLLOW_TRIM_CHARACTER_in_trim_character4610); if (state.failed) return retval;
 			if ( state.backtracking==0 ) {
 			TRIM_CHARACTER582_tree = (Object)adaptor.create(TRIM_CHARACTER582);
 			adaptor.addChild(root_0, TRIM_CHARACTER582_tree);
@@ -19589,7 +19990,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			STRING_LITERAL583=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_string_literal4617); if (state.failed) return retval;
+			STRING_LITERAL583=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_string_literal4621); if (state.failed) return retval;
 			if ( state.backtracking==0 ) {
 			STRING_LITERAL583_tree = (Object)adaptor.create(STRING_LITERAL583);
 			adaptor.addChild(root_0, STRING_LITERAL583_tree);
@@ -19655,7 +20056,7 @@ public class JPA2Parser extends Parser {
 				case 1 :
 					// JPA2.g:509:8: '0x'
 					{
-					string_literal584=(Token)match(input,64,FOLLOW_64_in_numeric_literal4629); if (state.failed) return retval;
+					string_literal584=(Token)match(input,64,FOLLOW_64_in_numeric_literal4633); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
 					string_literal584_tree = (Object)adaptor.create(string_literal584);
 					adaptor.addChild(root_0, string_literal584_tree);
@@ -19666,7 +20067,7 @@ public class JPA2Parser extends Parser {
 
 			}
 
-			INT_NUMERAL585=(Token)match(input,INT_NUMERAL,FOLLOW_INT_NUMERAL_in_numeric_literal4633); if (state.failed) return retval;
+			INT_NUMERAL585=(Token)match(input,INT_NUMERAL,FOLLOW_INT_NUMERAL_in_numeric_literal4637); if (state.failed) return retval;
 			if ( state.backtracking==0 ) {
 			INT_NUMERAL585_tree = (Object)adaptor.create(INT_NUMERAL585);
 			adaptor.addChild(root_0, INT_NUMERAL585_tree);
@@ -19720,7 +20121,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			WORD586=(Token)match(input,WORD,FOLLOW_WORD_in_single_valued_object_field4645); if (state.failed) return retval;
+			WORD586=(Token)match(input,WORD,FOLLOW_WORD_in_single_valued_object_field4649); if (state.failed) return retval;
 			if ( state.backtracking==0 ) {
 			WORD586_tree = (Object)adaptor.create(WORD586);
 			adaptor.addChild(root_0, WORD586_tree);
@@ -19774,7 +20175,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			WORD587=(Token)match(input,WORD,FOLLOW_WORD_in_single_valued_embeddable_object_field4656); if (state.failed) return retval;
+			WORD587=(Token)match(input,WORD,FOLLOW_WORD_in_single_valued_embeddable_object_field4660); if (state.failed) return retval;
 			if ( state.backtracking==0 ) {
 			WORD587_tree = (Object)adaptor.create(WORD587);
 			adaptor.addChild(root_0, WORD587_tree);
@@ -19828,7 +20229,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			WORD588=(Token)match(input,WORD,FOLLOW_WORD_in_collection_valued_field4667); if (state.failed) return retval;
+			WORD588=(Token)match(input,WORD,FOLLOW_WORD_in_collection_valued_field4671); if (state.failed) return retval;
 			if ( state.backtracking==0 ) {
 			WORD588_tree = (Object)adaptor.create(WORD588);
 			adaptor.addChild(root_0, WORD588_tree);
@@ -19882,7 +20283,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			WORD589=(Token)match(input,WORD,FOLLOW_WORD_in_entity_name4678); if (state.failed) return retval;
+			WORD589=(Token)match(input,WORD,FOLLOW_WORD_in_entity_name4682); if (state.failed) return retval;
 			if ( state.backtracking==0 ) {
 			WORD589_tree = (Object)adaptor.create(WORD589);
 			adaptor.addChild(root_0, WORD589_tree);
@@ -19936,7 +20337,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			WORD590=(Token)match(input,WORD,FOLLOW_WORD_in_subtype4689); if (state.failed) return retval;
+			WORD590=(Token)match(input,WORD,FOLLOW_WORD_in_subtype4693); if (state.failed) return retval;
 			if ( state.backtracking==0 ) {
 			WORD590_tree = (Object)adaptor.create(WORD590);
 			adaptor.addChild(root_0, WORD590_tree);
@@ -19990,7 +20391,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			WORD591=(Token)match(input,WORD,FOLLOW_WORD_in_entity_type_literal4700); if (state.failed) return retval;
+			WORD591=(Token)match(input,WORD,FOLLOW_WORD_in_entity_type_literal4704); if (state.failed) return retval;
 			if ( state.backtracking==0 ) {
 			WORD591_tree = (Object)adaptor.create(WORD591);
 			adaptor.addChild(root_0, WORD591_tree);
@@ -20044,7 +20445,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			STRING_LITERAL592=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_function_name4711); if (state.failed) return retval;
+			STRING_LITERAL592=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_function_name4715); if (state.failed) return retval;
 			if ( state.backtracking==0 ) {
 			STRING_LITERAL592_tree = (Object)adaptor.create(STRING_LITERAL592);
 			adaptor.addChild(root_0, STRING_LITERAL592_tree);
@@ -20098,7 +20499,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			WORD593=(Token)match(input,WORD,FOLLOW_WORD_in_state_field4722); if (state.failed) return retval;
+			WORD593=(Token)match(input,WORD,FOLLOW_WORD_in_state_field4726); if (state.failed) return retval;
 			if ( state.backtracking==0 ) {
 			WORD593_tree = (Object)adaptor.create(WORD593);
 			adaptor.addChild(root_0, WORD593_tree);
@@ -20152,7 +20553,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			WORD594=(Token)match(input,WORD,FOLLOW_WORD_in_result_variable4733); if (state.failed) return retval;
+			WORD594=(Token)match(input,WORD,FOLLOW_WORD_in_result_variable4737); if (state.failed) return retval;
 			if ( state.backtracking==0 ) {
 			WORD594_tree = (Object)adaptor.create(WORD594);
 			adaptor.addChild(root_0, WORD594_tree);
@@ -20206,7 +20607,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			WORD595=(Token)match(input,WORD,FOLLOW_WORD_in_superquery_identification_variable4744); if (state.failed) return retval;
+			WORD595=(Token)match(input,WORD,FOLLOW_WORD_in_superquery_identification_variable4748); if (state.failed) return retval;
 			if ( state.backtracking==0 ) {
 			WORD595_tree = (Object)adaptor.create(WORD595);
 			adaptor.addChild(root_0, WORD595_tree);
@@ -20260,7 +20661,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			WORD596=(Token)match(input,WORD,FOLLOW_WORD_in_date_time_timestamp_literal4755); if (state.failed) return retval;
+			WORD596=(Token)match(input,WORD,FOLLOW_WORD_in_date_time_timestamp_literal4759); if (state.failed) return retval;
 			if ( state.backtracking==0 ) {
 			WORD596_tree = (Object)adaptor.create(WORD596);
 			adaptor.addChild(root_0, WORD596_tree);
@@ -20313,7 +20714,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			pushFollow(FOLLOW_string_literal_in_pattern_value4766);
+			pushFollow(FOLLOW_string_literal_in_pattern_value4770);
 			string_literal597=string_literal();
 			state._fsp--;
 			if (state.failed) return retval;
@@ -20366,7 +20767,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			pushFollow(FOLLOW_input_parameter_in_collection_valued_input_parameter4777);
+			pushFollow(FOLLOW_input_parameter_in_collection_valued_input_parameter4781);
 			input_parameter598=input_parameter();
 			state._fsp--;
 			if (state.failed) return retval;
@@ -20419,7 +20820,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			pushFollow(FOLLOW_input_parameter_in_single_valued_input_parameter4788);
+			pushFollow(FOLLOW_input_parameter_in_single_valued_input_parameter4792);
 			input_parameter599=input_parameter();
 			state._fsp--;
 			if (state.failed) return retval;
@@ -20477,7 +20878,7 @@ public class JPA2Parser extends Parser {
 			root_0 = (Object)adaptor.nil();
 
 
-			WORD600=(Token)match(input,WORD,FOLLOW_WORD_in_enum_value_literal4799); if (state.failed) return retval;
+			WORD600=(Token)match(input,WORD,FOLLOW_WORD_in_enum_value_literal4803); if (state.failed) return retval;
 			if ( state.backtracking==0 ) {
 			WORD600_tree = (Object)adaptor.create(WORD600);
 			adaptor.addChild(root_0, WORD600_tree);
@@ -20496,13 +20897,13 @@ public class JPA2Parser extends Parser {
 				case 1 :
 					// JPA2.g:539:13: '.' WORD
 					{
-					char_literal601=(Token)match(input,62,FOLLOW_62_in_enum_value_literal4802); if (state.failed) return retval;
+					char_literal601=(Token)match(input,62,FOLLOW_62_in_enum_value_literal4806); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
 					char_literal601_tree = (Object)adaptor.create(char_literal601);
 					adaptor.addChild(root_0, char_literal601_tree);
 					}
 
-					WORD602=(Token)match(input,WORD,FOLLOW_WORD_in_enum_value_literal4805); if (state.failed) return retval;
+					WORD602=(Token)match(input,WORD,FOLLOW_WORD_in_enum_value_literal4809); if (state.failed) return retval;
 					if ( state.backtracking==0 ) {
 					WORD602_tree = (Object)adaptor.create(WORD602);
 					adaptor.addChild(root_0, WORD602_tree);
@@ -21363,7 +21764,7 @@ public class JPA2Parser extends Parser {
 		// JPA2.g:336:58: ( string_expression | all_or_any_expression )
 		int alt149=2;
 		int LA149_0 = input.LA(1);
-		if ( (LA149_0==AVG||LA149_0==COUNT||(LA149_0 >= LOWER && LA149_0 <= NAMED_PARAMETER)||(LA149_0 >= STRING_LITERAL && LA149_0 <= SUM)||LA149_0==WORD||LA149_0==57||LA149_0==71||LA149_0==76||(LA149_0 >= 84 && LA149_0 <= 87)||LA149_0==100||LA149_0==102||LA149_0==118||LA149_0==129||LA149_0==133||LA149_0==136) ) {
+		if ( (LA149_0==AVG||LA149_0==COUNT||LA149_0==GROUP||(LA149_0 >= LOWER && LA149_0 <= NAMED_PARAMETER)||(LA149_0 >= STRING_LITERAL && LA149_0 <= SUM)||LA149_0==WORD||LA149_0==57||LA149_0==71||LA149_0==76||(LA149_0 >= 84 && LA149_0 <= 87)||LA149_0==100||LA149_0==102||LA149_0==118||LA149_0==129||LA149_0==133||LA149_0==136) ) {
 			alt149=1;
 		}
 		else if ( ((LA149_0 >= 79 && LA149_0 <= 80)||LA149_0==127) ) {
@@ -21429,7 +21830,7 @@ public class JPA2Parser extends Parser {
 		// JPA2.g:337:39: ( boolean_expression | all_or_any_expression )
 		int alt150=2;
 		int LA150_0 = input.LA(1);
-		if ( (LA150_0==LPAREN||LA150_0==NAMED_PARAMETER||LA150_0==WORD||LA150_0==57||LA150_0==71||LA150_0==76||(LA150_0 >= 84 && LA150_0 <= 86)||LA150_0==100||LA150_0==102||LA150_0==118||(LA150_0 >= 142 && LA150_0 <= 143)) ) {
+		if ( (LA150_0==GROUP||LA150_0==LPAREN||LA150_0==NAMED_PARAMETER||LA150_0==WORD||LA150_0==57||LA150_0==71||LA150_0==76||(LA150_0 >= 84 && LA150_0 <= 86)||LA150_0==100||LA150_0==102||LA150_0==118||(LA150_0 >= 142 && LA150_0 <= 143)) ) {
 			alt150=1;
 		}
 		else if ( ((LA150_0 >= 79 && LA150_0 <= 80)||LA150_0==127) ) {
@@ -21495,7 +21896,7 @@ public class JPA2Parser extends Parser {
 		// JPA2.g:338:34: ( enum_expression | all_or_any_expression )
 		int alt151=2;
 		int LA151_0 = input.LA(1);
-		if ( (LA151_0==LPAREN||LA151_0==NAMED_PARAMETER||LA151_0==WORD||LA151_0==57||LA151_0==71||LA151_0==84||LA151_0==86||LA151_0==118) ) {
+		if ( (LA151_0==GROUP||LA151_0==LPAREN||LA151_0==NAMED_PARAMETER||LA151_0==WORD||LA151_0==57||LA151_0==71||LA151_0==84||LA151_0==86||LA151_0==118) ) {
 			alt151=1;
 		}
 		else if ( ((LA151_0 >= 79 && LA151_0 <= 80)||LA151_0==127) ) {
@@ -21556,7 +21957,7 @@ public class JPA2Parser extends Parser {
 		// JPA2.g:339:47: ( datetime_expression | all_or_any_expression )
 		int alt152=2;
 		int LA152_0 = input.LA(1);
-		if ( (LA152_0==AVG||LA152_0==COUNT||(LA152_0 >= LPAREN && LA152_0 <= NAMED_PARAMETER)||LA152_0==SUM||LA152_0==WORD||LA152_0==57||LA152_0==71||LA152_0==76||(LA152_0 >= 84 && LA152_0 <= 86)||(LA152_0 >= 88 && LA152_0 <= 90)||LA152_0==100||LA152_0==102||LA152_0==118) ) {
+		if ( (LA152_0==AVG||LA152_0==COUNT||LA152_0==GROUP||(LA152_0 >= LPAREN && LA152_0 <= NAMED_PARAMETER)||LA152_0==SUM||LA152_0==WORD||LA152_0==57||LA152_0==71||LA152_0==76||(LA152_0 >= 84 && LA152_0 <= 86)||(LA152_0 >= 88 && LA152_0 <= 90)||LA152_0==100||LA152_0==102||LA152_0==118) ) {
 			alt152=1;
 		}
 		else if ( ((LA152_0 >= 79 && LA152_0 <= 80)||LA152_0==127) ) {
@@ -21622,7 +22023,7 @@ public class JPA2Parser extends Parser {
 		// JPA2.g:340:38: ( entity_expression | all_or_any_expression )
 		int alt153=2;
 		int LA153_0 = input.LA(1);
-		if ( (LA153_0==NAMED_PARAMETER||LA153_0==WORD||LA153_0==57||LA153_0==71) ) {
+		if ( (LA153_0==GROUP||LA153_0==NAMED_PARAMETER||LA153_0==WORD||LA153_0==57||LA153_0==71) ) {
 			alt153=1;
 		}
 		else if ( ((LA153_0 >= 79 && LA153_0 <= 80)||LA153_0==127) ) {
@@ -21908,6 +22309,21 @@ public class JPA2Parser extends Parser {
 
 	}
 	// $ANTLR end synpred239_JPA2
+
+	// $ANTLR start synpred240_JPA2
+	public final void synpred240_JPA2_fragment() throws RecognitionException {
+		// JPA2.g:440:7: ( path_expression )
+		// JPA2.g:440:7: path_expression
+		{
+		pushFollow(FOLLOW_path_expression_in_synpred240_JPA24035);
+		path_expression();
+		state._fsp--;
+		if (state.failed) return;
+
+		}
+
+	}
+	// $ANTLR end synpred240_JPA2
 
 	// $ANTLR start synpred241_JPA2
 	public final void synpred241_JPA2_fragment() throws RecognitionException {
@@ -22360,6 +22776,20 @@ public class JPA2Parser extends Parser {
 		state.failed=false;
 		return success;
 	}
+	public final boolean synpred240_JPA2() {
+		state.backtracking++;
+		int start = input.mark();
+		try {
+			synpred240_JPA2_fragment(); // can never throw exception
+		} catch (RecognitionException re) {
+			System.err.println("impossible: "+re);
+		}
+		boolean success = !state.failed;
+		input.rewind(start);
+		state.backtracking--;
+		state.failed=false;
+		return success;
+	}
 	public final boolean synpred43_JPA2() {
 		state.backtracking++;
 		int start = input.mark();
@@ -22788,7 +23218,7 @@ public class JPA2Parser extends Parser {
 	static final String DFA41_eofS =
 		"\30\uffff";
 	static final String DFA41_minS =
-		"\1\6\1\27\2\uffff\1\13\1\67\1\37\1\uffff\1\6\15\37\1\0\1\6";
+		"\1\6\1\27\2\uffff\1\13\1\16\1\37\1\uffff\1\6\15\37\1\0\1\6";
 	static final String DFA41_maxS =
 		"\1\146\1\27\2\uffff\2\67\1\76\1\uffff\1\u008d\15\76\1\0\1\u008d";
 	static final String DFA41_acceptS =
@@ -22800,8 +23230,8 @@ public class JPA2Parser extends Parser {
 			"\1\4",
 			"",
 			"",
-			"\1\5\53\uffff\1\6",
-			"\1\6",
+			"\1\5\2\uffff\1\6\50\uffff\1\6",
+			"\1\6\50\uffff\1\6",
 			"\1\7\36\uffff\1\10",
 			"",
 			"\1\21\2\uffff\1\22\4\uffff\1\14\11\uffff\1\16\1\17\3\uffff\1\15\1\uffff"+
@@ -22890,7 +23320,7 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_select_statement_in_ql_statement445 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_update_statement_in_ql_statement449 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_delete_statement_in_ql_statement453 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_125_in_select_statement468 = new BitSet(new long[]{0x2A80000C07C40A40L,0x40CA515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_125_in_select_statement468 = new BitSet(new long[]{0x2A80000C07C44A40L,0x40CA515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_select_clause_in_select_statement470 = new BitSet(new long[]{0x0000000000000000L,0x0000002000000000L});
 	public static final BitSet FOLLOW_from_clause_in_select_statement472 = new BitSet(new long[]{0x000000002000C002L,0x0000000000000000L,0x0000000000001000L});
 	public static final BitSet FOLLOW_where_clause_in_select_statement475 = new BitSet(new long[]{0x000000002000C002L});
@@ -22914,17 +23344,17 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_joined_clause_in_join_section739 = new BitSet(new long[]{0x00000000001A0002L});
 	public static final BitSet FOLLOW_join_in_joined_clause747 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_fetch_join_in_joined_clause751 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_entity_name_in_range_variable_declaration763 = new BitSet(new long[]{0x0080000000000000L,0x0000000000020000L});
-	public static final BitSet FOLLOW_81_in_range_variable_declaration766 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_entity_name_in_range_variable_declaration763 = new BitSet(new long[]{0x0080000000004000L,0x0000000000020000L});
+	public static final BitSet FOLLOW_81_in_range_variable_declaration766 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_identification_variable_in_range_variable_declaration770 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_join_spec_in_join799 = new BitSet(new long[]{0x0080000000000000L,0x0000000000000000L,0x0000000000000010L});
-	public static final BitSet FOLLOW_join_association_path_expression_in_join801 = new BitSet(new long[]{0x0080000000000000L,0x0000000000020000L});
-	public static final BitSet FOLLOW_81_in_join804 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_join_spec_in_join799 = new BitSet(new long[]{0x0080000000004000L,0x0000000000000000L,0x0000000000000010L});
+	public static final BitSet FOLLOW_join_association_path_expression_in_join801 = new BitSet(new long[]{0x0080000000004000L,0x0000000000020000L});
+	public static final BitSet FOLLOW_81_in_join804 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_identification_variable_in_join808 = new BitSet(new long[]{0x0000000000000002L,0x0200000000000000L});
-	public static final BitSet FOLLOW_121_in_join811 = new BitSet(new long[]{0x2A80000C0FC40240L,0x4042515807F07F81L,0x000000000000C173L});
+	public static final BitSet FOLLOW_121_in_join811 = new BitSet(new long[]{0x2A80000C0FC44240L,0x4042515807F07F81L,0x000000000000C173L});
 	public static final BitSet FOLLOW_conditional_expression_in_join813 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_join_spec_in_fetch_join847 = new BitSet(new long[]{0x0000000000002000L});
-	public static final BitSet FOLLOW_FETCH_in_fetch_join849 = new BitSet(new long[]{0x0080000000000000L,0x0000000000000000L,0x0000000000000010L});
+	public static final BitSet FOLLOW_FETCH_in_fetch_join849 = new BitSet(new long[]{0x0080000000004000L,0x0000000000000000L,0x0000000000000010L});
 	public static final BitSet FOLLOW_join_association_path_expression_in_fetch_join851 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_LEFT_in_join_spec865 = new BitSet(new long[]{0x0000000040080000L});
 	public static final BitSet FOLLOW_OUTER_in_join_spec869 = new BitSet(new long[]{0x0000000000080000L});
@@ -22935,7 +23365,7 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_field_in_join_association_path_expression899 = new BitSet(new long[]{0x4000000000000000L});
 	public static final BitSet FOLLOW_62_in_join_association_path_expression900 = new BitSet(new long[]{0x0080000823004242L,0x340580A208020000L,0x0000000000002400L});
 	public static final BitSet FOLLOW_field_in_join_association_path_expression904 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_132_in_join_association_path_expression939 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_132_in_join_association_path_expression939 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_identification_variable_in_join_association_path_expression941 = new BitSet(new long[]{0x4000000000000000L});
 	public static final BitSet FOLLOW_62_in_join_association_path_expression943 = new BitSet(new long[]{0x0080000823004240L,0x340580A208020000L,0x0000000000002400L});
 	public static final BitSet FOLLOW_field_in_join_association_path_expression946 = new BitSet(new long[]{0x4000000000000000L});
@@ -22946,19 +23376,19 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_RPAREN_in_join_association_path_expression958 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_entity_name_in_join_association_path_expression991 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_IN_in_collection_member_declaration1004 = new BitSet(new long[]{0x0000000000800000L});
-	public static final BitSet FOLLOW_LPAREN_in_collection_member_declaration1005 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_LPAREN_in_collection_member_declaration1005 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_path_expression_in_collection_member_declaration1007 = new BitSet(new long[]{0x0000000080000000L});
-	public static final BitSet FOLLOW_RPAREN_in_collection_member_declaration1009 = new BitSet(new long[]{0x0080000000000000L,0x0000000000020000L});
-	public static final BitSet FOLLOW_81_in_collection_member_declaration1012 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_RPAREN_in_collection_member_declaration1009 = new BitSet(new long[]{0x0080000000004000L,0x0000000000020000L});
+	public static final BitSet FOLLOW_81_in_collection_member_declaration1012 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_identification_variable_in_collection_member_declaration1016 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_map_field_identification_variable_in_qualified_identification_variable1045 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_96_in_qualified_identification_variable1053 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_96_in_qualified_identification_variable1053 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_identification_variable_in_qualified_identification_variable1054 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_qualified_identification_variable1055 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_106_in_map_field_identification_variable1062 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_106_in_map_field_identification_variable1062 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_identification_variable_in_map_field_identification_variable1063 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_map_field_identification_variable1064 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_137_in_map_field_identification_variable1068 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_137_in_map_field_identification_variable1068 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_identification_variable_in_map_field_identification_variable1069 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_map_field_identification_variable1070 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_identification_variable_in_path_expression1084 = new BitSet(new long[]{0x4000000000000000L});
@@ -22969,41 +23399,41 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_identification_variable_in_general_identification_variable1133 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_map_field_identification_variable_in_general_identification_variable1141 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_identification_variable_declaration_in_update_clause1154 = new BitSet(new long[]{0x0000000200000000L});
-	public static final BitSet FOLLOW_SET_in_update_clause1156 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_SET_in_update_clause1156 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_update_item_in_update_clause1158 = new BitSet(new long[]{0x1000000000000002L});
-	public static final BitSet FOLLOW_60_in_update_clause1161 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_60_in_update_clause1161 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_update_item_in_update_clause1163 = new BitSet(new long[]{0x1000000000000002L});
 	public static final BitSet FOLLOW_path_expression_in_update_item1205 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000010L});
-	public static final BitSet FOLLOW_68_in_update_item1207 = new BitSet(new long[]{0x2A80000C07C40240L,0x4062515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_68_in_update_item1207 = new BitSet(new long[]{0x2A80000C07C44240L,0x4062515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_new_value_in_update_item1209 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_scalar_expression_in_new_value1220 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_simple_entity_expression_in_new_value1228 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_117_in_new_value1236 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_101_in_delete_clause1250 = new BitSet(new long[]{0x0080000000000000L});
 	public static final BitSet FOLLOW_identification_variable_declaration_in_delete_clause1252 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_DISTINCT_in_select_clause1280 = new BitSet(new long[]{0x2A80000C07C40240L,0x40CA515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_DISTINCT_in_select_clause1280 = new BitSet(new long[]{0x2A80000C07C44240L,0x40CA515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_select_item_in_select_clause1284 = new BitSet(new long[]{0x1000000000000002L});
-	public static final BitSet FOLLOW_60_in_select_clause1287 = new BitSet(new long[]{0x2A80000C07C40240L,0x40CA515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_60_in_select_clause1287 = new BitSet(new long[]{0x2A80000C07C44240L,0x40CA515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_select_item_in_select_clause1289 = new BitSet(new long[]{0x1000000000000002L});
 	public static final BitSet FOLLOW_select_expression_in_select_item1332 = new BitSet(new long[]{0x0080000000000002L,0x0000000000020000L});
 	public static final BitSet FOLLOW_81_in_select_item1336 = new BitSet(new long[]{0x0080000000000000L});
 	public static final BitSet FOLLOW_result_variable_in_select_item1340 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_path_expression_in_select_expression1353 = new BitSet(new long[]{0xAC00000000000002L});
-	public static final BitSet FOLLOW_set_in_select_expression1356 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_set_in_select_expression1356 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_scalar_expression_in_select_expression1372 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_identification_variable_in_select_expression1382 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_scalar_expression_in_select_expression1400 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_aggregate_expression_in_select_expression1408 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_119_in_select_expression1416 = new BitSet(new long[]{0x0000000000800000L});
-	public static final BitSet FOLLOW_LPAREN_in_select_expression1418 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_LPAREN_in_select_expression1418 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_identification_variable_in_select_expression1419 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_select_expression1420 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_constructor_expression_in_select_expression1428 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_115_in_constructor_expression1439 = new BitSet(new long[]{0x0080000000000000L});
 	public static final BitSet FOLLOW_constructor_name_in_constructor_expression1441 = new BitSet(new long[]{0x0000000000800000L});
-	public static final BitSet FOLLOW_LPAREN_in_constructor_expression1443 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_LPAREN_in_constructor_expression1443 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_constructor_item_in_constructor_expression1445 = new BitSet(new long[]{0x1000000080000000L});
-	public static final BitSet FOLLOW_60_in_constructor_expression1448 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_60_in_constructor_expression1448 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_constructor_item_in_constructor_expression1450 = new BitSet(new long[]{0x1000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_constructor_expression1454 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_path_expression_in_constructor_item1465 = new BitSet(new long[]{0x0000000000000002L});
@@ -23011,33 +23441,33 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_aggregate_expression_in_constructor_item1481 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_identification_variable_in_constructor_item1489 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_aggregate_expression_function_name_in_aggregate_expression1500 = new BitSet(new long[]{0x0000000000800000L});
-	public static final BitSet FOLLOW_LPAREN_in_aggregate_expression1502 = new BitSet(new long[]{0x0080000000000800L});
-	public static final BitSet FOLLOW_DISTINCT_in_aggregate_expression1504 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_LPAREN_in_aggregate_expression1502 = new BitSet(new long[]{0x0080000000004800L});
+	public static final BitSet FOLLOW_DISTINCT_in_aggregate_expression1504 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_path_expression_in_aggregate_expression1508 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_aggregate_expression1509 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_COUNT_in_aggregate_expression1543 = new BitSet(new long[]{0x0000000000800000L});
-	public static final BitSet FOLLOW_LPAREN_in_aggregate_expression1545 = new BitSet(new long[]{0x0080000000000800L});
-	public static final BitSet FOLLOW_DISTINCT_in_aggregate_expression1547 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_LPAREN_in_aggregate_expression1545 = new BitSet(new long[]{0x0080000000004800L});
+	public static final BitSet FOLLOW_DISTINCT_in_aggregate_expression1547 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_count_argument_in_aggregate_expression1551 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_aggregate_expression1553 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_function_invocation_in_aggregate_expression1588 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_identification_variable_in_count_argument1625 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_path_expression_in_count_argument1629 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_140_in_where_clause1642 = new BitSet(new long[]{0x2A80000C0FC40240L,0x4042515807F07F81L,0x000000000000C173L});
+	public static final BitSet FOLLOW_140_in_where_clause1642 = new BitSet(new long[]{0x2A80000C0FC44240L,0x4042515807F07F81L,0x000000000000C173L});
 	public static final BitSet FOLLOW_conditional_expression_in_where_clause1644 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_GROUP_in_groupby_clause1666 = new BitSet(new long[]{0x0000000000000080L});
-	public static final BitSet FOLLOW_BY_in_groupby_clause1668 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_BY_in_groupby_clause1668 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_groupby_item_in_groupby_clause1670 = new BitSet(new long[]{0x1000000000000002L});
-	public static final BitSet FOLLOW_60_in_groupby_clause1673 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_60_in_groupby_clause1673 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_groupby_item_in_groupby_clause1675 = new BitSet(new long[]{0x1000000000000002L});
 	public static final BitSet FOLLOW_path_expression_in_groupby_item1709 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_identification_variable_in_groupby_item1713 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_HAVING_in_having_clause1724 = new BitSet(new long[]{0x2A80000C0FC40240L,0x4042515807F07F81L,0x000000000000C173L});
+	public static final BitSet FOLLOW_HAVING_in_having_clause1724 = new BitSet(new long[]{0x2A80000C0FC44240L,0x4042515807F07F81L,0x000000000000C173L});
 	public static final BitSet FOLLOW_conditional_expression_in_having_clause1726 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_ORDER_in_orderby_clause1737 = new BitSet(new long[]{0x0000000000000080L});
-	public static final BitSet FOLLOW_BY_in_orderby_clause1739 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042555007F05081L,0x000000000000C363L});
+	public static final BitSet FOLLOW_BY_in_orderby_clause1739 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042555007F05081L,0x000000000000C363L});
 	public static final BitSet FOLLOW_orderby_item_in_orderby_clause1741 = new BitSet(new long[]{0x1000000000000002L});
-	public static final BitSet FOLLOW_60_in_orderby_clause1744 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042555007F05081L,0x000000000000C363L});
+	public static final BitSet FOLLOW_60_in_orderby_clause1744 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042555007F05081L,0x000000000000C363L});
 	public static final BitSet FOLLOW_orderby_item_in_orderby_clause1746 = new BitSet(new long[]{0x1000000000000002L});
 	public static final BitSet FOLLOW_orderby_variable_in_orderby_item1780 = new BitSet(new long[]{0x0000000000000422L});
 	public static final BitSet FOLLOW_sort_in_orderby_item1782 = new BitSet(new long[]{0x0000000000000002L});
@@ -23047,7 +23477,7 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_scalar_expression_in_orderby_variable1826 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_aggregate_expression_in_orderby_variable1830 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_LPAREN_in_subquery1860 = new BitSet(new long[]{0x0000000000000000L,0x2000000000000000L});
-	public static final BitSet FOLLOW_125_in_subquery1862 = new BitSet(new long[]{0x2A80000C07C40A40L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_125_in_subquery1862 = new BitSet(new long[]{0x2A80000C07C44A40L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_simple_select_clause_in_subquery1864 = new BitSet(new long[]{0x0000000000000000L,0x0000002000000000L});
 	public static final BitSet FOLLOW_subquery_from_clause_in_subquery1866 = new BitSet(new long[]{0x000000008000C000L,0x0000000000000000L,0x0000000000001000L});
 	public static final BitSet FOLLOW_where_clause_in_subquery1869 = new BitSet(new long[]{0x000000008000C000L});
@@ -23060,7 +23490,7 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_subselect_identification_variable_declaration_in_subquery_from_clause1942 = new BitSet(new long[]{0x1000000000000002L});
 	public static final BitSet FOLLOW_identification_variable_declaration_in_subselect_identification_variable_declaration1980 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_derived_path_expression_in_subselect_identification_variable_declaration1988 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-	public static final BitSet FOLLOW_81_in_subselect_identification_variable_declaration1990 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_81_in_subselect_identification_variable_declaration1990 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_identification_variable_in_subselect_identification_variable_declaration1992 = new BitSet(new long[]{0x00000000001A0002L});
 	public static final BitSet FOLLOW_join_in_subselect_identification_variable_declaration1995 = new BitSet(new long[]{0x00000000001A0002L});
 	public static final BitSet FOLLOW_derived_collection_member_declaration_in_subselect_identification_variable_declaration2005 = new BitSet(new long[]{0x0000000000000002L});
@@ -23086,7 +23516,7 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_single_valued_object_field_in_derived_collection_member_declaration2108 = new BitSet(new long[]{0x4000000000000000L});
 	public static final BitSet FOLLOW_62_in_derived_collection_member_declaration2110 = new BitSet(new long[]{0x0080000000000000L});
 	public static final BitSet FOLLOW_collection_valued_field_in_derived_collection_member_declaration2113 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_DISTINCT_in_simple_select_clause2126 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_DISTINCT_in_simple_select_clause2126 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_simple_select_expression_in_simple_select_clause2130 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_path_expression_in_simple_select_expression2170 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_scalar_expression_in_simple_select_expression2178 = new BitSet(new long[]{0x0000000000000002L});
@@ -23100,15 +23530,15 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_case_expression_in_scalar_expression2245 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_entity_type_expression_in_scalar_expression2253 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_conditional_term_in_conditional_expression2265 = new BitSet(new long[]{0x0000000010000002L});
-	public static final BitSet FOLLOW_OR_in_conditional_expression2269 = new BitSet(new long[]{0x2A80000C0FC40240L,0x4042515807F07F81L,0x000000000000C173L});
+	public static final BitSet FOLLOW_OR_in_conditional_expression2269 = new BitSet(new long[]{0x2A80000C0FC44240L,0x4042515807F07F81L,0x000000000000C173L});
 	public static final BitSet FOLLOW_conditional_term_in_conditional_expression2271 = new BitSet(new long[]{0x0000000010000002L});
 	public static final BitSet FOLLOW_conditional_factor_in_conditional_term2285 = new BitSet(new long[]{0x0000000000000012L});
-	public static final BitSet FOLLOW_AND_in_conditional_term2289 = new BitSet(new long[]{0x2A80000C0FC40240L,0x4042515807F07F81L,0x000000000000C173L});
+	public static final BitSet FOLLOW_AND_in_conditional_term2289 = new BitSet(new long[]{0x2A80000C0FC44240L,0x4042515807F07F81L,0x000000000000C173L});
 	public static final BitSet FOLLOW_conditional_factor_in_conditional_term2291 = new BitSet(new long[]{0x0000000000000012L});
-	public static final BitSet FOLLOW_NOT_in_conditional_factor2305 = new BitSet(new long[]{0x2A80000C0FC40240L,0x4042515807F07F81L,0x000000000000C173L});
+	public static final BitSet FOLLOW_NOT_in_conditional_factor2305 = new BitSet(new long[]{0x2A80000C0FC44240L,0x4042515807F07F81L,0x000000000000C173L});
 	public static final BitSet FOLLOW_conditional_primary_in_conditional_factor2309 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_simple_cond_expression_in_conditional_primary2320 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_LPAREN_in_conditional_primary2344 = new BitSet(new long[]{0x2A80000C0FC40240L,0x4042515807F07F81L,0x000000000000C173L});
+	public static final BitSet FOLLOW_LPAREN_in_conditional_primary2344 = new BitSet(new long[]{0x2A80000C0FC44240L,0x4042515807F07F81L,0x000000000000C173L});
 	public static final BitSet FOLLOW_conditional_expression_in_conditional_primary2345 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_conditional_primary2346 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_comparison_expression_in_simple_cond_expression2357 = new BitSet(new long[]{0x0000000000000002L});
@@ -23126,7 +23556,7 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_date_equals_macro_expression_in_date_macro_expression2458 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_date_today_macro_expression_in_date_macro_expression2466 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_72_in_date_between_macro_expression2478 = new BitSet(new long[]{0x0000000000800000L});
-	public static final BitSet FOLLOW_LPAREN_in_date_between_macro_expression2480 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_LPAREN_in_date_between_macro_expression2480 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_path_expression_in_date_between_macro_expression2482 = new BitSet(new long[]{0x1000000000000000L});
 	public static final BitSet FOLLOW_60_in_date_between_macro_expression2484 = new BitSet(new long[]{0x0000000000000000L,0x0010000000000000L});
 	public static final BitSet FOLLOW_116_in_date_between_macro_expression2486 = new BitSet(new long[]{0x3800000000000000L});
@@ -23140,47 +23570,47 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_set_in_date_between_macro_expression2520 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_date_between_macro_expression2543 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_74_in_date_before_macro_expression2555 = new BitSet(new long[]{0x0000000000800000L});
-	public static final BitSet FOLLOW_LPAREN_in_date_before_macro_expression2557 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_LPAREN_in_date_before_macro_expression2557 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_path_expression_in_date_before_macro_expression2559 = new BitSet(new long[]{0x1000000000000000L});
-	public static final BitSet FOLLOW_60_in_date_before_macro_expression2561 = new BitSet(new long[]{0x0280000004000000L,0x0000000000000080L});
+	public static final BitSet FOLLOW_60_in_date_before_macro_expression2561 = new BitSet(new long[]{0x0280000004004000L,0x0000000000000080L});
 	public static final BitSet FOLLOW_path_expression_in_date_before_macro_expression2564 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_input_parameter_in_date_before_macro_expression2568 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_date_before_macro_expression2571 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_73_in_date_after_macro_expression2583 = new BitSet(new long[]{0x0000000000800000L});
-	public static final BitSet FOLLOW_LPAREN_in_date_after_macro_expression2585 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_LPAREN_in_date_after_macro_expression2585 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_path_expression_in_date_after_macro_expression2587 = new BitSet(new long[]{0x1000000000000000L});
-	public static final BitSet FOLLOW_60_in_date_after_macro_expression2589 = new BitSet(new long[]{0x0280000004000000L,0x0000000000000080L});
+	public static final BitSet FOLLOW_60_in_date_after_macro_expression2589 = new BitSet(new long[]{0x0280000004004000L,0x0000000000000080L});
 	public static final BitSet FOLLOW_path_expression_in_date_after_macro_expression2592 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_input_parameter_in_date_after_macro_expression2596 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_date_after_macro_expression2599 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_75_in_date_equals_macro_expression2611 = new BitSet(new long[]{0x0000000000800000L});
-	public static final BitSet FOLLOW_LPAREN_in_date_equals_macro_expression2613 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_LPAREN_in_date_equals_macro_expression2613 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_path_expression_in_date_equals_macro_expression2615 = new BitSet(new long[]{0x1000000000000000L});
-	public static final BitSet FOLLOW_60_in_date_equals_macro_expression2617 = new BitSet(new long[]{0x0280000004000000L,0x0000000000000080L});
+	public static final BitSet FOLLOW_60_in_date_equals_macro_expression2617 = new BitSet(new long[]{0x0280000004004000L,0x0000000000000080L});
 	public static final BitSet FOLLOW_path_expression_in_date_equals_macro_expression2620 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_input_parameter_in_date_equals_macro_expression2624 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_date_equals_macro_expression2627 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_77_in_date_today_macro_expression2639 = new BitSet(new long[]{0x0000000000800000L});
-	public static final BitSet FOLLOW_LPAREN_in_date_today_macro_expression2641 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_LPAREN_in_date_today_macro_expression2641 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_path_expression_in_date_today_macro_expression2643 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_date_today_macro_expression2645 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_between_expression2658 = new BitSet(new long[]{0x0000000008000000L,0x0000000000040000L});
 	public static final BitSet FOLLOW_NOT_in_between_expression2661 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-	public static final BitSet FOLLOW_82_in_between_expression2665 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_82_in_between_expression2665 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_between_expression2667 = new BitSet(new long[]{0x0000000000000010L});
-	public static final BitSet FOLLOW_AND_in_between_expression2669 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_AND_in_between_expression2669 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_between_expression2671 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_string_expression_in_between_expression2679 = new BitSet(new long[]{0x0000000008000000L,0x0000000000040000L});
 	public static final BitSet FOLLOW_NOT_in_between_expression2682 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-	public static final BitSet FOLLOW_82_in_between_expression2686 = new BitSet(new long[]{0x0280000C07C00240L,0x0040005000F01080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_82_in_between_expression2686 = new BitSet(new long[]{0x0280000C07C04240L,0x0040005000F01080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_between_expression2688 = new BitSet(new long[]{0x0000000000000010L});
-	public static final BitSet FOLLOW_AND_in_between_expression2690 = new BitSet(new long[]{0x0280000C07C00240L,0x0040005000F01080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_AND_in_between_expression2690 = new BitSet(new long[]{0x0280000C07C04240L,0x0040005000F01080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_between_expression2692 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_datetime_expression_in_between_expression2700 = new BitSet(new long[]{0x0000000008000000L,0x0000000000040000L});
 	public static final BitSet FOLLOW_NOT_in_between_expression2703 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-	public static final BitSet FOLLOW_82_in_between_expression2707 = new BitSet(new long[]{0x0280000807800240L,0x0040005007701080L});
+	public static final BitSet FOLLOW_82_in_between_expression2707 = new BitSet(new long[]{0x0280000807804240L,0x0040005007701080L});
 	public static final BitSet FOLLOW_datetime_expression_in_between_expression2709 = new BitSet(new long[]{0x0000000000000010L});
-	public static final BitSet FOLLOW_AND_in_between_expression2711 = new BitSet(new long[]{0x0280000807800240L,0x0040005007701080L});
+	public static final BitSet FOLLOW_AND_in_between_expression2711 = new BitSet(new long[]{0x0280000807804240L,0x0040005007701080L});
 	public static final BitSet FOLLOW_datetime_expression_in_between_expression2713 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_path_expression_in_in_expression2725 = new BitSet(new long[]{0x0000000008010000L});
 	public static final BitSet FOLLOW_type_discriminator_in_in_expression2729 = new BitSet(new long[]{0x0000000008010000L});
@@ -23194,14 +23624,14 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_RPAREN_in_in_expression2768 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_subquery_in_in_expression2784 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_collection_valued_input_parameter_in_in_expression2800 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_LPAREN_in_in_expression2816 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_LPAREN_in_in_expression2816 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_path_expression_in_in_expression2818 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_in_expression2820 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_literal_in_in_item2848 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_single_valued_input_parameter_in_in_item2852 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_string_expression_in_like_expression2863 = new BitSet(new long[]{0x0000000008000000L,0x0000200000000000L});
 	public static final BitSet FOLLOW_NOT_in_like_expression2866 = new BitSet(new long[]{0x0000000000000000L,0x0000200000000000L});
-	public static final BitSet FOLLOW_109_in_like_expression2870 = new BitSet(new long[]{0x0280000C07C00240L,0x0040005000F01080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_109_in_like_expression2870 = new BitSet(new long[]{0x0280000C07C04240L,0x0040005000F01080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_like_expression2873 = new BitSet(new long[]{0x0000000000000002L,0x0000000400000000L});
 	public static final BitSet FOLLOW_pattern_value_in_like_expression2877 = new BitSet(new long[]{0x0000000000000002L,0x0000000400000000L});
 	public static final BitSet FOLLOW_input_parameter_in_like_expression2881 = new BitSet(new long[]{0x0000000000000002L,0x0000000400000000L});
@@ -23219,8 +23649,8 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_94_in_empty_collection_comparison_expression2938 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_entity_or_value_expression_in_collection_member_expression2949 = new BitSet(new long[]{0x0000000008000000L,0x0000800000000000L});
 	public static final BitSet FOLLOW_NOT_in_collection_member_expression2953 = new BitSet(new long[]{0x0000000000000000L,0x0000800000000000L});
-	public static final BitSet FOLLOW_111_in_collection_member_expression2957 = new BitSet(new long[]{0x0080000000000000L,0x0100000000000000L});
-	public static final BitSet FOLLOW_120_in_collection_member_expression2960 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_111_in_collection_member_expression2957 = new BitSet(new long[]{0x0080000000004000L,0x0100000000000000L});
+	public static final BitSet FOLLOW_120_in_collection_member_expression2960 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_path_expression_in_collection_member_expression2964 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_path_expression_in_entity_or_value_expression2975 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_simple_entity_or_value_expression_in_entity_or_value_expression2983 = new BitSet(new long[]{0x0000000000000002L});
@@ -23234,45 +23664,45 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_set_in_all_or_any_expression3047 = new BitSet(new long[]{0x0000000000800000L});
 	public static final BitSet FOLLOW_subquery_in_all_or_any_expression3060 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_string_expression_in_comparison_expression3071 = new BitSet(new long[]{0x0000000000000000L,0x080000000000007EL});
-	public static final BitSet FOLLOW_comparison_operator_in_comparison_expression3074 = new BitSet(new long[]{0x0280000C07C00240L,0x8040005000F19080L,0x0000000000000122L});
-	public static final BitSet FOLLOW_123_in_comparison_expression3078 = new BitSet(new long[]{0x0280000C07C00240L,0x8040005000F19080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_comparison_operator_in_comparison_expression3074 = new BitSet(new long[]{0x0280000C07C04240L,0x8040005000F19080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_123_in_comparison_expression3078 = new BitSet(new long[]{0x0280000C07C04240L,0x8040005000F19080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_comparison_expression3082 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression3086 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_boolean_expression_in_comparison_expression3095 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000018L});
-	public static final BitSet FOLLOW_set_in_comparison_expression3097 = new BitSet(new long[]{0x0280000004800000L,0x8040005000719080L,0x000000000000C000L});
+	public static final BitSet FOLLOW_set_in_comparison_expression3097 = new BitSet(new long[]{0x0280000004804000L,0x8040005000719080L,0x000000000000C000L});
 	public static final BitSet FOLLOW_boolean_expression_in_comparison_expression3106 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression3110 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_enum_expression_in_comparison_expression3119 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000018L});
-	public static final BitSet FOLLOW_set_in_comparison_expression3121 = new BitSet(new long[]{0x0280000004800000L,0x8040000000518080L});
+	public static final BitSet FOLLOW_set_in_comparison_expression3121 = new BitSet(new long[]{0x0280000004804000L,0x8040000000518080L});
 	public static final BitSet FOLLOW_enum_expression_in_comparison_expression3128 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression3132 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_datetime_expression_in_comparison_expression3141 = new BitSet(new long[]{0x0000000000000000L,0x000000000000007EL});
-	public static final BitSet FOLLOW_comparison_operator_in_comparison_expression3143 = new BitSet(new long[]{0x0280000807800240L,0x8040005007719080L});
+	public static final BitSet FOLLOW_comparison_operator_in_comparison_expression3143 = new BitSet(new long[]{0x0280000807804240L,0x8040005007719080L});
 	public static final BitSet FOLLOW_datetime_expression_in_comparison_expression3146 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression3150 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_entity_expression_in_comparison_expression3159 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000018L});
-	public static final BitSet FOLLOW_set_in_comparison_expression3161 = new BitSet(new long[]{0x0280000004000000L,0x8000000000018080L});
+	public static final BitSet FOLLOW_set_in_comparison_expression3161 = new BitSet(new long[]{0x0280000004004000L,0x8000000000018080L});
 	public static final BitSet FOLLOW_entity_expression_in_comparison_expression3170 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression3174 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_entity_type_expression_in_comparison_expression3183 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000018L});
 	public static final BitSet FOLLOW_set_in_comparison_expression3185 = new BitSet(new long[]{0x0280000004000000L,0x0000000000000080L,0x0000000000000040L});
 	public static final BitSet FOLLOW_entity_type_expression_in_comparison_expression3193 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_comparison_expression3201 = new BitSet(new long[]{0x0000000000000000L,0x000000000000007EL});
-	public static final BitSet FOLLOW_comparison_operator_in_comparison_expression3203 = new BitSet(new long[]{0x2A80000807840240L,0xC04251500071D081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_comparison_operator_in_comparison_expression3203 = new BitSet(new long[]{0x2A80000807844240L,0xC04251500071D081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_comparison_expression3206 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression3210 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_arithmetic_term_in_arithmetic_expression3274 = new BitSet(new long[]{0x2800000000000000L});
-	public static final BitSet FOLLOW_set_in_arithmetic_expression3276 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_set_in_arithmetic_expression3276 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_term_in_arithmetic_expression3284 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_arithmetic_term_in_arithmetic_expression3292 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_arithmetic_factor_in_arithmetic_term3303 = new BitSet(new long[]{0x8400000000000000L});
-	public static final BitSet FOLLOW_set_in_arithmetic_term3305 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_set_in_arithmetic_term3305 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_factor_in_arithmetic_term3314 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_arithmetic_factor_in_arithmetic_term3322 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_arithmetic_primary_in_arithmetic_factor3345 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_path_expression_in_arithmetic_primary3356 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_numeric_literal_in_arithmetic_primary3364 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_LPAREN_in_arithmetic_primary3372 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_LPAREN_in_arithmetic_primary3372 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_arithmetic_primary3373 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_arithmetic_primary3374 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_input_parameter_in_arithmetic_primary3382 = new BitSet(new long[]{0x0000000000000002L});
@@ -23319,68 +23749,68 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_type_discriminator_in_entity_type_expression3731 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_entity_type_literal_in_entity_type_expression3739 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_input_parameter_in_entity_type_expression3747 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_134_in_type_discriminator3758 = new BitSet(new long[]{0x0280000004000000L,0x0000040000000080L,0x0000000000000200L});
+	public static final BitSet FOLLOW_134_in_type_discriminator3758 = new BitSet(new long[]{0x0280000004004000L,0x0000040000000080L,0x0000000000000200L});
 	public static final BitSet FOLLOW_general_identification_variable_in_type_discriminator3761 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_path_expression_in_type_discriminator3765 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_input_parameter_in_type_discriminator3769 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_type_discriminator3772 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_108_in_functions_returning_numerics3783 = new BitSet(new long[]{0x0280000C07C00240L,0x0040005000F01080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_108_in_functions_returning_numerics3783 = new BitSet(new long[]{0x0280000C07C04240L,0x0040005000F01080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_functions_returning_numerics3784 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics3785 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_110_in_functions_returning_numerics3793 = new BitSet(new long[]{0x0280000C07C00240L,0x0040005000F01080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_110_in_functions_returning_numerics3793 = new BitSet(new long[]{0x0280000C07C04240L,0x0040005000F01080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_functions_returning_numerics3795 = new BitSet(new long[]{0x1000000000000000L});
-	public static final BitSet FOLLOW_60_in_functions_returning_numerics3796 = new BitSet(new long[]{0x0280000C07C00240L,0x0040005000F01080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_60_in_functions_returning_numerics3796 = new BitSet(new long[]{0x0280000C07C04240L,0x0040005000F01080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_functions_returning_numerics3798 = new BitSet(new long[]{0x1000000080000000L});
-	public static final BitSet FOLLOW_60_in_functions_returning_numerics3800 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_60_in_functions_returning_numerics3800 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_functions_returning_numerics3801 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics3804 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_78_in_functions_returning_numerics3812 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_78_in_functions_returning_numerics3812 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_functions_returning_numerics3813 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics3814 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_128_in_functions_returning_numerics3822 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_128_in_functions_returning_numerics3822 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_functions_returning_numerics3823 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics3824 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_113_in_functions_returning_numerics3832 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_113_in_functions_returning_numerics3832 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_functions_returning_numerics3833 = new BitSet(new long[]{0x1000000000000000L});
-	public static final BitSet FOLLOW_60_in_functions_returning_numerics3834 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_60_in_functions_returning_numerics3834 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_functions_returning_numerics3836 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics3837 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_126_in_functions_returning_numerics3845 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_126_in_functions_returning_numerics3845 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_path_expression_in_functions_returning_numerics3846 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics3847 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_104_in_functions_returning_numerics3855 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_104_in_functions_returning_numerics3855 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_identification_variable_in_functions_returning_numerics3856 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics3857 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_87_in_functions_returning_strings3895 = new BitSet(new long[]{0x0280000C07C00240L,0x0040005000F01080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_87_in_functions_returning_strings3895 = new BitSet(new long[]{0x0280000C07C04240L,0x0040005000F01080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_functions_returning_strings3896 = new BitSet(new long[]{0x1000000000000000L});
-	public static final BitSet FOLLOW_60_in_functions_returning_strings3897 = new BitSet(new long[]{0x0280000C07C00240L,0x0040005000F01080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_60_in_functions_returning_strings3897 = new BitSet(new long[]{0x0280000C07C04240L,0x0040005000F01080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_functions_returning_strings3899 = new BitSet(new long[]{0x1000000080000000L});
-	public static final BitSet FOLLOW_60_in_functions_returning_strings3902 = new BitSet(new long[]{0x0280000C07C00240L,0x0040005000F01080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_60_in_functions_returning_strings3902 = new BitSet(new long[]{0x0280000C07C04240L,0x0040005000F01080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_functions_returning_strings3904 = new BitSet(new long[]{0x1000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_functions_returning_strings3907 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_129_in_functions_returning_strings3915 = new BitSet(new long[]{0x0280000C07C00240L,0x0040005000F01080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_129_in_functions_returning_strings3915 = new BitSet(new long[]{0x0280000C07C04240L,0x0040005000F01080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_functions_returning_strings3917 = new BitSet(new long[]{0x1000000000000000L});
-	public static final BitSet FOLLOW_60_in_functions_returning_strings3918 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_60_in_functions_returning_strings3918 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_functions_returning_strings3920 = new BitSet(new long[]{0x1000000080000000L});
-	public static final BitSet FOLLOW_60_in_functions_returning_strings3923 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_60_in_functions_returning_strings3923 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_functions_returning_strings3925 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_functions_returning_strings3928 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_133_in_functions_returning_strings3936 = new BitSet(new long[]{0x0280001C07C00240L,0x0040087000F81080L,0x000000000000012AL});
+	public static final BitSet FOLLOW_133_in_functions_returning_strings3936 = new BitSet(new long[]{0x0280001C07C04240L,0x0040087000F81080L,0x000000000000012AL});
 	public static final BitSet FOLLOW_trim_specification_in_functions_returning_strings3939 = new BitSet(new long[]{0x0000001000000000L,0x0000002000000000L});
 	public static final BitSet FOLLOW_trim_character_in_functions_returning_strings3944 = new BitSet(new long[]{0x0000000000000000L,0x0000002000000000L});
-	public static final BitSet FOLLOW_101_in_functions_returning_strings3948 = new BitSet(new long[]{0x0280000C07C00240L,0x0040005000F01080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_101_in_functions_returning_strings3948 = new BitSet(new long[]{0x0280000C07C04240L,0x0040005000F01080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_functions_returning_strings3952 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_functions_returning_strings3954 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_LOWER_in_functions_returning_strings3962 = new BitSet(new long[]{0x0000000000800000L});
-	public static final BitSet FOLLOW_LPAREN_in_functions_returning_strings3964 = new BitSet(new long[]{0x0280000C07C00240L,0x0040005000F01080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_LPAREN_in_functions_returning_strings3964 = new BitSet(new long[]{0x0280000C07C04240L,0x0040005000F01080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_functions_returning_strings3965 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_functions_returning_strings3966 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_136_in_functions_returning_strings3974 = new BitSet(new long[]{0x0280000C07C00240L,0x0040005000F01080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_136_in_functions_returning_strings3974 = new BitSet(new long[]{0x0280000C07C04240L,0x0040005000F01080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_functions_returning_strings3975 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_functions_returning_strings3976 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_102_in_function_invocation4006 = new BitSet(new long[]{0x0000000400000000L});
 	public static final BitSet FOLLOW_function_name_in_function_invocation4007 = new BitSet(new long[]{0x1000000080000000L});
-	public static final BitSet FOLLOW_60_in_function_invocation4010 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_60_in_function_invocation4010 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_function_arg_in_function_invocation4012 = new BitSet(new long[]{0x1000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_function_invocation4016 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_literal_in_function_arg4027 = new BitSet(new long[]{0x0000000000000002L});
@@ -23394,37 +23824,37 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_84_in_general_case_expression4097 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000800L});
 	public static final BitSet FOLLOW_when_clause_in_general_case_expression4099 = new BitSet(new long[]{0x0000000000000000L,0x0000000020000000L,0x0000000000000800L});
 	public static final BitSet FOLLOW_when_clause_in_general_case_expression4102 = new BitSet(new long[]{0x0000000000000000L,0x0000000020000000L,0x0000000000000800L});
-	public static final BitSet FOLLOW_93_in_general_case_expression4106 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_93_in_general_case_expression4106 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_scalar_expression_in_general_case_expression4108 = new BitSet(new long[]{0x0000000000000000L,0x0000000080000000L});
 	public static final BitSet FOLLOW_95_in_general_case_expression4110 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_139_in_when_clause4121 = new BitSet(new long[]{0x2A80000C0FC40240L,0x4042515807F07F81L,0x000000000000C173L});
+	public static final BitSet FOLLOW_139_in_when_clause4121 = new BitSet(new long[]{0x2A80000C0FC44240L,0x4042515807F07F81L,0x000000000000C173L});
 	public static final BitSet FOLLOW_conditional_expression_in_when_clause4123 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000004L});
-	public static final BitSet FOLLOW_130_in_when_clause4125 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_130_in_when_clause4125 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_scalar_expression_in_when_clause4127 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_84_in_simple_case_expression4138 = new BitSet(new long[]{0x0080000000000000L,0x0000000000000000L,0x0000000000000040L});
+	public static final BitSet FOLLOW_84_in_simple_case_expression4138 = new BitSet(new long[]{0x0080000000004000L,0x0000000000000000L,0x0000000000000040L});
 	public static final BitSet FOLLOW_case_operand_in_simple_case_expression4140 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000800L});
 	public static final BitSet FOLLOW_simple_when_clause_in_simple_case_expression4142 = new BitSet(new long[]{0x0000000000000000L,0x0000000020000000L,0x0000000000000800L});
 	public static final BitSet FOLLOW_simple_when_clause_in_simple_case_expression4145 = new BitSet(new long[]{0x0000000000000000L,0x0000000020000000L,0x0000000000000800L});
-	public static final BitSet FOLLOW_93_in_simple_case_expression4149 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_93_in_simple_case_expression4149 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_scalar_expression_in_simple_case_expression4151 = new BitSet(new long[]{0x0000000000000000L,0x0000000080000000L});
 	public static final BitSet FOLLOW_95_in_simple_case_expression4153 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_path_expression_in_case_operand4164 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_type_discriminator_in_case_operand4172 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_139_in_simple_when_clause4183 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_139_in_simple_when_clause4183 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_scalar_expression_in_simple_when_clause4185 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000004L});
-	public static final BitSet FOLLOW_130_in_simple_when_clause4187 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_130_in_simple_when_clause4187 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_scalar_expression_in_simple_when_clause4189 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_86_in_coalesce_expression4200 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_86_in_coalesce_expression4200 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_scalar_expression_in_coalesce_expression4201 = new BitSet(new long[]{0x1000000000000000L});
-	public static final BitSet FOLLOW_60_in_coalesce_expression4204 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_60_in_coalesce_expression4204 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_scalar_expression_in_coalesce_expression4206 = new BitSet(new long[]{0x1000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_coalesce_expression4209 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_118_in_nullif_expression4220 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_118_in_nullif_expression4220 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_scalar_expression_in_nullif_expression4221 = new BitSet(new long[]{0x1000000000000000L});
-	public static final BitSet FOLLOW_60_in_nullif_expression4223 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_60_in_nullif_expression4223 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_scalar_expression_in_nullif_expression4225 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_nullif_expression4226 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_85_in_extension_functions4238 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_85_in_extension_functions4238 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_function_arg_in_extension_functions4240 = new BitSet(new long[]{0x0080000000000000L});
 	public static final BitSet FOLLOW_WORD_in_extension_functions4242 = new BitSet(new long[]{0x0000000080800000L});
 	public static final BitSet FOLLOW_LPAREN_in_extension_functions4245 = new BitSet(new long[]{0x0000000000040000L});
@@ -23435,7 +23865,7 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_RPAREN_in_extension_functions4260 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_100_in_extension_functions4268 = new BitSet(new long[]{0x0000000000000000L,0x1405008208000000L,0x0000000000002400L});
 	public static final BitSet FOLLOW_date_part_in_extension_functions4270 = new BitSet(new long[]{0x1000000000000000L,0x0000002000000000L});
-	public static final BitSet FOLLOW_set_in_extension_functions4272 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_set_in_extension_functions4272 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_function_arg_in_extension_functions4280 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_extension_functions4282 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_76_in_extension_functions4290 = new BitSet(new long[]{0x0000000000800000L});
@@ -23464,37 +23894,36 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_81_in_field4538 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_111_in_field4542 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_date_part_in_field4546 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_WORD_in_identification_variable4558 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_WORD_in_parameter_name4570 = new BitSet(new long[]{0x4000000000000002L});
-	public static final BitSet FOLLOW_62_in_parameter_name4573 = new BitSet(new long[]{0x0080000000000000L});
-	public static final BitSet FOLLOW_WORD_in_parameter_name4576 = new BitSet(new long[]{0x4000000000000002L});
-	public static final BitSet FOLLOW_TRIM_CHARACTER_in_trim_character4606 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_STRING_LITERAL_in_string_literal4617 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_64_in_numeric_literal4629 = new BitSet(new long[]{0x0000000000040000L});
-	public static final BitSet FOLLOW_INT_NUMERAL_in_numeric_literal4633 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_WORD_in_single_valued_object_field4645 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_WORD_in_single_valued_embeddable_object_field4656 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_WORD_in_collection_valued_field4667 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_WORD_in_entity_name4678 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_WORD_in_subtype4689 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_WORD_in_entity_type_literal4700 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_STRING_LITERAL_in_function_name4711 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_WORD_in_state_field4722 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_WORD_in_result_variable4733 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_WORD_in_superquery_identification_variable4744 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_WORD_in_date_time_timestamp_literal4755 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_string_literal_in_pattern_value4766 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_input_parameter_in_collection_valued_input_parameter4777 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_input_parameter_in_single_valued_input_parameter4788 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_WORD_in_enum_value_literal4799 = new BitSet(new long[]{0x4000000000000002L});
-	public static final BitSet FOLLOW_62_in_enum_value_literal4802 = new BitSet(new long[]{0x0080000000000000L});
-	public static final BitSet FOLLOW_WORD_in_enum_value_literal4805 = new BitSet(new long[]{0x4000000000000002L});
+	public static final BitSet FOLLOW_WORD_in_parameter_name4574 = new BitSet(new long[]{0x4000000000000002L});
+	public static final BitSet FOLLOW_62_in_parameter_name4577 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_WORD_in_parameter_name4580 = new BitSet(new long[]{0x4000000000000002L});
+	public static final BitSet FOLLOW_TRIM_CHARACTER_in_trim_character4610 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_STRING_LITERAL_in_string_literal4621 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_64_in_numeric_literal4633 = new BitSet(new long[]{0x0000000000040000L});
+	public static final BitSet FOLLOW_INT_NUMERAL_in_numeric_literal4637 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_WORD_in_single_valued_object_field4649 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_WORD_in_single_valued_embeddable_object_field4660 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_WORD_in_collection_valued_field4671 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_WORD_in_entity_name4682 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_WORD_in_subtype4693 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_WORD_in_entity_type_literal4704 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_STRING_LITERAL_in_function_name4715 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_WORD_in_state_field4726 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_WORD_in_result_variable4737 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_WORD_in_superquery_identification_variable4748 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_WORD_in_date_time_timestamp_literal4759 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_string_literal_in_pattern_value4770 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_input_parameter_in_collection_valued_input_parameter4781 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_input_parameter_in_single_valued_input_parameter4792 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_WORD_in_enum_value_literal4803 = new BitSet(new long[]{0x4000000000000002L});
+	public static final BitSet FOLLOW_62_in_enum_value_literal4806 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_WORD_in_enum_value_literal4809 = new BitSet(new long[]{0x4000000000000002L});
 	public static final BitSet FOLLOW_field_in_synpred21_JPA2904 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_field_in_synpred30_JPA21094 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_scalar_expression_in_synpred33_JPA21220 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_simple_entity_expression_in_synpred34_JPA21228 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_path_expression_in_synpred43_JPA21353 = new BitSet(new long[]{0xAC00000000000002L});
-	public static final BitSet FOLLOW_set_in_synpred43_JPA21356 = new BitSet(new long[]{0x2A80000C07C40240L,0x4042515007F05081L,0x000000000000C163L});
+	public static final BitSet FOLLOW_set_in_synpred43_JPA21356 = new BitSet(new long[]{0x2A80000C07C44240L,0x4042515007F05081L,0x000000000000C163L});
 	public static final BitSet FOLLOW_scalar_expression_in_synpred43_JPA21372 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_identification_variable_in_synpred44_JPA21382 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_scalar_expression_in_synpred45_JPA21400 = new BitSet(new long[]{0x0000000000000002L});
@@ -23503,13 +23932,13 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_scalar_expression_in_synpred50_JPA21473 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_aggregate_expression_in_synpred51_JPA21481 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_aggregate_expression_function_name_in_synpred53_JPA21500 = new BitSet(new long[]{0x0000000000800000L});
-	public static final BitSet FOLLOW_LPAREN_in_synpred53_JPA21502 = new BitSet(new long[]{0x0080000000000800L});
-	public static final BitSet FOLLOW_DISTINCT_in_synpred53_JPA21504 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_LPAREN_in_synpred53_JPA21502 = new BitSet(new long[]{0x0080000000004800L});
+	public static final BitSet FOLLOW_DISTINCT_in_synpred53_JPA21504 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_path_expression_in_synpred53_JPA21508 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_synpred53_JPA21509 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_COUNT_in_synpred55_JPA21543 = new BitSet(new long[]{0x0000000000800000L});
-	public static final BitSet FOLLOW_LPAREN_in_synpred55_JPA21545 = new BitSet(new long[]{0x0080000000000800L});
-	public static final BitSet FOLLOW_DISTINCT_in_synpred55_JPA21547 = new BitSet(new long[]{0x0080000000000000L});
+	public static final BitSet FOLLOW_LPAREN_in_synpred55_JPA21545 = new BitSet(new long[]{0x0080000000004800L});
+	public static final BitSet FOLLOW_DISTINCT_in_synpred55_JPA21547 = new BitSet(new long[]{0x0080000000004000L});
 	public static final BitSet FOLLOW_count_argument_in_synpred55_JPA21551 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_synpred55_JPA21553 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_path_expression_in_synpred65_JPA21814 = new BitSet(new long[]{0x0000000000000002L});
@@ -23539,51 +23968,51 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_collection_member_expression_in_synpred101_JPA22405 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_synpred120_JPA22658 = new BitSet(new long[]{0x0000000008000000L,0x0000000000040000L});
 	public static final BitSet FOLLOW_NOT_in_synpred120_JPA22661 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-	public static final BitSet FOLLOW_82_in_synpred120_JPA22665 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_82_in_synpred120_JPA22665 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_synpred120_JPA22667 = new BitSet(new long[]{0x0000000000000010L});
-	public static final BitSet FOLLOW_AND_in_synpred120_JPA22669 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_AND_in_synpred120_JPA22669 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_synpred120_JPA22671 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_string_expression_in_synpred122_JPA22679 = new BitSet(new long[]{0x0000000008000000L,0x0000000000040000L});
 	public static final BitSet FOLLOW_NOT_in_synpred122_JPA22682 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-	public static final BitSet FOLLOW_82_in_synpred122_JPA22686 = new BitSet(new long[]{0x0280000C07C00240L,0x0040005000F01080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_82_in_synpred122_JPA22686 = new BitSet(new long[]{0x0280000C07C04240L,0x0040005000F01080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_synpred122_JPA22688 = new BitSet(new long[]{0x0000000000000010L});
-	public static final BitSet FOLLOW_AND_in_synpred122_JPA22690 = new BitSet(new long[]{0x0280000C07C00240L,0x0040005000F01080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_AND_in_synpred122_JPA22690 = new BitSet(new long[]{0x0280000C07C04240L,0x0040005000F01080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_synpred122_JPA22692 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_string_expression_in_synpred133_JPA22873 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_pattern_value_in_synpred134_JPA22877 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_path_expression_in_synpred136_JPA22900 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_identification_variable_in_synpred144_JPA23002 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_string_expression_in_synpred151_JPA23071 = new BitSet(new long[]{0x0000000000000000L,0x080000000000007EL});
-	public static final BitSet FOLLOW_comparison_operator_in_synpred151_JPA23074 = new BitSet(new long[]{0x0280000C07C00240L,0x8040005000F19080L,0x0000000000000122L});
-	public static final BitSet FOLLOW_123_in_synpred151_JPA23078 = new BitSet(new long[]{0x0280000C07C00240L,0x8040005000F19080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_comparison_operator_in_synpred151_JPA23074 = new BitSet(new long[]{0x0280000C07C04240L,0x8040005000F19080L,0x0000000000000122L});
+	public static final BitSet FOLLOW_123_in_synpred151_JPA23078 = new BitSet(new long[]{0x0280000C07C04240L,0x8040005000F19080L,0x0000000000000122L});
 	public static final BitSet FOLLOW_string_expression_in_synpred151_JPA23082 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_all_or_any_expression_in_synpred151_JPA23086 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_boolean_expression_in_synpred154_JPA23095 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000018L});
-	public static final BitSet FOLLOW_set_in_synpred154_JPA23097 = new BitSet(new long[]{0x0280000004800000L,0x8040005000719080L,0x000000000000C000L});
+	public static final BitSet FOLLOW_set_in_synpred154_JPA23097 = new BitSet(new long[]{0x0280000004804000L,0x8040005000719080L,0x000000000000C000L});
 	public static final BitSet FOLLOW_boolean_expression_in_synpred154_JPA23106 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_all_or_any_expression_in_synpred154_JPA23110 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_enum_expression_in_synpred157_JPA23119 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000018L});
-	public static final BitSet FOLLOW_set_in_synpred157_JPA23121 = new BitSet(new long[]{0x0280000004800000L,0x8040000000518080L});
+	public static final BitSet FOLLOW_set_in_synpred157_JPA23121 = new BitSet(new long[]{0x0280000004804000L,0x8040000000518080L});
 	public static final BitSet FOLLOW_enum_expression_in_synpred157_JPA23128 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_all_or_any_expression_in_synpred157_JPA23132 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_datetime_expression_in_synpred159_JPA23141 = new BitSet(new long[]{0x0000000000000000L,0x000000000000007EL});
-	public static final BitSet FOLLOW_comparison_operator_in_synpred159_JPA23143 = new BitSet(new long[]{0x0280000807800240L,0x8040005007719080L});
+	public static final BitSet FOLLOW_comparison_operator_in_synpred159_JPA23143 = new BitSet(new long[]{0x0280000807804240L,0x8040005007719080L});
 	public static final BitSet FOLLOW_datetime_expression_in_synpred159_JPA23146 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_all_or_any_expression_in_synpred159_JPA23150 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_entity_expression_in_synpred162_JPA23159 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000018L});
-	public static final BitSet FOLLOW_set_in_synpred162_JPA23161 = new BitSet(new long[]{0x0280000004000000L,0x8000000000018080L});
+	public static final BitSet FOLLOW_set_in_synpred162_JPA23161 = new BitSet(new long[]{0x0280000004004000L,0x8000000000018080L});
 	public static final BitSet FOLLOW_entity_expression_in_synpred162_JPA23170 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_all_or_any_expression_in_synpred162_JPA23174 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_entity_type_expression_in_synpred164_JPA23183 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000018L});
 	public static final BitSet FOLLOW_set_in_synpred164_JPA23185 = new BitSet(new long[]{0x0280000004000000L,0x0000000000000080L,0x0000000000000040L});
 	public static final BitSet FOLLOW_entity_type_expression_in_synpred164_JPA23193 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_arithmetic_term_in_synpred172_JPA23274 = new BitSet(new long[]{0x2800000000000000L});
-	public static final BitSet FOLLOW_set_in_synpred172_JPA23276 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_set_in_synpred172_JPA23276 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_term_in_synpred172_JPA23284 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_arithmetic_factor_in_synpred174_JPA23303 = new BitSet(new long[]{0x8400000000000000L});
-	public static final BitSet FOLLOW_set_in_synpred174_JPA23305 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_set_in_synpred174_JPA23305 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_factor_in_synpred174_JPA23314 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_LPAREN_in_synpred179_JPA23372 = new BitSet(new long[]{0x2A80000807840240L,0x4042515000705081L,0x0000000000000001L});
+	public static final BitSet FOLLOW_LPAREN_in_synpred179_JPA23372 = new BitSet(new long[]{0x2A80000807844240L,0x4042515000705081L,0x0000000000000001L});
 	public static final BitSet FOLLOW_arithmetic_expression_in_synpred179_JPA23373 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_synpred179_JPA23374 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_aggregate_expression_in_synpred182_JPA23398 = new BitSet(new long[]{0x0000000000000002L});
@@ -23595,6 +24024,7 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_function_invocation_in_synpred199_JPA23556 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_date_time_timestamp_literal_in_synpred201_JPA23572 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_literal_in_synpred239_JPA24027 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_path_expression_in_synpred240_JPA24035 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_input_parameter_in_synpred241_JPA24043 = new BitSet(new long[]{0x0000000000000002L});
 
 	@Override
