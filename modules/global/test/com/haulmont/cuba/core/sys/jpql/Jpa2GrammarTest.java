@@ -61,6 +61,11 @@ public class Jpa2GrammarTest {
     }
 
     @Test
+    public void testGroupAlias() throws Exception {
+        testQuery("select group.name from sec$User u left join e.group group where u.login = 'admin'");
+    }
+
+    @Test
     public void testOrderByCount() throws Exception {
         testQuery("select instance.bookPublication.publisher.name, count(instance) " +
                 "from library$BookInstance instance " +
