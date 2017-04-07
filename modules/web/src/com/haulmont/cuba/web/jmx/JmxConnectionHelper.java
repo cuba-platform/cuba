@@ -123,7 +123,11 @@ public final class JmxConnectionHelper {
                 return action.perform(instance, getLocalConnection());
             } else {
                 MBeanServerConnectionFactoryBean factoryBean = new MBeanServerConnectionFactoryBean();
-                factoryBean.setServiceUrl("service:jmx:rmi:///jndi/rmi://" + instance.getAddress() + "/jmxrmi");
+                String address = instance.getAddress();
+                if (!address.startsWith("service:")) {
+                    address = "service:jmx:rmi:///jndi/rmi://" + address + "/jmxrmi";
+                }
+                factoryBean.setServiceUrl(address);
 
                 String username = instance.getLogin();
                 if (StringUtils.isNotEmpty(username)) {
