@@ -22,7 +22,6 @@ import com.haulmont.chile.core.datatypes.impl.UUIDDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
@@ -47,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -560,15 +560,16 @@ public class BulkEditorWindow extends AbstractWindow {
     }
 
     protected List<Entity> loadItems(View view) {
+        LoadContext.Query query = new LoadContext.Query(String.format("select e from %s e where e.%s in :ids", metaClass,
+                metadataTools.getPrimaryKeyName(metaClass)));
+
+        List<Object> ids = selected.stream()
+                .map(Entity::getId)
+                .collect(Collectors.toList());
+        query.setParameter("ids", ids);
+
         LoadContext<Entity> lc = new LoadContext<>(metaClass);
         lc.setSoftDeletion(false);
-
-        List<UUID> ids = new ArrayList<>();
-        for (Entity item : selected) {
-            ids.add(((BaseUuidEntity) item).getId());
-        }
-        LoadContext.Query query = new LoadContext.Query(String.format("select e from %s e where e.id in :ids", metaClass));
-        query.setParameter("ids", ids);
         lc.setQuery(query);
         lc.setView(view);
 
