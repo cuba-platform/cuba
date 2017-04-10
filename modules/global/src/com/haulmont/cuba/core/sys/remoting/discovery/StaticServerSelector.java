@@ -50,6 +50,7 @@ public class StaticServerSelector extends StickySessionServerSelector {
     public void init() {
         if (baseUrl == null)
             throw new IllegalStateException("baseUrl is null");
+        log.info("Server URL(s): {}", baseUrl);
         String[] strings = baseUrl.split("[,;]");
         for (String string : strings) {
             if (!StringUtils.isBlank(string)) {
