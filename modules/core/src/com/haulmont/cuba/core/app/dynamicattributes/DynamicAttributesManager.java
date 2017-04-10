@@ -198,7 +198,9 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
                 metadata.getTools().traverseAttributes(entity, new EntityAttributeVisitor() {
                     @Override
                     public void visit(Entity dependentEntity, MetaProperty property) {
-                        toProcess.add((BaseGenericIdEntity) dependentEntity);
+                        if (dependentEntity instanceof BaseGenericIdEntity) {
+                            toProcess.add((BaseGenericIdEntity) dependentEntity);
+                        }
                     }
 
                     @Override
