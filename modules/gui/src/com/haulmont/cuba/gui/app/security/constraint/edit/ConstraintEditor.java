@@ -174,12 +174,12 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
             type.setEnabled(true);
         }
 
-        if (item.getCheckType() == ConstraintCheckType.DATABASE_AND_MEMORY
-                || item.getCheckType() == ConstraintCheckType.DATABASE) {
-            testConstraint.setVisible(true);
-        } else {
-            testConstraint.setVisible(false);
-        }
+//        if (item.getCheckType() == ConstraintCheckType.DATABASE_AND_MEMORY
+//                || item.getCheckType() == ConstraintCheckType.DATABASE) {
+//            testConstraint.setVisible(true);
+//        } else {
+//            testConstraint.setVisible(false);
+//        }
     }
 
     protected List<Suggestion> requestHint(SourceCodeEditor sender, String text, int cursorPosition) {
@@ -326,44 +326,46 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
         Constraint constraint = getItem();
         String entityName = constraint.getEntityName();
         if (validateAll()) {
-            String baseQueryString = "select e from " + entityName + " e";
-            try {
-                QueryTransformer transformer = QueryTransformerFactory.createTransformer(baseQueryString);
-                if (StringUtils.isNotBlank(constraint.getJoinClause())) {
-                    transformer.addJoinAndWhere(constraint.getJoinClause(), constraint.getWhereClause());
-                } else {
-                    transformer.addWhere(constraint.getWhereClause());
-                }
-                CollectionDatasource datasource = DsBuilder.create()
-                        .setMetaClass(metadata.getSession().getClassNN(entityName))
-                        .setMaxResults(0)
-                        .buildCollectionDatasource();
-                datasource.setQuery(transformer.getResult());
-                datasource.refresh();
+            if (!Strings.isNullOrEmpty(constraint.getWhereClause())) {
+                String baseQueryString = "select e from " + entityName + " e";
+                try {
+                    QueryTransformer transformer = QueryTransformerFactory.createTransformer(baseQueryString);
+                    if (StringUtils.isNotBlank(constraint.getJoinClause())) {
+                        transformer.addJoinAndWhere(constraint.getJoinClause(), constraint.getWhereClause());
+                    } else {
+                        transformer.addWhere(constraint.getWhereClause());
+                    }
+                    CollectionDatasource datasource = DsBuilder.create()
+                            .setMetaClass(metadata.getSession().getClassNN(entityName))
+                            .setMaxResults(0)
+                            .buildCollectionDatasource();
+                    datasource.setQuery(transformer.getResult());
+                    datasource.refresh();
 
-            } catch (JpqlSyntaxException e) {
-                StringBuilder stringBuilder = new StringBuilder();
-                for (ErrorRec rec : e.getErrorRecs()) {
-                    stringBuilder.append(rec.toString()).append("<br>");
+                } catch (JpqlSyntaxException e) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (ErrorRec rec : e.getErrorRecs()) {
+                        stringBuilder.append(rec.toString()).append("<br>");
+                    }
+                    showMessageDialog(getMessage("notification.error"),
+                            formatMessage("notification.syntaxErrors", stringBuilder), MessageType.WARNING_HTML);
+                    return;
+                } catch (Exception e) {
+                    String msg;
+                    Throwable rootCause = ExceptionUtils.getRootCause(e);
+                    if (rootCause == null)
+                        rootCause = e;
+                    if (rootCause instanceof RemoteException) {
+                        List<RemoteException.Cause> causes = ((RemoteException) rootCause).getCauses();
+                        RemoteException.Cause cause = causes.get(causes.size() - 1);
+                        msg = cause.getThrowable() != null ? cause.getThrowable().toString() : cause.getClassName() + ": " + cause.getMessage();
+                    } else {
+                        msg = rootCause.toString();
+                    }
+                    showMessageDialog(getMessage("notification.error"),
+                            formatMessage("notification.runtimeError", msg), MessageType.WARNING_HTML);
+                    return;
                 }
-                showMessageDialog(getMessage("notification.error"),
-                        formatMessage("notification.syntaxErrors", stringBuilder), MessageType.WARNING_HTML);
-                return;
-            } catch (Exception e) {
-                String msg;
-                Throwable rootCause = ExceptionUtils.getRootCause(e);
-                if (rootCause == null)
-                    rootCause = e;
-                if (rootCause instanceof RemoteException) {
-                    List<RemoteException.Cause> causes = ((RemoteException) rootCause).getCauses();
-                    RemoteException.Cause cause = causes.get(causes.size() - 1);
-                    msg = cause.getThrowable() != null ? cause.getThrowable().toString() : cause.getClassName() + ": " + cause.getMessage();
-                } else {
-                    msg = rootCause.toString();
-                }
-                showMessageDialog(getMessage("notification.error"),
-                        formatMessage("notification.runtimeError", msg), MessageType.WARNING_HTML);
-                return;
             }
 
             if (!Strings.isNullOrEmpty(constraint.getGroovyScript())) {
