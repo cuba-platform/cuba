@@ -65,10 +65,16 @@ public class HintProvider {
         String[] words = queryString.substring(0, caretPosition + 1).split("\\s");
         String result = words[words.length - 1];
 
-        if (result.startsWith("in("))
-            result = result.substring(3);
+        if (StringUtils.isBlank(result)) {
+            return result;
+        }
 
-        return result;
+        int leftBracketsIdx = result.lastIndexOf('(');
+        if (leftBracketsIdx < 0 || (leftBracketsIdx >= result.length())) {
+            return result;
+        }
+
+        return result.substring(leftBracketsIdx + 1);
     }
 
     public HintResponse requestHint(String queryStringWithCaret) throws RecognitionException {
