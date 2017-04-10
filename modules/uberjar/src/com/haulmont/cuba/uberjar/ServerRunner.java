@@ -32,6 +32,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.CodeSource;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import static java.lang.String.format;
@@ -40,9 +41,10 @@ public class ServerRunner {
 
     public static final String STATIC_CONTENT_PATH_IN_JAR = "ubercontent";
     public static final String FRONT_CONTENT_PATH_IN_JAR = "uberfront";
+    public static final String APP_PROPERTIES_PATH_IN_JAR = "WEB-INF/local.app.properties";
     protected static final int DEFAULT_PORT = 8080;
     protected static final String CONTEXT_PATH_DELIMITER = "/";
-    protected int port = DEFAULT_PORT;
+    protected int port;
     protected String contextPath;
     protected String frontContextPath;
     protected URL jettyEnvPathUrl;
@@ -101,7 +103,10 @@ public class ServerRunner {
                     printHelp(formatter, cliOptions);
                     return;
                 }
+            } else if (port == 0) {
+                port = getWebPort();
             }
+
             if (cmd.hasOption(contextPathOption.getOpt())) {
                 String contextName = cmd.getOptionValue(contextPathOption.getOpt());
                 if (contextName != null && !contextName.isEmpty()) {
@@ -240,5 +245,20 @@ public class ServerRunner {
             e.printStackTrace(System.out);
         }
         return contents;
+    }
+
+    protected int getWebPort() {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Properties properties = new Properties();
+            properties.load(classLoader.getResourceAsStream(APP_PROPERTIES_PATH_IN_JAR));
+            String webPort = (String) properties.get("cuba.webPort");
+            if (webPort != null && !webPort.isEmpty()) {
+                return Integer.parseInt(webPort);
+            }
+        } catch (IOException | NumberFormatException e) {
+            System.out.println("Error while parsing port, use default port");
+        }
+        return DEFAULT_PORT;
     }
 }
