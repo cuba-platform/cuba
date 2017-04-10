@@ -568,13 +568,18 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         String queryStart = "select " + entityAlias + " from " + metaClass.getName() + " " + entityAlias + " ";
 
         StringBuilder queryBuilder = new StringBuilder(queryStart);
-        if (joinStr != null && !joinStr.equals("")) {
+        if (StringUtils.isNotEmpty(joinStr)) {
             if (sender == joinField) {
                 queryPosition = queryBuilder.length() + senderCursorPosition - 1;
             }
-            queryBuilder.append(joinStr);
+            if (!StringUtils.containsIgnoreCase(joinStr, "join") && !StringUtils.contains(joinStr, ",")) {
+                queryBuilder.append("join ").append(joinStr);
+                queryPosition += "join ".length();
+            } else {
+                queryBuilder.append(joinStr);
+            }
         }
-        if (whereStr != null && !whereStr.equals("")) {
+        if (StringUtils.isNotEmpty(whereStr)) {
             if (sender == whereField) {
                 queryPosition = queryBuilder.length() + WHERE.length() + senderCursorPosition - 1;
             }

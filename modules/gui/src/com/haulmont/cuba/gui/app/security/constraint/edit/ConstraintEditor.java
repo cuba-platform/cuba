@@ -203,14 +203,19 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
         queryBuilder.append(" ");
         queryBuilder.append(entityNameAlias);
         queryBuilder.append(" ");
-        if (joinStr != null && !joinStr.equals("")) {
+        if (StringUtils.isNotEmpty(joinStr)) {
             if (sender == joinClause) {
                 position = queryBuilder.length() + cursorPosition - 1;
             }
-            queryBuilder.append(joinStr);
+            if (!StringUtils.containsIgnoreCase(joinStr, "join") && !StringUtils.contains(joinStr, ",")) {
+                queryBuilder.append("join ").append(joinStr);
+                position += "join ".length();
+            } else {
+                queryBuilder.append(joinStr);
+            }
         }
 
-        if (whereStr != null && !whereStr.equals("")) {
+        if (StringUtils.isNotEmpty(whereStr)) {
             if (sender == whereClause) {
                 position = queryBuilder.length() + " WHERE ".length() + cursorPosition - 1;
             }
