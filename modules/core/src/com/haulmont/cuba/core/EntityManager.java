@@ -99,6 +99,9 @@ public interface EntityManager {
 
     /**
      * Find by primary key.
+     * <p>
+     * Due to accepting views, this method actually executes a {@link Query} which may lead to flushing of the
+     * persistence context and invoking listeners on modified entities.
      *
      * @param entityClass   entity class
      * @param id            entity id
@@ -112,6 +115,9 @@ public interface EntityManager {
 
     /**
      * Find by primary key.
+     * <p>
+     * Due to accepting views, this method actually executes a {@link Query} which may lead to flushing of the
+     * persistence context and invoking listeners on modified entities.
      *
      * @param entityClass   entity class
      * @param id            entity id
