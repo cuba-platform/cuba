@@ -104,6 +104,7 @@ public class ClusterInvocationSupport {
     }
 
     public void init() {
+        log.info("Server URL(s): {}", baseUrl);
         urls = new ArrayList<>();
         String[] strings = baseUrl.split("[,;]");
         for (String string : strings) {
