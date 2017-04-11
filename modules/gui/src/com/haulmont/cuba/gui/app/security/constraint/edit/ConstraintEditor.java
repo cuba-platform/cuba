@@ -48,6 +48,7 @@ import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.dom4j.Element;
 
 import javax.inject.Inject;
@@ -371,10 +372,12 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
             if (!Strings.isNullOrEmpty(constraint.getGroovyScript())) {
                 try {
                     security.evaluateConstraintScript(metadata.create(entityName), constraint.getGroovyScript());
-                } catch (Exception e) {
+                } catch (CompilationFailedException e) {
                     showMessageDialog(getMessage("notification.error"),
-                            formatMessage("notification.scriptRuntimeError", e.toString()), MessageType.WARNING_HTML);
+                            formatMessage("notification.scriptCompilationError", e.toString()), MessageType.WARNING_HTML);
                     return;
+                } catch (Exception e) {
+                    // ignore
                 }
             }
 
