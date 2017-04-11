@@ -343,33 +343,22 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
     }
 
     protected void loadEditable(FieldGroup resultComponent, FieldGroup.FieldConfig field) {
-        if (field.isCustom()) {
-            Element element = field.getXmlDescriptor();
+        Element element = field.getXmlDescriptor();
+        if (element != null) {
             String editable = element.attributeValue("editable");
             if (StringUtils.isNotEmpty(editable)) {
-                resultComponent.setEditable(field, Boolean.parseBoolean(editable));
+                field.setEditable(Boolean.parseBoolean(editable));
             }
-        } else {
-            if (resultComponent.isEditable()) {
-                MetaClass metaClass = getMetaClass(resultComponent, field);
-                MetaPropertyPath propertyPath = field.getMetaPropertyPath();
+        }
 
-                checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
+        if (!field.isCustom() && BooleanUtils.isNotFalse(field.isEditable())) {
+            MetaClass metaClass = getMetaClass(resultComponent, field);
+            MetaPropertyPath propertyPath = metadataTools.resolveMetaPropertyPath(metaClass, field.getId());
 
-                boolean editableFromPermissions = security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString());
+            checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
 
-                if (!editableFromPermissions) {
-                    resultComponent.setEditable(field, false);
-                    boolean visible = security.isEntityAttrReadPermitted(metaClass, propertyPath.toString());
-
-                    resultComponent.setVisible(field, visible);
-                } else if (!DynamicAttributesUtils.isDynamicAttribute(propertyPath.getMetaProperty())) {
-                    Element element = field.getXmlDescriptor();
-                    String editable = element.attributeValue("editable");
-                    if (StringUtils.isNotEmpty(editable)) {
-                        resultComponent.setEditable(field, Boolean.parseBoolean(editable));
-                    }
-                }
+            if (!security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())) {
+                field.setEditable(false);
             }
         }
     }
@@ -400,9 +389,22 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
     protected void loadVisible(FieldGroup resultComponent, FieldGroup.FieldConfig field) {
         Element element = field.getXmlDescriptor();
-        String visible = element.attributeValue("visible");
-        if (StringUtils.isNotEmpty(visible)) {
-            resultComponent.setVisible(field, resultComponent.isVisible() && Boolean.parseBoolean(visible));
+        if (element != null) {
+            String visible = element.attributeValue("visible");
+            if (StringUtils.isNotEmpty(visible)) {
+                resultComponent.setVisible(field, Boolean.parseBoolean(visible));
+            }
+        }
+
+        if (!field.isCustom() && BooleanUtils.isNotFalse(resultComponent.isVisible(field))) {
+            MetaClass metaClass = getMetaClass(resultComponent, field);
+            MetaPropertyPath propertyPath = metadataTools.resolveMetaPropertyPath(metaClass, field.getId());
+
+            checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
+
+            if (!security.isEntityAttrReadPermitted(metaClass, propertyPath.toString())) {
+                resultComponent.setVisible(field, false);
+            }
         }
     }
 
