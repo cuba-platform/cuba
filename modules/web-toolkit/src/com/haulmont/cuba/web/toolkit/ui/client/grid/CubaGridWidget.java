@@ -25,6 +25,13 @@ import elemental.json.JsonObject;
 public class CubaGridWidget extends Grid<JsonObject> {
 
     @Override
+    protected Editor<JsonObject> createEditor() {
+        Editor<JsonObject> editor =  super.createEditor();
+        editor.setEventHandler(new CubaEditorEventHandler<>());
+        return editor;
+    }
+
+    @Override
     protected void sortWithSorter(Column<?, ?> column, boolean shiftKeyDown) {
         // ignore shiftKeyDown until datasources don't support multi-sorting
         super.sortWithSorter(column, false);

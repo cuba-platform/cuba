@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
@@ -322,10 +323,263 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     void setColumnsCollapsingAllowed(boolean columnsCollapsingAllowed);
 
     /**
+     * Checks whether the item editor UI is enabled for this DataGrid.
+     *
+     * @return {@code true} if the editor is enabled for this grid
+     * @see #setEditorEnabled(boolean)
+     * @see #getEditedItemId()
+     */
+    boolean isEditorEnabled();
+
+    /**
+     * Sets whether or not the item editor UI is enabled for this DataGrid.
+     * When the editor is enabled, the user can open it by double-clicking
+     * a row or hitting enter when a row is focused. The editor can also be opened
+     * programmatically using the {@link #editItem(Object)} method.
+     *
+     * @param isEnabled {@code true} to enable the feature, {@code false} otherwise
+     * @see #getEditedItemId()
+     */
+    void setEditorEnabled(boolean isEnabled);
+
+    /**
+     * Gets the buffered editor mode.
+     *
+     * @return {@code true} if buffered editor is enabled, {@code false} otherwise
+     */
+    boolean isEditorBuffered();
+
+    /**
+     * Sets the buffered editor mode. The default mode is buffered ({@code true}).
+     *
+     * @param editorBuffered {@code true} to enable buffered editor, {@code false} to disable it
+     */
+    void setEditorBuffered(boolean editorBuffered);
+
+    /**
+     * Gets the current caption of the save button in the DataGrid editor.
+     *
+     * @return the current caption of the save button
+     */
+    String getEditorSaveCaption();
+
+    /**
+     * Sets the caption on the save button in the DataGrid editor.
+     *
+     * @param saveCaption the caption to set
+     */
+    void setEditorSaveCaption(String saveCaption);
+
+    /**
+     * Gets the current caption of the cancel button in the DataGrid editor.
+     *
+     * @return the current caption of the cancel button
+     */
+    String getEditorCancelCaption();
+
+    /**
+     * Sets the caption on the cancel button in the DataGrid editor.
+     *
+     * @param cancelCaption the caption to set
+     */
+    void setEditorCancelCaption(String cancelCaption);
+
+    /**
+     * Gets the id of the item that is currently being edited.
+     *
+     * @return the id of the item that is currently being edited, or
+     * {@code null} if no item is being edited at the moment
+     */
+    @Nullable
+    Object getEditedItemId();
+
+    /**
+     * Returns whether an item is currently being edited in the editor.
+     *
+     * @return {@code true} if the editor is open
+     */
+    boolean isEditorActive();
+
+    /**
+     * Opens the editor interface for the provided item. Scrolls the Grid to
+     * bring the item to view if it is not already visible.
+     *
+     * @param itemId the id of the item to edit
+     * @throws IllegalStateException    if the editor is not enabled or already editing an item in buffered mode
+     * @throws IllegalArgumentException if datasource doesn't contain item with given id
+     * @see #setEditorEnabled(boolean)
+     */
+    void editItem(Object itemId);
+
+    /**
+     * Field generator that generates component for column in {@link DataGrid} editor.
+     */
+    interface ColumnEditorFieldGenerator {
+        /**
+         * Generates component for {@link DataGrid} editor.
+         *
+         * @param datasource editing item datasource
+         * @param property   editing item property
+         * @return generated component
+         */
+        Field createField(Datasource datasource, String property);
+    }
+
+    /**
+     * The root class from which all DataGrid editor event state objects shall be derived.
+     */
+    abstract class AbstractDataGridEditorEvent extends AbstractDataGridEvent {
+        protected Object itemId;
+
+        /**
+         * @param component the DataGrid from which this event originates
+         * @param itemId    the editing item id
+         */
+        public AbstractDataGridEditorEvent(DataGrid component, Object itemId) {
+            super(component);
+            this.itemId = itemId;
+        }
+
+        /**
+         * @return an item Id
+         */
+        public Object getItemId() {
+            return itemId;
+        }
+    }
+
+    /**
+     * DataGrid editor pre commit listener.
+     */
+    interface EditorPreCommitListener {
+        /**
+         * Called before the item is updated.
+         *
+         * @param event an event providing more information
+         */
+        void preCommit(EditorPreCommitEvent event);
+    }
+
+    /**
+     * An event that is fired before the item is updated.
+     */
+    class EditorPreCommitEvent extends AbstractDataGridEditorEvent {
+        /**
+         * Constructor for a DataGrid editor pre commit event.
+         *
+         * @param component the DataGrid from which this event originates
+         * @param itemId    the editing item id
+         */
+        public EditorPreCommitEvent(DataGrid component, Object itemId) {
+            super(component, itemId);
+        }
+    }
+
+    /**
+     * Registers a new DataGrid editor pre commit listener.
+     *
+     * @param listener the listener to register
+     */
+    void addEditorPreCommitListener(EditorPreCommitListener listener);
+
+    /**
+     * Removes a previously registered DataGrid editor pre commit listener.
+     *
+     * @param listener the listener to remove
+     */
+    void removeEditorPreCommitListener(EditorPreCommitListener listener);
+
+    /**
+     * DataGrid editor post commit listener.
+     */
+    interface EditorPostCommitListener {
+        /**
+         * Called after the item is updated.
+         *
+         * @param event an event providing more information
+         */
+        void postCommit(EditorPostCommitEvent event);
+    }
+
+    /**
+     * An event that is fired after the item is updated.
+     */
+    class EditorPostCommitEvent extends AbstractDataGridEditorEvent {
+        /**
+         * Constructor for a DataGrid editor post commit event.
+         *
+         * @param component the DataGrid from which this event originates
+         * @param itemId    the edited item id
+         */
+        public EditorPostCommitEvent(DataGrid component, Object itemId) {
+            super(component, itemId);
+        }
+    }
+
+    /**
+     * Registers a new DataGrid editor post commit listener.
+     *
+     * @param listener the listener to register
+     */
+    void addEditorPostCommitListener(EditorPostCommitListener listener);
+
+    /**
+     * Removes a previously registered DataGrid editor post commit listener.
+     *
+     * @param listener the listener to remove
+     */
+    void removeEditorPostCommitListener(EditorPostCommitListener listener);
+
+    /**
+     * DataGrid editor close listener.
+     */
+    interface EditorCloseListener {
+        /**
+         * Called when a DataGrid editor UI have been closed.
+         *
+         * @param event an event providing more information
+         */
+        void editorClosed(EditorCloseEvent event);
+    }
+
+    /**
+     * An event that is fired when the DataGrid editor is closed.
+     */
+    class EditorCloseEvent extends AbstractDataGridEditorEvent {
+        /**
+         * Constructor for a DataGrid editor close event.
+         *
+         * @param component the DataGrid from which this event originates
+         * @param itemId    the edited item id
+         */
+        public EditorCloseEvent(DataGrid component, Object itemId) {
+            super(component, itemId);
+        }
+    }
+
+    /**
+     * Registers a new DataGrid editor close listener.
+     *
+     * @param listener the listener to register
+     */
+    void addEditorCloseListener(EditorCloseListener listener);
+
+    /**
+     * Removes a previously registered DataGrid editor close listener.
+     *
+     * @param listener the listener to remove
+     */
+    void removeEditorCloseListener(EditorCloseListener listener);
+
+    /**
      * Repaint UI representation of the DataGrid without refreshing the table data.
      */
     void repaint();
 
+    /**
+     * Enumeration, specifying the destinations that are supported when scrolling
+     * rows or columns into view.
+     */
     enum ScrollDestination {
         /**
          * Scroll as little as possible to show the target element. If the element
@@ -585,6 +839,9 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
      */
     void setRowDescriptionProvider(RowDescriptionProvider<E> provider);
 
+    /**
+     * The root class from which all DataGrid event state objects shall be derived.
+     */
     abstract class AbstractDataGridEvent extends EventObject {
 
         public AbstractDataGridEvent(DataGrid component) {
@@ -2138,6 +2395,45 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
          */
         @Nullable
         Class getType();
+
+        /**
+         * Returns whether the properties corresponding to this column should be
+         * editable when the item editor is active.
+         *
+         * @return {@code true} if this column is editable, {@code false} otherwise
+         * @see DataGrid#editItem(Object)
+         * @see #setEditable(boolean)
+         */
+        boolean isEditable();
+
+        /**
+         * Sets whether the properties corresponding to this column should be
+         * editable when the item editor is active. By default columns are
+         * editable.
+         * <p>
+         * Values in non-editable columns are currently not displayed when the
+         * editor is active, but this will probably change in the future. They
+         * are not automatically assigned an editor field and, if one is
+         * manually assigned, it is not used. Columns that cannot (or should
+         * not) be edited even in principle should be set non-editable.
+         *
+         * @param editable {@code true} if this column should be editable, {@code false} otherwise
+         * @see DataGrid#editItem(Object)
+         * @see DataGrid#isEditorActive()
+         */
+        void setEditable(boolean editable);
+
+        /**
+         * @return field generator that generates component for
+         * this column in {@link DataGrid} editor.
+         */
+        ColumnEditorFieldGenerator getEditorFieldGenerator();
+
+        /**
+         * @param fieldFactory field generator that generates component
+         *                     for this column in {@link DataGrid} editor.
+         */
+        void setEditorFieldGenerator(ColumnEditorFieldGenerator fieldFactory);
 
         /**
          * @return The DataGrid this column belongs to

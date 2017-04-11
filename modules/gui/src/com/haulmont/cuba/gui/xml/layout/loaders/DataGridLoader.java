@@ -97,6 +97,11 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
 
+        loadEditorEnabled(resultComponent, element);
+        loadEditorBuffered(resultComponent, element);
+        loadEditorSaveCaption(resultComponent, element);
+        loadEditorCancelCaption(resultComponent, element);
+
         loadActions(resultComponent, element);
 
         loadContextMenuEnabled(resultComponent, element);
@@ -145,6 +150,36 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
         loadSelectionMode(resultComponent, element);
         loadFrozenColumnCount(resultComponent, element);
         loadTabIndex(resultComponent, element);
+    }
+
+    protected void loadEditorEnabled(DataGrid component, Element element) {
+        String editorEnabled = element.attributeValue("editorEnabled");
+        if (StringUtils.isNotEmpty(editorEnabled)) {
+            component.setEditorEnabled(Boolean.parseBoolean(editorEnabled));
+        }
+    }
+
+    protected void loadEditorBuffered(DataGrid component, Element element) {
+        String editorBuffered = element.attributeValue("editorBuffered");
+        if (StringUtils.isNotEmpty(editorBuffered)) {
+            component.setEditorBuffered(Boolean.parseBoolean(editorBuffered));
+        }
+    }
+
+    protected void loadEditorSaveCaption(DataGrid component, Element element) {
+        String editorSaveCaption = element.attributeValue("editorSaveCaption");
+        if (StringUtils.isNotEmpty(editorSaveCaption)) {
+            editorSaveCaption = loadResourceString(editorSaveCaption);
+            component.setEditorSaveCaption(editorSaveCaption);
+        }
+    }
+
+    protected void loadEditorCancelCaption(DataGrid component, Element element) {
+        String editorCancelCaption = element.attributeValue("editorCancelCaption");
+        if (StringUtils.isNotEmpty(editorCancelCaption)) {
+            editorCancelCaption = loadResourceString(editorCancelCaption);
+            component.setEditorCancelCaption(editorCancelCaption);
+        }
     }
 
     protected void loadColumnsHidingAllowed(DataGrid component, Element element) {
@@ -277,6 +312,11 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
         String resizable = element.attributeValue("resizable");
         if (StringUtils.isNotEmpty(resizable)) {
             column.setResizable(Boolean.parseBoolean(resizable));
+        }
+
+        String editable = element.attributeValue("editable");
+        if (StringUtils.isNotEmpty(editable)) {
+            column.setEditable(Boolean.parseBoolean(editable));
         }
 
         // Default caption set to columns when it is added to a DataGrid,
