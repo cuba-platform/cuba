@@ -27,11 +27,15 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
@@ -40,26 +44,25 @@ import com.haulmont.cuba.web.gui.components.renderers.*;
 import com.haulmont.cuba.web.gui.data.IndexedCollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.SortableIndexedCollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.data.DataGridContainer;
-import com.haulmont.cuba.web.toolkit.ui.CubaGrid;
-import com.haulmont.cuba.web.toolkit.ui.CubaGridContextMenu;
-import com.haulmont.cuba.web.toolkit.ui.CubaMultiSelectionModel;
-import com.haulmont.cuba.web.toolkit.ui.CubaSingleSelectionModel;
+import com.haulmont.cuba.web.toolkit.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.converters.FormatterBasedConverter;
+import com.haulmont.cuba.web.toolkit.ui.converters.ObjectToObjectConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToObjectConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.YesNoIconConverter;
 import com.vaadin.addon.contextmenu.GridContextMenu.GridContextMenuOpenListener;
 import com.vaadin.addon.contextmenu.Menu;
 import com.vaadin.addon.contextmenu.MenuItem;
 import com.vaadin.data.Item;
+import com.vaadin.data.Validator;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.HorizontalLayout;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -122,6 +125,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     protected Security security = AppBeans.get(Security.NAME);
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
+    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
     protected CollectionDatasource.CollectionChangeListener collectionChangeSelectionListener;
     protected CollectionDsActionsNotifier collectionDsActionsNotifier;
 
@@ -130,6 +134,9 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     protected com.vaadin.event.SelectionEvent.SelectionListener selectionListener;
     protected com.vaadin.event.SortEvent.SortListener sortListener;
     protected com.vaadin.event.ContextClickEvent.ContextClickListener contextClickListener;
+    protected CubaGrid.EditorCloseListener editorCloseListener;
+    protected CubaGrid.EditorPreCommitListener editorPreCommitListener;
+    protected CubaGrid.EditorPostCommitListener editorPostCommitListener;
 
     protected final List<HeaderRow> headerRows = new ArrayList<>();
     protected final List<FooterRow> footerRows = new ArrayList<>();
@@ -191,16 +198,17 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             }
         };
 
-        component = new CubaGrid();
+        component = new CubaGrid(createEditorFieldFactory());
         initComponent(component);
 
         initContextMenu();
 
         initHeaderRows(component);
         initFooterRows(component);
+        initEditor(component);
     }
 
-    protected void initComponent(Grid component) {
+    protected void initComponent(CubaGrid component) {
         setSelectionMode(SelectionMode.SINGLE);
         component.setImmediate(true);
 
@@ -250,6 +258,12 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             @Override
             public void handleAction(Object sender, Object target) {
                 if (target == WebDataGrid.this.component) {
+                    if (WebDataGrid.this.isEditorEnabled()) {
+                        // Prevent custom actions on Enter if DataGrid editor is enabled
+                        // since it's the default shortcut to open editor
+                        return;
+                    }
+
                     if (enterPressAction != null) {
                         enterPressAction.actionPerform(WebDataGrid.this);
                     } else {
@@ -260,7 +274,9 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         });
 
         component.addItemClickListener(e -> {
-            if (e.isDoubleClick() && e.getItem() != null) {
+            if (e.isDoubleClick() && e.getItem() != null && !WebDataGrid.this.isEditorEnabled()) {
+                // note: for now Grid doesn't send double click if editor is enabled,
+                // but it's better to handle it manually
                 handleDoubleClickAction();
             }
 
@@ -277,6 +293,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                 getEventRouter().fireEvent(ItemClickListener.class, ItemClickListener::onItemClick, event);
             }
         });
+
         component.addColumnReorderListener(e -> {
             if (e.isUserOriginated()) {
                 // Grid doesn't know about columns hidden by security permissions,
@@ -302,6 +319,13 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
         component.setRowStyleGenerator(createRowStyleGenerator());
         component.setCellStyleGenerator(createCellStyleGenerator());
+    }
+
+    protected void initEditor(Grid component) {
+        Messages messages = AppBeans.get(Messages.NAME);
+
+        component.setEditorSaveCaption(messages.getMainMessage("actions.Ok"));
+        component.setEditorCancelCaption(messages.getMainMessage("actions.Cancel"));
     }
 
     protected void initHeaderRows(Grid component) {
@@ -439,6 +463,10 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         return new CellStyleGeneratorAdapter();
     }
 
+    protected CubaGridEditorFieldFactory createEditorFieldFactory() {
+        return new WebDataGridEditorFieldFactory(this);
+    }
+
     @Override
     public List<Column> getColumns() {
         return Collections.unmodifiableList(columnsOrder);
@@ -564,8 +592,9 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         gridColumn.setHidden(column.isCollapsed());
         gridColumn.setHidable(column.isCollapsible() && column.getOwner().isColumnsCollapsingAllowed());
         gridColumn.setResizable(column.isResizable());
+        gridColumn.setEditable(column.isEditable());
 
-        // FIXME: gg, workaround to prevent exception from GridColumn while Grid is using default IndexedContainer
+        // workaround to prevent exception from GridColumn while Grid is using default IndexedContainer
         if (getContainerDataSource() instanceof SortableIndexedCollectionDsWrapper) {
             gridColumn.setSortable(column.isSortable() && column.getOwner().isSortable());
         }
@@ -848,6 +877,289 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         this.columnsCollapsingAllowed = columnsCollapsingAllowed;
         for (Column column : getColumns()) {
             ((ColumnImpl) column).updateCollapsible();
+        }
+    }
+
+    protected Datasource createItemDatasource(Entity item) {
+        Datasource fieldDatasource = DsBuilder.create()
+                .setAllowCommit(false)
+                .setMetaClass(datasource.getMetaClass())
+                .setRefreshMode(CollectionDatasource.RefreshMode.NEVER)
+                .setViewName(View.LOCAL)
+                .buildDatasource();
+
+        ((DatasourceImplementation) fieldDatasource).valid();
+
+        //noinspection unchecked
+        fieldDatasource.setItem(item);
+
+        return fieldDatasource;
+    }
+
+    @Override
+    public boolean isEditorEnabled() {
+        return component.isEditorEnabled();
+    }
+
+    @Override
+    public void setEditorEnabled(boolean isEnabled) {
+        component.setEditorEnabled(isEnabled);
+    }
+
+    @Override
+    public boolean isEditorBuffered() {
+        return component.isEditorBuffered();
+    }
+
+    @Override
+    public void setEditorBuffered(boolean editorBuffered) {
+        component.setEditorBuffered(editorBuffered);
+    }
+
+    @Override
+    public String getEditorSaveCaption() {
+        return component.getEditorSaveCaption();
+    }
+
+    @Override
+    public void setEditorSaveCaption(String saveCaption) {
+        component.setEditorSaveCaption(saveCaption);
+    }
+
+    @Override
+    public String getEditorCancelCaption() {
+        return component.getEditorCancelCaption();
+    }
+
+    @Override
+    public void setEditorCancelCaption(String cancelCaption) {
+        component.setEditorCancelCaption(cancelCaption);
+    }
+
+    @Nullable
+    @Override
+    public Object getEditedItemId() {
+        return component.getEditedItemId();
+    }
+
+    @Override
+    public boolean isEditorActive() {
+        return component.isEditorActive();
+    }
+
+    @Override
+    public void editItem(Object itemId) {
+        //noinspection unchecked
+        if (!datasource.containsItem(itemId)) {
+            throw new IllegalArgumentException("Datasource doesn't contain item");
+        }
+
+        component.editItem(itemId);
+    }
+
+    @Override
+    public void addEditorCloseListener(EditorCloseListener listener) {
+        getEventRouter().addListener(EditorCloseListener.class, listener);
+
+        if (editorCloseListener == null) {
+            editorCloseListener = event -> {
+                EditorCloseEvent e = new EditorCloseEvent(WebDataGrid.this, event.getItem());
+                getEventRouter().fireEvent(EditorCloseListener.class, EditorCloseListener::editorClosed, e);
+            };
+            component.addEditorCloseListener(editorCloseListener);
+        }
+    }
+
+    @Override
+    public void removeEditorCloseListener(EditorCloseListener listener) {
+        getEventRouter().addListener(EditorCloseListener.class, listener);
+
+        if (!getEventRouter().hasListeners(EditorCloseListener.class)) {
+            component.removeEditorCloseListener(editorCloseListener);
+            editorCloseListener = null;
+        }
+    }
+
+    @Override
+    public void addEditorPreCommitListener(EditorPreCommitListener listener) {
+        getEventRouter().addListener(EditorPreCommitListener.class, listener);
+
+        if (editorPreCommitListener == null) {
+            editorPreCommitListener = event -> {
+                EditorPreCommitEvent e = new EditorPreCommitEvent(WebDataGrid.this, event.getItem());
+                getEventRouter().fireEvent(EditorPreCommitListener.class, EditorPreCommitListener::preCommit, e);
+            };
+            component.addEditorPreCommitListener(editorPreCommitListener);
+        }
+    }
+
+    @Override
+    public void removeEditorPreCommitListener(EditorPreCommitListener listener) {
+        getEventRouter().addListener(EditorPreCommitListener.class, listener);
+
+        if (!getEventRouter().hasListeners(EditorPreCommitListener.class)) {
+            component.removeEditorPreCommitListener(editorPreCommitListener);
+            editorPreCommitListener = null;
+        }
+    }
+
+    @Override
+    public void addEditorPostCommitListener(EditorPostCommitListener listener) {
+        getEventRouter().addListener(EditorPostCommitListener.class, listener);
+
+        if (editorPostCommitListener == null) {
+            editorPostCommitListener = event -> {
+                EditorPostCommitEvent e = new EditorPostCommitEvent(WebDataGrid.this, event.getItem());
+                getEventRouter().fireEvent(EditorPostCommitListener.class, EditorPostCommitListener::postCommit, e);
+            };
+            component.addEditorPostCommitListener(editorPostCommitListener);
+        }
+    }
+
+    @Override
+    public void removeEditorPostCommitListener(EditorPostCommitListener listener) {
+        getEventRouter().addListener(EditorPostCommitListener.class, listener);
+
+        if (!getEventRouter().hasListeners(EditorPostCommitListener.class)) {
+            component.removeEditorPostCommitListener(editorPostCommitListener);
+            editorPostCommitListener = null;
+        }
+    }
+
+    protected static class WebDataGridEditorFieldFactory implements CubaGridEditorFieldFactory {
+
+        protected WebDataGrid<?> dataGrid;
+        protected DataGridEditorFieldFactory fieldFactory = AppBeans.get(DataGridEditorFieldFactory.NAME);
+
+        public WebDataGridEditorFieldFactory(WebDataGrid dataGrid) {
+            this.dataGrid = dataGrid;
+        }
+
+        @Nullable
+        @Override
+        public com.vaadin.ui.Field<?> createField(Object itemId, Object propertyId) {
+            Column column = dataGrid.getColumnByPropertyId(propertyId);
+            if (column != null && dataGrid.columnGenerators.containsKey(column.getId())) {
+                return null;
+            }
+
+            //noinspection unchecked
+            Entity entity = dataGrid.getDatasource().getItem(itemId);
+            Datasource fieldDatasource = dataGrid.createItemDatasource(entity);
+            String fieldPropertyId = String.valueOf(propertyId);
+
+            Field columnComponent = column != null && column.getEditorFieldGenerator() != null
+                    ? column.getEditorFieldGenerator().createField(fieldDatasource, fieldPropertyId)
+                    : fieldFactory.createField(fieldDatasource, fieldPropertyId);
+            columnComponent.setParent(dataGrid);
+
+            return createCustomField(columnComponent);
+        }
+
+        protected CustomField createCustomField(final Field columnComponent) {
+            if (!(columnComponent instanceof Buffered)) {
+                throw new IllegalArgumentException("Editor field must implement " +
+                        "com.haulmont.cuba.gui.components.Component.Buffered");
+            }
+
+            AbstractField<?> content = (AbstractField<?>) WebComponentsHelper.getComposition(columnComponent);
+
+            CustomField wrapper = new CustomField() {
+                @Override
+                protected com.vaadin.ui.Component initContent() {
+                    return content;
+                }
+
+                @Override
+                protected AbstractField<?> getContent() {
+                    return (AbstractField<?>) super.getContent();
+                }
+
+                @Override
+                public Class getType() {
+                    return Object.class;
+                }
+
+                @Override
+                protected void setInternalValue(Object newValue) {
+                    columnComponent.setValue(newValue);
+                }
+
+                @Override
+                protected Object getInternalValue() {
+                    return columnComponent.getValue();
+                }
+
+                @Override
+                public ErrorMessage getErrorMessage() {
+                    return getContent().getErrorMessage();
+                }
+
+                @Override
+                public boolean isBuffered() {
+                    return ((Buffered) columnComponent).isBuffered();
+                }
+
+                @Override
+                public void setBuffered(boolean buffered) {
+                    ((Buffered) columnComponent).setBuffered(buffered);
+                }
+
+                @Override
+                public void commit() throws SourceException, Validator.InvalidValueException {
+                    try {
+                        columnComponent.validate();
+                    } catch (ValidationException e) {
+                        throw new Validator.InvalidValueException(e.getDetailsMessage());
+                    }
+                    ((Buffered) columnComponent).commit();
+                }
+
+                @Override
+                public void discard() throws SourceException {
+                    ((Buffered) columnComponent).discard();
+                }
+
+                @Override
+                public boolean isModified() {
+                    return ((Buffered) columnComponent).isModified();
+                }
+
+                @Override
+                public void setWidth(float width, Unit unit) {
+                    super.setWidth(width, unit);
+
+                    if (getContent() != null) {
+                        if (width < 0) {
+                            getContent().setWidthUndefined();
+                        } else {
+                            getContent().setWidth(100, Unit.PERCENTAGE);
+                        }
+                    }
+                }
+
+                @Override
+                public void setHeight(float height, Unit unit) {
+                    super.setHeight(height, unit);
+
+                    if (getContent() != null) {
+                        if (height < 0) {
+                            getContent().setHeightUndefined();
+                        } else {
+                            getContent().setHeight(100, Unit.PERCENTAGE);
+                        }
+                    }
+                }
+            };
+            //noinspection unchecked
+            wrapper.setConverter(new ObjectToObjectConverter());
+            wrapper.setFocusDelegate(content);
+
+            wrapper.setReadOnly(content.isReadOnly());
+            wrapper.setRequired(content.isRequired());
+            wrapper.setRequiredError(content.getRequiredError());
+
+            return wrapper;
         }
     }
 
@@ -1688,18 +2000,19 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             }
         });
 
-        Column column = new ColumnImpl(columnId, generator.getType(), this);
+        ColumnImpl column = new ColumnImpl(columnId, generator.getType(), this);
         if (existingColumn != null) {
             copyColumnProperties(column, existingColumn);
         } else {
             column.setCaption(columnId);
         }
+        column.setGenerated(true);
 
         columns.put(column.getId(), column);
         columnsOrder.add(index, column);
         columnGenerators.put(column.getId(), generator);
 
-        Grid.Column gridColumn = component.getColumn(((ColumnImpl) column).getColumnPropertyId());
+        Grid.Column gridColumn = component.getColumn(column.getColumnPropertyId());
         if (gridColumn != null) {
             setupGridColumnProperties(gridColumn, column);
         }
@@ -2068,19 +2381,19 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
 
         Entity item = datasource.getItem(itemId);
-        String joinedStyle = null;
+        StringBuilder joinedStyle = null;
         for (RowStyleProvider styleProvider : rowStyleProviders) {
             String styleName = styleProvider.getStyleName(item);
             if (styleName != null) {
                 if (joinedStyle == null) {
-                    joinedStyle = styleName;
+                    joinedStyle = new StringBuilder(styleName);
                 } else {
-                    joinedStyle += " " + styleName;
+                    joinedStyle.append(" ").append(styleName);
                 }
             }
         }
 
-        return joinedStyle;
+        return joinedStyle != null ? joinedStyle.toString() : null;
     }
 
     @SuppressWarnings("unchecked")
@@ -2091,7 +2404,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
 
         Entity item = datasource.getItem(itemId);
-        String joinedStyle = null;
+        StringBuilder joinedStyle = null;
         for (CellStyleProvider styleProvider : cellStyleProviders) {
             Column column = getColumnByPropertyId(propertyId);
             if (column == null) {
@@ -2100,14 +2413,14 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             String styleName = styleProvider.getStyleName(item, column.getId());
             if (styleName != null) {
                 if (joinedStyle == null) {
-                    joinedStyle = styleName;
+                    joinedStyle = new StringBuilder(styleName);
                 } else {
-                    joinedStyle += " " + styleName;
+                    joinedStyle.append(" ").append(styleName);
                 }
             }
         }
 
-        return joinedStyle;
+        return joinedStyle != null ? joinedStyle.toString() : null;
     }
 
     @Override
@@ -2229,7 +2542,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
         protected abstract com.vaadin.ui.renderers.Renderer<T> createImplementation();
 
-        public com.vaadin.data.util.converter.Converter getConverter() {
+        public com.vaadin.data.util.converter.Converter<? extends T, ?> getConverter() {
             // Some renderers need specific converter to be set at the same time
             // (see com.vaadin.ui.Grid.Column.setRenderer(Renderer<T>, Converter<? extends T,?>)).
             // Default `null` means do not use any converters
@@ -2285,16 +2598,20 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         protected boolean collapsible;
         protected boolean sortable;
         protected boolean resizable;
+        protected boolean editable;
+        protected boolean generated;
         protected Formatter formatter;
 
-        protected AbstractRenderer<?> renderer;
-        protected Converter<?, ?> converter;
+        protected AbstractRenderer renderer;
+        protected Converter converter;
 
         protected Class type;
         protected Element element;
 
         protected WebDataGrid owner;
         protected Grid.Column gridColumn;
+
+        protected ColumnEditorFieldGenerator fieldGenerator;
 
         public ColumnImpl(String id, @Nullable MetaPropertyPath propertyPath, WebDataGrid owner) {
             this(id, propertyPath, propertyPath != null ? propertyPath.getRangeJavaClass() : String.class, owner);
@@ -2315,6 +2632,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
         protected void setupDefaults() {
             resizable = true;
+            editable = true;
+            generated = false;
             // the generated properties are not normally sortable,
             // but require special handling to enable sorting.
             // for now sorting for generated properties is disabled
@@ -2634,6 +2953,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                 if (this.renderer != null) {
                     this.renderer.setDataGrid(owner);
                     if (this.renderer.getConverter() != null) {
+                        //noinspection unchecked
                         gridColumn.setRenderer(this.renderer.getImplementation(), this.renderer.getConverter());
                     } else {
                         gridColumn.setRenderer(this.renderer.getImplementation());
@@ -2693,6 +3013,40 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         @Override
         public Class getType() {
             return type;
+        }
+
+        public boolean isGenerated() {
+            return generated;
+        }
+
+        public void setGenerated(boolean generated) {
+            this.generated = generated;
+        }
+
+        @Override
+        public boolean isEditable() {
+            if (gridColumn != null) {
+                return gridColumn.isEditable();
+            }
+            return editable && !generated;
+        }
+
+        @Override
+        public void setEditable(boolean editable) {
+            this.editable = editable;
+            if (gridColumn != null) {
+                gridColumn.setEditable(editable && !generated);
+            }
+        }
+
+        @Override
+        public ColumnEditorFieldGenerator getEditorFieldGenerator() {
+            return fieldGenerator;
+        }
+
+        @Override
+        public void setEditorFieldGenerator(ColumnEditorFieldGenerator fieldFactory) {
+            this.fieldGenerator = fieldFactory;
         }
 
         public Grid.Column getGridColumn() {

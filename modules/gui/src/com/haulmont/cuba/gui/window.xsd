@@ -1681,6 +1681,7 @@
         </xs:sequence>
 
         <xs:attributeGroup ref="hasId"/>
+        <xs:attributeGroup ref="hasEditable"/>
         <xs:attribute name="property" type="xs:string"/>
 
         <xs:attribute name="caption" type="resourceString"/>
@@ -1719,6 +1720,10 @@
                 <xs:attribute name="selectionMode" type="dataGridSelectionMode"/>
                 <xs:attribute name="sortable" type="xs:boolean"/>
                 <xs:attribute name="textSelectionEnabled" type="xs:boolean"/>
+                <xs:attribute name="editorEnabled" type="xs:boolean"/>
+                <xs:attribute name="editorBuffered" type="xs:boolean"/>
+                <xs:attribute name="editorSaveCaption" type="resourceString"/>
+                <xs:attribute name="editorCancelCaption" type="resourceString"/>
 
                 <xs:attributeGroup ref="hasSettings"/>
                 <xs:attributeGroup ref="hasTabIndex"/>

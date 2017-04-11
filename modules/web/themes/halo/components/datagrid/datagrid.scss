@@ -26,7 +26,8 @@
     @include user-select(text);
   }
 
-  .#{$primary-stylename}-row  > .#{$primary-stylename}-cell:last-child {
+  .#{$primary-stylename}-row  > .#{$primary-stylename}-cell:last-child,
+  .#{$primary-stylename}-editor-cells > div:last-child {
     border-right: $v-grid-border-size solid $border-color;
   }
 
@@ -95,6 +96,67 @@
 
   .#{$primary-stylename}-body .#{$primary-stylename}-row {
     cursor: pointer;
+  }
+
+  .#{$primary-stylename}-editor {
+    @include box-shadow(none);
+  }
+
+  .#{$primary-stylename}-editor-cells > div {
+    .c-maskedfield,
+    .c-maskedfield-focus,
+    .v-textfield.c-pickerfield-text:focus {
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      @include box-shadow(none);
+    }
+
+    .c-maskedfield-focus {
+      position: relative;
+    }
+
+    .v-button.c-pickerfield-button {
+      border: none;
+      border-left: valo-border($color: $v-textfield-background-color, $border: $v-textfield-border, $strength: 0.5);
+      background: transparent;
+      @include box-shadow(none);
+    }
+
+    .c-datefield [class*="button"] {
+      border: none;
+      border-right: valo-border($color: $v-textfield-background-color, $border: $v-textfield-border, $strength: 0.5);
+      left: 1px;
+      right: auto;
+    }
+
+    .c-datefield-layout .c-maskedfield {
+      border-left: valo-border($color: $v-textfield-background-color, $border: $v-textfield-border, $strength: 0.5);
+      margin-left: 0;
+    }
+
+    .c-datefield-composition-error {
+      .c-maskedfield {
+        // we need to set up border again because border-color is calculated inside `valo-border` function
+        // and set style as !important to prevent error color
+        border-left: valo-border($color: $v-textfield-background-color, $border: $v-textfield-border, $strength: 0.5) !important;
+        @include box-shadow(none);
+      }
+
+      .v-datefield-button {
+        color: mix($v-textfield-background-color, valo-font-color($v-textfield-background-color));
+
+        &:hover {
+          color: valo-font-color($background-color);
+        }
+      }
+    }
+
+    .v-filterselect-error .v-filterselect-button {
+      color: mix($v-textfield-background-color, valo-font-color($v-textfield-background-color));
+      // we need to set up border again because border-color is calculated inside `valo-border` function
+      border-left: valo-border($color: $v-textfield-background-color, $border: $v-textfield-border, $strength: 0.5)
+    }
   }
 
   // styles from componentrenderers addon
