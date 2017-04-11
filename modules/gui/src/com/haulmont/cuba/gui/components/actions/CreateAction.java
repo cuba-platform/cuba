@@ -107,7 +107,7 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
      * @param openType  how to open the editor screen
      */
     public static CreateAction create(ListComponent target, WindowManager.OpenType openType) {
-        return AppBeans.getPrototype("cuba_CreateAction", target);
+        return AppBeans.getPrototype("cuba_CreateAction", target, openType);
     }
 
     /**
@@ -117,7 +117,7 @@ public class CreateAction extends BaseAction implements Action.HasOpenType, Acti
      * @param id        action name
      */
     public static CreateAction create(ListComponent target, WindowManager.OpenType openType, String id) {
-        return AppBeans.getPrototype("cuba_CreateAction", target, id);
+        return AppBeans.getPrototype("cuba_CreateAction", target, openType, id);
     }
 
     /**
