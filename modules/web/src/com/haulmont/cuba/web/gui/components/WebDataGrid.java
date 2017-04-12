@@ -1107,12 +1107,17 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
                 @Override
                 public void commit() throws SourceException, Validator.InvalidValueException {
+                    validate();
+                    ((Buffered) columnComponent).commit();
+                }
+
+                @Override
+                public void validate() throws Validator.InvalidValueException {
                     try {
                         columnComponent.validate();
                     } catch (ValidationException e) {
                         throw new Validator.InvalidValueException(e.getDetailsMessage());
                     }
-                    ((Buffered) columnComponent).commit();
                 }
 
                 @Override
@@ -1158,6 +1163,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             wrapper.setReadOnly(content.isReadOnly());
             wrapper.setRequired(content.isRequired());
             wrapper.setRequiredError(content.getRequiredError());
+
+            columnComponent.addValueChangeListener(event -> wrapper.markAsDirty());
 
             return wrapper;
         }
