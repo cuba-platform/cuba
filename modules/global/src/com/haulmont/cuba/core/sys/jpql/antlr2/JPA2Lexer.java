@@ -2532,8 +2532,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = TRIM_CHARACTER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:544:5: ( '\\'.\\'' )
-			// JPA2.g:544:7: '\\'.\\''
+			// JPA2.g:547:5: ( '\\'.\\'' )
+			// JPA2.g:547:7: '\\'.\\''
 			{
 			match("'.'"); 
 
@@ -2553,11 +2553,11 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = STRING_LITERAL;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:547:5: ( '\\'' (~ ( '\\'' | '\"' ) )* '\\'' )
-			// JPA2.g:547:7: '\\'' (~ ( '\\'' | '\"' ) )* '\\''
+			// JPA2.g:550:5: ( '\\'' (~ ( '\\'' | '\"' ) )* '\\'' )
+			// JPA2.g:550:7: '\\'' (~ ( '\\'' | '\"' ) )* '\\''
 			{
 			match('\''); 
-			// JPA2.g:547:12: (~ ( '\\'' | '\"' ) )*
+			// JPA2.g:550:12: (~ ( '\\'' | '\"' ) )*
 			loop1:
 			while (true) {
 				int alt1=2;
@@ -2603,8 +2603,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = WORD;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:550:5: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* )
-			// JPA2.g:550:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+			// JPA2.g:553:5: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* )
+			// JPA2.g:553:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
 			{
 			if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 				input.consume();
@@ -2614,7 +2614,7 @@ public class JPA2Lexer extends Lexer {
 				recover(mse);
 				throw mse;
 			}
-			// JPA2.g:550:31: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+			// JPA2.g:553:31: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
 			loop2:
 			while (true) {
 				int alt2=2;
@@ -2659,8 +2659,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = RUSSIAN_SYMBOLS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:553:5: ( ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' ) )
-			// JPA2.g:553:7: ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' )
+			// JPA2.g:556:5: ( ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' ) )
+			// JPA2.g:556:7: ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' )
 			{
 			if ( (input.LA(1) >= '\u0400' && input.LA(1) <= '\u052F') ) {
 				input.consume();
@@ -2687,11 +2687,11 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = NAMED_PARAMETER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:556:5: ( ':' ( '(?i)' | '(?I)' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )* )
-			// JPA2.g:556:7: ':' ( '(?i)' | '(?I)' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
+			// JPA2.g:559:5: ( ':' ( '(?i)' | '(?I)' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )* )
+			// JPA2.g:559:7: ':' ( '(?i)' | '(?I)' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
 			{
 			match(':'); 
-			// JPA2.g:556:11: ( '(?i)' | '(?I)' )?
+			// JPA2.g:559:11: ( '(?i)' | '(?I)' )?
 			int alt3=3;
 			int LA3_0 = input.LA(1);
 			if ( (LA3_0=='(') ) {
@@ -2708,14 +2708,14 @@ public class JPA2Lexer extends Lexer {
 			}
 			switch (alt3) {
 				case 1 :
-					// JPA2.g:556:12: '(?i)'
+					// JPA2.g:559:12: '(?i)'
 					{
 					match("(?i)"); 
 
 					}
 					break;
 				case 2 :
-					// JPA2.g:556:19: '(?I)'
+					// JPA2.g:559:19: '(?I)'
 					{
 					match("(?I)"); 
 
@@ -2732,7 +2732,7 @@ public class JPA2Lexer extends Lexer {
 				recover(mse);
 				throw mse;
 			}
-			// JPA2.g:556:52: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+			// JPA2.g:559:52: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
 			loop4:
 			while (true) {
 				int alt4=2;
@@ -2761,7 +2761,7 @@ public class JPA2Lexer extends Lexer {
 				}
 			}
 
-			// JPA2.g:556:90: ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
+			// JPA2.g:559:90: ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
 			loop6:
 			while (true) {
 				int alt6=2;
@@ -2772,15 +2772,15 @@ public class JPA2Lexer extends Lexer {
 
 				switch (alt6) {
 				case 1 :
-					// JPA2.g:556:91: ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
+					// JPA2.g:559:91: ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
 					{
-					// JPA2.g:556:91: ( '.' )
-					// JPA2.g:556:92: '.'
+					// JPA2.g:559:91: ( '.' )
+					// JPA2.g:559:92: '.'
 					{
 					match('.'); 
 					}
 
-					// JPA2.g:556:97: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
+					// JPA2.g:559:97: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
 					int cnt5=0;
 					loop5:
 					while (true) {
@@ -2837,8 +2837,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = WS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:558:5: ( ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' ) )
-			// JPA2.g:558:7: ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' )
+			// JPA2.g:561:5: ( ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' ) )
+			// JPA2.g:561:7: ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' )
 			{
 			if ( (input.LA(1) >= '\t' && input.LA(1) <= '\n')||(input.LA(1) >= '\f' && input.LA(1) <= '\r')||input.LA(1)==' ' ) {
 				input.consume();
@@ -2865,12 +2865,12 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = COMMENT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:562:5: ( '/*' ( . )* '*/' )
-			// JPA2.g:562:7: '/*' ( . )* '*/'
+			// JPA2.g:565:5: ( '/*' ( . )* '*/' )
+			// JPA2.g:565:7: '/*' ( . )* '*/'
 			{
 			match("/*"); 
 
-			// JPA2.g:562:12: ( . )*
+			// JPA2.g:565:12: ( . )*
 			loop7:
 			while (true) {
 				int alt7=2;
@@ -2891,7 +2891,7 @@ public class JPA2Lexer extends Lexer {
 
 				switch (alt7) {
 				case 1 :
-					// JPA2.g:562:12: .
+					// JPA2.g:565:12: .
 					{
 					matchAny(); 
 					}
@@ -2921,12 +2921,12 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = LINE_COMMENT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:565:5: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
-			// JPA2.g:565:7: '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
+			// JPA2.g:568:5: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
+			// JPA2.g:568:7: '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
 			{
 			match("//"); 
 
-			// JPA2.g:565:12: (~ ( '\\n' | '\\r' ) )*
+			// JPA2.g:568:12: (~ ( '\\n' | '\\r' ) )*
 			loop8:
 			while (true) {
 				int alt8=2;
@@ -2955,7 +2955,7 @@ public class JPA2Lexer extends Lexer {
 				}
 			}
 
-			// JPA2.g:565:26: ( '\\r' )?
+			// JPA2.g:568:26: ( '\\r' )?
 			int alt9=2;
 			int LA9_0 = input.LA(1);
 			if ( (LA9_0=='\r') ) {
@@ -2963,7 +2963,7 @@ public class JPA2Lexer extends Lexer {
 			}
 			switch (alt9) {
 				case 1 :
-					// JPA2.g:565:26: '\\r'
+					// JPA2.g:568:26: '\\r'
 					{
 					match('\r'); 
 					}
@@ -2989,8 +2989,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = ESCAPE_CHARACTER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:568:5: ( '\\'' (~ ( '\\'' | '\\\\' ) ) '\\'' )
-			// JPA2.g:568:7: '\\'' (~ ( '\\'' | '\\\\' ) ) '\\''
+			// JPA2.g:571:5: ( '\\'' (~ ( '\\'' | '\\\\' ) ) '\\'' )
+			// JPA2.g:571:7: '\\'' (~ ( '\\'' | '\\\\' ) ) '\\''
 			{
 			match('\''); 
 			if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '&')||(input.LA(1) >= '(' && input.LA(1) <= '[')||(input.LA(1) >= ']' && input.LA(1) <= '\uFFFF') ) {
@@ -3018,10 +3018,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = INT_NUMERAL;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:571:5: ( ( '0' .. '9' )+ )
-			// JPA2.g:571:7: ( '0' .. '9' )+
+			// JPA2.g:574:5: ( ( '0' .. '9' )+ )
+			// JPA2.g:574:7: ( '0' .. '9' )+
 			{
-			// JPA2.g:571:7: ( '0' .. '9' )+
+			// JPA2.g:574:7: ( '0' .. '9' )+
 			int cnt10=0;
 			loop10:
 			while (true) {

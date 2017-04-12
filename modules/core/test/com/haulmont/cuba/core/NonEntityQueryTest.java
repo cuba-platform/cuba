@@ -192,6 +192,14 @@ public class NonEntityQueryTest {
     }
 
     @Test
+    public void testExtract() throws Exception {
+        ValueLoadContext context = ValueLoadContext.create()
+                .setQuery(ValueLoadContext.createQuery("select extract(DAY from u.createTs), count(u.id) from sec$User u group by extract(DAY from u.createTs)"))
+                .addProperty("date").addProperty("count");
+        List<KeyValueEntity> list = dataManager.loadValues(context);
+    }
+
+    @Test
     public void testAggregates() throws Exception {
         ValueLoadContext context = ValueLoadContext.create();
         ValueLoadContext.Query query = context.setQueryString("select count(u) from sec$User u where u.id = :id1 or u.id = :id2");
