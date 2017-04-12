@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.security.entity.SessionAction;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.security.global.UserSession;
@@ -100,6 +101,9 @@ public class UserSessions implements UserSessionsAPI {
 
     @Inject
     protected Metadata metadata;
+
+    @Inject
+    protected SessionHistoryAPI sessionHistoryAPI;
 
     public UserSessions() {
         User noUser = new User();
@@ -322,6 +326,7 @@ public class UserSessions implements UserSessionsAPI {
             if (!usi.session.isSystem() && now > (usi.lastUsedTs + expirationTimeout * 1000)) {
                 log.debug("Removing session due to timeout: {}", usi);
 
+                sessionHistoryAPI.updateSessionLogRecord(usi.getSession(), SessionAction.EXPIRATION);
                 it.remove();
 
                 usi.lastUsedTs = 0;
@@ -329,4 +334,5 @@ public class UserSessions implements UserSessionsAPI {
             }
         }
     }
+
 }

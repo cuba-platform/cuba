@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.SessionParams;
 import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,18 +77,21 @@ public class Connection {
     }
 
     protected Map<String, Object> getLoginParams() {
-        return ParamsMap.of(ClientType.class.getName(), ClientType.DESKTOP.name());
-    }
-
-    protected void updateSessionClientInfo() {
+        Optional<InetAddress> address = null;
         try {
-            InetAddress address = InetAddress.getLocalHost();
-            session.setAddress(address.getHostName() + " (" + address.getHostAddress() + ")");
+            address = Optional.ofNullable(InetAddress.getLocalHost());
         } catch (UnknownHostException e) {
             log.warn("Unable to obtain local IP address", e);
         }
-        session.setClientInfo(makeClientInfo());
 
+        return ParamsMap.of(
+                ClientType.class.getName(), ClientType.DESKTOP.name(),
+                SessionParams.IP_ADDERSS.getId(), address.map(a -> a.getHostName() + " (" + a.getHostAddress() + ")")
+                                                         .orElse(""),
+                SessionParams.CLIENT_INFO.getId(), makeClientInfo());
+    }
+
+    protected void updateSessionClientInfo() {
         if (Boolean.TRUE.equals(session.getUser().getTimeZoneAuto()))
             session.setTimeZone(TimeZone.getDefault());
     }

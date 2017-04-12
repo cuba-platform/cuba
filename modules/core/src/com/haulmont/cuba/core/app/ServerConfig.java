@@ -257,4 +257,12 @@ public interface ServerConfig extends Config {
     @DefaultBoolean(false)
     boolean getRestStoreTokensInDb();
 
+    /**
+     * @return If persistent session history is enabled
+     */
+    @Property("cuba.session.historyEnabled")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(false)
+    boolean getSessionHistoryEnabled();
+
 }

@@ -1,0 +1,70 @@
+<!--
+  ~ Copyright (c) 2008-2016 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        class="com.haulmont.cuba.gui.app.security.session.history.SessionHistoryBrowser"
+        caption="msg://caption"
+        messagesPack="com.haulmont.cuba.gui.app.security.session.history"
+        focusComponent="sessionsTable">
+
+    <dsContext>
+        <groupDatasource id="sessionsDs" class="com.haulmont.cuba.security.entity.SessionLogEntry"
+                         view="sessionLogEntry-view">
+            <query>
+                select e from sec$SessionLogEntry e order by e.startedWhen desc
+            </query>
+        </groupDatasource>
+    </dsContext>
+
+    <assign name="filterFieldWidth" value="theme://cuba.gui.session-browse.filterField.width"/>
+
+    <dialogMode height="theme://cuba.gui.dialogSize.height.medium"
+                width="theme://cuba.gui.dialogSize.width.medium"
+                resizable="true"/>
+
+    <layout expand="sessionsTable" spacing="true">
+        <filter id="sessFilter" datasource="sessionsDs">
+            <properties include=".*"/>
+        </filter>
+        <groupTable id="sessionsTable" multiselect="true" width="100%">
+            <actions>
+                <action id="refresh" caption="msg://refresh" invoke="refresh" shortcut="SHIFT-ENTER"/>
+            </actions>
+            <buttonsPanel>
+                <button id="sessionsTableRefreshBtn" action="sessionsTable.refresh"/>
+            </buttonsPanel>
+            <rowsCount/>
+            <columns>
+                <column id="sessionId" caption="msg://sessionId"/>
+                <column id="user" caption="msg://user"/>
+                <column id="substitutedUser" caption="msg://substitutedUser"/>
+                <column id="lastAction" caption="msg://lastAction"/>
+                <column id="address" caption="msg://address"/>
+                <column id="clientType" caption="msg://clientType"/>
+                <column id="server" caption="msg://server"/>
+                <column id="startedWhen" caption="msg://startedWhen"/>
+                <column id="finishedWhen" caption="msg://finishedWhen"/>
+                <column id="clientInfo" caption="msg://clientInfo"/>
+            </columns>
+            <rows datasource="sessionsDs"/>
+        </groupTable>
+        <hbox spacing="true">
+            <label value="msg://lastUpdate"/>
+            <label id="lastUpdateTsLab"/>
+        </hbox>
+    </layout>
+</window>

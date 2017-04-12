@@ -303,4 +303,9 @@
         <property name="size"/>
         <property name="createDate"/>
     </view>
+
+    <view class="com.haulmont.cuba.security.entity.SessionLogEntry" extends="_local" name="sessionLogEntry-view">
+        <property name="user" view="_local"/>
+        <property name="substitutedUser" view="_local"/>
+    </view>
 </views>

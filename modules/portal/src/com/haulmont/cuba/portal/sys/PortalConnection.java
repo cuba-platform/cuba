@@ -17,6 +17,8 @@
 
 package com.haulmont.cuba.portal.sys;
 
+import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -28,6 +30,7 @@ import com.haulmont.cuba.portal.sys.security.PortalSecurityContext;
 import com.haulmont.cuba.portal.sys.security.PortalSessionFactory;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.SessionParams;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -38,6 +41,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class PortalConnection implements Connection {
 
@@ -61,8 +65,10 @@ public class PortalConnection implements Connection {
     @Override
     public synchronized void login(String login, String password, Locale locale,
                                    @Nullable String ipAddress, @Nullable String clientInfo) throws LoginException {
-        UserSession userSession = doLogin(login, password, locale);
+
+        UserSession userSession = doLogin(login, password, locale, getSessionParams(ipAddress, clientInfo));
         session = portalSessionFactory.createPortalSession(userSession, locale);
+        session.setAuthenticated(true);
 
         // replace security context
         PortalSecurityContext portalSecurityContext = new PortalSecurityContext(session);
@@ -70,16 +76,6 @@ public class PortalConnection implements Connection {
 
         // middleware service is called just below
         AppContext.setSecurityContext(portalSecurityContext);
-        session.setAddress(ipAddress);
-
-        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
-        String serverInfo = "Portal (" +
-                globalConfig.getWebHostName() + ":" +
-                globalConfig.getWebPort() + "/" +
-                globalConfig.getWebContextName() + ") ";
-
-        session.setClientInfo(serverInfo + clientInfo);
-        session.setAuthenticated(true);
 
         connected = true;
         fireConnectionListeners();
@@ -95,8 +91,21 @@ public class PortalConnection implements Connection {
      * @return created user session
      * @throws LoginException in case of unsuccessful login
      */
-    protected UserSession doLogin(String login, String password, Locale locale) throws LoginException {
-        return loginService.login(login, password, locale);
+    protected UserSession doLogin(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
+        return loginService.login(login, password, locale, params);
+    }
+
+    protected Map<String, Object> getSessionParams(String ipAddress, String clientInfo) {
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
+        String serverInfo = "Portal (" +
+                globalConfig.getWebHostName() + ":" +
+                globalConfig.getWebPort() + "/" +
+                globalConfig.getWebContextName() + ") ";
+        return ParamsMap.of(
+                ClientType.class.getName(), AppContext.getProperty("cuba.clientType"),
+                SessionParams.IP_ADDERSS.getId(), ipAddress,
+                SessionParams.CLIENT_INFO.getId(), serverInfo + clientInfo
+        );
     }
 
     @Override

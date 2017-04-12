@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.LoginFailedException;
+import com.haulmont.cuba.security.global.SessionParams;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.auth.CubaAuthProvider;
 import com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection;
@@ -167,7 +168,11 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
     }
 
     protected Map<String, Object> getLoginParams() {
-        return ParamsMap.of(ClientType.class.getName(), ClientType.WEB.name());
+        return ParamsMap.of(
+                ClientType.class.getName(), ClientType.WEB.name(),
+                SessionParams.IP_ADDERSS.getId(), App.getInstance().getClientAddress(),
+                SessionParams.CLIENT_INFO.getId(), makeClientInfo()
+        );
     }
 
     @Override

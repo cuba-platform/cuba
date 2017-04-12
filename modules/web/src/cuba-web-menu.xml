@@ -24,6 +24,7 @@
         <separator/>
         <item id="sys$Category.browse"/>
         <item id="sec$UserSessionEntity.browse"/>
+        <item id="sec$SessionLogEntry.browse"/>
         <item id="sys$LockInfo.browse"/>
         <item id="sys$FileDescriptor.browse"/>
         <item id="sys$SendingMessage.browse"/>

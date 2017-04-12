@@ -27,6 +27,7 @@ import com.haulmont.cuba.security.entity.RememberMeToken;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
+import com.haulmont.cuba.security.global.SessionParams;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.TrustedLoginHandler;
 import com.haulmont.cuba.security.sys.UserSessionManager;
@@ -143,6 +144,7 @@ public class LoginWorkerBean implements LoginWorker {
 
             UserSession session = userSessionManager.createSession(user, userLocale, false);
             checkPermissions(login, params, userLocale, session);
+            setSessionParams(session, params);
 
             tx.commit();
 
@@ -509,4 +511,12 @@ public class LoginWorkerBean implements LoginWorker {
             log.error("Unable to login anonymous session", e);
         }
     }
+
+    protected void setSessionParams(UserSession userSession, Map<String, Object> params) {
+        if (params != null) {
+            userSession.setClientInfo((String)params.get(SessionParams.CLIENT_INFO.getId()));
+            userSession.setAddress((String) params.get(SessionParams.IP_ADDERSS.getId()));
+        }
+    }
+
 }

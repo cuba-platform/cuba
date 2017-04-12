@@ -17,6 +17,7 @@
 package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.security.entity.SessionAction;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -47,10 +49,15 @@ public class LoginServiceBean implements LoginService {
     @Inject
     protected BruteForceProtectionAPI bruteForceProtectionAPI;
 
+    @Inject
+    protected SessionHistoryAPI sessionHistoryAPI;
+
     @Override
     public UserSession login(String login, String password, Locale locale) throws LoginException {
         try {
-            return loginWorker.login(login, password, locale);
+            UserSession session = loginWorker.login(login, password, locale);
+            sessionHistoryAPI.createSessionLogRecord(session, SessionAction.LOGIN, Collections.EMPTY_MAP);
+            return session;
         } catch (LoginException e) {
             log.info("Login failed: {}", e.toString());
             throw e;
@@ -63,7 +70,9 @@ public class LoginServiceBean implements LoginService {
     @Override
     public UserSession login(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
         try {
-            return loginWorker.login(login, password, locale, params);
+            UserSession session = loginWorker.login(login, password, locale, params);
+            sessionHistoryAPI.createSessionLogRecord(session, SessionAction.LOGIN, params);
+            return session;
         } catch (LoginException e) {
             log.info("Login failed: {}", e.toString());
             throw e;
@@ -148,7 +157,10 @@ public class LoginServiceBean implements LoginService {
                 throw new RuntimeException("Logout of system session from client is not permitted");
             }
 
+            sessionHistoryAPI.updateSessionLogRecord(session, SessionAction.LOGOUT);
+
             loginWorker.logout();
+            sessionHistoryAPI.updateSessionLogRecord(session, SessionAction.LOGOUT);
         } catch (Throwable e) {
             log.error("Logout error", e);
             throw new RuntimeException(e.toString());
@@ -157,7 +169,13 @@ public class LoginServiceBean implements LoginService {
 
     @Override
     public UserSession substituteUser(User substitutedUser) {
-        return loginWorker.substituteUser(substitutedUser);
+        UserSession currentSession = userSessionSource.getUserSession();
+        sessionHistoryAPI.updateSessionLogRecord(currentSession, SessionAction.SUBSTITUTION);
+
+        UserSession substitutionSession = loginWorker.substituteUser(substitutedUser);
+
+        sessionHistoryAPI.createSessionLogRecord(substitutionSession, SessionAction.LOGIN, currentSession, Collections.EMPTY_MAP);
+        return substitutionSession;
     }
 
     @Override

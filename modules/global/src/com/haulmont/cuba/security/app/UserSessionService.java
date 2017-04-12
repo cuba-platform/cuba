@@ -121,4 +121,5 @@ public interface UserSessionService {
      * @return effective permission value
      */
     Integer getPermissionValue(User user, PermissionType permissionType, String target);
+
 }

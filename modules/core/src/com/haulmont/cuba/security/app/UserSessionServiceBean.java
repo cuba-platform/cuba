@@ -21,6 +21,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.PermissionType;
+import com.haulmont.cuba.security.entity.SessionAction;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.security.global.UserSession;
@@ -48,6 +49,9 @@ public class UserSessionServiceBean implements UserSessionService {
 
     @Inject
     private UserSessionsAPI userSessions;
+
+    @Inject
+    private SessionHistoryAPI sessionHistoryAPI;
 
     @Inject
     private UserSessionSource userSessionSource;
@@ -103,6 +107,8 @@ public class UserSessionServiceBean implements UserSessionService {
 
     @Override
     public void killSession(UUID id) {
+        UserSession userSession = userSessions.get(id, false);
+        sessionHistoryAPI.updateSessionLogRecord(userSession, SessionAction.TERMINATION);
         userSessions.killSession(id);
     }
 
@@ -160,4 +166,5 @@ public class UserSessionServiceBean implements UserSessionService {
     public Integer getPermissionValue(User user, PermissionType permissionType, String target) {
         return userSessionManager.getPermissionValue(user, permissionType, target);
     }
+
 }

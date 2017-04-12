@@ -112,6 +112,8 @@ public class UserSession implements Serializable {
         attributes = src.attributes;
         roleTypes = src.roleTypes;
         localAttributes = src.localAttributes;
+        address = src.address;
+        clientInfo = src.clientInfo;
     }
 
     private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
