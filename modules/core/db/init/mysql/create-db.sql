@@ -4,7 +4,7 @@ create table SYS_SERVER (
     CREATED_BY varchar(50),
     UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    NAME varchar(255),
+    NAME varchar(190),
     IS_RUNNING boolean,
     DATA text,
     primary key (ID)
@@ -22,7 +22,7 @@ create table SYS_CONFIG (
     UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
     --
-    NAME varchar(255),
+    NAME varchar(190),
     VALUE text,
     --
     primary key (ID)
@@ -156,7 +156,7 @@ create table SEC_ROLE (
     DELETED_BY varchar(50),
     DELETE_TS_NN datetime(3) not null default '1000-01-01 00:00:00.000',
     --
-    NAME varchar(255) not null,
+    NAME varchar(190) not null,
     LOC_NAME varchar(255),
     DESCRIPTION varchar(1000),
     IS_DEFAULT_ROLE boolean,
@@ -186,7 +186,7 @@ create table SEC_GROUP (
     DELETED_BY varchar(50),
     DELETE_TS_NN datetime(3) not null default '1000-01-01 00:00:00.000',
     --
-    NAME varchar(255) not null,
+    NAME varchar(190) not null,
     PARENT_ID varchar(32),
     --
     primary key (ID),
@@ -378,7 +378,7 @@ create table SEC_USER_SETTING (
     --
     USER_ID varchar(32),
     CLIENT_TYPE char(1),
-    NAME varchar(255),
+    NAME varchar(190),
     VALUE text,
     --
     primary key (ID),
@@ -450,7 +450,7 @@ create table SEC_ENTITY_LOG (
     CHANGE_TYPE char(1),
     ENTITY varchar(100),
     ENTITY_ID varchar(32),
-    STRING_ENTITY_ID varchar(255),
+    STRING_ENTITY_ID varchar(190),
     INT_ENTITY_ID integer,
     LONG_ENTITY_ID bigint,
     CHANGES text,
@@ -590,13 +590,13 @@ create table SYS_FTS_QUEUE (
     CREATED_BY varchar(50),
     --
     ENTITY_ID varchar(32),
-    STRING_ENTITY_ID varchar(255),
+    STRING_ENTITY_ID varchar(190),
     INT_ENTITY_ID integer,
     LONG_ENTITY_ID bigint,
     ENTITY_NAME varchar(200),
     CHANGE_TYPE char(1),
     SOURCE_HOST varchar(255),
-    INDEXING_HOST varchar(255),
+    INDEXING_HOST varchar(190),
     FAKE boolean,
     --
     primary key (ID)
@@ -697,7 +697,7 @@ create table SYS_ENTITY_SNAPSHOT (
     --
     ENTITY_META_CLASS varchar(50) not null,
     ENTITY_ID varchar(32),
-    STRING_ENTITY_ID varchar(255),
+    STRING_ENTITY_ID varchar(190),
     INT_ENTITY_ID integer,
     LONG_ENTITY_ID bigint,
     AUTHOR_ID varchar(32) not null,
@@ -727,7 +727,7 @@ create table SYS_CATEGORY(
     DELETED_BY varchar(50),
     DELETE_TS_NN datetime(3) not null default '1000-01-01 00:00:00.000',
     --
-    NAME varchar(255) not null,
+    NAME varchar(190) not null,
     SPECIAL varchar(50),
     ENTITY_TYPE varchar(100) not null,
     IS_DEFAULT boolean,
@@ -756,7 +756,7 @@ create table SYS_CATEGORY_ATTR (
     DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     --
-    CATEGORY_ENTITY_TYPE varchar(4000),
+    CATEGORY_ENTITY_TYPE text,
     NAME varchar(255),
     CODE varchar(100) not null,
     CATEGORY_ID varchar(32) not null,
@@ -777,12 +777,12 @@ create table SYS_CATEGORY_ATTR (
     SCREEN varchar(255),
     REQUIRED boolean,
     LOOKUP boolean,
-    TARGET_SCREENS varchar(4000),
+    TARGET_SCREENS text,
     WIDTH varchar(20),
     ROWS_COUNT integer,
     IS_COLLECTION boolean,
-    JOIN_CLAUSE varchar(4000),
-    WHERE_CLAUSE varchar(4000),
+    JOIN_CLAUSE text,
+    WHERE_CLAUSE text,
     FILTER_XML longtext,
     --
     primary key (ID),
@@ -803,7 +803,7 @@ create table SYS_ATTR_VALUE (
     --
     CATEGORY_ATTR_ID varchar(32) not null,
     ENTITY_ID varchar(32),
-    STRING_ENTITY_ID varchar(255),
+    STRING_ENTITY_ID varchar(190),
     INT_ENTITY_ID integer,
     LONG_ENTITY_ID bigint,
     STRING_VALUE text,
@@ -812,7 +812,7 @@ create table SYS_ATTR_VALUE (
     DATE_VALUE datetime(3),
     BOOLEAN_VALUE boolean,
     ENTITY_VALUE varchar(36),
-    STRING_ENTITY_VALUE varchar(255),
+    STRING_ENTITY_VALUE varchar(190),
     INT_ENTITY_VALUE integer,
     LONG_ENTITY_VALUE bigint,
     CODE varchar(100),
@@ -856,7 +856,7 @@ create table SYS_QUERY_RESULT (
     SESSION_ID varchar(32) not null,
     QUERY_KEY integer not null,
     ENTITY_ID varchar(32),
-    STRING_ENTITY_ID varchar(255),
+    STRING_ENTITY_ID varchar(190),
     INT_ENTITY_ID integer,
     LONG_ENTITY_ID bigint,
     --
