@@ -3437,8 +3437,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
 
         @Override
-        public void setHeight(String height) {
-            super.setHeight(height);
+        public void setHeight(float height, Unit unit) {
+            super.setHeight(height, unit);
 
             if (getHeight() < 0) {
                 grid.setHeightUndefined();
@@ -3450,8 +3450,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
 
         @Override
-        public void setWidth(String width) {
-            super.setWidth(width);
+        public void setWidth(float width, Unit unit) {
+            super.setWidth(width, unit);
 
             if (getWidth() < 0) {
                 grid.setWidthUndefined();
