@@ -65,7 +65,6 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Resource;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -115,7 +114,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     protected Map<Entity, Datasource> fieldDatasources; // lazily initialized WeakHashMap;
 
-    protected CssLayout componentComposition;
+    protected TableComposition componentComposition;
 
     protected HorizontalLayout topPanel;
 
@@ -685,18 +684,17 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         setEditable(false);
 
-        componentComposition = new CssLayout();
+        componentComposition = new TableComposition();
+        componentComposition.setTable(component);
         componentComposition.setPrimaryStyleName("c-table-composition");
         componentComposition.addComponent(component);
-        componentComposition.setWidthUndefined();
-
-        // todo artamonov adjust component size relative to composition size
-
-        component.setSizeFull();
 
         component.setCellStyleGenerator(createStyleGenerator());
-
         component.addColumnCollapseListener(this::handleColumnCollapsed);
+
+        // force default sizes
+        componentComposition.setHeightUndefined();
+        componentComposition.setWidthUndefined();
     }
 
     protected WebTableFieldFactory createFieldFactory() {
@@ -2887,17 +2885,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void setHeight(String height) {
-        super.setHeight(height);
-
-        if (getHeight() < 0) {
-            component.setHeightUndefined();
-        } else {
-            component.setHeight(100, Unit.PERCENTAGE);
-        }
-    }
-
-    @Override
     public void requestFocus(E item, String columnId) {
         Preconditions.checkNotNullArgument(item);
         Preconditions.checkNotNullArgument(columnId);
@@ -2940,5 +2927,39 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         boolean columnCollapsed = component.isColumnCollapsed(propertyId);
 
         columns.get(propertyId).setCollapsed(columnCollapsed);
+    }
+
+    protected static class TableComposition extends CssLayout {
+        protected com.vaadin.ui.Table table;
+
+        public com.vaadin.ui.Table getTable() {
+            return table;
+        }
+
+        public void setTable(com.vaadin.ui.Table table) {
+            this.table = table;
+        }
+
+        @Override
+        public void setHeight(float height, Unit unit) {
+            super.setHeight(height, unit);
+
+            if (getHeight() < 0) {
+                table.setHeightUndefined();
+            } else {
+                table.setHeight(100, Unit.PERCENTAGE);
+            }
+        }
+
+        @Override
+        public void setWidth(float width, Unit unit) {
+            super.setWidth(width, unit);
+
+            if (getWidth() < 0) {
+                table.setWidthUndefined();
+            } else {
+                table.setWidth(100, Unit.PERCENTAGE);
+            }
+        }
     }
 }
