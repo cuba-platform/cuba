@@ -46,9 +46,7 @@ public class Jpa2GrammarTest {
         testQuery("select extract(MONTH from e.createTs) from app$MyEntity e where extract(MONTH from e.createTs) > 10");
         testQuery("select extract(DAY from e.createTs) from app$MyEntity e where extract(DAY from e.createTs) > 15");
 
-        testQuery("select extract(YEAR, e.createTs) from app$MyEntity e where extract(YEAR, e.createTs) > 2012");
-        testQuery("select extract(MONTH, e.createTs) from app$MyEntity e where extract(MONTH, e.createTs) > 10");
-        testQuery("select extract(DAY, e.createTs) from app$MyEntity e where extract(DAY, e.createTs) > 15");
+        testQuery("select extract(DAY FROM e.createTs), count(e.id) from app$MyEntity e group by extract(DAY FROM e.createTs)");
     }
 
     @Test

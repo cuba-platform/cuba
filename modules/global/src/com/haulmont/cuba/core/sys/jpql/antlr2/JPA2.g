@@ -195,7 +195,7 @@ groupby_clause
     : 'GROUP' 'BY' groupby_item (',' groupby_item)*
     -> ^(T_GROUP_BY<GroupByNode>[] 'GROUP' 'BY' groupby_item*);
 groupby_item
-    : path_expression | identification_variable;
+    : path_expression | identification_variable | extract_function;
 having_clause
     : 'HAVING' conditional_expression;
 orderby_clause
@@ -463,8 +463,11 @@ nullif_expression
 
 extension_functions
     : 'CAST(' function_arg WORD ('('INT_NUMERAL (',' INT_NUMERAL)*  ')')* ')'
-    | 'EXTRACT(' date_part ('FROM' | ',') function_arg ')'
+    | extract_function
     | '@ENUM' '(' enum_value_literal ')' -> ^(T_ENUM_MACROS<EnumConditionNode>[$enum_value_literal.text]);
+
+extract_function
+    : 'EXTRACT(' date_part 'FROM' function_arg ')';
 
 fragment date_part
     : 'EPOCH' | 'YEAR' | 'QUARTER' | 'MONTH' | 'WEEK' |'DAY' | 'HOUR' |'MINUTE' | 'SECOND';
