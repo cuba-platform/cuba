@@ -28,7 +28,7 @@
                 <xs:element name="component">
                     <xs:complexType>
                         <xs:all>
-                            <xs:element name="tag" minOccurs="1" maxOccurs="1">
+                            <xs:element name="tag" minOccurs="0" maxOccurs="1">
                                 <xs:complexType>
                                     <xs:simpleContent>
                                         <xs:extension base="xs:string">
