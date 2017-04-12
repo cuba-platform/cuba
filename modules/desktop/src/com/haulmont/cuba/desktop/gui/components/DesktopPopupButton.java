@@ -468,5 +468,14 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
         public boolean isDisableOnClick() {
             return false;
         }
+
+        @Override
+        public boolean isUseResponsePending() {
+            return false;
+        }
+
+        @Override
+        public void setUseResponsePending(boolean useResponsePending) {
+        }
     }
 }
