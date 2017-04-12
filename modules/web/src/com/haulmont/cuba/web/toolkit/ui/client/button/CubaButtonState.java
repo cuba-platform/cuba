@@ -21,5 +21,5 @@ import com.vaadin.shared.ui.button.ButtonState;
 
 public class CubaButtonState extends ButtonState {
 
-    public boolean useResponsePending = true;
+    public boolean useResponsePending = false;
 }

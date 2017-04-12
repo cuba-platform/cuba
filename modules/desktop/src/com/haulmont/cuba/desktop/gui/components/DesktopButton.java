@@ -44,6 +44,7 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
 
     protected PropertyChangeListener actionPropertyChangeListener;
     protected boolean disableOnClick = false;
+    protected boolean useResponsePending = false;
 
     public DesktopButton() {
         impl = createImplementation();
@@ -55,7 +56,7 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
                         return;
                     }
 
-                    if (e.getWhen() <= responseEndTs) {
+                    if (useResponsePending && e.getWhen() <= responseEndTs) {
                         return;
                     }
 
@@ -212,5 +213,15 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
     @Override
     public boolean isDisableOnClick() {
         return disableOnClick;
+    }
+
+    @Override
+    public boolean isUseResponsePending() {
+        return useResponsePending;
+    }
+
+    @Override
+    public void setUseResponsePending(boolean useResponsePending) {
+        this.useResponsePending = useResponsePending;
     }
 }

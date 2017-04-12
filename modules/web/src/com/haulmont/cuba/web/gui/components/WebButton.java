@@ -156,4 +156,12 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
     public boolean isDisableOnClick() {
         return component.isDisableOnClick();
     }
+
+    public boolean isUseResponsePending() {
+        return component.isUseResponsePending();
+    }
+
+    public void setUseResponsePending(boolean useResponsePending) {
+        component.setUseResponsePending(useResponsePending);
+    }
 }

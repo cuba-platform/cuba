@@ -32,4 +32,15 @@ public interface Button extends Component, Component.HasCaption, Component.Belon
      * @return true if the button is disabled when clicked.
      */
     boolean isDisableOnClick();
+
+    /**
+     * @return true if button will ignore subsequent clicks on client side when it is waiting for server response
+     */
+    boolean isUseResponsePending();
+    /**
+     * Determines if button will ignore subsequent clicks on client side when it is waiting for server response.
+     *
+     * @param useResponsePending whether to use response pending
+     */
+    void setUseResponsePending(boolean useResponsePending);
 }
