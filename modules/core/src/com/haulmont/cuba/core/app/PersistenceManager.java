@@ -175,7 +175,7 @@ public class PersistenceManager implements PersistenceManagerAPI {
 
     @Override
     public boolean useLazyCollection(String entityName) {
-        EntityStatistics es = getStatisticsCache().get(entityName);
+        EntityStatistics es = getStatisticsCache().get(getOriginalOrThisEntityName(entityName));
         if (es == null || es.getInstanceCount() == null)
             return false;
         else {
@@ -186,7 +186,7 @@ public class PersistenceManager implements PersistenceManagerAPI {
 
     @Override
     public boolean useLookupScreen(String entityName) {
-        EntityStatistics es = getStatisticsCache().get(entityName);
+        EntityStatistics es = getStatisticsCache().get(getOriginalOrThisEntityName(entityName));
         if (es == null || es.getInstanceCount() == null)
             return false;
         else {
@@ -197,7 +197,7 @@ public class PersistenceManager implements PersistenceManagerAPI {
 
     @Override
     public int getFetchUI(String entityName) {
-        EntityStatistics es = getStatisticsCache().get(entityName);
+        EntityStatistics es = getStatisticsCache().get(getOriginalOrThisEntityName(entityName));
         if (es != null && es.getFetchUI() != null)
             return es.getFetchUI();
         else
@@ -206,7 +206,7 @@ public class PersistenceManager implements PersistenceManagerAPI {
 
     @Override
     public int getMaxFetchUI(String entityName) {
-        EntityStatistics es = getStatisticsCache().get(entityName);
+        EntityStatistics es = getStatisticsCache().get(getOriginalOrThisEntityName(entityName));
         if (es != null && es.getMaxFetchUI() != null)
             return es.getMaxFetchUI();
         else
@@ -249,8 +249,7 @@ public class PersistenceManager implements PersistenceManagerAPI {
         EntityStatistics es;
         try {
             EntityManager em = persistence.getEntityManager();
-
-            es = getEntityStatisticsInstance(name, em);
+            es = getEntityStatisticsInstance(getOriginalOrThisEntityName(name), em);
 
             if (instanceCount != null) {
                 es.setInstanceCount(instanceCount);
@@ -287,7 +286,7 @@ public class PersistenceManager implements PersistenceManagerAPI {
         try {
             EntityManager em = persistence.getEntityManager();
             Query q = em.createQuery("delete from sys$EntityStatistics s where s.name = ?1");
-            q.setParameter(1, name);
+            q.setParameter(1, getOriginalOrThisEntityName(name));
             q.executeUpdate();
 
             tx.commit();
@@ -300,7 +299,7 @@ public class PersistenceManager implements PersistenceManagerAPI {
     @Override
     public void refreshStatisticsForEntity(String name) {
         log.debug("Refreshing statistics for entity " + name);
-        MetaClass metaClass = metadata.getClassNN(name);
+        MetaClass metaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metadata.getClassNN(name));
         String storeName = metadata.getTools().getStoreName(metaClass);
         if (storeName == null) {
             log.debug("Entity " + name + " is not persistent, ignoring it");
@@ -347,5 +346,13 @@ public class PersistenceManager implements PersistenceManagerAPI {
             es = list.get(0);
         }
         return es;
+    }
+
+    protected String getOriginalOrThisEntityName(String entityName) {
+        MetaClass metaClass = metadata.getClass(entityName);
+        if (metaClass == null) {
+            return entityName;
+        }
+        return metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass).getName();
     }
 }
