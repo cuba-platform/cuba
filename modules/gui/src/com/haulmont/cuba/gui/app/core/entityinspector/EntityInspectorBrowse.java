@@ -19,12 +19,12 @@ package com.haulmont.cuba.gui.app.core.entityinspector;
 
 import com.google.common.io.Files;
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.app.importexport.CollectionImportPolicy;
 import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.app.importexport.ReferenceImportBehaviour;
@@ -33,6 +33,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.actions.ExcelAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
@@ -49,6 +50,7 @@ import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +59,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.haulmont.cuba.gui.export.ExportFormat.JSON;
@@ -127,9 +130,6 @@ public class EntityInspectorBrowse extends AbstractLookup {
     @Inject
     protected EntityInspectorBrowse.Companion companion;
 
-    /**
-     * Buttons
-     */
     protected Button createButton;
     protected Button editButton;
     protected Button removeButton;
@@ -137,7 +137,6 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected Button refreshButton;
     protected FileUploadField importUpload;
     protected PopupButton exportPopupButton;
-
 
     protected CollectionDatasource entitiesDs;
     protected MetaClass selectedMeta;
@@ -208,6 +207,15 @@ public class EntityInspectorBrowse extends AbstractLookup {
             textSelection.addValueChangeListener(e -> changeTableTextSelectionEnabled());
         }
 
+        final SimpleDateFormat dateTimeFormat = new SimpleDateFormat(getMessage("dateTimeFormat"));
+        Formatter dateTimeFormatter = value -> {
+            if (value == null) {
+                return StringUtils.EMPTY;
+            }
+
+            return dateTimeFormat.format(value);
+        };
+
         //collect properties in order to add non-system columns first
         LinkedList<Table.Column> nonSystemPropertyColumns = new LinkedList<>();
         LinkedList<Table.Column> systemPropertyColumns = new LinkedList<>();
@@ -215,10 +223,18 @@ public class EntityInspectorBrowse extends AbstractLookup {
             //don't show embedded & multiple referred entities
             if (isEmbedded(metaProperty))
                 continue;
-            if (metaProperty.getRange().getCardinality().isMany())
+
+            Range range = metaProperty.getRange();
+            if (range.getCardinality().isMany())
                 continue;
 
+
             Table.Column column = new Table.Column(meta.getPropertyPath(metaProperty.getName()));
+
+            if (range.isDatatype() && DateTimeDatatype.NAME.equals(range.asDatatype().getName())) {
+                column.setFormatter(dateTimeFormatter);
+            }
+
             if (metaProperty.getJavaType().equals(String.class)) {
                 column.setMaxTextLength(MAX_TEXT_LENGTH);
             }
@@ -231,11 +247,13 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 systemPropertyColumns.add(column);
             }
         }
-        for (Table.Column column : nonSystemPropertyColumns)
+        for (Table.Column column : nonSystemPropertyColumns) {
             entitiesTable.addColumn(column);
+        }
 
-        for (Table.Column column : systemPropertyColumns)
+        for (Table.Column column : systemPropertyColumns) {
             entitiesTable.addColumn(column);
+        }
 
         if (entitiesDs != null) {
             ((DsContextImplementation) getDsContext()).unregister(entitiesDs);
