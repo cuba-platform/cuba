@@ -18,6 +18,7 @@
 package com.haulmont.cuba.gui.app.core.entityinspector;
 
 import com.haulmont.chile.core.datatypes.impl.ByteArrayDatatype;
+import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.datatypes.impl.UUIDDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -205,7 +206,7 @@ public class EntityInspectorEditor extends AbstractWindow {
     }
 
     protected void initShortcuts() {
-        final String commitShortcut =  configuration.getConfig(ClientConfig.class).getCommitShortcut();
+        final String commitShortcut = configuration.getConfig(ClientConfig.class).getCommitShortcut();
         Action commitAction = new AbstractAction("commitAndClose", commitShortcut) {
             @Override
             public void actionPerform(Component component) {
@@ -287,7 +288,7 @@ public class EntityInspectorEditor extends AbstractWindow {
 //        EmbeddedMapping embeddedMapping = embeddedMetaProperty.getAnnotatedElement().getAnnotation(EmbeddedMapping.class);
 
 //        if (embeddedMapping == null)
-            return null;
+        return null;
 
 //        MetaClass meta = embeddedMetaProperty.getRange().asClass();
 //
@@ -395,11 +396,12 @@ public class EntityInspectorEditor extends AbstractWindow {
 
         createCustomFields(fieldGroup, customFields);
     }
+
     /**
      * Creates field group for the embedded property
      *
      * @param embeddedMetaProperty meta property of the embedded property
-     * @param embeddedItem current value of the embedded property
+     * @param embeddedItem         current value of the embedded property
      */
     protected void addEmbeddedFieldGroup(MetaProperty embeddedMetaProperty, String fqnPrefix, Entity embeddedItem) {
         String fqn = fqnPrefix.isEmpty() ? embeddedMetaProperty.getName()
@@ -419,18 +421,24 @@ public class EntityInspectorEditor extends AbstractWindow {
         MetaClass embeddableMetaClass = embeddedMetaProperty.getRange().asClass();
         Collection<FieldGroup.FieldConfig> customFields = new LinkedList<>();
         MetaProperty nullIndicatorProperty = getNullIndicatorProperty(embeddedMetaProperty);
+
+        List<String> dateTimeFields = new ArrayList<>();
+
         for (MetaProperty metaProperty : embeddableMetaClass.getProperties()) {
             boolean isRequired = isRequired(metaProperty) || metaProperty.equals(nullIndicatorProperty);
             boolean isReadonly = metaProperty.isReadOnly();
             switch (metaProperty.getType()) {
                 case DATATYPE:
+                    if (DateTimeDatatype.NAME.equals(metaProperty.getRange().asDatatype().getName())) {
+                        dateTimeFields.add(metaProperty.getName());
+                    }
                 case ENUM:
                     //skip system properties
                     if (metadata.getTools().isSystem(metaProperty) && !showSystemFields) {
                         continue;
                     }
                     if (metaProperty.getType() != MetaProperty.Type.ENUM
-                            && (isByteArray(metaProperty) || isUuid(metaProperty)))  {
+                            && (isByteArray(metaProperty) || isUuid(metaProperty))) {
                         continue;
                     }
                     addField(embeddableMetaClass, metaProperty, embeddedItem, fieldGroup, isRequired, false, isReadonly, customFields);
@@ -454,6 +462,13 @@ public class EntityInspectorEditor extends AbstractWindow {
         }
         fieldGroup.setDatasource(embedDs);
         fieldGroup.bind();
+
+        for (String dateTimeField : dateTimeFields) {
+            FieldGroup.FieldConfig field = fieldGroup.getField(dateTimeField);
+            if (field != null && field.getComponent() != null) {
+                ((DateField) field.getComponent()).setResolution(DateField.Resolution.SEC);
+            }
+        }
     }
 
     protected boolean isByteArray(MetaProperty metaProperty) {
@@ -548,15 +563,15 @@ public class EntityInspectorEditor extends AbstractWindow {
      * which can be used later to create fieldGenerators
      *
      * @param metaProperty meta property of the item's property which field is creating
-     * @param item entity instance containing given property
+     * @param item         entity instance containing given property
      * @param fieldGroup   field group to which created field will be added
      * @param customFields if the field is custom it will be added to this collection
      * @param required     true if the field is required
      * @param custom       true if the field is custom
      */
     protected void addField(MetaClass metaClass, MetaProperty metaProperty, Entity item,
-                          FieldGroup fieldGroup, boolean required, boolean custom, boolean readOnly,
-                          Collection<FieldGroup.FieldConfig> customFields) {
+                            FieldGroup fieldGroup, boolean required, boolean custom, boolean readOnly,
+                            Collection<FieldGroup.FieldConfig> customFields) {
         if (!attrViewPermitted(metaClass, metaProperty))
             return;
 
@@ -594,7 +609,7 @@ public class EntityInspectorEditor extends AbstractWindow {
 
     /**
      * @param metaProperty meta property
-     * @param item entity containing property of the given meta property
+     * @param item         entity containing property of the given meta property
      * @return true if property require text area component; that is if it either too long or contains line separators
      */
     protected boolean requireTextArea(MetaProperty metaProperty, Entity item) {
@@ -612,7 +627,7 @@ public class EntityInspectorEditor extends AbstractWindow {
     }
 
     protected boolean containsSeparator(String s) {
-        return s.indexOf('\n') >=0 || s.indexOf('\r') >= 0;
+        return s.indexOf('\n') >= 0 || s.indexOf('\r') >= 0;
     }
 
     /**
@@ -774,7 +789,7 @@ public class EntityInspectorEditor extends AbstractWindow {
      */
     @SuppressWarnings("unchecked")
     protected ButtonsPanel createButtonsPanel(final MetaProperty metaProperty,
-                                            final CollectionDatasource propertyDs, Table table) {
+                                              final CollectionDatasource propertyDs, Table table) {
         MetaClass propertyMetaClass = metaProperty.getRange().asClass();
         ButtonsPanel propertyButtonsPanel = componentsFactory.createComponent(ButtonsPanel.class);
 
@@ -816,7 +831,7 @@ public class EntityInspectorEditor extends AbstractWindow {
     }
 
     protected AddAction createAddAction(MetaProperty metaProperty, CollectionDatasource propertyDs,
-                                      Table table, MetaClass propertyMetaClass) {
+                                        Table table, MetaClass propertyMetaClass) {
         Lookup.Handler addHandler = createAddHandler(metaProperty, propertyDs);
         AddAction addAction = new AddAction(table, addHandler, OPEN_TYPE);
         addAction.setWindowId(EntityInspectorBrowse.SCREEN_NAME);
