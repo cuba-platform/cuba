@@ -21,8 +21,8 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 public interface RelatedEntitiesAPI {
 
@@ -35,7 +35,7 @@ public interface RelatedEntitiesAPI {
      * @param metaClass        metaClass of single entity from <code>selectedEntities</code>
      * @param metaProperty     chosen field to find related entities. Can be obtained from <code>metaClass</code>
      */
-    void openRelatedScreen(Set<? extends Entity> selectedEntities, MetaClass metaClass, MetaProperty metaProperty);
+    void openRelatedScreen(Collection<? extends Entity> selectedEntities, MetaClass metaClass, MetaProperty metaProperty);
 
     /**
      * Shows found related entities in chosen screen.
@@ -46,7 +46,7 @@ public interface RelatedEntitiesAPI {
      * @param descriptor       descriptor contains screen id, {@link com.haulmont.cuba.gui.WindowManager.OpenType} and
      *                         generated filter caption
      */
-    void openRelatedScreen(Set<? extends Entity> selectedEntities, MetaClass metaClass, MetaProperty metaProperty,
+    void openRelatedScreen(Collection<? extends Entity> selectedEntities, MetaClass metaClass, MetaProperty metaProperty,
                            RelatedScreenDescriptor descriptor);
 
     /**
@@ -56,7 +56,7 @@ public interface RelatedEntitiesAPI {
      * @param clazz            class of single entity from <code>selectedEntities</code>
      * @param property         chosen field to find related entities
      */
-    void openRelatedScreen(Set<? extends Entity> selectedEntities, Class clazz, String property);
+    <T extends Entity> void openRelatedScreen(Collection<T> selectedEntities, Class<T> clazz, String property);
 
     /**
      * Shows found related entities in chosen screen.
@@ -67,7 +67,7 @@ public interface RelatedEntitiesAPI {
      * @param descriptor       descriptor contains screen id, {@link com.haulmont.cuba.gui.WindowManager.OpenType} and
      *                         generated filter caption
      */
-    void openRelatedScreen(Set<? extends Entity> selectedEntities, Class clazz, String property,
+    <T extends Entity> void openRelatedScreen(Collection<T> selectedEntities, Class<T> clazz, String property,
                            RelatedScreenDescriptor descriptor);
 
     class RelatedScreenDescriptor {
