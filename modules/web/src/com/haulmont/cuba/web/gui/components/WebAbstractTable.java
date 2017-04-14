@@ -38,6 +38,7 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.formatters.CollectionFormatter;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.aggregation.Aggregation;
@@ -172,14 +173,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     public void addColumn(Table.Column column) {
         checkNotNullArgument(column, "Column must be non null");
 
-        component.addContainerProperty(column.getId(), column.getType(), null);
+        Object columnId = column.getId();
+        component.addContainerProperty(columnId, column.getType(), null);
         if (StringUtils.isNotBlank(column.getDescription())) {
-            component.setColumnDescription(column.getId(), column.getDescription());
+            component.setColumnDescription(columnId, column.getDescription());
         }
 
         if (StringUtils.isNotBlank(column.getValueDescription())) {
-            component.setAggregationDescription(column.getId(), column.getValueDescription());
-        } else if (column.getAggregation()!= null
+            component.setAggregationDescription(columnId, column.getValueDescription());
+        } else if (column.getAggregation() != null
                 && column.getAggregation().getType() != AggregationInfo.Type.CUSTOM) {
             Messages messages = AppBeans.get(Messages.NAME);
             String aggregationTypeLabel;
@@ -206,27 +208,33 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                                     column.getAggregation().getType().toString()));
             }
 
-            component.setAggregationDescription(column.getId(), messages.getMainMessage(aggregationTypeLabel));
+            component.setAggregationDescription(columnId, messages.getMainMessage(aggregationTypeLabel));
         }
 
         if (!column.isSortable()) {
-            component.setColumnSortable(column.getId(), column.isSortable());
+            component.setColumnSortable(columnId, column.isSortable());
         }
 
-        columns.put(column.getId(), column);
+        columns.put(columnId, column);
         columnsOrder.add(column);
         if (column.getWidth() != null) {
-            component.setColumnWidth(column.getId(), column.getWidth());
+            component.setColumnWidth(columnId, column.getWidth());
         }
         if (column.getAlignment() != null) {
-            component.setColumnAlignment(column.getId(),
+            component.setColumnAlignment(columnId,
                     WebComponentsHelper.convertColumnAlignment(column.getAlignment()));
         }
 
-        final String caption = StringUtils.capitalize(column.getCaption() != null ? column.getCaption() : getColumnCaption(column.getId()));
-        setColumnHeader(column.getId(), caption);
+        final String caption = StringUtils.capitalize(column.getCaption() != null ? column.getCaption() : getColumnCaption(columnId));
+        setColumnHeader(columnId, caption);
 
         column.setOwner(this);
+
+        MetaProperty metaProperty = ((MetaPropertyPath) columnId).getMetaProperty();
+        if (column.getFormatter() == null && Collection.class.isAssignableFrom(metaProperty.getJavaType())) {
+            final Formatter collectionFormatter = new CollectionFormatter();
+            column.setFormatter(collectionFormatter);
+        }
     }
 
     @Override
@@ -837,7 +845,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     protected Collection<MetaPropertyPath> createColumns(com.vaadin.data.Container ds) {
-        @SuppressWarnings({"unchecked"})
+        @SuppressWarnings("unchecked")
         final Collection<MetaPropertyPath> properties = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
 
         Window window = ComponentsHelper.getWindowImplementation(this);
@@ -1874,6 +1882,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 aggregationInfos.add(aggregation);
             }
         }
+
         @SuppressWarnings("unchecked")
         Map<AggregationInfo, Object> results = ((CollectionDatasource.Aggregatable) datasource).aggregate(
                 aggregationInfos.toArray(new AggregationInfo[aggregationInfos.size()]),

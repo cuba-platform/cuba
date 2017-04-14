@@ -36,7 +36,9 @@ import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.formatters.CollectionFormatter;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -484,16 +486,17 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     public void addColumn(Column column) {
         checkNotNullArgument(column, "Column must be non null");
 
-        columns.put(column.getId(), column);
+        Object columnId = column.getId();
+        columns.put(columnId, column);
         columnsOrder.add(column);
 
         if (tableModel != null) {
             tableModel.addColumn(column);
         }
 
-        if (datasource != null && column.isEditable() && column.getId() instanceof MetaPropertyPath) {
-            if (!editableColumns.contains(column.getId())) {
-                editableColumns.add((MetaPropertyPath) column.getId());
+        if (datasource != null && column.isEditable() && columnId instanceof MetaPropertyPath) {
+            if (!editableColumns.contains(columnId)) {
+                editableColumns.add((MetaPropertyPath) columnId);
             }
         }
 
@@ -501,6 +504,15 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
         refresh();
 
         column.setOwner(this);
+
+        if (column.getFormatter() == null && columnId instanceof MetaPropertyPath) {
+            MetaProperty metaProperty = ((MetaPropertyPath) columnId).getMetaProperty();
+
+            if (Collection.class.isAssignableFrom(metaProperty.getJavaType())) {
+                final Formatter collectionFormatter = new CollectionFormatter();
+                column.setFormatter(collectionFormatter);
+            }
+        }
     }
 
     @Override
