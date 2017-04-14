@@ -126,13 +126,11 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     protected Security security = AppBeans.get(Security.NAME);
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
-    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
     protected CollectionDatasource.CollectionChangeListener collectionChangeSelectionListener;
     protected CollectionDsActionsNotifier collectionDsActionsNotifier;
 
     protected Grid.ColumnVisibilityChangeListener columnCollapsingChangeListener;
     protected Grid.ColumnResizeListener columnResizeListener;
-    protected com.vaadin.event.SelectionEvent.SelectionListener selectionListener;
     protected com.vaadin.event.SortEvent.SortListener sortListener;
     protected com.vaadin.event.ContextClickEvent.ContextClickListener contextClickListener;
     protected CubaGrid.EditorCloseListener editorCloseListener;
@@ -218,12 +216,12 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         containerWrapper = new GeneratedPropertyContainer(component.getContainerDataSource());
         component.setContainerDataSource(containerWrapper);
 
-        component.addSelectionListener(event -> {
+        component.addSelectionListener(e -> {
             if (datasource == null) {
                 return;
             }
 
-            final Set<? extends Entity> selected = getSelected();
+            final Set<E> selected = getSelected();
             if (selected.isEmpty()) {
                 Entity dsItem = datasource.getItemIfValid();
                 //noinspection unchecked
@@ -253,6 +251,17 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             LookupSelectionChangeEvent selectionChangeEvent = new LookupSelectionChangeEvent(this);
             getEventRouter().fireEvent(LookupSelectionChangeListener.class,
                     LookupSelectionChangeListener::lookupValueChanged, selectionChangeEvent);
+
+            if (getEventRouter().hasListeners(SelectionListener.class)) {
+                List<E> addedItems = getItemsByIds(e.getAdded());
+                List<E> removedItems = getItemsByIds(e.getRemoved());
+                List<E> selectedItems = getItemsByIds(e.getSelected());
+
+                SelectionEvent<E> event =
+                        new SelectionEvent<>(WebDataGrid.this, addedItems, removedItems, selectedItems);
+                //noinspection unchecked
+                getEventRouter().fireEvent(SelectionListener.class, SelectionListener::selected, event);
+            }
         });
 
         component.addShortcutListener(new ShortcutListener("dataGridEnter", KeyCode.ENTER, null) {
@@ -2354,19 +2363,6 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     @Override
     public void addSelectionListener(SelectionListener<E> listener) {
         getEventRouter().addListener(SelectionListener.class, listener);
-
-        if (selectionListener == null) {
-            selectionListener = (com.vaadin.event.SelectionEvent.SelectionListener) e -> {
-                List<E> added = getItemsByIds(e.getAdded());
-                List<E> removed = getItemsByIds(e.getRemoved());
-                List<E> selected = getItemsByIds(e.getSelected());
-
-                SelectionEvent<E> event = new SelectionEvent<>(WebDataGrid.this, added, removed, selected);
-                //noinspection unchecked
-                getEventRouter().fireEvent(SelectionListener.class, SelectionListener::selected, event);
-            };
-            component.addSelectionListener(selectionListener);
-        }
     }
 
     protected List<E> getItemsByIds(Set itemIds) {
@@ -2379,11 +2375,6 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     @Override
     public void removeSelectionListener(SelectionListener<E> listener) {
         getEventRouter().removeListener(SelectionListener.class, listener);
-
-        if (!getEventRouter().hasListeners(SelectionListener.class)) {
-            component.removeSelectionListener(selectionListener);
-            selectionListener = null;
-        }
     }
 
     @SuppressWarnings("unchecked")
