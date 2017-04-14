@@ -44,6 +44,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Use this class to export {@link com.haulmont.cuba.gui.components.Table} into Excel format
@@ -197,7 +198,11 @@ public class ExcelExporter {
 
         CollectionDatasource datasource = table.getDatasource();
         if (exportMode == ExportMode.SELECTED_ROWS && table.getSelected().size() > 0) {
-            for (Entity item : table.getSelected()) {
+            Set<Entity> selected = table.getSelected();
+            List<Entity> ordered = ((Collection<Entity>) datasource.getItems()).stream()
+                    .filter(selected::contains)
+                    .collect(Collectors.toList());
+            for (Entity item : ordered) {
                 createRow(table, columns, 0, ++r, item.getId());
             }
         } else {
@@ -327,7 +332,11 @@ public class ExcelExporter {
 
         CollectionDatasource datasource = dataGrid.getDatasource();
         if (exportMode == ExportMode.SELECTED_ROWS && dataGrid.getSelected().size() > 0) {
-            for (Entity item : dataGrid.getSelected()) {
+            Set<Entity> selected = dataGrid.getSelected();
+            List<Entity> ordered = ((Collection<Entity>) datasource.getItems()).stream()
+                    .filter(selected::contains)
+                    .collect(Collectors.toList());
+            for (Entity item : ordered) {
                 createDataGridRow(dataGrid, columns, 0, ++r, item.getId());
             }
         } else {
