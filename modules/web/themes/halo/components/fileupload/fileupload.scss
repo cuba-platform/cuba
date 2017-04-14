@@ -21,6 +21,11 @@
 
     .v-button {
       @include box-defaults;
+
+      .v-mac & {
+        // workaround to prevent appearing of empty system tooltip
+        z-index: 5;
+      }
     }
   }
 
