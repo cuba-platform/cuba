@@ -1603,15 +1603,15 @@ public class WebWindow implements Window, Component.Wrapper,
 
     public static class Lookup extends WebWindow implements Window.Lookup, LookupComponent.LookupSelectionChangeListener {
 
-        private Handler handler;
+        protected Handler handler;
 
-        private Validator validator;
+        protected Validator validator;
 
-        private Component lookupComponent;
-        private VerticalLayout container;
-        private Button selectButton;
-        private Button cancelButton;
-        private SelectAction selectAction;
+        protected Component lookupComponent;
+        protected VerticalLayout container;
+        protected Button selectButton;
+        protected Button cancelButton;
+        protected SelectAction selectAction;
 
         public Lookup() {
             Configuration configuration = AppBeans.get(Configuration.NAME);
