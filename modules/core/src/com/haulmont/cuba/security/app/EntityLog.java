@@ -20,6 +20,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
@@ -423,6 +424,10 @@ public class EntityLog implements EntityLogAPI {
         }
         Set<String> attributes = new HashSet<>();
         for (MetaProperty metaProperty : metadata.getSession().getClassNN(entity.getClass()).getProperties()) {
+            Range range = metaProperty.getRange();
+            if (range.isClass() && range.getCardinality().isMany()) {
+                continue;
+            }
             attributes.add(metaProperty.getName());
         }
         return attributes;

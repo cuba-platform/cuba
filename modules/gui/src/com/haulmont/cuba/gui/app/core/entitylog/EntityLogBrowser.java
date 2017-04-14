@@ -332,6 +332,9 @@ public class EntityLogBrowser extends AbstractWindow {
                             !HasUuid.class.isAssignableFrom(range.asClass().getJavaClass())) {
                         continue;
                     }
+                    if (range.isClass() && range.getCardinality().isMany()) {
+                        continue;
+                    }
                     CheckBox checkBox = factory.createComponent(CheckBox.class);
                     if (enabledAttr != null && isEntityHaveAtrribute(property.getName(), enabledAttr)) {
                         checkBox.setValue(true);
