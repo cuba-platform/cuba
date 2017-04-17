@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.core.file.FileUploadDialog;
 import com.haulmont.cuba.gui.components.Action.Status;
@@ -105,6 +106,8 @@ public class CubaFoldersPane extends VerticalLayout {
     protected Folders folders = AppBeans.get(Folders.NAME);
 
     protected BackgroundTaskWrapper<Integer, List<AppFolder>> folderUpdateBackgroundTaskWrapper;
+
+    protected Frame frame;
 
     public CubaFoldersPane() {
         setSizeFull();
@@ -241,20 +244,13 @@ public class CubaFoldersPane extends VerticalLayout {
             AppUI ui = AppUI.getCurrent();
             stopExistingFoldersPaneTimer(ui);
             ui.addTimer(timer);
-        } else {
-            AttachListener attachListener = new AttachListener() {
-                @Override
-                public void attach(AttachEvent event) {
-                    AppUI ui = (AppUI) getUI();
-
-                    stopExistingFoldersPaneTimer(ui);
-                    ui.addTimer(timer);
-
-                    // execute once
-                    removeAttachListener(this);
-                }
-            };
-            addAttachListener(attachListener);
+        } else if (frame != null) {
+            com.haulmont.cuba.gui.components.Window window = ComponentsHelper.getWindowImplementation(frame);
+            if (window == null) {
+                throw new IllegalStateException("Null window for CubaFoldersPane");
+            }
+            AbstractComponent topLevelFrame = window.unwrapComposition(AbstractComponent.class);
+            timer.extend(topLevelFrame);
         }
     }
 
@@ -624,6 +620,14 @@ public class CubaFoldersPane extends VerticalLayout {
     protected boolean isItemExpandable(Folder folder) {
         return folder instanceof AbstractSearchFolder &&
                 StringUtils.isBlank(((AbstractSearchFolder) folder).getFilterComponentId());
+    }
+
+    public void setFrame(Frame frame) {
+        this.frame = frame;
+    }
+
+    public Frame getFrame() {
+        return frame;
     }
 
     protected class FolderTreeStyleProvider implements Tree.ItemStyleGenerator {
