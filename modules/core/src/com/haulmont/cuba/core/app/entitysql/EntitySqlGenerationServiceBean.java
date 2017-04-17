@@ -78,8 +78,8 @@ public class EntitySqlGenerationServiceBean implements EntitySqlGenerationServic
             throw new RuntimeException("Cannot determine data store for " + entity);
 
         try (Transaction tx = persistence.createTransaction(storeName)) {
-            Entity reloaded = persistence.getEntityManager(storeName)
-                    .find(entity.getClass(), entity.getId(), createFullView(entity));
+            Entity reloaded = persistence.getEntityManager(storeName).find(entity.getClass(), entity.getId(),
+                    createFullView(entity.getMetaClass()));
             if (reloaded != null) {
                 entity = reloaded;
             }
@@ -88,18 +88,18 @@ public class EntitySqlGenerationServiceBean implements EntitySqlGenerationServic
         return entity;
     }
 
-    //todo use local fields only for embedded
-    protected View createFullView(Entity entity) {
-        MetaClass metaClass = entity.getMetaClass();
-        View view = new View(entity.getClass());
+    @SuppressWarnings("unchecked")
+    protected View createFullView(MetaClass metaClass) {
+        View view = new View(metaClass.getJavaClass());
         for (MetaProperty metaProperty : metaClass.getProperties()) {
-            if (isReferenceField(metaProperty)) {
+            if (metadataTools.isEmbedded(metaProperty)) {
+                view.addProperty(metaProperty.getName(), createFullView(metaProperty.getRange().asClass()));
+            } else if (isReferenceField(metaProperty)) {
                 view.addProperty(metaProperty.getName(), viewRepository.getView(metaProperty.getRange().asClass(), View.MINIMAL));
             } else if (isDataField(metaProperty)) {
                 view.addProperty(metaProperty.getName());
             }
         }
-
         return view;
     }
 
@@ -113,6 +113,5 @@ public class EntitySqlGenerationServiceBean implements EntitySqlGenerationServic
     protected boolean isDataField(MetaProperty metaProperty) {
         Type type = metaProperty.getType();
         return (DATATYPE == type || ENUM == type);
-
     }
 }
