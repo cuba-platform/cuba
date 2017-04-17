@@ -368,6 +368,8 @@ definitions:
   userInfo:
     type: object
     properties:
+      id:
+        type: string
       login:
         type: string
       name:

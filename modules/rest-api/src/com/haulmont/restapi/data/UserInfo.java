@@ -22,6 +22,7 @@ import com.haulmont.cuba.security.entity.User;
  */
 public class UserInfo {
 
+    public String id;
     public String login;
     public String name;
     public String firstName;
@@ -35,6 +36,7 @@ public class UserInfo {
     public String locale;
 
     public UserInfo(User user) {
+        this.id = user.getId().toString();
         this.login = user.getLogin();
         this.name = user.getName();
         this.firstName = user.getFirstName();
