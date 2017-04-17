@@ -230,10 +230,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         column.setOwner(this);
 
-        MetaProperty metaProperty = ((MetaPropertyPath) columnId).getMetaProperty();
-        if (column.getFormatter() == null && Collection.class.isAssignableFrom(metaProperty.getJavaType())) {
-            final Formatter collectionFormatter = new CollectionFormatter();
-            column.setFormatter(collectionFormatter);
+        if (column.getFormatter() == null && columnId instanceof MetaPropertyPath) {
+            MetaProperty metaProperty = ((MetaPropertyPath) columnId).getMetaProperty();
+
+            if (Collection.class.isAssignableFrom(metaProperty.getJavaType())) {
+                final Formatter collectionFormatter = new CollectionFormatter();
+                column.setFormatter(collectionFormatter);
+            }
         }
     }
 
