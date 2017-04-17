@@ -340,7 +340,8 @@ public class EntitySqlGenerator {
             Map<String, String> result = new LinkedHashMap<>();
             for (Field field : clazz.getDeclaredFields()) {
                 Embedded embedded = field.getAnnotation(Embedded.class);
-                AttributeOverrides overrides = field.getAnnotation(AttributeOverrides.class);
+                AttributeOverrides attributeOverrides = field.getAnnotation(AttributeOverrides.class);
+                AssociationOverrides associationOverrides = field.getAnnotation(AssociationOverrides.class);
                 Column columnAnnotation = field.getAnnotation(Column.class);
                 JoinColumn joinColumnAnnotation = field.getAnnotation(JoinColumn.class);
 
@@ -348,8 +349,12 @@ public class EntitySqlGenerator {
                     Class<?> embeddedObjectType = field.getType();
                     Map<String, String> embeddedFields = collectFields(embeddedObjectType);
 
-                    if (overrides != null) {
-                        overrideFields(overrides, embeddedFields);
+                    if (attributeOverrides != null) {
+                        overrideAttributes(attributeOverrides, embeddedFields);
+                    }
+
+                    if (associationOverrides != null) {
+                        overrideAssociations(associationOverrides, embeddedFields);
                     }
 
                     for (Map.Entry<String, String> entry : embeddedFields.entrySet()) {
@@ -365,10 +370,19 @@ public class EntitySqlGenerator {
             return result;
         }
 
-        private void overrideFields(AttributeOverrides overrides, Map<String, String> embeddedFields) {
+        private void overrideAttributes(AttributeOverrides overrides, Map<String, String> embeddedFields) {
             AttributeOverride[] overriddenAttributes = overrides.value();
             for (AttributeOverride overriddenAttribute : overriddenAttributes) {
                 embeddedFields.put(overriddenAttribute.name(), overriddenAttribute.column().name());
+            }
+        }
+
+        private void overrideAssociations(AssociationOverrides overrides, Map<String, String> embeddedFields) {
+            AssociationOverride[] overriddenAttributes = overrides.value();
+            for (AssociationOverride overriddenAttribute : overriddenAttributes) {
+                if (overriddenAttribute.joinColumns().length == 1) {
+                    embeddedFields.put(overriddenAttribute.name(), overriddenAttribute.joinColumns()[0].name());
+                }
             }
         }
     }
