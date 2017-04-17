@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.formatters.CollectionFormatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
@@ -609,8 +610,13 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                     ? column.getPropertyPath().getMetaProperty()
                     : null;
 
-            setDefaultConverter(gridColumn, metaProperty, column.getType());
-            setDefaultRenderer(gridColumn, metaProperty, column.getType());
+            if (metaProperty != null && Collection.class.isAssignableFrom(metaProperty.getJavaType())) {
+                final FormatterBasedConverter converter = new FormatterBasedConverter(new CollectionFormatter());
+                gridColumn.setConverter(converter);
+            } else {
+                setDefaultConverter(gridColumn, metaProperty, column.getType());
+                setDefaultRenderer(gridColumn, metaProperty, column.getType());
+            }
         }
     }
 
