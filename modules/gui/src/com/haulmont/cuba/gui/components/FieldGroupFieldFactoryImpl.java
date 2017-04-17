@@ -16,7 +16,9 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -39,8 +41,10 @@ import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import javax.inject.Inject;
+import javax.persistence.TemporalType;
 
 @org.springframework.stereotype.Component(FieldGroupFieldFactory.NAME)
 public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
@@ -204,7 +208,7 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
         textField.setDatasource(fc.getTargetDatasource(), fc.getProperty());
 
         String maxLength = fc.getXmlDescriptor() != null ? fc.getXmlDescriptor().attributeValue("maxLength") : null;
-        if (StringUtils.isNotEmpty(maxLength)) {
+        if (!Strings.isNullOrEmpty(maxLength)) {
             ((TextInputField.MaxLengthLimited) textField).setMaxLength(Integer.parseInt(maxLength));
         }
 
@@ -232,19 +236,54 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
         DateField dateField = componentsFactory.createComponent(DateField.class);
         dateField.setDatasource(fc.getTargetDatasource(), fc.getProperty());
 
-        if (fc.getXmlDescriptor() != null) {
-            String resolution = fc.getXmlDescriptor().attributeValue("resolution");
-            if (StringUtils.isNotEmpty(resolution)) {
-                dateField.setResolution(DateField.Resolution.valueOf(resolution));
-            }
+        MetaClass metaClass = fc.getTargetDatasource().getMetaClass();
+        MetaPropertyPath mpp = resolveMetaPropertyPath(metaClass, fc.getProperty());
 
-            String dateFormat = fc.getXmlDescriptor().attributeValue("dateFormat");
-            if (StringUtils.isNotEmpty(dateFormat)) {
-                if (dateFormat.startsWith("msg://")) {
-                    dateFormat = messages.getMainMessage(dateFormat.substring(6, dateFormat.length()));
-                }
-                dateField.setDateFormat(dateFormat);
+        MetaProperty metaProperty = mpp.getMetaProperty();
+        TemporalType tt = null;
+        if (metaProperty != null) {
+            if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
+                tt = TemporalType.DATE;
+            } else if (metaProperty.getAnnotations() != null) {
+                tt = (TemporalType) metaProperty.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
             }
+        }
+
+        Element xmlDescriptor = fc.getXmlDescriptor();
+
+        String resolution = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("resolution");
+        String dateFormat = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("dateFormat");
+
+        DateField.Resolution dateResolution = DateField.Resolution.MIN;
+
+        if (!StringUtils.isEmpty(resolution)) {
+            dateResolution = DateField.Resolution.valueOf(resolution);
+            dateField.setResolution(dateResolution);
+        } else if (tt == TemporalType.DATE) {
+            dateField.setResolution(DateField.Resolution.DAY);
+        }
+
+        if (dateFormat == null) {
+            if (dateResolution == DateField.Resolution.DAY) {
+                dateFormat = "msg://dateFormat";
+            } else if (dateResolution == DateField.Resolution.MIN) {
+                dateFormat = "msg://dateTimeFormat";
+            }
+        }
+
+        if (!StringUtils.isEmpty(dateFormat)) {
+            if (dateFormat.startsWith("msg://")) {
+                dateFormat = messages.getMainMessage(dateFormat.substring(6, dateFormat.length()));
+            }
+            dateField.setDateFormat(dateFormat);
+        } else {
+            String formatStr;
+            if (tt == TemporalType.DATE) {
+                formatStr = messages.getMainMessage("dateFormat");
+            } else {
+                formatStr = messages.getMainMessage("dateTimeFormat");
+            }
+            dateField.setDateFormat(formatStr);
         }
 
         return new GeneratedField(dateField);
