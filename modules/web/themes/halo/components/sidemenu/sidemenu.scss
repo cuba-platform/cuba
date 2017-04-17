@@ -214,6 +214,10 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
 
   .#{$primary-stylename}-wrap {
     font-size: 0;
+
+    & > * {
+      font-size: $v-font-size;
+    }
   }
 
   .#{$primary-stylename}-title {
