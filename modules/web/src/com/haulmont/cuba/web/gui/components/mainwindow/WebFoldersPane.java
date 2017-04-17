@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.web.app.folders.CubaFoldersPane;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
@@ -44,6 +45,13 @@ public class WebFoldersPane extends WebAbstractComponent<CubaFoldersPane> implem
     @Override
     public String getStyleName() {
         return StringUtils.normalizeSpace(super.getStyleName().replace(C_FOLDERS_PANE, ""));
+    }
+
+    @Override
+    public void setFrame(Frame frame) {
+        super.setFrame(frame);
+
+        component.setFrame(frame);
     }
 
     @Override
