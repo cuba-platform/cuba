@@ -243,6 +243,9 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
                 //remove deleted and empty attributes
                 if (categoryAttributeValue.getDeleteTs() == null && categoryAttributeValue.getValue() != null) {
+                    if (entity instanceof BaseDbGeneratedIdEntity && categoryAttributeValue.getObjectEntityId() == null) {
+                        categoryAttributeValue.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
+                    }
                     CategoryAttributeValue mergedCategoryAttributeValue = em.merge(categoryAttributeValue);
                     mergedCategoryAttributeValue.setCategoryAttribute(categoryAttributeValue.getCategoryAttribute());
 

@@ -287,6 +287,7 @@ public class RdbmsStore implements DataStore {
 
         Set<Entity> res = new HashSet<>();
         List<Entity> persisted = new ArrayList<>();
+        List<BaseGenericIdEntity> identityEntitiesToStoreDynamicAttributes = new ArrayList<>();
 
         try (Transaction tx = persistence.createTransaction(storeName)) {
             EntityManager em = persistence.getEntityManager(storeName);
@@ -309,7 +310,11 @@ public class RdbmsStore implements DataStore {
                     persisted.add(entity);
 
                     if (entityHasDynamicAttributes(entity)) {
-                        entitiesToStoreDynamicAttributes.add((BaseGenericIdEntity) entity);
+                        if (entity instanceof BaseDbGeneratedIdEntity) {
+                            identityEntitiesToStoreDynamicAttributes.add((BaseGenericIdEntity) entity);
+                        } else {
+                            entitiesToStoreDynamicAttributes.add((BaseGenericIdEntity) entity);
+                        }
                     }
                 }
             }
@@ -371,6 +376,13 @@ public class RdbmsStore implements DataStore {
                 }
             }
 
+            tx.commit();
+        }
+
+        try (Transaction tx = persistence.createTransaction(storeName)) {
+            for (BaseGenericIdEntity entity : identityEntitiesToStoreDynamicAttributes) {
+                dynamicAttributesManagerAPI.storeDynamicAttributes(entity);
+            }
             tx.commit();
         }
 
