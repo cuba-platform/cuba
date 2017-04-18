@@ -449,7 +449,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     }
 
     /**
-     * DataGrid editor pre commit listener.
+     * DataGrid editor pre commit listener. Works in buffered mode only.
      */
     interface EditorPreCommitListener {
         /**
@@ -476,7 +476,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     }
 
     /**
-     * Registers a new DataGrid editor pre commit listener.
+     * Registers a new DataGrid editor pre commit listener. Works in buffered mode only.
      *
      * @param listener the listener to register
      */
@@ -490,7 +490,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     void removeEditorPreCommitListener(EditorPreCommitListener listener);
 
     /**
-     * DataGrid editor post commit listener.
+     * DataGrid editor post commit listener. Works in buffered mode only.
      */
     interface EditorPostCommitListener {
         /**
@@ -517,7 +517,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     }
 
     /**
-     * Registers a new DataGrid editor post commit listener.
+     * Registers a new DataGrid editor post commit listener. Works in buffered mode only.
      *
      * @param listener the listener to register
      */
