@@ -545,6 +545,19 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
                 paintAggregationRow(target, ((AggregationContainer) items).aggregate(context));
             }
         }
+
+        // paint cuba-ids
+
+        AppUI current = AppUI.getCurrent();
+        if (current != null && current.isTestMode()) {
+            ArrayList<String> visibleColOrder = new ArrayList<>();
+            for (Object columnId : visibleColumns) {
+                if (!isColumnCollapsed(columnId)) {
+                    visibleColOrder.add(columnId.toString());
+                }
+            }
+            target.addAttribute("colcubaids", visibleColOrder.toArray());
+        }
     }
 
     protected Collection<?> getAggregationItemIds() {

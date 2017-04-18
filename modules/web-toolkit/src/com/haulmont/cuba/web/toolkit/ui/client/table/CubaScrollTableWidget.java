@@ -38,9 +38,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.tableshared.TableWidgetDelegate;
 import com.vaadin.client.*;
 import com.vaadin.client.ui.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static com.haulmont.cuba.web.toolkit.ui.client.Tools.isAnyModifierKeyPressed;
 import static com.haulmont.cuba.web.toolkit.ui.client.tableshared.TableWidgetDelegate.*;
@@ -378,6 +376,20 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
         @Override
         protected HeaderCell createHeaderCell(String cid, String caption) {
             return new CubaScrollTableHeaderCell(cid, caption);
+        }
+
+        @Override
+        protected String getCustomHtmlAttributes(TableHead.VisibleColumnAction action) {
+            String colKey = action.getColKey();
+            HeaderCell headerCell = getHeaderCell(colKey);
+            if (headerCell != null) {
+                String cubaId = headerCell.getElement().getAttribute("cuba-id");
+                if (cubaId != null) {
+                    return "cuba-id=\"cc-" + cubaId + "\"";
+                }
+            }
+
+            return super.getCustomHtmlAttributes(action);
         }
     }
 
@@ -816,5 +828,37 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
     @Override
     protected boolean isColumnCollapsingEnabled() {
         return visibleColOrder.length > 1;
+    }
+
+    @Override
+    public void updateColumnProperties(UIDL uidl) {
+        super.updateColumnProperties(uidl);
+
+        if (uidl.hasAttribute("colcubaids")
+                && uidl.hasAttribute("vcolorder")) {
+            try {
+                String[] vcolorder = uidl.getStringArrayAttribute("vcolorder");
+                String[] colcubaids = uidl.getStringArrayAttribute("colcubaids");
+
+                Map<String, HeaderCell> headerCellMap = new HashMap<>();
+                for (int i = 0; i < getHead().getVisibleCellCount(); i++) {
+                    HeaderCell headerCell = getHead().getHeaderCell(i);
+                    if (headerCell.getColKey() != null) {
+                        headerCellMap.put(headerCell.getColKey(), headerCell);
+                    }
+                }
+
+                for (int i = 0; i < vcolorder.length; i++) {
+                    String key = vcolorder[i];
+                    HeaderCell headerCell = headerCellMap.get(key);
+
+                    if (headerCell != null) {
+                        headerCell.getElement().setAttribute("cuba-id", colcubaids[i]);
+                    }
+                }
+            } catch (Exception e) {
+                VConsole.error("Unable to init cuba-ids for columns " + e.getMessage());
+            }
+        }
     }
 }

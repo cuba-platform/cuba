@@ -634,6 +634,19 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
                 && Table.AggregationStyle.TOP.equals(getAggregationStyle())) {
             paintAggregationRow(target, ((AggregationContainer) items).aggregate(new Context(items.getItemIds())));
         }
+
+        // paint cuba-ids
+
+        AppUI current = AppUI.getCurrent();
+        if (current != null && current.isTestMode()) {
+            ArrayList<String> visibleColOrder = new ArrayList<>();
+            for (Object columnId : visibleColumns) {
+                if (!isColumnCollapsed(columnId)) {
+                    visibleColOrder.add(columnId.toString());
+                }
+            }
+            target.addAttribute("colcubaids", visibleColOrder.toArray());
+        }
     }
 
     protected void paintAggregationRow(PaintTarget target, Map<Object, Object> aggregations) throws PaintException {
