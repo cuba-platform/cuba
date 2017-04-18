@@ -1092,6 +1092,10 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
                 @Override
                 public ErrorMessage getErrorMessage() {
+                    try {
+                        validate();
+                    } catch (Validator.InvalidValueException ignore) {
+                    }
                     return getContent().getErrorMessage();
                 }
 
