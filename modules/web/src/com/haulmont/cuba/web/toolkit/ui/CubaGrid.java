@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.data.Container;
+import com.vaadin.data.Validatable;
 import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.event.Action;
@@ -166,6 +167,16 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
         });
 
         return invalidValueExceptions;
+    }
+
+    @Override
+    protected boolean isEditorFieldsValid() {
+        try {
+            editorFields.forEach(Validatable::validate);
+            return true;
+        } catch (Validator.InvalidValueException e) {
+            return false;
+        }
     }
 
     protected void fireEditorPreCommitEvent() {
