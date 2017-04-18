@@ -1054,7 +1054,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         @Override
         public com.vaadin.ui.Field<?> createField(Object itemId, Object propertyId) {
             Column column = dataGrid.getColumnByPropertyId(propertyId);
-            if (column != null && dataGrid.columnGenerators.containsKey(column.getId())) {
+            if (column != null && !column.isEditable()) {
                 return null;
             }
 
@@ -3032,14 +3032,23 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             if (gridColumn != null) {
                 return gridColumn.isEditable();
             }
-            return editable && !generated;
+            return editable && !generated && !isRepresentsCollection();
+        }
+
+        protected boolean isRepresentsCollection() {
+            if (propertyPath != null) {
+                MetaProperty metaProperty = propertyPath.getMetaProperty();
+                Class<?> javaType = metaProperty.getJavaType();
+                return Collection.class.isAssignableFrom(javaType);
+            }
+            return false;
         }
 
         @Override
         public void setEditable(boolean editable) {
             this.editable = editable;
             if (gridColumn != null) {
-                gridColumn.setEditable(editable && !generated);
+                gridColumn.setEditable(editable && !generated  && !isRepresentsCollection());
             }
         }
 

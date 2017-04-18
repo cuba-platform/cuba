@@ -40,6 +40,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
 import javax.persistence.TemporalType;
+import java.util.Collection;
 
 @org.springframework.stereotype.Component(DataGridEditorFieldFactory.NAME)
 public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactory {
@@ -91,7 +92,11 @@ public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactor
                     return createNumberField(datasource, property);
                 }
             } else if (mppRange.isClass()) {
-                return createEntityField(datasource, property, mpp);
+                MetaProperty metaProperty = mpp.getMetaProperty();
+                Class<?> javaType = metaProperty.getJavaType();
+                if (!Collection.class.isAssignableFrom(javaType)) {
+                    return createEntityField(datasource, property, mpp);
+                }
             } else if (mppRange.isEnum()) {
                 return createEnumField(datasource, property);
             }
@@ -99,8 +104,10 @@ public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactor
 
         String exceptionMessage;
         if (mpp != null) {
-            exceptionMessage = String.format("Can't create field \"%s\" with data type: %s",
-                    property, mpp.getRange().asDatatype().getName());
+            String name = mpp.getRange().isDatatype()
+                    ? mpp.getRange().asDatatype().getName()
+                    : mpp.getRange().asClass().getName();
+            exceptionMessage = String.format("Can't create field \"%s\" with data type: %s", property, name);
         } else {
             exceptionMessage = String.format("Can't create field \"%s\" with given data type", property);
         }

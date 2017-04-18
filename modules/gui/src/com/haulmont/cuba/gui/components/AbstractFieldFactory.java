@@ -45,6 +45,7 @@ import org.dom4j.Element;
 import javax.annotation.Nullable;
 import javax.persistence.TemporalType;
 import java.lang.reflect.Method;
+import java.util.Collection;
 
 import static com.haulmont.cuba.gui.WindowManager.OpenType;
 import static com.haulmont.cuba.gui.components.EntityLinkField.EntityLinkClickHandler;
@@ -112,9 +113,9 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                 Class<?> javaType = metaProperty.getJavaType();
                 if (FileDescriptor.class.isAssignableFrom(javaType)) {
                     return createFileUploadField(datasource, property);
+                } else if (!Collection.class.isAssignableFrom(javaType)) {
+                    return createEntityField(datasource, property, mpp, xmlDescriptor);
                 }
-
-                return createEntityField(datasource, property, mpp, xmlDescriptor);
             } else if (mppRange.isEnum()) {
                 return createEnumField(datasource, property);
             }
@@ -122,7 +123,10 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 
         String exceptionMessage;
         if (mpp != null) {
-            exceptionMessage = String.format("Can't create field \"%s\" with data type: %s", property, mpp.getRange().asDatatype().getName());
+            String name = mpp.getRange().isDatatype()
+                    ? mpp.getRange().asDatatype().getName()
+                    : mpp.getRange().asClass().getName();
+            exceptionMessage = String.format("Can't create field \"%s\" with data type: %s", property, name);
         } else {
             exceptionMessage = String.format("Can't create field \"%s\" with given data type", property);
         }
