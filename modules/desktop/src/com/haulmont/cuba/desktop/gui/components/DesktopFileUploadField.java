@@ -775,4 +775,31 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
             afterValueClearListeners.remove(listener);
         }
     }
+
+    @Override
+    public void commit() {
+        // do nothing
+    }
+
+    @Override
+    public void discard() {
+        // do nothing
+    }
+
+    @Override
+    public boolean isBuffered() {
+        // do nothing
+        return false;
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        // do nothing
+    }
+
+    @Override
+    public boolean isModified() {
+        // do nothing
+        return false;
+    }
 }

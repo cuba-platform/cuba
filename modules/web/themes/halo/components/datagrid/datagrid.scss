@@ -105,6 +105,9 @@
   .#{$primary-stylename}-editor-cells > div {
     .c-maskedfield,
     .c-maskedfield-focus,
+    .c-fileupload .v-button,
+    .c-fileupload-clear.v-button,
+    .v-button.c-pickerfield-button,
     .v-textfield.c-pickerfield-text:focus {
       border: none;
       border-radius: 0;
@@ -117,11 +120,75 @@
     }
 
     .v-button.c-pickerfield-button {
-      border: none;
       border-left: valo-border($color: $v-textfield-background-color, $border: $v-textfield-border, $strength: 0.5);
-      background: transparent;
-      @include box-shadow(none);
     }
+
+    .v-filterselect-button:active:after,
+    .c-datefield [class*="button"]:active:after,
+    .c-pickerfield-layout>.v-button:last-child {
+      border-radius: 0;
+    }
+
+    .c-fileupload-container {
+      .v-spacing {
+        display: none;
+      }
+
+      .c-fileupload .v-button,
+      .c-fileupload-clear.v-button {
+        border-left: valo-border($color: $v-textfield-background-color, $border: $v-textfield-border, $strength: 0.5);
+
+        color: mix($v-textfield-background-color, valo-font-color($v-textfield-background-color));
+
+        &:hover {
+          color: valo-font-color($background-color);
+        }
+
+        &:after,
+        &:hover:after {
+          background: transparent;
+        }
+
+        &:focus:after {
+          border-color: transparent;
+          @include box-shadow(none);
+        }
+
+        &:active:after,
+        &:active:hover:after {
+          @if type-of($v-textfield-background-color) == color {
+            @include valo-button-active-style($v-textfield-background-color);
+          }
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+        }
+      }
+
+      .c-fileupload .v-button-focus {
+        &:after {
+          border-color: transparent;
+          @include box-shadow(none);
+        }
+      }
+
+      .c-fileupload {
+        &:hover .v-button {
+          color: valo-font-color($background-color);
+        }
+
+        &:active,
+        &:active:hover {
+          .v-button:after {
+            @if type-of($v-textfield-background-color) == color {
+              @include valo-button-active-style($v-textfield-background-color);
+            }
+          }
+        }
+      }
+    }
+
 
     .c-datefield [class*="button"] {
       border: none;
