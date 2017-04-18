@@ -16,9 +16,9 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -136,7 +136,12 @@ public class QueryParserRegex implements QueryParser {
 
     @Override
     public Set<String> getAllEntityNames() {
-        return null;
+        Matcher entityNamesMatcher = ENTITY_PATTERN.matcher(source);
+        Set<String> entityNames = Sets.newHashSet();
+        while (entityNamesMatcher.find()) {
+            entityNames.add(entityNamesMatcher.group(1));
+        }
+        return entityNames;
     }
 
     @Override
