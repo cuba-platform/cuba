@@ -211,8 +211,12 @@ public class ScreensHelper {
         }
 
         if (lookupElement != null) {
+            String datasource = lookupElement.attributeValue("datasource");
+            if (StringUtils.isNotBlank(datasource)) {
+                return datasource;
+            }
             for (Element element : Dom4j.elements(lookupElement)) {
-                String datasource = element.attributeValue("datasource");
+                datasource = element.attributeValue("datasource");
                 if (StringUtils.isNotBlank(datasource)) {
                     return datasource;
                 }
