@@ -28,6 +28,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaPropert
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.MetadataTools;
@@ -91,7 +92,14 @@ public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactor
                     return createNumberField(datasource, property);
                 }
             } else if (mppRange.isClass()) {
-                return createEntityField(datasource, property, mpp);
+                MetaProperty metaProperty = mpp.getMetaProperty();
+                Class<?> javaType = metaProperty.getJavaType();
+                if (FileDescriptor.class.isAssignableFrom(javaType)) {
+                    return createFileUploadField(datasource, property);
+                }
+                if (!Collection.class.isAssignableFrom(javaType)) {
+                    return createEntityField(datasource, property, mpp);
+                }
             } else if (mppRange.isEnum()) {
                 return createEnumField(datasource, property);
             }
@@ -105,6 +113,25 @@ public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactor
             exceptionMessage = String.format("Can't create field \"%s\" with given data type", property);
         }
         throw new UnsupportedOperationException(exceptionMessage);
+    }
+
+    protected Field createFileUploadField(Datasource datasource, String property) {
+        FileUploadField fileUploadField = (FileUploadField) componentsFactory.createComponent(FileUploadField.NAME);
+        fileUploadField.setMode(FileUploadField.FileStoragePutMode.IMMEDIATE);
+
+        fileUploadField.setUploadButtonCaption(null);
+        fileUploadField.setUploadButtonDescription(messages.getMainMessage("upload.submit"));
+        fileUploadField.setUploadButtonIcon("icons/upload.png");
+
+        fileUploadField.setClearButtonCaption(null);
+        fileUploadField.setClearButtonDescription(messages.getMainMessage("upload.clear"));
+        fileUploadField.setClearButtonIcon("icons/remove.png");
+
+        fileUploadField.setShowFileName(true);
+        fileUploadField.setShowClearButton(true);
+
+        fileUploadField.setDatasource(datasource, property);
+        return fileUploadField;
     }
 
     protected Field createUuidField(Datasource datasource, String property) {
