@@ -385,7 +385,7 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
             if (headerCell != null) {
                 String cubaId = headerCell.getElement().getAttribute("cuba-id");
                 if (cubaId != null) {
-                    return "cuba-id=\"cc-" + cubaId + "\"";
+                    return "cuba-id=\"cc_" + cubaId + "\"";
                 }
             }
 
@@ -853,7 +853,7 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
                     HeaderCell headerCell = headerCellMap.get(key);
 
                     if (headerCell != null) {
-                        headerCell.getElement().setAttribute("cuba-id", colcubaids[i]);
+                        headerCell.getElement().setAttribute("cuba-id", "column_" + colcubaids[i]);
                     }
                 }
             } catch (Exception e) {
