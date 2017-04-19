@@ -214,16 +214,18 @@ public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactor
         if (optionsDatasource == null) {
             pickerField = componentsFactory.createComponent(PickerField.class);
             pickerField.setDatasource(datasource, property);
-            PickerField.LookupAction lookupAction = pickerField.addLookupAction();
-            // Opening lookup screen in another mode will close editor
-            lookupAction.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
-            // In case of adding special logic for lookup screen opened from DataGrid editor
-            lookupAction.setLookupScreenParams(ParamsMap.of("dataGridEditor", true));
+            pickerField.addLookupAction();
             if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
                 DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
                 DynamicAttributesMetaProperty dynamicAttributesMetaProperty = (DynamicAttributesMetaProperty) mpp.getMetaProperty();
                 dynamicAttributesGuiTools.initEntityPickerField(pickerField, dynamicAttributesMetaProperty.getAttribute());
             }
+            PickerField.LookupAction lookupAction =
+                    (PickerField.LookupAction) pickerField.getActionNN(PickerField.LookupAction.NAME);
+            // Opening lookup screen in another mode will close editor
+            lookupAction.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
+            // In case of adding special logic for lookup screen opened from DataGrid editor
+            lookupAction.setLookupScreenParams(ParamsMap.of("dataGridEditor", true));
             boolean actionsByMetaAnnotations = ComponentsHelper.createActionsByMetaAnnotations(pickerField);
             if (!actionsByMetaAnnotations) {
                 pickerField.addClearAction();
