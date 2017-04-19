@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.data;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -389,7 +390,12 @@ public class IndexedCollectionDsWrapper
             Item wrapper = getItemWrapper(e.getItem());
 
             // MetaProperty worked wrong with properties from inherited superclasses
-            MetaPropertyPath metaPropertyPath = datasource.getMetaClass().getPropertyPath(e.getProperty());
+            MetaClass metaClass = datasource.getMetaClass();
+            String property = e.getProperty();
+            MetaPropertyPath metaPropertyPath = metaClass.getPropertyPath(property);
+            if (metaPropertyPath == null && DynamicAttributesUtils.isDynamicAttribute(property)) {
+                metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, property);
+            }
             if (metaPropertyPath == null) {
                 return;
             }
