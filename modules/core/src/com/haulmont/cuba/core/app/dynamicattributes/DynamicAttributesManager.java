@@ -30,6 +30,7 @@ import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -249,7 +250,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
                     //copy transient fields (for nested CAVs as well)
                     mergedCategoryAttributeValue.setTransientEntityValue(categoryAttributeValue.getTransientEntityValue());
                     mergedCategoryAttributeValue.setTransientCollectionValue(categoryAttributeValue.getTransientCollectionValue());
-                    if (categoryAttributeValue.getCategoryAttribute().getIsCollection() && categoryAttributeValue.getChildValues() != null) {
+                    if (BooleanUtils.isTrue(categoryAttributeValue.getCategoryAttribute().getIsCollection()) && categoryAttributeValue.getChildValues() != null) {
                         for (CategoryAttributeValue childCAV : categoryAttributeValue.getChildValues()) {
                             for (CategoryAttributeValue mergedChildCAV : mergedCategoryAttributeValue.getChildValues()) {
                                 if (mergedChildCAV.getId().equals(childCAV.getId())) {
@@ -261,7 +262,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
                         }
                     }
 
-                    if (mergedCategoryAttributeValue.getCategoryAttribute().getIsCollection()) {
+                    if (BooleanUtils.isTrue(mergedCategoryAttributeValue.getCategoryAttribute().getIsCollection())) {
                         storeCategoryAttributeValueWithCollectionType(mergedCategoryAttributeValue);
                     }
 
