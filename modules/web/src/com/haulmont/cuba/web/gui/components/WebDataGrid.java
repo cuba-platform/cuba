@@ -972,7 +972,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     @Override
     public void removeEditorCloseListener(EditorCloseListener listener) {
-        getEventRouter().addListener(EditorCloseListener.class, listener);
+        getEventRouter().removeListener(EditorCloseListener.class, listener);
 
         if (!getEventRouter().hasListeners(EditorCloseListener.class)) {
             component.removeEditorCloseListener(editorCloseListener);
@@ -995,7 +995,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     @Override
     public void removeEditorPreCommitListener(EditorPreCommitListener listener) {
-        getEventRouter().addListener(EditorPreCommitListener.class, listener);
+        getEventRouter().removeListener(EditorPreCommitListener.class, listener);
 
         if (!getEventRouter().hasListeners(EditorPreCommitListener.class)) {
             component.removeEditorPreCommitListener(editorPreCommitListener);
@@ -1018,7 +1018,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
     @Override
     public void removeEditorPostCommitListener(EditorPostCommitListener listener) {
-        getEventRouter().addListener(EditorPostCommitListener.class, listener);
+        getEventRouter().removeListener(EditorPostCommitListener.class, listener);
 
         if (!getEventRouter().hasListeners(EditorPostCommitListener.class)) {
             component.removeEditorPostCommitListener(editorPostCommitListener);
