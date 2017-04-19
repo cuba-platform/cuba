@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.app.core.categories;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Category;
+import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.CheckBox;
@@ -59,6 +60,9 @@ public class CategoryEditor extends AbstractEditor<Category> {
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             String storeName = metadata.getTools().getStoreName(metaClass);
             if (Stores.isMain(storeName)) {
+                if (metadata.getTools().hasCompositePrimaryKey(metaClass) && !HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
+                    continue;
+                }
                 options.put(messageTools.getDetailedEntityCaption(metaClass), metaClass);
             }
         }

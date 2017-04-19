@@ -29,6 +29,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.SecurityJpqlGenerator;
 import com.haulmont.cuba.gui.ScreensHelper;
@@ -238,9 +239,11 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 MetaClass entityType = null;
                 for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
                     if (!metadataTools.isSystemLevel(metaClass)) {
+                        if (metadata.getTools().hasCompositePrimaryKey(metaClass) && !HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
+                            continue;
+                        }
                         options.put(messageTools.getDetailedEntityCaption(metaClass), metaClass.getJavaClass().getName());
-                        if (attribute != null
-                                && metaClass.getJavaClass().getName().equals(attribute.getEntityClass())) {
+                        if (attribute != null && metaClass.getJavaClass().getName().equals(attribute.getEntityClass())) {
                             entityType = metaClass;
                         }
                     }
