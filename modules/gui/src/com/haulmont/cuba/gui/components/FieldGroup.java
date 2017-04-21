@@ -47,6 +47,19 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
     List<FieldConfig> getFields();
 
     /**
+     * @param column column index
+     * @return added field configs of {@code column}
+     */
+    List<FieldConfig> getFields(int column);
+
+    /**
+     * @param column column index
+     * @param row    row index
+     * @return field config
+     */
+    FieldConfig getField(int column, int row);
+
+    /**
      * Get field config by id.
      *
      * @param fieldId field id
@@ -480,132 +493,222 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         return fieldConfig.getComponent();
     }
 
+    /**
+     * @deprecated Use {@code FieldConfig.isRequired()} instead.
+     */
     @Deprecated
     default boolean isRequired(FieldConfig fc) {
         Boolean required = fc.isRequired();
         return required == null ? false : required;
     }
+    /**
+     * @deprecated Use {@code FieldConfig.setRequired(required)} instead.
+     */
     @Deprecated
     default void setRequired(FieldConfig field, boolean required, String message) {
         field.setRequired(required);
         field.setRequiredMessage(message);
     }
+    /**
+     * @deprecated Use {@code FieldConfig.setRequired(required)} instead.
+     */
     @Deprecated
     default void setRequired(FieldConfig field, boolean required) {
         field.setRequired(required);
     }
+    /**
+     * @deprecated Use {@code FieldConfig.getRequiredMessage()} instead.
+     */
     @Deprecated
     default String getRequiredMessage(FieldConfig field) {
         return field.getRequiredMessage();
     }
+    /**
+     * @deprecated Use {@code FieldConfig.setRequiredMessage(message)} instead.
+     */
     @Deprecated
     default void setRequiredMessage(FieldConfig field, String message) {
         field.setRequiredMessage(message);
     }
+    /**
+     * @deprecated Use {@code FieldGroup.getFieldNN(fieldId).isRequired()} instead.
+     */
     @Deprecated
     default boolean isRequired(String fieldId) {
         return isRequired(getFieldNN(fieldId));
     }
+    /**
+     * @deprecated Use {@code FieldGroup.getFieldNN(fieldId).setRequired(required)} instead.
+     */
     @Deprecated
     default void setRequired(String fieldId, boolean required, String message) {
         setRequired(getFieldNN(fieldId), required, message);
     }
+    /**
+     * @deprecated Use {@code FieldGroup.getFieldNN(fieldId).setRequired(fieldId)} instead.
+     */
     @Deprecated
     default void setRequired(String fieldId, boolean required) {
         setRequired(getFieldNN(fieldId), required);
     }
+    /**
+     * @deprecated Use {@code FieldGroup.getFieldNN(fieldId).getRequiredMessage()} instead.
+     */
     @Deprecated
     default String getRequiredMessage(String fieldId) {
         return getRequiredMessage(getFieldNN(fieldId));
     }
+    /**
+     * @deprecated Use {@code FieldGroup.getFieldNN(fieldId).setRequiredMessage(message)} instead.
+     */
     @Deprecated
     default void setRequiredMessage(String fieldId, String message) {
         setRequiredMessage(getFieldNN(fieldId), message);
     }
+    /**
+     * @deprecated Use {@code FieldConfig.addValidator(validator)} instead.
+     */
     @Deprecated
     default void addValidator(FieldConfig field, Validator validator) {
         field.addValidator(validator);
     }
+    /**
+     * @deprecated Use {@code FieldGroup.getFieldNN(fieldId).addValidator(validator)} instead.
+     */
     @Deprecated
     default void addValidator(String fieldId, Validator validator) {
         getFieldNN(fieldId).addValidator(validator);
     }
 
+    /**
+     * @deprecated Use {@code FieldConfig.isEditable()} instead.
+     */
     @Deprecated
     default boolean isEditable(FieldConfig field) {
         Boolean editable = field.isEditable();
         return editable == null ? true : editable;
     }
+    /**
+     * @deprecated Use {@code FieldConfig.setEditable(editable)} instead.
+     */
     @Deprecated
     default void setEditable(FieldConfig field, boolean editable) {
         field.setEditable(editable);
     }
+    /**
+     * @deprecated Use {@code FieldGroup.getFieldNN(fieldId).isEditable()}
+     */
     @Deprecated
     default boolean isEditable(String fieldId) {
         return isEditable(getFieldNN(fieldId));
     }
+    /**
+     * @deprecated Use {@code FieldGroup.getFieldNN(fieldId).setEditable(editable)} instead.
+     */
     @Deprecated
     default void setEditable(String fieldId, boolean editable) {
         setEditable(getFieldNN(fieldId), editable);
     }
 
+    /**
+     * @deprecated Use {@code FieldConfig.isEnabled()} instead.
+     */
     @Deprecated
     default boolean isEnabled(FieldConfig fc) {
         Boolean enabled = fc.isEnabled();
         return enabled == null ? true : enabled;
     }
+    /**
+     * @deprecated Use {@code FieldConfig.setEnabled(enabled)} instead.
+     */
     @Deprecated
     default void setEnabled(FieldConfig fc, boolean enabled) {
         fc.setEnabled(enabled);
     }
+    /**
+     * @deprecated Use {@code FieldGroup.getFieldNN(fieldId).isEnabled()}
+     */
     @Deprecated
     default boolean isEnabled(String fieldId) {
         return isEnabled(getFieldNN(fieldId));
     }
+    /**
+     * @deprecated Use {@code FieldGroup.getFieldNN(fieldId).setEnabled(enabled)} instead.
+     */
     @Deprecated
     default void setEnabled(String fieldId, boolean enabled) {
         setEnabled(getFieldNN(fieldId), enabled);
     }
 
+    /**
+     * @deprecated Use {@code FieldConfig.isVisible()} instead.
+     */
     @Deprecated
     default boolean isVisible(FieldConfig fc) {
         Boolean visible = fc.isVisible();
         return visible == null ? true : visible;
     }
+    /**
+     * @deprecated Use {@code FieldConfig.setVisible(visible)} instead.
+     */
     @Deprecated
     default void setVisible(FieldConfig fc, boolean visible) {
         fc.setVisible(visible);
     }
+    /**
+     * @deprecated Use {@code FieldGroup.getFieldNN("fieldId").isVisible()}
+     */
     @Deprecated
     default boolean isVisible(String fieldId) {
         return isVisible(getFieldNN(fieldId));
     }
+    /**
+     * @deprecated Use {@code FieldGroup.getFieldNN(fieldId).setVisible(visible)} instead.
+     */
     @Deprecated
     default void setVisible(String fieldId, boolean visible) {
         setVisible(getFieldNN(fieldId), visible);
     }
 
+    /**
+     * @deprecated Inject field instance and use typed component instead of this method.
+     */
     @Deprecated
     default Object getFieldValue(FieldConfig fc) {
         return ((HasValue) fc.getComponentNN()).getValue();
     }
+    /**
+     * @deprecated Inject field instance and use typed component instead of this method.
+     */
     @Deprecated
     default void setFieldValue(FieldConfig fc, Object value) {
         ((HasValue) fc.getComponentNN()).setValue(value);
     }
+    /**
+     * @deprecated Inject field instance and use typed component instead of this method.
+     */
     @Deprecated
     default Object getFieldValue(String fieldId) {
         return getFieldValue(getFieldNN(fieldId));
     }
+    /**
+     * @deprecated Inject field instance and use typed component instead of this method.
+     */
     @Deprecated
     default void setFieldValue(String fieldId, Object value) {
         setFieldValue(getFieldNN(fieldId), value);
     }
 
+    /**
+     * @deprecated Use {@code FieldGroup.getFieldNN(fieldId).getCaption()} instead.
+     */
     @Deprecated
     default String getFieldCaption(String fieldId) {
         return getFieldNN(fieldId).getCaption();
     }
+    /**
+     * @deprecated Use {@code FieldGroup.getFieldNN(fieldId).setCaption(caption)} instead.
+     */
     @Deprecated
     default void setFieldCaption(String fieldId, String caption) {
         getFieldNN(fieldId).setCaption(caption);
