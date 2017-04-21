@@ -125,6 +125,16 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
     }
 
     @Override
+    public List<FieldConfig> getFields(int column) {
+        return Collections.unmodifiableList(columnFieldMapping.get(column));
+    }
+
+    @Override
+    public FieldConfig getField(int column, int row) {
+        return columnFieldMapping.get(column).get(row);
+    }
+
+    @Override
     public FieldConfig getField(String fieldId) {
         for (final Map.Entry<String, FieldConfig> entry : fields.entrySet()) {
             if (entry.getKey().equals(fieldId)) {
@@ -1547,6 +1557,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
 
         public void setToolTipButton(ToolTipButton toolTipButton) {
             this.toolTipButton = toolTipButton;
+        }
+
+        @Override
+        public String toString() {
+            return "FieldConfig: " + id;
         }
     }
 }

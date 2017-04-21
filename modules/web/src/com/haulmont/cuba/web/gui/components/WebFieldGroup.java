@@ -110,6 +110,16 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
     }
 
     @Override
+    public List<FieldConfig> getFields(int column) {
+        return Collections.unmodifiableList(columnFieldMapping.get(column));
+    }
+
+    @Override
+    public FieldConfig getField(int column, int row) {
+        return columnFieldMapping.get(column).get(row);
+    }
+
+    @Override
     public FieldConfig getField(String fieldId) {
         return fields.get(fieldId);
     }
@@ -1352,6 +1362,11 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
 
         public FieldAttachMode getAttachMode() {
             return attachMode;
+        }
+
+        @Override
+        public String toString() {
+            return "FieldConfig: " + id;
         }
     }
 }
