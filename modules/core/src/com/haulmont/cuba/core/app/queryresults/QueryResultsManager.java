@@ -40,10 +40,11 @@ import java.util.*;
 
 /**
  * Supports functionality that allows queries from previously selected results.
- *
  */
 @Component(QueryResultsManagerAPI.NAME)
 public class QueryResultsManager implements QueryResultsManagerAPI {
+
+    private final Logger log = LoggerFactory.getLogger(QueryResultsManager.class);
 
     @Inject
     protected Persistence persistence;
@@ -64,8 +65,6 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
     protected Metadata metadata;
 
     private static final int BATCH_SIZE = 100;
-
-    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public void savePreviousQueryResults(LoadContext loadContext) {

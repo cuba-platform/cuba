@@ -32,6 +32,8 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,6 +50,8 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 public class DesktopFrame
         extends DesktopVBox
         implements DetachableFrame, WrappedFrame, Component.HasXmlDescriptor {
+
+    private final Logger log = LoggerFactory.getLogger(DesktopFrame.class);
 
     private String messagePack;
     private FrameContext context;

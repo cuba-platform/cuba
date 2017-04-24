@@ -35,9 +35,9 @@ import java.util.Properties;
 
 public class MainWindowProperties {
 
-    private JFrame frame;
+    private final Logger log = LoggerFactory.getLogger(MainWindowProperties.class);
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private JFrame frame;
 
     public MainWindowProperties(JFrame frame) {
         this.frame = frame;

@@ -39,6 +39,8 @@ import java.util.List;
 @Component(Coordinator.NAME)
 public class DbBasedCoordinator implements Coordinator {
 
+    private final Logger log = LoggerFactory.getLogger(DbBasedCoordinator.class);
+
     protected static class ContextImpl implements Context {
 
         protected List<ScheduledTask> tasks;
@@ -61,8 +63,6 @@ public class DbBasedCoordinator implements Coordinator {
 
     @Inject
     protected Persistence persistence;
-
-    protected Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public Context begin() {

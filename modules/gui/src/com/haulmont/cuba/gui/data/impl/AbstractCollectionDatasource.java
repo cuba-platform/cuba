@@ -38,6 +38,8 @@ import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -271,6 +273,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                             try {
                                 dsContext.getFrameContext().addValueChangeListener(path, componentValueListener);
                             } catch (Exception e) {
+                                Logger log = LoggerFactory.getLogger(AbstractCollectionDatasource.class);
                                 log.error("Unable to add value listener: " + e);
                             }
                         }

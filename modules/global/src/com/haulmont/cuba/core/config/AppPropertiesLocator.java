@@ -56,7 +56,7 @@ public class AppPropertiesLocator {
 
     public static final String NAME = "cuba_AppPropertiesLocator";
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(AppPropertiesLocator.class);
 
     protected volatile Set<String> interfacesCache;
 

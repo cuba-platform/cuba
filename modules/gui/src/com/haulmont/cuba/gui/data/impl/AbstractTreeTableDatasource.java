@@ -21,6 +21,8 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.TreeTableDatasource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -48,6 +50,7 @@ public abstract class AbstractTreeTableDatasource<T extends Entity<K>, K>
     @Override
     protected void doSort() {
         if (tree == null) {
+            Logger log = LoggerFactory.getLogger(AbstractTreeDatasource.class);
             log.warn("AbstractTreeTableDatasource.doSort: Tree is null, exiting");
             return;
         }

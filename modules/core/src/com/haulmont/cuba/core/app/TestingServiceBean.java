@@ -32,12 +32,11 @@ import java.util.UUID;
 
 /**
  * Service for integration testing. Don't use it in application code!
- *
  */
 @Service(TestingService.NAME)
 public class TestingServiceBean implements TestingService {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(TestingServiceBean.class);
 
     @Inject
     private Persistence persistence;

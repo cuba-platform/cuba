@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MbeanInspectWindow extends AbstractEditor {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(MbeanInspectWindow.class);
 
     @Inject
     protected Table<ManagedBeanAttribute> attributesTable;

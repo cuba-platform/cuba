@@ -34,6 +34,8 @@ import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.text.MaskFormatter;
@@ -48,6 +50,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> implements TimeField {
+
+    private final Logger log = LoggerFactory.getLogger(DesktopTimeField.class);
 
     private boolean showSeconds;
     private String timeFormat;

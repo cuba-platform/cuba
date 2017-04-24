@@ -44,7 +44,7 @@ import java.util.Map;
 
 public class CubaUserAuthenticationProvider implements AuthenticationProvider, Serializable {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(CubaUserAuthenticationProvider.class);
 
     @Inject
     protected LoginService loginService;

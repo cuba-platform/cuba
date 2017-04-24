@@ -43,7 +43,7 @@ import java.util.List;
 
 public class PortalAuthenticationProvider implements AuthenticationProvider, Serializable {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(PortalAuthenticationProvider.class);
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {

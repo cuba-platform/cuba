@@ -57,7 +57,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
 
     public static final String APP_PROPS_PARAM = "appProperties";
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(AbstractWebAppContextLoader.class);
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {

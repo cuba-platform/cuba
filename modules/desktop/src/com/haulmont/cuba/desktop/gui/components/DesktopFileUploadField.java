@@ -47,6 +47,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.*;
@@ -56,6 +58,8 @@ import static com.haulmont.cuba.gui.ComponentsHelper.handleFilteredAttributes;
 import static com.haulmont.cuba.gui.upload.FileUploadingAPI.FileInfo;
 
 public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileUploadWrapper> implements FileUploadField {
+
+    private final Logger log = LoggerFactory.getLogger(DesktopFileUploadField.class);
 
     protected FileUploadingAPI fileUploading;
     protected Messages messages;

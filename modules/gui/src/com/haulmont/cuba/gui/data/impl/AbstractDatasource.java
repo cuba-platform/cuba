@@ -37,7 +37,7 @@ import java.util.HashSet;
 
 public abstract class AbstractDatasource<T extends Entity> implements Datasource<T>, DatasourceImplementation<T> {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger log = LoggerFactory.getLogger(AbstractDatasource.class);
 
     protected String id;
     protected boolean modified;

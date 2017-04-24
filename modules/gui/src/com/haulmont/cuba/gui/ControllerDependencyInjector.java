@@ -48,8 +48,6 @@ public class ControllerDependencyInjector {
     private Frame frame;
     private Map<String,Object> params;
 
-    private Logger log = LoggerFactory.getLogger(getClass());
-
     public ControllerDependencyInjector(Frame frame, Map<String,Object> params) {
         this.frame = frame;
         this.params = params;
@@ -156,6 +154,7 @@ public class ControllerDependencyInjector {
                         type, name, declaringClass.getCanonicalName(), frameClass.getCanonicalName());
             }
 
+            Logger log = LoggerFactory.getLogger(ControllerDependencyInjector.class);
             log.warn(msg);
         }
     }

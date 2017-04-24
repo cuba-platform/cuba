@@ -50,12 +50,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Standard implementation of {@link Runner} interface used by {@link Scheduling} to run scheduled tasks.
- *
  */
 @Component(Runner.NAME)
 public class RunnerBean implements Runner {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(RunnerBean.class);
 
     protected ExecutorService executorService;
 

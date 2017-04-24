@@ -55,7 +55,7 @@ import java.util.regex.Pattern;
 
 public abstract class AbstractScripting implements Scripting {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(AbstractScripting.class);
 
     private static final Pattern IMPORT_PATTERN = Pattern.compile("\\bimport\\b\\s+");
     private static final Pattern PACKAGE_PATTERN = Pattern.compile("\\bpackage\\b\\s+.+");

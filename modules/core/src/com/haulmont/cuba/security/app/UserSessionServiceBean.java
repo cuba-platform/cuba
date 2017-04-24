@@ -36,13 +36,12 @@ import java.util.*;
 
 /**
  * Service facade to active {@link UserSession}s management.
- *
  */
 @Service(UserSessionService.NAME)
 public class UserSessionServiceBean implements UserSessionService {
     public static final String MESSAGE_ATTR_PREFIX = "message-";
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(UserSessionServiceBean.class);
 
     @Inject
     private UserSessionManager userSessionManager;

@@ -31,7 +31,7 @@ import java.util.*;
 
 public class CreditsLoader {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(CreditsLoader.class);
 
     private List<CreditsItem> items = new ArrayList<>();
 
@@ -55,7 +55,7 @@ public class CreditsLoader {
             Resources resources = AppBeans.get(Resources.NAME);
             String xml = resources.getResourceAsString(location);
             if (xml == null) {
-                log.debug("Resource " + location + " not found, ignore it");
+                log.debug("Resource {} not found, ignore it", location);
                 continue;
             }
             Element rootElement = Dom4j.readDocument(xml).getRootElement();

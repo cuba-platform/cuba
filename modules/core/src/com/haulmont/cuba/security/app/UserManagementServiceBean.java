@@ -45,6 +45,8 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 @Service(UserManagementService.NAME)
 public class UserManagementServiceBean implements UserManagementService {
 
+    private final Logger log = LoggerFactory.getLogger(UserManagementServiceBean.class);
+
     protected static final String GROUP_COPY_VIEW = "group.copy";
 
     protected static final String ROLE_COPY_VIEW = "role.copy";
@@ -56,8 +58,6 @@ public class UserManagementServiceBean implements UserManagementService {
     protected static final String CHANGE_PASSWORD_VIEW = "user.changePassword";
 
     protected static final String CHECK_PASSWORD_VIEW = "user.check";
-
-    protected Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     protected Persistence persistence;

@@ -65,8 +65,6 @@ public class PersistenceTools {
 
     public static final String NAME = "cuba_PersistenceTools";
 
-    protected final Logger log = LoggerFactory.getLogger(getClass());
-
     @Inject
     protected Persistence persistence;
 

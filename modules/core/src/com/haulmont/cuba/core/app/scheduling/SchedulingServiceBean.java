@@ -17,35 +17,27 @@
 
 package com.haulmont.cuba.core.app.scheduling;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ClusterListenerAdapter;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.SchedulingService;
 import com.haulmont.cuba.core.app.scheduled.MethodInfo;
-import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
 import com.haulmont.cuba.core.entity.ScheduledTask;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.CubaDefaultListableBeanFactory;
 import com.haulmont.cuba.security.entity.User;
-import org.apache.commons.lang.ClassUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.aop.TargetClassAware;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service(SchedulingService.NAME)
 public class SchedulingServiceBean implements SchedulingService {
-
-    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     protected Persistence persistence;

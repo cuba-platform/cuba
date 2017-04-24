@@ -27,8 +27,8 @@ import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -45,7 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component(PersistenceManagerAPI.NAME)
 public class PersistenceManager implements PersistenceManagerAPI {
 
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(PersistenceManager.class);
 
     protected volatile Set<String> softDeleteTables;
 

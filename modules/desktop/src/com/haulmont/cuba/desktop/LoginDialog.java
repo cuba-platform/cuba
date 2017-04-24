@@ -43,7 +43,7 @@ import java.util.Map;
 
 public class LoginDialog extends JDialog {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(LoginDialog.class);
 
     protected Connection connection;
     protected Locale resolvedLocale;

@@ -54,7 +54,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class AbstractViewRepository implements ViewRepository {
 
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(AbstractViewRepository.class);
 
     protected List<String> readFileNames = new LinkedList<>();
 

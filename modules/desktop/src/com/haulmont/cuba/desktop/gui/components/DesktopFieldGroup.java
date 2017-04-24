@@ -39,6 +39,8 @@ import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -53,6 +55,8 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         implements FieldGroup, AutoExpanding, Component.UiPermissionAware {
+
+    private final Logger log = LoggerFactory.getLogger(DesktopFieldGroup.class);
 
     public static final String DEFAULT_FIELD_WIDTH = "200px";
 

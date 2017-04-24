@@ -33,7 +33,6 @@ public class UniqueConstraintViolationPatternFactory extends TypeFactory {
     @Override
     public Object build(String value) {
         Messages messages = AppBeans.get(Messages.NAME);
-        Logger log = LoggerFactory.getLogger(getClass());
         PersistenceManagerService pmService = AppBeans.get(PersistenceManagerService.NAME);
         String defaultConstraintViolationPattern = pmService.getUniqueConstraintViolationPattern();
         Pattern constraintViolationPattern;
@@ -45,6 +44,7 @@ public class UniqueConstraintViolationPatternFactory extends TypeFactory {
                 constraintViolationPattern = Pattern.compile(value);
             } catch (PatternSyntaxException e) {
                 constraintViolationPattern = Pattern.compile(defaultConstraintViolationPattern);
+                Logger log = LoggerFactory.getLogger(UniqueConstraintViolationPatternFactory.class);
                 log.warn(String.format(messages.getMainMessage("incorrectRegexp"),
                         "cuba.uniqueConstraintViolationPattern"), e);
             }

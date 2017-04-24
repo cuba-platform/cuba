@@ -36,6 +36,7 @@ import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
@@ -50,6 +51,9 @@ import java.util.*;
 
 public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
         implements TabSheet, DesktopContainer, AutoExpanding, Component.UiPermissionAware {
+
+    private final Logger log = LoggerFactory.getLogger(DesktopTabSheet.class);
+
     protected Map<Component, String> components = new HashMap<>();
 
     protected List<TabImpl> tabs = new ArrayList<>();

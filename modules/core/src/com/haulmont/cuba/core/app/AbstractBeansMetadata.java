@@ -28,7 +28,6 @@ import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
-import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -38,7 +37,7 @@ import java.util.*;
  */
 public abstract class AbstractBeansMetadata {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(AbstractBeansMetadata.class);
 
     protected List<String> beansToIgnore = Arrays.asList("cubaDataSource", "entityManagerFactory", "hibernateSessionFactory",
             "mailSendTaskExecutor", "scheduler", "sqlSession", "sqlSessionFactory", "transactionManager",

@@ -48,8 +48,6 @@ import java.util.Set;
 
 public abstract class AbstractTableLoader<T extends Table> extends ActionsHolderLoader<T> {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
-
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
     protected DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.NAME);
     protected DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
@@ -110,6 +108,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         if (StringUtils.isBlank(rowHeaderMode)) {
             rowHeaderMode = rowsElement.attributeValue("headerMode");
             if (StringUtils.isNotBlank(rowHeaderMode)) {
+                Logger log = LoggerFactory.getLogger(AbstractTableLoader.class);
                 log.warn("Attribute headerMode is deprecated. Use rowHeaderMode.");
             }
         }

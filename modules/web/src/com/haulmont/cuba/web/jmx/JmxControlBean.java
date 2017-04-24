@@ -49,7 +49,7 @@ import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.withConnection;
 public class JmxControlBean implements JmxControlAPI {
     private static final String JMX_LONG_OPERATION_REGEXP = ".*@JmxLongOperation(\\((\\d+)\\))?.*";
 
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(JmxControlBean.class);
 
     @Inject
     protected DataService dataService;

@@ -38,11 +38,10 @@ import java.io.InputStream;
 
 /**
  * Data provider for log files from specified JMX instance
- *
  */
 public class LogDataProvider implements ExportDataProvider {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(LogDataProvider.class);
 
     protected InputStream inputStream;
 

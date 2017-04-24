@@ -26,8 +26,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,10 +40,10 @@ public class ThemeConstantsRepository {
 
     public static final String NAME = "cuba_ThemeConstantsRepository";
 
+    private final Logger log = LoggerFactory.getLogger(ThemeConstantsRepository.class);
+
     @Inject
     protected Resources resources;
-
-    protected Logger log = LoggerFactory.getLogger(getClass());
 
     private volatile boolean initialized;
 

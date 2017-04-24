@@ -34,6 +34,8 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.ManyToMany;
 import java.util.*;
@@ -46,6 +48,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             CollectionDatasource.Indexed<T, K>,
             CollectionDatasource.Sortable<T, K>,
             CollectionDatasource.Aggregatable<T, K> {
+
+    private static final Logger log = LoggerFactory.getLogger(CollectionPropertyDatasourceImpl.class);
 
     protected T item;
     protected boolean cascadeProperty;

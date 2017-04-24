@@ -33,7 +33,7 @@ import javax.inject.Inject;
 @Component("cuba_CachingFacadeMBean")
 public class CachingFacade implements CachingFacadeMBean {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(CachingFacade.class);
 
     @Inject
     private Scripting scripting;

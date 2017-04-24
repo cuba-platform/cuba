@@ -59,7 +59,7 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
     @Inject
     private Resources resources;
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(DesktopThemeLoaderImpl.class);
 
     // like '255 128 0'
     private static final Pattern DECIMAL_COLOR_PATTERN = Pattern.compile("^(\\d+)\\s+(\\d+)\\s+(\\d+)$");

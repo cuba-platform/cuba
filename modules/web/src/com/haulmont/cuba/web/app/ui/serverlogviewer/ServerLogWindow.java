@@ -58,7 +58,7 @@ import java.util.*;
 
 public class ServerLogWindow extends AbstractWindow {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(ServerLogWindow.class);
 
     @Inject
     protected CollectionDatasource<JmxInstance, UUID> jmxInstancesDs;

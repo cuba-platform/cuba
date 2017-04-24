@@ -62,7 +62,7 @@ import java.util.zip.CRC32;
 @Service(FoldersService.NAME)
 public class FoldersServiceBean implements FoldersService {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(FoldersServiceBean.class);
 
     @Inject
     protected UserSessionSource userSessionSource;

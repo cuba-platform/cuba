@@ -48,7 +48,7 @@ public class WindowDelegate {
 
     protected WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(WindowDelegate.class);
 
     public WindowDelegate(Window window) {
         this.window = window;

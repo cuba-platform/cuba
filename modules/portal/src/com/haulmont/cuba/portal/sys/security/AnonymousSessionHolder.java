@@ -20,7 +20,6 @@ package com.haulmont.cuba.portal.sys.security;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.portal.config.PortalConfig;
@@ -33,8 +32,8 @@ import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Locale;
@@ -43,16 +42,13 @@ import java.util.Objects;
 @Component("cuba_PortalAnonymousSessionHolder")
 public class AnonymousSessionHolder {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(AnonymousSessionHolder.class);
 
     @Inject
     protected GlobalConfig globalConfig;
 
     @Inject
     protected PortalConfig portalConfig;
-
-    @Inject
-    protected PasswordEncryption passwordEncryption;
 
     @Inject
     protected LoginService loginService;

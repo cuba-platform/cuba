@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 public class ScrollBoxLayoutLoader extends ContainerLoader<ScrollBoxLayout> {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(ScrollBoxLayoutLoader.class);
 
     protected void loadOrientation(ScrollBoxLayout component, Element element) {
         String orientation = element.attributeValue("orientation");

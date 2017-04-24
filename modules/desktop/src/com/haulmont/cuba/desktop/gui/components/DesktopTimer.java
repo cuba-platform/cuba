@@ -31,7 +31,7 @@ import java.util.List;
 
 public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements com.haulmont.cuba.gui.components.Timer {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(DesktopTimer.class);
 
     protected boolean repeating = false;
     protected int delay = 0;

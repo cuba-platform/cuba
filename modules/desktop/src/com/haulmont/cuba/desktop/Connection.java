@@ -35,13 +35,13 @@ import java.util.*;
 
 public class Connection {
 
+    private final Logger log = LoggerFactory.getLogger(Connection.class);
+
     private List<ConnectionListener> listeners = new ArrayList<>();
 
     protected boolean connected;
 
     protected UserSession session;
-
-    protected Logger log = LoggerFactory.getLogger(getClass());
 
     public void login(String login, String password, Locale locale) throws LoginException {
         UserSession userSession = doLogin(login, password, locale, getLoginParams());
@@ -50,7 +50,7 @@ public class Connection {
 
         session = clientUserSession;
         AppContext.setSecurityContext(new SecurityContext(session));
-        log.info("Logged in: " + session);
+        log.info("Logged in: {}", session);
 
         updateSessionClientInfo();
 

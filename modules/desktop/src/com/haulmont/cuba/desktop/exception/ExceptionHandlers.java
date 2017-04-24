@@ -36,18 +36,17 @@ import java.util.*;
  * <p>A set of exception handlers is configured by defining <code>ExceptionHandlersConfiguration</code> beans
  * in spring.xml. If a project needs specific handlers, it should define a bean of such type with its own
  * <strong>id</strong>, e.g. <code>refapp_ExceptionHandlersConfiguration</code></p>
- *
  */
 @Component("cuba_ExceptionHandlers")
 public class ExceptionHandlers {
+
+    private final Logger log = LoggerFactory.getLogger(ExceptionHandlers.class);
 
     protected LinkedList<ExceptionHandler> handlers = new LinkedList<>();
 
     protected LinkedList<GenericExceptionHandler> genericHandlers = new LinkedList<>();
 
     protected ExceptionHandler defaultHandler;
-
-    private Logger log = LoggerFactory.getLogger(getClass());
 
     public ExceptionHandlers() {
         this.defaultHandler = new DefaultExceptionHandler();

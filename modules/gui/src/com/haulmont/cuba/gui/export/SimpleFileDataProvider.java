@@ -40,11 +40,10 @@ import java.net.URLEncoder;
 
 /**
  * Data provider for File on name and path
- *
  */
 public class SimpleFileDataProvider implements ExportDataProvider {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(SimpleFileDataProvider.class);
 
     protected String filePath;
     protected InputStream inputStream;

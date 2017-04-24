@@ -54,6 +54,8 @@ import java.util.concurrent.ConcurrentMap;
 @Component(SchedulingAPI.NAME)
 public class Scheduling implements SchedulingAPI {
 
+    private final Logger log = LoggerFactory.getLogger(Scheduling.class);
+
     @Inject
     protected Configuration configuration;
 
@@ -88,8 +90,6 @@ public class Scheduling implements SchedulingAPI {
     protected Map<ScheduledTask, Long> lastFinishCache = new ConcurrentHashMap<>();
 
     protected volatile long schedulingStartTime;
-
-    protected Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public void processScheduledTasks() {

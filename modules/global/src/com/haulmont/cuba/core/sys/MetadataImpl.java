@@ -40,7 +40,7 @@ import java.util.*;
 @Component(Metadata.NAME)
 public class MetadataImpl implements Metadata {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(MetadataImpl.class);
 
     protected volatile Session session;
 
