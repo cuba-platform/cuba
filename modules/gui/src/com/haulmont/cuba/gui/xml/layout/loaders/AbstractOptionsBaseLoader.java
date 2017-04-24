@@ -17,12 +17,14 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.DatasourceComponent;
 import com.haulmont.cuba.gui.components.OptionsField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -39,6 +41,16 @@ public abstract class AbstractOptionsBaseLoader<T extends OptionsField> extends 
         if (!StringUtils.isEmpty(captionProperty)) {
             component.setCaptionMode(CaptionMode.PROPERTY);
             component.setCaptionProperty(captionProperty);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void loadOptionsEnum(T resultComponent, Element element) {
+        String optionsEnumClass = element.attributeValue("optionsEnum");
+        if (StringUtils.isNotEmpty(optionsEnumClass)) {
+            Scripting scripting = AppBeans.get(Scripting.class);
+            resultComponent.setOptionsEnum(
+                    (Class<? extends EnumClass>) scripting.loadClass(optionsEnumClass));
         }
     }
 

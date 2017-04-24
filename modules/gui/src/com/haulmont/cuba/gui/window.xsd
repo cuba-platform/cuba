@@ -1281,6 +1281,8 @@
                 <xs:attribute name="newOptionHandler" type="xs:string"/>
                 <xs:attribute name="inputPrompt" type="resourceString"/>
 
+                <xs:attribute name="optionsEnum" type="xs:string"/>
+
                 <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
@@ -1422,6 +1424,8 @@
                 <xs:attributeGroup ref="hasTabIndex"/>
 
                 <xs:attribute name="multiselect" type="xs:boolean"/>
+
+                <xs:attribute name="optionsEnum" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
