@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +88,11 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
             });
         }
 
-        scripting.runGroovyScript(getScriptName(file), bind);
+        try {
+            scripting.evaluateGroovy(file.getContent(), bind);
+        } catch (IOException e) {
+            throw new RuntimeException("An error occurred while executing Groovy script", e);
+        }
         return !postUpdateScripts.containsValue(file);
     }
 
