@@ -29,6 +29,8 @@ public class OptionsListLoader extends AbstractOptionsBaseLoader<OptionsList> {
     @Override
     public void loadComponent() {
         super.loadComponent();
+
         loadCaptionProperty(resultComponent, element);
+        loadOptionsEnum(resultComponent, element);
     }
 }

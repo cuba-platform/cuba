@@ -27,6 +27,8 @@ public class OptionsGroupLoader extends AbstractOptionsBaseLoader<OptionsGroup> 
 
         loadOrientation(resultComponent, element);
         loadCaptionProperty(resultComponent, element);
+
+        loadOptionsEnum(resultComponent, element);
     }
 
     protected void loadOrientation(OptionsGroup component, Element element) {

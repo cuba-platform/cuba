@@ -17,6 +17,9 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.DatasourceComponent;
@@ -70,6 +73,18 @@ public class LookupFieldLoader extends AbstractFieldLoader<LookupField> {
         loadNewOptionHandler(resultComponent, element);
 
         loadNullOptionVisible(resultComponent, element);
+
+        loadOptionsEnum(resultComponent, element);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void loadOptionsEnum(LookupField resultComponent, Element element) {
+        String optionsEnumClass = element.attributeValue("optionsEnum");
+        if (StringUtils.isNotEmpty(optionsEnumClass)) {
+            Scripting scripting = AppBeans.get(Scripting.class);
+            resultComponent.setOptionsEnum(
+                    (Class<? extends EnumClass>) scripting.loadClass(optionsEnumClass));
+        }
     }
 
     protected void loadNullOptionVisible(LookupField resultComponent, Element element) {
