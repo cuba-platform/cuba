@@ -35,11 +35,6 @@ import com.vaadin.client.ui.gridlayout.GridLayoutConnector;
 import com.vaadin.client.ui.layout.ComponentConnectorLayoutSlot;
 import com.vaadin.client.ui.orderedlayout.Slot;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget.TOOLTIP_CLASSNAME;
-
 public class CubaTooltip extends VTooltip {
 
     public static final String REQUIRED_INDICATOR = "v-required-field-indicator";
@@ -92,7 +87,6 @@ public class CubaTooltip extends VTooltip {
 
         protected boolean isTooltipElement(Element element) {
             return (REQUIRED_INDICATOR.equals(element.getClassName())
-                    || TOOLTIP_CLASSNAME.equals(element.getClassName())
                     || ERROR_INDICATOR.equals(element.getClassName()));
         }
 
@@ -251,7 +245,6 @@ public class CubaTooltip extends VTooltip {
         protected boolean elementIsIndicator(Element relativeElement) {
             return relativeElement != null
                     && (REQUIRED_INDICATOR.equals(relativeElement.getClassName())
-                        || TOOLTIP_CLASSNAME.equals(relativeElement.getClassName())
                         || ERROR_INDICATOR.equals(relativeElement.getClassName()));
         }
 
@@ -296,7 +289,6 @@ public class CubaTooltip extends VTooltip {
                     if (caption instanceof CubaCaptionWidget) {
                         CubaCaptionWidget cubaCaptionWidget = (CubaCaptionWidget) caption;
                         if (cubaCaptionWidget.getRequiredIndicatorElement() != null
-                                || cubaCaptionWidget.getTooltipElement() != null
                                 || cubaCaptionWidget.getErrorIndicatorElement() != null) {
                             return true;
                         }

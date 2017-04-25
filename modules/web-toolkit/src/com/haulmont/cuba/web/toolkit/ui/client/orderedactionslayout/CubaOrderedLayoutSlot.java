@@ -35,16 +35,12 @@ import java.util.List;
 
 public class CubaOrderedLayoutSlot extends Slot {
 
-    public static final String TOOLTIP_CLASSNAME = "c-tooltip-button";
-
-    protected Element tooltipIcon;
-    protected String descriptionText;
-
     public CubaOrderedLayoutSlot(VAbstractOrderedLayout layout, Widget widget) {
         super(layout, widget);
     }
 
-    public void setCaption(String captionText, String descriptionText, Icon icon, List<String> styles,
+    @Override
+    public void setCaption(String captionText, Icon icon, List<String> styles,
                            String error, boolean showError, boolean required, boolean enabled, boolean captionAsHtml) {
         // CAUTION copied from super
         // Caption wrappers
@@ -52,7 +48,7 @@ public class CubaOrderedLayoutSlot extends Slot {
         final Element focusedElement = WidgetUtil.getFocusedElement();
         // By default focus will not be lost
         boolean focusLost = false;
-        if (captionText != null || icon != null || error != null || required || descriptionText != null) {
+        if (captionText != null || icon != null || error != null || required) {
             if (caption == null) {
                 caption = DOM.createDiv();
                 captionWrap = DOM.createDiv();
@@ -136,30 +132,6 @@ public class CubaOrderedLayoutSlot extends Slot {
         } else if (requiredIcon != null) {
             requiredIcon.removeFromParent();
             requiredIcon = null;
-        }
-
-        // Description
-        // Haulmont API
-        this.descriptionText = descriptionText;
-        if (descriptionText != null) {
-            if (tooltipIcon == null) {
-                tooltipIcon = DOM.createSpan();
-                // TODO decide something better (e.g. use CSS to insert the
-                // character)
-                tooltipIcon.setInnerHTML("?");
-                tooltipIcon.setClassName(TOOLTIP_CLASSNAME);
-
-                // The star should not be read by the screen reader, as it is
-                // purely visual. Required state is set at the element level for
-                // the screen reader.
-                Roles.getTextboxRole().setAriaHiddenState(tooltipIcon, true);
-            }
-            if (caption != null) {
-                caption.appendChild(tooltipIcon);
-            }
-        } else if (this.tooltipIcon != null) {
-            this.tooltipIcon.removeFromParent();
-            this.tooltipIcon = null;
         }
 
         // Error

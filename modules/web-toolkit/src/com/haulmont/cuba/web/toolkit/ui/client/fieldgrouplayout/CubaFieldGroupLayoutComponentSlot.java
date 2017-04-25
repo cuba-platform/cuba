@@ -365,15 +365,6 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
             requiredElement = null;
         }
 
-        if (captionWidget.getTooltipElement() != null) {
-            captionWidget.getTooltipElement().removeFromParent();
-            tooltipElement = captionWidget.getTooltipElement();
-            rightCaption.appendChild(tooltipElement);
-        } else if (tooltipElement != null) {
-            tooltipElement.removeFromParent();
-            tooltipElement = null;
-        }
-
         if (captionWidget.getErrorIndicatorElement() != null) {
             captionWidget.getErrorIndicatorElement().removeFromParent();
 

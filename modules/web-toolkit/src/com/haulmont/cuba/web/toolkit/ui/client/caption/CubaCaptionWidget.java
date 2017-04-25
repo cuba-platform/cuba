@@ -31,9 +31,6 @@ import com.vaadin.shared.ui.ComponentStateUtil;
 public class CubaCaptionWidget extends VCaption {
 
     public static final String CUBA_CLASSNAME = "c-caption";
-    public static final String TOOLTIP_CLASSNAME = "c-tooltip-button";
-
-    protected Element toolTipIndicator;
 
     protected boolean captionPlacedAfterComponentByDefault = true;
 
@@ -144,13 +141,6 @@ public class CubaCaptionWidget extends VCaption {
             captionText = null;
         }
 
-        if (ComponentStateUtil.hasDescription(owner.getState())
-                && captionText != null) {
-            addStyleDependentName("hasdescription");
-        } else {
-            removeStyleDependentName("hasdescription");
-        }
-
         AriaHelper.handleInputRequired(owner.getWidget(), showRequired);
 
         if (showRequired) {
@@ -170,24 +160,6 @@ public class CubaCaptionWidget extends VCaption {
             // Remove existing
             requiredFieldIndicator.removeFromParent();
             requiredFieldIndicator = null;
-        }
-
-        // Description
-        // Haulmont API
-        if (ComponentStateUtil.hasDescription(owner.getState())) {
-            addStyleDependentName("hasdescription");
-            if (toolTipIndicator == null) {
-                toolTipIndicator = DOM.createDiv();
-                toolTipIndicator.setClassName(TOOLTIP_CLASSNAME);
-
-                DOM.insertChild(getElement(), toolTipIndicator, getDescriptionInsertPosition());
-            }
-        } else {
-            removeStyleDependentName("hasdescription");
-            if (toolTipIndicator != null) {
-                toolTipIndicator.removeFromParent();
-                toolTipIndicator = null;
-            }
         }
 
         AriaHelper.handleInputInvalid(owner.getWidget(), showError);
@@ -237,9 +209,6 @@ public class CubaCaptionWidget extends VCaption {
         if (errorIndicatorElement != null && errorIndicatorElement.getParentElement() == getElement()) {
             width += WidgetUtil.getRequiredWidth(errorIndicatorElement);
         }
-        if (toolTipIndicator != null && toolTipIndicator.getParentElement() == getElement()) {
-            width += WidgetUtil.getRequiredWidth(toolTipIndicator);
-        }
         return width;
     }
 
@@ -249,31 +218,12 @@ public class CubaCaptionWidget extends VCaption {
         return super.getTextElement();
     }
 
-    public Element getTooltipElement() {
-        return toolTipIndicator;
-    }
-
     public Element getRequiredIndicatorElement() {
         return requiredFieldIndicator;
     }
 
     public Element getErrorIndicatorElement() {
         return errorIndicatorElement;
-    }
-
-    @Override
-    protected int getInsertPosition(InsertPosition element) {
-        int pos = super.getInsertPosition(element);
-
-        if (toolTipIndicator != null) {
-            pos++;
-        }
-
-        return pos;
-    }
-
-    protected int getDescriptionInsertPosition() {
-        return super.getInsertPosition(null);
     }
 
     public void setCaptionHolder(CaptionHolder captionHolder) {
