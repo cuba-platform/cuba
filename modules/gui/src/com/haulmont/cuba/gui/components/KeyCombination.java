@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
@@ -271,7 +272,7 @@ public class KeyCombination {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("key", key)
                 .add("modifiers", modifiers)
                 .toString();
