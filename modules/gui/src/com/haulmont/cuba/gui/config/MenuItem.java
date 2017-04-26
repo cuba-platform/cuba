@@ -104,7 +104,6 @@ public class MenuItem {
     }
 
     public boolean isPermitted(UserSession session) {
-        final String id = descriptor.attributeValue("id");
         if (StringUtils.isEmpty(id)) {
              return true;
         } else {
