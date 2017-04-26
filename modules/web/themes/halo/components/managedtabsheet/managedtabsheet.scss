@@ -15,6 +15,10 @@ $c-managed-tabsheet-tabbar-height: $v-unit-size + round($v-unit-size/6) + 2*firs
     .v-tabsheet-content {
       display: none;
     }
+
+    .v-tabsheet-deco {
+      display: none;
+    }
   }
 
   .#{$primary-stylename} {
