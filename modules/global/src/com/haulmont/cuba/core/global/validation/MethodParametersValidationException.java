@@ -20,7 +20,6 @@ import com.haulmont.cuba.core.global.SupportedByClient;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.io.Serializable;
 import java.util.Set;
 
 @SupportedByClient
