@@ -110,10 +110,12 @@ public class CubaFileUploadWrapper extends CustomField {
             container.setWidth(100, Unit.PERCENTAGE);
             if (isShowFileName()) {
                 container.setExpandRatio(fileNameButton, 1);
+                fileNameButton.setWidth(100, Unit.PERCENTAGE);
                 uploadButton.setWidthUndefined();
                 clearButton.setWidthUndefined();
             } else {
                 container.setExpandRatio(fileNameButton, 0);
+                fileNameButton.setWidthUndefined();
                 if (isShowClearButton() && !isRequired()) {
                     uploadButton.setWidth(100, Unit.PERCENTAGE);
                     clearButton.setWidth(100, Unit.PERCENTAGE);

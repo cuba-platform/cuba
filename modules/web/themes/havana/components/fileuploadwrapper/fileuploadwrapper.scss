@@ -25,6 +25,11 @@
     width: 5px;
   }
 
+  .c-fileupload-filename.v-has-width {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .c-fileupload-filename.c-fileupload-empty {
     cursor: default;
 

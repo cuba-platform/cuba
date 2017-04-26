@@ -25,6 +25,11 @@
     width: $v-layout-spacing-horizontal/2;
   }
 
+  .c-fileupload-filename.v-has-width {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .c-fileupload-filename.c-fileupload-empty {
     color: $v-font-color;
     text-decoration: none;
