@@ -66,6 +66,10 @@ public class SuggestionsContainer extends Widget {
         }
     }
 
+    public List<SuggestionItem> getSuggestions() {
+        return suggestions;
+    }
+
     protected void selectItem(SuggestionItem item) {
         if (item == selectedSuggestion) {
             return;
