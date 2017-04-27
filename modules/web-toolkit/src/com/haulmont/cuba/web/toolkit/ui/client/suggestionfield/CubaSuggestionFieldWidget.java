@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.client.suggestionfield.menu.SuggestionItem;
 import com.haulmont.cuba.web.toolkit.ui.client.suggestionfield.menu.SuggestionsContainer;
 import com.vaadin.client.BrowserInfo;
+import com.vaadin.client.ComputedStyle;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.VOverlay;
 import com.vaadin.client.ui.VTextField;
@@ -118,7 +119,6 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
 
     protected void showSuggestions() {
         Scheduler.get().scheduleDeferred(() -> {
-            suggestionsPopup.hide();
             suggestionsContainer.clearItems();
 
             for (Suggestion suggestion : suggestions) {
@@ -131,7 +131,12 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
 
             suggestionsPopup.removeAutoHidePartner(getElement());
             suggestionsPopup.addAutoHidePartner(getElement());
-            suggestionsPopup.showPopup();
+
+            if (!suggestionsPopup.isAttached() || !suggestionsPopup.isVisible()) {
+                suggestionsPopup.showPopup();
+            }
+
+            suggestionsPopup.updateWidth();
         });
     }
 
@@ -415,6 +420,40 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
 
             setPopupPosition(left, top);
         }
+
+        protected void updateWidth() {
+            setWidth("");
+
+            int mainWidgetWidth = CubaSuggestionFieldWidget.this.getParent().getOffsetWidth();
+            double popupMarginBorderPaddingWidth = getMarginBorderPaddingWidth(getWidget().getElement());
+
+            List<SuggestionItem> suggestions = suggestionsContainer.getSuggestions();
+            if (suggestions == null || suggestions.isEmpty()) {
+                setWidth(mainWidgetWidth - popupMarginBorderPaddingWidth + "px");
+                return;
+            }
+
+            int maxSuggestionWidth = 0;
+            for (SuggestionItem suggestionItem : suggestions) {
+                maxSuggestionWidth = Math.max(suggestionItem.getOffsetWidth(), maxSuggestionWidth);
+            }
+
+            com.google.gwt.user.client.Element suggestionElement = suggestions.get(0).getElement();
+            double suggestionMarginBorderPaddingWidth = getMarginBorderPaddingWidth(suggestionElement);
+
+            if (maxSuggestionWidth <= mainWidgetWidth) {
+                suggestionMarginBorderPaddingWidth = 0;
+            }
+
+            int maxWidth = Math.max(maxSuggestionWidth, mainWidgetWidth);
+
+            setWidth(maxWidth - popupMarginBorderPaddingWidth + suggestionMarginBorderPaddingWidth + "px");
+        }
+    }
+
+    protected static double getMarginBorderPaddingWidth(Element element) {
+        final ComputedStyle s = new ComputedStyle(element);
+        return s.getMarginWidth() + s.getBorderWidth() + s.getPaddingWidth();
     }
 
     protected class CubaTextFieldEvents implements KeyDownHandler, KeyUpHandler, ValueChangeHandler<String>, BlurHandler {
