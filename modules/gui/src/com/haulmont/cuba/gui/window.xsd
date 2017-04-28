@@ -1443,6 +1443,7 @@
     <xs:complexType name="optionsListComponent">
         <xs:complexContent>
             <xs:extension base="optionsBaseFieldComponent">
+                <xs:attribute name="nullOptionVisible" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

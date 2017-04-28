@@ -57,4 +57,14 @@ public class WebOptionsList extends WebAbstractOptionsBase<CubaListSelect> imple
         attachListener(component);
         initDefaults(component);
     }
+
+    @Override
+    public void setNullOptionVisible(boolean nullOptionVisible) {
+        component.setNullSelectionAllowed(nullOptionVisible);
+    }
+
+    @Override
+    public boolean isNullOptionVisible() {
+        return component.isNullSelectionAllowed();
+    }
 }
