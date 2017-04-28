@@ -857,7 +857,7 @@ create table SEC_SESSION_LOG_ENTRY (
     STARTED_WHEN timestamp,
     FINISHED_WHEN timestamp,
     CLIENT_TYPE varchar(10),
-    SERVER varchar(128),
+    SERVER_ID varchar(128),
     --
     primary key (ID)
 )^
