@@ -21,14 +21,9 @@ import com.google.common.base.Strings;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.Categorized;
-import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
@@ -39,6 +34,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -62,6 +58,9 @@ public class DynamicAttributesGuiTools {
 
     @Inject
     protected Metadata metadata;
+
+    @Inject
+    protected DataManager dataManager;
 
     /**
      * Enforce the datasource to change modified status if dynamic attribute is changed
@@ -142,7 +141,6 @@ public class DynamicAttributesGuiTools {
         return classes;
     }
 
-
     public void initDefaultAttributeValues(BaseGenericIdEntity item, MetaClass metaClass) {
         Preconditions.checkNotNullArgument(metaClass, "metaClass is null");
         Collection<CategoryAttribute> attributes =
@@ -165,7 +163,29 @@ public class DynamicAttributesGuiTools {
             }
 
             if (categoryAttribute.getDefaultValue() != null) {
-                item.setValue(code, categoryAttribute.getDefaultValue());
+                Class javaClassForEntity = categoryAttribute.getJavaClassForEntity();
+                if (BooleanUtils.isTrue(categoryAttribute.getIsEntity()) && javaClassForEntity != null) {
+                    @SuppressWarnings("unchecked")
+                    LoadContext loadContext =  LoadContext.create(javaClassForEntity)
+                            .setView(View.MINIMAL)
+                            .setSoftDeletion(false);
+
+                    if (BaseUuidEntity.class.isAssignableFrom(javaClassForEntity)) {
+                        loadContext.setId(categoryAttribute.getDefaultValue());
+                    } else {
+                        Metadata metadata = AppBeans.get(Metadata.class);
+                        MetaClass relatedMetaClass = metadata.getClassNN(javaClassForEntity);
+                        loadContext.setQueryString(String.format("select e from %s e where e.uuid = :entityId",
+                                relatedMetaClass.getName()))
+                                .setParameter("entityId", categoryAttribute.getDefaultValue());
+                    }
+
+                    //noinspection unchecked
+                    Entity entityValue = dataManager.load(loadContext);
+                    item.setValue(code, entityValue);
+                } else {
+                    item.setValue(code, categoryAttribute.getDefaultValue());
+                }
             } else if (Boolean.TRUE.equals(categoryAttribute.getDefaultDateIsCurrent())) {
                 item.setValue(code, currentTimestamp);
             }
