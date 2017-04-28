@@ -19,6 +19,7 @@ package com.haulmont.cuba.web;
 import com.google.common.collect.Lists;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DevelopmentException;
@@ -44,6 +45,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.web.exception.ExceptionDialog;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebButton;
@@ -66,6 +68,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -1298,6 +1301,31 @@ public class WebWindowManager extends WindowManager {
 
         ui.addWindow(window);
         window.center();
+    }
+
+    @Override
+    public void showExceptionDialog(Throwable throwable) {
+        showExceptionDialog(throwable, null, null);
+    }
+
+    @Override
+    public void showExceptionDialog(Throwable throwable, @Nullable String caption, @Nullable String message) {
+        Preconditions.checkNotNullArgument(throwable);
+
+        Throwable rootCause = ExceptionUtils.getRootCause(throwable);
+        if (rootCause == null) {
+            rootCause = throwable;
+        }
+
+        ExceptionDialog dialog = new ExceptionDialog(rootCause, caption, message);
+        for (com.vaadin.ui.Window window : ui.getWindows()) {
+            if (window.isModal()) {
+                dialog.setModal(true);
+                break;
+            }
+        }
+        ui.addWindow(dialog);
+        dialog.focus();
     }
 
     public WindowBreadCrumbs getBreadCrumbs(ComponentContainer container) {

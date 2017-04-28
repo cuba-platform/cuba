@@ -20,8 +20,9 @@ package com.haulmont.cuba.desktop.sys;
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopConfig;
@@ -44,6 +45,7 @@ import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Frame.MessageMode;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
@@ -55,6 +57,9 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.jdesktop.swingx.JXErrorPane;
+import org.jdesktop.swingx.error.ErrorInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1518,6 +1523,119 @@ public class DesktopWindowManager extends WindowManager {
         }
 
         dialog.setVisible(true);
+    }
+
+    @Override
+    public void showExceptionDialog(Throwable throwable) {
+        showExceptionDialog(throwable, null, null);
+    }
+
+    @Override
+    public void showExceptionDialog(Throwable throwable, @Nullable String caption, @Nullable String message) {
+        Preconditions.checkNotNullArgument(throwable);
+
+        JXErrorPane errorPane = new JXErrorPaneExt();
+        errorPane.setErrorInfo(createErrorInfo(caption, message, throwable));
+
+        final TopLevelFrame mainFrame = App.getInstance().getMainFrame();
+
+        JDialog dialog = JXErrorPane.createDialog(mainFrame, errorPane);
+        dialog.setMinimumSize(new Dimension(600, (int) dialog.getMinimumSize().getHeight()));
+
+        final DialogWindow lastDialogWindow = getLastDialogWindow();
+        dialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                if (lastDialogWindow != null) {
+                    lastDialogWindow.enableWindow();
+                } else {
+                    mainFrame.activate();
+                }
+            }
+        });
+        dialog.setModal(false);
+
+        if (lastDialogWindow != null) {
+            lastDialogWindow.disableWindow(null);
+        } else {
+            mainFrame.deactivate(null);
+        }
+
+        dialog.setVisible(true);
+    }
+
+    protected ErrorInfo createErrorInfo(String caption, String message, Throwable exception) {
+        UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+        Security security = AppBeans.get(Security.NAME);
+        if (userSessionSource.getUserSession() == null
+                || !security.isSpecificPermitted("cuba.gui.showExceptionDetails")) {
+
+            String dialogCaption = StringUtils.isNotEmpty(caption) ? caption : getMessage("errorPane.title");
+            String dialogMessage = StringUtils.isNotEmpty(message) ? message : getMessage("exceptionDialog.contactAdmin");
+
+            return new ErrorInfo(dialogCaption, dialogMessage,null, null, null, null, null);
+        }
+
+        Throwable rootCause = ExceptionUtils.getRootCause(exception);
+        if (rootCause == null)
+            rootCause = exception;
+
+        StringBuilder msg = new StringBuilder();
+        if (rootCause instanceof RemoteException) {
+            RemoteException re = (RemoteException) rootCause;
+            if (!re.getCauses().isEmpty()) {
+                RemoteException.Cause cause = re.getCauses().get(re.getCauses().size() - 1);
+                if (cause.getThrowable() != null)
+                    rootCause = cause.getThrowable();
+                else {
+                    // root cause is not supported by client
+                    String className = cause.getClassName();
+                    if (className != null && className.indexOf('.') > 0) {
+                        className = className.substring(className.lastIndexOf('.') + 1);
+                    }
+                    msg.append(className).append(": ").append(cause.getMessage());
+                }
+            }
+        }
+
+        if (msg.length() == 0) {
+            msg.append(rootCause.getClass().getSimpleName());
+            if (!StringUtils.isBlank(rootCause.getMessage()))
+                msg.append(": ").append(rootCause.getMessage());
+
+            if (rootCause instanceof DevelopmentException) {
+                Map<String, Object> params = new LinkedHashMap<>();
+                if (rootCause instanceof GuiDevelopmentException) {
+                    GuiDevelopmentException guiDevException = (GuiDevelopmentException) rootCause;
+                    if (guiDevException.getFrameId() != null) {
+                        params.put("Frame ID", guiDevException.getFrameId());
+                        try {
+                            WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+                            params.put("XML descriptor",
+                                    windowConfig.getWindowInfo(guiDevException.getFrameId()).getTemplate());
+                        } catch (Exception e) {
+                            params.put("XML descriptor", "not found for " + guiDevException.getFrameId());
+                        }
+                    }
+                }
+                params.putAll(((DevelopmentException) rootCause).getParams());
+
+                if (!params.isEmpty()) {
+                    msg.append("\n\n");
+                    for (Map.Entry<String, Object> entry : params.entrySet()) {
+                        msg.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+                    }
+                }
+            }
+        }
+
+        return new ErrorInfo(getMessage("errorPane.title"), msg.toString(),
+                null, null, rootCause, null, null);
+    }
+
+    protected String getMessage(String key) {
+        Messages messages = AppBeans.get(Messages.NAME);
+        return messages.getMainMessage(key, App.getInstance().getLocale());
     }
 
     /**

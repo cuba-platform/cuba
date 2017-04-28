@@ -1120,6 +1120,22 @@ public abstract class WindowManager {
      */
     public abstract void showOptionDialog(String title, String message, Frame.MessageType messageType, Action[] actions);
 
+    /**
+     * Shows exception dialog with default caption, message and displays stacktrace of given throwable.
+     *
+     * @param throwable throwable
+     */
+    public abstract void showExceptionDialog(Throwable throwable);
+
+    /**
+     * Shows exception dialog with given caption, message and displays stacktrace of given throwable.
+     *
+     * @param throwable throwable
+     * @param caption   dialog caption
+     * @param message   dialog message
+     */
+    public abstract void showExceptionDialog(Throwable throwable, @Nullable String caption, @Nullable String message);
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
