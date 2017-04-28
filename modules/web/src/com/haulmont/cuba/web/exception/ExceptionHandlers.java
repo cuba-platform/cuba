@@ -40,7 +40,7 @@ import java.util.*;
  */
 public class ExceptionHandlers {
 
-    private static Logger log = LoggerFactory.getLogger(ExceptionHandlers.class);
+    private static final Logger log = LoggerFactory.getLogger(ExceptionHandlers.class);
 
     protected App app;
 
@@ -136,7 +136,7 @@ public class ExceptionHandlers {
         Map<String, GenericExceptionHandler> handlerMap = AppBeans.getAll(GenericExceptionHandler.class);
 
         List<GenericExceptionHandler> handlers = new ArrayList<>(handlerMap.values());
-        Collections.sort(handlers, new OrderComparator());
+        handlers.sort(new OrderComparator());
 
         for (GenericExceptionHandler handler : handlers) {
             addHandler(handler);
