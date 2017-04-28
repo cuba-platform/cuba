@@ -60,6 +60,14 @@ public class UserSession implements Serializable {
 
     /**
      * INTERNAL
+     * Used only for kryo serialization
+     */
+    public UserSession() {
+        localAttributes = new ConcurrentHashMap<>();
+    }
+
+    /**
+     * INTERNAL
      */
     public UserSession(UUID id, User user, Collection<Role> roles, Locale locale, boolean system) {
         this.id = id;
