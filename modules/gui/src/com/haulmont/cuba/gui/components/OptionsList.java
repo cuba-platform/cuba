@@ -20,4 +20,13 @@ package com.haulmont.cuba.gui.components;
 public interface OptionsList extends OptionsField {
 
     String NAME = "optionsList";
+
+    /**
+     * Sets visibility for first null element in suggestion popup.
+     */
+    void setNullOptionVisible(boolean nullOptionVisible);
+    /**
+     * @return true if first null element is visible.
+     */
+    boolean isNullOptionVisible();
 }

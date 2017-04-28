@@ -18,6 +18,8 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.OptionsList;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 public class OptionsListLoader extends AbstractOptionsBaseLoader<OptionsList> {
     @Override
@@ -32,5 +34,13 @@ public class OptionsListLoader extends AbstractOptionsBaseLoader<OptionsList> {
 
         loadCaptionProperty(resultComponent, element);
         loadOptionsEnum(resultComponent, element);
+        loadNullOptionVisible(resultComponent, element);
+    }
+
+    protected void loadNullOptionVisible(OptionsList resultComponent, Element element) {
+        String nullOptionVisible = element.attributeValue("nullOptionVisible");
+        if (StringUtils.isNotEmpty(nullOptionVisible)) {
+            resultComponent.setNullOptionVisible(Boolean.parseBoolean(nullOptionVisible));
+        }
     }
 }
