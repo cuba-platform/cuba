@@ -27,8 +27,6 @@ import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingsTools;
-import com.haulmont.cuba.web.auth.CubaAuthProvider;
-import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.sys.LinkHandler;
 import com.haulmont.cuba.web.toolkit.ui.*;
@@ -93,10 +91,7 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
     protected UserSessionSource userSessionSource;
 
     @Inject
-    protected WebAuthConfig webAuthConfig;
-
-    @Inject
-    protected CubaAuthProvider authProvider;
+    protected UserSessionService userSessionService;
 
     protected TestIdManager testIdManager = new TestIdManager();
 
@@ -275,11 +270,10 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
             log.debug("Ping middleware session");
 
             try {
-                UserSessionService service = AppBeans.get(UserSessionService.NAME);
                 UserSession session = app.getConnection().getSession();
                 if (session instanceof ClientUserSession
                         && ((ClientUserSession) session).isAuthenticated()) {
-                    service.getUserSession(session.getId());
+                    userSessionService.getUserSession(session.getId());
                 }
             } catch (Exception e) {
                 app.exceptionHandlers.handle(new com.vaadin.server.ErrorEvent(e));

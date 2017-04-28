@@ -16,38 +16,41 @@
  */
 package com.haulmont.cuba.web.exception;
 
-import com.google.common.collect.Iterables;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DialogAction;
-import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.Connection;
-import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
+import com.haulmont.cuba.web.gui.components.WebButton;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
+import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.server.Page;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+
+import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.setClickShortcut;
 
 /**
  * Handles {@link NoUserSessionException}.
- *
  */
 public class NoUserSessionHandler extends AbstractExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(NoUserSessionHandler.class);
 
     private Locale locale;
-
-    private Window noUserSessionDialog;
 
     public NoUserSessionHandler() {
         super(NoUserSessionException.class.getName());
@@ -62,40 +65,82 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
         try {
             // we may show two or more dialogs if user pressed F5 and we have no valid user session
             // just remove previous dialog and show new
-            if (noUserSessionDialog != null) {
-                app.getAppUI().removeWindow(noUserSessionDialog);
+            List<Window> noUserSessionDialogs = app.getAppUI().getWindows().stream()
+                    .filter(w -> w instanceof NoUserSessionExceptionDialog)
+                    .collect(Collectors.toList());
+            for (Window dialog : noUserSessionDialogs) {
+                app.getAppUI().removeWindow(dialog);
             }
 
-            Messages messages = AppBeans.get(Messages.NAME);
-
-            WebWindowManager wm = app.getWindowManager();
-            wm.showOptionDialog(
-                    messages.getMainMessage("dialogs.Information", locale),
-                    messages.getMainMessage("noUserSession.message", locale),
-                    Frame.MessageType.CONFIRMATION,
-                    new Action[]{new LoginAction()}
-            );
-
-            Collection<Window> windows = app.getAppUI().getWindows();
-            if (!windows.isEmpty()) {
-                noUserSessionDialog = Iterables.getLast(windows);
-            }
+            showNoUserSessionDialog(app);
         } catch (Throwable th) {
             log.error("Unable to handle NoUserSessionException", throwable);
             log.error("Exception in NoUserSessionHandler", th);
         }
     }
 
-    private static class LoginAction extends DialogAction {
-        protected LoginAction() {
-            super(DialogAction.Type.OK);
+    protected void showNoUserSessionDialog(App app) {
+        Messages messages = AppBeans.get(Messages.NAME);
+
+        Window dialog = new NoUserSessionExceptionDialog();
+        dialog.setStyleName("c-nousersession-dialog");
+        dialog.setCaption(messages.getMainMessage("dialogs.Information", locale));
+        dialog.setClosable(false);
+        dialog.setResizable(false);
+        dialog.setModal(true);
+
+        AppUI ui = app.getAppUI();
+
+        if (ui.isTestMode()) {
+            dialog.setCubaId("optionDialog");
+            dialog.setId(ui.getTestIdManager().getTestId("optionDialog"));
         }
 
-        @Override
-        public void actionPerform(Component component) {
-            String url = ControllerUtils.getLocationWithoutParams() + "?restartApp";
+        Label messageLab = new CubaLabel();
+        messageLab.setWidthUndefined();
+        messageLab.setValue(messages.getMainMessage("noUserSession.message", locale));
 
-            Page.getCurrent().open(url, "_self");
+        VerticalLayout layout = new VerticalLayout();
+        layout.setSpacing(true);
+        layout.setWidthUndefined();
+        layout.setStyleName("c-nousersession-dialog-layout");
+        layout.setSpacing(true);
+        dialog.setContent(layout);
+
+        Button reloginBtn = new Button();
+        if (ui.isTestMode()) {
+            reloginBtn.setCubaId("reloginBtn");
+            reloginBtn.setId(ui.getTestIdManager().getTestId("reloginBtn"));
         }
+        reloginBtn.addStyleName(WebButton.ICON_STYLE);
+        reloginBtn.addStyleName("c-primary-action");
+        reloginBtn.addClickListener(event -> relogin());
+        reloginBtn.setCaption(messages.getMainMessage(Type.OK.getMsgKey()));
+
+        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
+        String iconName = thCM.getThemeValue(Type.OK.getIconKey());
+        reloginBtn.setIcon(WebComponentsHelper.getIcon(iconName));
+
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        setClickShortcut(reloginBtn, clientConfig.getCommitShortcut());
+
+        reloginBtn.focus();
+
+        layout.addComponent(messageLab);
+        layout.addComponent(reloginBtn);
+
+        layout.setComponentAlignment(reloginBtn, Alignment.BOTTOM_RIGHT);
+
+        ui.addWindow(dialog);
+
+        dialog.center();
+    }
+
+    protected void relogin() {
+        String url = ControllerUtils.getLocationWithoutParams() + "?restartApp";
+        Page.getCurrent().open(url, "_self");
+    }
+
+    public static class NoUserSessionExceptionDialog extends CubaWindow {
     }
 }

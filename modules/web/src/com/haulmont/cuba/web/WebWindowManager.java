@@ -59,9 +59,9 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.BorderStyle;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.*;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.BooleanUtils;
@@ -1133,6 +1133,7 @@ public class WebWindowManager extends WindowManager {
 
         VerticalLayout layout = new VerticalLayout();
         layout.setStyleName("c-app-message-dialog");
+        layout.setSpacing(true);
         if (messageType.getWidth() != null && messageType.getWidth() == AUTO_SIZE_PX) {
             layout.setWidthUndefined();
         }
@@ -1150,25 +1151,21 @@ public class WebWindowManager extends WindowManager {
         }
         layout.addComponent(messageLab);
 
-        HorizontalLayout buttonsContainer = new HorizontalLayout();
-        buttonsContainer.setSpacing(true);
-
         DialogAction action = new DialogAction(Type.OK);
         Button button = WebComponentsHelper.createButton();
 
         button.setCaption(action.getCaption());
         button.setIcon(WebComponentsHelper.getIcon(action.getIcon()));
         button.addStyleName(WebButton.ICON_STYLE);
-        button.addClickListener((Button.ClickListener) event ->
+        button.addClickListener(event ->
                 vWindow.close()
         );
 
-        buttonsContainer.addComponent(button);
         button.focus();
 
-        layout.addComponent(buttonsContainer);
+        layout.addComponent(button);
 
-        layout.setComponentAlignment(buttonsContainer, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
+        layout.setComponentAlignment(button, Alignment.BOTTOM_RIGHT);
 
         float width;
         DialogParams dialogParams = getDialogParams();
@@ -1250,9 +1247,6 @@ public class WebWindowManager extends WindowManager {
         }
         window.setContent(layout);
 
-        HorizontalLayout actionsBar = new HorizontalLayout();
-        actionsBar.setHeight(-1, Unit.PIXELS);
-
         HorizontalLayout buttonsContainer = new HorizontalLayout();
         buttonsContainer.setSpacing(true);
 
@@ -1296,13 +1290,11 @@ public class WebWindowManager extends WindowManager {
             ((Button) buttonsContainer.getComponent(0)).focus();
         }
 
-        actionsBar.addComponent(buttonsContainer);
-
         layout.addComponent(messageLab);
-        layout.addComponent(actionsBar);
+        layout.addComponent(buttonsContainer);
 
         layout.setExpandRatio(messageLab, 1);
-        layout.setComponentAlignment(actionsBar, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
+        layout.setComponentAlignment(buttonsContainer, Alignment.BOTTOM_RIGHT);
 
         ui.addWindow(window);
         window.center();
