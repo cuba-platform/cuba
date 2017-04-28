@@ -521,8 +521,8 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                     loadValidators(resultComponent, field);
                     loadRequired(resultComponent, field);
                     loadEnable(resultComponent, field);
-                    loadVisible(resultComponent, field);
                 }
+                loadVisible(resultComponent, field);
                 loadEditable(resultComponent, field);
             }
         }
