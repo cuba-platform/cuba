@@ -30,17 +30,17 @@ public class ManagedBeanOperation extends AbstractNotPersistentEntity {
     private static final long serialVersionUID = 4932698715958055857L;
 
     @MetaProperty
-    private String name;
+    protected String name;
 
     @MetaProperty
-    private String returnType;
+    protected String returnType;
 
     @MetaProperty
-    private String description;
+    protected String description;
 
-    private ManagedBeanInfo mbean;
+    protected ManagedBeanInfo mbean;
 
-    private List<ManagedBeanOperationParameter> parameters;
+    protected List<ManagedBeanOperationParameter> parameters;
 
     public String getName() {
         return name;
