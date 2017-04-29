@@ -190,7 +190,7 @@ public class JmxControlBean implements JmxControlAPI {
         return info;
     }
 
-    private ManagedBeanInfo createManagedBeanInfo(JmxInstance jmx, ObjectName name, MBeanInfo info) {
+    protected ManagedBeanInfo createManagedBeanInfo(JmxInstance jmx, ObjectName name, MBeanInfo info) {
         ManagedBeanInfo mbi = new ManagedBeanInfo();
         mbi.setClassName(info.getClassName());
         mbi.setDescription(info.getDescription());
@@ -317,7 +317,7 @@ public class JmxControlBean implements JmxControlAPI {
         for (ManagedBeanOperation op : bean.getOperations()) {
             if (op.getName().equals(operationName)) {
                 List<ManagedBeanOperationParameter> args = op.getParameters();
-                if ((args.isEmpty() && argTypes==null) || args.size()==argTypes.length) {
+                if ((args.isEmpty() && argTypes == null) || args.size() == argTypes.length) {
                     boolean isFound=true;
                     for (int i = 0; i < args.size(); i++) {
                         ManagedBeanOperationParameter arg = args.get(i);
@@ -375,26 +375,23 @@ public class JmxControlBean implements JmxControlAPI {
         checkNotNullArgument(operation.getMbean().getJmxInstance());
 
         //noinspection UnnecessaryLocalVariable
-        Object result = withConnection(operation.getMbean().getJmxInstance(), new JmxAction<Object>() {
-            @Override
-            public Object perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
-                try {
-                    ObjectName name = new ObjectName(operation.getMbean().getObjectName());
+        Object result = withConnection(operation.getMbean().getJmxInstance(), (jmx, connection) -> {
+            try {
+                ObjectName name = new ObjectName(operation.getMbean().getObjectName());
 
-                    String[] types = new String[operation.getParameters().size()];
-                    for (int i = 0; i < operation.getParameters().size(); i++) {
-                        types[i] = operation.getParameters().get(i).getType();
-                    }
-
-                    log.debug(String.format("Invoke method '%s' from '%s' on '%s'",
-                            operation.getName(), name.getCanonicalName(), operation.getMbean().getJmxInstance().getNodeName()));
-                    return connection.invoke(name, operation.getName(), parameterValues, types);
-                } catch (Exception e) {
-                    log.warn(String.format("Error invoking method '%s' from '%s' on '%s'",
-                            operation.getName(), operation.getMbean().getObjectName(),
-                            operation.getMbean().getJmxInstance().getNodeName()), e);
-                    throw e;
+                String[] types = new String[operation.getParameters().size()];
+                for (int i = 0; i < operation.getParameters().size(); i++) {
+                    types[i] = operation.getParameters().get(i).getJavaType();
                 }
+
+                log.debug(String.format("Invoke method '%s' from '%s' on '%s'",
+                        operation.getName(), name.getCanonicalName(), operation.getMbean().getJmxInstance().getNodeName()));
+                return connection.invoke(name, operation.getName(), parameterValues, types);
+            } catch (Exception e) {
+                log.warn(String.format("Error invoking method '%s' from '%s' on '%s'",
+                        operation.getName(), operation.getMbean().getObjectName(),
+                        operation.getMbean().getJmxInstance().getNodeName()), e);
+                throw e;
             }
         });
 
@@ -446,7 +443,7 @@ public class JmxControlBean implements JmxControlAPI {
         return domains;
     }
 
-    private void loadOperations(ManagedBeanInfo mbean, MBeanInfo info) {
+    protected void loadOperations(ManagedBeanInfo mbean, MBeanInfo info) {
         List<ManagedBeanOperation> opList = new ArrayList<>();
         MBeanOperationInfo[] operations = info.getOperations();
 
@@ -469,6 +466,7 @@ public class JmxControlBean implements JmxControlAPI {
                     ManagedBeanOperationParameter p = new ManagedBeanOperationParameter();
                     p.setName(pinfo.getName());
                     p.setType(cleanType(pinfo.getType()));
+                    p.setJavaType(pinfo.getType());
                     p.setDescription(pinfo.getDescription());
                     p.setOperation(o);
 
@@ -488,14 +486,14 @@ public class JmxControlBean implements JmxControlAPI {
         mbean.setOperations(opList);
     }
 
-    private String cleanType(String type) {
+    protected String cleanType(String type) {
         if (type != null && type.startsWith("[L") && type.endsWith(";")) {
             return type.substring(2, type.length() - 1) + "[]";
         }
         return type;
     }
 
-    private void setSerializableValue(ManagedBeanAttribute mba, Object value) {
+    protected void setSerializableValue(ManagedBeanAttribute mba, Object value) {
         if (value instanceof Serializable && !(value instanceof Proxy)) {
             mba.setValue(value);
         } else if (value != null) {
@@ -503,14 +501,14 @@ public class JmxControlBean implements JmxControlAPI {
         }
     }
 
-    private String getDefaultNodeName(@SuppressWarnings("unused") JmxInstance instance) {
+    protected String getDefaultNodeName(@SuppressWarnings("unused") JmxInstance instance) {
         return "Unknown JMX interface";
     }
 
     /**
      * Sorts domains alphabetically by name *
      */
-    private static class DomainComparator implements Comparator<ManagedBeanDomain> {
+    protected static class DomainComparator implements Comparator<ManagedBeanDomain> {
         @Override
         public int compare(ManagedBeanDomain mbd1, ManagedBeanDomain mbd2) {
             return mbd1 != null && mbd1.getName() != null
@@ -522,7 +520,7 @@ public class JmxControlBean implements JmxControlAPI {
     /**
      * Sorts mbeans alphabetically by name *
      */
-    private static class MBeanComparator implements Comparator<ManagedBeanInfo> {
+    protected static class MBeanComparator implements Comparator<ManagedBeanInfo> {
         @Override
         public int compare(ManagedBeanInfo mbd1, ManagedBeanInfo mbd2) {
             return mbd1 != null && mbd1.getPropertyList() != null
@@ -534,7 +532,7 @@ public class JmxControlBean implements JmxControlAPI {
     /**
      * Sorts attributes alphabetically by name *
      */
-    private static class AttributeComparator implements Comparator<ManagedBeanAttribute> {
+    protected static class AttributeComparator implements Comparator<ManagedBeanAttribute> {
         @Override
         public int compare(ManagedBeanAttribute mbd1, ManagedBeanAttribute mbd2) {
             return mbd1 != null && mbd1.getName() != null
@@ -546,7 +544,7 @@ public class JmxControlBean implements JmxControlAPI {
     /**
      * Sorts operations alphabetically by name *
      */
-    private static class OperationComparator implements Comparator<ManagedBeanOperation> {
+    protected static class OperationComparator implements Comparator<ManagedBeanOperation> {
         @Override
         public int compare(ManagedBeanOperation o1, ManagedBeanOperation o2) {
             return o1 != null && o1.getName() != null
