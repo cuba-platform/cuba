@@ -34,9 +34,11 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -46,7 +48,7 @@ import java.util.*;
  * @see com.haulmont.cuba.security.app.LoginServiceBean
  */
 @Component(LoginWorker.NAME)
-public class LoginWorkerBean implements LoginWorker {
+public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordered {
 
     private final Logger log = LoggerFactory.getLogger(LoginWorkerBean.class);
 
@@ -412,17 +414,7 @@ public class LoginWorkerBean implements LoginWorker {
 
     @Override
     public UserSession getSession(UUID sessionId) {
-        UserSession session = userSessionManager.findSession(sessionId);
-        if (session == null && sessionId.equals(configuration.getConfig(GlobalConfig.class).getAnonymousSessionId())) {
-            synchronized (this) {
-                session = userSessionManager.findSession(sessionId);
-                if (session == null) {
-                    initializeAnonymousSession();
-                    session = userSessionManager.findSession(sessionId);
-                }
-            }
-        }
-        return session;
+        return userSessionManager.findSession(sessionId);
     }
 
     @Override
@@ -498,8 +490,13 @@ public class LoginWorkerBean implements LoginWorker {
         }
     }
 
+    @PostConstruct
+    public void init() {
+        AppContext.addListener(this);
+    }
+
     protected void initializeAnonymousSession() {
-        log.info("Initializing anonymous session");
+        log.debug("Initialize anonymous session");
 
         try {
             UserSession session = loginAnonymous();
@@ -508,5 +505,19 @@ public class LoginWorkerBean implements LoginWorker {
         } catch (LoginException e) {
             log.error("Unable to login anonymous session", e);
         }
+    }
+
+    @Override
+    public void applicationStarted() {
+        initializeAnonymousSession();
+    }
+
+    @Override
+    public void applicationStopped() {
+    }
+
+    @Override
+    public int getOrder() {
+        return LOWEST_PLATFORM_PRECEDENCE - 110;
     }
 }
