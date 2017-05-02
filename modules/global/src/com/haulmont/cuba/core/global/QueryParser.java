@@ -109,6 +109,10 @@ public interface QueryParser {
             }
         }
 
+        public String getVariableName() {
+            return variableName;
+        }
+
         public boolean isSelectedPath() {
             return selectedPath;
         }
