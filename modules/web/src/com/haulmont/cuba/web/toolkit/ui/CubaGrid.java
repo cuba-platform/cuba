@@ -16,6 +16,12 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.security.entity.ConstraintOperationType;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.vaadin.data.Container;
 import com.vaadin.data.Validatable;
 import com.vaadin.data.Validator;
@@ -38,6 +44,10 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
     protected CubaGridEditorFieldFactory editorFieldFactory;
 
     protected Collection<Field<?>> editorFields = new ArrayList<>();
+
+    protected CollectionDatasource collectionDatasource;
+
+    protected Security security = AppBeans.get(Security.NAME);
 
     public CubaGrid(CubaGridEditorFieldFactory editorFieldFactory) {
         this(null, null, editorFieldFactory);
@@ -65,6 +75,14 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
         datasourceExtension.refreshCache();
     }
 
+    public CollectionDatasource getCollectionDatasource() {
+        return collectionDatasource;
+    }
+
+    public void setCollectionDatasource(CollectionDatasource collectionDatasource) {
+        this.collectionDatasource = collectionDatasource;
+    }
+
     @Override
     protected void doEditItem() {
         clearFields(editorFields);
@@ -83,6 +101,17 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
         for (Field<?> f : getEditorFields()) {
             f.markAsDirtyRecursive();
         }
+    }
+
+    @Override
+    protected boolean isEditingPermitted(Object id) {
+        if (collectionDatasource != null) {
+            //noinspection unchecked
+            Entity entity = collectionDatasource.getItem(id);
+            return security.isEntityOpPermitted(collectionDatasource.getMetaClass(), EntityOp.UPDATE) &&
+                    (entity != null && security.isPermitted(entity, ConstraintOperationType.UPDATE));
+        }
+        return true;
     }
 
     protected void clearFields(Collection<Field<?>> fields) {

@@ -734,6 +734,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
 
         assignAutoDebugId();
+
+        component.setCollectionDatasource(datasource);
     }
 
     protected void addInitialColumns(CollectionDatasource datasource) {
@@ -3036,7 +3038,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             if (gridColumn != null) {
                 return gridColumn.isEditable();
             }
-            return editable && !generated && !isRepresentsCollection();
+            return editable && !generated && !isRepresentsCollection() && isEditingPermitted();
         }
 
         protected boolean isRepresentsCollection() {
@@ -3048,11 +3050,21 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             return false;
         }
 
+        protected boolean isEditingPermitted() {
+            if (propertyPath != null) {
+                MetaClass metaClass = propertyPath.getMetaProperty().getDomain();
+                return owner.security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString());
+            }
+            return true;
+        }
+
         @Override
         public void setEditable(boolean editable) {
             this.editable = editable;
             if (gridColumn != null) {
-                gridColumn.setEditable(editable && !generated  && !isRepresentsCollection());
+                gridColumn.setEditable(editable && !generated
+                        && !isRepresentsCollection()
+                        && isEditingPermitted());
             }
         }
 
