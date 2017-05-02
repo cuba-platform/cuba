@@ -133,6 +133,7 @@ public class CubaManagedTabSheet extends CssLayout
         closeHandler.onTabClose(this, tabContent);
     }
 
+    @Override
     public TabSheetBehaviour getTabSheetBehaviour() {
         return behaviour;
     }
@@ -608,7 +609,8 @@ public class CubaManagedTabSheet extends CssLayout
 
         @Override
         public void setTabTestId(String tabId, String testId) {
-            tabSheet.tabbedHeader.setTestId(((TabImpl) tabSheet.tabIds.get(tabId)).getTabbarTab(), testId);
+            TabImpl tabImpl = (TabImpl) tabSheet.tabIds.get(tabId);
+            tabSheet.tabbedHeader.setTestId(tabImpl.getTabbarTab(), testId);
         }
 
         @Override

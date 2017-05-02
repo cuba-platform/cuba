@@ -41,7 +41,7 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
 
     protected Stack<Component> openedComponents = new Stack<>();
 
-    protected HashSet<Action.Handler> actionHandlers = new HashSet<>();
+    protected Set<Action.Handler> actionHandlers = null; // lazily initialized
 
     protected KeyMapper<Action> actionMapper = null;
 
@@ -56,7 +56,7 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
         public void onTabContextMenu(int tabIndex) {
             Tab tab = getTab(tabIndex);
             if (tab != null) {
-                HashSet<Action> actions = getActions(CubaTabSheet.this.getActionTarget(tab));
+                Set<Action> actions = getActions(CubaTabSheet.this.getActionTarget(tab));
 
                 if (!actions.isEmpty()) {
                     actionMapper = new KeyMapper<>();
@@ -81,7 +81,14 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
             if (tab != null) {
                 if (actionMapper != null) {
                     Action action = actionMapper.get(actionKey);
-                    Action.Handler[] handlers = actionHandlers.toArray(new Action.Handler[actionHandlers.size()]);
+                    Action.Handler[] handlers;
+
+                    if (actionHandlers != null) {
+                        handlers = actionHandlers.toArray(new Action.Handler[actionHandlers.size()]);
+                    } else {
+                        handlers = new Action.Handler[0];
+                    }
+
                     for (Action.Handler handler : handlers) {
                         handler.handleAction(action, this, CubaTabSheet.this.getActionTarget(tab));
                     }
@@ -114,7 +121,7 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
         behaviour = new TabSheetBehaviourImpl(this);
     }
 
-    protected HashSet<Action> getActions(Component actionTarget) {
+    protected Set<Action> getActions(Component actionTarget) {
         HashSet<Action> actions = new LinkedHashSet<>();
         if (actionHandlers != null) {
             for (Action.Handler handler : actionHandlers) {
@@ -136,7 +143,7 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
     public void beforeClientResponse(boolean initial) {
         super.beforeClientResponse(initial);
 
-        getState().hasActionsHandlers = !actionHandlers.isEmpty();
+        getState().hasActionsHandlers = actionHandlers != null && !actionHandlers.isEmpty();
     }
 
     public Component getPreviousTab(Component tab) {
@@ -203,7 +210,12 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
 
     @Override
     public void removeComponent(Component c) {
+        Tab tab = tabs.get(c);
+
         super.removeComponent(c);
+
+        tabIds.inverse().remove(tab);
+
         if (c != null && closeHandlers != null) {
             closeHandlers.remove(c);
             if (closeHandlers.isEmpty()) {
@@ -213,17 +225,49 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
     }
 
     @Override
+    public void replaceComponent(Component oldComponent, Component newComponent) {
+        Tab oldTab = tabs.get(oldComponent);
+
+        super.replaceComponent(oldComponent, newComponent);
+
+        Tab newTab = tabs.get(newComponent);
+
+        String oldTabId = tabIds.inverse().get(oldTab);
+        String newTabId = tabIds.inverse().get(newTab);
+
+        if (oldTabId != null) {
+            tabIds.remove(oldTabId);
+            if (newTab != null) {
+                tabIds.put(oldTabId, newTab);
+            }
+        }
+        if (newTabId != null) {
+            tabIds.remove(newTabId);
+            if (oldTab != null) {
+                tabIds.put(newTabId, oldTab);
+            }
+        }
+    }
+
+    @Override
     public void addActionHandler(Action.Handler actionHandler) {
+        if (actionHandlers == null) {
+            actionHandlers = new LinkedHashSet<>();
+        }
         actionHandlers.add(actionHandler);
     }
 
     @Override
     public void removeActionHandler(Action.Handler actionHandler) {
-        actionHandlers.remove(actionHandler);
+        if (actionHandlers != null) {
+            actionHandlers.remove(actionHandler);
+        }
     }
 
     public void moveTab(Component c, int position) {
         Tab oldTab = getTab(c);
+        String tabId = tabIds.inverse().get(oldTab);
+
         String tabCubaId = getCubaId(oldTab);
 
         // do not detach close handler
@@ -241,6 +285,11 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
         newTab.setStyleName(oldTab.getStyleName());
 
         setCubaId(newTab, tabCubaId);
+
+        if (tabId != null) {
+            tabIds.remove(tabId);
+            tabIds.put(tabId, newTab);
+        }
     }
 
     public void setTabCloseHandler(Component tabContent, TabCloseHandler closeHandler) {
@@ -337,7 +386,8 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
 
         @Override
         public String getTab(int position) {
-            return tabSheet.getTab(position).getId();
+            Tab tab = tabSheet.getTab(position);
+            return tabSheet.tabIds.inverse().get(tab);
         }
 
         @Override
