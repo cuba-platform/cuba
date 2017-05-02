@@ -751,7 +751,7 @@ public class RdbmsStore implements DataStore {
             for (QueryParser.QueryPath path : queryParser.getQueryPaths()) {
                 if (path.isSelectedPath()) {
                     MetaClass metaClass = metadata.getClassNN(path.getEntityName());
-                    if (!isEntityAttrViewPermitted(metaClass.getPropertyPath(path.getPropertyPath()))) {
+                    if (!Objects.equals(path.getPropertyPath(), path.getVariableName()) && !isEntityAttrViewPermitted(metaClass.getPropertyPath(path.getPropertyPath()))) {
                         indexes.add(index);
                     }
                     index++;

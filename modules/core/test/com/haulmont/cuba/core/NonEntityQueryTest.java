@@ -176,8 +176,8 @@ public class NonEntityQueryTest {
     public void testScalars() throws Exception {
         ValueLoadContext context = ValueLoadContext.create()
                 .setQuery(ValueLoadContext.createQuery("select u.id, u.login from sec$User u where u.id = :id1 or u.id = :id2 order by u.login")
-                    .setParameter("id1", TestSupport.ADMIN_USER_ID)
-                    .setParameter("id2", TestSupport.ANONYMOUS_USER_ID))
+                        .setParameter("id1", TestSupport.ADMIN_USER_ID)
+                        .setParameter("id2", TestSupport.ANONYMOUS_USER_ID))
                 .addProperty("user1Id").addProperty("login");
 
         List<KeyValueEntity> list = dataManager.loadValues(context);
@@ -212,6 +212,21 @@ public class NonEntityQueryTest {
         assertEquals(1, list.size());
         KeyValueEntity e = list.get(0);
         assertEquals(Long.valueOf(2), e.getValue("count"));
+    }
+
+    @Test
+    public void testIdentificationVariable() throws Exception {
+        ValueLoadContext context = ValueLoadContext.create();
+        ValueLoadContext.Query query = context.setQueryString("select u, u.id from sec$User u where u.id = :id1");
+        query.setParameter("id1", TestSupport.ADMIN_USER_ID);
+        context.addProperty("user");
+        context.addProperty("id");
+
+        List<KeyValueEntity> list = dataManager.secure().loadValues(context);
+
+        assertEquals(1, list.size());
+        KeyValueEntity e = list.get(0);
+        assertEquals(TestSupport.ADMIN_USER_ID, ((User) e.getValue("user")).getId());
     }
 
     @Test
@@ -329,7 +344,7 @@ public class NonEntityQueryTest {
             List<KeyValueEntity> list = dataManager.secure().loadValues(context);
             assertEquals(1, list.size());
 
-            context  = ValueLoadContext.create();
+            context = ValueLoadContext.create();
             context.setQueryString("select s.name, sn.viewXml from sys$Server s, sys$EntitySnapshot sn");
             context.addProperty("name");
             context.addProperty("viewXml");
@@ -364,7 +379,7 @@ public class NonEntityQueryTest {
             } catch (RowLevelSecurityException e) {
             }
 
-            context  = ValueLoadContext.create();
+            context = ValueLoadContext.create();
             context.setQueryString("select s.name, sn.viewXml from sys$Server s, sys$EntitySnapshot sn");
             context.addProperty("name");
             context.addProperty("viewXml");
@@ -378,4 +393,28 @@ public class NonEntityQueryTest {
         }
     }
 
+    @Test
+    public void testIdentificationVariableDeniedSecurity() throws Exception {
+        ConfigStorageService configStorageService = AppBeans.get(ConfigStorageService.class);
+        configStorageService.setDbProperty("cuba.disableLoadValuesIfConstraints", "true");
+
+        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
+        UserSession userSession = lw.login(USER_NAME_1, passwordEncryption.getPlainHash(USER_PASSWORD), Locale.getDefault());
+        assertNotNull(userSession);
+
+        UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+        UserSession savedUserSession = uss.getUserSession();
+        ((TestUserSessionSource) uss).setUserSession(userSession);
+        try {
+            ValueLoadContext context = ValueLoadContext.create();
+            context.setQueryString("select s from sys$EntitySnapshot s");
+            context.addProperty("snapshot");
+
+            List result = dataManager.secure().loadValues(context);
+
+            assertTrue(result.isEmpty());
+        } finally {
+            ((TestUserSessionSource) uss).setUserSession(savedUserSession);
+        }
+    }
 }
