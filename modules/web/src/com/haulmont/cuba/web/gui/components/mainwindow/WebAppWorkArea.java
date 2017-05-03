@@ -286,7 +286,7 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         return state;
     }
 
-    // Allows Tabs reordering, do not support component drop to Tabs panel
+    // Allows Tabs reordering, do not support component / text drop to Tabs panel
     public static class TabSheetReorderingDropHandler extends DefaultTabSheetDropHandler {
         @Override
         protected void handleDropFromAbsoluteParentLayout(DragAndDropEvent event) {
@@ -295,6 +295,11 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
 
         @Override
         protected void handleDropFromLayout(DragAndDropEvent event) {
+            // do nothing
+        }
+
+        @Override
+        protected void handleHTML5Drop(DragAndDropEvent event) {
             // do nothing
         }
     }
