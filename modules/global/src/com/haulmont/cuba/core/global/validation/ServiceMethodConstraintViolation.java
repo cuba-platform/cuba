@@ -16,8 +16,6 @@
 
 package com.haulmont.cuba.core.global.validation;
 
-import org.hibernate.validator.internal.engine.path.PathImpl;
-
 import javax.validation.ConstraintViolation;
 import javax.validation.Path;
 import javax.validation.ValidationException;
@@ -30,8 +28,9 @@ public class ServiceMethodConstraintViolation implements ConstraintViolation<Obj
     private String messageTemplate;
     private Object invalidValue;
     private ConstraintDescriptor<?> constraintDescriptor;
-    private final Object[] executableParameters;
-    private final Object executableReturnValue;
+    private Object[] executableParameters;
+    private Object executableReturnValue;
+    private Path propertyPath;
 
     public ServiceMethodConstraintViolation(Class serviceInterface, ConstraintViolation violation) {
         this.message = violation.getMessage();
@@ -41,6 +40,7 @@ public class ServiceMethodConstraintViolation implements ConstraintViolation<Obj
         this.executableParameters = violation.getExecutableParameters();
         this.executableReturnValue = violation.getExecutableReturnValue();
         this.rootBeanClass = serviceInterface;
+        this.propertyPath = violation.getPropertyPath();
     }
 
     @Override
@@ -58,8 +58,9 @@ public class ServiceMethodConstraintViolation implements ConstraintViolation<Obj
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Class getRootBeanClass() {
+    public Class<Object> getRootBeanClass() {
         return rootBeanClass;
     }
 
@@ -80,7 +81,7 @@ public class ServiceMethodConstraintViolation implements ConstraintViolation<Obj
 
     @Override
     public Path getPropertyPath() {
-        return PathImpl.createRootPath();
+        return propertyPath;
     }
 
     @Override
@@ -94,7 +95,7 @@ public class ServiceMethodConstraintViolation implements ConstraintViolation<Obj
     }
 
     @Override
-    public Object unwrap(Class type) {
+    public <U> U unwrap(Class<U> type) {
         throw new ValidationException("Unwrap is unsupported");
     }
 
