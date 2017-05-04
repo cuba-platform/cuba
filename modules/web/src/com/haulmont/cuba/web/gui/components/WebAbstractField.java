@@ -269,8 +269,8 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField>
         this.editable = editable;
 
         boolean parentEditable = true;
-        if (parent instanceof Editable) {
-            parentEditable = ((Editable) parent).isEditable();
+        if (parent instanceof ChildEditableController) {
+            parentEditable = ((ChildEditableController) parent).isEditable();
         }
         boolean finalEditable = parentEditable && editable;
 
