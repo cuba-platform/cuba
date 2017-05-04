@@ -508,6 +508,12 @@ public interface Component {
     }
 
     /**
+     * Component that manages editable property of child components.
+     */
+    interface ChildEditableController extends Editable {
+    }
+
+    /**
      * Event that is fired when "editable" property of Editable component has been changed.
      */
     class EditableChangeEvent extends EventObject {

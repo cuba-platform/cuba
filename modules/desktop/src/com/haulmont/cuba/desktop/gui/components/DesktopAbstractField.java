@@ -225,8 +225,8 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
         this.editable = editable;
 
         boolean parentEditable = true;
-        if (parent instanceof Editable) {
-            parentEditable = ((Editable) parent).isEditable();
+        if (parent instanceof ChildEditableController) {
+            parentEditable = ((ChildEditableController) parent).isEditable();
         }
         boolean finalEditable = parentEditable && editable;
 
