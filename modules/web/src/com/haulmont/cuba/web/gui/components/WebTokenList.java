@@ -587,6 +587,15 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         }
 
         @Override
+        public boolean isEmpty() {
+            if (datasource != null) {
+                return datasource.getItems().isEmpty();
+            }
+
+            return super.isEmpty();
+        }
+
+        @Override
         protected Component initContent() {
             return composition;
         }
