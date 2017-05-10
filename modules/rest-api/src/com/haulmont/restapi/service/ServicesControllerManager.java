@@ -84,7 +84,7 @@ public class ServicesControllerManager {
 
     @Nullable
     public ServiceCallResult invokeServiceMethodPost(String serviceName, String methodName, String paramsJson, String modelVersion) {
-        Map<String, String> paramsMap = parseParamsJson(paramsJson);
+        Map<String, String> paramsMap = restParseUtils.parseParamsJson(paramsJson);
         List<String> paramNames = new ArrayList<>(paramsMap.keySet());
         List<String> paramValuesStr = new ArrayList<>(paramsMap.values());
         return _invokeServiceMethod(serviceName, methodName, paramNames, paramValuesStr, modelVersion);
@@ -102,28 +102,6 @@ public class ServicesControllerManager {
                     HttpStatus.NOT_FOUND);
         }
         return serviceInfo;
-    }
-
-    private Map<String, String> parseParamsJson(String paramsJson) {
-        Map<String, String> result = new LinkedHashMap<>();
-        if (Strings.isNullOrEmpty(paramsJson)) return result;
-
-        JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = jsonParser.parse(paramsJson).getAsJsonObject();
-
-        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-            String paramName = entry.getKey();
-            JsonElement paramValue = entry.getValue();
-            if (paramValue.isJsonNull()) {
-                result.put(paramName, null);
-            } else if (paramValue.isJsonPrimitive()) {
-                result.put(paramName, paramValue.getAsString());
-            } else {
-                result.put(paramName, paramValue.toString());
-            }
-        }
-
-        return result;
     }
 
     @Nullable

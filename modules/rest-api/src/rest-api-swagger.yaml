@@ -779,11 +779,56 @@ paths:
           schema:
             $ref: '#/definitions/error'
 
+    post:
+      tags:
+        - Queries
+      summary: Execute a query
+      description: |
+        Executes a predefined query. Query parameters must be passed in the request body as JSON map.
+      responses:
+        200:
+          description: Success. A list of entitie is returned in the response body.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/entityFull'
+        403:
+          description: Forbidden. The user doesn't have permissions to read the entity.
+          schema:
+            $ref: '#/definitions/error'
+        404:
+          description: |
+            MetaClass not found or query with the given name not found
+          schema:
+            $ref: '#/definitions/error'
+
   /queries/{entityName}/{queryName}/count:
     parameters:
       - $ref: '#/parameters/entityNameParam'
       - $ref: '#/parameters/queryNameParam'
     get:
+      tags:
+        - Queries
+      summary: Return a number of entities in query result
+      description: |
+        Returns a number of entities that matches the query. You can use the `all` keyword for the `queryNameParam`
+        to get the number of all available entities.
+      responses:
+        200:
+          description: Success
+          schema:
+            title: Count
+            type: integer
+        403:
+          description: Forbidden. The user doesn't have permissions to read the entity.
+          schema:
+            $ref: '#/definitions/error'
+        404:
+          description: |
+            MetaClass not found or query with the given name not found
+          schema:
+            $ref: '#/definitions/error'
+    post:
       tags:
         - Queries
       summary: Return a number of entities in query result

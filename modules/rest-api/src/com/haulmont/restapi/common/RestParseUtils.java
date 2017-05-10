@@ -16,7 +16,11 @@
 
 package com.haulmont.restapi.common;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
@@ -26,14 +30,13 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.restapi.transform.JsonTransformationDirection;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 /**
  */
@@ -49,7 +52,7 @@ public class RestParseUtils {
     @Inject
     protected Metadata metadata;
 
-    public Object toObject(Type type, String value, String modelVersion) throws ParseException {
+    public Object toObject(Type type, String value, @Nullable String modelVersion) throws ParseException {
         if (value == null) return null;
         Class clazz;
         Class argumentTypeClass = null;
@@ -128,5 +131,27 @@ public class RestParseUtils {
     public String serialize(Object instance) {
         Gson gson = new Gson();
         return gson.toJson(instance);
+    }
+
+    public Map<String, String> parseParamsJson(String paramsJson) {
+        Map<String, String> result = new LinkedHashMap<>();
+        if (Strings.isNullOrEmpty(paramsJson)) return result;
+
+        JsonParser jsonParser = new JsonParser();
+        JsonObject jsonObject = jsonParser.parse(paramsJson).getAsJsonObject();
+
+        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+            String paramName = entry.getKey();
+            JsonElement paramValue = entry.getValue();
+            if (paramValue.isJsonNull()) {
+                result.put(paramName, null);
+            } else if (paramValue.isJsonPrimitive()) {
+                result.put(paramName, paramValue.getAsString());
+            } else {
+                result.put(paramName, paramValue.toString());
+            }
+        }
+
+        return result;
     }
 }

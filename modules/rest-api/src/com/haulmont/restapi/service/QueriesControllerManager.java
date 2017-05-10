@@ -17,6 +17,9 @@
 package com.haulmont.restapi.service;
 
 import com.google.common.base.Strings;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
@@ -30,6 +33,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.restapi.common.RestControllerUtils;
+import com.haulmont.restapi.common.RestParseUtils;
 import com.haulmont.restapi.exception.RestAPIException;
 import com.haulmont.restapi.config.RestQueriesConfiguration;
 import com.haulmont.restapi.transform.JsonTransformationDirection;
@@ -40,6 +44,7 @@ import org.springframework.util.ClassUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
@@ -68,15 +73,35 @@ public class QueriesControllerManager {
     @Inject
     protected PersistenceManagerClient persistenceManagerClient;
 
-    public String executeQuery(String entityName,
-                               String queryName,
-                               @Nullable Integer limit,
-                               @Nullable Integer offset,
-                               @Nullable String viewName,
-                               @Nullable Boolean returnNulls,
-                               @Nullable Boolean dynamicAttributes,
-                               @Nullable String version,
-                               Map<String, String> params) {
+    @Inject
+    protected RestParseUtils restParseUtils;
+
+    public String executeQueryGet(String entityName,
+                                  String queryName,
+                                  @Nullable Integer limit,
+                                  @Nullable Integer offset,
+                                  @Nullable String viewName,
+                                  @Nullable Boolean returnNulls,
+                                  @Nullable Boolean dynamicAttributes,
+                                  @Nullable String version,
+                                  Map<String, String> params) {
+        return _executeQuery(entityName, queryName, limit, offset, viewName, returnNulls, dynamicAttributes, version, params);
+    }
+
+    public String executeQueryPost(String entityName,
+                                  String queryName,
+                                  @Nullable Integer limit,
+                                  @Nullable Integer offset,
+                                  @Nullable String viewName,
+                                  @Nullable Boolean returnNulls,
+                                  @Nullable Boolean dynamicAttributes,
+                                  @Nullable String version,
+                                  String paramsJson) {
+        Map<String, String> paramsMap = restParseUtils.parseParamsJson(paramsJson);
+        return _executeQuery(entityName, queryName, limit, offset, viewName, returnNulls, dynamicAttributes, version, paramsMap);
+    }
+
+    protected String _executeQuery(String entityName, String queryName, @Nullable Integer limit, @Nullable Integer offset, @Nullable String viewName, @Nullable Boolean returnNulls, @Nullable Boolean dynamicAttributes, @Nullable String version, Map<String, String> params) {
         LoadContext<Entity> ctx;
         entityName = restControllerUtils.transformEntityNameIfRequired(entityName, version, JsonTransformationDirection.FROM_VERSION);
         try {
@@ -104,10 +129,22 @@ public class QueriesControllerManager {
         return json;
     }
 
-    public String getCount(String entityName,
-                           String queryName,
-                           String version,
-                           Map<String, String> params) {
+    public String getCountGet(String entityName,
+                              String queryName,
+                              String version,
+                              Map<String, String> params) {
+        return _getCount(entityName, queryName, version, params);
+    }
+
+    public String getCountPost(String entityName,
+                              String queryName,
+                              String version,
+                              String paramsJson) {
+        Map<String, String> paramsMap = restParseUtils.parseParamsJson(paramsJson);
+        return _getCount(entityName, queryName, version, paramsMap);
+    }
+
+    protected String _getCount(String entityName, String queryName, String version, Map<String, String> params) {
         entityName = restControllerUtils.transformEntityNameIfRequired(entityName, version, JsonTransformationDirection.FROM_VERSION);
         LoadContext<Entity> ctx;
         try {
@@ -180,6 +217,20 @@ public class QueriesControllerManager {
     }
 
     protected Object toObject(Class clazz, String value) throws ParseException {
+        if (clazz.isArray()) {
+            Class componentType = clazz.getComponentType();
+            JsonParser jsonParser = new JsonParser();
+            JsonArray jsonArray = jsonParser.parse(value).getAsJsonArray();
+            List result = new ArrayList();
+            for (JsonElement jsonElement : jsonArray) {
+                String stringValue = (jsonElement.isJsonPrimitive() && jsonElement.getAsJsonPrimitive().isString()) ?
+                        jsonElement.getAsJsonPrimitive().getAsString() :
+                        jsonElement.toString();
+                Object arrayElementValue = toObject(componentType, stringValue);
+                result.add(arrayElementValue);
+            }
+            return result;
+        }
         if (String.class == clazz) return value;
         if (Integer.class == clazz || Integer.TYPE == clazz
                 || Byte.class == clazz || Byte.TYPE == clazz
