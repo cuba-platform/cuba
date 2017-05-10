@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.data;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.web.gui.components.WebDataGrid.CollectionDsListenersWrapper;
 import com.vaadin.data.Container;
 
 import java.util.Collection;
@@ -27,16 +28,23 @@ import java.util.List;
 import static com.haulmont.cuba.gui.data.CollectionDatasource.Sortable.Order;
 import static com.haulmont.cuba.gui.data.CollectionDatasource.Sortable.SortInfo;
 
-public class SortableIndexedCollectionDsWrapper extends IndexedCollectionDsWrapper implements Container.Sortable {
+public class SortableDataGridIndexedCollectionDsWrapper
+        extends
+            DataGridIndexedCollectionDsWrapper
+        implements
+            Container.Sortable {
 
-    public SortableIndexedCollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
-        super(datasource, autoRefresh);
+    public SortableDataGridIndexedCollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh,
+                                                      CollectionDsListenersWrapper collectionDsListenersWrapper) {
+        super(datasource, autoRefresh, collectionDsListenersWrapper);
     }
 
     @SuppressWarnings("unchecked")
-    public SortableIndexedCollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties,
-                                              boolean autoRefresh) {
-        super(datasource, properties, autoRefresh);
+    public SortableDataGridIndexedCollectionDsWrapper(CollectionDatasource datasource,
+                                                      Collection<MetaPropertyPath> properties,
+                                                      boolean autoRefresh,
+                                                      CollectionDsListenersWrapper collectionDsListenersWrapper) {
+        super(datasource, properties, autoRefresh, collectionDsListenersWrapper);
     }
 
     @Override
