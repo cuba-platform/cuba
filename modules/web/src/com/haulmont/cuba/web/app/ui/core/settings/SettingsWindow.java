@@ -16,13 +16,15 @@
  */
 package com.haulmont.cuba.web.app.ui.core.settings;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.TimeZones;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserManagementService;
@@ -120,13 +122,13 @@ public class SettingsWindow extends AbstractWindow {
 
         initTimeZoneFields();
 
-        final User user = userSession.getUser();
+        User user = userSession.getUser();
         changePasswordBtn.setAction(
                 new AbstractAction("changePassw") {
                     @Override
                     public void actionPerform(Component component) {
-                        Window passwordDialog = openWindow("sec$User.changePassword", WindowManager.OpenType.DIALOG,
-                                Collections.<String, Object>singletonMap("currentPasswordRequired", true));
+                        Window passwordDialog = openWindow("sec$User.changePassword", OpenType.DIALOG,
+                                ParamsMap.of("currentPasswordRequired", true));
                         passwordDialog.addCloseListener(actionId -> {
                             // move focus back to window
                             changePasswordBtn.requestFocus();
@@ -139,25 +141,6 @@ public class SettingsWindow extends AbstractWindow {
             changePasswordBtn.setEnabled(false);
         }
 
-        AbstractAction commitAction = new AbstractAction("ok", clientConfig.getCommitShortcut()) {
-            @Override
-            public void actionPerform(Component component) {
-                if (changeThemeEnabled) {
-                    String selectedTheme = appThemeField.getValue();
-                    userSettingsTools.saveAppWindowTheme(selectedTheme);
-                    App.getInstance().setUserAppTheme(selectedTheme);
-                }
-                AppWorkArea.Mode m = modeOptions.getValue() == msgTabbed ? AppWorkArea.Mode.TABBED : AppWorkArea.Mode.SINGLE;
-                userSettingsTools.saveAppWindowMode(m);
-                saveTimeZoneSettings();
-                saveLocaleSettings();
-
-                showNotification(getMessage("modeChangeNotification"), NotificationType.HUMANIZED);
-
-                close(COMMIT_ACTION_ID);
-            }
-        };
-
         Map<String, Locale> locales = globalConfig.getAvailableLocales();
         TreeMap<String, Object> options = new TreeMap<>();
         for (Map.Entry<String, Locale> entry : locales.entrySet()) {
@@ -166,17 +149,41 @@ public class SettingsWindow extends AbstractWindow {
         appLangField.setOptionsMap(options);
         appLangField.setValue(userManagementService.loadOwnLocale());
 
+        Action commitAction = new BaseAction("commit", clientConfig.getCommitShortcut()) {
+            @Override
+            public void actionPerform(Component component) {
+                commit();
+            }
+        };
         addAction(commitAction);
         okBtn.setAction(commitAction);
 
-        cancelBtn.setAction(
-                new AbstractAction("cancel") {
-                    @Override
-                    public void actionPerform(Component component) {
-                        close(CLOSE_ACTION_ID);
-                    }
-                }
-        );
+        cancelBtn.setAction(new BaseAction("cancel") {
+            @Override
+            public void actionPerform(Component component) {
+                cancel();
+            }
+        });
+    }
+
+    protected void commit() {
+        if (changeThemeEnabled) {
+            String selectedTheme = appThemeField.getValue();
+            userSettingsTools.saveAppWindowTheme(selectedTheme);
+            App.getInstance().setUserAppTheme(selectedTheme);
+        }
+        AppWorkArea.Mode m = modeOptions.getValue() == msgTabbed ? AppWorkArea.Mode.TABBED : AppWorkArea.Mode.SINGLE;
+        userSettingsTools.saveAppWindowMode(m);
+        saveTimeZoneSettings();
+        saveLocaleSettings();
+
+        showNotification(getMessage("modeChangeNotification"), NotificationType.HUMANIZED);
+
+        close(COMMIT_ACTION_ID);
+    }
+
+    protected void cancel() {
+        close(CLOSE_ACTION_ID);
     }
 
     protected void initTimeZoneFields() {
