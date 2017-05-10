@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.collect.ImmutableMap;
+import com.haulmont.bali.events.EventRouter;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
@@ -35,15 +36,13 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
-import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
+import com.haulmont.cuba.gui.data.impl.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.renderers.*;
-import com.haulmont.cuba.web.gui.data.IndexedCollectionDsWrapper;
-import com.haulmont.cuba.web.gui.data.SortableIndexedCollectionDsWrapper;
+import com.haulmont.cuba.web.gui.data.DataGridIndexedCollectionDsWrapper;
+import com.haulmont.cuba.web.gui.data.SortableDataGridIndexedCollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.data.DataGridContainer;
 import com.haulmont.cuba.web.toolkit.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.converters.FormatterBasedConverter;
@@ -126,8 +125,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     protected Security security = AppBeans.get(Security.NAME);
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
-    protected CollectionDatasource.CollectionChangeListener collectionChangeSelectionListener;
-    protected CollectionDsActionsNotifier collectionDsActionsNotifier;
+    protected CollectionDsListenersWrapper collectionDsListenersWrapper;
 
     protected Grid.ColumnVisibilityChangeListener columnCollapsingChangeListener;
     protected Grid.ColumnResizeListener columnResizeListener;
@@ -160,6 +158,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
         rendererClasses = builder.build();
     }
+
+    protected DataGridIndexedCollectionDsWrapper containerDatasource;
 
     public WebDataGrid() {
         Configuration configuration = AppBeans.get(Configuration.NAME);
@@ -605,7 +605,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         gridColumn.setEditable(column.isEditable());
 
         // workaround to prevent exception from GridColumn while Grid is using default IndexedContainer
-        if (getContainerDataSource() instanceof SortableIndexedCollectionDsWrapper) {
+        if (getContainerDataSource() instanceof SortableDataGridIndexedCollectionDsWrapper) {
             gridColumn.setSortable(column.isSortable() && column.getOwner().isSortable());
         }
 
@@ -684,15 +684,34 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                     "com.haulmont.cuba.gui.data.CollectionDatasource.Indexed");
         }
 
+        if (this.datasource != null) {
+            if (!this.datasource.getMetaClass().equals(datasource.getMetaClass())) {
+                throw new IllegalArgumentException("The new datasource must correspond to the same MetaClass");
+            }
+
+            if (collectionDsListenersWrapper != null) {
+                collectionDsListenersWrapper.unbind(this.datasource);
+                if (containerDatasource != null) {
+                    containerDatasource.unsubscribe();
+                    containerDatasource = null;
+                }
+            }
+        }
+
         addInitialColumns(datasource);
 
         this.datasource = datasource;
 
         List<Column> visibleColumnsOrder = getInitialVisibleColumns();
 
+        if (collectionDsListenersWrapper == null) {
+            collectionDsListenersWrapper = new CollectionDsListenersWrapper();
+        }
+
         component.removeAllColumns();
-        final IndexedCollectionDsWrapper containerDatasource =
-                createContainerDatasource((CollectionDatasource.Indexed) datasource, getPropertyColumns());
+
+        containerDatasource = createContainerDatasource((CollectionDatasource.Indexed) datasource,
+                getPropertyColumns(), collectionDsListenersWrapper);
         containerWrapper = new GeneratedPropertyContainer(containerDatasource);
         component.setContainerDataSource(containerWrapper);
 
@@ -721,11 +740,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             rowsCount.setDatasource(datasource);
         }
 
-        initCollectionChangeSelectionListener(datasource);
-
-        //noinspection unchecked
-        collectionDsActionsNotifier = new CollectionDsActionsNotifier(this);
-        collectionDsActionsNotifier.bind(datasource);
+        collectionDsListenersWrapper.bind(datasource);
 
         refreshActionsState();
 
@@ -787,35 +802,6 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             }
             action.setDatasource(datasource);
         }
-    }
-
-    protected void initCollectionChangeSelectionListener(CollectionDatasource datasource) {
-        collectionChangeSelectionListener = e -> {
-            // #PL-2035, reload selection from ds
-            Collection<Object> selectedItemIds = component.getSelectedRows();
-            if (selectedItemIds == null) {
-                selectedItemIds = Collections.emptySet();
-            }
-
-            //noinspection unchecked
-            Set<Object> newSelection = selectedItemIds.stream()
-                    .filter(entityId -> e.getDs().containsItem(entityId))
-                    .collect(Collectors.toSet());
-
-            if (e.getDs().getState() == Datasource.State.VALID && e.getDs().getItem() != null) {
-                newSelection.add(e.getDs().getItem().getId());
-            }
-
-            if (newSelection.isEmpty()) {
-                setSelected((E) null);
-            } else {
-                setSelectedIds(newSelection);
-            }
-        };
-
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource,
-                collectionChangeSelectionListener));
     }
 
     @Override
@@ -1477,11 +1463,12 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         return actionsPermissions;
     }
 
-    protected IndexedCollectionDsWrapper createContainerDatasource(CollectionDatasource.Indexed datasource,
-                                                                   Collection<MetaPropertyPath> columns) {
+    protected DataGridIndexedCollectionDsWrapper createContainerDatasource(CollectionDatasource.Indexed datasource,
+                                                                           Collection<MetaPropertyPath> columns,
+                                                                           CollectionDsListenersWrapper collectionDsListenersWrapper) {
         return datasource instanceof CollectionDatasource.Sortable
-                ? new SortableDataGridDsWrapper(datasource, columns)
-                : new DataGridDsWrapper(datasource, columns);
+                ? new SortableDataGridDsWrapper(datasource, columns, collectionDsListenersWrapper)
+                : new DataGridDsWrapper(datasource, columns, collectionDsListenersWrapper);
     }
 
     protected List<Column> getInitialVisibleColumns() {
@@ -2453,10 +2440,11 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         getEventRouter().removeListener(LookupSelectionChangeListener.class, listener);
     }
 
-    protected class DataGridDsWrapper extends IndexedCollectionDsWrapper {
+    protected class DataGridDsWrapper extends DataGridIndexedCollectionDsWrapper {
 
-        public DataGridDsWrapper(CollectionDatasource.Indexed datasource, Collection<MetaPropertyPath> properties) {
-            super(datasource, properties, true);
+        public DataGridDsWrapper(CollectionDatasource.Indexed datasource, Collection<MetaPropertyPath> properties,
+                                 CollectionDsListenersWrapper collectionDsListenersWrapper) {
+            super(datasource, properties, true, collectionDsListenersWrapper);
         }
 
         @Override
@@ -2471,12 +2459,13 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     }
 
     protected class SortableDataGridDsWrapper
-            extends SortableIndexedCollectionDsWrapper
+            extends SortableDataGridIndexedCollectionDsWrapper
             implements DataGridContainer {
 
         public SortableDataGridDsWrapper(CollectionDatasource.Indexed datasource,
-                                         Collection<MetaPropertyPath> properties) {
-            super(datasource, properties, true);
+                                         Collection<MetaPropertyPath> properties,
+                                         CollectionDsListenersWrapper collectionDsListenersWrapper) {
+            super(datasource, properties, true, collectionDsListenersWrapper);
         }
 
         @Override
@@ -3487,6 +3476,168 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             } else {
                 grid.setWidth(100, Unit.PERCENTAGE);
             }
+        }
+    }
+
+    public class CollectionDsListenersWrapper implements
+            Datasource.ItemChangeListener,
+            Datasource.ItemPropertyChangeListener,
+            Datasource.StateChangeListener,
+            CollectionDatasource.CollectionChangeListener {
+
+        protected WeakItemChangeListener weakItemChangeListener;
+        protected WeakItemPropertyChangeListener weakItemPropertyChangeListener;
+        protected WeakStateChangeListener weakStateChangeListener;
+        protected WeakCollectionChangeListener weakCollectionChangeListener;
+
+        private EventRouter eventRouter;
+
+        /**
+         * Use EventRouter for listeners instead of fields with listeners List.
+         *
+         * @return lazily initialized {@link EventRouter} instance.
+         * @see EventRouter
+         */
+        protected EventRouter getEventRouter() {
+            if (eventRouter == null) {
+                eventRouter = new EventRouter();
+            }
+            return eventRouter;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void collectionChanged(CollectionDatasource.CollectionChangeEvent e) {
+            // #PL-2035, reload selection from ds
+            Collection<Object> selectedItemIds = component.getSelectedRows();
+            if (selectedItemIds == null) {
+                selectedItemIds = Collections.emptySet();
+            }
+
+            //noinspection unchecked
+            Set<Object> newSelection = selectedItemIds.stream()
+                    .filter(entityId -> e.getDs().containsItem(entityId))
+                    .collect(Collectors.toSet());
+
+            if (e.getDs().getState() == Datasource.State.VALID && e.getDs().getItem() != null) {
+                newSelection.add(e.getDs().getItem().getId());
+            }
+
+            if (newSelection.isEmpty()) {
+                setSelected((E) null);
+            } else {
+                setSelectedIds(newSelection);
+            }
+
+            for (Action action : getActions()) {
+                action.refreshState();
+            }
+
+            if (getEventRouter().hasListeners(CollectionDatasource.CollectionChangeListener.class)) {
+                getEventRouter().fireEvent(CollectionDatasource.CollectionChangeListener.class,
+                        CollectionDatasource.CollectionChangeListener::collectionChanged, e);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void itemChanged(Datasource.ItemChangeEvent e) {
+            for (Action action : getActions()) {
+                action.refreshState();
+            }
+
+            if (getEventRouter().hasListeners(Datasource.ItemChangeListener.class)) {
+                getEventRouter().fireEvent(Datasource.ItemChangeListener.class,
+                        Datasource.ItemChangeListener::itemChanged, e);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent e) {
+            for (Action action : getActions()) {
+                action.refreshState();
+            }
+
+            if (getEventRouter().hasListeners(Datasource.ItemPropertyChangeListener.class)) {
+                getEventRouter().fireEvent(Datasource.ItemPropertyChangeListener.class,
+                        Datasource.ItemPropertyChangeListener::itemPropertyChanged, e);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void stateChanged(Datasource.StateChangeEvent e) {
+            for (Action action : getActions()) {
+                action.refreshState();
+            }
+
+            if (getEventRouter().hasListeners(Datasource.StateChangeListener.class)) {
+                getEventRouter().fireEvent(Datasource.StateChangeListener.class,
+                        Datasource.StateChangeListener::stateChanged, e);
+            }
+        }
+
+        public void addCollectionChangeListener(CollectionDatasource.CollectionChangeListener listener) {
+            getEventRouter().addListener(CollectionDatasource.CollectionChangeListener.class, listener);
+        }
+
+        public void removeCollectionChangeListener(CollectionDatasource.CollectionChangeListener listener) {
+            getEventRouter().removeListener(CollectionDatasource.CollectionChangeListener.class, listener);
+        }
+
+        public void addItemChangeListener(Datasource.ItemChangeListener listener) {
+            getEventRouter().addListener(Datasource.ItemChangeListener.class, listener);
+        }
+
+        public void removeItemChangeListener(Datasource.ItemChangeListener listener) {
+            getEventRouter().removeListener(Datasource.ItemChangeListener.class, listener);
+        }
+
+        public void addItemPropertyChangeListener(Datasource.ItemPropertyChangeListener listener) {
+            getEventRouter().addListener(Datasource.ItemPropertyChangeListener.class, listener);
+        }
+
+        public void removeItemPropertyChangeListener(Datasource.ItemPropertyChangeListener listener) {
+            getEventRouter().removeListener(Datasource.ItemPropertyChangeListener.class, listener);
+        }
+
+        public void addStateChangeListener(Datasource.StateChangeListener listener) {
+            getEventRouter().addListener(Datasource.StateChangeListener.class, listener);
+        }
+
+        public void removeStateChangeListener(Datasource.StateChangeListener listener) {
+            getEventRouter().removeListener(Datasource.StateChangeListener.class, listener);
+        }
+
+        @SuppressWarnings("unchecked")
+        public void bind(CollectionDatasource ds) {
+            weakItemChangeListener = new WeakItemChangeListener(ds, this);
+            ds.addItemChangeListener(weakItemChangeListener);
+
+            weakItemPropertyChangeListener = new WeakItemPropertyChangeListener(ds, this);
+            ds.addItemPropertyChangeListener(weakItemPropertyChangeListener);
+
+            weakStateChangeListener = new WeakStateChangeListener(ds, this);
+            ds.addStateChangeListener(weakStateChangeListener);
+
+            weakCollectionChangeListener = new WeakCollectionChangeListener(ds, this);
+            ds.addCollectionChangeListener(weakCollectionChangeListener);
+        }
+
+        @SuppressWarnings("unchecked")
+        public void unbind(CollectionDatasource ds) {
+            ds.removeItemChangeListener(weakItemChangeListener);
+            weakItemChangeListener = null;
+
+            ds.removeItemPropertyChangeListener(weakItemPropertyChangeListener);
+            weakItemPropertyChangeListener = null;
+
+            ds.removeStateChangeListener(weakStateChangeListener);
+            weakStateChangeListener = null;
+
+            ds.removeCollectionChangeListener(weakCollectionChangeListener);
+            weakCollectionChangeListener = null;
         }
     }
 }

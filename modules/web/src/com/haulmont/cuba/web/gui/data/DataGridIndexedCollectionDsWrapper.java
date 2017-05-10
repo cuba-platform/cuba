@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
-import com.haulmont.cuba.gui.data.impl.WeakDsListenerAdapter;
+import com.haulmont.cuba.web.gui.components.WebDataGrid.CollectionDsListenersWrapper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -32,7 +32,7 @@ import com.vaadin.ui.UI;
 
 import java.util.*;
 
-public class IndexedCollectionDsWrapper
+public class DataGridIndexedCollectionDsWrapper
         extends
             AbstractContainer
         implements
@@ -44,26 +44,28 @@ public class IndexedCollectionDsWrapper
 
     protected CollectionDatasource.Indexed datasource;
     protected Collection<MetaPropertyPath> properties = new ArrayList<>();
+    protected CollectionDsListenersWrapper collectionDsListenersWrapper;
 
     protected Datasource.StateChangeListener cdsStateChangeListener;
     protected Datasource.ItemPropertyChangeListener cdsItemPropertyChangeListener;
     protected CollectionDatasource.CollectionChangeListener cdsCollectionChangeListener;
 
-    protected WeakDsListenerAdapter weakDsListenerAdapter;
-
-    public IndexedCollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
-        this(datasource, null, autoRefresh);
+    public DataGridIndexedCollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh,
+                                              CollectionDsListenersWrapper collectionDsListenersWrapper) {
+        this(datasource, null, autoRefresh, collectionDsListenersWrapper);
     }
 
     @SuppressWarnings("unchecked")
-    public IndexedCollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties,
-                                      boolean autoRefresh) {
+    public DataGridIndexedCollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties,
+                                              boolean autoRefresh,
+                                              CollectionDsListenersWrapper collectionDsListenersWrapper) {
         if (!(datasource instanceof CollectionDatasource.Indexed)) {
             throw new IllegalArgumentException("Datasource must implement " +
                     "com.haulmont.cuba.gui.data.CollectionDatasource.Indexed");
         }
         this.datasource = (CollectionDatasource.Indexed) datasource;
         this.autoRefresh = autoRefresh;
+        this.collectionDsListenersWrapper = collectionDsListenersWrapper;
 
         final View view = datasource.getView();
         final MetaClass metaClass = datasource.getMetaClass();
@@ -78,12 +80,9 @@ public class IndexedCollectionDsWrapper
         cdsStateChangeListener = createStateChangeListener();
         cdsCollectionChangeListener = createCollectionChangeListener();
 
-        weakDsListenerAdapter = new WeakDsListenerAdapter(datasource, cdsItemPropertyChangeListener,
-                cdsStateChangeListener, cdsCollectionChangeListener);
-
-        datasource.addItemPropertyChangeListener(weakDsListenerAdapter);
-        datasource.addStateChangeListener(weakDsListenerAdapter);
-        datasource.addCollectionChangeListener(weakDsListenerAdapter);
+        collectionDsListenersWrapper.addItemPropertyChangeListener(cdsItemPropertyChangeListener);
+        collectionDsListenersWrapper.addStateChangeListener(cdsStateChangeListener);
+        collectionDsListenersWrapper.addCollectionChangeListener(cdsCollectionChangeListener);
     }
 
     protected void createProperties(View view, MetaClass metaClass) {
@@ -323,11 +322,10 @@ public class IndexedCollectionDsWrapper
     @SuppressWarnings("unchecked")
     @Override
     public void unsubscribe() {
-        datasource.removeCollectionChangeListener(weakDsListenerAdapter);
-        datasource.removeItemPropertyChangeListener(weakDsListenerAdapter);
-        datasource.removeStateChangeListener(weakDsListenerAdapter);
+        collectionDsListenersWrapper.removeCollectionChangeListener(cdsCollectionChangeListener);
+        collectionDsListenersWrapper.removeItemPropertyChangeListener(cdsItemPropertyChangeListener);
+        collectionDsListenersWrapper.removeStateChangeListener(cdsStateChangeListener);
 
-        weakDsListenerAdapter = null;
         datasource = null;
     }
 

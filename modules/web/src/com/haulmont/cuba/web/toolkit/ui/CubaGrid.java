@@ -150,6 +150,9 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
         editorActive = false;
         fireEditorCloseEvent(itemId);
 
+        // to prevent one more detach in case of changing datasource
+        clearFields(editorFields);
+
         // Mark Grid as dirty so the client side gets to know that the editors
         // are no longer attached
         markAsDirty();
