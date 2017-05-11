@@ -311,7 +311,7 @@ NOT: 'NOT';
 IN: 'IN';
 
 in_item
-    : literal | single_valued_input_parameter;
+    : string_literal | numeric_literal | single_valued_input_parameter;
 like_expression
     : string_expression ('NOT')? 'LIKE' (string_expression | pattern_value | input_parameter)('ESCAPE' escape_character)?;
 null_comparison_expression
