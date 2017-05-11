@@ -53,7 +53,7 @@ public interface EntitySerializationAPI {
                   EntitySerializationOption... options);
 
     /**
-     * Serialized a collection of entities to the JSON array. Method works like the {@link #toJson(Entity, View,
+     * Serializes a collection of entities to the JSON array. Method works like the {@link #toJson(Entity, View,
      * EntitySerializationOption...)}, but return a JSON array as a result.
      *
      * @param entities a list of entities to be serialized
@@ -83,6 +83,15 @@ public interface EntitySerializationAPI {
      */
     String toJson(Collection<? extends Entity> entities);
 
+    /**
+     * Serializes any custom POJO or collection of POJOs or JSON. If some field in POJO is an entity then this field
+     * will be serialized according to entity serialization rules
+     *
+     * @param object any POJO or collection of POJOs
+     * @param options options specifying how a JSON object graph for fields with type 'Entity' will be serialized
+     * @return a string that represents a JSON object or JSON array
+     */
+    String objectToJson(Object object, EntitySerializationOption... options);
 
     /**
      * Deserializes a JSON object to the entity.

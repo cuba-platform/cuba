@@ -180,7 +180,7 @@ public class ServicesControllerManager {
             if (datatype != null) {
                 return new ServiceCallResult(datatype.format(methodResult), false);
             } else {
-                return new ServiceCallResult(restParseUtils.serializePOJO(methodResult, methodReturnType), true);
+                return new ServiceCallResult(restParseUtils.serialize(methodResult), true);
             }
         }
     }

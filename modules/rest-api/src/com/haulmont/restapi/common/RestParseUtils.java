@@ -123,14 +123,8 @@ public class RestParseUtils {
         return gson.fromJson(json, clazz);
     }
 
-    public String serializePOJO(Object pojoInstance, Class clazz) {
-        Gson gson = new Gson();
-        return gson.toJson(pojoInstance, clazz);
-    }
-
     public String serialize(Object instance) {
-        Gson gson = new Gson();
-        return gson.toJson(instance);
+        return entitySerializationAPI.objectToJson(instance);
     }
 
     public Map<String, String> parseParamsJson(String paramsJson) {

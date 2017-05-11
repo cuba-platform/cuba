@@ -109,6 +109,12 @@ public class EntitySerialization implements EntitySerializationAPI {
     }
 
     @Override
+    public String objectToJson(Object object, EntitySerializationOption... options) {
+        context.remove();
+        return createGsonForSerialization(null, options).toJson(object);
+    }
+
+    @Override
     public Entity entityFromJson(String json,
                                  @Nullable MetaClass metaClass,
                                  EntitySerializationOption... options) {
