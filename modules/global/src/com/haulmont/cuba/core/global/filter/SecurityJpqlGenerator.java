@@ -18,7 +18,11 @@
 package com.haulmont.cuba.core.global.filter;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.*;
+
+import java.util.Arrays;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -33,10 +37,22 @@ public class SecurityJpqlGenerator extends AbstractJpqlGenerator {
 
         Op operator = condition.getOperator();
         String jpqlOperator = operator.forJpql();
-        String valueToString = valueToString(javaClass, parameterInfo.getValue(), operator);
-        if (operator == Op.IN || operator == Op.NOT_IN) {
-            valueToString = valueToString.replace("[", "(").replace("]", ")");
+        String parameterInfoValue = parameterInfo.getValue();
+
+        if (parameterInfoValue != null && (operator == Op.IN || operator == Op.NOT_IN)) {
+            if (parameterInfoValue.startsWith("[") || parameterInfoValue.startsWith("(")) {
+                parameterInfoValue = parameterInfoValue.replaceAll("[\\[\\]()]", "");
+            }
+
+            String[] splittedValues = parameterInfoValue.split(",");
+            String convertedValue = Arrays.stream(splittedValues)
+                    .map(String::trim)
+                    .map(v -> valueToString(javaClass, v, Op.EQUAL))
+                    .collect(Collectors.joining(", ", "(", ")"));
+            parameterInfoValue = convertedValue;
         }
+
+        String valueToString = valueToString(javaClass, parameterInfoValue, operator);
 
         if (operator.isUnary()) {
             return format("{E}.%s %s", condition.getName(), jpqlOperator);
@@ -58,6 +74,14 @@ public class SecurityJpqlGenerator extends AbstractJpqlGenerator {
             Enum enumValue = Enum.valueOf(javaClass, value);
             Object enumId = ((EnumClass) enumValue).getId();
             return (enumId instanceof Number) ? enumId.toString() : "'" + enumId + "'";
+        } else if (Entity.class.isAssignableFrom(javaClass)) {
+            if (BaseIntegerIdEntity.class.isAssignableFrom(javaClass)
+                    || BaseLongIdEntity.class.isAssignableFrom(javaClass)
+                    || BaseDbGeneratedIdEntity.class.isAssignableFrom(javaClass)) {
+                return value;
+            } else {
+                return "'" + value + "'";
+            }
         } else {
             if (operator == Op.CONTAINS || operator == Op.DOES_NOT_CONTAIN) {
                 return "'%" + value + "%'";

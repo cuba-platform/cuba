@@ -225,4 +225,10 @@ public class Jpa2GrammarTest {
 
         return errorNodes.isEmpty();
     }
+
+    @Test
+    public void testInClause() throws Exception {
+        testQuery("select u from sec$User u where u.login in ('a', 'b', 'c')");
+        testQuery("select u from sec$User u where u.login in (1, 2, 3)");
+    }
 }

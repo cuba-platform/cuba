@@ -19,9 +19,10 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -254,9 +255,29 @@ public class SecurityImpl implements Security {
     @SuppressWarnings("unused")
     protected Object parseValue(Class<?> clazz, String string) {
         try {
-            Datatype datatype = Datatypes.get(clazz);
-            return datatype != null ? datatype.parse(string) : string;
-        } catch (ParseException e) {
+            if (Entity.class.isAssignableFrom(clazz)) {
+                Object entity = metadata.create(clazz);
+                if (entity instanceof BaseIntegerIdEntity) {
+                    ((BaseIntegerIdEntity) entity).setId(Integer.valueOf(string));
+                } else if (entity instanceof BaseLongIdEntity) {
+                    ((BaseLongIdEntity) entity).setId(Long.valueOf(string));
+                } else if (entity instanceof BaseStringIdEntity) {
+                    ((BaseStringIdEntity) entity).setId(string);
+                } else if (entity instanceof BaseDbGeneratedIdEntity) {
+                    ((BaseDbGeneratedIdEntity) entity).setId(IdProxy.of(Long.valueOf(string)));
+                } else if (entity instanceof HasUuid) {
+                    ((HasUuid) entity).setUuid(UUID.fromString(string));
+                }
+                return entity;
+            } else if (EnumClass.class.isAssignableFrom(clazz)) {
+                //noinspection unchecked
+                Enum parsedEnum = Enum.valueOf((Class<Enum>) clazz, string);
+                return parsedEnum;
+            } else {
+                Datatype datatype = Datatypes.get(clazz);
+                return datatype != null ? datatype.parse(string) : string;
+            }
+        } catch (ParseException | IllegalArgumentException e) {
             log.error("Could not parse a value in constraint. Class [{}], value [{}].", clazz, string, e);
             throw new RowLevelSecurityException(format("Could not parse a value in constraint. Class [%s], value [%s]. " +
                     "See the log for details.", clazz, string), null);

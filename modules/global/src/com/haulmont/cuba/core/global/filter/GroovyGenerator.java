@@ -17,9 +17,11 @@
 
 package com.haulmont.cuba.core.global.filter;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -31,9 +33,9 @@ public class GroovyGenerator {
         if (condition instanceof LogicalCondition) {
             LogicalOp operation = ((LogicalCondition) condition).getOperation();
             List<Condition> conditions = condition.getConditions();
-            if (conditions.isEmpty())
+            if (conditions.isEmpty()) {
                 return "";
-            else {
+            } else {
                 StringBuilder sb = new StringBuilder();
 
                 if (conditions.size() > 1)
@@ -60,7 +62,22 @@ public class GroovyGenerator {
 
             Op operator = ((Clause) condition).getOperator();
             String groovyOperator = operator.forGroovy();
-            String valueToString = valueToString(javaClass, parameterInfo.getValue(), operator);
+            String parameterInfoValue = parameterInfo.getValue();
+
+            if (parameterInfoValue != null && (operator == Op.IN || operator == Op.NOT_IN)) {
+                if (parameterInfoValue.startsWith("[") || parameterInfoValue.startsWith("(")) {
+                    parameterInfoValue = parameterInfoValue.replaceAll("[\\[\\]()]", "");
+                }
+
+                String[] splittedValues = parameterInfoValue.split(",");
+                String convertedValue = Arrays.stream(splittedValues)
+                        .map(String::trim)
+                        .map(v -> valueToString(javaClass, v, Op.EQUAL))
+                        .collect(Collectors.joining(", ", "[", "]"));
+                parameterInfoValue = convertedValue;
+            }
+
+            String valueToString = valueToString(javaClass, parameterInfoValue, operator);
 
             String resultingClause;
             if (operator.isUnary()) {
@@ -91,7 +108,8 @@ public class GroovyGenerator {
         } else if (String.class.isAssignableFrom(javaClass)) {
             return "'" + value + "'";
         } else {
-            return format("value(%s.class, '%s')", javaClass.getCanonicalName(), value);
+            //the following method should match com.haulmont.cuba.core.sys.SecurityImpl.parseValue()
+            return format("parse(%s.class, '%s')", javaClass.getCanonicalName(), value);
         }
     }
 }
