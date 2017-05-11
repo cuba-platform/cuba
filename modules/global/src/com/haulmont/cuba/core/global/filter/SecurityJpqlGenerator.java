@@ -39,19 +39,6 @@ public class SecurityJpqlGenerator extends AbstractJpqlGenerator {
         String jpqlOperator = operator.forJpql();
         String parameterInfoValue = parameterInfo.getValue();
 
-        if (parameterInfoValue != null && (operator == Op.IN || operator == Op.NOT_IN)) {
-            if (parameterInfoValue.startsWith("[") || parameterInfoValue.startsWith("(")) {
-                parameterInfoValue = parameterInfoValue.replaceAll("[\\[\\]()]", "");
-            }
-
-            String[] splittedValues = parameterInfoValue.split(",");
-            String convertedValue = Arrays.stream(splittedValues)
-                    .map(String::trim)
-                    .map(v -> valueToString(javaClass, v, Op.EQUAL))
-                    .collect(Collectors.joining(", ", "(", ")"));
-            parameterInfoValue = convertedValue;
-        }
-
         String valueToString = valueToString(javaClass, parameterInfoValue, operator);
 
         if (operator.isUnary()) {
@@ -66,11 +53,23 @@ public class SecurityJpqlGenerator extends AbstractJpqlGenerator {
     protected String valueToString(Class javaClass, String value, Op operator) {
         if (value == null) {
             return "null";
-        } else if (Number.class.isAssignableFrom(javaClass)
-                || Boolean.class.isAssignableFrom(javaClass)
-                || operator == Op.IN || operator == Op.NOT_IN) {
+        } else if (operator == Op.IN || operator == Op.NOT_IN) {
+            // IN operator has its own logic, because we have to convert string with default values to the right form
+            if (value.startsWith("[") || value.startsWith("(")) {
+                value = value.replaceAll("[\\[\\]()]", "");
+            }
+
+            String[] splittedValues = value.split(",");
+            String convertedValue = Arrays.stream(splittedValues)
+                    .map(String::trim)
+                    .map(v -> valueToString(javaClass, v, Op.EQUAL))
+                    .collect(Collectors.joining(", ", "(", ")"));
+           return convertedValue;
+        } else  if (Number.class.isAssignableFrom(javaClass)
+                || Boolean.class.isAssignableFrom(javaClass)) {
             return value;
         } else if (EnumClass.class.isAssignableFrom(javaClass)) {
+            //noinspection unchecked
             Enum enumValue = Enum.valueOf(javaClass, value);
             Object enumId = ((EnumClass) enumValue).getId();
             return (enumId instanceof Number) ? enumId.toString() : "'" + enumId + "'";
