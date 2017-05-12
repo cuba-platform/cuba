@@ -75,7 +75,7 @@ public class MbeanInspectWindow extends AbstractEditor {
         attributesTable.setItemClickAction(editAttributeAction);
         attributesTable.addGeneratedColumn("type", entity -> {
             Label label = componentsFactory.createComponent(Label.class);
-            label.setValue(AttributeHelper.convertTypeToReadableName(((ManagedBeanAttribute) entity).getType()));
+            label.setValue(AttributeHelper.convertTypeToReadableName(entity.getType()));
             return label;
         });
 
@@ -240,8 +240,13 @@ public class MbeanInspectWindow extends AbstractEditor {
                         "beanName", operation.getMbean().getClassName(),
                         "methodName", operation.getName());
             }
-        } catch (Exception e) {
-            resultMap = ParamsMap.of("exception", e);
+        } catch (Exception ex) {
+            log.error("Error occurs while performing JMX operation {}", operation.getName(), ex);
+
+            resultMap = ParamsMap.of(
+                    "exception", ex,
+                    "beanName", operation.getMbean().getClassName(),
+                    "methodName", operation.getName());
         }
 
         Window w = openWindow("jmxConsoleOperationResult", OpenType.DIALOG, resultMap);
@@ -267,7 +272,12 @@ public class MbeanInspectWindow extends AbstractEditor {
             @Override
             public boolean handleException(Exception ex) {
                 log.error("Error occurs while performing JMX operation {}", operation.getName(), ex);
-                Window w = openWindow("jmxConsoleOperationResult", OpenType.DIALOG, ParamsMap.of("exception", ex));
+
+                Window w = openWindow("jmxConsoleOperationResult", OpenType.DIALOG, ParamsMap.of(
+                        "exception", ex,
+                        "beanName", operation.getMbean().getClassName(),
+                        "methodName", operation.getName()));
+
                 w.addCloseListener(actionId -> reloadAttributes());
                 return true;
             }
