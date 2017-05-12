@@ -18,17 +18,13 @@
 package com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.operation;
 
 import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
-import com.haulmont.cuba.gui.theme.ThemeConstants;
-import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.entity.AttributeHelper;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -37,22 +33,16 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import javax.inject.Inject;
 import javax.management.MBeanException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 
 public class OperationResultWindow extends AbstractWindow {
-
     @Inject
     protected Label resultLabel;
 
     @Inject
     protected ScrollBoxLayout resultContainer;
-
-    @Inject
-    protected ThemeConstants themeConstants;
-
-    @Inject
-    protected FileUploadingAPI fileUploading;
 
     @Inject
     protected ExportDisplay exportDisplay;
@@ -64,59 +54,36 @@ public class OperationResultWindow extends AbstractWindow {
     protected Object result;
 
     @WindowParam
+    protected Throwable exception;
+
+    @WindowParam
     protected String methodName;
 
     @WindowParam
     protected String beanName;
 
+    @Inject
+    protected ComponentsFactory componentsFactory;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogOptions()
-                .setResizable(true)
-                .setWidth(themeConstants.getInt("cuba.web.jmx.OperationResultWindow.width"))
-                .setHeight(themeConstants.getInt("cuba.web.jmx.OperationResultWindow.height"));
+        if (exception != null) {
+            Label traceLabel = componentsFactory.createComponent(Label.class);
+            traceLabel.setValue(getExceptionMessage(exception));
 
-        Throwable ex = (Throwable) params.get("exception");
-
-        ComponentsFactory componentsFactory = AppConfig.getFactory();
-
-        if (ex != null) {
-            if (ex instanceof UndeclaredThrowableException)
-                ex = ex.getCause();
-
-            if (ex instanceof JmxControlException) {
-                ex = ex.getCause();
-
-                if (ex instanceof MBeanException) {
-                    ex = ex.getCause();
-                }
-            }
-
-            String msg;
-            if (ex != null) {
-                msg = ex.getClass().getName() +
-                        ": \n" + ex.getMessage() +
-                        "\n" + ExceptionUtils.getFullStackTrace(ex);
-            } else {
-                msg = "";
-            }
-
-            Label trace = componentsFactory.createComponent(Label.class);
-            trace.setFrame(getFrame());
-            trace.setValue(msg);
+            com.vaadin.ui.Label vaadinLbl = traceLabel.unwrap(com.vaadin.ui.Label.class);
+            vaadinLbl.setContentMode(ContentMode.PREFORMATTED);
 
             resultLabel.setValue(getMessage("operationResult.exception"));
-            resultContainer.add(trace);
-
+            resultContainer.add(traceLabel);
         } else if (result != null) {
             Label valueHolder = componentsFactory.createComponent(Label.class);
-            valueHolder.setFrame(getFrame());
-
-            com.vaadin.ui.Label vaadinLbl = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(valueHolder);
-            vaadinLbl.setContentMode(ContentMode.PREFORMATTED);
             valueHolder.setValue(AttributeHelper.convertToString(result));
+
+            com.vaadin.ui.Label vaadinLbl = valueHolder.unwrap(com.vaadin.ui.Label.class);
+            vaadinLbl.setContentMode(ContentMode.PREFORMATTED);
 
             resultLabel.setValue(getMessage("operationResult.result"));
             resultContainer.add(valueHolder);
@@ -125,13 +92,46 @@ public class OperationResultWindow extends AbstractWindow {
         }
     }
 
+    protected String getExceptionMessage(Throwable exception) {
+        if (exception instanceof UndeclaredThrowableException)
+            exception = exception.getCause();
+
+        if (exception instanceof JmxControlException) {
+            exception = exception.getCause();
+
+            if (exception instanceof MBeanException) {
+                exception = exception.getCause();
+            }
+        }
+
+        String msg;
+        if (exception != null) {
+            msg = String.format("%s: \n%s\n%s",
+                    exception.getClass().getName(),
+                    exception.getMessage(),
+                    ExceptionUtils.getFullStackTrace(exception));
+        } else {
+            msg = "";
+        }
+        return msg;
+    }
+
     public void close() {
         close(CLOSE_ACTION_ID);
     }
 
     public void exportToFile() {
-        if (result != null) {
-            byte[] bytes = AttributeHelper.convertToString(result).getBytes();
+        if (result != null || exception != null) {
+            String exportResult = String.format("JMX Method %s : %s result\n", beanName, methodName);
+
+            if (result != null) {
+                exportResult += AttributeHelper.convertToString(result);
+            }
+            if (exception != null) {
+                exportResult += getExceptionMessage(exception);
+            }
+
+            byte[] bytes = exportResult.getBytes(StandardCharsets.UTF_8);
             exportDisplay.show(new ByteArrayDataProvider(bytes),
                     String.format("jmx.%s-%s-%s.log",
                             beanName,
