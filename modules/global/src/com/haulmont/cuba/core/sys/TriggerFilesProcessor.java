@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 public class TriggerFilesProcessor {
     public static final String NAME = "cuba_TriggerFilesProcessor";
 
-    private Logger log = LoggerFactory.getLogger(TriggerFilesProcessor.class);
+    private final Logger log = LoggerFactory.getLogger(TriggerFilesProcessor.class);
 
     protected String tempDir;
 
@@ -62,7 +62,7 @@ public class TriggerFilesProcessor {
             try {
                 Files.delete(path);
             } catch (IOException e) {
-                log.error("Unable to delete trigger file " + path);
+                log.error("Unable to delete trigger file {}", path);
             }
         }
     }
@@ -82,13 +82,13 @@ public class TriggerFilesProcessor {
             try {
                 processFile(fileName);
             } catch (Exception e) {
-                log.error("Trigger file " + path + " processing error: " + e);
+                log.error("Trigger file {} processing error: {}", path, e);
             }
 
             try {
                 Files.delete(path);
             } catch (IOException e) {
-                log.error("Unable to delete trigger file " + path);
+                log.error("Unable to delete trigger file {}", path);
             }
         }
     }
@@ -114,8 +114,7 @@ public class TriggerFilesProcessor {
                 }
             }
 
-
-            log.info("Calling " + fileName);
+            log.info("Calling {}", fileName);
             Object bean = AppBeans.get(beanName);
             Class<?> beanClass = bean.getClass();
             Method method = typesArray == null ?
@@ -123,8 +122,8 @@ public class TriggerFilesProcessor {
                     beanClass.getMethod(methodName, typesArray);
             Object result = paramsArray == null ?
                     method.invoke(bean) :
-                    method.invoke(bean, paramsArray);
-            log.debug("Result " + result);
+                    method.invoke(bean, (Object[]) paramsArray);
+            log.debug("Result {}", result);
         }
     }
 
@@ -141,7 +140,7 @@ public class TriggerFilesProcessor {
             try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(triggersDir)) {
                 Iterables.addAll(paths, directoryStream);
             } catch (IOException e) {
-                log.error("Unable to read trigger files: " + e);
+                log.error("Unable to read trigger files: {}", e);
                 return paths;
             }
         }
