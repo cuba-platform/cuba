@@ -267,6 +267,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
         private String url;
         private String user;
         private String password;
+        private PrintWriter logWriter;
 
         private SingleConnectionDataSource(String url, String user, String password) throws SQLException {
             this.url = url;
@@ -286,11 +287,12 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
 
         @Override
         public PrintWriter getLogWriter() throws SQLException {
-            return new PrintWriter(System.out);
+            return logWriter;
         }
 
         @Override
         public void setLogWriter(PrintWriter out) throws SQLException {
+            this.logWriter = out;
         }
 
         @Override

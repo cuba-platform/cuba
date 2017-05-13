@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 @Scope("prototype")
 public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
 
-    protected static final Pattern MACRO_PATTERN = Pattern.compile("@between\\s*\\(([^\\)]+)\\)");
+    protected static final Pattern MACRO_PATTERN = Pattern.compile("@between\\s*\\(([^)]+)\\)");
     protected static final Pattern PARAM_PATTERN = Pattern.compile("(now)\\s*([\\d\\s+-]*)");
     protected static final Pattern QUERY_PARAM_PATTERN = Pattern.compile(":(\\w+)");
 
@@ -51,7 +51,6 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
         units.put("second", Calendar.SECOND);
     }
 
-    protected int count;
     protected Map<String, Object> params = new HashMap<>();
 
     public TimeBetweenQueryMacroHandler() {

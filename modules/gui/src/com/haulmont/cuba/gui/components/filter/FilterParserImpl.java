@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 
 @Component(FilterParser.NAME)
 public class FilterParserImpl implements FilterParser {
-    protected static Logger log = LoggerFactory.getLogger(FilterParser.class);
+    private static final Logger log = LoggerFactory.getLogger(FilterParser.class);
 
     @Override
     public ConditionsTree getConditions(Filter filter, String xml) {

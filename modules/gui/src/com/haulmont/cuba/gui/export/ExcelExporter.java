@@ -417,7 +417,7 @@ public class ExcelExporter {
             }
             i++;
         }
-        return rowNumber++;
+        return rowNumber;
     }
 
     protected int createGroupRow(GroupTable table, List<Table.Column> columns, int rowNumber, GroupInfo groupInfo, int groupNumber) {

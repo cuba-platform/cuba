@@ -23,7 +23,6 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.global.GlobalPersistentAttributesLoadChecker;
-import com.haulmont.cuba.core.global.MetadataTools;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
@@ -32,9 +31,6 @@ public class CorePersistentAttributesLoadChecker extends GlobalPersistentAttribu
 
     @Inject
     protected Persistence persistence;
-
-    @Inject
-    protected MetadataTools metadataTools;
 
     @Override
     protected boolean isLoadedSpecificCheck(Object entity, String property, MetaClass metaClass, MetaProperty metaProperty) {

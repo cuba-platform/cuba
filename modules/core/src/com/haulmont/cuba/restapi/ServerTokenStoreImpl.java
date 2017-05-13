@@ -47,8 +47,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/**
- */
 @Component(ServerTokenStore.NAME)
 public class ServerTokenStoreImpl implements ServerTokenStore {
 
@@ -100,8 +98,8 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
 
             @Override
             public byte[] getState() {
-                if (tokenValueToAccessTokenStore.isEmpty() && tokenValueToAccessTokenStore.isEmpty() & authenticationToAccessTokenStore.isEmpty()
-                        & tokenValueToSessionIdStore.isEmpty() & tokenValueToAuthenticationKeyStore.isEmpty()) {
+                if (tokenValueToAccessTokenStore.isEmpty() && tokenValueToAuthenticationStore.isEmpty() && authenticationToAccessTokenStore.isEmpty()
+                        && tokenValueToSessionIdStore.isEmpty() && tokenValueToAuthenticationKeyStore.isEmpty()) {
                     return new byte[0];
                 }
 
@@ -409,6 +407,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
             this.expiry = date.getTime();
         }
 
+        @Override
         public int compareTo(Delayed other) {
             if (this == other) {
                 return 0;
@@ -417,6 +416,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
             return (diff == 0 ? 0 : ((diff < 0) ? -1 : 1));
         }
 
+        @Override
         public long getDelay(TimeUnit unit) {
             return expiry - System.currentTimeMillis();
         }

@@ -87,8 +87,8 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
             component = new CubaHorizontalSplitPanel() {
                 @Override
                 public void setSplitPosition(float pos, Unit unit, boolean reverse) {
-                    currentPosition = getSplitPosition();
-                    inverse = isSplitPositionReversed();
+                    currentPosition = this.getSplitPosition();
+                    inverse = this.isSplitPositionReversed();
 
                     super.setSplitPosition(pos, unit, reverse);
                 }
@@ -97,19 +97,16 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
             component = new VerticalSplitPanel() {
                 @Override
                 public void setSplitPosition(float pos, Unit unit, boolean reverse) {
-                    currentPosition = getSplitPosition();
+                    currentPosition = this.getSplitPosition();
 
                     super.setSplitPosition(pos, unit, reverse);
                 }
             };
         }
 
-        component.addSplitPositionChangeListener(new AbstractSplitPanel.SplitPositionChangeListener() {
-            @Override
-            public void onSplitPositionChanged(AbstractSplitPanel.SplitPositionChangeEvent event) {
-                firePositionUpdateListener(currentPosition, event.getSplitPosition());
-            }
-        });
+        component.addSplitPositionChangeListener(event ->
+                firePositionUpdateListener(currentPosition, event.getSplitPosition())
+        );
     }
 
     protected void firePositionUpdateListener(float previousPosition, float newPosition) {

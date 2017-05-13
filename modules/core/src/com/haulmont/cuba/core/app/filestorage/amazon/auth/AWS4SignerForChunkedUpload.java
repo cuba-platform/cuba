@@ -20,6 +20,7 @@ package com.haulmont.cuba.core.app.filestorage.amazon.auth;
 import com.haulmont.cuba.core.app.filestorage.amazon.util.BinaryUtils;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
 
@@ -137,7 +138,7 @@ public class AWS4SignerForChunkedUpload extends AWS4SignerBase {
         System.out.println("------------------------------------");
         
         // compute the signing key
-        byte[] kSecret = (SCHEME + awsSecretKey).getBytes();
+        byte[] kSecret = (SCHEME + awsSecretKey).getBytes(StandardCharsets.UTF_8);
         byte[] kDate = sign(dateStamp, kSecret, "HmacSHA256");
         byte[] kRegion = sign(regionName, kDate, "HmacSHA256");
         byte[] kService = sign(serviceName, kRegion, "HmacSHA256");

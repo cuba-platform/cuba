@@ -61,7 +61,7 @@ public class MBeanExporter extends org.springframework.jmx.export.MBeanExporter 
         } catch (NoSuchFieldException | IllegalAccessException ignore) {
         }
         if (beans != null) {
-            log.info("Registering beans for JMX exposure: " + beans.keySet());
+            log.info("Registering beans for JMX exposure: {}", beans.keySet());
         }
 
         super.afterSingletonsInstantiated();

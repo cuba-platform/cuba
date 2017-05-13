@@ -44,12 +44,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheController {
 
+    private final Logger log = LoggerFactory.getLogger(ObjectsCache.class);
+
     protected String name;
     protected CacheSet cacheSet;
     protected CacheLoader loader;
     protected boolean logUpdateEvent = false;
-
-    protected static Logger log = LoggerFactory.getLogger(ObjectsCache.class);
 
     protected ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
     protected ReentrantLock updateDataLock = new ReentrantLock();

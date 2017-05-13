@@ -66,7 +66,7 @@ public class ByteArrayDatatype implements Datatype<byte[]> {
         if (value == null || value.length() == 0)
             return null;
 
-        return Base64.decodeBase64(value.getBytes());
+        return Base64.decodeBase64(value.getBytes(StandardCharsets.UTF_8));
     }
 
     @Override

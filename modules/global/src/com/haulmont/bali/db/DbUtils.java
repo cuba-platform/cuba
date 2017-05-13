@@ -17,7 +17,9 @@
 package com.haulmont.bali.db;
 
 import javax.annotation.concurrent.ThreadSafe;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -198,7 +200,7 @@ public final class DbUtils {
      * @param e SQLException to print stack trace of
      */
     public static void printStackTrace(SQLException e) {
-        printStackTrace(e, new PrintWriter(System.err));
+        printStackTrace(e, new PrintWriter(new OutputStreamWriter(System.err, StandardCharsets.UTF_8)));
     }
 
     /**
@@ -226,7 +228,7 @@ public final class DbUtils {
      * @param conn Connection to print warnings from
      */
     public static void printWarnings(Connection conn) {
-        printWarnings(conn, new PrintWriter(System.err));
+        printWarnings(conn, new PrintWriter(new OutputStreamWriter(System.err, StandardCharsets.UTF_8)));
     }
 
     /**

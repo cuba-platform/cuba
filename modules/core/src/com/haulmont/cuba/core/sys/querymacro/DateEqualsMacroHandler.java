@@ -28,9 +28,8 @@ import java.util.regex.Pattern;
 @Scope("prototype")
 public class DateEqualsMacroHandler extends AbstractQueryMacroHandler {
 
-    protected static final Pattern MACRO_PATTERN = Pattern.compile("@dateEquals\\s*\\(([^\\)]+)\\)");
+    protected static final Pattern MACRO_PATTERN = Pattern.compile("@dateEquals\\s*\\(([^)]+)\\)");
 
-    protected int count;
     protected Map<String, Object> namedParameters;
     protected List<Pair<String, String>> paramNames = new ArrayList<>();
 

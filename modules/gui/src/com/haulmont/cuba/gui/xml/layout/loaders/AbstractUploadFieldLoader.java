@@ -55,7 +55,7 @@ public abstract class AbstractUploadFieldLoader<T extends UploadField> extends A
 
         String fileSizeLimit = element.attributeValue("fileSizeLimit");
         if (StringUtils.isNotEmpty(fileSizeLimit)) {
-            resultComponent.setFileSizeLimit(Long.valueOf(fileSizeLimit));
+            resultComponent.setFileSizeLimit(Long.parseLong(fileSizeLimit));
         }
     }
 

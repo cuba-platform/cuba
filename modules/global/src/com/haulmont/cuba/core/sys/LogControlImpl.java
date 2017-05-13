@@ -90,13 +90,11 @@ public class LogControlImpl implements LogControl {
                 randomAccessFile.seek(lengthFile - LOG_TAIL_AMOUNT_BYTES);
                 skipFirstLine(randomAccessFile);
             }
-            String str;
             while (randomAccessFile.read() != -1) {
                 randomAccessFile.seek(randomAccessFile.getFilePointer() - 1);
                 String line = readUtf8Line(randomAccessFile);
                 if (line != null) {
-                    str = new String(line.getBytes(), StandardCharsets.UTF_8.name());
-                    sb.append(str).append("\n");
+                    sb.append(line).append("\n");
                 }
             }
         } catch (IOException e) {
@@ -256,6 +254,6 @@ public class LogControlImpl implements LogControl {
             return null;
         }
 
-        return new String(input.toByteArray(), StandardCharsets.UTF_8.name());
+        return new String(input.toByteArray(), StandardCharsets.UTF_8);
     }
 }

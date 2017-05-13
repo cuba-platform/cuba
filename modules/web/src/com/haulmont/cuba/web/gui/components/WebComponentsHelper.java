@@ -54,7 +54,7 @@ import java.lang.reflect.Field;
 
 public class WebComponentsHelper {
 
-    protected static Map<String, Class<? extends FontIcon>> fontIcons = new ConcurrentHashMap<>();
+    protected static final Map<String, Class<? extends FontIcon>> fontIcons = new ConcurrentHashMap<>();
 
     static {
         registerFontIcon("font-icon", FontAwesome.class);

@@ -138,7 +138,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     protected final List<HeaderRow> headerRows = new ArrayList<>();
     protected final List<FooterRow> footerRows = new ArrayList<>();
 
-    protected static Map<Class<? extends Renderer>, Class<? extends Renderer>> rendererClasses;
+    protected static final Map<Class<? extends Renderer>, Class<? extends Renderer>> rendererClasses;
 
     protected boolean showIconsForPopupMenuActions;
 

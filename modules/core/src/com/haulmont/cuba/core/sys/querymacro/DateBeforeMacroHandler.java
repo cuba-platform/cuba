@@ -27,9 +27,8 @@ import java.util.regex.Pattern;
 @Scope("prototype")
 public class DateBeforeMacroHandler extends AbstractQueryMacroHandler {
 
-    protected static final Pattern MACRO_PATTERN = Pattern.compile("@dateBefore\\s*\\(([^\\)]+)\\)");
+    protected static final Pattern MACRO_PATTERN = Pattern.compile("@dateBefore\\s*\\(([^)]+)\\)");
 
-    protected int count;
     protected Map<String, Object> namedParameters;
     protected List<String> paramNames = new ArrayList<>();
 

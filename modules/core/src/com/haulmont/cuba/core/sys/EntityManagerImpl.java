@@ -327,7 +327,7 @@ public class EntityManagerImpl implements EntityManager {
                 continue;
             }
 
-            if (srcProperty.getRange().isClass() & !metadataTools.isEmbedded(srcProperty)) {
+            if (srcProperty.getRange().isClass() && !metadataTools.isEmbedded(srcProperty)) {
                 if (!metadataTools.isOwningSide(srcProperty))
                     continue;
 

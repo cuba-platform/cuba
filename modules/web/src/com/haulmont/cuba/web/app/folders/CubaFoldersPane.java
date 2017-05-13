@@ -712,13 +712,7 @@ public class CubaFoldersPane extends VerticalLayout {
 
     protected class SearchFolderActionsHandler extends AppFolderActionsHandler {
 
-        protected OpenAction openAction = new OpenAction();
-        protected CopyAction copyAction = new CopyAction();
-        protected CreateAction createAction = new CreateAction(false);
-        protected EditAction editAction = new EditAction();
-        protected RemoveAction removeAction = new RemoveAction();
-        protected ExportAction exportAction = new ExportAction();
-        protected ImportAction importAction = new ImportAction();
+        protected CreateAction searchFolderCreateAction = new CreateAction(false);
 
         @Override
         public Action[] getActions(Object target, Object sender) {
@@ -774,26 +768,25 @@ public class CubaFoldersPane extends VerticalLayout {
         }
 
         protected Action[] createAllActions() {
-            return new Action[] {openAction, copyAction, createAction,
+            return new Action[] {openAction, copyAction, searchFolderCreateAction,
                     editAction, removeAction, exportAction, importAction};
         }
 
         protected Action[] createWithoutOpenActions() {
-            return new Action[] {createAction, editAction, removeAction};
+            return new Action[] {searchFolderCreateAction, editAction, removeAction};
         }
 
         protected Action[] createOnlyCreateAction() {
-            return new Action[] {createAction};
+            return new Action[] {searchFolderCreateAction};
         }
 
         protected Action[] createImportCreateAction() {
-            return new Action[] {createAction, importAction};
+            return new Action[] {searchFolderCreateAction, importAction};
         }
 
         protected Action[] createOpenCreateAction() {
-            return new Action[] {openAction, createAction, copyAction};
+            return new Action[] {openAction, searchFolderCreateAction, copyAction};
         }
-
     }
 
     protected abstract class FolderAction extends Action {

@@ -33,7 +33,7 @@ public class EclipseLinkLog extends AbstractSessionLog {
 
     protected Map<String, Logger> logsCache = new ConcurrentHashMap<>();
 
-    protected static Map<Integer, Level> levels = new HashMap<>();
+    protected static final Map<Integer, Level> levels = new HashMap<>();
 
     static {
         levels.put(SessionLog.OFF, Level.OFF);

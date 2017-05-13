@@ -42,13 +42,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class RoleBrowser extends AbstractLookup {
 
     protected static final String DEFAULT_ROLE_PROPERTY = "defaultRole";
 
-    protected static final Logger log = LoggerFactory.getLogger(RoleBrowser.class);
+    private final Logger log = LoggerFactory.getLogger(RoleBrowser.class);
 
     @Inject
     protected Table<Role> rolesTable;
@@ -242,9 +243,12 @@ public class RoleBrowser extends AbstractLookup {
         if (!selected.isEmpty()) {
             try {
                 if (exportFormat == ExportFormat.ZIP) {
-                    exportDisplay.show(new ByteArrayDataProvider(entityImportExportService.exportEntitiesToZIP(selected, view)), "Roles", ExportFormat.ZIP);
+                    byte[] data = entityImportExportService.exportEntitiesToZIP(selected, view);
+                    exportDisplay.show(new ByteArrayDataProvider(data), "Roles", ExportFormat.ZIP);
                 } else if (exportFormat == ExportFormat.JSON) {
-                    exportDisplay.show(new ByteArrayDataProvider(entityImportExportService.exportEntitiesToJSON(selected, view).getBytes()), "Roles", ExportFormat.JSON);
+                    byte[] data = entityImportExportService.exportEntitiesToJSON(selected, view)
+                            .getBytes(StandardCharsets.UTF_8);
+                    exportDisplay.show(new ByteArrayDataProvider(data), "Roles", ExportFormat.JSON);
                 }
             } catch (Exception e) {
                 showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);

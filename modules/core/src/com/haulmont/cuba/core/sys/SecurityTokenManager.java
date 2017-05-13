@@ -102,7 +102,9 @@ public class SecurityTokenManager {
     protected Cipher getCipher(int mode) {
         try {
             Cipher cipher = Cipher.getInstance("AES");
-            byte[] encryptionKey = rightPad(substring(config.getKeyForSecurityTokenEncryption(), 0, 16), 16).getBytes();
+            byte[] encryptionKey = rightPad(substring(config.getKeyForSecurityTokenEncryption(), 0, 16), 16)
+                    .getBytes(StandardCharsets.UTF_8);
+
             SecretKeySpec sKeySpec = new SecretKeySpec(encryptionKey, "AES");
             cipher.init(mode, sKeySpec);
             return cipher;

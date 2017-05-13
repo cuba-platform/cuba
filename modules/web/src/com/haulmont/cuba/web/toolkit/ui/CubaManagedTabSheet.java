@@ -501,7 +501,7 @@ public class CubaManagedTabSheet extends CssLayout
         }
 
         protected void setComponent(Component component) {
-            removeComponent(this.component);
+            this.removeComponent(this.component);
 
             this.component = component;
 

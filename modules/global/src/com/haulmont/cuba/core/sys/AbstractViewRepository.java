@@ -42,6 +42,7 @@ import javax.inject.Inject;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -144,7 +145,7 @@ public class AbstractViewRepository implements ViewRepository {
             SAXReader reader = new SAXReader();
             Document doc;
             try {
-                doc = reader.read(new InputStreamReader(stream));
+                doc = reader.read(new InputStreamReader(stream, StandardCharsets.UTF_8));
             } catch (DocumentException e) {
                 throw new RuntimeException("Unable to parse view file " + fileName, e);
             }
@@ -363,7 +364,7 @@ public class AbstractViewRepository implements ViewRepository {
     }
 
     public void deployViews(InputStream xml) {
-        deployViews(new InputStreamReader(xml));
+        deployViews(new InputStreamReader(xml, StandardCharsets.UTF_8));
     }
 
     public void deployViews(Reader xml) {
@@ -379,7 +380,7 @@ public class AbstractViewRepository implements ViewRepository {
         try {
             doc = reader.read(xml);
         } catch (DocumentException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to read views xml", e);
         }
         Element rootElem = doc.getRootElement();
 

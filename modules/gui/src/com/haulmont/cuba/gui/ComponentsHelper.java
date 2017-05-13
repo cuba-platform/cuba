@@ -208,7 +208,7 @@ public abstract class ComponentsHelper {
                     if (comp != null) {
                         return comp;
                     } else {
-                        findComponent((Frame) c, id);
+                        return findComponent((Frame) c, id);
                     }
                 }
             }

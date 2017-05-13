@@ -281,9 +281,10 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
 
                     @Override
                     public String getFormattedValue() {
-                        Object value = getValue();
-                        if (value instanceof Date)
+                        Object value = this.getValue();
+                        if (value instanceof Date) {
                             return new SimpleDateFormat(timeFormat).format(value);
+                        }
 
                         return super.getFormattedValue();
                     }

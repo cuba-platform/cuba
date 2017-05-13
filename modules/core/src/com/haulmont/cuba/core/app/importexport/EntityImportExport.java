@@ -88,7 +88,7 @@ public class EntityImportExport implements EntityImportExportAPI {
     @Override
     public byte[] exportEntitiesToZIP(Collection<? extends Entity> entities) {
         String json = entitySerialization.toJson(entities, null, EntitySerializationOption.COMPACT_REPEATED_ENTITIES);
-        byte[] jsonBytes = json.getBytes();
+        byte[] jsonBytes = json.getBytes(StandardCharsets.UTF_8);
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(byteArrayOutputStream);
@@ -156,13 +156,13 @@ public class EntityImportExport implements EntityImportExportAPI {
     @Override
     public Collection<Entity> importEntitiesFromZIP(byte[] zipBytes, EntityImportView view) {
         Collection<Entity> result = new ArrayList<>();
-        Collection<? extends Entity> entities = null;
+        Collection<? extends Entity> entities;
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(zipBytes);
         ZipArchiveInputStream archiveReader = new ZipArchiveInputStream(byteArrayInputStream);
         try {
             try {
                 while (archiveReader.getNextZipEntry() != null) {
-                    String json = new String(readBytesFromEntry(archiveReader));
+                    String json = new String(readBytesFromEntry(archiveReader), StandardCharsets.UTF_8);
                     entities = entitySerialization.entitiesCollectionFromJson(json,
                             null,
                             EntitySerializationOption.COMPACT_REPEATED_ENTITIES);

@@ -59,6 +59,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -524,7 +525,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
                         exportDisplay.show(new ByteArrayDataProvider(entityImportExportService.exportEntitiesToZIP(selected)),
                                 selectedMeta.getJavaClass().getSimpleName() + ".zip", ZIP);
                     } else if (exportFormat == JSON) {
-                        exportDisplay.show(new ByteArrayDataProvider(entityImportExportService.exportEntitiesToJSON(selected).getBytes()),
+                        byte[] data = entityImportExportService.exportEntitiesToJSON(selected)
+                                .getBytes(StandardCharsets.UTF_8);
+                        exportDisplay.show(new ByteArrayDataProvider(data),
                                 selectedMeta.getJavaClass().getSimpleName() + ".json", JSON);
                     }
                 } catch (Exception e) {

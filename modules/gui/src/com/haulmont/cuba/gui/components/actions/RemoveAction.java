@@ -23,7 +23,6 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -60,8 +59,6 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
     protected boolean confirm = true;
     protected String confirmationMessage;
     protected String confirmationTitle;
-
-    protected Security security = AppBeans.get(Security.NAME);
 
     protected AfterRemoveHandler afterRemoveHandler;
 

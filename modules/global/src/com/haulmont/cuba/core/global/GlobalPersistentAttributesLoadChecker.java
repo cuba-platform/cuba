@@ -39,6 +39,12 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
     @Inject
     protected Metadata metadata;
 
+    protected enum PropertyLoadedState {
+        YES,
+        NO,
+        UNKNOWN
+    }
+
     @Override
     public boolean isLoaded(Object entity, String property) {
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
@@ -57,15 +63,15 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
             }
         }
 
-        Boolean isLoaded = isLoadedCommonCheck(entity, property);
-        if (isLoaded != null) {
-            return isLoaded;
+        PropertyLoadedState isLoaded = isLoadedCommonCheck(entity, property);
+        if (isLoaded != PropertyLoadedState.UNKNOWN) {
+            return isLoaded == PropertyLoadedState.YES;
         }
 
         return isLoadedSpecificCheck(entity, property, metaClass, metaProperty);
     }
 
-    protected Boolean isLoadedCommonCheck(Object entity, String property) {
+    protected PropertyLoadedState isLoadedCommonCheck(Object entity, String property) {
         if (entity instanceof BaseGenericIdEntity) {
             BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
 
@@ -73,7 +79,7 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
             if (inaccessibleAttributes != null) {
                 for (String inaccessibleAttr : inaccessibleAttributes) {
                     if (inaccessibleAttr.equals(property))
-                        return false;
+                        return PropertyLoadedState.NO;
                 }
             }
 
@@ -83,16 +89,16 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
                     boolean inFetchGroup = fetchGroup.getAttributeNames().contains(property);
                     if (!inFetchGroup) {
                         // definitely not loaded
-                        return false;
+                        return PropertyLoadedState.NO;
                     } else {
                         // requires additional check specific for the tier
-                        return null;
+                        return PropertyLoadedState.UNKNOWN;
                     }
                 }
             }
         }
 
-        return null;
+        return PropertyLoadedState.UNKNOWN;
     }
 
     protected boolean isLoadedSpecificCheck(Object entity, String property, MetaClass metaClass, MetaProperty metaProperty) {

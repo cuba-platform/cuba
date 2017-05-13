@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.global;
 
+import com.google.common.collect.ImmutableList;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.datatypes.Datatype;
@@ -61,7 +62,7 @@ public class MetadataTools {
     public static final String SYSTEM_ANN_NAME = "cuba.system";
     public static final String STORE_ANN_NAME = "cuba.storeName";
 
-    public static final List<Class> SYSTEM_INTERFACES = Arrays.asList(
+    public static final List<Class> SYSTEM_INTERFACES = ImmutableList.of(
             Instance.class,
             Entity.class,
             BaseGenericIdEntity.class,

@@ -108,7 +108,7 @@ public class Scheduling implements SchedulingMBean {
 
             Query query = em.createQuery(jpql);
 
-            Date startDate = DateUtils.addHours(timeSource.currentTimestamp(), -Integer.valueOf(age));
+            Date startDate = DateUtils.addHours(timeSource.currentTimestamp(), -Integer.parseInt(age));
             query.setParameter(1, startDate);
             if (maxPeriod != null) {
                 query.setParameter(2, Integer.parseInt(maxPeriod) * 3600);

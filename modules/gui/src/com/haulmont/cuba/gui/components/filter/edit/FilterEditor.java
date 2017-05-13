@@ -45,6 +45,8 @@ import java.util.*;
  */
 public class FilterEditor extends AbstractWindow {
 
+    private final Logger log = LoggerFactory.getLogger(FilterEditor.class);
+
     protected static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
 
     protected FilterEntity filterEntity;
@@ -112,8 +114,6 @@ public class FilterEditor extends AbstractWindow {
     protected ConditionFrame activeConditionFrame;
 
     protected boolean treeItemChangeListenerEnabled = true;
-
-    protected static Logger log = LoggerFactory.getLogger(FilterEditor.class);
 
     @WindowParam(name = "useShortConditionForm")
     protected Boolean useShortConditionForm;
