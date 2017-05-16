@@ -92,6 +92,8 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
+    apply(plugin: 'findbugs')
+    apply(plugin: 'pmd')
     apply(plugin: 'cuba')
 
     dependencies {
@@ -121,6 +123,80 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     javadoc {
         // move to plugin ?
         options.addStringOption("sourcepath", "")
+    }
+
+    findbugs {
+        toolVersion = "3.0.1"
+        ignoreFailures = true
+        omitVisitors = ['FindDoubleCheck']
+        excludeFilter = rootProject.file("findbugs/exclude-filter.xml")
+        effort = "max"
+        reportLevel = "high"
+    }
+
+    findbugsMain {
+        exclude "${project.buildDir}/**/release.number",
+                "${project.buildDir}/**/release.timestamp"
+        reports {
+            xml.enabled = false
+            html {
+                enabled = true
+                stylesheet = rootProject.resources.text.fromFile("findbugs/fancy-hist.xsl")
+                destination "${project.buildDir}/reports/findbugs/${project.name}.html"
+            }
+        }
+    }
+
+    findbugsTest {
+        exclude "${project.buildDir}/**/release.number",
+                "${project.buildDir}/**/release.timestamp"
+        reports {
+            xml.enabled = false
+            html {
+                enabled = true
+                stylesheet = rootProject.resources.text.fromFile("findbugs/fancy-hist.xsl")
+                destination "${project.buildDir}/reports/findbugs/test-${project.name}.html"
+            }
+        }
+    }
+
+    pmd {
+        ignoreFailures = true
+        sourceSets = [sourceSets.main]
+        reportsDir = file("${project.buildDir}/reports/pmd")
+        ruleSets = [
+                "java-basic",
+                "java-braces",
+                "java-design",
+                "java-unusedcode"
+        ]
+    }
+
+    pmdMain {
+        excludes = [
+                "**/release.number",
+                "**/release.timestamp",
+                "**/JPAParser.java",
+                "**/JPA2Parser.java"
+        ]
+        reports {
+            xml.enabled = true
+            html.enabled = false
+        }
+        source project.fileTree("src")
+    }
+
+
+    task pmdReport(dependsOn: pmdMain, group: 'verification', description:
+            'Generates a HTML report after executing PMD checks.') << {
+        ant.xslt(
+                in: "${project.buildDir}/reports/pmd/main.xml",
+                style: "${rootDir}/findbugs/pmd-nicerhtml.xsl",
+                out: "${project.buildDir}/reports/pmd/main.html")
+    }
+
+    check {
+        dependsOn += ['pmdReport']
     }
 }
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <Match>
+        <Class name="com.haulmont.cuba.core.sys.jpql.antlr.JPAParser"/>
+    </Match>
+
+    <Match>
+        <Class name="com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Parser"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD"/>
+    </Match>
+
+    <Match>
+        <Source name="~.*\.timestamp"/>
+    </Match>
+
+    <Match>
+        <Source name="~.*\.number"/>
+    </Match>
+</FindBugsFilter>
