@@ -69,8 +69,6 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
     protected Action enterPressAction;
     protected boolean editable = true;
 
-    protected String caption;
-
     protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
 
     protected CollectionDsActionsNotifier collectionDsActionsNotifier;

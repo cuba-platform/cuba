@@ -44,9 +44,6 @@ import java.util.UUID;
 public class DefaultConnection extends AbstractConnection implements ExternallyAuthenticatedConnection {
 
     @Inject
-    protected GlobalConfig globalConfig;
-
-    @Inject
     protected WebAuthConfig webAuthConfig;
 
     @Inject

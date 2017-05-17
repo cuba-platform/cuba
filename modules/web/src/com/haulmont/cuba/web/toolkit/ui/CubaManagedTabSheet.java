@@ -391,7 +391,7 @@ public class CubaManagedTabSheet extends CssLayout
         Component getComponent();
     }
 
-    public class TabImpl extends CssLayout implements Tab {
+    public static class TabImpl extends CssLayout implements Tab {
 
         protected String id;
 

@@ -62,7 +62,6 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     protected boolean optionsInitialized;
     protected boolean resetValueState = false;
 
-    protected boolean editable = true;
     protected boolean newOptionAllowed;
     protected boolean settingValue;
 

@@ -49,11 +49,6 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     protected String captionProperty;
     protected String descriptionProperty;
 
-    /**
-     * In the initialization list of options updating the data source is prohibited
-     */
-    protected boolean optionsInitialization = false;
-
     @Override
     public void setDatasource(Datasource datasource, String property) {
         if ((datasource == null && property != null) || (datasource != null && property == null))
@@ -182,9 +177,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     }
 
     protected void setComponentContainerDs(com.vaadin.data.Container newDataSource) {
-        optionsInitialization = true;
         component.setContainerDataSource(newDataSource);
-        optionsInitialization = false;
     }
 
     @Override

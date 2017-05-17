@@ -9,6 +9,26 @@
     </Match>
 
     <Match>
+        <Class name="com.haulmont.cuba.core.config.ConfigGetter"/>
+        <Bug pattern="ES_COMPARING_PARAMETER_STRING_WITH_EQ"/>
+    </Match>
+
+    <Match>
+        <Class name="com.haulmont.cuba.core.sys.serialization.UnfetchedValueHolder"/>
+        <Bug pattern="CN_IDIOM_NO_SUPER_CALL"/>
+    </Match>
+
+    <Match>
+        <Class name="com.haulmont.cuba.core.sys.jmx.MBeanExporter" />
+        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" />
+    </Match>
+
+    <Match>
+        <Class name="com.haulmont.cuba.portal.springframework.view.FreeMarkerView" />
+        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" />
+    </Match>
+
+    <Match>
         <Bug pattern="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD"/>
     </Match>
 

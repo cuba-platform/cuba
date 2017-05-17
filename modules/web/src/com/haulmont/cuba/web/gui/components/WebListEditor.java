@@ -173,7 +173,7 @@ public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor
         delegate.getDisplayValuesField().setTabIndex(tabIndex);
     }
 
-    public class CubaListEditor extends CustomField<List> {
+    public static class CubaListEditor extends CustomField<List> {
         private final Component content;
 
         public CubaListEditor(HBoxLayout mainLayout) {

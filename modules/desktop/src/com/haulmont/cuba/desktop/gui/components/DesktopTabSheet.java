@@ -72,7 +72,6 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
 
     // CAUTION do not add ChangeListeners directly to impl
     protected List<ChangeListener> implTabSheetChangeListeners = new ArrayList<>();
-    protected String caption;
 
     public DesktopTabSheet() {
         impl = new JTabbedPaneExt();

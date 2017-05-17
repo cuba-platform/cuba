@@ -69,7 +69,6 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     protected boolean valid = true;
 
     protected Object prevValue = null;
-    protected boolean editable = true;
 
     protected TimeZone timeZone;
     protected UserSession userSession;

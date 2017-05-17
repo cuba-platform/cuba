@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui.data;
 
+import com.google.common.collect.ImmutableList;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.vaadin.data.Container;
@@ -38,11 +39,7 @@ public class ObjectContainer implements com.vaadin.data.Container, Container.Ite
     protected List<ItemSetChangeListener> itemSetChangeListeners = null;
     protected boolean ignoreListeners;
 
-    protected static final List<String> methodsName = new ArrayList<>();
-    static {
-        methodsName.add("getName");
-        methodsName.add("getCaption");
-    }
+    protected static final List<String> methodsName = ImmutableList.of("getName", "getCaption");
 
     protected List values;
 

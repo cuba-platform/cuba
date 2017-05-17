@@ -44,7 +44,6 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected boolean settingsEnabled = true;
     protected boolean locked = false;
-    protected String caption;
 
     public DesktopSplitPanel() {
         impl = new JSplitPane() {
@@ -157,7 +156,7 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
 
     @Override
     public boolean isSplitPositionReversed() {
-        return isSplitPositionReversed();
+        return false;
     }
 
     @Override

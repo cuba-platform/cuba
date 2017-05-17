@@ -41,7 +41,7 @@ import java.util.List;
 
 public class SwingXTableSettings implements TableSettings {
 
-    protected final Logger log = LoggerFactory.getLogger(SwingXTableSettings.class);
+    private final Logger log = LoggerFactory.getLogger(SwingXTableSettings.class);
 
     protected JXTable table;
     protected List<Table.Column> columns;
@@ -250,9 +250,6 @@ public class SwingXTableSettings implements TableSettings {
                 }
 
                 Boolean underline = BooleanUtils.toBooleanObject(fontUnderline);
-                if (sizeIndex < 0) {
-                    log.debug("Broken underline property in font definition, skip");
-                }
 
                 @SuppressWarnings("MagicConstant")
                 Font font = new Font(fontFamily, style, size);

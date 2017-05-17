@@ -41,7 +41,6 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     protected DesktopAbstractBox content;
 
     protected boolean scheduledRepaint = false;
-    protected String caption;
 
     public DesktopScrollBoxLayout() {
         impl = new JScrollPane();

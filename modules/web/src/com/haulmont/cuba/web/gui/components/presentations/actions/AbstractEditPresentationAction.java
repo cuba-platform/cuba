@@ -25,6 +25,7 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.presentations.PresentationEditor;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 public abstract class AbstractEditPresentationAction extends AbstractPresentationAction {
 
@@ -47,7 +48,7 @@ public abstract class AbstractEditPresentationAction extends AbstractPresentatio
             Constructor<? extends PresentationEditor> windowConstructor = windowClass
                     .getConstructor(Presentation.class, Component.HasPresentations.class);
             window = windowConstructor.newInstance(presentation, table);
-        } catch (Exception e) {
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new DevelopmentException("Invalid presentation's screen");
         }
         return window;

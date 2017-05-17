@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -60,8 +59,6 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
 
     protected Object prevValue;
     protected String prevTextValue;
-
-    protected boolean editable = true;
 
     protected java.util.List<Action> actionsOrder = new LinkedList<>();
     protected java.util.Set<DesktopButton> buttons = new HashSet<>();
@@ -272,8 +269,8 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
     }
 
     public void checkDatasourceProperty(Datasource datasource, String property){
-        Preconditions.checkNotNullArgument(datasource);
-        Preconditions.checkNotNullArgument(property);
+        checkNotNullArgument(datasource);
+        checkNotNullArgument(property);
 
         MetaPropertyPath metaPropertyPath = getResolvedMetaPropertyPath(datasource.getMetaClass(), property);
         if (!metaPropertyPath.getRange().isClass()) {
@@ -286,10 +283,11 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
         checkDatasourceProperty(datasource, property);
         this.datasource = datasource;
 
-        if (datasource == null) {
+        // null datasource is not supported for this class
+        /*if (datasource == null) {
             setValue(null);
             return;
-        }
+        }*/
 
         resolveMetaPropertyPath(datasource.getMetaClass(), property);
 

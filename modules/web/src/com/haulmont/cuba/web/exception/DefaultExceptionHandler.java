@@ -22,11 +22,7 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebWindowManager;
-import com.vaadin.server.AbstractErrorMessage;
-import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorEvent;
-import com.vaadin.server.ErrorMessage;
-import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Window;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -70,14 +66,6 @@ public class DefaultExceptionHandler implements ExceptionHandler {
                 showDialog(app, t);
             } else {
                 showNotification(app, t);
-            }
-        } else {
-            // Finds the original source of the error/exception
-            AbstractComponent component = DefaultErrorHandler.findAbstractComponent(event);
-            if (component != null) {
-                // Shows the error in AbstractComponent
-                ErrorMessage errorMessage = AbstractErrorMessage.getErrorMessageForException(t);
-                component.setComponentError(errorMessage);
             }
         }
 

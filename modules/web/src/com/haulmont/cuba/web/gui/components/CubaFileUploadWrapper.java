@@ -181,8 +181,8 @@ public class CubaFileUploadWrapper extends CustomField {
     @Override
     public void focus() {
         super.focus();
-        if (uploadButton instanceof Focusable) {
-            ((Focusable) uploadButton).focus();
+        if (uploadButton != null) {
+            uploadButton.focus();
         }
     }
 

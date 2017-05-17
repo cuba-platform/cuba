@@ -105,7 +105,7 @@ public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
     public void setWidth(float width, Unit unit) {
         super.setWidth(width, unit);
 
-        if (composition != null) {
+        if (composition != null && dateField != null) {
             if (width < 0) {
                 composition.setWidth(-1, Unit.PIXELS);
                 String defaultDateFieldWidth = "-1px";

@@ -50,8 +50,6 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
     protected Resolution resolution;
 
-    protected boolean editable = true;
-
     protected boolean updatingInstance;
 
     protected CubaDateField dateField;
