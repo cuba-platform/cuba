@@ -19,7 +19,6 @@ package com.haulmont.cuba.core.sys;
 
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.security.entity.Permission;
@@ -59,6 +58,9 @@ public class DefaultPermissionValuesConfig {
     @Inject
     protected Resources resources;
 
+    @Inject
+    protected Metadata metadata;
+
     protected void checkInitialized() {
         if (!initialized) {
             lock.readLock().unlock();
@@ -70,8 +72,8 @@ public class DefaultPermissionValuesConfig {
                     initialized = true;
                 }
             } finally {
-                lock.writeLock().unlock();
                 lock.readLock().lock();
+                lock.writeLock().unlock();
             }
         }
     }
@@ -94,8 +96,7 @@ public class DefaultPermissionValuesConfig {
             Document document = Dom4j.readDocument(fileContent);
             List<Element> permissionElements = Dom4j.elements(document.getRootElement(), "permission");
 
-            Metadata metadata = AppBeans.get(Metadata.NAME);
-            permissionElements.stream().forEach(element -> {
+            for (Element element : permissionElements) {
                 String target = element.attributeValue("target");
                 Integer value = Integer.valueOf(element.attributeValue("value"));
                 Integer type = Integer.valueOf(element.attributeValue("type"));
@@ -104,7 +105,7 @@ public class DefaultPermissionValuesConfig {
                 permission.setType(PermissionType.fromId(type));
                 permission.setValue(value);
                 permissionValues.put(target, permission);
-            });
+            }
         } else {
             log.error("File {} not found", fileName);
         }

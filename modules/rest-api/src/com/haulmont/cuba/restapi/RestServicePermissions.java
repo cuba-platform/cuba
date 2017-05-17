@@ -20,15 +20,12 @@ package com.haulmont.cuba.restapi;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.restapi.controllers.ServicesController;
-import com.haulmont.restapi.exception.RestAPIException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -43,7 +40,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Class holds an information about services that allowed to be invoked with REST API.
  * Configuration is loaded from {@code *-rest-services.xml} files.
- *
  */
 @Component(RestServicePermissions.NAME)
 public class RestServicePermissions {
@@ -52,10 +48,10 @@ public class RestServicePermissions {
 
     public static final String CUBA_REST_SERVICES_CONFIG_PROP_NAME = "cuba.restServicesConfig";
 
+    private final Logger log = LoggerFactory.getLogger(RestServicePermissions.class);
+
     @Inject
     protected Resources resources;
-
-    protected static Logger log = LoggerFactory.getLogger(RestServicePermissions.class);
 
     protected Map<String, Set<String>> serviceMethods = new ConcurrentHashMap<>();
 

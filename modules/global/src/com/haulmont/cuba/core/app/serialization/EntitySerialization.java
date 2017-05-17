@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 @Component(EntitySerializationAPI.NAME)
 public class EntitySerialization implements EntitySerializationAPI {
 
-    protected Logger log = LoggerFactory.getLogger(EntitySerialization.class);
+    private final Logger log = LoggerFactory.getLogger(EntitySerialization.class);
 
     protected static final String ENTITY_NAME_PROP = "_entityName";
     protected static final String INSTANCE_NAME_PROP = "_instanceName";
@@ -64,17 +64,13 @@ public class EntitySerialization implements EntitySerializationAPI {
     @Inject
     protected DynamicAttributes dynamicAttributes;
 
-    protected ThreadLocal<EntitySerializationContext> context = new ThreadLocal<EntitySerializationContext>() {
-        @Override
-        protected EntitySerializationContext initialValue() {
-            return new EntitySerializationContext();
-        }
-    };
+    protected ThreadLocal<EntitySerializationContext> context =
+            ThreadLocal.withInitial(EntitySerializationContext::new);
 
     /**
      * Class is used for storing a collection of entities already processed during the serialization.
      */
-    protected class EntitySerializationContext {
+    protected static class EntitySerializationContext {
         protected Table<Object, MetaClass, Entity> processedEntities = HashBasedTable.create();
 
         protected Table<Object, MetaClass, Entity> getProcessedEntities() {

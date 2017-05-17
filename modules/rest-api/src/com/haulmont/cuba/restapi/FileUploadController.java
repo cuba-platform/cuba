@@ -47,10 +47,8 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InterruptedIOException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -99,7 +97,7 @@ public class FileUploadController {
                 saveFileDescriptor(fd);
 
                 response.setStatus(HttpServletResponse.SC_OK);
-                PrintWriter writer = new PrintWriter(response.getOutputStream());
+                PrintWriter writer = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8));
                 writer.write(fd.getId().toString());
                 writer.close();
 

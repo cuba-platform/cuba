@@ -52,14 +52,14 @@ public class RestQueriesConfiguration {
 
     protected final String CUBA_REST_QUERIES_CONFIG_PROP_NAME = "cuba.rest.queriesConfig";
 
+    private final Logger log = LoggerFactory.getLogger(RestQueriesConfiguration.class);
+
     protected volatile boolean initialized;
 
     protected ReadWriteLock lock = new ReentrantReadWriteLock();
 
     @Inject
     protected Resources resources;
-
-    protected static Logger log = LoggerFactory.getLogger(RestQueriesConfiguration.class);
 
     protected List<QueryInfo> queries = new ArrayList<>();
 

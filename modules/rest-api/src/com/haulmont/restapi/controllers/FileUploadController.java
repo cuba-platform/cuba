@@ -86,7 +86,7 @@ public class FileUploadController {
 
             long size = 0;
             try {
-                size = Long.valueOf(contentLength);
+                size = Long.parseLong(contentLength);
             } catch (NumberFormatException ignored) {
             }
 

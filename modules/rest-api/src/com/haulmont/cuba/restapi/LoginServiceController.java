@@ -40,6 +40,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -49,6 +50,8 @@ import java.util.Map;
 
 @Controller
 public class LoginServiceController {
+
+    private final Logger log = LoggerFactory.getLogger(LoginServiceController.class);
 
     @Inject
     protected PasswordEncryption passwordEncryption;
@@ -62,7 +65,6 @@ public class LoginServiceController {
     @Inject
     protected UserSessionService userSessionService;
 
-    private static Logger log = LoggerFactory.getLogger(LoginServiceController.class);
     private static MimeType FORM_TYPE;
 
     static {
@@ -167,7 +169,7 @@ public class LoginServiceController {
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
-            PrintWriter writer = new PrintWriter(response.getOutputStream());
+            PrintWriter writer = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8));
             writer.write(userSession.getId().toString());
             writer.close();
 
