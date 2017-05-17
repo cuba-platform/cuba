@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.web.sys;
 
-import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.Window;
@@ -28,10 +28,11 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.external.org.slf4j.Logger;
+import com.vaadin.external.org.slf4j.LoggerFactory;
 import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -61,7 +62,7 @@ public class MenuBuilder {
     protected WindowConfig windowConfig;
 
     @Inject
-    protected Scripting scripting;
+    protected MessageTools messageTools;
 
     protected AppMenu appMenu;
 
@@ -206,8 +207,9 @@ public class MenuBuilder {
     }
 
     protected void assignDescription(AppMenu.MenuItem menuItem, MenuItem conf) {
-        if (conf.getDescription() != null) {
-            menuItem.setDescription(conf.getDescription());
+        String description = conf.getDescription();
+        if (StringUtils.isNotEmpty(description)) {
+            menuItem.setDescription(messageTools.loadString(description));
         }
     }
 
