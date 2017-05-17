@@ -24,6 +24,19 @@
 
     <xs:element name="menu-config" type="menuOrItem"/>
 
+    <xs:simpleType name="resourceString">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="mainMsg://"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
     <xs:complexType name="menuOrItem">
         <xs:sequence>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -44,7 +57,7 @@
         <xs:attribute type="xs:string" name="id"/>
         <xs:attribute type="xs:string" name="insertBefore"/>
         <xs:attribute type="xs:string" name="insertAfter"/>
-        <xs:attribute type="xs:string" name="description"/>
+        <xs:attribute type="resourceString" name="description"/>
         <xs:attribute type="xs:string" name="stylename"/>
         <xs:attribute type="xs:string" name="icon"/>
         <xs:attribute type="xs:boolean" name="expanded"/>
@@ -63,7 +76,7 @@
         <xs:attribute type="openTypeType" name="openType"/>
         <xs:attribute type="xs:boolean" name="resizable"/>
         <xs:attribute type="xs:string" name="shortcut"/>
-        <xs:attribute type="xs:string" name="description"/>
+        <xs:attribute type="resourceString" name="description"/>
         <xs:attribute type="xs:string" name="stylename"/>
         <xs:attribute type="xs:string" name="icon"/>
         <xs:attribute type="xs:string" name="insertBefore"/>

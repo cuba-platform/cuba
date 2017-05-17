@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.sys;
 
 import com.google.common.base.Strings;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.Window;
@@ -28,6 +29,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.security.global.UserSession;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -59,6 +61,9 @@ public class SideMenuBuilder {
 
     @Inject
     protected WindowConfig windowConfig;
+
+    @Inject
+    private MessageTools messageTools;
 
     public SideMenuBuilder() {
     }
@@ -189,8 +194,9 @@ public class SideMenuBuilder {
     }
 
     protected void assignDescription(SideMenu.MenuItem menuItem, MenuItem conf) {
-        if (conf.getDescription() != null) {
-            menuItem.setDescription(conf.getDescription());
+        String description = conf.getDescription();
+        if (StringUtils.isNotEmpty(description)) {
+            menuItem.setDescription(messageTools.loadString(description));
         }
     }
 
