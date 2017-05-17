@@ -55,7 +55,7 @@ import java.util.UUID;
 @Controller
 public class FileUploadController {
 
-    private Logger log = LoggerFactory.getLogger(FileUploadController.class);
+    private final Logger log = LoggerFactory.getLogger(FileUploadController.class);
 
     @Inject
     protected UserSessionService userSessionService;
