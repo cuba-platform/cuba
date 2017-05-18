@@ -643,7 +643,7 @@
                var total = p[1]+p[2]+p[3]+p[4];
                if (total > 0) {
                   content += addBug(   4, containerId, label, bugP, bug[5], subContainerId,
-                                       "showbug('" + bugId + "', '" + subContainerId + "', '"+id3+"')");
+                                       "showbug('" + bugId + "', '" + subContainerId + "', '"+id3+"')", id3);
                }
             }
             return content;
@@ -672,7 +672,7 @@
             content += "</div>";
             return content;
          }
-         function addBug( level, id, label, p, version, subId, onclick) {
+         function addBug( level, id, label, p, version, subId, onclick, pattern) {
             var content = "";
             content += "<div class='bugList-level" + level + "' id='" + id + "'>";
             content += "<div class='bugList-level" + level + "-label' id='" + id + "'>";
@@ -681,7 +681,7 @@
             if (version==lastVersion) {
                content += "<span style='color:red;font-weight:bold;'>NEW!</span> ";
             }
-            content += "<strong>" + label + "</strong>";
+            content += "<strong>" + pattern + " : " + label + "</strong>";
             if (version==0) {
                content += " <em>since release first historized release</em>";
             } else {
