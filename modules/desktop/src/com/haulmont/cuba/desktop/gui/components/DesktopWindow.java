@@ -342,7 +342,7 @@ public class DesktopWindow implements Window, Component.Disposable,
                                     }
                                     @Override
                                     public void actionPerform(Component component) {
-                                        close(actionId, true);
+                                        committable.close(actionId, true);
                                     }
                                 },
                                 new DialogAction(Type.CANCEL) {
@@ -359,15 +359,14 @@ public class DesktopWindow implements Window, Component.Disposable,
                 );
             } else {
                 windowManager.showOptionDialog(
-                        messages.getMessage(AppConfig.getMessagesPack(), "closeUnsaved.caption"),
-                        messages.getMessage(AppConfig.getMessagesPack(), "closeUnsaved"),
+                        messages.getMainMessage("closeUnsaved.caption"),
+                        messages.getMainMessage("closeUnsaved"),
                         MessageType.WARNING,
                         new Action[]{
                                 new DialogAction(Type.YES) {
                                     @Override
                                     public void actionPerform(Component component) {
-                                        forceClose = true;
-                                        close(actionId);
+                                        getWrapper().close(actionId, true);
                                     }
 
                                 },

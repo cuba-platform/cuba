@@ -873,10 +873,8 @@ public class WebWindow implements Window, Component.Wrapper,
     public boolean isResponsive() {
         ComponentContainer container = getContainer();
 
-        if (container instanceof AbstractComponent) {
-            return ((AbstractComponent) container).isResponsive();
-        }
-        return false;
+        return container instanceof AbstractComponent
+                && ((AbstractComponent) container).isResponsive();
     }
 
     @Override
@@ -1065,6 +1063,7 @@ public class WebWindow implements Window, Component.Wrapper,
                                     public String getCaption() {
                                         return messages.getMainMessage("closeUnsaved.save");
                                     }
+                                    
                                     @Override
                                     public void actionPerform(Component component) {
                                         committable.commitAndClose();
@@ -1083,7 +1082,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
                                     @Override
                                     public void actionPerform(Component component) {
-                                        close(actionId, true);
+                                        committable.close(actionId, true);
                                     }
                                 },
                                 new DialogAction(DialogAction.Type.CANCEL) {
@@ -1091,6 +1090,7 @@ public class WebWindow implements Window, Component.Wrapper,
                                     public String getIcon() {
                                         return null;
                                     }
+
                                     @Override
                                     public void actionPerform(Component component) {
                                         doAfterClose = null;
@@ -1102,15 +1102,14 @@ public class WebWindow implements Window, Component.Wrapper,
                 );
             } else {
                 windowManager.showOptionDialog(
-                        messages.getMessage(WebWindow.class, "closeUnsaved.caption"),
-                        messages.getMessage(WebWindow.class, "closeUnsaved"),
+                        messages.getMainMessage("closeUnsaved.caption"),
+                        messages.getMainMessage("closeUnsaved"),
                         MessageType.WARNING,
                         new Action[]{
                                 new DialogAction(DialogAction.Type.YES) {
                                     @Override
                                     public void actionPerform(Component component) {
-                                        forceClose = true;
-                                        close(actionId);
+                                        getWrapper().close(actionId, true);
                                     }
                                 },
                                 new DialogAction(DialogAction.Type.NO, Status.PRIMARY) {
