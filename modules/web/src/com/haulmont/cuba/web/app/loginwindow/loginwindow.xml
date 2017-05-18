@@ -44,7 +44,10 @@
                            value="mainMsg://loginWindow.welcomeLabel"/>
                 </hbox>
 
-                <grid id="loginFormLayout" stylename="c-login-form" spacing="true">
+                <grid id="loginFormLayout"
+                      stylename="c-login-form"
+                      spacing="true"
+                      align="MIDDLE_CENTER">
                     <columns>
                         <column id="loginFormCaptionColumn"/>
                         <column id="loginFormFieldColumn"/>
