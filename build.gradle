@@ -127,7 +127,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
 
     findbugs {
         toolVersion = "3.0.1"
-        ignoreFailures = true
+        ignoreFailures = false
         omitVisitors = ['FindDoubleCheck']
         excludeFilter = rootProject.file("findbugs/exclude-filter.xml")
         effort = "max"
@@ -135,8 +135,6 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     }
 
     findbugsMain {
-        exclude "${project.buildDir}/**/release.number",
-                "${project.buildDir}/**/release.timestamp"
         reports {
             xml.enabled = false
             html {
@@ -148,8 +146,6 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     }
 
     findbugsTest {
-        exclude "${project.buildDir}/**/release.number",
-                "${project.buildDir}/**/release.timestamp"
         reports {
             xml.enabled = false
             html {
@@ -174,8 +170,6 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
 
     pmdMain {
         excludes = [
-                "**/release.number",
-                "**/release.timestamp",
                 "**/JPAParser.java",
                 "**/JPA2Parser.java"
         ]
@@ -330,6 +324,12 @@ configure(globalModule) {
         from "$buildDir/tmp/filtered"
     }
     sourceJar.dependsOn filterDummyEntities
+
+    findbugsMain {
+        classes = classes.filter {
+            !it.path.contains(new File("com/haulmont/cuba/core/global/release.").path)
+        }
+    }
 }
 
 configure(coreModule) {
