@@ -22,7 +22,7 @@ import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
@@ -98,13 +98,14 @@ public class RoleBrowser extends AbstractLookup {
                 rolesDs.refresh();
             }
         };
+        copyRoles.setCaption(getMessage("actions.Copy"));
 
         boolean hasPermissionsToCreateRole = security.isEntityOpPermitted(Role.class, EntityOp.CREATE);
         copyRoles.setEnabled(hasPermissionsToCreateRole);
 
         rolesTable.addAction(copyRoles);
 
-        rolesTable.addAction(new ItemTrackingAction("assignToUsers") {
+        ItemTrackingAction assignToUsersAction = new ItemTrackingAction("assignToUsers") {
             @Override
             public void actionPerform(Component component) {
                 if (target.getSelected().isEmpty()) {
@@ -115,47 +116,41 @@ public class RoleBrowser extends AbstractLookup {
                 final Role role = (Role) target.getSingleSelected();
                 Map<String, Object> params = new HashMap<>();
                 WindowParams.MULTI_SELECT.set(params, true);
-                openLookup("sec$User.lookup", new Handler() {
-                    @Override
-                    public void handleLookup(Collection items) {
-                        if (items == null) return;
-                        List<Entity> toCommit = new ArrayList<>();
-                        for (Object item : items) {
-                            User user = (User) item;
-                            LoadContext<UserRole> ctx = new LoadContext<>(UserRole.class).setView("user.edit");
-                            LoadContext.Query query = ctx.setQueryString("select ur from sec$UserRole ur where ur.user.id = :user");
-                            query.setParameter("user", user);
-                            List<UserRole> userRoles = dataManager.loadList(ctx);
+                openLookup("sec$User.lookup", items -> {
+                    if (items == null) return;
+                    List<Entity> toCommit = new ArrayList<>();
+                    for (Object item : items) {
+                        User user = (User) item;
+                        LoadContext<UserRole> ctx = new LoadContext<>(UserRole.class).setView("user.edit");
+                        LoadContext.Query query = ctx.setQueryString("select ur from sec$UserRole ur where ur.user.id = :user");
+                        query.setParameter("user", user);
+                        List<UserRole> userRoles = dataManager.loadList(ctx);
 
-                            boolean roleExist = false;
-                            for (UserRole userRole : userRoles) {
-                                if (role.equals(userRole.getRole())) {
-                                    roleExist = true;
-                                    break;
-                                }
-                            }
-                            if (!roleExist) {
-                                UserRole ur = metadata.create(UserRole.class);
-                                ur.setUser(user);
-                                ur.setRole(role);
-                                toCommit.add(ur);
+                        boolean roleExist = false;
+                        for (UserRole userRole : userRoles) {
+                            if (role.equals(userRole.getRole())) {
+                                roleExist = true;
+                                break;
                             }
                         }
-
-                        if (!toCommit.isEmpty()) {
-                            dataManager.commit(new CommitContext(toCommit));
+                        if (!roleExist) {
+                            UserRole ur = metadata.create(UserRole.class);
+                            ur.setUser(user);
+                            ur.setRole(role);
+                            toCommit.add(ur);
                         }
-
-                        showNotification(getMessage("rolesAssigned.msg"), NotificationType.HUMANIZED);
                     }
-                }, WindowManager.OpenType.THIS_TAB, params);
-            }
 
-            @Override
-            public String getCaption() {
-                return getMessage("assignToUsers");
+                    if (!toCommit.isEmpty()) {
+                        dataManager.commit(new CommitContext(toCommit));
+                    }
+
+                    showNotification(getMessage("rolesAssigned.msg"), NotificationType.HUMANIZED);
+                }, OpenType.THIS_TAB, params);
             }
-        });
+        };
+        assignToUsersAction.setCaption(getMessage("assignToUsers"));
+        rolesTable.addAction(assignToUsersAction);
 
         boolean hasPermissionsToCreateUserRole = security.isEntityOpPermitted(UserRole.class, EntityOp.CREATE);
 
