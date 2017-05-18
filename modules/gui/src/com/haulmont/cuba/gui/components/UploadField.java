@@ -46,6 +46,7 @@ public interface UploadField extends Component, Component.HasCaption, Component.
         }
     }
 
+    @FunctionalInterface
     interface FileUploadStartListener {
         void fileUploadStart(FileUploadStartEvent e);
     }
@@ -56,6 +57,7 @@ public interface UploadField extends Component, Component.HasCaption, Component.
         }
     }
 
+    @FunctionalInterface
     interface FileUploadFinishListener {
         void fileUploadFinish(FileUploadFinishEvent e);
     }
@@ -75,6 +77,7 @@ public interface UploadField extends Component, Component.HasCaption, Component.
         }
     }
 
+    @FunctionalInterface
     interface FileUploadErrorListener {
         void fileUploadError(FileUploadErrorEvent e);
     }

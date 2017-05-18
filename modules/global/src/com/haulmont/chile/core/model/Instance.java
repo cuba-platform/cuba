@@ -172,6 +172,7 @@ public interface Instance extends Serializable {
     /**
      * Interface to track changes in data model objects.
      */
+    @FunctionalInterface
     interface PropertyChangeListener {
         /**
          * Called when value of instance property changed.

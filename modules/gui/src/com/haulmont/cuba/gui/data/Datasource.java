@@ -201,6 +201,7 @@ public interface Datasource<T extends Entity> {
     /**
      * Listener to datasource item change events.
      */
+    @FunctionalInterface
     interface ItemChangeListener<T extends Entity> {
         /**
          * Current item changed, that is now {@link com.haulmont.cuba.gui.data.Datasource#getItem()} returns a different
@@ -248,6 +249,7 @@ public interface Datasource<T extends Entity> {
     /**
      * Listener to datasource state change events.
      */
+    @FunctionalInterface
     interface StateChangeListener<T extends Entity> {
         /**
          * Datasource state changed.
@@ -314,6 +316,7 @@ public interface Datasource<T extends Entity> {
     /**
      * Listener to datasource item property value change events.
      */
+    @FunctionalInterface
     interface ItemPropertyChangeListener<T extends Entity> {
         /**
          * Property value of some datasource item changed. In case of {@link CollectionDatasource} this method may be

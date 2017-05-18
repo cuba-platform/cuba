@@ -1367,6 +1367,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     /**
      * An event listener for selection events in the DataGrid.
      */
+    @FunctionalInterface
     interface SelectionListener<E> {
         /**
          * Called when the selection state has changed.

@@ -99,6 +99,7 @@ public interface TextInputField extends Field, Component.Buffered, Component.Foc
         void setTextChangeEventMode(TextChangeEventMode mode);
     }
 
+    @FunctionalInterface
     interface TextChangeListener {
         void textChange(TextChangeEvent event);
     }
@@ -172,6 +173,7 @@ public interface TextInputField extends Field, Component.Buffered, Component.Foc
         void removeEnterPressListener(EnterPressListener listener);
     }
 
+    @FunctionalInterface
     interface EnterPressListener {
         void enterPressed(EnterPressEvent e);
     }

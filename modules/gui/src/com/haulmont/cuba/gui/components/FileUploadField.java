@@ -125,6 +125,7 @@ public interface FileUploadField extends UploadField, Field, Component.Focusable
         }
     }
 
+    @FunctionalInterface
     interface FileUploadSucceedListener {
         void fileUploadSucceed(FileUploadSucceedEvent e);
     }

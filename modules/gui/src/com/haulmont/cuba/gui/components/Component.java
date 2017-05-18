@@ -317,6 +317,7 @@ public interface Component {
     /**
      * Listener fired when user clicks inside the layout at any place.
      */
+    @FunctionalInterface
     interface LayoutClickListener {
         void layoutClick(LayoutClickEvent event);
     }
@@ -399,6 +400,7 @@ public interface Component {
     /**
      * Listener to value change events.
      */
+    @FunctionalInterface
     interface ValueChangeListener {
         /**
          * Called when value of Component changed.
@@ -527,6 +529,7 @@ public interface Component {
         }
     }
 
+    @FunctionalInterface
     interface EditableChangeListener {
         void editableChanged(EditableChangeEvent event);
     }
@@ -615,6 +618,7 @@ public interface Component {
     /**
      * Listener to expanded state change events.
      */
+    @FunctionalInterface
     interface ExpandedStateChangeListener {
         /**
          * Called when expanded state of {@link com.haulmont.cuba.gui.components.Component.Collapsable} changed.

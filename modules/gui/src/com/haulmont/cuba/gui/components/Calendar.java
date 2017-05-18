@@ -191,6 +191,7 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
     /**
      * Event mouse drag listener.
      */
+    @FunctionalInterface
     interface CalendarEventMoveListener {
         void eventMove(CalendarEventMoveEvent event);
     }
@@ -222,6 +223,7 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
     /**
      * Backward icon click listener.
      */
+    @FunctionalInterface
     interface CalendarBackwardClickListener {
         void backwardClick(CalendarBackwardClickEvent event);
     }
@@ -241,6 +243,7 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
     /**
      * Date labels click listener of the component.
      */
+    @FunctionalInterface
     interface CalendarDateClickListener {
         void dateClick(CalendarDateClickEvent event);
     }
@@ -266,6 +269,7 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
     /**
      * Event labels click listener of the component.
      */
+    @FunctionalInterface
     interface CalendarEventClickListener {
         void eventClick(CalendarEventClickEvent event);
     }
@@ -297,6 +301,7 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
     /**
      * Forward icon click listener.
      */
+    @FunctionalInterface
     interface CalendarForwardClickListener {
         void forwardClick(CalendarForwardClickEvent event);
     }
@@ -316,6 +321,7 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
     /**
      * Event range change listener.
      */
+    @FunctionalInterface
     interface CalendarEventResizeListener {
         void eventResize(CalendarEventResizeEvent event);
     }
@@ -360,6 +366,7 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
     /**
      * Week labels click listener.
      */
+    @FunctionalInterface
     interface CalendarWeekClickListener {
         void weekClick(CalendarWeekClickEvent event);
     }
@@ -391,6 +398,7 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
     /**
      * Time range mouse select listener.
      */
+    @FunctionalInterface
     interface CalendarRangeSelectListener {
         void rangeSelect(CalendarRangeSelectEvent event);
     }

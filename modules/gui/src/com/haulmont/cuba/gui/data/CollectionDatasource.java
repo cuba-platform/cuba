@@ -468,6 +468,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
         }
     }
 
+    @FunctionalInterface
     interface CollectionChangeListener<T extends Entity<K>, K> {
         /**
          * Enclosed collection changed.

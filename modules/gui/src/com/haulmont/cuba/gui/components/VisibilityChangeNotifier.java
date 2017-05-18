@@ -20,6 +20,7 @@ public interface VisibilityChangeNotifier {
     void addVisibilityChangeListener(VisibilityChangeListener listener);
     void removeVisibilityChangeListener(VisibilityChangeListener listener);
 
+    @FunctionalInterface
     interface VisibilityChangeListener {
         void componentVisibilityChanged(VisibilityChangeEvent event);
     }

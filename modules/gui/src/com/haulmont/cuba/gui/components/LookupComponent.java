@@ -53,6 +53,7 @@ public interface LookupComponent extends Component {
         }
     }
 
+    @FunctionalInterface
     interface LookupSelectionChangeListener {
         void lookupValueChanged(LookupSelectionChangeEvent event);
     }

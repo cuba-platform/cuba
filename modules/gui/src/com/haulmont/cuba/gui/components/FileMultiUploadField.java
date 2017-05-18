@@ -92,6 +92,7 @@ public interface FileMultiUploadField extends UploadField {
      */
     void clearUploads();
 
+    @FunctionalInterface
     interface QueueUploadCompleteListener {
         void queueUploadComplete();
     }
