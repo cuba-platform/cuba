@@ -30,7 +30,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
-import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +58,7 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
 
     public WebFrame() {
-        ((CubaOrderedActionsLayout)component).addActionHandler(new com.vaadin.event.Action.Handler() {
+        component.addActionHandler(new com.vaadin.event.Action.Handler() {
             @Override
             public com.vaadin.event.Action[] getActions(Object target, Object sender) {
                 return actionsHolder.getActionImplementations();

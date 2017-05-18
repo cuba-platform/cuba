@@ -20,7 +20,7 @@ import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.server.Sizeable;
 
-public class WebVBoxLayout extends WebAbstractBox implements VBoxLayout {
+public class WebVBoxLayout extends WebAbstractBox<CubaVerticalActionsLayout> implements VBoxLayout {
     public WebVBoxLayout() {
         component = new CubaVerticalActionsLayout();
         component.setWidth(100, Sizeable.Unit.PERCENTAGE);

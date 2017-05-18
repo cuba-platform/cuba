@@ -23,14 +23,14 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractOrderedLayout;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> implements BoxLayout {
+public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
+        extends WebAbstractComponent<T> implements BoxLayout {
 
     protected List<Component> ownComponents = new ArrayList<>();
     protected LayoutEvents.LayoutClickListener layoutClickListener;
@@ -199,18 +199,6 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
     }
 
     @Override
-    public String getDescription() {
-        return getComposition().getDescription();
-    }
-
-    @Override
-    public void setDescription(String description) {
-        if (getComposition() instanceof AbstractComponent) {
-            ((AbstractComponent) getComposition()).setDescription(description);
-        }
-    }
-
-    @Override
     public void addLayoutClickListener(LayoutClickListener listener) {
         getEventRouter().addListener(LayoutClickListener.class, listener);
         if (layoutClickListener == null) {
@@ -227,7 +215,7 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
 
     protected Component findChildComponent(BoxLayout layout, com.vaadin.ui.Component clickedComponent) {
         for (Component component : layout.getComponents()) {
-            if (WebComponentsHelper.getComposition(component) == clickedComponent) {
+            if (component.unwrapComposition(com.vaadin.ui.Component.class) == clickedComponent) {
                 return component;
             }
         }
