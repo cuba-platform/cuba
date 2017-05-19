@@ -507,6 +507,13 @@ public interface Component {
     interface Editable extends Component {
         boolean isEditable();
         void setEditable(boolean editable);
+
+        default boolean isEditableWithParent() {
+            if (getParent() instanceof ChildEditableController) {
+                return isEditable() && ((ChildEditableController) getParent()).isEditable();
+            }
+            return isEditable();
+        }
     }
 
     /**
