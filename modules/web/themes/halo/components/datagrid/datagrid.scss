@@ -78,12 +78,29 @@
     }
   }
 
+  .#{$primary-stylename} {
+    .v-link,
+    .v-button-link {
+      -webkit-transition: none;
+      -moz-transition: none;
+      transition: none;
+    }
+  }
+
   .#{$primary-stylename}-row-selected {
-    .#{$primary-stylename}-cell .boolean-value {
-      &:before {
-        $font-color: valo-font-color($v-selection-color, 0.9);
+    $font-color: valo-font-color($v-selection-color, 0.9);
+
+    .#{$primary-stylename}-cell {
+      .v-link,
+      .v-button-link,
+      .boolean-value:before {
         color: $font-color;
       }
+    }
+
+    .v-button-link:focus,
+    .v-button:focus:after {
+      border-color: $font-color;
     }
   }
 

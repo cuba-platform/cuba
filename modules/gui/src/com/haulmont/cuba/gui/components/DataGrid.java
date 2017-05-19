@@ -1028,6 +1028,12 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     }
 
     /**
+     * A renderer for presenting simple plain-text string values as a link with call back handler.
+     */
+    interface ClickableTextRenderer extends Renderer, HasNullRepresentation, HasRendererClickListener {
+    }
+
+    /**
      * A renderer for presenting HTML content.
      */
     interface HtmlRenderer extends Renderer, HasNullRepresentation {

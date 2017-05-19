@@ -147,6 +147,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                 new ImmutableMap.Builder<>();
 
         builder.put(DataGrid.TextRenderer.class, WebTextRenderer.class);
+        builder.put(DataGrid.ClickableTextRenderer.class, WebClickableTextRenderer.class);
         builder.put(DataGrid.HtmlRenderer.class, WebHtmlRenderer.class);
         builder.put(DataGrid.ProgressBarRenderer.class, WebProgressBarRenderer.class);
         builder.put(DataGrid.DateRenderer.class, WebDateRenderer.class);
