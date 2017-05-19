@@ -27,8 +27,10 @@ import org.antlr.runtime.tree.CommonErrorNode;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.TreeVisitor;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class Jpa2GrammarTest {
@@ -76,8 +78,10 @@ public class Jpa2GrammarTest {
     }
 
     @Test
+    @Ignore
     public void testFunction() throws Exception {
         testQuery("select u from sec$User u where function('DAYOFMONTH', u.createTs) = 1");
+        testQuery("select u from sec$User u where function('hasRoles', u.createdBy, u.login)");
     }
 
     @Test
@@ -127,6 +131,7 @@ public class Jpa2GrammarTest {
     }
 
     @Test
+    @Ignore
     public void testMemberOf() throws Exception {
         String query = "where p.owner.id = :userParam or (select u from tamsy$User u where u.id = :userParam) member of p.developers";
         CharStream cs = new AntlrNoCaseStringStream(query);
@@ -135,6 +140,10 @@ public class Jpa2GrammarTest {
         JPA2Parser jpa2Parser = new JPA2Parser(tstream);
         JPA2Parser.where_clause_return aReturn = jpa2Parser.where_clause();
         Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
+
+        testQuery("SELECT d FROM app$Department d WHERE (select e from app$Employee e where e.id = :eParam) MEMBER OF e.employees");
+        testQuery("SELECT e FROM app$Employee e WHERE 'write code' MEMBER OF e.codes");
+        testQuery("SELECT e FROM app$Employee e WHERE 'write code' NOT MEMBER OF e.codes");
     }
 
     @Test
@@ -230,5 +239,150 @@ public class Jpa2GrammarTest {
     public void testInClause() throws Exception {
         testQuery("select u from sec$User u where u.login in ('a', 'b', 'c')");
         testQuery("select u from sec$User u where u.login in (1, 2, 3)");
+    }
+
+    @Test
+    @Ignore
+    public void testTreat() throws Exception {
+        testQuery("SELECT e FROM app$Employee e JOIN TREAT(e.projects AS app$LargeProject) p WHERE p.budget > 1000000");
+        testQuery("SELECT e FROM app$Employee e JOIN e.projects p WHERE TREAT(p as app$LargeProject).budget > 1000000");
+    }
+
+    @Test
+    public void testInCollectionMember() throws Exception {
+        testQuery("SELECT e FROM app$Employee e, IN(e.projects) p WHERE p.budget > 1000000");
+    }
+
+    @Test
+    public void testIsNotEmpty() throws Exception {
+        testQuery("SELECT e FROM app$Employee e WHERE e.projects IS EMPTY");
+        testQuery("SELECT e FROM app$Employee e WHERE e.projects IS NOT EMPTY");
+    }
+
+    @Test
+    @Ignore
+    public void testEntityTypeExpression() throws Exception {
+        testQuery("SELECT e FROM app$Employee e WHERE TYPE(e) IN :empTypes");
+        testQuery("SELECT e FROM app$Employee e WHERE TYPE(e) IN (:empType1, :empType2)");
+        testQuery("SELECT e FROM app$Employee e WHERE TYPE(e) <> app$Exempt");
+        testQuery("SELECT e FROM app$Employee e WHERE TYPE(e) IN (app$Exempt, app$Contractor)");
+    }
+
+    @Test
+    @Ignore
+    public void testCaseExpression() throws Exception {
+        testQuery("UPDATE app$Employee e SET e.salary = CASE e.rating WHEN 1 THEN e.salary * 1.1 WHEN 2 THEN e.salary * 1.05 ELSE e.salary * 1.01 END");
+        testQuery("UPDATE app$Employee e SET e.salary = CASE WHEN e.rating = 1 THEN e.salary * 1.1 WHEN e.rating = 2 THEN e.salary * 1.05 ELSE e.salary * 1.01 END");
+        testQuery("SELECT e.name, CASE TYPE(e) WHEN app$Exempt THEN 'Exempt' WHEN app$Contractor THEN 'Contractor' WHEN app$Intern THEN 'Intern' ELSE 'NonExempt' END FROM app$Employee e " +
+                "WHERE e.dept.name = 'Engineering'");
+        testQuery("SELECT e.name, f.name, CONCAT(CASE WHEN f.annualMiles > 50000 THEN 'Platinum ' WHEN f.annualMiles > 25000 THEN 'Gold ' ELSE '' END, 'Frequent Flyer') " +
+                "FROM app$Employee e JOIN e.frequentFlierPlan f");
+    }
+
+    @Test
+    public void testArithmeticFunctions() throws Exception {
+        testQuery("SELECT w.name FROM app$Course c JOIN c.studentWaitlist w WHERE c.name = 'Calculus' AND INDEX(w) = 0");
+        testQuery("SELECT w.name FROM app$Course c WHERE c.name = 'Calculus' AND SIZE(c.studentWaitlist) = 1");
+        testQuery("SELECT w.name FROM app$Course c WHERE c.name = 'Calculus' AND ABS(c.time) = 10");
+        testQuery("SELECT w.name FROM app$Course c WHERE c.name = 'Calculus' AND SQRT(c.time) = 10.5");
+        testQuery("SELECT w.name FROM app$Course c WHERE c.name = 'Calculus' AND MOD(c.time, c.time1) = 2");
+    }
+
+
+    @Test
+    @Ignore
+    public void testStringFunctions() throws Exception {
+        testQuery("SELECT x FROM app$Magazine x WHERE CONCAT(x.title, 's') = 'JDJs'");
+
+        testQuery("SELECT x FROM app$Magazine x WHERE SUBSTRING(x.title, 1, 1) = 'J'");
+        testQuery("SELECT x FROM app$Magazine x WHERE SUBSTRING(x.title, 1) = 'J'");
+
+        testQuery("SELECT x FROM app$Magazine x WHERE TRIM(x.title) = 'D'");
+        testQuery("SELECT x FROM app$Magazine x WHERE TRIM(TRAILING FROM x.title) = 'D'");
+        testQuery("SELECT x FROM app$Magazine x WHERE TRIM(LEADING FROM x.title) = 'D'");
+        testQuery("SELECT x FROM app$Magazine x WHERE TRIM(BOTH FROM x.title) = 'D'");
+        testQuery("SELECT x FROM app$Magazine x WHERE TRIM(FROM x.title) = 'D'");
+
+        testQuery("SELECT x FROM app$Magazine x WHERE TRIM(TRAILING 'J' FROM x.title) = 'D'");
+        testQuery("SELECT x FROM app$Magazine x WHERE TRIM(LEADING 'J' FROM x.title) = 'D'");
+        testQuery("SELECT x FROM app$Magazine x WHERE TRIM(BOTH 'J' FROM x.title) = 'D'");
+
+        testQuery("SELECT x FROM app$Magazine x WHERE LOWER(x.title) = 'd'");
+        testQuery("SELECT x FROM app$Magazine x WHERE UPPER(x.title) = 'D'");
+        testQuery("SELECT x FROM app$Magazine x WHERE LENGTH(x.title) = 10");
+
+        testQuery("SELECT x FROM app$Magazine x WHERE LOCATE('A', x.title, 4) = 6");
+        testQuery("SELECT x FROM app$Magazine x WHERE LOCATE('A', x.title) = 2");
+    }
+
+    @Test
+    public void testHaving() throws RecognitionException {
+        testQuery("SELECT c, COUNT(o) FROM app$Customer c JOIN c.orders o GROUP BY c HAVING COUNT(o) > 5");
+        testQuery("SELECT c.status, AVG(c.filledOrderCount), COUNT(c) FROM app$Customer c GROUP BY c.status HAVING c.status IN (1, 2)");
+    }
+
+    @Test
+    public void testNullIfCoalesce() throws RecognitionException {
+        testQuery("SELECT NULLIF(emp.salary, 10) FROM app$Employee emp");
+        testQuery("SELECT COALESCE(emp.salary, emp.salaryOld, 10) FROM app$Employee emp");
+    }
+
+    @Test
+    public void testAllAnySome() throws RecognitionException {
+        testQuery("SELECT emp FROM app$Employee emp WHERE emp.salary > ALL (SELECT m.salary FROM app$Manager m WHERE m.department = emp.department)");
+        testQuery("SELECT emp FROM app$Employee emp WHERE emp.salary > ANY (SELECT m.salary FROM app$Manager m WHERE m.department = emp.department)");
+        testQuery("SELECT emp FROM app$Employee emp WHERE emp.salary > SOME (SELECT m.salary FROM app$Manager m WHERE m.department = emp.department)");
+    }
+
+    @Test
+    @Ignore
+    public void testNewObjectInSelect() throws RecognitionException {
+        testQuery("SELECT NEW com.acme.example.CustomerDetails(c.id, c.status, o.count) FROM app$Customer c JOIN c.orders o WHERE o.count > 100");
+    }
+
+    @Test
+    @Ignore
+    public void testKeyValueColection() throws RecognitionException {
+        testQuery("SELECT v.location.street, KEY(i).title, VALUE(i) FROM app$VideoStore v JOIN v.videoInventory i WHERE v.location.zipcode = '94301' AND VALUE(i) > 0");
+    }
+
+    @Test
+    @Ignore
+    public void testLiterals() throws RecognitionException {
+        testQuery("SELECT e FROM app$Employee e WHERE e.name = 'Bob'");
+
+        testQuery("SELECT e FROM app$Employee e WHERE e.id = 1234");
+        testQuery("SELECT e FROM app$Employee e WHERE e.id = -1234");
+
+        testQuery("SELECT e FROM app$Employee e WHERE e.id = 1234L");
+        testQuery("SELECT e FROM app$Employee e WHERE e.id = -1234L");
+
+        testQuery("SELECT s FROM app$Stat s WHERE s.ratio > 3.14F");
+        testQuery("SELECT s FROM app$Stat s WHERE s.ratio > -3.14F");
+
+        testQuery("SELECT s FROM app$Stat s WHERE s.ratio > 3.14e32D");
+        testQuery("SELECT s FROM app$Stat s WHERE s.ratio > -3.14e32D");
+
+        testQuery("SELECT e FROM app$Employee e WHERE e.active = TRUE");
+
+        testQuery("SELECT e FROM app$Employee e WHERE e.startDate = {d'2012-01-03'}");
+        testQuery("SELECT e FROM app$Employee e WHERE e.startTime = {t'09:00:00'}");
+        testQuery("SELECT e FROM app$Employee e WHERE e.version = {ts'2012-01-03 09:00:00.000000001'}");
+
+        testQuery("UPDATE app$Employee e SET e.manager = NULL WHERE e.manager = :manager");
+    }
+
+    @Test
+    @Ignore
+    public void testAggregateFunctions() throws RecognitionException {
+        testQuery("SELECT AVG(o.quantity)/2.0 FROM app$Order o");
+        testQuery("SELECT AVG(o.quantity * o.price) FROM app$Order o");
+    }
+
+    @Test
+    @Ignore
+    public void testSubQueries() throws RecognitionException {
+        testQuery("SELECT goodCustomer FROM app$Customer goodCustomer WHERE goodCustomer.balanceOwed < (SELECT AVG(c.balanceOwed)/2.0 FROM app$Customer c)");
+        testQuery("SELECT c FROM app$Customer c WHERE (SELECT AVG(o.price) FROM c.orders o) > 100");
     }
 }
