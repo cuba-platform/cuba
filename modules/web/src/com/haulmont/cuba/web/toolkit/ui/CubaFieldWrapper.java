@@ -54,7 +54,7 @@ public class CubaFieldWrapper extends CustomField {
     @Override
     public boolean isReadOnly() {
         if (component instanceof Component.Editable) {
-            return !((Component.Editable) component).isEditable();
+            return !((Component.Editable) component).isEditableWithParent();
         }
         return super.isReadOnly();
     }
