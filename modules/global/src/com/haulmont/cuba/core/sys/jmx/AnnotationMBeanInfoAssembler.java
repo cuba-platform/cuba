@@ -49,6 +49,8 @@ import java.util.Map;
  * Such method is exposed as operation, not as attribute accessor.
  */
 public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAssembler {
+    protected static final String FIELD_RUN_ASYNC = "runAsync";
+    protected static final String FIELD_TIMEOUT = "timeout";
 
     /* Map: Bean name -> jmx interface */
     private Map<String, Class> interfaceCache = Maps.newHashMap();
@@ -387,9 +389,31 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
     protected void populateOperationDescriptor(Descriptor desc, Method method, String beanKey) {
         Method resolvedOperation = findJmxMethod(method, beanKey);
         ManagedOperation mo = this.attributeSource.getManagedOperation(resolvedOperation);
+
+        if (resolvedOperation != null) {
+            applyRunAsync(desc, resolvedOperation);
+        }
+
         if (mo != null) {
             applyCurrencyTimeLimit(desc, mo.getCurrencyTimeLimit());
         }
+    }
+
+    /**
+     * Adds fields to the operation descriptor in case of operation should be executed asynchronously if
+     * <code>operation</code> was annotated by {@link JmxRunAsync}.
+     *
+     * @param desc      operation descriptor
+     * @param operation operation
+     */
+    protected void applyRunAsync(Descriptor desc, Method operation) {
+        JmxRunAsync jmxRunAsync = operation.getAnnotation(JmxRunAsync.class);
+        if (jmxRunAsync == null) {
+            return;
+        }
+
+        desc.setField(FIELD_RUN_ASYNC, true);
+        desc.setField(FIELD_TIMEOUT, jmxRunAsync.timeout());
     }
 
     /**

@@ -222,9 +222,8 @@ public class MbeanInspectWindow extends AbstractEditor {
             return;
         }
 
-        Long timeout = jmxControlAPI.getAsyncOperationTimeout(op);
-        if (timeout != null && webConfig.getPushEnabled()) {
-            runAsynchronously(op, paramValues, timeout);
+        if (op.getRunAsync() && webConfig.getPushEnabled()) {
+            runAsynchronously(op, paramValues, op.getTimeout());
         } else {
             runSynchronously(op, paramValues);
         }

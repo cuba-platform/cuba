@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.web.jmx;
 
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.LoadContext;
@@ -25,7 +24,6 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.NodeIdentifier;
 import com.haulmont.cuba.core.sys.jmx.JmxNodeIdentifierMBean;
 import com.haulmont.cuba.web.jmx.entity.*;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -38,8 +36,6 @@ import java.io.Serializable;
 import java.lang.reflect.Proxy;
 import java.rmi.UnmarshalException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.getObjectName;
@@ -47,7 +43,8 @@ import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.withConnection;
 
 @Component(JmxControlAPI.NAME)
 public class JmxControlBean implements JmxControlAPI {
-    private static final String JMX_LONG_OPERATION_REGEXP = ".*@JmxLongOperation(\\((\\d+)\\))?.*";
+    protected static final String FIELD_RUN_ASYNC = "runAsync";
+    protected static final String FIELD_TIMEOUT = "timeout";
 
     private final Logger log = LoggerFactory.getLogger(JmxControlBean.class);
 
@@ -75,6 +72,7 @@ public class JmxControlBean implements JmxControlAPI {
      */
     protected static final String ROLE_SETTER = "setter";
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<JmxInstance> getInstances() {
         LoadContext loadContext = new LoadContext(JmxInstance.class);
@@ -399,28 +397,6 @@ public class JmxControlBean implements JmxControlAPI {
     }
 
     @Override
-    public Long getAsyncOperationTimeout(ManagedBeanOperation operation) {
-        Preconditions.checkNotNullArgument(operation);
-
-        String description = operation.getDescription();
-        if (StringUtils.isEmpty(description))
-            return null;
-
-        Pattern pattern = Pattern.compile(JMX_LONG_OPERATION_REGEXP);
-        Matcher matcher = pattern.matcher(description);
-        if (matcher.matches()) {
-            int groupCount = matcher.groupCount();
-            if (matcher.group(groupCount) != null) {
-                String group = matcher.group(groupCount);
-                return Long.valueOf(group);
-            } else {
-                return 0L;
-            }
-        }
-        return null;
-    }
-
-    @Override
     public List<ManagedBeanDomain> getDomains(JmxInstance instance) {
         checkNotNullArgument(instance);
 
@@ -448,7 +424,8 @@ public class JmxControlBean implements JmxControlAPI {
         MBeanOperationInfo[] operations = info.getOperations();
 
         for (MBeanOperationInfo operation : operations) {
-            String role = (String) operation.getDescriptor().getFieldValue(FIELD_ROLE);
+            Descriptor descriptor = operation.getDescriptor();
+            String role = (String) descriptor.getFieldValue(FIELD_ROLE);
             if (ROLE_GETTER.equals(role) || ROLE_SETTER.equals(role)) {
                 continue; // these operations do the same as reading / writing attributes
             }
@@ -458,6 +435,12 @@ public class JmxControlBean implements JmxControlAPI {
             o.setDescription(operation.getDescription());
             o.setMbean(mbean);
             o.setReturnType(cleanType(operation.getReturnType()));
+
+            Object runAsync = descriptor.getFieldValue(FIELD_RUN_ASYNC);
+            if (runAsync != null) {
+                o.setRunAsync((Boolean) runAsync);
+                o.setTimeout((Long) descriptor.getFieldValue(FIELD_TIMEOUT));
+            }
 
             List<ManagedBeanOperationParameter> paramList = new ArrayList<>();
             if (operation.getSignature() != null) {

@@ -38,6 +38,12 @@ public class ManagedBeanOperation extends AbstractNotPersistentEntity {
     @MetaProperty
     protected String description;
 
+    @MetaProperty
+    protected Boolean runAsync = false;
+
+    @MetaProperty
+    protected Long timeout;
+
     protected ManagedBeanInfo mbean;
 
     protected List<ManagedBeanOperationParameter> parameters;
@@ -80,5 +86,21 @@ public class ManagedBeanOperation extends AbstractNotPersistentEntity {
 
     public void setParameters(List<ManagedBeanOperationParameter> parameters) {
         this.parameters = parameters;
+    }
+
+    public Boolean getRunAsync() {
+        return runAsync;
+    }
+
+    public void setRunAsync(Boolean runAsync) {
+        this.runAsync = runAsync;
+    }
+
+    public Long getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(Long timeout) {
+        this.timeout = timeout;
     }
 }
