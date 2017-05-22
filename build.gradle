@@ -570,9 +570,6 @@ configure(webModule) {
         compile(bom['com.vaadin.addon:vaadin-context-menu']) {
             exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
         }
-        compile(bom['de.datenhahn.vaadin:componentrenderer']) {
-            exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
-        }
 
         provided(bom['org.apache.tomcat:tomcat-servlet-api'])
 

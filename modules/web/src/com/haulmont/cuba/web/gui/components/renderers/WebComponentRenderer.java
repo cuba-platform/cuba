@@ -19,9 +19,9 @@ package com.haulmont.cuba.web.gui.components.renderers;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.gui.components.WebDataGrid;
+import com.haulmont.cuba.web.toolkit.ui.renderers.componentrenderer.ComponentRenderer;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.renderers.Renderer;
-import de.datenhahn.vaadin.componentrenderer.ComponentRenderer;
 
 import java.util.Locale;
 
