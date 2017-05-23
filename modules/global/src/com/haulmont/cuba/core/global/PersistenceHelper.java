@@ -24,73 +24,98 @@ import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
  */
 public class PersistenceHelper {
 
+    //this instance is required for unit tests where application context can be not created
+    private static EntityStates _entityStates = new EntityStates();
+
     /**
      * @see EntityStates#isNew(Object)
      */
     public static boolean isNew(Object entity) {
-        return AppBeans.get(EntityStates.class).isNew(entity);
+        EntityStates entityStates = AppBeans.get(EntityStates.class);
+        return entityStates != null ? entityStates.isNew(entity) : _entityStates.isNew(entity);
     }
 
     /**
      * @see EntityStates#isManaged(Object)
      */
     public static boolean isManaged(Object entity) {
-        return AppBeans.get(EntityStates.class).isManaged(entity);
+        EntityStates entityStates = AppBeans.get(EntityStates.class);
+        return entityStates != null ? entityStates.isManaged(entity) : _entityStates.isManaged(entity);
     }
 
     /**
      * @see EntityStates#isDeleted(Object)
      */
     public static boolean isDetached(Object entity) {
-        return AppBeans.get(EntityStates.class).isDetached(entity);
+        EntityStates entityStates = AppBeans.get(EntityStates.class);
+        return entityStates != null ? entityStates.isDetached(entity) : _entityStates.isDetached(entity);
     }
 
     /**
      * @see EntityStates#getEntityName(Class)
      */
     public static String getEntityName(Class<?> entityClass) {
-        return AppBeans.get(EntityStates.class).getEntityName(entityClass);
+        EntityStates entityStates = AppBeans.get(EntityStates.class);
+        return entityStates != null ? entityStates.getEntityName(entityClass) : _entityStates.getEntityName(entityClass);
     }
 
     /**
      * @see EntityStates#isSoftDeleted(Class)
      */
     public static boolean isSoftDeleted(Class entityClass) {
-        return AppBeans.get(EntityStates.class).isSoftDeleted(entityClass);
+        EntityStates entityStates = AppBeans.get(EntityStates.class);
+        return entityStates != null ? entityStates.isSoftDeleted(entityClass) : _entityStates.isSoftDeleted(entityClass);
     }
 
     /**
      * @see EntityStates#isLoaded(Object, String)
      */
     public static boolean isLoaded(Object entity, String property) {
-        return AppBeans.get(EntityStates.class).isLoaded(entity, property);
+        EntityStates entityStates = AppBeans.get(EntityStates.class);
+        return entityStates != null ? entityStates.isLoaded(entity, property) : _entityStates.isLoaded(entity, property);
     }
 
     /**
      * @see EntityStates#checkLoaded(Object, String...)
      */
     public static void checkLoaded(Object entity, String... properties) {
-        AppBeans.get(EntityStates.class).checkLoaded(entity, properties);
+        EntityStates entityStates = AppBeans.get(EntityStates.class);
+        if (entityStates != null) {
+            entityStates.checkLoaded(entity, properties);
+        } else {
+            _entityStates.checkLoaded(entity, properties);
+        }
     }
 
     /**
      * @see EntityStates#isDeleted(Object)
      */
     public static boolean isDeleted(Object entity) {
-        return AppBeans.get(EntityStates.class).isDetached(entity);
+        EntityStates entityStates = AppBeans.get(EntityStates.class);
+        return entityStates != null ? entityStates.isDeleted(entity) : _entityStates.isDeleted(entity);
     }
 
     /**
      * @see EntityStates#makeDetached(BaseGenericIdEntity)
      */
     public static void makeDetached(BaseGenericIdEntity entity) {
-        AppBeans.get(EntityStates.class).makeDetached(entity);
+        EntityStates entityStates = AppBeans.get(EntityStates.class);
+        if (entityStates != null) {
+            entityStates.makeDetached(entity);
+        } else {
+            _entityStates.makeDetached(entity);
+        }
     }
 
     /**
      * @see EntityStates#makePatch(BaseGenericIdEntity)
      */
     public static void makePatch(BaseGenericIdEntity entity) {
-        AppBeans.get(EntityStates.class).makePatch(entity);
+        EntityStates entityStates = AppBeans.get(EntityStates.class);
+        if (entityStates != null) {
+            entityStates.makePatch(entity);
+        } else {
+            _entityStates.makePatch(entity);
+        }
     }
 }
