@@ -18,6 +18,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
 import java.util.List;
 import java.util.Map;
@@ -42,4 +43,16 @@ public interface BulkEditor extends Component, Component.HasCaption, Component.B
 
     List<Field.Validator> getModelValidators();
     void setModelValidators(List<Field.Validator> modelValidators);
+
+    /**
+     * Sets the given <code>constraintOperationType</code> to the BulkEditAction.
+     *
+     * @param constraintOperationType constraintOperationType
+     */
+    void setConstraintOperationType(ConstraintOperationType constraintOperationType);
+
+    /**
+     * @return {@link ConstraintOperationType} of the BulkEditAction
+     */
+    ConstraintOperationType getConstraintOperationType();
 }

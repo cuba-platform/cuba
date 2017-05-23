@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import org.springframework.context.annotation.Scope;
 
 import java.util.List;
@@ -62,6 +63,7 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
 
         this.icon = "icons/bulk-edit.png";
         this.caption = messages.getMessage(getClass(), "actions.BulkEdit");
+        this.constraintOperationType = ConstraintOperationType.UPDATE;
 
         boolean permitted = userSession.isSpecificPermitted(BulkEditor.PERMISSION);
 

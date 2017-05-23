@@ -75,6 +75,10 @@ public abstract class ItemTrackingAction extends BaseAction {
         this.constraintOperationType = constraintOperationType;
     }
 
+    public ConstraintOperationType getConstraintOperationType() {
+        return constraintOperationType;
+    }
+
     public void setConstraintCode(String constraintCode) {
         this.constraintCode = constraintCode;
     }

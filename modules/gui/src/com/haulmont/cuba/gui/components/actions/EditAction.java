@@ -165,14 +165,14 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
     public void refreshState() {
         super.refreshState();
 
-        if (target != null) {
-            CollectionDatasource ds = target.getDatasource();
-            if (ds != null && !captionInitialized) {
-                if (security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
-                    setCaption(messages.getMainMessage("actions.Edit"));
-                } else {
-                    setCaption(messages.getMainMessage("actions.View"));
-                }
+        if (target == null || target.getDatasource() == null)
+            return;
+
+        if (!captionInitialized) {
+            if (security.isEntityOpPermitted(target.getDatasource().getMetaClass(), EntityOp.UPDATE)) {
+                setCaption(messages.getMainMessage("actions.Edit"));
+            } else {
+                setCaption(messages.getMainMessage("actions.View"));
             }
         }
     }

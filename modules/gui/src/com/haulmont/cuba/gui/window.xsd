@@ -350,6 +350,7 @@
 
     <xs:simpleType name="constraintOperationType">
         <xs:restriction base="xs:string">
+            <xs:enumeration value="none"/>
             <xs:enumeration value="create"/>
             <xs:enumeration value="read"/>
             <xs:enumeration value="update"/>

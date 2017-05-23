@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.components.BulkEditor;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.BulkEditAction;
+import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +36,7 @@ public class DesktopBulkEditor extends DesktopButton implements BulkEditor {
     protected ListComponent listComponent;
     protected Map<String, Field.Validator> fieldValidators;
     protected List<Field.Validator> modelValidators;
+    protected ConstraintOperationType constraintOperationType = ConstraintOperationType.UPDATE;
 
     public DesktopBulkEditor() {
         setCaption(null);
@@ -113,6 +115,7 @@ public class DesktopBulkEditor extends DesktopButton implements BulkEditor {
             }
             bulkEditAction.setEnabled(enabled);
             bulkEditAction.setVisible(visible);
+            bulkEditAction.setConstraintOperationType(constraintOperationType);
 
             listComponent.addAction(bulkEditAction);
         }
@@ -142,5 +145,18 @@ public class DesktopBulkEditor extends DesktopButton implements BulkEditor {
         if (bulkEditAction != null) {
             bulkEditAction.setModelValidators(modelValidators);
         }
+    }
+
+    @Override
+    public void setConstraintOperationType(ConstraintOperationType constraintOperationType) {
+        this.constraintOperationType = constraintOperationType;
+        if (bulkEditAction != null) {
+            bulkEditAction.setConstraintOperationType(constraintOperationType);
+        }
+    }
+
+    @Override
+    public ConstraintOperationType getConstraintOperationType() {
+        return constraintOperationType;
     }
 }

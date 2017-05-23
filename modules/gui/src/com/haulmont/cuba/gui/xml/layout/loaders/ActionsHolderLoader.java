@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Attribute;
 import org.dom4j.Element;
 
 public abstract class ActionsHolderLoader<T extends Component.ActionsHolder> extends AbstractComponentLoader<T> {
@@ -115,10 +116,15 @@ public abstract class ActionsHolderLoader<T extends Component.ActionsHolder> ext
     protected void loadConstraint(Action action, Element element) {
         if (action instanceof ItemTrackingAction) {
             ItemTrackingAction itemTrackingAction = (ItemTrackingAction) action;
-            ConstraintOperationType operationType
-                    = ConstraintOperationType.fromId(element.attributeValue("constraintOperationType"));
+
+            Attribute operationTypeAttribute = element.attribute("constraintOperationType");
+            if (operationTypeAttribute != null) {
+                ConstraintOperationType operationType
+                        = ConstraintOperationType.fromId(operationTypeAttribute.getValue());
+                itemTrackingAction.setConstraintOperationType(operationType);
+            }
+
             String constraintCode = element.attributeValue("constraintCode");
-            itemTrackingAction.setConstraintOperationType(operationType);
             itemTrackingAction.setConstraintCode(constraintCode);
         }
     }
