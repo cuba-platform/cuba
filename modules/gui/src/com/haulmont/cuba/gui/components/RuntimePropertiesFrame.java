@@ -266,36 +266,32 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         for (final DynamicAttributesMetaProperty metaProperty : metaProperties) {
             Range range = metaProperty.getRange();
             if (!range.isDatatype()) {
-                component.addCustomField(metaProperty.getName(), new FieldGroup.CustomFieldGenerator() {
-                    @Override
-                    public Component generateField(Datasource datasource, String propertyId) {
-                        final PickerField pickerField;
-                        Boolean lookup = metaProperty.getAttribute().getLookup();
-                        if (lookup != null && lookup) {
-                            pickerField = componentsFactory.createComponent(LookupPickerField.class);
+                final PickerField pickerField;
+                Boolean lookup = metaProperty.getAttribute().getLookup();
+                if (lookup != null && lookup) {
+                    pickerField = componentsFactory.createComponent(LookupPickerField.class);
 
-                            CollectionDatasource optionsDs = DsBuilder.create(datasource.getDsContext())
-                                    .setMetaClass(metaProperty.getRange().asClass())
-                                    .setViewName(View.MINIMAL)
-                                    .buildCollectionDatasource();
-                            optionsDs.refresh();
-                            Action action = pickerField.getAction(LookupAction.NAME);
-                            if (action != null)
-                                pickerField.removeAction(action);
+                    CollectionDatasource optionsDs = DsBuilder.create(getDsContext())
+                            .setMetaClass(metaProperty.getRange().asClass())
+                            .setViewName(View.MINIMAL)
+                            .buildCollectionDatasource();
+                    optionsDs.refresh();
+                    Action action = pickerField.getAction(LookupAction.NAME);
+                    if (action != null)
+                        pickerField.removeAction(action);
 
-                            ((LookupPickerField) pickerField).setOptionsDatasource(optionsDs);
-                        } else {
-                            pickerField = componentsFactory.createComponent(PickerField.class);
-                            dynamicAttributesGuiTools.initEntityPickerField(pickerField, metaProperty.getAttribute());
-                        }
-                        pickerField.setMetaClass(ds.getMetaClass());
-                        pickerField.setFrame(RuntimePropertiesFrame.this);
-                        pickerField.setDatasource(ds, propertyId);
-                        pickerField.addOpenAction();
-                        pickerField.setWidth(fieldWidth);
-                        return pickerField;
-                    }
-                });
+                    ((LookupPickerField) pickerField).setOptionsDatasource(optionsDs);
+                } else {
+                    pickerField = componentsFactory.createComponent(PickerField.class);
+                    dynamicAttributesGuiTools.initEntityPickerField(pickerField, metaProperty.getAttribute());
+                }
+                pickerField.setMetaClass(ds.getMetaClass());
+                pickerField.setFrame(RuntimePropertiesFrame.this);
+                pickerField.setDatasource(ds, metaProperty.getName());
+                pickerField.addOpenAction();
+                pickerField.setWidth(fieldWidth);
+
+                component.getFieldNN(metaProperty.getName()).setComponent(pickerField);
             } else {
                 if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
                     final CategoryAttribute attribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
@@ -303,17 +299,14 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                         for (FieldGroup.FieldConfig field : fields) {
                             if (field.getId().equals(metaProperty.getName())) {
                                 field.setCustom(true);
-                                component.addCustomField(metaProperty.getName(), new FieldGroup.CustomFieldGenerator() {
-                                    @Override
-                                    public Component generateField(Datasource datasource, String propertyId) {
-                                        LookupField field = componentsFactory.createComponent(LookupField.class);
-                                        field.setFrame(RuntimePropertiesFrame.this);
-                                        field.setOptionsList(attribute.getEnumerationOptions());
-                                        field.setDatasource(rds, propertyId);
-                                        field.setWidth(fieldWidth);
-                                        return field;
-                                    }
-                                });
+
+                                LookupField lookupField = componentsFactory.createComponent(LookupField.class);
+                                lookupField.setFrame(RuntimePropertiesFrame.this);
+                                lookupField.setOptionsList(attribute.getEnumerationOptions());
+                                lookupField.setDatasource(rds, metaProperty.getName());
+                                lookupField.setWidth(fieldWidth);
+
+                                field.setComponent(lookupField);
                             }
                         }
                     }

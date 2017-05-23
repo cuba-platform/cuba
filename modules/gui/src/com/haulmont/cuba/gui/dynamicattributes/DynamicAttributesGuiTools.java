@@ -221,6 +221,8 @@ public class DynamicAttributesGuiTools {
                 || !Strings.isNullOrEmpty(categoryAttribute.getWhereClause())) {
             lookupAction = createLookupAction(pickerField, categoryAttribute.getJoinClause(), categoryAttribute.getWhereClause());
             pickerField.addAction(lookupAction);
+        } else if (lookupAction == null) {
+            lookupAction = pickerField.addLookupAction();
         }
 
         if (lookupAction == null) {
