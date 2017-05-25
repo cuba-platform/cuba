@@ -101,16 +101,16 @@ public abstract class AbstractMessages implements Messages {
         log.debug("Main message pack: " + mainMessagePack);
 
         for (Locale locale : globalConfig.getAvailableLocales().values()) {
-            String numberDecimalSeparator = getMessage(mainMessagePack, "numberDecimalSeparator", locale);
-            String numberGroupingSeparator = getMessage(mainMessagePack, "numberGroupingSeparator", locale);
-            String integerFormat = getMessage(mainMessagePack, "integerFormat", locale);
-            String doubleFormat = getMessage(mainMessagePack, "doubleFormat", locale);
-            String decimalFormat = getMessage(mainMessagePack, "decimalFormat", locale);
-            String dateFormat = getMessage(mainMessagePack, "dateFormat", locale);
-            String dateTimeFormat = getMessage(mainMessagePack, "dateTimeFormat", locale);
-            String timeFormat = getMessage(mainMessagePack, "timeFormat", locale);
-            String trueString = getMessage(mainMessagePack, "trueString", locale);
-            String falseString = getMessage(mainMessagePack, "falseString", locale);
+            String numberDecimalSeparator = getMainMessage("numberDecimalSeparator", locale);
+            String numberGroupingSeparator = getMainMessage("numberGroupingSeparator", locale);
+            String integerFormat = getMainMessage("integerFormat", locale);
+            String doubleFormat = getMainMessage("doubleFormat", locale);
+            String decimalFormat = getMainMessage("decimalFormat", locale);
+            String dateFormat = getMainMessage("dateFormat", locale);
+            String dateTimeFormat = getMainMessage("dateTimeFormat", locale);
+            String timeFormat = getMainMessage("timeFormat", locale);
+            String trueString = getMainMessage("trueString", locale);
+            String falseString = getMainMessage("falseString", locale);
             if (numberDecimalSeparator.equals("numberDecimalSeparator")
                     || numberGroupingSeparator.equals("numberGroupingSeparator")
                     || integerFormat.equals("integerFormat")
@@ -249,9 +249,7 @@ public abstract class AbstractMessages implements Messages {
         checkNotNullArgument(key, "Message key is null");
 
         String compositeKey = packs + "/" + key;
-        String[] split = mainMessagePack.split(" ");
-        String lastMainMessagePack = split[split.length - 1];
-        String msg = internalGetMessage(lastMainMessagePack, compositeKey, locale, null, false);
+        String msg = internalGetMessage(mainMessagePack, compositeKey, locale, null, false);
         if (msg != null)
             return msg;
 
