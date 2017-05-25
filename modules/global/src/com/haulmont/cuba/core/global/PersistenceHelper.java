@@ -19,8 +19,9 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 
 /**
- * Utility class providing some information about persistent entities.
- *
+ * Utility class providing information about entity states.
+ * <p>
+ * Delegates to {@link EntityStates} bean, so consider using it directly.
  */
 public class PersistenceHelper {
 
@@ -52,16 +53,18 @@ public class PersistenceHelper {
     }
 
     /**
-     * @see EntityStates#getEntityName(Class)
+     * DEPRECATED. Use {@link MetadataTools#getEntityName(Class)} instead.
      */
+    @Deprecated
     public static String getEntityName(Class<?> entityClass) {
         EntityStates entityStates = AppBeans.get(EntityStates.class);
         return entityStates != null ? entityStates.getEntityName(entityClass) : _entityStates.getEntityName(entityClass);
     }
 
     /**
-     * @see EntityStates#isSoftDeleted(Class)
+     * DEPRECATED. Use {@link MetadataTools#isSoftDeleted(java.lang.Class)} instead.
      */
+    @Deprecated
     public static boolean isSoftDeleted(Class entityClass) {
         EntityStates entityStates = AppBeans.get(EntityStates.class);
         return entityStates != null ? entityStates.isSoftDeleted(entityClass) : _entityStates.isSoftDeleted(entityClass);
