@@ -14,7 +14,7 @@ You can also build a snapshot version of the platform from the source code and u
 
 In order to build the platform from source, you need to install the following:
 * Java 8 Development Kit (JDK)
-* [Gradle](https://gradle.org) (tested on 2.13, but newer versions may also work)
+* [Gradle](https://gradle.org) (tested on 3.1, but newer versions may also work)
 * [CUBA Gradle Plugin](https://github.com/cuba-platform/cuba-gradle-plugin)
 
 Let's assume that you have cloned CUBA Gradle Plugin and CUBA into the following directories:
@@ -27,13 +27,13 @@ work/
 Open terminal in the `work` directory and run the following command to build and install the plugin into your local Maven repository (`~/.m2`):
 ```
 cd cuba-gradle-plugin
-gradle install
+gradlew install
 ```
 
 After that, go to the CUBA directory and build and install it with the same command:
 ```
 cd ../cuba
-gradle install
+gradlew install
 ```
 
 ## Using Snapshot Version
@@ -41,15 +41,15 @@ gradle install
 Edit the `build.gradle` file of your project. Change the `ext.cubaVersion` property and add `mavenLocal()` to the `repositories` section, for example:
 ```
 buildscript {
-    ext.cubaVersion = '6.2-SNAPSHOT'
+    ext.cubaVersion = '6.6-SNAPSHOT'
     repositories {
         mavenLocal()
         maven { ...
 ```
 That's all. Now you can generate IDE project files and build and deploy your application based on the snapshot version of the platform from your local repository:
  ```
- gradle idea
- gradle deploy
+ gradlew idea
+ gradlew deploy
  ```
 
 ## Third-party dependencies
