@@ -47,6 +47,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     protected boolean samePage;
 
     protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
+    protected WeakCollectionChangeListener weakCollectionChangeListener;
 
     protected List<VisibilityChangeListener> visibilityChangeListeners;
 
@@ -70,19 +71,24 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         Preconditions.checkNotNullArgument(datasource, "datasource is null");
 
         if (this.datasource != null) {
-            throw new UnsupportedOperationException("Changing datasource is not supported by the RowsCount component");
+            //noinspection unchecked
+            this.datasource.removeCollectionChangeListener(weakCollectionChangeListener);
+            weakCollectionChangeListener = null;
+        } else {
+            //noinspection unchecked
+            collectionChangeListener = e -> {
+                samePage = Operation.REFRESH != e.getOperation()
+                        && Operation.CLEAR != e.getOperation();
+                onCollectionChanged();
+            };
+
         }
 
         this.datasource = datasource;
 
+        weakCollectionChangeListener = new WeakCollectionChangeListener(datasource, collectionChangeListener);
         //noinspection unchecked
-        collectionChangeListener = e -> {
-            samePage = Operation.REFRESH != e.getOperation()
-                    && Operation.CLEAR != e.getOperation();
-            onCollectionChanged();
-        };
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeListener));
+        datasource.addCollectionChangeListener(weakCollectionChangeListener);
 
         component.getCountButton().addClickListener(event -> onLinkClick());
         component.getPrevButton().addClickListener(event -> onPrevClick());
