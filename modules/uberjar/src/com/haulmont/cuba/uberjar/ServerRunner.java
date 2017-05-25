@@ -16,38 +16,19 @@
 
 package com.haulmont.cuba.uberjar;
 
-import com.google.common.reflect.ClassPath;
 import org.apache.commons.cli.*;
 import org.apache.commons.io.FilenameUtils;
-import org.eclipse.jetty.plus.webapp.EnvConfiguration;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.webapp.Configuration;
-import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.CodeSource;
-import java.util.HashSet;
 import java.util.Properties;
-import java.util.Set;
 
+import static com.haulmont.cuba.uberjar.CubaJettyUtils.*;
 import static java.lang.String.format;
 
 public class ServerRunner {
 
-    public static final String STATIC_CONTENT_PATH_IN_JAR = "ubercontent";
-    public static final String FRONT_CONTENT_PATH_IN_JAR = "uberfront";
-    public static final String APP_PROPERTIES_PATH_IN_JAR = "WEB-INF/local.app.properties";
-    protected static final int DEFAULT_PORT = 8080;
-    protected static final String CONTEXT_PATH_DELIMITER = "/";
-    protected int port;
-    protected String contextPath;
-    protected String frontContextPath;
-    protected URL jettyEnvPathUrl;
 
     public static void main(String[] args) {
         ServerRunner runner = new ServerRunner();
@@ -69,6 +50,10 @@ public class ServerRunner {
                 .hasArg()
                 .desc("front application context name").argName("frontContextName").build();
 
+        Option portalContextPathOption = Option.builder("portalContextName")
+                .hasArg()
+                .desc("portal application context name for single jar application").argName("portalContextName").build();
+
         Option jettyEnvPathOption = Option.builder("jettyEnvPath")
                 .hasArg()
                 .desc("jetty resource xml path").argName("jettyEnvPath").build();
@@ -80,6 +65,7 @@ public class ServerRunner {
         cliOptions.addOption(portOption);
         cliOptions.addOption(contextPathOption);
         cliOptions.addOption(frontContextPathOption);
+        cliOptions.addOption(portalContextPathOption);
         cliOptions.addOption(jettyEnvPathOption);
 
         CommandLineParser parser = new DefaultParser();
@@ -95,52 +81,82 @@ public class ServerRunner {
         if (cmd.hasOption("help"))
             printHelp(formatter, cliOptions);
         else {
+            CubaJettyServer jettyServer = new CubaJettyServer();
             if (cmd.hasOption(portOption.getOpt())) {
                 try {
-                    port = Integer.parseInt(cmd.getOptionValue(portOption.getOpt()));
+                    jettyServer.setPort(Integer.parseInt(cmd.getOptionValue(portOption.getOpt())));
                 } catch (NumberFormatException e) {
                     System.out.println("port has to be number");
                     printHelp(formatter, cliOptions);
                     return;
                 }
-            } else if (port == 0) {
-                port = getWebPort();
+            } else {
+                jettyServer.setPort(getDefaultWebPort());
             }
-
+            String contextPath = null;
+            String frontContextPath = null;
+            String portalContextPath = null;
             if (cmd.hasOption(contextPathOption.getOpt())) {
                 String contextName = cmd.getOptionValue(contextPathOption.getOpt());
                 if (contextName != null && !contextName.isEmpty()) {
-                    if (CONTEXT_PATH_DELIMITER.equals(contextName)) {
-                        contextPath = CONTEXT_PATH_DELIMITER;
+                    if (PATH_DELIMITER.equals(contextName)) {
+                        contextPath = PATH_DELIMITER;
+                    } else {
+                        contextPath = PATH_DELIMITER + contextName;
                     }
-                    contextPath = CONTEXT_PATH_DELIMITER + contextName;
                 }
             }
             if (cmd.hasOption(frontContextPathOption.getOpt())) {
                 String contextName = cmd.getOptionValue(frontContextPathOption.getOpt());
                 if (contextName != null && !contextName.isEmpty()) {
-                    if (CONTEXT_PATH_DELIMITER.equals(contextName)) {
-                        frontContextPath = CONTEXT_PATH_DELIMITER;
+                    if (PATH_DELIMITER.equals(contextName)) {
+                        frontContextPath = PATH_DELIMITER;
+                    } else {
+                        frontContextPath = PATH_DELIMITER + contextName;
                     }
-                    frontContextPath = CONTEXT_PATH_DELIMITER + contextName;
+                }
+            }
+
+            if (cmd.hasOption(portalContextPathOption.getOpt())) {
+                String contextName = cmd.getOptionValue(portalContextPathOption.getOpt());
+                if (contextName != null && !contextName.isEmpty()) {
+                    if (PATH_DELIMITER.equals(contextName)) {
+                        portalContextPath = PATH_DELIMITER;
+                    } else {
+                        portalContextPath = PATH_DELIMITER + contextName;
+                    }
                 }
             }
 
             if (contextPath == null) {
                 String jarName = getJarName();
                 if (jarName != null) {
-                    contextPath = CONTEXT_PATH_DELIMITER + FilenameUtils.getBaseName(jarName);
+                    jettyServer.setContextPath(PATH_DELIMITER + FilenameUtils.getBaseName(jarName));
                 } else {
-                    contextPath = CONTEXT_PATH_DELIMITER;
+                    jettyServer.setContextPath(PATH_DELIMITER);
                 }
+            } else {
+                jettyServer.setContextPath(contextPath);
             }
             if (frontContextPath == null) {
-                if (CONTEXT_PATH_DELIMITER.equals(contextPath)) {
-                    frontContextPath = CONTEXT_PATH_DELIMITER + "app-front";
+                if (PATH_DELIMITER.equals(contextPath)) {
+                    jettyServer.setFrontContextPath(PATH_DELIMITER + "app-front");
                 } else {
-                    frontContextPath = contextPath + "-front";
+                    jettyServer.setFrontContextPath(jettyServer.getContextPath() + "-front");
                 }
+            } else {
+                jettyServer.setFrontContextPath(frontContextPath);
             }
+            if (portalContextPath == null) {
+                if (PATH_DELIMITER.equals(contextPath)) {
+                    jettyServer.setPortalContextPath(PATH_DELIMITER + "app-portal");
+                } else {
+                    jettyServer.setPortalContextPath(jettyServer.getContextPath() + "-portal");
+                }
+            } else {
+                jettyServer.setPortalContextPath(frontContextPath);
+            }
+
             if (cmd.hasOption(jettyEnvPathOption.getOpt())) {
                 String jettyEnvPath = cmd.getOptionValue(jettyEnvPathOption.getOpt());
                 if (jettyEnvPath != null && !jettyEnvPath.isEmpty()) {
@@ -151,68 +167,15 @@ public class ServerRunner {
                         return;
                     }
                     try {
-                        jettyEnvPathUrl = file.toURI().toURL();
+                        jettyServer.setJettyEnvPathUrl(file.toURI().toURL());
                     } catch (MalformedURLException e) {
                         throw new RuntimeException("Unable to create jettyEnvPathUrl", e);
                     }
                 }
             }
-            startServer();
+            System.out.println(format("Starting Jetty server on port: %s and contextPath: %s", jettyServer.getPort(), jettyServer.getContextPath()));
+            jettyServer.start();
         }
-    }
-
-    protected void startServer() {
-        System.out.println(format("Starting Jetty server on port: %s and contextPath: %s", port, contextPath));
-        System.setProperty("app.home", System.getProperty("user.dir"));
-        try {
-            Server server = createServer();
-            server.start();
-            server.join();
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
-        }
-    }
-
-    protected Server createServer() throws Exception {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
-        Server server = new Server(port);
-
-        CubaJettyWebAppContext cubaContext = new CubaJettyWebAppContext();
-        cubaContext.setStaticContents(getStaticContents(classLoader));
-        cubaContext.setConfigurations(new Configuration[]{new CubaJettyWebXmlConfiguration(), createEnvConfiguration(classLoader)});
-        cubaContext.setDescriptor("WEB-INF/web.xml");
-        cubaContext.setContextPath(contextPath);
-        cubaContext.setParentLoaderPriority(true);
-        cubaContext.setClassLoader(classLoader);
-
-        URL frontContentUrl = classLoader.getResource(FRONT_CONTENT_PATH_IN_JAR);
-        WebAppContext frontContext = null;
-        if (frontContentUrl != null) {
-            frontContext = new WebAppContext();
-            frontContext.setContextPath(frontContextPath);
-            frontContext.setParentLoaderPriority(true);
-            frontContext.setClassLoader(classLoader);
-            frontContext.setResourceBase(frontContentUrl.toURI().toString());
-        }
-        if (frontContext != null) {
-            HandlerCollection handlerCollection = new HandlerCollection();
-            handlerCollection.setHandlers(new Handler[]{cubaContext, frontContext});
-            server.setHandler(handlerCollection);
-        } else {
-            server.setHandler(cubaContext);
-        }
-        return server;
-    }
-
-    protected EnvConfiguration createEnvConfiguration(ClassLoader classLoader) {
-        EnvConfiguration envConfiguration = new EnvConfiguration();
-        if (jettyEnvPathUrl != null) {
-            envConfiguration.setJettyEnvXml(jettyEnvPathUrl);
-        } else {
-            envConfiguration.setJettyEnvXml(classLoader.getResource("WEB-INF/jetty-env.xml"));
-        }
-        return envConfiguration;
     }
 
     protected void printHelp(HelpFormatter formatter, Options cliOptions) {
@@ -229,36 +192,29 @@ public class ServerRunner {
         return null;
     }
 
-    protected Set<String> getStaticContents(ClassLoader classLoader) {
-        Set<String> contents = new HashSet<>();
-        try {
-            ClassPath.from(classLoader).getResources().forEach(it -> {
-                if (it.getResourceName() != null && it.getResourceName().startsWith(STATIC_CONTENT_PATH_IN_JAR)) {
-                    String[] paths = it.getResourceName().split("/");
-                    //extract only first level dirs
-                    if (paths.length > 2) {
-                        contents.add(paths[1]);
-                    }
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace(System.out);
-        }
-        return contents;
-    }
-
-    protected int getWebPort() {
+    protected int getDefaultWebPort() {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try {
             Properties properties = new Properties();
-            properties.load(classLoader.getResourceAsStream(APP_PROPERTIES_PATH_IN_JAR));
+            properties.load(classLoader.getResourceAsStream(getPropertiesForPort(classLoader)));
             String webPort = (String) properties.get("cuba.webPort");
             if (webPort != null && !webPort.isEmpty()) {
                 return Integer.parseInt(webPort);
             }
-        } catch (IOException | NumberFormatException e) {
+        } catch (Exception e) {
             System.out.println("Error while parsing port, use default port");
         }
-        return DEFAULT_PORT;
+        return 8080;
+    }
+
+    protected String getPropertiesForPort(ClassLoader classLoader) {
+        if (isSingleJar(classLoader) || hasWebApp(classLoader)) {
+            return WEB_PATH_IN_JAR + PATH_DELIMITER + APP_PROPERTIES_PATH_IN_JAR;
+        } else if (hasCoreApp(classLoader)) {
+            return CORE_PATH_IN_JAR + PATH_DELIMITER + APP_PROPERTIES_PATH_IN_JAR;
+        } else if (hasPortalApp(classLoader)) {
+            return PORTAL_PATH_IN_JAR + PATH_DELIMITER + APP_PROPERTIES_PATH_IN_JAR;
+        }
+        return null;
     }
 }

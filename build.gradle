@@ -908,7 +908,6 @@ configure(uberJarModule) {
         compile(bom['org.eclipse.jetty.websocket:websocket-server'])
         compile(bom['commons-cli:commons-cli'])
         compile(bom['commons-io:commons-io'])
-        compile(bom['com.google.guava:guava'])
         compile(bom['org.apache.commons:commons-dbcp2'])
     }
 }

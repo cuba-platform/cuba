@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.WebStatisticsAccumulator;
@@ -320,10 +321,13 @@ public class CubaApplicationServlet extends VaadinServlet {
     @Override
     protected boolean isAllowedVAADINResourceUrl(HttpServletRequest request,
                                                  URL resourceUrl) {
-        String resourcePath = resourceUrl.getPath();
-        if ("jar".equals(resourceUrl.getProtocol())) {
-            if (resourcePath.contains("!/ubercontent/VAADIN/")) {
-                return true;
+        boolean isUberJar = Boolean.parseBoolean(AppContext.getProperty("cuba.uberJar"));
+        if (isUberJar) {
+            String resourcePath = resourceUrl.getPath();
+            if ("jar".equals(resourceUrl.getProtocol())) {
+                if (resourcePath.contains("!/LIB-INF/app/VAADIN/")) {
+                    return true;
+                }
             }
         }
         return super.isAllowedVAADINResourceUrl(request, resourceUrl);
