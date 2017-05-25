@@ -240,6 +240,16 @@ public class MetadataTools {
     }
 
     /**
+     * Determine whether the entity supports <em>Soft Deletion</em>.
+     *
+     * @param entityClass entity class
+     * @return {@code true} if the entity implements {@link SoftDelete}
+     */
+    public boolean isSoftDeleted(Class entityClass) {
+        return SoftDelete.class.isAssignableFrom(entityClass);
+    }
+
+    /**
      * Determine whether the given property is system-level. A property is considered system if it is defined not
      * in an entity class but in one of its base interfaces:
      * {@link Entity}, {@link Creatable}, {@link Updatable}, {@link SoftDelete}, {@link Versioned}, {@link HasUuid}
@@ -607,6 +617,21 @@ public class MetadataTools {
             }
         }
         return enums;
+    }
+
+    /**
+     * @param entityClass entity class
+     * @return entity name as defined in {@link javax.persistence.Entity} annotation
+     */
+    public String getEntityName(Class<?> entityClass) {
+        Annotation annotation = entityClass.getAnnotation(javax.persistence.Entity.class);
+        if (annotation == null)
+            throw new IllegalArgumentException("Class " + entityClass + " is not a persistent entity");
+        String name = ((javax.persistence.Entity) annotation).name();
+        if (!StringUtils.isEmpty(name))
+            return name;
+        else
+            return entityClass.getSimpleName();
     }
 
     /**

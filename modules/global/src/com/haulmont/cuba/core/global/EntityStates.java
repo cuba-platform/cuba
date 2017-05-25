@@ -24,15 +24,19 @@ import com.haulmont.cuba.core.entity.SoftDelete;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.util.Objects;
 
 /**
- * Utility class providing some information about entities states.
+ * Provides information about entities states.
  */
 @Component(EntityStates.NAME)
 public class EntityStates {
     public static final String NAME = "cuba_EntityStates";
+
+    @Inject
+    private PersistentAttributesLoadChecker checker;
 
     /**
      * Determines whether the instance is <em>New</em>, i.e. just created and not stored in database yet.
@@ -88,9 +92,9 @@ public class EntityStates {
     }
 
     /**
-     * @param entityClass entity class
-     * @return entity name as defined in {@link javax.persistence.Entity} annotation
+     * DEPRECATED. Use {@link MetadataTools#getEntityName(Class)} instead.
      */
+    @Deprecated
     public String getEntityName(Class<?> entityClass) {
         Annotation annotation = entityClass.getAnnotation(javax.persistence.Entity.class);
         if (annotation == null)
@@ -103,11 +107,9 @@ public class EntityStates {
     }
 
     /**
-     * Determines whether the entity supports <em>Soft Deletion</em>.
-     *
-     * @param entityClass entity class
-     * @return {@code true} if the entity implements {@link SoftDelete}
+     * DEPRECATED. Use {@link MetadataTools#isSoftDeleted(java.lang.Class)} instead.
      */
+    @Deprecated
     public boolean isSoftDeleted(Class entityClass) {
         return SoftDelete.class.isAssignableFrom(entityClass);
     }
@@ -122,7 +124,6 @@ public class EntityStates {
      * @return true if loaded
      */
     public boolean isLoaded(Object entity, String property) {
-        PersistentAttributesLoadChecker checker = AppBeans.get(PersistentAttributesLoadChecker.NAME);
         return checker.isLoaded(entity, property);
     }
 
