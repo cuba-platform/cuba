@@ -55,6 +55,16 @@ public class ClientUserSession extends UserSession implements ClientBasedSession
     }
 
     @Override
+    public void removeAttribute(String name) {
+        super.removeAttribute(name);
+
+        if (authenticated) {
+            UserSessionService uss = AppBeans.get(UserSessionService.NAME);
+            uss.removeSessionAttribute(id, name);
+        }
+    }
+
+    @Override
     public void setLocale(Locale locale) {
         super.setLocale(locale);
 

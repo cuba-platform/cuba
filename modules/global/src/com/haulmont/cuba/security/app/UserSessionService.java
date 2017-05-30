@@ -52,6 +52,15 @@ public interface UserSessionService {
     void setSessionAttribute(UUID sessionId, String name, Serializable value);
 
     /**
+     * Remove a session attribute, propagating changes to the cluster.
+     * @param sessionId an active session identifier
+     * @param name      attribute name
+     * @throws com.haulmont.cuba.security.global.NoUserSessionException in case of a session with the specified ID
+     * doesn't exist
+     */
+    void removeSessionAttribute(UUID sessionId, String name);
+
+    /**
      * Set user locale into the session, propagating changes to the cluster.
      * @param sessionId an active session identifier
      * @param locale    user locale
