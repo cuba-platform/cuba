@@ -109,19 +109,12 @@ public class WindowDelegate {
 
     public void saveSettings() {
         if (settings != null) {
-            final Set<String> visitedIds = new HashSet<>();
-
             ComponentsHelper.walkComponents(
                     window,
                     (component, name) -> {
-                        if (component instanceof Component.HasSettings) {
-                            log.trace("Saving settings for : " + name + " : " + component);
-
-                            if (visitedIds.contains(name)) {
-                                log.warn("Names of some HasSettings components clashed, set Id for component explicitly, name=" + name);
-                            }
-
-                            visitedIds.add(name);
+                        if (component.getId() != null
+                                && component instanceof Component.HasSettings) {
+                            log.trace("Saving settings for : {} : {}", name, component);
 
                             Element e = WindowDelegate.this.settings.get(name);
                             boolean modified = ((Component.HasSettings) component).saveSettings(e);
@@ -152,11 +145,15 @@ public class WindowDelegate {
         ComponentsHelper.walkComponents(
                 window,
                 (component, name) -> {
-                    if (component instanceof Component.HasSettings) {
-                        log.trace("Applying settings for : " + name + " : " + component);
+                    if (component.getId() != null
+                            && component instanceof Component.HasSettings) {
+                        log.trace("Applying settings for : {} : {} ", name, component);
+
                         Element e = WindowDelegate.this.settings.get(name);
                         ((Component.HasSettings) component).applySettings(e);
-                        if (component instanceof Component.HasPresentations && e.attributeValue("presentation") != null) {
+
+                        if (component instanceof Component.HasPresentations
+                                && e.attributeValue("presentation") != null) {
                             final String def = e.attributeValue("presentation");
                             if (!StringUtils.isEmpty(def)) {
                                 UUID defaultId = UUID.fromString(def);

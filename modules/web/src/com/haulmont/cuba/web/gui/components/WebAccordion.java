@@ -529,12 +529,13 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
                 if (window != null) {
                     com.haulmont.cuba.gui.ComponentsHelper.walkComponents(
                             tabContent,
-                            (component1, name) -> {
-                                if (component1 instanceof HasSettings) {
+                            (settingsComponent, name) -> {
+                                if (settingsComponent.getId() != null
+                                        && settingsComponent instanceof HasSettings) {
                                     Settings settings = window.getSettings();
                                     if (settings != null) {
                                         Element e = settings.get(name);
-                                        ((HasSettings) component1).applySettings(e);
+                                        ((HasSettings) settingsComponent).applySettings(e);
                                     }
                                 }
                             }
