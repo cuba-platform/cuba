@@ -911,7 +911,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected ParamEditor createParamEditor(final AbstractCondition condition) {
         boolean conditionRemoveEnabled = !initialConditions.contains(condition);
-        ParamEditor paramEditor = new ParamEditor(condition, conditionRemoveEnabled, isEditable() && userCanEditFilers());
+        ParamEditor paramEditor = new ParamEditor(condition, conditionRemoveEnabled, isParamEditorOperationEditable());
         AbstractAction removeConditionAction = new AbstractAction("") {
             @Override
             public void actionPerform(Component component) {
@@ -923,6 +923,10 @@ public class FilterDelegateImpl implements FilterDelegate {
         removeConditionAction.setVisible(conditionRemoveEnabled);
         paramEditor.setRemoveButtonAction(removeConditionAction);
         return paramEditor;
+    }
+
+    protected boolean isParamEditorOperationEditable() {
+        return isEditable() && userCanEditFilers();
     }
 
     /**
