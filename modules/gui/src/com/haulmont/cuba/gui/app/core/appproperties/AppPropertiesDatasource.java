@@ -61,10 +61,13 @@ public class AppPropertiesDatasource extends CustomHierarchicalDatasource<AppPro
             String[] parts = entity.getName().split("\\.");
             AppPropertyEntity parent = null;
             for (int i = 0; i < parts.length; i++) {
+                String[] currParts = Arrays.copyOfRange(parts, 0, i + 1);
                 String part = parts[i];
                 if (i < parts.length - 1) {
                     Optional<AppPropertyEntity> parentOpt = resultList.stream()
-                            .filter(e -> e.getCategory() && e.getName().equals(part))
+                            .filter(e -> {
+                                return e.getCategory() && nameEquals(currParts, e);
+                            })
                             .findFirst();
                     if (parentOpt.isPresent()) {
                         parent = parentOpt.get();
@@ -87,11 +90,37 @@ public class AppPropertiesDatasource extends CustomHierarchicalDatasource<AppPro
         for (Iterator<AppPropertyEntity> iter = resultList.iterator(); iter.hasNext();) {
             AppPropertyEntity entity = iter.next();
             resultList.stream()
-                    .filter(e -> e != entity && e.getName().equals(entity.getName()))
+                    .filter(e -> e != entity && nameParts(e).equals(nameParts(entity)))
                     .findFirst()
                     .ifPresent(e -> iter.remove());
         }
 
         return resultList;
+    }
+
+    private boolean nameEquals(String[] nameParts, AppPropertyEntity entity) {
+        AppPropertyEntity e = entity;
+        for (int i = nameParts.length - 1; i >= 0; i--) {
+            String name = nameParts[i];
+            if (!e.getName().equals(name))
+                return false;
+            if (i > 0) {
+                e = e.getParent();
+                if (e == null)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    private List<String> nameParts(AppPropertyEntity entity) {
+        List<String> list = new ArrayList<>();
+        AppPropertyEntity e = entity;
+        while (e != null) {
+            list.add(e.getName());
+            e = e.getParent();
+        }
+        Collections.reverse(list);
+        return list;
     }
 }
