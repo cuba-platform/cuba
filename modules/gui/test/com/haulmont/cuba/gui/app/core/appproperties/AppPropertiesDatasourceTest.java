@@ -25,8 +25,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class AppPropertiesDatasourceTest extends CubaClientTestCase {
 
@@ -70,5 +69,34 @@ public class AppPropertiesDatasourceTest extends CubaClientTestCase {
 
         AppPropertyEntity someOtherProp = list.stream().filter(e -> e.getName().equals("someOtherProp")).findFirst().get();
         assertNull(someOtherProp.getParent());
+    }
+
+    @Test
+    public void test_pl_9104() throws Exception {
+        AppPropertiesDatasource datasource = new AppPropertiesDatasource();
+
+        AppPropertyEntity e1 = new AppPropertyEntity();
+        e1.setName("cuba.cat1.ui.prop1");
+
+        AppPropertyEntity e2 = new AppPropertyEntity();
+        e2.setName("cuba.cat2.ui.prop2");
+
+        AppPropertyEntity e3 = new AppPropertyEntity();
+        e3.setName("cuba.cat2.ui.prop3");
+
+        List<AppPropertyEntity> list = datasource.createEntitiesTree(Arrays.asList(e1, e2, e3));
+/*
+         cuba
+           cat1
+             ui
+               prop1
+           cat2
+             ui
+               prop2
+               prop3
+*/
+        assertEquals(8, list.size());
+
+        assertEquals(2, list.stream().filter(e -> e.getName().equals("ui")).count());
     }
 }
