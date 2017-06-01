@@ -18,6 +18,8 @@
 package com.haulmont.cuba.core.app.filestorage.amazon.auth;
 
 import com.haulmont.cuba.core.app.filestorage.amazon.util.BinaryUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +32,8 @@ import java.util.Map;
  * 'Authorization' header.
  */
 public class AWS4SignerForAuthorizationHeader extends AWS4SignerBase {
+
+    private static final Logger log = LoggerFactory.getLogger(AWS4SignerForAuthorizationHeader.class);
 
     public AWS4SignerForAuthorizationHeader(URL endpointUrl, String httpMethod,
             String serviceName, String regionName) {
@@ -90,18 +94,14 @@ public class AWS4SignerForAuthorizationHeader extends AWS4SignerBase {
         String canonicalRequest = getCanonicalRequest(endpointUrl, httpMethod,
                 canonicalizedQueryParameters, canonicalizedHeaderNames,
                 canonicalizedHeaders, bodyHash);
-        System.out.println("--------- Canonical request --------");
-        System.out.println(canonicalRequest);
-        System.out.println("------------------------------------");
-        
+        log.debug("Canonical request: {}", canonicalRequest);
+
         // construct the string to be signed
         String dateStamp = dateStampFormat.format(now);
         String scope =  dateStamp + "/" + regionName + "/" + serviceName + "/" + TERMINATOR;
         String stringToSign = getStringToSign(SCHEME, ALGORITHM, dateTimeStamp, scope, canonicalRequest);
-        System.out.println("--------- String to sign -----------");
-        System.out.println(stringToSign);
-        System.out.println("------------------------------------");
-        
+        log.debug("String to sign: {}", stringToSign);
+
         // compute the signing key
         byte[] kSecret = (SCHEME + awsSecretKey).getBytes(StandardCharsets.UTF_8);
         byte[] kDate = sign(dateStamp, kSecret, "HmacSHA256");
