@@ -16,12 +16,13 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SplitPanel;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalSplitPanel;
-import com.vaadin.server.Sizeable;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.AbstractSplitPanel;
 import com.vaadin.ui.VerticalSplitPanel;
 import org.apache.commons.lang.StringUtils;
@@ -32,10 +33,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> implements SplitPanel, Component.HasSettings {
+public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> implements SplitPanel {
 
-    protected Map<String, Component> componentByIds = new HashMap<>();
-    protected Collection<Component> ownComponents = new LinkedHashSet<>();
+    protected List<Component> ownComponents = new ArrayList<>(3);
 
     protected SplitPanel.PositionUpdateListener positionListener;
 
@@ -63,10 +63,6 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
         final com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
 
         component.addComponent(vComponent);
-
-        if (childComponent.getId() != null) {
-            componentByIds.put(childComponent.getId(), childComponent);
-        }
 
         if (frame != null) {
             if (childComponent instanceof BelongToFrame
@@ -118,9 +114,6 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     @Override
     public void remove(Component childComponent) {
         component.removeComponent(WebComponentsHelper.getComposition(childComponent));
-        if (childComponent.getId() != null) {
-            componentByIds.remove(childComponent.getId());
-        }
         ownComponents.remove(childComponent);
 
         childComponent.setParent(null);
@@ -129,9 +122,8 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     @Override
     public void removeAll() {
         component.removeAllComponents();
-        componentByIds.clear();
 
-        List<Component> components = new ArrayList<>(ownComponents);
+        Component[] components = ownComponents.toArray(new Component[ownComponents.size()]);
         ownComponents.clear();
 
         for (Component childComponent : components) {
@@ -155,7 +147,12 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
 
     @Override
     public Component getOwnComponent(String id) {
-        return componentByIds.get(id);
+        Preconditions.checkNotNullArgument(id);
+
+        return ownComponents.stream()
+                .filter(component -> Objects.equals(id, component.getId()))
+                .findFirst()
+                .orElse(null);
     }
 
     @Nullable
@@ -200,11 +197,11 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
             String unit = e.attributeValue("unit");
 
             if (!StringUtils.isBlank(value) && !StringUtils.isBlank(unit)) {
-                Sizeable.Unit convertedUnit;
+                Unit convertedUnit;
                 if (NumberUtils.isNumber(unit)) {
                     convertedUnit = convertLegacyUnit(Integer.parseInt(unit));
                 } else {
-                    convertedUnit = Sizeable.Unit.getUnitFromSymbol(unit);
+                    convertedUnit = Unit.getUnitFromSymbol(unit);
                 }
                 component.setSplitPosition(Float.parseFloat(value), convertedUnit, component.isSplitPositionReversed());
             }
@@ -258,9 +255,9 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     @Override
     public void setSplitPosition(int pos, int unit) {
         if (unit == UNITS_PIXELS) {
-            component.setSplitPosition(pos, Sizeable.Unit.PIXELS);
+            component.setSplitPosition(pos, Unit.PIXELS);
         } else if (unit == UNITS_PERCENTAGE) {
-            component.setSplitPosition(pos, Sizeable.Unit.PERCENTAGE);
+            component.setSplitPosition(pos, Unit.PERCENTAGE);
         } else {
             throw new IllegalArgumentException("Unsupported unit " + unit);
         }
@@ -269,9 +266,9 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     @Override
     public void setSplitPosition(int pos, int unit, boolean reversePosition) {
         if (unit == UNITS_PIXELS) {
-            component.setSplitPosition(pos, Sizeable.Unit.PIXELS, reversePosition);
+            component.setSplitPosition(pos, Unit.PIXELS, reversePosition);
         } else if (unit == UNITS_PERCENTAGE) {
-            component.setSplitPosition(pos, Sizeable.Unit.PERCENTAGE, reversePosition);
+            component.setSplitPosition(pos, Unit.PERCENTAGE, reversePosition);
         } else {
             throw new IllegalArgumentException("Unsupported unit " + unit);
         }
@@ -284,9 +281,9 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
 
     @Override
     public int getSplitPositionUnit() {
-        if (component.getSplitPositionUnit() == Sizeable.Unit.PIXELS) {
+        if (component.getSplitPositionUnit() == Unit.PIXELS) {
             return UNITS_PIXELS;
-        } else if (component.getSplitPositionUnit() == Sizeable.Unit.PERCENTAGE) {
+        } else if (component.getSplitPositionUnit() == Unit.PERCENTAGE) {
             return UNITS_PERCENTAGE;
         } else {
             throw new IllegalArgumentException("Component has unsupported split position unit " + component.getSplitPositionUnit());
@@ -301,9 +298,9 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     @Override
     public void setMinSplitPosition(int pos, int unit) {
         if (unit == UNITS_PIXELS) {
-            component.setMinSplitPosition(pos, Sizeable.Unit.PIXELS);
+            component.setMinSplitPosition(pos, Unit.PIXELS);
         } else if (unit == UNITS_PERCENTAGE) {
-            component.setMinSplitPosition(pos, Sizeable.Unit.PERCENTAGE);
+            component.setMinSplitPosition(pos, Unit.PERCENTAGE);
         } else {
             throw new IllegalArgumentException("Unsupported unit " + unit);
         }
@@ -312,9 +309,9 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     @Override
     public void setMaxSplitPosition(int pos, int unit) {
         if (unit == UNITS_PIXELS) {
-            component.setMaxSplitPosition(pos, Sizeable.Unit.PIXELS);
+            component.setMaxSplitPosition(pos, Unit.PIXELS);
         } else if (unit == UNITS_PERCENTAGE) {
-            component.setMaxSplitPosition(pos, Sizeable.Unit.PERCENTAGE);
+            component.setMaxSplitPosition(pos, Unit.PERCENTAGE);
         } else {
             throw new IllegalArgumentException("Unsupported unit " + unit);
         }
@@ -340,14 +337,14 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
         return positionListener;
     }
 
-    protected Sizeable.Unit convertLegacyUnit(int unit) {
+    protected Unit convertLegacyUnit(int unit) {
         switch (unit) {
             case 0:
-                return Sizeable.Unit.PIXELS;
+                return Unit.PIXELS;
             case 8:
-                return Sizeable.Unit.PERCENTAGE;
+                return Unit.PERCENTAGE;
             default:
-                return Sizeable.Unit.PIXELS;
+                return Unit.PIXELS;
         }
     }
 }

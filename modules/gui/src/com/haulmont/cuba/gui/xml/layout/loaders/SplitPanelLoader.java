@@ -56,6 +56,8 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
 
+        loadSettingsEnabled(resultComponent, element);
+
         String pos = element.attributeValue("pos");
         if (!StringUtils.isEmpty(pos)) {
             boolean reversePosition = false;

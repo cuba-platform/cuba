@@ -33,7 +33,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> implements SplitPanel, Component.HasSettings {
+public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> implements SplitPanel {
 
     protected boolean applyNewPosition = true;
     protected int position = 50;
