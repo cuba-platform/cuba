@@ -19,10 +19,10 @@ package com.haulmont.cuba.web.gui.data;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,12 +32,14 @@ import static com.haulmont.cuba.gui.data.CollectionDatasource.Sortable.SortInfo;
 
 public class SortableCollectionDsWrapper extends CollectionDsWrapper implements Container.Sortable {
 
-    public SortableCollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
-        super(datasource, autoRefresh);
+    public SortableCollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh,
+                                       CollectionDsListenersWrapper collectionDsListenersWrapper) {
+        super(datasource, autoRefresh, collectionDsListenersWrapper);
     }
 
-    public SortableCollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, boolean autoRefresh) {
-        super(datasource, properties, autoRefresh);
+    public SortableCollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties,
+                                       boolean autoRefresh, CollectionDsListenersWrapper collectionDsListenersWrapper) {
+        super(datasource, properties, autoRefresh, collectionDsListenersWrapper);
     }
 
     @Override

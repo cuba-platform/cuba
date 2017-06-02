@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.EnumerationContainer;
@@ -45,6 +46,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     protected Map<String, ?> optionsMap;
     protected Class<? extends EnumClass> optionsEnum;
     protected CollectionDatasource optionsDatasource;
+
+    protected CollectionDsListenersWrapper collectionDsListenersWrapper;
 
     protected String captionProperty;
     protected String descriptionProperty;
@@ -308,12 +311,17 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         this.optionsDatasource = datasource;
 
         if (datasource != null) {
-            setComponentContainerDs(new CollectionDsWrapper(datasource, true));
+            collectionDsListenersWrapper = createCollectionDsListenersWrapper();
+            setComponentContainerDs(new CollectionDsWrapper(datasource, true, collectionDsListenersWrapper));
 
             if (captionProperty != null) {
                 component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));
             }
         }
+    }
+
+    protected CollectionDsListenersWrapper createCollectionDsListenersWrapper() {
+        return new CollectionDsListenersWrapper();
     }
 
     @SuppressWarnings({"unchecked"})

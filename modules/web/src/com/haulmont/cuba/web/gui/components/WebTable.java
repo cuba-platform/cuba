@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -58,10 +59,12 @@ public class WebTable<E extends Entity> extends WebAbstractTable<CubaTable, E> {
     }
 
     @Override
-    protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
+    protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource,
+                                                            Collection<MetaPropertyPath> columns,
+                                                            CollectionDsListenersWrapper collectionDsListenersWrapper) {
         return datasource instanceof CollectionDatasource.Sortable && isSortable() ?
-                new SortableTableDsWrapper(datasource, columns) :
-                new TableDsWrapper(datasource, columns);
+                new SortableTableDsWrapper(datasource, columns, collectionDsListenersWrapper) :
+                new TableDsWrapper(datasource, columns, collectionDsListenersWrapper);
     }
 
     protected class TableDsWrapper extends CollectionDsWrapper
@@ -69,8 +72,9 @@ public class WebTable<E extends Entity> extends WebAbstractTable<CubaTable, E> {
 
         protected List<Object> aggregationProperties = null;
 
-        public TableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
-            super(datasource, properties, true);
+        public TableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties,
+                              CollectionDsListenersWrapper collectionDsListenersWrapper) {
+            super(datasource, properties, true, collectionDsListenersWrapper);
         }
 
         @Override
@@ -141,8 +145,9 @@ public class WebTable<E extends Entity> extends WebAbstractTable<CubaTable, E> {
 
         protected List<Object> aggregationProperties = null;
 
-        public SortableTableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
-            super(datasource, properties, true);
+        public SortableTableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties,
+                                      CollectionDsListenersWrapper collectionDsListenersWrapper) {
+            super(datasource, properties, true, collectionDsListenersWrapper);
         }
 
         @Override

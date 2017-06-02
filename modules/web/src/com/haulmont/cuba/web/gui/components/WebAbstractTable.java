@@ -43,10 +43,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.aggregation.Aggregation;
 import com.haulmont.cuba.gui.data.aggregation.Aggregations;
-import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
-import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
-import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
+import com.haulmont.cuba.gui.data.impl.*;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -141,11 +138,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
     protected boolean settingsEnabled = true;
 
-    protected Datasource.ItemPropertyChangeListener aggregationDatasourceListener;
-    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
-    protected CollectionDatasource.CollectionChangeListener collectionChangeSelectionListener;
+    protected CollectionDsListenersWrapper collectionDsListenersWrapper;
 
-    protected CollectionDsActionsNotifier collectionDsActionsNotifier;
+    protected CollectionDsWrapper containerDatasource;
 
     protected boolean ignoreUnfetchedAttributes = false;
 
@@ -890,7 +885,21 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         Preconditions.checkNotNullArgument(datasource, "datasource is null");
 
         if (this.datasource != null) {
-            throw new UnsupportedOperationException("Changing datasource is not supported by the Table component");
+            if (!this.datasource.getMetaClass().equals(datasource.getMetaClass())) {
+                throw new IllegalArgumentException("The new datasource must correspond to the same MetaClass");
+            }
+
+            if (fieldDatasources != null) {
+                fieldDatasources.clear();
+            }
+
+            if (collectionDsListenersWrapper != null) {
+                collectionDsListenersWrapper.unbind(this.datasource);
+                if (containerDatasource != null) {
+                    containerDatasource.unsubscribe();
+                    containerDatasource = null;
+                }
+            }
         }
 
         MessageTools messageTools = AppBeans.get(MessageTools.NAME);
@@ -924,28 +933,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         this.datasource = datasource;
 
-        // drop cached datasources for components before update table cells on client
-        collectionChangeListener = e -> {
-            if (fieldDatasources != null) {
-                switch (e.getOperation()) {
-                    case CLEAR:
-                    case REFRESH:
-                        fieldDatasources.clear();
-                        break;
+        if (collectionDsListenersWrapper == null) {
+            collectionDsListenersWrapper = createCollectionDsListenersWrapper();
+        }
 
-                    case UPDATE:
-                    case REMOVE:
-                        for (Object entity : e.getItems()) {
-                            fieldDatasources.remove(entity);
-                        }
-                        break;
-                }
-            }
-        };
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeListener));
-
-        final CollectionDsWrapper containerDatasource = createContainerDatasource(datasource, getPropertyColumns());
+        containerDatasource = createContainerDatasource(datasource, getPropertyColumns(),
+                collectionDsListenersWrapper);
 
         component.setContainerDataSource(containerDatasource);
 
@@ -1001,10 +994,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
         }
 
-        aggregationDatasourceListener = createAggregationDatasourceListener();
-        //noinspection unchecked
-        datasource.addItemPropertyChangeListener(new WeakItemPropertyChangeListener(datasource, aggregationDatasourceListener));
-
         createStubsForGeneratedColumns();
 
         setVisibleColumns(getInitialVisibleColumns());
@@ -1022,37 +1011,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             rowsCount.setDatasource(datasource);
         }
 
-        collectionChangeSelectionListener = e -> {
-            // #PL-2035, reload selection from ds
-            Set<Object> selectedItemIds = getSelectedItemIds();
-            if (selectedItemIds == null) {
-                selectedItemIds = Collections.emptySet();
-            }
-
-            Set<Object> newSelection = new HashSet<>();
-            for (Object entityId : selectedItemIds) {
-                //noinspection unchecked
-                if (e.getDs().containsItem(entityId)) {
-                    newSelection.add(entityId);
-                }
-            }
-
-            if (e.getDs().getState() == Datasource.State.VALID && e.getDs().getItem() != null) {
-                newSelection.add(e.getDs().getItem().getId());
-            }
-
-            if (newSelection.isEmpty()) {
-                setSelected((E) null);
-            } else {
-                setSelectedIds(newSelection);
-            }
-        };
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeSelectionListener));
-
-        //noinspection unchecked
-        collectionDsActionsNotifier = new CollectionDsActionsNotifier(this);
-        collectionDsActionsNotifier.bind(datasource);
+        collectionDsListenersWrapper.bind(datasource);
 
         for (Action action : getActions()) {
             action.refreshState();
@@ -1062,6 +1021,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             setSortable(false);
 
         assignAutoDebugId();
+    }
+
+    protected CollectionDsListenersWrapper createCollectionDsListenersWrapper() {
+        return new TableCollectionDsListenersWrapper();
     }
 
     protected boolean canBeSorted(CollectionDatasource datasource) {
@@ -1169,7 +1132,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     protected abstract CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource,
-                                                                     Collection<MetaPropertyPath> columns);
+                                                                     Collection<MetaPropertyPath> columns,
+                                                                     CollectionDsListenersWrapper collectionDsListenersWrapper);
 
     protected void setVisibleColumns(List<?> columnsOrder) {
         component.setVisibleColumns(columnsOrder.toArray());
@@ -2365,24 +2329,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         aggregationCells.put(column, "");
     }
 
-    protected CollectionDatasource.ItemPropertyChangeListener createAggregationDatasourceListener() {
-        return new AggregationDatasourceListener();
-    }
-
-    protected class AggregationDatasourceListener implements Datasource.ItemPropertyChangeListener<Entity> {
-
-        @Override
-        public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent<Entity> e) {
-            if (isAggregatable() && aggregationCells != null) {
-                final CollectionDatasource ds = WebAbstractTable.this.getDatasource();
-                component.aggregate(new AggregationContainer.Context(ds.getItemIds()));
-
-                // trigger aggregation repaint
-                component.markAsDirty();
-            }
-        }
-    }
-
     protected static class WebTableFieldFactory extends AbstractFieldFactory implements TableFieldFactory {
         protected WebAbstractTable<?, ?> webTable;
 
@@ -2972,6 +2918,100 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             } else {
                 table.setWidth(100, Unit.PERCENTAGE);
             }
+        }
+    }
+
+    public class TableCollectionDsListenersWrapper extends CollectionDsListenersWrapper {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void collectionChanged(CollectionDatasource.CollectionChangeEvent e) {
+            // replacement for collectionChangeListener
+            if (fieldDatasources != null) {
+                switch (e.getOperation()) {
+                    case CLEAR:
+                    case REFRESH:
+                        fieldDatasources.clear();
+                        break;
+
+                    case UPDATE:
+                    case REMOVE:
+                        for (Object entity : e.getItems()) {
+                            fieldDatasources.remove(entity);
+                        }
+                        break;
+                }
+            }
+
+            // replacement for collectionChangeSelectionListener
+            // #PL-2035, reload selection from ds
+            Set<Object> selectedItemIds = getSelectedItemIds();
+            if (selectedItemIds == null) {
+                selectedItemIds = Collections.emptySet();
+            }
+
+            Set<Object> newSelection = new HashSet<>();
+            for (Object entityId : selectedItemIds) {
+                //noinspection unchecked
+                if (e.getDs().containsItem(entityId)) {
+                    newSelection.add(entityId);
+                }
+            }
+
+            if (e.getDs().getState() == Datasource.State.VALID && e.getDs().getItem() != null) {
+                newSelection.add(e.getDs().getItem().getId());
+            }
+
+            if (newSelection.isEmpty()) {
+                setSelected((E) null);
+            } else {
+                setSelectedIds(newSelection);
+            }
+
+            super.collectionChanged(e);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void itemChanged(Datasource.ItemChangeEvent e) {
+            for (Action action : getActions()) {
+                action.refreshState();
+            }
+
+            super.itemChanged(e);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent e) {
+            // replacement for aggregationDatasourceListener
+            handleAggregation();
+
+            for (Action action : getActions()) {
+                action.refreshState();
+            }
+
+            super.itemPropertyChanged(e);
+        }
+
+        protected void handleAggregation() {
+            if (isAggregatable() && aggregationCells != null) {
+                final CollectionDatasource ds = WebAbstractTable.this.getDatasource();
+                component.aggregate(new AggregationContainer.Context(ds.getItemIds()));
+
+                // trigger aggregation repaint
+                component.markAsDirty();
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void stateChanged(Datasource.StateChangeEvent e) {
+            for (Action action : getActions()) {
+                action.refreshState();
+            }
+
+            super.stateChanged(e);
         }
     }
 }

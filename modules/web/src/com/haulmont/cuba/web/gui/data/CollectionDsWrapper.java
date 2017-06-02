@@ -36,6 +36,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
 
     protected CollectionDatasource datasource;
     protected Collection<MetaPropertyPath> properties = new ArrayList<>();
+    protected CollectionDsListenersWrapper collectionDsListenersWrapper;
 
     // lazily initialized listeners list
     protected List<ItemSetChangeListener> itemSetChangeListeners = null;
@@ -44,17 +45,17 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     protected Datasource.ItemPropertyChangeListener cdsItemPropertyChangeListener;
     protected CollectionDatasource.CollectionChangeListener cdsCollectionChangeListener;
 
-    protected WeakDsListenerAdapter weakDsListenerAdapter;
-
-    public CollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
-        this(datasource, null, autoRefresh);
+    public CollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh,
+                               CollectionDsListenersWrapper collectionDsListenersWrapper) {
+        this(datasource, null, autoRefresh, collectionDsListenersWrapper);
     }
 
     @SuppressWarnings("unchecked")
     public CollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties,
-                               boolean autoRefresh) {
+                               boolean autoRefresh, CollectionDsListenersWrapper collectionDsListenersWrapper) {
         this.datasource = datasource;
         this.autoRefresh = autoRefresh;
+        this.collectionDsListenersWrapper = collectionDsListenersWrapper;
 
         final View view = datasource.getView();
         final MetaClass metaClass = datasource.getMetaClass();
@@ -69,12 +70,9 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         cdsStateChangeListener = createStateChangeListener();
         cdsCollectionChangeListener = createCollectionChangeListener();
 
-        weakDsListenerAdapter = new WeakDsListenerAdapter(datasource, cdsItemPropertyChangeListener,
-                cdsStateChangeListener, cdsCollectionChangeListener);
-
-        datasource.addItemPropertyChangeListener(weakDsListenerAdapter);
-        datasource.addStateChangeListener(weakDsListenerAdapter);
-        datasource.addCollectionChangeListener(weakDsListenerAdapter);
+        collectionDsListenersWrapper.addItemPropertyChangeListener(cdsItemPropertyChangeListener);
+        collectionDsListenersWrapper.addStateChangeListener(cdsStateChangeListener);
+        collectionDsListenersWrapper.addCollectionChangeListener(cdsCollectionChangeListener);
     }
 
     protected CollectionDatasource.CollectionChangeListener createCollectionChangeListener() {
@@ -240,11 +238,10 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     @SuppressWarnings("unchecked")
     @Override
     public void unsubscribe() {
-        datasource.removeCollectionChangeListener(weakDsListenerAdapter);
-        datasource.removeItemPropertyChangeListener(weakDsListenerAdapter);
-        datasource.removeStateChangeListener(weakDsListenerAdapter);
+        collectionDsListenersWrapper.removeCollectionChangeListener(cdsCollectionChangeListener);
+        collectionDsListenersWrapper.removeItemPropertyChangeListener(cdsItemPropertyChangeListener);
+        collectionDsListenersWrapper.removeStateChangeListener(cdsStateChangeListener);
 
-        weakDsListenerAdapter = null;
         datasource = null;
     }
 

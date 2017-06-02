@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.WidgetsTree;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaWidgetsTree;
 import com.vaadin.ui.Tree;
@@ -77,13 +78,18 @@ public class WebWidgetsTree<E extends Entity> extends WebAbstractTree<CubaWidget
 
         this.datasource = datasource;
         this.hierarchyProperty = datasource.getHierarchyPropertyName();
+        collectionDsListenersWrapper = createCollectionDsListenersWrapper();
 
-        HierarchicalDsWrapper wrapper = new HierarchicalDsWrapper(datasource);
+        HierarchicalDsWrapper wrapper = new HierarchicalDsWrapper(datasource, collectionDsListenersWrapper);
         component.setContainerDataSource(wrapper);
 
         for (Action action : getActions()) {
             action.refreshState();
         }
+    }
+
+    protected CollectionDsListenersWrapper createCollectionDsListenersWrapper() {
+        return new CollectionDsListenersWrapper();
     }
 
     @Override

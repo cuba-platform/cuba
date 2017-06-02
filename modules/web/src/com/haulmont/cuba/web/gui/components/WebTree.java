@@ -28,8 +28,7 @@ import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
-import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.ItemClickEvent;
@@ -50,9 +49,6 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> impl
 
     protected Action doubleClickAction;
     protected ItemClickEvent.ItemClickListener itemClickListener;
-
-    protected CollectionDatasource.CollectionChangeListener collectionChangeSelectionListener;
-    protected CollectionDsActionsNotifier collectionDsActionsNotifier;
 
     public WebTree() {
         component = new CubaTree();
@@ -206,8 +202,9 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> impl
 
         this.datasource = datasource;
         this.hierarchyProperty = datasource.getHierarchyPropertyName();
+        collectionDsListenersWrapper = createCollectionDsListenersWrapper();
 
-        component.setContainerDataSource(new HierarchicalDsWrapper(datasource));
+        component.setContainerDataSource(new HierarchicalDsWrapper(datasource, collectionDsListenersWrapper));
 
         tryToAssignCaptionProperty();
 
@@ -221,41 +218,17 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> impl
             action.setDatasource(datasource);
         }
 
-        collectionChangeSelectionListener = e -> {
-            // #PL-2035, reload selection from ds
-            Set<Object> selectedItemIds = getSelectedItemIds();
-            if (selectedItemIds == null) {
-                selectedItemIds = Collections.emptySet();
-            }
-
-            Set<Object> newSelection = new HashSet<>();
-            for (Object entityId : selectedItemIds) {
-                if (e.getDs().containsItem(entityId)) {
-                    newSelection.add(entityId);
-                }
-            }
-
-            if (e.getDs().getState() == Datasource.State.VALID && e.getDs().getItem() != null) {
-                newSelection.add(e.getDs().getItem().getId());
-            }
-
-            if (newSelection.isEmpty()) {
-                setSelected((E) null);
-            } else {
-                setSelectedIds(newSelection);
-            }
-        };
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeSelectionListener));
-
-        collectionDsActionsNotifier = new CollectionDsActionsNotifier(this);
-        collectionDsActionsNotifier.bind(datasource);
+        collectionDsListenersWrapper.bind(datasource);
 
         for (Action action : getActions()) {
             action.refreshState();
         }
 
         assignAutoDebugId();
+    }
+
+    protected CollectionDsListenersWrapper createCollectionDsListenersWrapper() {
+        return new TreeCollectionDsListenersWrapper();
     }
 
     @Override
@@ -302,5 +275,68 @@ public class WebTree<E extends Entity> extends WebAbstractTree<CubaTree, E> impl
     @Override
     public void removeLookupValueChangeListener(LookupSelectionChangeListener listener) {
         getEventRouter().removeListener(LookupSelectionChangeListener.class, listener);
+    }
+
+    public class TreeCollectionDsListenersWrapper extends CollectionDsListenersWrapper {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void collectionChanged(CollectionDatasource.CollectionChangeEvent e) {
+            // replacement for collectionChangeSelectionListener
+            // #PL-2035, reload selection from ds
+            Set<Object> selectedItemIds = getSelectedItemIds();
+            if (selectedItemIds == null) {
+                selectedItemIds = Collections.emptySet();
+            }
+
+            Set<Object> newSelection = new HashSet<>();
+            for (Object entityId : selectedItemIds) {
+                if (e.getDs().containsItem(entityId)) {
+                    newSelection.add(entityId);
+                }
+            }
+
+            if (e.getDs().getState() == Datasource.State.VALID && e.getDs().getItem() != null) {
+                newSelection.add(e.getDs().getItem().getId());
+            }
+
+            if (newSelection.isEmpty()) {
+                setSelected((E) null);
+            } else {
+                setSelectedIds(newSelection);
+            }
+
+            super.collectionChanged(e);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void itemChanged(Datasource.ItemChangeEvent e) {
+            for (Action action : getActions()) {
+                action.refreshState();
+            }
+
+            super.itemChanged(e);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent e) {
+            for (Action action : getActions()) {
+                action.refreshState();
+            }
+
+            super.itemPropertyChanged(e);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void stateChanged(Datasource.StateChangeEvent e) {
+            for (Action action : getActions()) {
+                action.refreshState();
+            }
+
+            super.stateChanged(e);
+        }
     }
 }

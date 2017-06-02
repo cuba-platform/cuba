@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -149,13 +150,10 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     }
 
     @Override
-    protected CollectionDatasource.ItemPropertyChangeListener createAggregationDatasourceListener() {
-        return new GroupAggregationDatasourceListener();
-    }
-
-    @Override
-    protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
-        return new GroupTableDsWrapper(datasource, columns);
+    protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource,
+                                                            Collection<MetaPropertyPath> columns,
+                                                            CollectionDsListenersWrapper collectionDsListenersWrapper) {
+        return new GroupTableDsWrapper(datasource, columns, collectionDsListenersWrapper);
     }
 
     @Override
@@ -348,8 +346,9 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         protected Object first;
         protected Object last;
 
-        public GroupTableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
-            super(datasource, properties, true);
+        public GroupTableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties,
+                                   CollectionDsListenersWrapper collectionDsListenersWrapper) {
+            super(datasource, properties, true, collectionDsListenersWrapper);
             groupDatasource = datasource instanceof GroupDatasource;
         }
 
@@ -836,11 +835,22 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         }
     }
 
-    protected class GroupAggregationDatasourceListener extends AggregationDatasourceListener {
+    @Override
+    public void addColumn(Column column) {
+        super.addColumn(column);
 
+        setColumnGroupAllowed(column, column.isGroupAllowed());
+    }
+
+    @Override
+    protected CollectionDsListenersWrapper createCollectionDsListenersWrapper() {
+        return new GroupTableCollectionDsListenersWrapper();
+    }
+
+    public class GroupTableCollectionDsListenersWrapper extends TableCollectionDsListenersWrapper {
         @Override
-        public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent<Entity> e) {
-            super.itemPropertyChanged(e);
+        protected void handleAggregation() {
+            super.handleAggregation();
 
             if (isAggregatable() && aggregationCells != null) {
                 if (datasource instanceof GroupDatasource) {
@@ -853,12 +863,5 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
                 }
             }
         }
-    }
-
-    @Override
-    public void addColumn(Column column) {
-        super.addColumn(column);
-
-        setColumnGroupAllowed(column, column.isGroupAllowed());
     }
 }

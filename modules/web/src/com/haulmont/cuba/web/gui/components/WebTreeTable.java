@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.TreeTableDatasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -85,8 +86,9 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
 
     @Override
     protected CollectionDsWrapper createContainerDatasource(
-            CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
-        return new TreeTableDsWrapper((HierarchicalDatasource) datasource);
+            CollectionDatasource datasource, Collection<MetaPropertyPath> columns,
+            CollectionDsListenersWrapper collectionDsListenersWrapper) {
+        return new TreeTableDsWrapper((HierarchicalDatasource) datasource, collectionDsListenersWrapper);
     }
 
     @Override
@@ -228,8 +230,9 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
 
         protected List<Object> aggregationProperties = null;
 
-        public TreeTableDsWrapper(HierarchicalDatasource datasource) {
-            super(datasource);
+        public TreeTableDsWrapper(HierarchicalDatasource datasource,
+                                  CollectionDsListenersWrapper collectionDsListenersWrapper) {
+            super(datasource, collectionDsListenersWrapper);
             treeTableDatasource = (datasource instanceof TreeTableDatasource);
         }
 

@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
@@ -44,6 +45,8 @@ public abstract class WebAbstractTree<T extends CubaTree, E extends Entity>
 
     protected List<Tree.StyleProvider> styleProviders; // lazily initialized List
     protected StyleGeneratorAdapter styleGenerator;    // lazily initialized field
+
+    protected CollectionDsListenersWrapper collectionDsListenersWrapper;
 
     protected ButtonsPanel buttonsPanel;
     protected HorizontalLayout topPanel;
