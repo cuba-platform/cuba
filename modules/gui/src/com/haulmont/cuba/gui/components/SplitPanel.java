@@ -16,6 +16,8 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import java.util.EventObject;
+
 public interface SplitPanel extends Component.Container, Component.BelongToFrame, Component.HasIcon,
         Component.HasCaption, Component.HasSettings {
 
@@ -67,10 +69,59 @@ public interface SplitPanel extends Component.Container, Component.BelongToFrame
     void setLocked(boolean locked);
     boolean isLocked();
 
+    /**
+     * @deprecated Use {@link #addSplitPositionChangeListener}
+     */
+    @Deprecated
     void setPositionUpdateListener(PositionUpdateListener positionListener);
+    /**
+     * @deprecated Use {@link #removeSplitPositionChangeListener}
+     */
+    @Deprecated
     PositionUpdateListener getPositionUpdateListener();
 
+    /**
+     * @deprecated Use {@link SplitPositionChangeListener}
+     */
+    @Deprecated
     interface PositionUpdateListener {
         void updatePosition(float previousPosition, float newPosition);
     }
+
+    /**
+     * Event that indicates a change in SplitPanel's splitter position.
+     */
+    class SplitPositionChangeEvent extends EventObject {
+        private final float previousPosition;
+        private final float newPosition;
+
+        public SplitPositionChangeEvent(SplitPanel splitPanel, float previousPosition, float newPosition) {
+            super(splitPanel);
+            this.previousPosition = previousPosition;
+            this.newPosition = newPosition;
+        }
+
+        @Override
+        public SplitPanel getSource() {
+            return (SplitPanel) super.getSource();
+        }
+
+        public float getPreviousPosition() {
+            return previousPosition;
+        }
+
+        public float getNewPosition() {
+            return newPosition;
+        }
+    }
+
+    /**
+     * Interface for listening for {@link SplitPositionChangeEvent}s fired by a SplitPanel.
+     */
+    interface SplitPositionChangeListener {
+        void onSplitPositionChanged(SplitPositionChangeEvent event);
+    }
+
+    void addSplitPositionChangeListener(SplitPositionChangeListener listener);
+    void removeSplitPositionChangeListener(SplitPositionChangeListener listener);
 }

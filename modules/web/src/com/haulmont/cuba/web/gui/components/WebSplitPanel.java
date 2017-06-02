@@ -100,15 +100,18 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
             };
         }
 
-        component.addSplitPositionChangeListener(event ->
-                firePositionUpdateListener(currentPosition, event.getSplitPosition())
-        );
+        component.addSplitPositionChangeListener(this::fireSplitPositionChangeListener);
     }
 
-    protected void firePositionUpdateListener(float previousPosition, float newPosition) {
+    protected void fireSplitPositionChangeListener(AbstractSplitPanel.SplitPositionChangeEvent event) {
         if (positionListener != null) {
-            positionListener.updatePosition(previousPosition, newPosition);
+            positionListener.updatePosition(currentPosition, event.getSplitPosition());
         }
+
+        SplitPositionChangeEvent cubaEvent = new SplitPositionChangeEvent(this, currentPosition, event.getSplitPosition());
+        getEventRouter().fireEvent(SplitPositionChangeListener.class,
+                SplitPositionChangeListener::onSplitPositionChanged,
+                cubaEvent);
     }
 
     @Override
@@ -335,6 +338,16 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     @Override
     public PositionUpdateListener getPositionUpdateListener() {
         return positionListener;
+    }
+
+    @Override
+    public void addSplitPositionChangeListener(SplitPositionChangeListener listener) {
+        getEventRouter().addListener(SplitPositionChangeListener.class, listener);
+    }
+
+    @Override
+    public void removeSplitPositionChangeListener(SplitPositionChangeListener listener) {
+        getEventRouter().removeListener(SplitPositionChangeListener.class, listener);
     }
 
     protected Unit convertLegacyUnit(int unit) {

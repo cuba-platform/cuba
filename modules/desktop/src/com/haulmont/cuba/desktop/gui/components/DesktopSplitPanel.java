@@ -191,6 +191,16 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
     }
 
     @Override
+    public void addSplitPositionChangeListener(SplitPositionChangeListener listener) {
+        // not supported
+    }
+
+    @Override
+    public void removeSplitPositionChangeListener(SplitPositionChangeListener listener) {
+        // not supported
+    }
+
+    @Override
     public void add(Component component) {
         JComponent jComponent = DesktopComponentsHelper.getComposition(component);
         jComponent.setMinimumSize(new Dimension());
