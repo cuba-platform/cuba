@@ -23,6 +23,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.impl.SessionImpl;
 import com.haulmont.cuba.core.entity.*;
+import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.global.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,6 +96,7 @@ public class MetadataImpl implements Metadata {
             T obj = extClass.newInstance();
             assignIdentifier((Entity) obj);
             assignUuid((Entity) obj);
+            createEmbedded((Entity) obj);
             invokePostConstructMethods((Entity) obj);
             return obj;
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
@@ -143,6 +145,20 @@ public class MetadataImpl implements Metadata {
     protected void assignUuid(Entity entity) {
         if (entity instanceof HasUuid) {
             ((HasUuid) entity).setUuid(UuidProvider.createUuid());
+        }
+    }
+
+    protected void createEmbedded(Entity entity) {
+        MetaClass metaClass = getClassNN(entity.getClass());
+        for (MetaProperty property : metaClass.getProperties()) {
+            if (property.getRange().isClass() && tools.isEmbedded(property)) {
+                EmbeddedParameters embeddedParameters = property.getAnnotatedElement().getAnnotation(EmbeddedParameters.class);
+                if (embeddedParameters != null && !embeddedParameters.nullAllowed()) {
+                    MetaClass embeddableMetaClass = property.getRange().asClass();
+                    Entity embeddableEntity = create(embeddableMetaClass);
+                    entity.setValue(property.getName(), embeddableEntity);
+                }
+            }
         }
     }
 
