@@ -223,6 +223,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                 for (CategoryAttribute attribute : attributesToShow) {
                     FieldGroup.FieldConfig field = resultComponent.createField(
                             DynamicAttributesUtils.encodeAttributeCode(attribute.getCode()));
+                    field.setCustom(true);
                     field.setProperty(DynamicAttributesUtils.encodeAttributeCode(attribute.getCode()));
                     field.setCaption(attribute.getName());
                     field.setDatasource(ds);
