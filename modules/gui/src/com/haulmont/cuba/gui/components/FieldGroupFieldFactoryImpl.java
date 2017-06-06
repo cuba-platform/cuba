@@ -109,7 +109,8 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
                 } else if (datatype instanceof NumberDatatype) {
                     if (fc.getXmlDescriptor() != null
                             && fc.getXmlDescriptor().attribute("mask") != null) {
-                        MaskedField maskedField = (MaskedField) createMaskedField(fc);
+                        GeneratedField generatedField = createMaskedField(fc);
+                        MaskedField maskedField = (MaskedField) generatedField.getComponent();
                         maskedField.setValueMode(MaskedField.ValueMode.MASKED);
                         maskedField.setSendNullRepresentation(false);
                         return new GeneratedField(maskedField);
