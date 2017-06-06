@@ -67,7 +67,7 @@ import static java.lang.String.format;
  */
 public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected static final Multimap<PropertyType, String> FIELDS_VISIBLE_FOR_DATATYPES = ArrayListMultimap.create();
-    protected static final Set<String> ALWAYS_VISIBLE_FIELDS = Sets.newHashSet("name", "code", "required", "dataType", "isCollection");
+    protected static final Set<String> ALWAYS_VISIBLE_FIELDS = Sets.newHashSet("name", "code", "required", "dataType");
     protected static final String WHERE = " where ";
 
     static {
@@ -75,16 +75,21 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.STRING, "defaultString");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.STRING, "width");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.STRING, "rowsCount");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.STRING, "isCollection");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DOUBLE, "defaultDouble");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DOUBLE, "width");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DOUBLE, "isCollection");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.INTEGER, "defaultInt");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.INTEGER, "width");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.INTEGER, "isCollection");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE, "defaultDate");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE, "defaultDateIsCurrent");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE, "width");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE, "isCollection");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "enumeration");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "defaultString");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "width");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "isCollection");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "entityClass");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "screen");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "lookup");
@@ -93,6 +98,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "joinClause");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "whereClause");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "constraintWizard");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "isCollection");
     }
 
     protected CategoryAttribute attribute;
@@ -423,6 +429,10 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             } else {
                 attributeFieldGroup.setVisible("defaultDate", true);
             }
+        }
+
+        if (attribute.getDataType() == PropertyType.BOOLEAN) {
+            attributeFieldGroup.setFieldValue("isCollection", null);
         }
     }
 
