@@ -78,7 +78,7 @@ public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> 
     public void setFrame(Frame frame) {
         super.setFrame(frame);
 
-        if (frame != null) {
+        if (popupContent != null && frame != null) {
             if (popupContent instanceof BelongToFrame
                     && ((BelongToFrame) popupContent).getFrame() == null) {
                 ((BelongToFrame) popupContent).setFrame(frame);
