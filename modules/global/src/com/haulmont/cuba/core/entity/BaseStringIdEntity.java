@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.MetaClass;
+import com.haulmont.cuba.core.entity.annotation.UnavailableInSecurityConstraints;
 
 import javax.persistence.MappedSuperclass;
 
@@ -35,6 +36,7 @@ import javax.persistence.MappedSuperclass;
  */
 @MappedSuperclass
 @MetaClass(name = "sys$BaseStringIdEntity")
+@UnavailableInSecurityConstraints
 public abstract class BaseStringIdEntity extends BaseGenericIdEntity<String> {
 
     private static final long serialVersionUID = -1887225952123433245L;

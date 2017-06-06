@@ -22,6 +22,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.annotation.UnavailableInSecurityConstraints;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -48,6 +49,7 @@ import java.util.UUID;
  */
 @MappedSuperclass
 @com.haulmont.chile.core.annotations.MetaClass(name = "sys$BaseGenericIdEntity")
+@UnavailableInSecurityConstraints
 public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements Entity<T> {
 
     private static final long serialVersionUID = -8400641366148656528L;

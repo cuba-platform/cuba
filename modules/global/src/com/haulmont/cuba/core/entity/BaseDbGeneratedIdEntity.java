@@ -17,6 +17,7 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.MetaClass;
+import com.haulmont.cuba.core.entity.annotation.UnavailableInSecurityConstraints;
 
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
@@ -26,6 +27,7 @@ import javax.persistence.Transient;
  */
 @MappedSuperclass
 @MetaClass(name = "sys$BaseDbGeneratedIdEntity")
+@UnavailableInSecurityConstraints
 public abstract class BaseDbGeneratedIdEntity extends BaseGenericIdEntity<IdProxy> {
 
     @Transient

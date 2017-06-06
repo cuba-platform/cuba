@@ -20,7 +20,8 @@ package com.haulmont.cuba.gui.app.security.constraint.edit;
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.*;
+import com.haulmont.cuba.core.entity.annotation.UnavailableInSecurityConstraints;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.GroovyGenerator;
 import com.haulmont.cuba.core.global.filter.SecurityJpqlGenerator;
@@ -135,10 +136,12 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
         entities = new HashMap<>();
         for (MetaClass metaClass : metadata.getSession().getClasses()) {
             if (extendedEntities.getExtendedClass(metaClass) == null && BaseGenericIdEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
-                MetaClass mainMetaClass = extendedEntities.getOriginalOrThisMetaClass(metaClass);
-                String originalName = mainMetaClass.getName();
-                options.put(messageTools.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", originalName);
-                entities.put(originalName, metaClass.getName());
+                if (!isUnavailableInSecurityConstraints(metaClass)) {
+                    MetaClass mainMetaClass = extendedEntities.getOriginalOrThisMetaClass(metaClass);
+                    String originalName = mainMetaClass.getName();
+                    options.put(messageTools.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", originalName);
+                    entities.put(originalName, metaClass.getName());
+                }
             }
         }
         entityName.setOptionsMap(options);
@@ -181,6 +184,12 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
 //        } else {
 //            testConstraint.setVisible(false);
 //        }
+    }
+
+    protected boolean isUnavailableInSecurityConstraints(MetaClass metaClass) {
+        Map<String, Object> metaAnnotationAttributes = metadata.getTools().getMetaAnnotationAttributes(metaClass.getAnnotations(),
+                UnavailableInSecurityConstraints.class);
+        return Boolean.TRUE.equals(metaAnnotationAttributes.get("value"));
     }
 
     protected List<Suggestion> requestHint(SourceCodeEditor sender, String text, int cursorPosition) {
