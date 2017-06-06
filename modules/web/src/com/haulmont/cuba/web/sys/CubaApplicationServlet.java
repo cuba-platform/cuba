@@ -154,13 +154,22 @@ public class CubaApplicationServlet extends VaadinServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if (handleContextRootWithoutSlash(request, response)) {
+            return;
+        }
 
         String requestURI = request.getRequestURI();
-        String contextName = request.getContextPath().length() == 0 ? "" : request.getContextPath().substring(1);
 
         if (request.getParameter("restartApp") != null) {
-            request.getSession().invalidate();
-            response.sendRedirect(requestURI);
+            try {
+                request.getSession().invalidate();
+            } catch (Exception e) {
+                // Vaadin listens to invalidate of web session and can throw exceptions during invalildate() call
+                log.debug("Exception during session invalidation", e);
+            } finally {
+                // always send redirect to client
+                response.sendRedirect(requestURI);
+            }
             return;
         }
 
@@ -174,6 +183,8 @@ public class CubaApplicationServlet extends VaadinServlet {
                 action = lastPart;
             }
         }
+
+        String contextName = request.getContextPath().length() == 0 ? "" : request.getContextPath().substring(1);
 
         boolean needRedirect = action != null;
         if (needRedirect) {
