@@ -21,10 +21,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.downloader.CubaFileDownloaderClie
 import com.vaadin.server.*;
 import org.apache.commons.lang.StringUtils;
 
-import javax.mail.internet.MimeUtility;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class CubaFileDownloader extends AbstractExtension {
@@ -109,28 +106,18 @@ public class CubaFileDownloader extends AbstractExtension {
 
             boolean isViewDocumentRequest = targetResourceKey.startsWith(VIEW_RESOURCE_PREFIX);
 
-            WebBrowser browser = Page.getCurrent().getWebBrowser();
-            boolean isFirefox = browser.isFirefox();
-            boolean isChrome = browser.isChrome();
-
             stream = ((ConnectorResource) resource).getStream();
 
-            String fileName;
-            if (isChrome) {
-                fileName = MimeUtility.encodeWord(stream.getFileName(), StandardCharsets.UTF_8.name(), "Q");
-            } else {
-                fileName = URLEncoder.encode(stream.getFileName(), StandardCharsets.UTF_8.name()).replaceAll("\\+", "%20");
-            }
-
-            if (stream.getParameter("Content-Disposition") == null) {
+            String contentDisposition = stream.getParameter(DownloadStream.CONTENT_DISPOSITION);
+            if (contentDisposition == null) {
                 // Content-Disposition: attachment generally forces download
-                stream.setParameter("Content-Disposition",
-                        (isViewDocumentRequest ? "inline" : "attachment") + "; " +
-                                (isFirefox ? "filename*=UTF-8''" + fileName : "filename=\"" + fileName + "\""));
+                contentDisposition = (isViewDocumentRequest ? "inline" : "attachment") + "; " +
+                        DownloadStream.getContentDispositionFilename(stream.getFileName());
             }
 
-            // Content-Type to block eager browser plug-ins from hijacking the
-            // file
+            stream.setParameter(DownloadStream.CONTENT_DISPOSITION, contentDisposition);
+
+            // Content-Type to block eager browser plug-ins from hijacking the file
             if (isOverrideContentType() && !isViewDocumentRequest) {
                 stream.setContentType("application/octet-stream;charset=UTF-8");
             } else {
