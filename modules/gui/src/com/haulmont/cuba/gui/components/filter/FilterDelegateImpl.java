@@ -1469,6 +1469,10 @@ public class FilterDelegateImpl implements FilterDelegate {
         applyDatasourceFilter();
         initDatasourceMaxResults();
         datasource.refresh(params);
+
+        if (afterFilterAppliedHandler != null) {
+            afterFilterAppliedHandler.afterFilterApplied();
+        }
     }
 
     /**
