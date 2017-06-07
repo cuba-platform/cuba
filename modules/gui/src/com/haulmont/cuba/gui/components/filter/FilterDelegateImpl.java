@@ -1441,6 +1441,10 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (ftsFilterHelper == null)
             return;
 
+        if (beforeFilterAppliedHandler != null) {
+            if (!beforeFilterAppliedHandler.beforeFilterApplied()) return;
+        }
+
         String searchTerm = ftsSearchCriteriaField.getValue();
         if (Strings.isNullOrEmpty(searchTerm) && clientConfig.getGenericFilterChecking()) {
             windowManager.showNotification(getMainMessage("filter.fillSearchCondition"), Frame.NotificationType.TRAY);
