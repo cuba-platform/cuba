@@ -335,7 +335,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
      * Sets whether or not the item editor UI is enabled for this DataGrid.
      * When the editor is enabled, the user can open it by double-clicking
      * a row or hitting enter when a row is focused. The editor can also be opened
-     * programmatically using the {@link #editItem(Object)} method.
+     * programmatically using the {@link #edit(Entity)} method.
      *
      * @param isEnabled {@code true} to enable the feature, {@code false} otherwise
      * @see #getEditedItemId()
@@ -401,15 +401,28 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     boolean isEditorActive();
 
     /**
-     * Opens the editor interface for the provided item. Scrolls the Grid to
+     * Opens the editor interface for the provided item Id. Scrolls the Grid to
      * bring the item to view if it is not already visible.
      *
      * @param itemId the id of the item to edit
      * @throws IllegalStateException    if the editor is not enabled or already editing an item in buffered mode
      * @throws IllegalArgumentException if datasource doesn't contain item with given id
      * @see #setEditorEnabled(boolean)
+     * @deprecated Use {@link #edit(Entity)}
      */
+    @Deprecated
     void editItem(Object itemId);
+
+    /**
+     * Opens the editor interface for the provided entity. Scrolls the Grid to
+     * bring the entity to view if it is not already visible.
+     *
+     * @param entity the entity to edit
+     * @throws IllegalStateException    if the editor is not enabled or already editing an entity in buffered mode
+     * @throws IllegalArgumentException if datasource doesn't contain the entity
+     * @see #setEditorEnabled(boolean)
+     */
+    void edit(Entity entity);
 
     /**
      * Field generator that generates component for column in {@link DataGrid} editor.
@@ -2408,7 +2421,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
          * editable when the item editor is active.
          *
          * @return {@code true} if this column is editable, {@code false} otherwise
-         * @see DataGrid#editItem(Object)
+         * @see DataGrid#edit(Entity)
          * @see #setEditable(boolean)
          */
         boolean isEditable();
@@ -2425,7 +2438,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
          * not) be edited even in principle should be set non-editable.
          *
          * @param editable {@code true} if this column should be editable, {@code false} otherwise
-         * @see DataGrid#editItem(Object)
+         * @see DataGrid#edit(Entity)
          * @see DataGrid#isEditorActive()
          */
         void setEditable(boolean editable);
