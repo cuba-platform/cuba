@@ -17,10 +17,7 @@
 package com.haulmont.cuba.web.sys;
 
 import com.google.common.base.Strings;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
@@ -28,30 +25,33 @@ import com.haulmont.cuba.web.app.WebStatisticsAccumulator;
 import com.haulmont.cuba.web.auth.RequestContext;
 import com.vaadin.server.*;
 import com.vaadin.shared.ApplicationConstants;
+import groovy.lang.Writable;
+import groovy.text.SimpleTemplateEngine;
+import groovy.text.Template;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
- * Main CUBA web-application servlet
+ * Main CUBA web-application servlet.
  */
 public class CubaApplicationServlet extends VaadinServlet {
+    public static final String INTERNAL_ERROR_TEXT = "Internal Server Error. Please contact system administrator";
 
     private static final long serialVersionUID = -8701539520754293569L;
 
@@ -154,28 +154,51 @@ public class CubaApplicationServlet extends VaadinServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (handleContextRootWithoutSlash(request, response)) {
-            return;
-        }
-
-        String requestURI = request.getRequestURI();
-
-        if (request.getParameter("restartApp") != null) {
-            try {
-                request.getSession().invalidate();
-            } catch (Exception e) {
-                // Vaadin listens to invalidate of web session and can throw exceptions during invalildate() call
-                log.debug("Exception during session invalidation", e);
-            } finally {
-                // always send redirect to client
-                response.sendRedirect(requestURI);
+        try {
+            if (handleContextRootWithoutSlash(request, response)) {
+                return;
             }
-            return;
+
+            String requestURI = request.getRequestURI();
+
+            if (request.getParameter("restartApp") != null) {
+                try {
+                    request.getSession().invalidate();
+                } catch (Exception e) {
+                    // Vaadin listens to invalidate of web session and can throw exceptions during invalildate() call
+                    log.debug("Exception during session invalidation", e);
+                } finally {
+                    // always send redirect to client
+                    response.sendRedirect(requestURI);
+                }
+                return;
+            }
+
+            String[] uriParts = requestURI.split("/");
+            String action = getTargetAction(uriParts);
+
+            boolean needRedirect = action != null;
+            if (needRedirect) {
+                if (webConfig.getUseRedirectWithBlankPageForLinkAction() &&
+                        request.getParameter(FROM_HTML_REDIRECT_PARAM) == null) {
+                    redirectWithBlankHtmlPage(request, response);
+                } else {
+                    String contextName = request.getContextPath().length() == 0 ?
+                            "" : request.getContextPath().substring(1);
+
+                    redirectToApp(request, response, contextName, uriParts, action);
+                }
+            } else {
+                serviceAppRequest(request, response);
+            }
+        } catch (Throwable t) {
+            // try to handle error here
+            handleServerError(request, response, t);
         }
+    }
 
-        String[] uriParts = requestURI.split("/");
+    protected String getTargetAction(String[] uriParts) {
         String action = null;
-
         if (uriParts.length > 0) {
             String lastPart = uriParts[uriParts.length - 1];
 
@@ -183,20 +206,7 @@ public class CubaApplicationServlet extends VaadinServlet {
                 action = lastPart;
             }
         }
-
-        String contextName = request.getContextPath().length() == 0 ? "" : request.getContextPath().substring(1);
-
-        boolean needRedirect = action != null;
-        if (needRedirect) {
-            if (webConfig.getUseRedirectWithBlankPageForLinkAction() &&
-                    request.getParameter(FROM_HTML_REDIRECT_PARAM) == null) {
-                redirectWithBlankHtmlPage(request, response);
-            } else {
-                redirectToApp(request, response, contextName, uriParts, action);
-            }
-        } else {
-            serviceAppRequest(request, response);
-        }
+        return action;
     }
 
     protected void redirectWithBlankHtmlPage(HttpServletRequest request, HttpServletResponse response)
@@ -330,8 +340,7 @@ public class CubaApplicationServlet extends VaadinServlet {
     }
 
     @Override
-    protected boolean isAllowedVAADINResourceUrl(HttpServletRequest request,
-                                                 URL resourceUrl) {
+    protected boolean isAllowedVAADINResourceUrl(HttpServletRequest request, URL resourceUrl) {
         boolean isUberJar = Boolean.parseBoolean(AppContext.getProperty("cuba.uberJar"));
         if (isUberJar) {
             String resourcePath = resourceUrl.getPath();
@@ -342,5 +351,135 @@ public class CubaApplicationServlet extends VaadinServlet {
             }
         }
         return super.isAllowedVAADINResourceUrl(request, resourceUrl);
+    }
+
+    public void handleServerError(HttpServletRequest req, HttpServletResponse resp, Throwable exception) throws IOException {
+        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        resp.setContentType("text/html");
+        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
+
+        PrintWriter out = resp.getWriter();
+
+        try {
+            String errorHtml = prepareErrorHtml(req, exception);
+            out.print(errorHtml);
+        } catch (Throwable t) {
+            log.error("Unable to show error page", t);
+            out.print(INTERNAL_ERROR_TEXT);
+        }
+    }
+
+    protected String prepareErrorHtml(HttpServletRequest req, Throwable exception) {
+        Messages messages = AppBeans.get(Messages.NAME);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+
+        WebConfig webConfig = configuration.getConfig(WebConfig.class);
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
+
+        // SimpleTemplateEngine requires mutable map
+        Map<String, Object> binding = new HashMap<>();
+        binding.put("tryAgainUrl", "?restartApp");
+        binding.put("productionMode", webConfig.getProductionMode());
+        binding.put("messages", messages);
+        binding.put("exception", exception);
+        binding.put("exceptionName", exception.getClass().getName());
+        binding.put("exceptionMessage", exception.getMessage());
+        binding.put("exceptionStackTrace", ExceptionUtils.getStackTrace(exception));
+
+        Locale locale = resolveLocale(req, messages, globalConfig);
+
+        String serverErrorPageTemplatePath = webConfig.getServerErrorPageTemplate();
+
+        String localeString = messages.getTools().localeToString(locale);
+        String templateContent = getLocalizedTemplateContent(resources, serverErrorPageTemplatePath, localeString);
+        if (templateContent == null) {
+            templateContent = resources.getResourceAsString(serverErrorPageTemplatePath);
+
+            if (templateContent == null) {
+                throw new IllegalStateException("Unable to find server error page template " + serverErrorPageTemplatePath);
+            }
+        }
+
+        SimpleTemplateEngine templateEngine = new SimpleTemplateEngine();
+        Template template = getTemplate(templateEngine, templateContent);
+
+        Writable writable = template.make(binding);
+
+        String html;
+        try {
+            html = writable.writeTo(new StringWriter()).toString();
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to write server error page", e);
+        }
+
+        return html;
+    }
+
+    protected Locale resolveLocale(HttpServletRequest req, Messages messages, GlobalConfig globalConfig) {
+        Map<String, Locale> locales = globalConfig.getAvailableLocales();
+
+        if (globalConfig.getLocaleSelectVisible()) {
+            String lastLocale = getCookieValue(req, "LAST_LOCALE");
+            if (lastLocale != null) {
+                for (Locale locale : locales.values()) {
+                    if (locale.toLanguageTag().equals(lastLocale)) {
+                        return locale;
+                    }
+                }
+            }
+        }
+
+        Locale requestLocale = req.getLocale();
+        if (requestLocale != null) {
+            Locale requestTrimmedLocale = messages.getTools().trimLocale(requestLocale);
+            if (locales.containsValue(requestTrimmedLocale)) {
+                return requestTrimmedLocale;
+            }
+
+            // if not found and application locale contains country, try to match by language only
+            if (!StringUtils.isEmpty(requestLocale.getCountry())) {
+                Locale appLocale = Locale.forLanguageTag(requestLocale.getLanguage());
+                for (Locale locale : locales.values()) {
+                    if (Locale.forLanguageTag(locale.getLanguage()).equals(appLocale)) {
+                        return locale;
+                    }
+                }
+            }
+        }
+
+        return messages.getTools().getDefaultLocale();
+    }
+
+    protected String getCookieValue(HttpServletRequest req, String cookieName) {
+        if (req.getCookies() == null) {
+            return null;
+        }
+
+        for (Cookie cookie : req.getCookies()) {
+            if (Objects.equals(cookieName, cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    protected String getLocalizedTemplateContent(Resources resources, String defaultTemplateName, String locale) {
+        String localizedTemplate = FilenameUtils.getFullPath(defaultTemplateName)
+                + FilenameUtils.getBaseName(defaultTemplateName) +
+                "_" + locale +
+                "." + FilenameUtils.getExtension(defaultTemplateName);
+
+        return resources.getResourceAsString(localizedTemplate);
+    }
+
+    protected Template getTemplate(SimpleTemplateEngine templateEngine, String templateString) {
+        Template bodyTemplate;
+        try {
+            bodyTemplate = templateEngine.createTemplate(templateString);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to compile Groovy template", e);
+        }
+        return bodyTemplate;
     }
 }

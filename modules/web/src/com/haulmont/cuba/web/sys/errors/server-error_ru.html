@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Внутренняя ошибка сервера</title>
+    <meta charset="utf-8">
+    <style type="text/css">
+        body {
+            background-color: #fafafa;
+            color: rgb(70, 70, 70);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin: 0 0 12px;
+        }
+
+        .wrap {
+            width: auto;
+            display: inline-block;
+            min-width: 900px;
+            text-align: left;
+            background: white;
+            border: 1px solid #c5c5c5;
+            border-radius: 7px;
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>
+        Внутренняя ошибка сервера. <br/>
+        Пожалуйста, свяжитесь с администратором системы.
+    </h1>
+    Попробуйте снова позже. <a href="${tryAgainUrl}">Нажмите здесь</a> чтобы продолжить.<br/>
+    <br/>
+    <% if (!productionMode) { %>
+    <b>Информация для разработчиков:</b> <br/>
+    <br/>
+    [!] Вы можете отключить вывод информации для разработчиков
+        при помоши свойства приложения: <b>cuba.web.productionMode</b>.
+    <br/>
+    Exception Name: ${exceptionName} <br/>
+    Exception Message: ${exceptionMessage} <br/>
+    Exception stack trace: <br/>
+    <pre>
+    ${exceptionStackTrace}
+</pre>
+    <% } %>
+</div>
+</body>
+</html>

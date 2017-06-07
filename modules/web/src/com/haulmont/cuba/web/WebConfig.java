@@ -320,4 +320,11 @@ public interface WebConfig extends Config {
     @Default("DEFAULT")
     @Factory(factory = MainTabSheetModeFactory.class)
     MainTabSheetMode getMainTabSheetMode();
+
+    /**
+     * @return Template path for Internal Server Error page (HTTP Status 500).
+     */
+    @Property("cuba.web.serverErrorPageTemplate")
+    @Default("/com/haulmont/cuba/web/sys/errors/server-error.html")
+    String getServerErrorPageTemplate();
 }
