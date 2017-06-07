@@ -18,9 +18,11 @@
 package com.haulmont.cuba.gui.app.security.session.browse;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.data.impl.GroupDatasourceImpl;
 import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 
 import java.util.Collection;
@@ -41,6 +43,9 @@ public class UserSessionsDatasource extends GroupDatasourceImpl<UserSessionEntit
         updateTs = timeSource.currentTimestamp();
 
         data.clear();
+        if (!AppBeans.get(Security.class).isEntityOpPermitted(UserSessionEntity.class, EntityOp.READ))
+            return;
+
         UserSessionService uss = AppBeans.get(UserSessionService.NAME);
         Collection<UserSessionEntity> userSessionList = uss.getUserSessionInfo();
         for (UserSessionEntity entity : userSessionList) {
