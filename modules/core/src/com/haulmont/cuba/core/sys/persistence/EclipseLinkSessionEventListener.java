@@ -31,7 +31,9 @@ import org.apache.commons.lang.BooleanUtils;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
+import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.mappings.*;
@@ -69,6 +71,19 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
             setCacheable(metaClass, desc, session);
 
             if (Entity.class.isAssignableFrom(desc.getJavaClass())) {
+                // set DescriptorEventManager that doesn't invoke listeners for base classes
+                desc.setEventManager(new DescriptorEventManager() {
+                    @Override
+                    public void notifyListeners(DescriptorEvent event) {
+                        if (hasAnyListeners()) {
+                            for (int index = 0; index < getEventListeners().size(); index++) {
+                                DescriptorEventListener listener = (DescriptorEventListener)getEventListeners().get(index);
+                                notifyListener(listener, event);
+                            }
+                        }
+                    }
+                });
+
                 desc.getEventManager().addListener(descriptorEventListener);
             }
 
