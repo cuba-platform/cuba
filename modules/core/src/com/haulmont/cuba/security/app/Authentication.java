@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.global.LoginException;
@@ -61,6 +62,9 @@ public class Authentication {
 
     @Inject
     protected UserSessionManager userSessionManager;
+
+    @Inject
+    protected ServerConfig serverConfig;
 
     protected ThreadLocal<Integer> cleanupCounter = new ThreadLocal<>();
 
@@ -162,6 +166,6 @@ public class Authentication {
     }
 
     protected String getSystemLogin() {
-        return AppContext.getProperty("cuba.jmxUserLogin");
+        return serverConfig.getJmxUserLogin();
     }
 }

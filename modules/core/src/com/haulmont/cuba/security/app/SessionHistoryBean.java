@@ -245,7 +245,7 @@ public class SessionHistoryBean implements SessionHistoryAPI {
     }
 
     protected String getSystemLogin() {
-        return AppContext.getProperty("cuba.jmxUserLogin");
+        return serverConfig.getJmxUserLogin();
     }
 
     protected boolean mayLogSession(UserSession userSession) {

@@ -101,4 +101,18 @@ public interface DesktopConfig extends Config {
     @Property("cuba.desktop.searchField.asyncTimeoutMs")
     @DefaultInt(200)
     int getSearchFieldAsyncTimeoutMs();
+
+    /**
+     * @return Default user login to set in the login dialog.
+     */
+    @Property("cuba.desktop.loginDialogDefaultUser")
+    @Default("admin")
+    String getLoginDialogDefaultUser();
+
+    /**
+     * @return Default user password to set in the login dialog.
+     */
+    @Property("cuba.desktop.loginDialogDefaultPassword")
+    @Default("admin")
+    String getLoginDialogDefaultPassword();
 }

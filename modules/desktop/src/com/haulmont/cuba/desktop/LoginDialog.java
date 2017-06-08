@@ -19,7 +19,6 @@ package com.haulmont.cuba.desktop;
 
 import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.LoginProperties;
 import com.haulmont.cuba.security.app.LoginService;
@@ -44,6 +43,7 @@ import java.util.Map;
 public class LoginDialog extends JDialog {
 
     private final Logger log = LoggerFactory.getLogger(LoginDialog.class);
+    private final DesktopConfig desktopConfig;
 
     protected Connection connection;
     protected Locale resolvedLocale;
@@ -63,6 +63,7 @@ public class LoginDialog extends JDialog {
         this.connection = connection;
         this.loginProperties = new LoginProperties();
         Configuration configuration = AppBeans.get(Configuration.NAME);
+        desktopConfig = configuration.getConfig(DesktopConfig.class);
         this.locales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
         resolvedLocale = resolveLocale();
         addWindowListener(
@@ -89,7 +90,7 @@ public class LoginDialog extends JDialog {
         nameField = new JTextField();
         passwordField = new JPasswordField();
 
-        String defaultName = AppContext.getProperty("cuba.desktop.loginDialogDefaultUser");
+        String defaultName = desktopConfig.getLoginDialogDefaultUser();
         String lastLogin = loginProperties.loadLastLogin();
         if (!StringUtils.isBlank(lastLogin)) {
             nameField.setText(lastLogin);
@@ -104,7 +105,7 @@ public class LoginDialog extends JDialog {
         panel.add(nameField, "width 150!, wrap");
 
         panel.add(new JLabel(messages.getMainMessage("loginWindow.passwordField", resolvedLocale)));
-        String defaultPassword = AppContext.getProperty("cuba.desktop.loginDialogDefaultPassword");
+        String defaultPassword = desktopConfig.getLoginDialogDefaultPassword();
         if (!StringUtils.isBlank(defaultPassword))
             passwordField.setText(defaultPassword);
         panel.add(passwordField, "width 150!, wrap");

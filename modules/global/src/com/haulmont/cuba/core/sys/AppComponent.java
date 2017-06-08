@@ -103,6 +103,15 @@ public class AppComponent implements Comparable<AppComponent> {
         return additiveProperties != null && additiveProperties.contains(property);
     }
 
+    /**
+     * @return names of properties exported by this app component, sorted in natural order
+     */
+    public List<String> getPropertyNames() {
+        List<String> list = new ArrayList<>(properties.stringPropertyNames());
+        list.sort(Comparator.naturalOrder());
+        return list;
+    }
+
     @Override
     public int compareTo(AppComponent other) {
         if (this.dependsOn(other))

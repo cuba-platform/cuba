@@ -47,12 +47,14 @@ public interface WebConfig extends Config {
      * @return Default user login to set in the login dialog.
      */
     @Property("cuba.web.loginDialogDefaultUser")
+    @Default("admin")
     String getLoginDialogDefaultUser();
 
     /**
      * @return Default user password to set in the login dialog.
      */
     @Property("cuba.web.loginDialogDefaultPassword")
+    @Default("admin")
     String getLoginDialogDefaultPassword();
 
     /**

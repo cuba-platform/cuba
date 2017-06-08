@@ -158,7 +158,7 @@ public interface ServerConfig extends Config {
     boolean getSyncNewUserSessionReplication();
 
     @Property("cuba.prettyTimeProperties")
-    @DefaultString("")
+    @DefaultString("com/haulmont/cuba/core/app/prettytime/prettytime.properties")
     String getPrettyTimeProperties();
 
     /**
@@ -225,6 +225,13 @@ public interface ServerConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @Default("anonymous")
     String getAnonymousLogin();
+
+    /**
+     * Login name which is used by default in system authentication
+     */
+    @Property("cuba.jmxUserLogin")
+    @Default("admin")
+    String getJmxUserLogin();
 
     /**
      * Warning in the log when a service is invoked from inside middleware.

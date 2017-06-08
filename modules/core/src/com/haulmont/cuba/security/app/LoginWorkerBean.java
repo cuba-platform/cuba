@@ -41,12 +41,13 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
 import java.util.*;
 
 /**
  * Class that encapsulates the middleware login/logout functionality.
  *
- * @see com.haulmont.cuba.security.app.LoginServiceBean
+ * @see LoginServiceBean
  */
 @Component(LoginWorker.NAME)
 public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordered {
@@ -61,7 +62,11 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
     @Inject
     protected Messages messages;
 
-    protected Configuration configuration;
+    @Inject
+    protected GlobalConfig globalConfig;
+
+    @Inject
+    protected ServerConfig serverConfig;
 
     @Inject
     protected PasswordEncryption passwordEncryption;
@@ -80,11 +85,6 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
 
     @Inject
     protected Authentication authentication;
-
-    @Inject
-    public void setConfiguration(Configuration configuration) {
-        this.configuration = configuration;
-    }
 
     @Nullable
     protected User loadUser(String login) throws LoginException {
@@ -140,7 +140,7 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
                 throw new LoginException(getInvalidCredentialsMessage(login, locale));
 
             Locale userLocale = locale;
-            if (user.getLanguage() != null && !configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible()) {
+            if (user.getLanguage() != null && !globalConfig.getLocaleSelectVisible()) {
                 userLocale = new Locale(user.getLanguage());
             }
 
@@ -204,10 +204,8 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
 
     @Override
     public UserSession loginAnonymous() throws LoginException {
-        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
         UUID anonymousSessionId = globalConfig.getAnonymousSessionId();
 
-        ServerConfig serverConfig = configuration.getConfig(ServerConfig.class);
         String anonymousLogin = serverConfig.getAnonymousLogin();
 
         Locale locale = messages.getTools().trimLocale(messages.getTools().getDefaultLocale());
@@ -247,7 +245,7 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
         }
 
         if (!trustedLoginHandler.checkPassword(trustedClientPassword)) {
-            throw new LoginException(getInvalidCredentialsMessage(AppContext.getProperty("cuba.jmxUserLogin"),
+            throw new LoginException(getInvalidCredentialsMessage(serverConfig.getJmxUserLogin(),
                     messages.getTools().getDefaultLocale()));
         }
 
@@ -298,7 +296,7 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
 
             Locale userLocale = locale;
             if (user.getLanguage() != null &&
-                    BooleanUtils.isFalse(configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible())) {
+                    BooleanUtils.isFalse(globalConfig.getLocaleSelectVisible())) {
                 userLocale = new Locale(user.getLanguage());
             }
             UserSession session = userSessionManager.createSession(user, userLocale, false);
@@ -340,7 +338,7 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
 
             Locale userLocale = locale;
             if (user.getLanguage() != null &&
-                    BooleanUtils.isFalse(configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible())) {
+                    BooleanUtils.isFalse(globalConfig.getLocaleSelectVisible())) {
                 userLocale = new Locale(user.getLanguage());
             }
             UserSession session = userSessionManager.createSession(user, userLocale, false);
@@ -384,7 +382,7 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
             if (currentSession.getUser().equals(substitutedUser)) {
                 user = em.find(User.class, substitutedUser.getId());
                 if (user == null)
-                    throw new javax.persistence.NoResultException("User not found");
+                    throw new NoResultException("User not found");
             } else {
                 TypedQuery<User> query = em.createQuery(
                         "select s.substitutedUser from sec$User u join u.substitutions s " +
@@ -395,7 +393,7 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
                 query.setParameter(2, substitutedUser);
                 List<User> list = query.getResultList();
                 if (list.isEmpty())
-                    throw new javax.persistence.NoResultException("User not found");
+                    throw new NoResultException("User not found");
                 else
                     user = list.get(0);
             }
@@ -460,7 +458,7 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
 
             Locale userLocale = locale;
             if (user.getLanguage() != null &&
-                    BooleanUtils.isFalse(configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible())) {
+                    BooleanUtils.isFalse(globalConfig.getLocaleSelectVisible())) {
                 userLocale = new Locale(user.getLanguage());
             }
 

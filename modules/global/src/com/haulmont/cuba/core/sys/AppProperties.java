@@ -21,6 +21,8 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.haulmont.bali.datastruct.Pair;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrLookup;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,18 +40,6 @@ public class AppProperties {
     private final Logger log = LoggerFactory.getLogger(AppProperties.class);
 
     public static final Pattern SEPARATOR_PATTERN = Pattern.compile("\\s");
-
-    private List<String> configPropertyNames = new ArrayList<>(Arrays.asList(
-            // common for all blocks
-            "cuba.persistenceConfig",
-            "cuba.metadataConfig",
-            "cuba.viewsConfig",
-            "cuba.creditsConfig",
-            "cuba.springContextConfig",
-            "cuba.mainMessagePack"
-    ));
-
-    private String block;
 
     private AppComponents appComponents;
 
@@ -79,60 +69,21 @@ public class AppProperties {
 
     public AppProperties(AppComponents appComponents) {
         this.appComponents = appComponents;
-        this.block = appComponents.getBlock();
-        switch (block) {
-            case "core":
-                configPropertyNames.addAll(Arrays.asList(
-                        "cuba.remotingSpringContextConfig",
-                        "cuba.defaultPermissionValuesConfig",
-                        "cuba.ftsConfig"
-                ));
-                break;
-            case "web":
-                configPropertyNames.addAll(Arrays.asList(
-                        "cuba.dispatcherSpringContextConfig",
-                        "cuba.restSpringContextConfig",
-                        "cuba.idpSpringContextConfig",
-                        "cuba.restServicesConfig",
-                        "cuba.rest.queriesConfig",
-                        "cuba.rest.servicesConfig",
-                        "cuba.rest.jsonTransformationConfig",
-                        "cuba.windowConfig",
-                        "cuba.menuConfig",
-                        "cuba.themeConfig",
-                        "cuba.permissionConfig",
-                        "cuba.web.componentsConfig",
-                        "cuba.web.widgetSet"
-                ));
-                break;
-            case "portal":
-                configPropertyNames.addAll(Arrays.asList(
-                        "cuba.dispatcherSpringContextConfig",
-                        "cuba.restSpringContextConfig",
-                        "cuba.restServicesConfig",
-                        "cuba.rest.servicesConfig",
-                        "cuba.rest.queriesConfig",
-                        "cuba.rest.jsonTransformationConfig"
-                ));
-                break;
-            case "desktop":
-                configPropertyNames.addAll(Arrays.asList(
-                        "cuba.windowConfig",
-                        "cuba.menuConfig",
-                        "cuba.themeConfig",
-                        "cuba.permissionConfig"
-                ));
-                break;
-            default:
-                log.warn("Block {} is unknown, adding no specific configuration properties");
-        }
     }
 
     /**
-     * @return all property names defined in the set of {@code app.properties} files
+     * @return all property names defined in the set of {@code app.properties} files and exported by the app components
      */
     public String[] getPropertyNames() {
-        return properties.keySet().toArray(new String[properties.size()]);
+        Set<String> namesSet = new HashSet<>();
+        for (AppComponent appComponent : appComponents.getComponents()) {
+            namesSet.addAll(appComponent.getPropertyNames());
+        }
+        namesSet.addAll(properties.keySet());
+
+        List<String> list = new ArrayList<>(namesSet);
+        list.sort(Comparator.naturalOrder());
+        return list.toArray(new String[list.size()]);
     }
 
     /**
@@ -178,65 +129,72 @@ public class AppProperties {
             value = properties.get(key);
         }
 
-        if (configPropertyNames.contains(key) || (StringUtils.isNotEmpty(value) && value.startsWith("+"))) {
-            List<String> values = null;
+        if (StringUtils.isNotEmpty(value)) {
+            // escaped +
+            if (value.startsWith("\\+")) {
+                return handleInterpolation(value.substring(1));
+            }
 
-            if (StringUtils.isNotEmpty(value)) {
-                if (value.startsWith("\\+")) {
-                    return value.substring(1);
+            // not +
+            if (!value.startsWith("+")) {
+                return handleInterpolation(value);
+            }
+
+            List<String> values = new LinkedList<>();
+
+            // +
+            String cleanValue = value.substring(1);
+            int index = 0;
+            for (String valuePart : split(cleanValue)) {
+                if (!values.contains(valuePart)) {
+                    values.add(index, valuePart);
+                    index++;
                 }
+            }
+            getValuesFromAppComponents(key, values);
+            if (values.isEmpty()) {
+                return null;
+            }
+            return handleInterpolation(Joiner.on(" ").join(values));
 
-                if (!value.startsWith("+")) {
-                    return value;
-                }
+        } else {
+            List<String> values = new LinkedList<>();
+            getValuesFromAppComponents(key, values);
+            if (values.isEmpty()) {
+                return null;
+            }
+            return handleInterpolation(Joiner.on(" ").join(values));
+        }
+    }
 
-                String cleanValue = value.substring(1);
-                int index = 0;
-                for (String valuePart : split(cleanValue)) {
-                    if (values == null) {
-                        values = new LinkedList<>();
-                    }
+    private String handleInterpolation(String value) {
+        StrSubstitutor substitutor = new StrSubstitutor(new StrLookup() {
+            @Override
+            public String lookup(String key) {
+                String property = getSystemOrAppProperty(key);
+                return property != null ? property : System.getProperty(key);
+            }
+        });
+        return substitutor.replace(value);
+    }
 
+    private void getValuesFromAppComponents(String key, List<String> values) {
+        int index;
+        for (AppComponent component : Lists.reverse(appComponents.getComponents())) {
+            String compValue = component.getProperty(key);
+            if (StringUtils.isNotEmpty(compValue)) {
+                index = 0;
+                for (String valuePart : split(compValue)) {
                     if (!values.contains(valuePart)) {
                         values.add(index, valuePart);
                         index++;
                     }
                 }
-            }
-
-            for (AppComponent component : Lists.reverse(appComponents.getComponents())) {
-                String compValue = component.getProperty(key);
-                if (StringUtils.isNotEmpty(compValue)) {
-                    int index = 0;
-                    for (String valuePart : split(compValue)) {
-                        if (values == null) {
-                            values = new LinkedList<>();
-                        }
-
-                        if (!values.contains(valuePart)) {
-                            values.add(index, valuePart);
-                            index++;
-                        }
-                    }
-
-                    if (!component.isAdditiveProperty(key)) {
-                        // we found overwrite, stop iteration
-                        break;
-                    }
+                if (!component.isAdditiveProperty(key)) {
+                    // we found overwrite, stop iteration
+                    break;
                 }
             }
-
-            if (values == null) {
-                return null;
-            }
-
-            String joinedValue = Joiner.on(" ").join(values);
-
-            log.trace("Additive property {} is set to {}", key, joinedValue);
-
-            return joinedValue;
-        } else {
-            return value;
         }
     }
 

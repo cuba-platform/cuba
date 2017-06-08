@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -58,6 +59,9 @@ public class EntityLog implements EntityLogAPI {
     protected UserSessionSource userSessionSource;
     @Inject
     protected ReferenceToEntitySupport referenceToEntitySupport;
+    @Inject
+    protected ServerConfig serverConfig;
+
     private volatile boolean loaded;
     protected EntityLogConfig config;
     private Map<String, Set<String>> entitiesManual;
@@ -250,7 +254,7 @@ public class EntityLog implements EntityLogAPI {
         if (AppContext.isStarted())
             return em.getReference(User.class, userSessionSource.getUserSession().getUser().getId());
         else {
-            String login = AppContext.getProperty("cuba.jmxUserLogin");
+            String login = serverConfig.getJmxUserLogin();
             TypedQuery<User> query = em.createQuery("select u from sec$User u where u.loginLowerCase = ?1", User.class);
             query.setParameter(1, login);
             User user = query.getFirstResult();

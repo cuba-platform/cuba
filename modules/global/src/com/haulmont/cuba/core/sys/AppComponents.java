@@ -198,4 +198,11 @@ public class AppComponents {
     private List<String> splitCommaSeparatedValue(String value) {
         return Splitter.on(',').omitEmptyStrings().trimResults().splitToList(value);
     }
+
+    /**
+     * For tests only.
+     */
+    void add(AppComponent component) {
+        components.add(component);
+    }
 }

@@ -23,6 +23,21 @@
         <property name="cuba.metadataConfig" value="cuba-metadata.xml"/>
         <property name="cuba.viewsConfig" value="cuba-views.xml"/>
         <property name="cuba.creditsConfig" value="cuba-credits.xml"/>
+
+        <property name="cuba.webHostName" value="localhost"/>
+        <property name="cuba.webPort" value="8080"/>
+
+        <property name="cuba.confDir" value="${catalina.base}/conf/${cuba.webContextName}"/>
+        <property name="cuba.dbDir" value="${catalina.base}/webapps/${cuba.webContextName}/WEB-INF/db"/>
+        <property name="cuba.logDir" value="${catalina.base}/logs"/>
+        <property name="cuba.tempDir" value="${catalina.base}/temp/${cuba.webContextName}"/>
+        <property name="cuba.dataDir" value="${catalina.base}/work/${cuba.webContextName}"/>
+        <property name="cuba.classpath.directories" value="${catalina.base}/lib;${catalina.base}/shared/classes;${catalina.base}/shared/lib;${catalina.base}/webapps/${cuba.webContextName}/WEB-INF/classes;${catalina.base}/webapps/${cuba.webContextName}/WEB-INF/lib"/>
+
+        <property name="cuba.passwordEncryptionModule" value="cuba_Sha1EncryptionModule"/>
+        <property name="cuba.groovyEvaluatorImport" value="com.haulmont.cuba.core.global.PersistenceHelper"/>
+        <property name="cuba.trustedClientPassword" value="MLdWm1Ik4NmM"/>
+        <property name="cuba.anonymousSessionId" value="9c91dbdf-3e73-428e-9088-d586da2434c5"/>
     </module>
 
     <module name="core" dependsOn="global" blocks="core">
@@ -35,6 +50,13 @@
         <property name="cuba.mainMessagePack" value="com.haulmont.cuba.core"/>
         <property name="cuba.remotingSpringContextConfig" value="cuba-remoting-spring.xml"/>
         <property name="cuba.defaultPermissionValuesConfig" value="cuba-default-permission-values.xml"/>
+
+        <property name="cuba.dispatcherBaseUrl" value="http://${cuba.webHostName}:${cuba.webPort}/${cuba.webContextName}/remoting"/>
+        <property name="cuba.dataSourceJndiName" value="java:comp/env/jdbc/CubaDS"/>
+
+        <property name="eclipselink.cache.shared.default" value="false"/>
+        <property name="eclipselink.cache.coordination.protocol" value="com.haulmont.cuba.core.sys.entitycache.EntityCacheTransportManager"/>
+        <property name="eclipselink.cache.coordination.propagate-asynchronously" value="false"/>
     </module>
 
     <module name="client" dependsOn="global" blocks="web,portal,desktop">
@@ -83,6 +105,14 @@
         <property name="cuba.permissionConfig" value="cuba-web-permissions.xml"/>
         <property name="cuba.web.widgetSet" value="com.haulmont.cuba.web.toolkit.ui.WidgetSet"/>
         <property name="cuba.web.componentsConfig" value=""/>
+
+        <property name="cuba.dispatcherBaseUrl" value="http://${cuba.webHostName}:${cuba.webPort}/${cuba.webContextName}/dispatch"/>
+        <property name="cuba.useLocalServiceInvocation" value="true"/>
+        <property name="cuba.rest.client.id" value="client"/>
+        <property name="cuba.rest.client.secret" value="secret"/>
+        <property name="cuba.rest.client.tokenExpirationTimeSec" value="43200"/>
+        <property name="cuba.rest.allowedOrigins" value="*"/>
+        <property name="cuba.rest.maxUploadSize" value="20971520"/>
     </module>
 
     <module name="web-toolkit" dependsOn="web">
@@ -99,6 +129,15 @@
         <property name="cuba.springContextConfig" value="+cuba-portal-spring.xml"/>
         <property name="cuba.mainMessagePack" value="com.haulmont.cuba.core"/>
         <property name="cuba.dispatcherSpringContextConfig" value="+cuba-portal-dispatcher-spring.xml"/>
+
+        <property name="cuba.dispatcherBaseUrl" value="http://${cuba.webHostName}:${cuba.webPort}/${cuba.webContextName}"/>
+        <property name="cuba.useLocalServiceInvocation" value="true"/>
+        <property name="cuba.rest.client.id" value="client"/>
+        <property name="cuba.rest.client.secret" value="secret"/>
+        <property name="cuba.rest.client.tokenExpirationTimeSec" value="43200"/>
+        <property name="cuba.rest.allowedOrigins" value="*"/>
+        <property name="cuba.rest.maxUploadSize" value="20971520"/>
+        <property name="cuba.portal.templateLoaderPath" value="/WEB-INF/templates/"/>
     </module>
     
     <module name="desktop" dependsOn="gui" blocks="desktop">
@@ -109,5 +148,13 @@
         <property name="cuba.windowConfig" value="cuba-desktop-screens.xml"/>
         <property name="cuba.menuConfig" value="cuba-desktop-menu.xml"/>
         <property name="cuba.permissionConfig" value="cuba-desktop-permissions.xml"/>
+
+        <property name="cuba.confDir" value="${cuba.desktop.home}/conf"/>
+        <property name="cuba.logDir" value="${cuba.desktop.home}/logs"/>
+        <property name="cuba.tempDir" value="${cuba.desktop.home}/temp"/>
+        <property name="cuba.dataDir" value="${cuba.desktop.home}/work"/>
+
+        <property name="cuba.useLocalServiceInvocation" value="false"/>
+        <property name="cuba.themeConfig" value="nimbus-theme.properties"/>
     </module>
 </app-component>

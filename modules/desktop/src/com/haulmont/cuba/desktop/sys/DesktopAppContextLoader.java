@@ -19,13 +19,14 @@ package com.haulmont.cuba.desktop.sys;
 
 import com.google.common.base.Splitter;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.*;
+import com.haulmont.cuba.core.sys.AbstractAppContextLoader;
+import com.haulmont.cuba.core.sys.AppComponents;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SingleSecurityContextHolder;
 import com.haulmont.cuba.gui.AppConfig;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
-import org.apache.commons.lang.text.StrLookup;
-import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,16 +154,8 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
             }
         }
 
-        StrSubstitutor substitutor = new StrSubstitutor(new StrLookup() {
-            @Override
-            public String lookup(String key) {
-                String subst = properties.getProperty(key);
-                return subst != null ? subst : System.getProperty(key);
-            }
-        });
         for (Object key : properties.keySet()) {
-            String value = substitutor.replace(properties.getProperty((String) key));
-            AppContext.setProperty((String) key, value.trim());
+            AppContext.setProperty((String) key, properties.getProperty((String) key).trim());
         }
 
         List<String> list = new ArrayList<>();
