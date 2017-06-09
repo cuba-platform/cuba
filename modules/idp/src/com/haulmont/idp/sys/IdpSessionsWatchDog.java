@@ -56,6 +56,12 @@ public class IdpSessionsWatchDog {
             return;
         }
 
+        List<String> serviceProviderUrls = idpConfig.getServiceProviderUrls();
+        if (serviceProviderUrls.isEmpty()) {
+            // there are no service providers registered
+            return;
+        }
+
         UserSession systemSession;
         try {
             systemSession = loginService.getSystemSession(idpConfig.getTrustedClientPassword());
