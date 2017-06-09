@@ -17,13 +17,11 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
@@ -33,7 +31,8 @@ import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataSupplier;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
@@ -172,6 +171,21 @@ public interface PickerField extends Field, Component.ActionsHolder, Component.B
             if (owner != null && owner instanceof Component) {
                 ((Component) owner).setVisible(editable);
             }
+        }
+
+        protected Datasource getPropertyDatasource() {
+            if (pickerField.getDatasource() == null
+                    || pickerField.getMetaPropertyPath() == null
+                    || pickerField.getMetaPropertyPath().getMetaProperty().getType() != MetaProperty.Type.COMPOSITION)
+                return null;
+
+            for (Datasource datasource : pickerField.getDatasource().getDsContext().getAll()) {
+                if (datasource instanceof NestedDatasource
+                        && ((NestedDatasource) datasource).getMaster() == pickerField.getDatasource()
+                        && ((NestedDatasource) datasource).getProperty() == pickerField.getMetaPropertyPath().getMetaProperty())
+                    return datasource;
+            }
+            return null;
         }
     }
 
@@ -439,6 +453,31 @@ public interface PickerField extends Field, Component.ActionsHolder, Component.B
         @Override
         public void actionPerform(Component component) {
             if (pickerField.isEditable()) {
+                Object value = pickerField.getValue();
+
+                if (value instanceof Entity
+                        && pickerField.getMetaPropertyPath() != null
+                        && pickerField.getMetaPropertyPath().getMetaProperty().getType() == MetaProperty.Type.COMPOSITION) {
+                    Datasource propertyDatasource = getPropertyDatasource();
+                    if (propertyDatasource != null) {
+                        for (Datasource datasource : propertyDatasource.getDsContext().getAll()) {
+                            if (datasource instanceof NestedDatasource
+                                    && ((NestedDatasource) datasource).getMaster() == propertyDatasource
+                                    && ((NestedDatasource) datasource).getProperty().getType() == MetaProperty.Type.COMPOSITION) {
+                                if (datasource instanceof CollectionDatasource) {
+                                    CollectionDatasource collectionDatasource = (CollectionDatasource) datasource;
+                                    for (Object id : collectionDatasource.getItemIds()) {
+                                        //noinspection unchecked
+                                        collectionDatasource.removeItem(collectionDatasource.getItem(id));
+                                    }
+                                }
+                            }
+                        }
+                        //noinspection unchecked
+                        ((DatasourceImplementation) propertyDatasource).deleted((Entity) value);
+                    }
+                }
+
                 pickerField.setValue(null);
             }
         }
@@ -546,7 +585,13 @@ public interface PickerField extends Field, Component.ActionsHolder, Component.B
 
         @Override
         public void actionPerform(Component component) {
+            boolean composition = pickerField.getMetaPropertyPath() != null
+                    && pickerField.getMetaPropertyPath().getMetaProperty().getType() == MetaProperty.Type.COMPOSITION;
+
             Entity entity = getEntity();
+            if (entity == null && composition) {
+                entity = initEntity();
+            }
             if (entity == null)
                 return;
 
@@ -573,8 +618,9 @@ public interface PickerField extends Field, Component.ActionsHolder, Component.B
                 return;
             }
 
-            DataSupplier dataSupplier = window.getDsContext().getDataSupplier();
-            entity = dataSupplier.reload(entity, View.MINIMAL);
+            if (!composition) {
+                entity = window.getDsContext().getDataSupplier().reload(entity, View.MINIMAL);
+            }
 
             String windowAlias = getEditScreen();
             if (windowAlias == null) {
@@ -585,7 +631,8 @@ public interface PickerField extends Field, Component.ActionsHolder, Component.B
                     windowConfig.getWindowInfo(windowAlias),
                     entity,
                     openType,
-                    screenParams != null ? screenParams : Collections.emptyMap()
+                    screenParams != null ? screenParams : Collections.emptyMap(),
+                    getPropertyDatasource()
             );
             editor.addCloseListener(actionId -> {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
@@ -617,6 +664,19 @@ public interface PickerField extends Field, Component.ActionsHolder, Component.B
             }
 
             return null;
+        }
+
+        protected Entity initEntity() {
+            Entity entity = AppBeans.get(Metadata.class).create(
+                    pickerField.getMetaPropertyPath().getMetaProperty().getRange().asClass());
+
+            Entity ownerEntity = pickerField.getDatasource().getItem();
+            MetaProperty inverseProp = pickerField.getMetaPropertyPath().getMetaProperty().getInverse();
+            if (inverseProp != null) {
+                entity.setValue(inverseProp.getName(), ownerEntity);
+            }
+
+            return entity;
         }
 
         protected void afterCommitOpenedEntity(Entity item) {

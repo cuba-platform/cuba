@@ -19,9 +19,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -110,6 +108,9 @@ public class DatasourceImpl<T extends Entity> extends AbstractDatasource<T> impl
                 }
             } else {
                 parentDs.setItem(item);
+                if (AppBeans.get(EntityStates.class).isNew(item)) {
+                    ((DatasourceImplementation) parentDs).modified(item);
+                }
             }
             clearCommitLists();
             modified = false;

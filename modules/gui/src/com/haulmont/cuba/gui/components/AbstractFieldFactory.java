@@ -345,14 +345,19 @@ public abstract class AbstractFieldFactory implements FieldFactory {
             if (optionsDatasource == null) {
                 pickerField = componentsFactory.createComponent(PickerField.class);
                 pickerField.setDatasource(datasource, property);
-                pickerField.addLookupAction();
-                if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
-                    DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
-                    DynamicAttributesMetaProperty dynamicAttributesMetaProperty = (DynamicAttributesMetaProperty) mpp.getMetaProperty();
-                    dynamicAttributesGuiTools.initEntityPickerField(pickerField, dynamicAttributesMetaProperty.getAttribute());
-                }
-                boolean actionsByMetaAnnotations = ComponentsHelper.createActionsByMetaAnnotations(pickerField);
-                if (!actionsByMetaAnnotations) {
+                if (mpp.getMetaProperty().getType() == MetaProperty.Type.ASSOCIATION) {
+                    pickerField.addLookupAction();
+                    if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
+                        DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
+                        DynamicAttributesMetaProperty dynamicAttributesMetaProperty = (DynamicAttributesMetaProperty) mpp.getMetaProperty();
+                        dynamicAttributesGuiTools.initEntityPickerField(pickerField, dynamicAttributesMetaProperty.getAttribute());
+                    }
+                    boolean actionsByMetaAnnotations = ComponentsHelper.createActionsByMetaAnnotations(pickerField);
+                    if (!actionsByMetaAnnotations) {
+                        pickerField.addClearAction();
+                    }
+                } else {
+                    pickerField.addOpenAction();
                     pickerField.addClearAction();
                 }
             } else {
