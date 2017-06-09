@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
@@ -178,6 +179,17 @@ public interface Action {
     interface HasBeforeActionPerformedHandler extends Action {
         BeforeActionPerformedHandler getBeforeActionPerformedHandler();
         void setBeforeActionPerformedHandler(BeforeActionPerformedHandler handler);
+    }
+
+    /**
+     * Interface defining constraintOperationType and constraintCode options.
+     */
+    interface HasSecurityConstraint {
+        void setConstraintOperationType(ConstraintOperationType constraintOperationType);
+        ConstraintOperationType getConstraintOperationType();
+
+        String getConstraintCode();
+        void setConstraintCode(String constraintCode);
     }
 
     /**

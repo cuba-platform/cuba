@@ -20,10 +20,11 @@ package com.haulmont.cuba.gui.components.actions;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
-public abstract class ItemTrackingAction extends BaseAction {
+public abstract class ItemTrackingAction extends BaseAction implements Action.HasSecurityConstraint {
 
     protected ConstraintOperationType constraintOperationType;
     protected String constraintCode;
@@ -71,15 +72,23 @@ public abstract class ItemTrackingAction extends BaseAction {
         return super.isPermitted();
     }
 
+    @Override
     public void setConstraintOperationType(ConstraintOperationType constraintOperationType) {
         this.constraintOperationType = constraintOperationType;
     }
 
+    @Override
     public ConstraintOperationType getConstraintOperationType() {
         return constraintOperationType;
     }
 
+    @Override
     public void setConstraintCode(String constraintCode) {
         this.constraintCode = constraintCode;
+    }
+
+    @Override
+    public String getConstraintCode() {
+        return constraintCode;
     }
 }

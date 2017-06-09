@@ -22,11 +22,8 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
-import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
-import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import org.apache.commons.lang.StringUtils;
-import org.dom4j.Attribute;
 import org.dom4j.Element;
 
 public abstract class ActionsHolderLoader<T extends Component.ActionsHolder> extends AbstractComponentLoader<T> {
@@ -49,7 +46,7 @@ public abstract class ActionsHolderLoader<T extends Component.ActionsHolder> ext
 
                     loadActionOpenType(instance, element);
 
-                    loadConstraint(instance, element);
+                    loadActionConstraint(instance, element);
 
                     loadShortcut(instance, element);
 
@@ -104,28 +101,12 @@ public abstract class ActionsHolderLoader<T extends Component.ActionsHolder> ext
                     openType = WindowManager.OpenType.valueOf(openTypeString);
                 } catch (IllegalArgumentException e) {
                     throw new GuiDevelopmentException(
-                            "Unknown open type: '" + openTypeString + "' for action: '" + action.getId() + "'",
+                            String.format("Unknown open type: '%s' for action: '%s'", openTypeString, action.getId()),
                             context.getFullFrameId());
                 }
 
                 ((Action.HasOpenType) action).setOpenType(openType);
             }
-        }
-    }
-
-    protected void loadConstraint(Action action, Element element) {
-        if (action instanceof ItemTrackingAction) {
-            ItemTrackingAction itemTrackingAction = (ItemTrackingAction) action;
-
-            Attribute operationTypeAttribute = element.attribute("constraintOperationType");
-            if (operationTypeAttribute != null) {
-                ConstraintOperationType operationType
-                        = ConstraintOperationType.fromId(operationTypeAttribute.getValue());
-                itemTrackingAction.setConstraintOperationType(operationType);
-            }
-
-            String constraintCode = element.attributeValue("constraintCode");
-            itemTrackingAction.setConstraintCode(constraintCode);
         }
     }
 }

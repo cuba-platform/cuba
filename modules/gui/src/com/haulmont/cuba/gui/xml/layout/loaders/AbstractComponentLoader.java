@@ -42,8 +42,10 @@ import com.haulmont.cuba.gui.xml.DeclarativeTrackingAction;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
+import org.dom4j.Attribute;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
@@ -506,7 +508,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         shortcut = loadShortcut(shortcut);
 
         if (Boolean.parseBoolean(trackSelection)) {
-            return new DeclarativeTrackingAction(
+            DeclarativeTrackingAction action = new DeclarativeTrackingAction(
                     id,
                     loadResourceString(element.attributeValue("caption")),
                     loadResourceString(element.attributeValue("description")),
@@ -517,6 +519,10 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                     shortcut,
                     actionsHolder
             );
+
+            loadActionConstraint(action, element);
+
+            return action;
         } else {
             return new DeclarativeAction(
                     id,
@@ -529,6 +535,22 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                     shortcut,
                     actionsHolder
             );
+        }
+    }
+
+    protected void loadActionConstraint(Action action, Element element) {
+        if (action instanceof Action.HasSecurityConstraint) {
+            Action.HasSecurityConstraint itemTrackingAction = (Action.HasSecurityConstraint) action;
+
+            Attribute operationTypeAttribute = element.attribute("constraintOperationType");
+            if (operationTypeAttribute != null) {
+                ConstraintOperationType operationType
+                        = ConstraintOperationType.fromId(operationTypeAttribute.getValue());
+                itemTrackingAction.setConstraintOperationType(operationType);
+            }
+
+            String constraintCode = element.attributeValue("constraintCode");
+            itemTrackingAction.setConstraintCode(constraintCode);
         }
     }
 
