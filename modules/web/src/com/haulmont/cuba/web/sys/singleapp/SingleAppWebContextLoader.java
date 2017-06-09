@@ -30,9 +30,11 @@ import com.haulmont.restapi.sys.SingleAppRestApiServlet;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.web.filter.DelegatingFilterProxy;
+import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.*;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -44,9 +46,12 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
 
     private Set<String> dependencyJars;
 
+    private static final String FRONT_CONTEXT_NAME = "front";
+
     /**
      * Invoked reflectively by {@link SingleAppWebServletListener}.
-     * @param jarNames  JARs of the core block
+     *
+     * @param jarNames JARs of the core block
      */
     @SuppressWarnings("unused")
     public void setJarNames(String jarNames) {
@@ -69,6 +74,8 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
         registerRestApiServlet(servletContext);
 
         registerCubaHttpFilter(servletContext);
+
+        registerFrontAppServlet(servletContext);
 
         registerClassLoaderFilter(servletContext);
     }
@@ -117,6 +124,25 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
         FilterRegistration.Dynamic restSpringSecurityFilterChainReg =
                 servletContext.addFilter("restSpringSecurityFilterChain", restSpringSecurityFilterChain);
         restSpringSecurityFilterChainReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/rest/*");
+    }
+
+    protected void registerFrontAppServlet(ServletContext servletContext) {
+        try {
+            if (servletContext.getResource(FRONT_CONTEXT_NAME) != null) {
+                DispatcherServlet frontServlet = new SingleAppFrontServlet(FRONT_CONTEXT_NAME);
+                try {
+                    frontServlet.init(new CubaServletConfig("app_front_servlet", servletContext));
+                } catch (ServletException e) {
+                    throw new RuntimeException("An error occurred while initializing app_servlet servlet", e);
+                }
+                ServletRegistration.Dynamic cubaServletReg = servletContext.addServlet("app_front_servlet", frontServlet);
+                cubaServletReg.setLoadOnStartup(3);
+                cubaServletReg.setAsyncSupported(true);
+                cubaServletReg.addMapping(String.format("/%s/*", FRONT_CONTEXT_NAME));
+            }
+        } catch (MalformedURLException e) {
+            //Do nothing
+        }
     }
 
     protected void registerCubaHttpFilter(ServletContext servletContext) {
