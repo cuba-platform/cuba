@@ -31,6 +31,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.FieldGroup.CustomFieldGenerator;
 import com.haulmont.cuba.gui.components.FieldGroup.FieldCaptionAlignment;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -223,7 +224,6 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                 for (CategoryAttribute attribute : attributesToShow) {
                     FieldGroup.FieldConfig field = resultComponent.createField(
                             DynamicAttributesUtils.encodeAttributeCode(attribute.getCode()));
-                    field.setCustom(true);
                     field.setProperty(DynamicAttributesUtils.encodeAttributeCode(attribute.getCode()));
                     field.setCaption(attribute.getName());
                     field.setDatasource(ds);
@@ -233,14 +233,14 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                             attribute.getName()));
                     loadWidth(field, attribute.getWidth());
 
+                    // Currently, ListEditor does not support datasource binding so we create custom field
                     if (BooleanUtils.isTrue(attribute.getIsCollection())) {
-                        FieldGroup.CustomFieldGenerator fieldGenerator = new DynamicAttributeCustomFieldGenerator();
+                        CustomFieldGenerator fieldGenerator = new DynamicAttributeCustomFieldGenerator();
 
                         Component fieldComponent = fieldGenerator.generateField(ds, DynamicAttributesUtils.encodeAttributeCode(attribute.getCode()));
+                        field.setCustom(true);
                         field.setComponent(fieldComponent);
                         applyPermissions(fieldComponent);
-
-                        // todo artamonov apply common attributes
                     }
                     fields.add(field);
                 }
