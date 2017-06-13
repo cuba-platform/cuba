@@ -166,6 +166,11 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, Component.
     void sort(String columnId, SortDirection direction);
 
     /**
+     * @return sort order list
+     */
+    List<SortOrder> getSortOrder();
+
+    /**
      * @return {@code true} if text selection is enabled.
      */
     boolean isTextSelectionEnabled();

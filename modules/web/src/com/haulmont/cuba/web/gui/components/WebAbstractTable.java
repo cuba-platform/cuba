@@ -43,7 +43,8 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.aggregation.Aggregation;
 import com.haulmont.cuba.gui.data.aggregation.Aggregations;
-import com.haulmont.cuba.gui.data.impl.*;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenersWrapper;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -459,6 +460,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             component.setSortContainerPropertyId(propertyId);
             component.sort();
         }
+    }
+
+    @Nullable
+    @Override
+    public SortInfo getSortInfo() {
+        Object sortContainerPropertyId = component.getSortContainerPropertyId();
+        return sortContainerPropertyId != null
+                ? new SortInfo(sortContainerPropertyId, component.isSortAscending())
+                : null;
     }
 
     @Override

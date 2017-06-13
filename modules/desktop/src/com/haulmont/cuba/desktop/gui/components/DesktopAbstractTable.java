@@ -47,6 +47,7 @@ import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -1316,6 +1317,20 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
                 }
             }
         }
+    }
+
+    @Nullable
+    @Override
+    public SortInfo getSortInfo() {
+        // SortInfo is returned only for sorting triggered from UI
+        List<? extends RowSorter.SortKey> sortKeys = impl.getRowSorter().getSortKeys();
+        if (CollectionUtils.isNotEmpty(sortKeys)) {
+            RowSorter.SortKey sortKey = sortKeys.get(0);
+
+            return new SortInfo(columnsOrder.get(sortKey.getColumn()).getId(),
+                    SortOrder.ASCENDING.equals(sortKey.getSortOrder()));
+        }
+        return null;
     }
 
     @Override

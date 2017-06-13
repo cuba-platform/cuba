@@ -176,6 +176,12 @@ public interface Table<E extends Entity>
      */
     void sortBy(Object propertyId, boolean ascending);
 
+    /**
+     * @return current sort information or null if no column is sorted
+     */
+    @Nullable
+    SortInfo getSortInfo();
+
     void selectAll();
 
     boolean isMultiLineCells();
@@ -451,6 +457,36 @@ public interface Table<E extends Entity>
      * @return true if selection is visible
      */
     boolean isShowSelection();
+
+    class SortInfo {
+        protected final Object propertyId;
+        protected final boolean ascending;
+
+        /**
+         * Constructor for a SortInfo object.
+         *
+         * @param propertyId column indicated by a corresponding {@code MetaPropertyPath} object
+         * @param ascending  sort direction
+         */
+        public SortInfo(Object propertyId, boolean ascending) {
+            this.propertyId = propertyId;
+            this.ascending = ascending;
+        }
+
+        /**
+         * @return the property Id
+         */
+        public Object getPropertyId() {
+            return propertyId;
+        }
+
+        /**
+         * @return a sort direction value
+         */
+        public boolean getAscending() {
+            return ascending;
+        }
+    }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
