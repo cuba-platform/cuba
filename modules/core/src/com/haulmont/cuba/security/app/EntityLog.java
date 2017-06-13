@@ -313,14 +313,23 @@ public class EntityLog implements EntityLogAPI {
             dirty = changes.getAttributes();
         }
 
+        EntityLogItem.Type type;
         Properties properties = new Properties();
-        for (String attr : attributes) {
-            if (dirty.contains(attr)) {
+        if (entity instanceof SoftDelete && dirty.contains("deleteTs") && !((SoftDelete) entity).isDeleted()) {
+            type = EntityLogItem.Type.RESTORE;
+            for (String attr : attributes) {
                 writeAttribute(properties, entity, attr);
-            } else if (!Stores.getAdditional().isEmpty()) {
-                String idAttr = metadataTools.getCrossDataStoreReferenceIdProperty(storeName, metaClass.getPropertyNN(attr));
-                if (idAttr != null && dirty.contains(idAttr)) {
+            }
+        } else {
+            type = EntityLogItem.Type.MODIFY;
+            for (String attr : attributes) {
+                if (dirty.contains(attr)) {
                     writeAttribute(properties, entity, attr);
+                } else if (!Stores.getAdditional().isEmpty()) {
+                    String idAttr = metadataTools.getCrossDataStoreReferenceIdProperty(storeName, metaClass.getPropertyNN(attr));
+                    if (idAttr != null && dirty.contains(idAttr)) {
+                        writeAttribute(properties, entity, attr);
+                    }
                 }
             }
         }
@@ -328,7 +337,7 @@ public class EntityLog implements EntityLogAPI {
             EntityLogItem item = metadata.create(EntityLogItem.class);
             item.setEventTs(ts);
             item.setUser(findUser(em));
-            item.setType(EntityLogItem.Type.MODIFY);
+            item.setType(type);
             item.setEntity(metaClass.getName());
             item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
             item.setChanges(getChanges(properties));

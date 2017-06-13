@@ -47,7 +47,8 @@ public class EntityLogItem extends BaseUuidEntity {
     public enum Type implements EnumClass<String> {
         CREATE("C"),
         MODIFY("M"),
-        DELETE("D");
+        DELETE("D"),
+        RESTORE("R");
 
         private String id;
 
@@ -67,6 +68,8 @@ public class EntityLogItem extends BaseUuidEntity {
                 return MODIFY;
             else if ("D".equals(value))
                 return DELETE;
+            else if ("R".equals(value))
+                return RESTORE;
             else
                 return null;
         }
