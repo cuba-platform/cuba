@@ -873,7 +873,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public int indexOfId(K itemId) {
         if (itemId == null) return -1;
         Collection<T> collection = getCollection();
-        if ((collection != null) && !collection.isEmpty() && !itemId.equals(lastItemId())) {
+        if (CollectionUtils.isNotEmpty(collection)) {
             List<T> list = new ArrayList<>(collection);
             T currentItem = getItem(itemId);
             return list.indexOf(currentItem);
