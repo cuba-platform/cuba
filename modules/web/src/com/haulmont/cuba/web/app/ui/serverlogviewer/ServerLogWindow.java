@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.export.ExportDisplay;
+import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
 import com.haulmont.cuba.web.export.LogDataProvider;
@@ -112,6 +113,9 @@ public class ServerLogWindow extends AbstractWindow {
     private Metadata metadata;
 
     protected JmxInstance localJmxInstance;
+
+    protected static final String LAST_SELECTED_LOG_FILE_NAME = "lastSelectedLogFileName";
+    protected static final String LAST_SELECTED_JMX_CONNECTION_ID = "lastSelectedJmxConnectionId";
 
     @Override
     public void init(Map<String, Object> params) {
@@ -526,5 +530,40 @@ public class ServerLogWindow extends AbstractWindow {
         }
 
         logTailLabel.setValue("");
+
+    }
+
+    @Override
+    public void applySettings(Settings settings) {
+        super.applySettings(settings);
+        if (settings.get().attribute(LAST_SELECTED_JMX_CONNECTION_ID) != null) {
+            UUID lastJmxConnectionId = UUID.fromString(
+                    settings.get().attributeValue(LAST_SELECTED_JMX_CONNECTION_ID));
+            if (jmxInstancesDs.containsItem(lastJmxConnectionId)) {
+                jmxConnectionField.setValue(jmxInstancesDs.getItem(lastJmxConnectionId));
+            }
+        }
+        if (settings.get().attribute(LAST_SELECTED_LOG_FILE_NAME) != null) {
+            String lastFileName = settings.get().attributeValue(LAST_SELECTED_LOG_FILE_NAME);
+            @SuppressWarnings("unchecked")
+            List<String> logFileNamesList = logFileNameField.getOptionsList();
+            if (logFileNamesList.contains(lastFileName)) {
+                logFileNameField.setValue(lastFileName);
+                showLogTail();
+            }
+        }
+    }
+
+    @Override
+    public void saveSettings() {
+        String lastFileName = logFileNameField.getValue();
+        getSettings().get().addAttribute(LAST_SELECTED_LOG_FILE_NAME, lastFileName);
+        if (!getSelectedConnection().equals(localJmxInstance)) {
+            String lastJmxConnectionId = String.valueOf(getSelectedConnection().getId());
+            getSettings().get().addAttribute(LAST_SELECTED_JMX_CONNECTION_ID, lastJmxConnectionId);
+        } else {
+            getSettings().get().addAttribute(LAST_SELECTED_JMX_CONNECTION_ID, null);
+        }
+        super.saveSettings();
     }
 }
