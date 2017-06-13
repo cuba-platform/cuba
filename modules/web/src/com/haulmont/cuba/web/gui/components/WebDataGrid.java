@@ -1055,6 +1055,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                     ? column.getEditorFieldGenerator().createField(fieldDatasource, fieldPropertyId)
                     : fieldFactory.createField(fieldDatasource, fieldPropertyId);
             columnComponent.setParent(dataGrid);
+            columnComponent.setFrame(dataGrid.getFrame());
 
             return createCustomField(columnComponent);
         }
