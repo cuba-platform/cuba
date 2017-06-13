@@ -21,6 +21,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.CodeSource;
 import java.util.Properties;
 
@@ -58,6 +59,10 @@ public class ServerRunner {
                 .hasArg()
                 .desc("jetty resource xml path").argName("jettyEnvPath").build();
 
+        Option jettyConfOption = Option.builder("jettyConfPath")
+                .hasArg()
+                .desc("jetty configuration xml path").argName("jettyConfPath").build();
+
         Option helpOption = Option.builder("help")
                 .desc("print help information").build();
 
@@ -67,6 +72,7 @@ public class ServerRunner {
         cliOptions.addOption(frontContextPathOption);
         cliOptions.addOption(portalContextPathOption);
         cliOptions.addOption(jettyEnvPathOption);
+        cliOptions.addOption(jettyConfOption);
 
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
@@ -173,6 +179,28 @@ public class ServerRunner {
                     }
                 }
             }
+
+            if (cmd.hasOption(jettyConfOption.getOpt())) {
+                String jettyConf = cmd.getOptionValue(jettyConfOption.getOpt());
+                if (jettyConf != null && !jettyConf.isEmpty()) {
+                    File file = new File(jettyConf);
+                    if (!file.exists()) {
+                        System.out.println("jettyConf should point to an existing file");
+                        printHelp(formatter, cliOptions);
+                        return;
+                    }
+                    try {
+                        jettyServer.setJettyEnvPathUrl(file.toURI().toURL());
+                    } catch (MalformedURLException e) {
+                        throw new RuntimeException("Unable to create jettyConfUrl", e);
+                    }
+                }
+            } else {
+                URL jettyConfUrl = getJettyConfUrl();
+                if (jettyConfUrl != null) {
+                    jettyServer.setJettyConfUrl(jettyConfUrl);
+                }
+            }
             System.out.println(format("Starting Jetty server on port: %s and contextPath: %s", jettyServer.getPort(), jettyServer.getContextPath()));
             jettyServer.start();
         }
@@ -205,6 +233,16 @@ public class ServerRunner {
             System.out.println("Error while parsing port, use default port");
         }
         return 8080;
+    }
+
+    protected URL getJettyConfUrl() {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            return classLoader.getResource("jetty.xml");
+        } catch (Exception e) {
+            System.out.println("Error while found jetty.xml");
+            return null;
+        }
     }
 
     protected String getPropertiesForPort(ClassLoader classLoader) {

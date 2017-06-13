@@ -23,6 +23,7 @@ import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.webapp.WebXmlConfiguration;
+import org.eclipse.jetty.xml.XmlConfiguration;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -38,6 +39,7 @@ public class CubaJettyServer {
     protected String portalContextPath;
     protected String frontContextPath;
     protected URL jettyEnvPathUrl;
+    protected URL jettyConfUrl;
 
     public int getPort() {
         return port;
@@ -79,6 +81,14 @@ public class CubaJettyServer {
         this.jettyEnvPathUrl = jettyEnvPathUrl;
     }
 
+    public URL getJettyConfUrl() {
+        return jettyConfUrl;
+    }
+
+    public void setJettyConfUrl(URL jettyConfUrl) {
+        this.jettyConfUrl = jettyConfUrl;
+    }
+
     public void start() {
         String appHome = System.getProperty("app.home");
         if (appHome == null || appHome.length() == 0) {
@@ -96,8 +106,13 @@ public class CubaJettyServer {
     protected Server createServer() throws Exception {
         ClassLoader serverClassLoader = Thread.currentThread().getContextClassLoader();
         ClassLoader sharedClassLoader = new URLClassLoader(pathsToURLs(serverClassLoader, SHARED_CLASS_PATH_IN_JAR), serverClassLoader);
-
-        Server server = new Server(port);
+        Server server;
+        if (jettyConfUrl != null) {
+            XmlConfiguration xmlConfiguration = new XmlConfiguration(jettyConfUrl);
+            server = (Server) xmlConfiguration.configure();
+        } else {
+            server = new Server(port);
+        }
         List<Handler> handlers = new ArrayList<>();
         if (CubaJettyUtils.hasCoreApp(serverClassLoader)) {
             String coreContextPath = contextPath;
