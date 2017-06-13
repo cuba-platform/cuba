@@ -488,12 +488,9 @@ public class BulkEditorWindow extends AbstractWindow {
             showOptionDialog(messages.getMainMessage("closeUnsaved.caption"),
                     messages.getMainMessage("closeUnsaved"),
                     MessageType.CONFIRMATION, new Action[]{
-                            new DialogAction(Type.YES) {
-                                @Override
-                                public void actionPerform(Component component) {
-                                    close(CLOSE_ACTION_ID, true);
-                                }
-                            },
+                            new DialogAction(Type.YES).withHandler(event -> {
+                                close(CLOSE_ACTION_ID, true);
+                            }),
                             new DialogAction(Type.NO, Status.PRIMARY)
                     });
         } else {

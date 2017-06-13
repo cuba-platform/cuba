@@ -45,6 +45,8 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
+import static com.haulmont.cuba.gui.components.PickerField.*;
+
 public class UserEditor extends AbstractEditor<User> {
 
     @Inject
@@ -306,17 +308,14 @@ public class UserEditor extends AbstractEditor<User> {
         pickerField.setRequired(true);
         pickerField.setRequiredMessage(getMessage("groupMsg"));
 
-        PickerField.LookupAction action = new PickerField.LookupAction(pickerField) {
-            @Nullable
-            @Override
-            public Map<String, Object> getLookupScreenParams() {
-                if (getItem().getGroup() != null) {
-                    return ParamsMap.of("selectedGroup", getItem().getGroup());
-                }
-                return super.getLookupScreenParams();
-            }
-        };
+        LookupAction action = LookupAction.create(pickerField);
         action.setLookupScreenOpenType(OpenType.DIALOG);
+        action.setLookupScreenParamsSupplier(() -> {
+            if (getItem().getGroup() != null) {
+                return ParamsMap.of("selectedGroup", getItem().getGroup());
+            }
+            return Collections.emptyMap();
+        });
         pickerField.addAction(action);
 
         groupFc.setComponent(pickerField);

@@ -278,12 +278,12 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
         clearBtn.setIcon("components/pickerfield/images/clear-btn.png");
         clearBtn.setStyleName("c-listeditor-button");
         clearBtn.setCaption("");
-        clearBtn.setAction(new BaseAction("clear") {
-            @Override
-            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                actualField.setValue(null);
-            }
-        });
+        clearBtn.setAction(new BaseAction("clear")
+                        .withCaption("Clear")
+                        .withHandler(event ->
+                                actualField.setValue(null)
+                        ));
+
         layout.add(clearBtn);
     }
 }

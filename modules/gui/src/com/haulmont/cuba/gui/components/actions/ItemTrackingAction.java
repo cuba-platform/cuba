@@ -24,7 +24,21 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
-public abstract class ItemTrackingAction extends BaseAction implements Action.HasSecurityConstraint {
+/**
+ * Standard action that changes enabled property depending on selection of a bound {@link ListComponent}.
+ * <br>
+ * You can use fluent API to create instances of ItemTrackingAction and assign handlers to them:
+ * <pre>{@code
+ *     Action action = new ItemTrackingAction("moveToTrash")
+ *             .withCaption("Move to trash")
+ *             .withIcon("icons/trash.png")
+ *             .withHandler(event -> {
+ *                 // action logic here
+ *             });
+ *     docsTable.addAction(action);
+ * }</pre>
+ */
+public class ItemTrackingAction extends BaseAction implements Action.HasSecurityConstraint {
 
     protected ConstraintOperationType constraintOperationType;
     protected String constraintCode;
@@ -35,7 +49,7 @@ public abstract class ItemTrackingAction extends BaseAction implements Action.Ha
         this(null, id);
     }
 
-    protected ItemTrackingAction(ListComponent target, String id) {
+    public ItemTrackingAction(ListComponent target, String id) {
         super(id, null);
 
         this.target = target;

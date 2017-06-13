@@ -151,14 +151,13 @@ public class UiPermissionsFrame extends AbstractFrame {
 
         final boolean hasPermissionsToModifyPermission = isCreatePermitted && isDeletePermitted && isRoleEditPermitted;
 
-        RemoveAction removeAction = new RemoveAction(uiPermissionsTable, false) {
-            @Override
-            protected void afterRemove(Set selected) {
-                if (!selected.isEmpty()) {
-                    markItemPermission(UiPermissionVariant.NOTSET, (UiPermissionTarget) selected.iterator().next());
-                }
+        RemoveAction removeAction = new RemoveAction(uiPermissionsTable, false);
+        removeAction.setAfterRemoveHandler(removedItems -> {
+            if (!removedItems.isEmpty()) {
+                UiPermissionTarget removedPermission = (UiPermissionTarget) removedItems.iterator().next();
+                markItemPermission(UiPermissionVariant.NOTSET, removedPermission);
             }
-        };
+        });
         removeAction.setEnabled(hasPermissionsToModifyPermission);
         removeAction.setIcon(null);
         removeAction.setCaption(getMessage("actions.RemoveSelected"));
@@ -174,7 +173,7 @@ public class UiPermissionsFrame extends AbstractFrame {
     protected Collection<WindowInfo> sortWindowInfos(Collection<WindowInfo> infos) {
         List<WindowInfo> infosContainer = new ArrayList<>(infos);
 
-        Collections.sort(infosContainer, (o1, o2) -> {
+        infosContainer.sort((o1, o2) -> {
             if (o1.getId().contains("$") != o2.getId().contains("$")) {
                 if (o1.getId().contains("$")) {
                     return -1;

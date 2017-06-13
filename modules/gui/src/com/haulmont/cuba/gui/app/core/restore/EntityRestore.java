@@ -190,19 +190,13 @@ public class EntityRestore extends AbstractWindow {
                 entitiesTable.setSizeFull();
 
                 entitiesTable.setMultiSelect(true);
-                entitiesTable.addAction(new ItemTrackingAction("restore") {
-                    @Override
-                    public void actionPerform(Component component) {
-                        showRestoreDialog();
-                    }
-
-                    @Override
-                    public String getCaption() {
-                        return getMessage("entityRestore.restore");
-                    }
-                });
-
-                restoreButton.setAction(entitiesTable.getAction("restore"));
+                Action restoreAction = new ItemTrackingAction("restore")
+                        .withCaption(getMessage("entityRestore.restore"))
+                        .withHandler(event ->
+                                showRestoreDialog()
+                        );
+                entitiesTable.addAction(restoreAction);
+                restoreButton.setAction(restoreAction);
 
                 tablePanel.add(filter);
                 tablePanel.add(entitiesTable);
@@ -210,7 +204,7 @@ public class EntityRestore extends AbstractWindow {
 
                 entitiesTable.refresh();
 
-                ( (FilterImplementation)filter).loadFiltersAndApplyDefault();
+                ((FilterImplementation)filter).loadFiltersAndApplyDefault();
             }
         }
     }
@@ -238,25 +232,19 @@ public class EntityRestore extends AbstractWindow {
                         getMessage("dialogs.Message"),
                         MessageType.CONFIRMATION,
                         new Action[]{
-                                new DialogAction(Type.OK) {
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        restoreService.restoreEntities(entityList);
-                                        entitiesTable.refresh();
-                                        entitiesTable.requestFocus();
-                                    }
-                                },
-                                new DialogAction(Type.CANCEL, Status.PRIMARY) {
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        entitiesTable.requestFocus();
-                                    }
-                                }
+                                new DialogAction(Type.OK).withHandler(event -> {
+                                    restoreService.restoreEntities(entityList);
+                                    entitiesTable.refresh();
+                                    entitiesTable.requestFocus();
+                                }),
+                                new DialogAction(Type.CANCEL, Status.PRIMARY).withHandler(event -> {
+                                    entitiesTable.requestFocus();
+                                })
                         }
                 );
             }
         } else {
-            showNotification(getMessage("entityRestore.restoreMsg"), NotificationType.HUMANIZED);
+            showNotification(getMessage("entityRestore.restoreMsg"));
         }
     }
 

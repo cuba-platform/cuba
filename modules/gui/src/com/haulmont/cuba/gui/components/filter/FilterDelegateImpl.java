@@ -41,6 +41,7 @@ import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
+import com.haulmont.cuba.gui.components.Frame.MessageType;
 import com.haulmont.cuba.gui.components.KeyCombination.Key;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
@@ -1204,21 +1205,19 @@ public class FilterDelegateImpl implements FilterDelegate {
                 ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
                 this.layout.remove(appliedFiltersLayout);
             } else {
-
-                windowManager.showOptionDialog(messages.getMainMessage("removeApplied.title"),
-                        messages.getMainMessage("removeApplied.message"), Frame.MessageType.WARNING,
+                windowManager.showOptionDialog(
+                        messages.getMainMessage("removeApplied.title"),
+                        messages.getMainMessage("removeApplied.message"),
+                        MessageType.WARNING,
                         new Action[]{
-                                new DialogAction(Type.YES) {
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        for (AppliedFilterHolder holder : appliedFilters) {
-                                            appliedFiltersLayout.remove(holder.layout);
-                                            FilterDelegateImpl.this.layout.remove(appliedFiltersLayout);
-                                        }
-                                        appliedFilters.clear();
-                                        ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
+                                new DialogAction(Type.YES).withHandler(event -> {
+                                    for (AppliedFilterHolder holder : appliedFilters) {
+                                        appliedFiltersLayout.remove(holder.layout);
+                                        FilterDelegateImpl.this.layout.remove(appliedFiltersLayout);
                                     }
-                                },
+                                    appliedFilters.clear();
+                                    ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
+                                }),
                                 new DialogAction(Type.NO, Status.PRIMARY)
                         });
             }
@@ -2232,21 +2231,15 @@ public class FilterDelegateImpl implements FilterDelegate {
             windowManager.showOptionDialog(
                     getMainMessage("filter.removeDialogTitle"),
                     getMainMessage("filter.removeDialogMessage"),
-                    Frame.MessageType.CONFIRMATION,
+                    MessageType.CONFIRMATION,
                     new Action[]{
-                            new DialogAction(Type.YES) {
-                                @Override
-                                public void actionPerform(Component component) {
-                                    removeFilterEntity();
-                                    settingsBtn.requestFocus();
-                                }
-                            },
-                            new DialogAction(Type.NO, Status.PRIMARY) {
-                                @Override
-                                public void actionPerform(Component component) {
-                                    settingsBtn.requestFocus();
-                                }
-                            }
+                            new DialogAction(Type.YES).withHandler(event -> {
+                                removeFilterEntity();
+                                settingsBtn.requestFocus();
+                            }),
+                            new DialogAction(Type.NO, Status.PRIMARY).withHandler(event -> {
+                                settingsBtn.requestFocus();
+                            })
                     });
         }
 

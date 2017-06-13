@@ -22,7 +22,11 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DialogAction;
+import com.haulmont.cuba.gui.components.Frame.MessageType;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.exception.AccessDeniedHandler;
@@ -164,7 +168,7 @@ public class LinkHandler {
             app.getWindowManager().showOptionDialog(
                     messages.getMainMessage("toSubstitutedUser.title"),
                     getDialogMessage(substitutedUser),
-                    Frame.MessageType.CONFIRMATION_HTML,
+                    MessageType.CONFIRMATION_HTML,
                     new Action[]{
                             new ChangeSubstUserAction(substitutedUser) {
                                 @Override
@@ -206,15 +210,12 @@ public class LinkHandler {
             app.getWindowManager().showOptionDialog(
                     messages.getMainMessage("warning.title"),
                     getWarningMessage(user),
-                    Frame.MessageType.WARNING_HTML,
+                    MessageType.WARNING_HTML,
                     new Action[]{
-                            new DialogAction(DialogAction.Type.OK) {
-                                @Override
-                                public void actionPerform(Component component) {
-                                    JavaScript js = Page.getCurrent().getJavaScript();
-                                    js.execute("window.close();");
-                                }
-                            }
+                            new DialogAction(DialogAction.Type.OK).withHandler(event -> {
+                                JavaScript js = Page.getCurrent().getJavaScript();
+                                js.execute("window.close();");
+                            })
                     });
         }
     }

@@ -21,6 +21,7 @@ import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
+import java.util.EventObject;
 
 /**
  * The {@code Action} interface abstracts away a function from a visual component.
@@ -199,5 +200,23 @@ public interface Action {
         NORMAL,
 
         PRIMARY
+    }
+
+    class ActionPerformedEvent extends EventObject {
+        private final Component component;
+
+        public ActionPerformedEvent(Action source, Component component) {
+            super(source);
+            this.component = component;
+        }
+
+        public Component getComponent() {
+            return component;
+        }
+
+        @Override
+        public Action getSource() {
+            return (Action) super.getSource();
+        }
     }
 }

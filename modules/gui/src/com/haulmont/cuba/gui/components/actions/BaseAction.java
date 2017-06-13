@@ -18,13 +18,12 @@
 package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.ListComponent;
+import com.haulmont.cuba.gui.components.*;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Action that can change its enabled and visible properties depending on the user permissions and current context.
@@ -43,8 +42,19 @@ import java.util.List;
  * </ul>
  * <p> Descendants may override {@link #isPermitted()} and {@link #isApplicable()} methods to define conditions in which
  * action will be enabled.
+ *
+ * Also, you can use fluent API to create instances of BaseAction and assign handlers to them:
+ * <pre>{@code
+ *     Action action = new BaseAction("printAll")
+ *             .withCaption("Print all")
+ *             .withIcon("icons/print.png")
+ *             .withHandler(event -> {
+ *                 // action logic here
+ *              });
+ *     docsTable.addAction(action);
+ * }</pre>
  */
-public abstract class BaseAction extends AbstractAction implements Action.HasTarget, Action.UiPermissionAware {
+public class BaseAction extends AbstractAction implements Action.HasTarget, Action.UiPermissionAware {
 
     private boolean enabledByUiPermissions = true;
     private boolean visibleByUiPermissions = true;
@@ -56,7 +66,9 @@ public abstract class BaseAction extends AbstractAction implements Action.HasTar
 
     protected ListComponent target;
 
-    protected BaseAction(String id) {
+    protected Consumer<ActionPerformedEvent> actionPerformHandler;
+
+    public BaseAction(String id) {
         this(id, null);
     }
 
@@ -66,6 +78,7 @@ public abstract class BaseAction extends AbstractAction implements Action.HasTar
 
     /**
      * Callback method which is invoked by the action to determine its enabled state.
+     *
      * @return true if the action is enabled for the current user
      */
     protected boolean isPermitted() {
@@ -74,6 +87,7 @@ public abstract class BaseAction extends AbstractAction implements Action.HasTar
 
     /**
      * Callback method which is invoked by the action to determine its enabled state.
+     *
      * @return true if the action is enabled for the current context, e.g. there is a selected row in a table
      */
     protected boolean isApplicable() {
@@ -206,5 +220,69 @@ public abstract class BaseAction extends AbstractAction implements Action.HasTar
      */
     public interface EnabledRule {
         boolean isActionEnabled();
+    }
+
+    @Override
+    public void actionPerform(Component component) {
+        if (actionPerformHandler != null) {
+            actionPerformHandler.accept(new ActionPerformedEvent(this, component));
+        }
+    }
+
+    /**
+     * Set caption usin fluent API method.
+     *
+     * @param caption caption
+     * @return current instance of action
+     */
+    public BaseAction withCaption(String caption) {
+        this.caption = caption;
+        return this;
+    }
+
+    /**
+     * Set description using fluent API method.
+     *
+     * @param description description
+     * @return current instance of action
+     */
+    public BaseAction withDescription(String description) {
+        this.description = description;
+        return this;
+    }
+
+    /**
+     * Set icon using fluent API method.
+     *
+     * @param icon icon
+     * @return current instance of action
+     */
+    public BaseAction withIcon(String icon) {
+        this.icon = icon;
+        return this;
+    }
+
+    /**
+     * Set shortcut using fluent API method.
+     *
+     * @param shortcut shortcut
+     * @return current instance of action
+     */
+    public BaseAction withShortcut(String shortcut) {
+        if (shortcut != null) {
+            this.shortcut = KeyCombination.create(shortcut);
+        }
+        return this;
+    }
+
+    /**
+     * Set actionPerformed handler using fluent API method. Can be used instead of subclassing BaseAction class.
+     *
+     * @param handler action performed handler
+     * @return current instance of action
+     */
+    public BaseAction withHandler(Consumer<ActionPerformedEvent> handler) {
+        this.actionPerformHandler = handler;
+        return this;
     }
 }

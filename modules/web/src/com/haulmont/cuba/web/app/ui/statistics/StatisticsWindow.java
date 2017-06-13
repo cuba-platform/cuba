@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
@@ -37,7 +38,7 @@ import java.util.UUID;
 public class StatisticsWindow extends AbstractWindow {
 
     @Inject
-    protected GroupTable paramsTable;
+    protected GroupTable<PerformanceParameter> paramsTable;
 
     @Inject
     protected GroupDatasource<PerformanceParameter, UUID> statisticsDs;
@@ -51,8 +52,6 @@ public class StatisticsWindow extends AbstractWindow {
     @Inject
     protected LookupPickerField jmxConnectionField;
 
-    protected JmxInstance localJmxInstance;
-
     @Inject
     protected CollectionDatasource<JmxInstance, UUID> jmxInstancesDs;
 
@@ -61,6 +60,8 @@ public class StatisticsWindow extends AbstractWindow {
 
     @Inject
     protected Metadata metadata;
+
+    protected JmxInstance localJmxInstance;
 
     protected MetaClass parameterClass;
 
@@ -71,7 +72,7 @@ public class StatisticsWindow extends AbstractWindow {
     public void init(Map<String, Object> params) {
         parameterClass = metadata.getClassNN(PerformanceParameter.class);
         initJMXTable();
-        setNode(jmxConnectionField.<JmxInstance>getValue());
+        setNode(jmxConnectionField.getValue());
         valuesTimer.setDelay(timerDelay);
 
         paramsTable.setShowItemsCountForGroup(false);
@@ -85,7 +86,7 @@ public class StatisticsWindow extends AbstractWindow {
         jmxConnectionField.setRequired(true);
         jmxConnectionField.addValueChangeListener(e -> {
             try {
-                setNode(jmxConnectionField.<JmxInstance>getValue());
+                setNode(jmxConnectionField.getValue());
             } catch (JmxControlException ex) {
                 JmxInstance jmxInstance = jmxConnectionField.getValue();
                 showNotification(messages.getMessage("com.haulmont.cuba.web.app.ui.jmxcontrol",
@@ -105,24 +106,16 @@ public class StatisticsWindow extends AbstractWindow {
             }
         });
 
-        jmxConnectionField.addAction(new AbstractAction("actions.Add") {
-            @Override
-            public void actionPerform(Component component) {
-                JmxInstanceEditor instanceEditor = (JmxInstanceEditor) openEditor("sys$JmxInstance.edit",
-                        metadata.create(JmxInstance.class), OpenType.DIALOG);
-                instanceEditor.addCloseListener(actionId -> {
-                    if (COMMIT_ACTION_ID.equals(actionId)) {
+        jmxConnectionField.addAction(new BaseAction("actions.Add")
+                .withIcon("icons/plus-btn.png")
+                .withHandler(event -> {
+                    JmxInstanceEditor instanceEditor = (JmxInstanceEditor) openEditor(
+                            metadata.create(JmxInstance.class), OpenType.DIALOG);
+                    instanceEditor.addCloseWithCommitListener(() -> {
                         jmxInstancesDs.refresh();
                         jmxConnectionField.setValue(instanceEditor.getItem());
-                    }
-                });
-            }
-
-            @Override
-            public String getIcon() {
-                return "icons/plus-btn.png";
-            }
-        });
+                    });
+                }));
 
         localNodeLab.setValue(jmxControlAPI.getLocalNodeName());
         localNodeLab.setEditable(false);
@@ -141,8 +134,8 @@ public class StatisticsWindow extends AbstractWindow {
         statisticsDs.clear();
         startTime = System.currentTimeMillis();
 
-        Map<String, Object> constantParams = ParamsMap.of("node", currentNode, "refreshPeriod", timerDelay);
-        statisticsDs.refresh(constantParams);
+        statisticsDs.refresh(ParamsMap.of("node", currentNode,
+                                          "refreshPeriod", timerDelay));
         statisticsDs.groupBy(new Object[]{new MetaPropertyPath(parameterClass, parameterClass.getPropertyNN("parameterGroup"))});
         paramsTable.expandAll();
     }

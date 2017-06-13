@@ -17,9 +17,35 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 
-public class DialogAction extends AbstractAction {
+/**
+ * Standard action for option dialogs.
+ * <br>
+ * You can use fluent API to create instances of DialogAction and assign handlers to them:
+ * <pre>{@code
+ *     showOptionDialog(
+ *             "Select options",
+ *             "Do you want to print all rows?",
+ *             MessageType.CONFIRMATION,
+ *             new Action[]{
+ *                     new DialogAction(Type.YES).withHandler(event -> {
+ *                         // add action logic here
+ *                     }),
+ *                     new DialogAction(Type.NO)
+ *                             .withCaption("Print selected")
+ *                             .withIcon("icons/print-seletcted.png")
+ *                             .withHandler(event -> {
+ *                         // add action logic here
+ *                     }),
+ *                     new DialogAction(Type.CANCEL)
+ *             });
+ * }</pre>
+ *
+ * @see Window#showOptionDialog(String, String, Frame.MessageType, Action[])
+ */
+public class DialogAction extends BaseAction {
 
     public enum Type {
         OK("ok", "actions.Ok", "actions.dialog.Ok.icon"),
@@ -51,11 +77,12 @@ public class DialogAction extends AbstractAction {
         }
     }
 
-    private Type type;
+    protected Type type;
 
     public DialogAction(Type type) {
         super(type.id);
         this.type = type;
+        this.caption = messages.getMainMessage(type.msgKey);
 
         ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
         this.icon = thCM.getThemeValue(type.iconKey);
@@ -71,16 +98,7 @@ public class DialogAction extends AbstractAction {
         this.primary = status == Status.PRIMARY;
     }
 
-    @Override
-    public String getCaption() {
-        return messages.getMainMessage(type.msgKey);
-    }
-
     public Type getType() {
         return type;
-    }
-
-    @Override
-    public void actionPerform(Component component) {
     }
 }

@@ -316,12 +316,11 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             HBoxLayout hbox = factory.createComponent(HBoxLayout.class);
             hbox.setWidth("100%");
             LinkButton linkButton = factory.createComponent(LinkButton.class);
-            linkButton.setAction(new BaseAction("constraintWizard") {
-                @Override
-                public void actionPerform(Component component) {
-                    openConstraintWizard();
-                }
-            });
+            linkButton.setAction(new BaseAction("constraintWizard")
+                    .withHandler(event ->
+                            openConstraintWizard()
+                    ));
+
             linkButton.setCaption(getMessage("constraintWizard"));
             linkButton.setAlignment(Alignment.MIDDLE_LEFT);
             hbox.add(linkButton);

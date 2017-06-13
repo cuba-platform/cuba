@@ -893,13 +893,10 @@ public class CubaFoldersPane extends VerticalLayout {
                     messages.getMainMessage("folders.removeFolderConfirmation"),
                     Frame.MessageType.CONFIRMATION,
                     new com.haulmont.cuba.gui.components.Action[]{
-                            new DialogAction(Type.YES) {
-                                @Override
-                                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                                    removeFolder(folder);
-                                    refreshFolders();
-                                }
-                            },
+                            new DialogAction(Type.YES).withHandler(event -> {
+                                removeFolder(folder);
+                                refreshFolders();
+                            }),
                             new DialogAction(Type.NO, Status.PRIMARY)
                     }
             );

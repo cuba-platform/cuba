@@ -27,9 +27,11 @@ import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
@@ -1058,46 +1060,27 @@ public class WebWindow implements Window, Component.Wrapper,
                         messages.getMainMessage("saveUnsaved"),
                         MessageType.WARNING,
                         new Action[]{
-                                new DialogAction(DialogAction.Type.OK, Status.PRIMARY) {
-                                    @Override
-                                    public String getCaption() {
-                                        return messages.getMainMessage("closeUnsaved.save");
-                                    }
-                                    
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        committable.commitAndClose();
-                                    }
-                                },
-                                new AbstractAction("discard") {
-                                    {
-                                        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
-                                        icon = thCM.getThemeValue("actions.dialog.Cancel.icon");
-                                    }
+                                new DialogAction(Type.OK, Status.PRIMARY)
+                                    .withCaption(messages.getMainMessage("closeUnsaved.save"))
+                                    .withHandler(event -> {
 
-                                    @Override
-                                    public String getCaption() {
-                                        return messages.getMainMessage("closeUnsaved.discard");
-                                    }
+                                    committable.commitAndClose();
+                                }),
+                                new BaseAction("discard")
+                                    .withIcon(AppBeans.get(ThemeConstantsManager.class).getThemeValue("actions.dialog.Cancel.icon"))
+                                    .withCaption(messages.getMainMessage("closeUnsaved.discard"))
+                                    .withHandler(event -> {
 
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        committable.close(actionId, true);
-                                    }
-                                },
-                                new DialogAction(DialogAction.Type.CANCEL) {
-                                    @Override
-                                    public String getIcon() {
-                                        return null;
-                                    }
+                                    committable.close(actionId, true);
+                                }),
+                                new DialogAction(Type.CANCEL)
+                                    .withIcon(null)
+                                    .withHandler(event -> {
 
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        doAfterClose = null;
-                                        // try to move focus back
-                                        findAndFocusChildComponent();
-                                    }
-                                }
+                                    doAfterClose = null;
+                                    // try to move focus back
+                                    findAndFocusChildComponent();
+                                })
                         }
                 );
             } else {
@@ -1106,20 +1089,16 @@ public class WebWindow implements Window, Component.Wrapper,
                         messages.getMainMessage("closeUnsaved"),
                         MessageType.WARNING,
                         new Action[]{
-                                new DialogAction(DialogAction.Type.YES) {
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        getWrapper().close(actionId, true);
-                                    }
-                                },
-                                new DialogAction(DialogAction.Type.NO, Status.PRIMARY) {
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        doAfterClose = null;
-                                        // try to move focus back
-                                        findAndFocusChildComponent();
-                                    }
-                                }
+                                new DialogAction(Type.YES)
+                                        .withHandler(event ->
+                                        getWrapper().close(actionId, true)
+                                ),
+                                new DialogAction(Type.NO, Status.PRIMARY)
+                                        .withHandler(event -> {
+                                    doAfterClose = null;
+                                    // try to move focus back
+                                    findAndFocusChildComponent();
+                                })
                         }
                 );
             }

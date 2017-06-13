@@ -36,6 +36,7 @@ import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.Component.BelongToFrame;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.components.mainwindow.TopLevelWindowAttachListener;
@@ -841,25 +842,21 @@ public class WebWindowManager extends WindowManager {
                     messages.getMessage(WebWindow.class, "discardChangesOnClose"),
                     MessageType.WARNING,
                     new Action[]{
-                            new AbstractAction(messages.getMainMessage("closeApplication")) {
-                                {
-                                    icon = themeConstantsManager.getThemeValue("actions.dialog.Ok.icon");
-                                }
+                            new BaseAction("closeApplication")
+                                    .withCaption(messages.getMainMessage("closeApplication"))
+                                    .withIcon(themeConstantsManager.getThemeValue("actions.dialog.Ok.icon"))
+                                    .withHandler(event -> {
 
-                                @Override
-                                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                                    closeAllWindows();
-                                    runIfOk.run();
+                                closeAllWindows();
+                                runIfOk.run();
+                            }),
+                            new DialogAction(Type.CANCEL, Status.PRIMARY)
+                                    .withHandler(event -> {
+
+                                if (runIfCancel != null) {
+                                    runIfCancel.run();
                                 }
-                            },
-                            new DialogAction(Type.CANCEL, Status.PRIMARY) {
-                                @Override
-                                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                                    if (runIfCancel != null) {
-                                        runIfCancel.run();
-                                    }
-                                }
-                            }
+                            })
                     }
             );
         } else {

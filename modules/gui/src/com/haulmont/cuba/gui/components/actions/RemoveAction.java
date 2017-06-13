@@ -215,29 +215,23 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
                 getConfirmationMessage(),
                 Frame.MessageType.CONFIRMATION,
                 new Action[]{
-                        new DialogAction(Type.OK, Status.PRIMARY) {
-                            @Override
-                            public void actionPerform(Component component) {
+                        new DialogAction(Type.OK, Status.PRIMARY).withHandler(event -> {
+                            try {
+                                remove(selected);
+                            } finally {
+                                target.requestFocus();
                                 try {
-                                    remove(selected);
-                                } finally {
-                                    target.requestFocus();
-                                    try {
-                                        //noinspection unchecked
-                                        target.setSelected(selected);
-                                    } catch (Exception e) {
-                                        // ignore
-                                    }
+                                    //noinspection unchecked
+                                    target.setSelected(selected);
+                                } catch (Exception e) {
+                                    // ignore
                                 }
                             }
-                        },
-                        new DialogAction(Type.CANCEL) {
-                            @Override
-                            public void actionPerform(Component component) {
-                                // move focus to owner
-                                target.requestFocus();
-                            }
-                        }
+                        }),
+                        new DialogAction(Type.CANCEL).withHandler(event -> {
+                            // move focus to owner
+                            target.requestFocus();
+                        })
                 }
         );
     }

@@ -46,6 +46,7 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
@@ -321,40 +322,25 @@ public class DesktopWindow implements Window, Component.Disposable,
                         messages.getMainMessage("saveUnsaved"),
                         MessageType.WARNING,
                         new Action[]{
-                                new DialogAction(Type.OK, Status.PRIMARY) {
-                                    @Override
-                                    public String getCaption() {
-                                        return messages.getMainMessage("closeUnsaved.save");
-                                    }
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        committable.commitAndClose();
-                                    }
-                                },
-                                new AbstractAction("discard") {
-                                    @Override
-                                    public String getCaption() {
-                                        return messages.getMainMessage("closeUnsaved.discard");
-                                    }
-                                    @Override
-                                    public String getIcon() {
-                                        return "icons/cancel.png";
-                                    }
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        committable.close(actionId, true);
-                                    }
-                                },
-                                new DialogAction(Type.CANCEL) {
-                                    @Override
-                                    public String getIcon() {
-                                        return null;
-                                    }
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        doAfterClose = null;
-                                    }
-                                }
+                                new DialogAction(Type.OK, Status.PRIMARY)
+                                    .withCaption(messages.getMainMessage("closeUnsaved.save"))
+                                    .withHandler(event -> {
+
+                                    committable.commitAndClose();
+                                }),
+                                new BaseAction("discard")
+                                    .withIcon("icons/cancel.png")
+                                    .withCaption(messages.getMainMessage("closeUnsaved.discard"))
+                                    .withHandler(event -> {
+
+                                    committable.close(actionId, true);
+                                }),
+                                new DialogAction(Type.CANCEL)
+                                    .withIcon(null)
+                                    .withHandler(event -> {
+
+                                    doAfterClose = null;
+                                })
                         }
                 );
             } else {
@@ -363,19 +349,12 @@ public class DesktopWindow implements Window, Component.Disposable,
                         messages.getMainMessage("closeUnsaved"),
                         MessageType.WARNING,
                         new Action[]{
-                                new DialogAction(Type.YES) {
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        getWrapper().close(actionId, true);
-                                    }
-
-                                },
-                                new DialogAction(Type.NO, Status.PRIMARY) {
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        doAfterClose = null;
-                                    }
-                                }
+                                new DialogAction(Type.YES).withHandler(event -> {
+                                    getWrapper().close(actionId, true);
+                                }),
+                                new DialogAction(Type.NO, Status.PRIMARY).withHandler(event -> {
+                                    doAfterClose = null;
+                                })
                         }
                 );
             }

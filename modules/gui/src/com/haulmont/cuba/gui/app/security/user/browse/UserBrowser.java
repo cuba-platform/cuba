@@ -136,20 +136,15 @@ public class UserBrowser extends AbstractLookup {
             }
         });
 
-        RemoveAction removeAction = new RemoveAction(usersTable) {
-            @Override
-            public boolean isApplicable() {
-                if (target != null) {
-                    Set selected = target.getSelected();
-                    if (!selected.isEmpty()) {
-                        return !(selected.contains(userSession.getUser())
-                                || userSession.getCurrentOrSubstitutedUser().equals(target.getSingleSelected()));
-                    }
-                }
-
-                return false;
+        RemoveAction removeAction = new RemoveAction(usersTable);
+        removeAction.addEnabledRule(() -> {
+            Set selected = usersTable.getSelected();
+            if (!selected.isEmpty()) {
+                return !(selected.contains(userSession.getUser())
+                        || userSession.getCurrentOrSubstitutedUser().equals(usersTable.getSingleSelected()));
             }
-        };
+            return false;
+        });
         removeAction.setAfterRemoveHandler(removedItems -> {
             UserBrowser.Companion companion = getCompanion();
             if (companion != null) {

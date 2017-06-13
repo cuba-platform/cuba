@@ -65,12 +65,9 @@ public class CopySettings extends AbstractWindow {
                             getMessage("confirmCopy.msg"),
                             MessageType.CONFIRMATION,
                             new Action[]{
-                                    new DialogAction(Type.YES) {
-                                        @Override
-                                        public void actionPerform(Component component) {
-                                            copySettings();
-                                        }
-                                    },
+                                    new DialogAction(Type.YES).withHandler(event -> {
+                                        copySettings();
+                                    }),
                                     new DialogAction(Type.NO, Status.PRIMARY)
                             }
                     );

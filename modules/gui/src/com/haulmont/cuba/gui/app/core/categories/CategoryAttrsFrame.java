@@ -25,7 +25,7 @@ import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
@@ -93,58 +93,46 @@ public class CategoryAttrsFrame extends AbstractFrame {
     }
 
     protected void initMoveButtons() {
-        AbstractAction moveUpAction = new ItemTrackingAction("moveUp") {
-            @Override
-            public void actionPerform(Component component) {
-                Set<CategoryAttribute> selected = categoryAttrsTable.getSelected();
-                if (selected.isEmpty())
-                    return;
+        Action moveUpAction = new ItemTrackingAction("moveUp")
+                .withCaption("")
+                .withHandler(event -> {
+                    Set<CategoryAttribute> selected = categoryAttrsTable.getSelected();
+                    if (selected.isEmpty())
+                        return;
 
-                CategoryAttribute currentAttr = selected.iterator().next();
-                UUID prevId = categoryAttrsDs.prevItemId(currentAttr.getId());
-                if (prevId == null)
-                    return;
+                    CategoryAttribute currentAttr = selected.iterator().next();
+                    UUID prevId = categoryAttrsDs.prevItemId(currentAttr.getId());
+                    if (prevId == null)
+                        return;
 
-                Integer tmp = currentAttr.getOrderNo();
-                CategoryAttribute prevAttr = categoryAttrsDs.getItem(prevId);
-                currentAttr.setOrderNo(prevAttr.getOrderNo());
-                prevAttr.setOrderNo(tmp);
+                    Integer tmp = currentAttr.getOrderNo();
+                    CategoryAttribute prevAttr = categoryAttrsDs.getItemNN(prevId);
+                    currentAttr.setOrderNo(prevAttr.getOrderNo());
+                    prevAttr.setOrderNo(tmp);
 
-                sortTableByOrderNo();
-            }
-
-            @Override
-            public String getCaption() {
-                return "";
-            }
-        };
+                    sortTableByOrderNo();
+                });
         ((Button) getComponentNN("moveUp")).setAction(moveUpAction);
 
-        AbstractAction moveDownAction = new ItemTrackingAction("moveDown") {
-            @Override
-            public void actionPerform(Component component) {
-                Set<CategoryAttribute> selected = categoryAttrsTable.getSelected();
-                if (selected.isEmpty())
-                    return;
+        Action moveDownAction = new ItemTrackingAction("moveDown")
+                .withCaption("")
+                .withHandler(event -> {
+                    Set<CategoryAttribute> selected = categoryAttrsTable.getSelected();
+                    if (selected.isEmpty())
+                        return;
 
-                CategoryAttribute currentAttr = selected.iterator().next();
-                UUID nextId = categoryAttrsDs.nextItemId(currentAttr.getId());
-                if (nextId == null)
-                    return;
+                    CategoryAttribute currentAttr = selected.iterator().next();
+                    UUID nextId = categoryAttrsDs.nextItemId(currentAttr.getId());
+                    if (nextId == null)
+                        return;
 
-                Integer tmp = currentAttr.getOrderNo();
-                CategoryAttribute nextAttr = categoryAttrsDs.getItem(nextId);
-                currentAttr.setOrderNo(nextAttr.getOrderNo());
-                nextAttr.setOrderNo(tmp);
+                    Integer tmp = currentAttr.getOrderNo();
+                    CategoryAttribute nextAttr = categoryAttrsDs.getItemNN(nextId);
+                    currentAttr.setOrderNo(nextAttr.getOrderNo());
+                    nextAttr.setOrderNo(tmp);
 
-                sortTableByOrderNo();
-            }
-
-            @Override
-            public String getCaption() {
-                return "";
-            }
-        };
+                    sortTableByOrderNo();
+                });
         ((Button) getComponentNN("moveDown")).setAction(moveDownAction);
 
         categoryAttrsTable.addAction(moveUpAction);
@@ -268,7 +256,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                 AttributeEditor editor = (AttributeEditor) openEditor(
                         "sys$CategoryAttribute.edit",
                         selected.iterator().next(),
-                        WindowManager.OpenType.DIALOG,
+                        OpenType.DIALOG,
                         categoryAttrsTable.getDatasource());
                 editor.addCloseListener(actionId -> {
                     categoryAttrsTable.getDatasource().refresh();
@@ -299,7 +287,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
             AttributeEditor editor = (AttributeEditor) openEditor(
                     "sys$CategoryAttribute.edit",
                     attribute,
-                    WindowManager.OpenType.DIALOG,
+                    OpenType.DIALOG,
                     categoryAttrsTable.getDatasource());
             editor.addCloseListener(actionId -> {
                 categoryAttrsTable.getDatasource().refresh();

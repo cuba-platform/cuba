@@ -57,7 +57,7 @@ import java.util.*;
 
 public class GroupBrowser extends AbstractWindow {
 
-    protected static final Logger log = LoggerFactory.getLogger(GroupBrowser.class);
+    private final Logger log = LoggerFactory.getLogger(GroupBrowser.class);
 
     @Inject
     protected UserManagementService userManagementService;
@@ -119,35 +119,29 @@ public class GroupBrowser extends AbstractWindow {
 
     @Override
     public void init(final Map<String, Object> params) {
-        CreateAction createAction = new CreateAction(groupsTree) {
-            @Override
-            protected void afterCommit(Entity entity) {
-                groupsTree.expandTree();
-            }
-        };
+        CreateAction createAction = new CreateAction(groupsTree);
+        createAction.setAfterCommitHandler(entity -> {
+            groupsTree.expandTree();
+        });
         groupsTree.addAction(createAction);
         createAction.setCaption(getMessage("action.create"));
 
         createAction.setOpenType(OpenType.DIALOG);
 
-        EditAction groupEditAction = new EditAction(groupsTree) {
-            @Override
-            protected void afterCommit(Entity entity) {
-                groupsTree.expandTree();
-            }
-        };
+        EditAction groupEditAction = new EditAction(groupsTree);
+        groupEditAction.setAfterCommitHandler(entity -> {
+            groupsTree.expandTree();
+        });
         groupEditAction.setOpenType(OpenType.DIALOG);
         groupsTree.addAction(groupEditAction);
 
         groupCreateButton.addAction(createAction);
         groupCreateButton.addAction(groupCopyAction);
 
-        userCreateAction = new GroupPropertyCreateAction(usersTable) {
-            @Override
-            protected void afterCommit(Entity entity) {
-                usersTable.getDatasource().refresh();
-            }
-        };
+        userCreateAction = new GroupPropertyCreateAction(usersTable);
+        userCreateAction.setAfterCommitHandler(entity -> {
+            usersTable.getDatasource().refresh();
+        });
 
         groupsTree.addAction(new RemoveAction(groupsTree) {
             @Override
@@ -163,46 +157,40 @@ public class GroupBrowser extends AbstractWindow {
             }
         });
         usersTable.addAction(userCreateAction);
-        ItemTrackingAction moveToGroupAction = new ItemTrackingAction("moveToGroup") {
-            @Override
-            public String getIcon() {
-                return "icons/move.png";
-            }
+        Action moveToGroupAction = new ItemTrackingAction("moveToGroup")
+                .withIcon("icons/move.png")
+                .withHandler(event -> {
+                    Set<User> selected = usersTable.getSelected();
+                    if (!selected.isEmpty()) {
+                        Lookup lookupWindow = openLookup(Group.class, items -> {
+                            if (items.size() == 1) {
+                                Group group = (Group) items.iterator().next();
+                                List<UUID> usersForModify = new ArrayList<>();
+                                for (User user : selected) {
+                                    usersForModify.add(user.getId());
+                                }
+                                userManagementService.moveUsersToGroup(usersForModify, group.getId());
 
-            @Override
-            public void actionPerform(Component component) {
-                final Set<User> selected = usersTable.getSelected();
-                if (!selected.isEmpty()) {
-                    Lookup lookupWindow = openLookup(Group.class, items -> {
-                        if (items.size() == 1) {
-                            Group group = (Group) items.iterator().next();
-                            List<UUID> usersForModify = new ArrayList<>();
-                            for (User user : selected) {
-                                usersForModify.add(user.getId());
+                                if (selected.size() == 1) {
+                                    User user = selected.iterator().next();
+                                    showNotification(formatMessage("userMovedToGroup", user.getLogin(), group.getName()));
+                                } else {
+                                    showNotification(formatMessage("usersMovedToGroup", group.getName()));
+                                }
+
+                                usersTable.getDatasource().refresh();
                             }
-                            userManagementService.moveUsersToGroup(usersForModify, group.getId());
+                        }, OpenType.DIALOG);
 
-                            if (selected.size() == 1) {
-                                showNotification(String.format(getMessage("userMovedToGroup"),
-                                        usersTable.getSingleSelected().getLogin(), group.getName()),
-                                        NotificationType.HUMANIZED);
-                            } else {
-                                showNotification(String.format(getMessage("usersMovedToGroup"), group.getName()),
-                                        NotificationType.HUMANIZED);
-                            }
+                        lookupWindow.addCloseListener(actionId -> {
+                            usersTable.requestFocus();
+                        });
+                    }
+                });
 
-                            usersTable.getDatasource().refresh();
-                        }
-                    }, OpenType.DIALOG);
-
-                    lookupWindow.addCloseListener(actionId -> {
-                        usersTable.requestFocus();
-                    });
-                }
-            }
-        };
         MetaClass userMetaClass = metadata.getSession().getClass(User.class);
         moveToGroupAction.setEnabled(security.isEntityOpPermitted(userMetaClass, EntityOp.UPDATE));
+
         usersTable.addAction(moveToGroupAction);
 
         tabsheet.addListener(newTab -> {
@@ -311,21 +299,20 @@ public class GroupBrowser extends AbstractWindow {
             return;
         }
 
+        @SuppressWarnings("unchecked")
         Table<Constraint> constraintsTable = (Table) getComponentNN("constraintsTable");
         constraintCreateAction = new GroupPropertyCreateAction(constraintsTable);
         constraintsTable.addAction(constraintCreateAction);
 
-        ItemTrackingAction activateAction = new ItemTrackingAction("activate") {
-            @Override
-            public void actionPerform(Component component) {
-                Constraint constraint = (Constraint) constraintsTable.getSingleSelected();
-                if (constraint != null) {
-                    constraint.setIsActive(!Boolean.TRUE.equals(constraint.getIsActive()));
-                    constraintsDs.commit();
-                    constraintsDs.refresh();
-                }
-            }
-        };
+        Action activateAction = new ItemTrackingAction("activate")
+                .withHandler(event -> {
+                    Constraint constraint = constraintsTable.getSingleSelected();
+                    if (constraint != null) {
+                        constraint.setIsActive(!Boolean.TRUE.equals(constraint.getIsActive()));
+                        constraintsDs.commit();
+                        constraintsDs.refresh();
+                    }
+                });
         constraintsTable.addAction(activateAction);
 
         constraintsDs.addItemChangeListener(e -> {

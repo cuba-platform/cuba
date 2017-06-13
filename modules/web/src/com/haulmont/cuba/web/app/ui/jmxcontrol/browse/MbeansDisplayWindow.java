@@ -17,11 +17,12 @@
 
 package com.haulmont.cuba.web.app.ui.jmxcontrol.browse;
 
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -32,10 +33,8 @@ import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -55,7 +54,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
     protected Label localJmxField;
 
     @Resource(name = "mbeans")
-    protected TreeTable mbeansTable;
+    protected TreeTable<ManagedBeanInfo> mbeansTable;
 
     @Inject
     protected LookupPickerField jmxConnectionField;
@@ -64,7 +63,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
     protected JmxControlAPI jmxControlAPI;
 
     @Inject
-    private Metadata metadata;
+    protected Metadata metadata;
 
     protected JmxInstance localJmxInstance;
 
@@ -76,34 +75,28 @@ public class MbeansDisplayWindow extends AbstractWindow {
 
         mbeansTable.addAction(new RefreshAction(mbeansTable));
 
-        Action inspectAction = new ItemTrackingAction("inspect") {
-            @Override
-            public void actionPerform(Component component) {
-                Set<ManagedBeanInfo> selected = target.getSelected();
-                if (!selected.isEmpty()) {
-                    ManagedBeanInfo mbi = selected.iterator().next();
-                    if (mbi.getObjectName() != null) { // otherwise it's a fake root node
-                        Window editor = openEditor("jmxConsoleInspectMbean", mbi, OpenType.THIS_TAB);
-                        editor.addCloseListener(actionId -> {
-                            target.requestFocus();
-                        });
-                    } else { // expand / collapse fake root node
-                        TreeTable treeTable = (TreeTable) target;
-                        UUID itemId = mbi.getId();
-                        if (treeTable.isExpanded(itemId)) {
-                            treeTable.collapse(itemId);
+        Action inspectAction = new ItemTrackingAction("inspect")
+                .withCaption(getMessage("action.inspect"))
+                .withHandler(event -> {
+                    Set<ManagedBeanInfo> selected = mbeansTable.getSelected();
+                    if (!selected.isEmpty()) {
+                        ManagedBeanInfo mbi = selected.iterator().next();
+                        if (mbi.getObjectName() != null) { // otherwise it's a fake root node
+                            Window editor = openEditor("jmxConsoleInspectMbean", mbi, OpenType.THIS_TAB);
+                            editor.addCloseListener(actionId -> {
+                                mbeansTable.requestFocus();
+                            });
                         } else {
-                            treeTable.expand(itemId);
+                            // expand / collapse fake root node
+                            UUID itemId = mbi.getId();
+                            if (mbeansTable.isExpanded(itemId)) {
+                                mbeansTable.collapse(itemId);
+                            } else {
+                                mbeansTable.expand(itemId);
+                            }
                         }
                     }
-                }
-            }
-
-            @Override
-            public String getCaption() {
-                return getMessage("action.inspect");
-            }
-        };
+                });
 
         mbeansTable.addAction(inspectAction);
         mbeansTable.setItemClickAction(inspectAction);
@@ -135,24 +128,18 @@ public class MbeansDisplayWindow extends AbstractWindow {
             }
         });
 
-        jmxConnectionField.addAction(new AbstractAction("actions.Add") {
-            @Override
-            public void actionPerform(Component component) {
-                final JmxInstanceEditor instanceEditor = (JmxInstanceEditor) openEditor("sys$JmxInstance.edit",
-                        metadata.create(JmxInstance.class), OpenType.DIALOG);
-                instanceEditor.addCloseListener(actionId -> {
-                    if (COMMIT_ACTION_ID.equals(actionId)) {
-                        jmxInstancesDs.refresh();
-                        jmxConnectionField.setValue(instanceEditor.getItem());
-                    }
-                });
-            }
-
-            @Override
-            public String getIcon() {
-                return "icons/plus-btn.png";
-            }
-        });
+        jmxConnectionField.addAction(new BaseAction("actions.Add")
+                .withIcon("icons/plus-btn.png")
+                .withHandler(event -> {
+                    JmxInstanceEditor instanceEditor = (JmxInstanceEditor) openEditor(
+                            metadata.create(JmxInstance.class), OpenType.DIALOG);
+                    instanceEditor.addCloseListener(actionId -> {
+                        if (COMMIT_ACTION_ID.equals(actionId)) {
+                            jmxInstancesDs.refresh();
+                            jmxConnectionField.setValue(instanceEditor.getItem());
+                        }
+                    });
+                }));
 
         mbeanDs.setJmxInstance(localJmxInstance);
         mbeanDs.refresh();
@@ -161,7 +148,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
         localJmxField.setEditable(false);
 
         mbeansTable.setStyleProvider((entity, property) -> {
-            if (entity instanceof ManagedBeanInfo && ((ManagedBeanInfo) entity).getObjectName() == null) {
+            if (entity != null && entity.getObjectName() == null) {
                 return "c-jmx-tree-table-domain";
             }
             return null;
@@ -171,9 +158,8 @@ public class MbeansDisplayWindow extends AbstractWindow {
     private class ObjectNameFieldListener implements ValueChangeListener {
         @Override
         public void valueChanged(ValueChangeEvent e) {
-            Map<String, Object> params = new HashMap<>();
-            params.put("objectName", e.getValue());
-            mbeanDs.refresh(params);
+            mbeanDs.refresh(ParamsMap.of("objectName", e.getValue()));
+
             if (StringUtils.isNotEmpty((String) e.getValue())) {
                 mbeansTable.expandAll();
             }

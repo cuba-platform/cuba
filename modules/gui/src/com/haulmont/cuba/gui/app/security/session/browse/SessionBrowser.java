@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.app.security.session.browse;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
@@ -32,10 +33,6 @@ import javax.inject.Named;
 import java.util.*;
 
 public class SessionBrowser extends AbstractLookup {
-
-    public interface Companion {
-        void enableTextSelection(Table table);
-    }
 
     @Inject
     protected UserSessionSource userSessionSource;
@@ -71,10 +68,7 @@ public class SessionBrowser extends AbstractLookup {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        Companion companion = getCompanion();
-        if (companion != null) {
-            companion.enableTextSelection(sessionsTable);
-        }
+        sessionsTable.setTextSelectionEnabled(true);
 
         sessionsDs.addCollectionChangeListener(e -> {
             String time = Datatypes.getNN(Date.class).format(sessionsDs.getUpdateTs(), userSessionSource.getLocale());
@@ -110,13 +104,13 @@ public class SessionBrowser extends AbstractLookup {
     }
 
     public void message() {
-        final Set<UserSessionEntity> selected = sessionsTable.getSelected();
-        final Set<UserSessionEntity> all = new HashSet<>(sessionsDs.getItems());
+        Set<UserSessionEntity> selected = sessionsTable.getSelected();
+        Set<UserSessionEntity> all = new HashSet<>(sessionsDs.getItems());
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("selectedSessions", selected);
-        params.put("allSessions", all);
-        SessionMessageWindow window = (SessionMessageWindow) openWindow("sessionMessageWindow", OpenType.DIALOG, params);
+        SessionMessageWindow window = (SessionMessageWindow) openWindow("sessionMessageWindow", OpenType.DIALOG,
+                ParamsMap.of("selectedSessions", selected,
+                             "allSessions", all));
+
         window.addCloseListener(actionId -> {
             String result = window.getResult();
             if (!StringUtils.isBlank(result)) {
@@ -127,7 +121,7 @@ public class SessionBrowser extends AbstractLookup {
     }
 
     public void kill() {
-        final Set<UserSessionEntity> selected = sessionsTable.getSelected();
+        Set<UserSessionEntity> selected = sessionsTable.getSelected();
         if (selected.isEmpty())
             return;
 
@@ -136,19 +130,17 @@ public class SessionBrowser extends AbstractLookup {
                 messages.getMessage(getClass(), "killConfirm"),
                 MessageType.CONFIRMATION,
                 new Action[]{
-                        new DialogAction(Type.OK) {
-                            @Override
-                            public void actionPerform(Component component) {
-                                for (UserSessionEntity session : selected) {
-                                    if (!session.getId().equals(userSessionSource.getUserSession().getId())) {
-                                        uss.killSession(session.getId());
-                                    } else
-                                        showNotification(getMessage("killUnavailable"), NotificationType.WARNING);
+                        new DialogAction(Type.OK).withHandler(event -> {
+                            for (UserSessionEntity session : selected) {
+                                if (!session.getId().equals(userSessionSource.getUserSession().getId())) {
+                                    uss.killSession(session.getId());
+                                } else {
+                                    showNotification(getMessage("killUnavailable"), NotificationType.WARNING);
                                 }
-                                sessionsTable.getDatasource().refresh();
-                                sessionsTable.requestFocus();
                             }
-                        },
+                            sessionsTable.getDatasource().refresh();
+                            sessionsTable.requestFocus();
+                        }),
                         new DialogAction(Type.CANCEL, Status.PRIMARY)
                 }
         );
