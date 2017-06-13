@@ -46,7 +46,7 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
 
     private Set<String> dependencyJars;
 
-    private static final String FRONT_CONTEXT_NAME = "front";
+    protected static final String FRONT_CONTEXT_NAME = "front";
 
     /**
      * Invoked reflectively by {@link SingleAppWebServletListener}.
@@ -127,21 +127,23 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
     }
 
     protected void registerFrontAppServlet(ServletContext servletContext) {
+        boolean hasFrontApp = false;
         try {
-            if (servletContext.getResource(FRONT_CONTEXT_NAME) != null) {
-                DispatcherServlet frontServlet = new SingleAppFrontServlet(FRONT_CONTEXT_NAME);
-                try {
-                    frontServlet.init(new CubaServletConfig("app_front_servlet", servletContext));
-                } catch (ServletException e) {
-                    throw new RuntimeException("An error occurred while initializing app_servlet servlet", e);
-                }
-                ServletRegistration.Dynamic cubaServletReg = servletContext.addServlet("app_front_servlet", frontServlet);
-                cubaServletReg.setLoadOnStartup(3);
-                cubaServletReg.setAsyncSupported(true);
-                cubaServletReg.addMapping(String.format("/%s/*", FRONT_CONTEXT_NAME));
-            }
+            hasFrontApp = servletContext.getResource(FRONT_CONTEXT_NAME) != null;
         } catch (MalformedURLException e) {
             //Do nothing
+        }
+        if (hasFrontApp) {
+            DispatcherServlet frontServlet = new SingleAppFrontServlet(FRONT_CONTEXT_NAME);
+            try {
+                frontServlet.init(new CubaServletConfig("app_front_servlet", servletContext));
+            } catch (ServletException e) {
+                throw new RuntimeException("An error occurred while initializing app_servlet servlet", e);
+            }
+            ServletRegistration.Dynamic cubaServletReg = servletContext.addServlet("app_front_servlet", frontServlet);
+            cubaServletReg.setLoadOnStartup(3);
+            cubaServletReg.setAsyncSupported(true);
+            cubaServletReg.addMapping(String.format("/%s/*", FRONT_CONTEXT_NAME));
         }
     }
 
