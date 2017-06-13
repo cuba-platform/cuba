@@ -89,7 +89,7 @@
     <screen id="sysInfoWindow" template="/com/haulmont/cuba/gui/app/core/showinfo/show-info.xml"/>
 
     <screen id="entityRestore"
-            template="/com/haulmont/cuba/gui/app/core/restore/entity-restore.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/restore/entity-restore.xml" multipleOpen="true"/>
 
     <screen id="backgroundWorkWindow"
             template="/com/haulmont/cuba/gui/backgroundwork/background-work-window.xml"/>
@@ -125,7 +125,7 @@
             template="/com/haulmont/cuba/gui/app/core/scheduled/scheduled-execution-browse.xml"/>
 
     <screen id="entityInspector.browse"
-            template="/com/haulmont/cuba/gui/app/core/entityinspector/entity-inspector-browse.xml"/>
+            template="/com/haulmont/cuba/gui/app/core/entityinspector/entity-inspector-browse.xml" multipleOpen="true"/>
 
     <screen id="entityInspector.edit"
             template="/com/haulmont/cuba/gui/app/core/entityinspector/entity-inspector-edit.xml"/>
