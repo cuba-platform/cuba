@@ -48,9 +48,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import static com.google.common.hash.Hashing.md5;
 
 public class CubaVaadinServletService extends VaadinServletService {
 
@@ -323,7 +326,8 @@ public class CubaVaadinServletService extends VaadinServletService {
                         }
                         idParts.add(id);
 
-                        return StringUtils.join(idParts, "-");
+                        String longId = StringUtils.join(idParts, "-");
+                        return md5().hashString(longId, StandardCharsets.UTF_8).toString();
                     }
                     return super.createConnectorId(connector);
                 }

@@ -122,9 +122,8 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
 
         TestIdManager testIdManager = ui.getTestIdManager();
         String testId = component.getId() + "_" + id;
-        testIdManager.reserveId(testId);
 
-        component.setTestId(delegateItem, testId);
+        component.setTestId(delegateItem, testIdManager.reserveId(testId));
     }
 
     @Override
