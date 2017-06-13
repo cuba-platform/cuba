@@ -17,8 +17,11 @@
 
 package com.haulmont.cuba.gui;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.google.common.hash.Hashing.md5;
 
 public class TestIdManager {
 
@@ -44,7 +47,7 @@ public class TestIdManager {
             id = id + number;
         }
 
-        return id;
+        return md5().hashString(id, StandardCharsets.UTF_8).toString();
     }
 
     public String reserveId(String id) {
@@ -52,7 +55,7 @@ public class TestIdManager {
             ids.put(id, 0);
         }
 
-        return id;
+        return md5().hashString(id, StandardCharsets.UTF_8).toString();
     }
 
     public String normalize(String id) {
