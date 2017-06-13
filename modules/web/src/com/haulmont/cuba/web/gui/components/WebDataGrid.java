@@ -955,12 +955,12 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     public void editItem(Object itemId) {
         checkNotNullArgument(itemId, "Item's Id must be non null");
         //noinspection unchecked
-        Entity item = datasource.getItem(itemId);
+        E item = (E) datasource.getItem(itemId);
         edit(item);
     }
 
     @Override
-    public void edit(Entity entity) {
+    public void edit(E entity) {
         checkNotNullArgument(entity, "Entity must be non null");
 
         Object itemId = entity.getId();
