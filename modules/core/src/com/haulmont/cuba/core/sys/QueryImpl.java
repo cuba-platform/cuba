@@ -36,6 +36,7 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,8 @@ import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.util.*;
 import java.util.function.Consumer;
+
+import static java.lang.String.format;
 
 /**
  * Implementation of {@link TypedQuery} interface based on EclipseLink.
@@ -213,12 +216,12 @@ public class QueryImpl<T> implements TypedQuery<T> {
         String nestedEntityPath = parser.getEntityPathIfSecondaryReturnedInsteadOfMain();
         if (nestedEntityName != null) {
             if (parser.isCollectionSecondaryEntitySelect()) {
-                throw new IllegalStateException(String.format("Collection attributes are not supported in select clause: %s", nestedEntityPath));
+                throw new IllegalStateException(format("Collection attributes are not supported in select clause: %s", nestedEntityPath));
             }
             QueryTransformer transformer = queryTransformerFactory.transformer(result);
             transformer.replaceWithSelectEntityVariable("tempEntityAlias");
-            transformer.addFirstSelectionSource(String.format("%s tempEntityAlias", nestedEntityName));
-            transformer.addWhereAsIs(String.format("tempEntityAlias.id = %s.id", nestedEntityPath));
+            transformer.addFirstSelectionSource(format("%s tempEntityAlias", nestedEntityName));
+            transformer.addWhereAsIs(format("tempEntityAlias.id = %s.id", nestedEntityPath));
             transformer.addEntityInGroupBy("tempEntityAlias");
             result = transformer.getResult();
         }
@@ -311,14 +314,12 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         JpaQuery<T> query = getQuery();
         preExecute(query);
+        if (!views.isEmpty()) {
+            FetchGroup fg = new FetchGroupBuilder(views).build();
+            query.setHint(QueryHints.FETCH_GROUP, fg);
+        }
         @SuppressWarnings("unchecked")
-        List<T> resultList = (List<T>) getResultFromCache(query, false, obj -> {
-            ((List) obj).stream().filter(item -> item instanceof Entity).forEach(item -> {
-                for (View view : views) {
-                    entityFetcher.fetch((Entity) item, view);
-                }
-            });
-        });
+        List<T> resultList = (List<T>) getResultFromCache(query, false, obj -> {});
         return resultList;
     }
 
@@ -331,14 +332,14 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         JpaQuery<T> jpaQuery = getQuery();
         preExecute(jpaQuery);
+        if (!views.isEmpty()) {
+            FetchGroup fg = new FetchGroupBuilder(views).build();
+            jpaQuery.setHint(QueryHints.FETCH_GROUP, fg);
+        }
+
+
         @SuppressWarnings("unchecked")
-        T result = (T) getResultFromCache(jpaQuery, true, obj -> {
-            if (obj instanceof Entity) {
-                for (View view : views) {
-                    entityFetcher.fetch((Entity) obj, view);
-                }
-            }
-        });
+        T result = (T) getResultFromCache(jpaQuery, true, obj -> {});
         return result;
     }
 
@@ -353,18 +354,12 @@ public class QueryImpl<T> implements TypedQuery<T> {
         try {
             JpaQuery<T> query = getQuery();
             preExecute(query);
+            if (!views.isEmpty()) {
+                FetchGroup fg = new FetchGroupBuilder(views).build();
+                query.setHint(QueryHints.FETCH_GROUP, fg);
+            }
             @SuppressWarnings("unchecked")
-            List<T> resultList = (List<T>) getResultFromCache(query, false, obj -> {
-                List list = (List) obj;
-                if (!list.isEmpty()) {
-                    Object item = list.get(0);
-                    if (item instanceof Entity) {
-                        for (View view : views) {
-                            entityFetcher.fetch((Entity) item, view);
-                        }
-                    }
-                }
-            });
+            List<T> resultList = (List<T>) getResultFromCache(query, false, obj -> {});
             if (resultList.isEmpty()) {
                 return null;
             } else {

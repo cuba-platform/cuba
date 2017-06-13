@@ -24,4 +24,24 @@ package com.haulmont.cuba.core.global;
 public class SilentException extends RuntimeException {
 
     private static final long serialVersionUID = 6598108074890603763L;
+
+    public SilentException() {
+        super();
+    }
+
+    public SilentException(String message) {
+        super(message);
+    }
+
+    public SilentException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public SilentException(Throwable cause) {
+        super(cause);
+    }
+
+    protected SilentException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

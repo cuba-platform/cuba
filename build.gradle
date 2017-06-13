@@ -257,7 +257,7 @@ configure(globalModule) {
         compile(bom['org.eclipse.persistence:javax.persistence'])
         compile(bom['org.eclipse.persistence:commonj.sdo'])
         compile(bom['org.glassfish:javax.json'])
-        compile(bom['com.haulmont.thirdparty:eclipselink'])
+        compile('com.haulmont.thirdparty:eclipselink:2.6.2.cuba13')
 
         compile(bom['org.freemarker:freemarker'])
         compile(bom['aopalliance:aopalliance'])
