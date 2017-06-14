@@ -261,6 +261,7 @@ public class DataManagerBean implements DataManager {
     protected CommitContext createCommitContext(CommitContext context) {
         CommitContext newCtx = new CommitContext();
         newCtx.setSoftDeletion(context.isSoftDeletion());
+        newCtx.setDiscardCommitted(context.isDiscardCommitted());
         return newCtx;
     }
 

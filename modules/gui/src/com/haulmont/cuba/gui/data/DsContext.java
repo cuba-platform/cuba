@@ -87,6 +87,16 @@ public interface DsContext {
     boolean commit();
 
     /**
+     * Indicates that the DsContext will be discarded right after commit hence it doesn't need committed instances.
+     */
+    boolean isDiscardCommitted();
+
+    /**
+     * Set to true if the DsContext will be discarded right after commit hence it doesn't need committed instances.
+     */
+    void setDiscardCommitted(boolean discardCommitted);
+
+    /**
      * Register dependency between datasources.
      * <br>Dependent datasource is refreshed if one of the following events occurs on master datasource:
      * <ul>
