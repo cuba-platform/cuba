@@ -303,9 +303,9 @@ public class RdbmsStore implements DataStore {
             // persist new
             for (Entity entity : context.getCommitInstances()) {
                 if (PersistenceHelper.isNew(entity)) {
-                    checkOperationPermitted(entity, ConstraintOperationType.CREATE);
                     attributeSecurity.beforePersist(entity);
                     em.persist(entity);
+                    checkOperationPermitted(entity, ConstraintOperationType.CREATE);
                     if (!context.isDiscardCommitted()) {
                         res.add(entity);
                     }
@@ -325,11 +325,11 @@ public class RdbmsStore implements DataStore {
             for (Entity entity : context.getCommitInstances()) {
                 if (!PersistenceHelper.isNew(entity)) {
                     security.restoreFilteredData((BaseGenericIdEntity) entity);
-                    checkOperationPermitted(entity, ConstraintOperationType.UPDATE);
                     attributeSecurity.beforeMerge(entity);
                     View view = getViewFromContext(context, entity);
 
                     Entity merged = em.merge(entity, view);
+                    checkOperationPermitted(merged, ConstraintOperationType.UPDATE);
                     if (!context.isDiscardCommitted()) {
                         res.add(merged);
                     }
@@ -349,7 +349,6 @@ public class RdbmsStore implements DataStore {
             // remove
             for (Entity entity : context.getRemoveInstances()) {
                 security.restoreFilteredData((BaseGenericIdEntity) entity);
-                checkOperationPermitted(entity, ConstraintOperationType.DELETE);
 
                 Entity e;
                 if (entity instanceof SoftDelete) {
@@ -359,6 +358,7 @@ public class RdbmsStore implements DataStore {
                 } else {
                     e = em.merge(entity);
                 }
+                checkOperationPermitted(e, ConstraintOperationType.DELETE);
                 em.remove(e);
                 if (!context.isDiscardCommitted()) {
                     res.add(e);

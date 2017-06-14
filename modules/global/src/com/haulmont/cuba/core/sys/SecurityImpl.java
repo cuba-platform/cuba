@@ -237,7 +237,7 @@ public class SecurityImpl implements Security {
     @Override
     public Object evaluateConstraintScript(Entity entity, String groovyScript) {
         Map<String, Object> context = new HashMap<>();
-        context.put("__entity__", metadataTools.deepCopy(entity)); // copy to avoid implicit modification
+        context.put("__entity__", entity);
         context.put("parse", new MethodClosure(this, "parseValue"));
         context.put("userSession", userSessionSource.getUserSession());
         fillGroovyConstraintsContext(context);
