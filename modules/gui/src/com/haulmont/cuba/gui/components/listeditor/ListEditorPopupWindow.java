@@ -174,6 +174,9 @@ public class ListEditorPopupWindow extends AbstractWindow {
                 case LONG:
                     componentForAdding = createTextField(Datatypes.get(Long.class));
                     break;
+                case DOUBLE:
+                    componentForAdding = createTextField(Datatypes.get(Double.class));
+                    break;
                 case BIGDECIMAL:
                     componentForAdding = createTextField(Datatypes.get(BigDecimal.class));
                     break;
