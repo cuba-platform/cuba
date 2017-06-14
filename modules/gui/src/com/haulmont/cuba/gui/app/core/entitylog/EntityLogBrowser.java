@@ -157,10 +157,11 @@ public class EntityLogBrowser extends AbstractWindow {
         }
 
         systemAttrsList = Arrays.asList("createTs", "createdBy", "updateTs", "updatedBy", "deleteTs", "deletedBy", "version", "id");
-        Map<String, Object> changeTypeMap = new TreeMap<>();
+        Map<String, Object> changeTypeMap = new LinkedHashMap<>();
         changeTypeMap.put(messages.getMessage(getClass(),"createField"), "C");
         changeTypeMap.put(messages.getMessage(getClass(),"modifyField"),"M");
         changeTypeMap.put(messages.getMessage(getClass(), "deleteField"), "D");
+        changeTypeMap.put(messages.getMessage(getClass(), "restoreField"), "R");
 
         entityMetaClassesMap = getEntityMetaClasses();
         entityNameField.setOptionsMap(entityMetaClassesMap);

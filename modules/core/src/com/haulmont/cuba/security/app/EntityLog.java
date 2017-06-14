@@ -333,7 +333,7 @@ public class EntityLog implements EntityLogAPI {
                 }
             }
         }
-        if (!properties.isEmpty()) {
+        if (!properties.isEmpty() || type == EntityLogItem.Type.RESTORE) {
             EntityLogItem item = metadata.create(EntityLogItem.class);
             item.setEventTs(ts);
             item.setUser(findUser(em));
