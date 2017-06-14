@@ -688,7 +688,11 @@ public class RdbmsStore implements DataStore {
                     .filter(path -> !path.isSelectedPath())
                     .forEach(path -> {
                         MetaClass metaClass = metadata.getClassNN(path.getEntityName());
-                        if (!isEntityAttrViewPermitted(metaClass.getPropertyPath(path.getPropertyPath()))) {
+                        MetaPropertyPath propertyPath = metaClass.getPropertyPath(path.getPropertyPath());
+                        if (propertyPath == null) {
+                            throw new IllegalStateException(String.format("query path '%s' is unresolved", path.getFullPath()));
+                        }
+                        if (!isEntityAttrViewPermitted(propertyPath)) {
                             throw new AccessDeniedException(PermissionType.ENTITY_ATTR, metaClass + "." + path.getFullPath());
                         }
                     });

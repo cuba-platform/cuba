@@ -417,4 +417,34 @@ public class NonEntityQueryTest {
             ((TestUserSessionSource) uss).setUserSession(savedUserSession);
         }
     }
+
+    @Test
+    public void testIncorrectPathInWhere() throws Exception {
+        ConfigStorageService configStorageService = AppBeans.get(ConfigStorageService.class);
+        configStorageService.setDbProperty("cuba.disableLoadValuesIfConstraints", "true");
+
+        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
+        UserSession userSession = lw.login(USER_NAME_1, passwordEncryption.getPlainHash(USER_PASSWORD), Locale.getDefault());
+        assertNotNull(userSession);
+
+        UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+        UserSession savedUserSession = uss.getUserSession();
+        ((TestUserSessionSource) uss).setUserSession(userSession);
+        try {
+            ValueLoadContext context = ValueLoadContext.create();
+            context.setQueryString("select s.viewXml from sys$EntitySnapshot s where s.name1 = '1'");
+            context.addProperty("viewXml");
+
+            dataManager.secure().loadValues(context);
+        } catch (NullPointerException e) {
+            fail("Handling property path error");
+        } catch (IllegalStateException e) {
+            if (!"query path 's.name1' is unresolved".equals(e.getMessage())) {
+                throw e;
+            }
+        }
+        finally {
+            ((TestUserSessionSource) uss).setUserSession(savedUserSession);
+        }
+    }
 }
