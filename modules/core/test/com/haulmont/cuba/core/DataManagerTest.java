@@ -29,10 +29,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import javax.persistence.TemporalType;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -274,6 +271,20 @@ public class DataManagerTest {
         } catch (Exception e) {
             assertTrue(e instanceof DevelopmentException);
         }
+    }
+
+    @Test
+    public void testDiscardCommitted() throws Exception {
+        Server server = new Server();
+        server.setName("localhost");
+        CommitContext commitContext = new CommitContext(server);
+        commitContext.setDiscardCommitted(true);
+
+        Set<Entity> committed = dataManager.commit(commitContext);
+        assertTrue(committed.isEmpty());
+
+        Server saved = dataManager.load(LoadContext.create(Server.class).setId(server.getId()));
+        assertNotNull(saved);
     }
 
     public static class MyLoadContext<E extends Entity> extends LoadContext<E> {

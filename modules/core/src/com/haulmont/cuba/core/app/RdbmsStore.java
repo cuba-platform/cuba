@@ -306,7 +306,9 @@ public class RdbmsStore implements DataStore {
                     checkOperationPermitted(entity, ConstraintOperationType.CREATE);
                     attributeSecurity.beforePersist(entity);
                     em.persist(entity);
-                    res.add(entity);
+                    if (!context.isDiscardCommitted()) {
+                        res.add(entity);
+                    }
                     persisted.add(entity);
 
                     if (entityHasDynamicAttributes(entity)) {
@@ -328,7 +330,9 @@ public class RdbmsStore implements DataStore {
                     View view = getViewFromContext(context, entity);
 
                     Entity merged = em.merge(entity, view);
-                    res.add(merged);
+                    if (!context.isDiscardCommitted()) {
+                        res.add(merged);
+                    }
                     if (entityHasDynamicAttributes(entity)) {
                         BaseGenericIdEntity originalBaseGenericIdEntity = (BaseGenericIdEntity) entity;
                         BaseGenericIdEntity mergedBaseGenericIdEntity = (BaseGenericIdEntity) merged;
@@ -356,7 +360,9 @@ public class RdbmsStore implements DataStore {
                     e = em.merge(entity);
                 }
                 em.remove(e);
-                res.add(e);
+                if (!context.isDiscardCommitted()) {
+                    res.add(e);
+                }
 
                 if (entityHasDynamicAttributes(entity)) {
                     Map<String, CategoryAttributeValue> dynamicAttributes = ((BaseGenericIdEntity) entity).getDynamicAttributes();
@@ -366,12 +372,14 @@ public class RdbmsStore implements DataStore {
                     for (CategoryAttributeValue categoryAttributeValue : dynamicAttributes.values()) {
                         if (!PersistenceHelper.isNew(categoryAttributeValue)) {
                             em.remove(categoryAttributeValue);
-                            res.add(categoryAttributeValue);
+                            if (!context.isDiscardCommitted()) {
+                                res.add(categoryAttributeValue);
+                            }
                         }
                     }
                 }
 
-                if (isAuthorizationRequired() && userSessionSource.getUserSession().hasConstraints()) {
+                if (!context.isDiscardCommitted() && isAuthorizationRequired() && userSessionSource.getUserSession().hasConstraints()) {
                     security.filterByConstraints(res);
                 }
             }
@@ -386,21 +394,22 @@ public class RdbmsStore implements DataStore {
             tx.commit();
         }
 
-        if (isAuthorizationRequired() && userSessionSource.getUserSession().hasConstraints()) {
+        if (!context.isDiscardCommitted() && isAuthorizationRequired() && userSessionSource.getUserSession().hasConstraints()) {
             security.applyConstraints(res);
         }
 
-        for (Entity entity : res) {
-            if (!persisted.contains(entity)) {
-                View view = context.getViews().get(entity);
-                if (view == null) {
-                    view = viewRepository.getView(entity.getClass(), View.LOCAL);
+        if (!context.isDiscardCommitted()) {
+            for (Entity entity : res) {
+                if (!persisted.contains(entity)) {
+                    View view = context.getViews().get(entity);
+                    if (view == null) {
+                        view = viewRepository.getView(entity.getClass(), View.LOCAL);
+                    }
+                    attributeSecurity.afterMerge(entity, view);
                 }
-                attributeSecurity.afterMerge(entity, view);
             }
+            updateReferences(persisted, res);
         }
-
-        updateReferences(persisted, res);
 
         return res;
     }

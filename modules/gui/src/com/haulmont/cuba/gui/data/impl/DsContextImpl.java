@@ -54,6 +54,8 @@ public class DsContextImpl implements DsContextImplementation {
     protected List<BeforeCommitListener> beforeCommitListeners; // lazily initialized list
     protected List<AfterCommitListener> afterCommitListeners; // lazily initialized list
 
+    private boolean discardCommitted;
+
     public DsContextImpl(DataSupplier dataservice) {
         this.dataservice = dataservice;
         this.metadata = AppBeans.get(Metadata.NAME);
@@ -183,6 +185,16 @@ public class DsContextImpl implements DsContextImplementation {
         return committed;
     }
 
+    @Override
+    public boolean isDiscardCommitted() {
+        return discardCommitted;
+    }
+
+    @Override
+    public void setDiscardCommitted(boolean discardCommitted) {
+        this.discardCommitted = discardCommitted;
+    }
+
     protected boolean commitToParent(Collection<Datasource> datasources) {
         List<Datasource> list = new ArrayList<>();
         for (Datasource datasource : datasources) {
@@ -251,6 +263,7 @@ public class DsContextImpl implements DsContextImplementation {
     protected CommitContext createCommitContext(DataSupplier dataservice,
                                                 Map<DataSupplier, Collection<Datasource<Entity>>> commitData) {
         CommitContext context = new CommitContext();
+        context.setDiscardCommitted(discardCommitted);
 
         for (Datasource<Entity> datasource : commitData.get(dataservice)) {
             if (datasource instanceof DatasourceImplementation) {

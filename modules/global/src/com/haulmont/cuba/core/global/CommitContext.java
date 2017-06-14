@@ -37,6 +37,7 @@ public class CommitContext implements Serializable {
     protected Map<Object, View> views = new HashMap<>();
 
     protected boolean softDeletion = true;
+    protected boolean discardCommitted;
     protected Map<String, Object> dbHints = new HashMap<>();
 
     /**
@@ -172,6 +173,20 @@ public class CommitContext implements Serializable {
      */
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
+    }
+
+    /**
+     * @return true if calling code does not need committed instances, which allows for performance optimization
+     */
+    public boolean isDiscardCommitted() {
+        return discardCommitted;
+    }
+
+    /**
+     * Set to true if calling code does not need committed instances, which allows for performance optimization.
+     */
+    public void setDiscardCommitted(boolean discardCommitted) {
+        this.discardCommitted = discardCommitted;
     }
 
     private View getViewFromRepository(Entity entity, String viewName) {
