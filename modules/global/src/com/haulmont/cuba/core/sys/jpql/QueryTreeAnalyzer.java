@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.sys.jpql;
 
+import com.google.common.base.Preconditions;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.pointer.EntityPointer;
@@ -46,8 +47,8 @@ public class QueryTreeAnalyzer {
     }
 
     public void prepare(DomainModel model, String query, boolean failOnErrors) throws RecognitionException {
+        Preconditions.checkNotNull(query, "query is null");
         this.model = model;
-
         query = query.replace("\n", " ");
         query = query.replace("\r", " ");
         query = query.replace("\t", " ");
