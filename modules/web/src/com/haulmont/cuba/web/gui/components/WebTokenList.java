@@ -22,7 +22,9 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
@@ -32,6 +34,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
@@ -687,13 +690,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
                                 if (isEditable()) {
                                     if (items == null || items.isEmpty()) return;
-                                    for (final Object item : items) {
-                                        if (itemChangeHandler != null) {
-                                            itemChangeHandler.addItem(item);
-                                        } else {
-                                            datasource.addItem((Entity) item);
-                                        }
-                                    }
+
+                                    handleLookupInternal(items);
 
                                     if (afterLookupSelectionHandler != null) {
                                         afterLookupSelectionHandler.onSelect(items);
@@ -734,6 +732,31 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             }
 
             editor = layout;
+        }
+
+        @SuppressWarnings("unchecked")
+        protected void handleLookupInternal(Collection items) {
+            // get master entity and inverse attribute in case of nested datasource
+            Entity masterEntity = getMasterEntity(datasource);
+            MetaProperty inverseProp = getInverseProperty(datasource);
+            boolean initializeMasterReference = inverseProp != null && isInitializeMasterReference(inverseProp);
+
+            for (final Object item : items) {
+                if (itemChangeHandler != null) {
+                    itemChangeHandler.addItem(item);
+                } else {
+                    if (item instanceof Entity) {
+                        Entity entity = (Entity) item;
+                        if (datasource != null && !datasource.containsItem(entity.getId())) {
+                            // Initialize reference to master entity
+                            if (initializeMasterReference) {
+                                entity.setValue(inverseProp.getName(), masterEntity);
+                            }
+                            datasource.addItem(entity);
+                        }
+                    }
+                }
+            }
         }
 
         public void refreshComponent() {
@@ -835,7 +858,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             return label;
         }
 
-        private void doRemove(CubaTokenListLabel source) {
+        protected void doRemove(CubaTokenListLabel source) {
             Instance item = componentItems.get(source);
             if (item != null) {
                 itemComponents.remove(item);
@@ -844,12 +867,25 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                 if (itemChangeHandler != null) { //todo test
                     itemChangeHandler.removeItem(item);
                 } else {
-                    datasource.removeItem((Entity) item);
+                    if (datasource != null) {
+                        // get inverse attribute in case of nested datasource
+                        MetaProperty inverseProp = getInverseProperty(datasource);
+                        boolean initializeMasterReference = inverseProp != null
+                                && isInitializeMasterReference(inverseProp);
+
+                        if (initializeMasterReference) {
+                            item.setValue(inverseProp.getName(), null);
+                            datasource.excludeItem((Entity) item);
+                            return;
+                        } else {
+                            datasource.removeItem((Entity) item);
+                        }
+                    }
                 }
             }
         }
 
-        private void doClick(CubaTokenListLabel source) {
+        protected void doClick(CubaTokenListLabel source) {
             if (itemClickListener != null) {
                 Instance item = componentItems.get(source);
                 if (item != null)
@@ -886,14 +922,26 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void addValueFromLookupPickerField() {
         final Entity newItem = lookupPickerField.getValue();
         if (newItem == null) return;
         if (itemChangeHandler != null) {
             itemChangeHandler.addItem(newItem);
         } else {
-            if (datasource != null && !datasource.getItems().contains(newItem)) {
-                datasource.addItem(newItem);
+            if (datasource != null) {
+                // get master entity and inverse attribute in case of nested datasource
+                Entity masterEntity = getMasterEntity(datasource);
+                MetaProperty inverseProp = getInverseProperty(datasource);
+
+                if (!datasource.containsItem(newItem.getId())) {
+                    // Initialize reference to master entity
+                    if (inverseProp != null && isInitializeMasterReference(inverseProp)) {
+                        newItem.setValue(inverseProp.getName(), masterEntity);
+                    }
+
+                    datasource.addItem(newItem);
+                }
             }
         }
         lookupPickerField.setValue(null);
@@ -907,6 +955,43 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                 }
             }
         }
+    }
+
+    @Nullable
+    protected Entity getMasterEntity(CollectionDatasource datasource) {
+        if (datasource instanceof NestedDatasource) {
+            Datasource masterDs = ((NestedDatasource) datasource).getMaster();
+            com.google.common.base.Preconditions.checkState(masterDs != null);
+            return masterDs.getItem();
+        }
+        return null;
+    }
+
+    @Nullable
+    protected MetaProperty getInverseProperty(CollectionDatasource datasource) {
+        if (datasource instanceof NestedDatasource) {
+            MetaProperty metaProperty = ((NestedDatasource) datasource).getProperty();
+            com.google.common.base.Preconditions.checkState(metaProperty != null);
+            return metaProperty.getInverse();
+        }
+        return null;
+    }
+
+    protected boolean isInitializeMasterReference(MetaProperty inverseProp) {
+        return !inverseProp.getRange().getCardinality().isMany()
+                && isInversePropertyAssignableFromDsClass(inverseProp);
+
+    }
+
+    protected boolean isInversePropertyAssignableFromDsClass(MetaProperty inverseProp) {
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        ExtendedEntities extendedEntities = metadata.getExtendedEntities();
+
+        Class inversePropClass = extendedEntities.getEffectiveClass(inverseProp.getDomain());
+        Class dsClass = extendedEntities.getEffectiveClass(datasource.getMetaClass());
+
+        //noinspection unchecked
+        return inversePropClass.isAssignableFrom(dsClass);
     }
 
     @Override
