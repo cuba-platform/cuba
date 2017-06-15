@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -49,6 +50,8 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
 
     protected Label userNameLabel;
     protected CubaComboBox userComboBox;
+
+    protected Formatter<User> userNameFormatter;
 
     public WebUserIndicator() {
         component = new com.vaadin.ui.CssLayout();
@@ -116,7 +119,11 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
     }
 
     protected String getSubstitutedUserCaption(User user) {
-        return InstanceUtils.getInstanceName(user);
+        if (userNameFormatter != null) {
+            return userNameFormatter.format(user);
+        } else {
+            return InstanceUtils.getInstanceName(user);
+        }
     }
 
     protected List<UserSubstitution> getUserSubstitutions() {
@@ -187,6 +194,17 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
                 userComboBox.setHeight(100, Unit.PERCENTAGE);
             }
         }
+    }
+
+    @Override
+    public void setUserNameFormatter(Formatter<User> userNameFormatter) {
+        this.userNameFormatter = userNameFormatter;
+        refreshUserSubstitutions();
+    }
+
+    @Override
+    public Formatter<User> getUserNameFormatter() {
+        return userNameFormatter;
     }
 
     protected class SubstitutedUserChangeListener implements Property.ValueChangeListener {

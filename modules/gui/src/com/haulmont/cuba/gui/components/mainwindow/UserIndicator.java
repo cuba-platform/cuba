@@ -18,10 +18,24 @@
 package com.haulmont.cuba.gui.components.mainwindow;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.security.entity.User;
 
 public interface UserIndicator extends Component.BelongToFrame {
 
     String NAME = "userIndicator";
 
     void refreshUserSubstitutions();
+
+    /**
+     * Assign a formatter that change user name caption.
+     *
+     * @param userNameFormatter formatter to be executed.
+     */
+    void setUserNameFormatter(Formatter<User> userNameFormatter);
+
+    /**
+     * @return formatter that is used or null.
+     */
+    Formatter<User> getUserNameFormatter();
 }
