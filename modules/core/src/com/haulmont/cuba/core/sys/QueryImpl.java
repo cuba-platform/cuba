@@ -23,7 +23,9 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.entity.IdProxy;
+import com.haulmont.cuba.core.entity.contracts.Ids;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.entitycache.QueryCacheManager;
 import com.haulmont.cuba.core.sys.entitycache.QueryKey;
@@ -420,6 +422,10 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         if (value instanceof IdProxy) {
             value = ((IdProxy) value).get();
+        } else if (value instanceof Id) {
+            value = ((Id) value).getValue();
+        } else if (value instanceof Ids) {
+            value = ((Ids)value).getValues();
         } else if (implicitConversions) {
             value = handleImplicitConversions(value);
         }
