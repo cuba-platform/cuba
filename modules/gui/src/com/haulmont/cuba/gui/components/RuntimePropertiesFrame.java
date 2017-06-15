@@ -220,6 +220,9 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                 } else {
                     field.setWidth(fieldWidth);
                 }
+                if (attribute.getDataType() == PropertyType.ENUMERATION) {
+                    field.setCustom(true);
+                }
             } else {
                 field.setCaption(property.getName());
                 field.setWidth(fieldWidth);
@@ -302,7 +305,6 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                     if (attribute.getDataType() == PropertyType.ENUMERATION) {
                         for (FieldGroup.FieldConfig field : fields) {
                             if (field.getId().equals(metaProperty.getName())) {
-                                field.setCustom(true);
                                 component.addCustomField(metaProperty.getName(), new FieldGroup.CustomFieldGenerator() {
                                     @Override
                                     public Component generateField(Datasource datasource, String propertyId) {
