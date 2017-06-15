@@ -167,11 +167,14 @@ public class RoleBrowser extends AbstractLookup {
         try {
             Collection<Entity> importedEntities;
             if ("json".equals(Files.getFileExtension(importRolesUpload.getFileName()))) {
-                importedEntities = entityImportExportService.importEntitiesFromJSON(new String(fileBytes), createRolesImportView());
+                String jsonContent = new String(fileBytes, StandardCharsets.UTF_8);
+                importedEntities = entityImportExportService.importEntitiesFromJSON(jsonContent, createRolesImportView());
             } else {
                 importedEntities = entityImportExportService.importEntitiesFromZIP(fileBytes, createRolesImportView());
             }
-            long importedRolesCount = importedEntities.stream().filter(entity -> entity instanceof Role).count();
+            long importedRolesCount = importedEntities.stream()
+                    .filter(entity -> entity instanceof Role)
+                    .count();
             showNotification(importedRolesCount + " roles imported", NotificationType.HUMANIZED);
             rolesDs.refresh();
         } catch (Exception e) {
