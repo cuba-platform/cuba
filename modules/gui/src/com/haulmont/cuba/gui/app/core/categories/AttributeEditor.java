@@ -89,7 +89,6 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "enumeration");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "defaultString");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "width");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "isCollection");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "entityClass");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "screen");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "lookup");
@@ -431,7 +430,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             }
         }
 
-        if (attribute.getDataType() == PropertyType.BOOLEAN) {
+        if (attribute.getDataType() == PropertyType.BOOLEAN ||
+                attribute.getDataType() == PropertyType.ENUMERATION) {
             attributeFieldGroup.setFieldValue("isCollection", null);
         }
     }
