@@ -29,10 +29,12 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -284,7 +286,12 @@ public class EntitySerialization implements EntitySerializationAPI {
 
                     Range propertyRange = metaProperty.getRange();
                     if (propertyRange.isDatatype()) {
-                        writeSimpleProperty(jsonObject, fieldValue, metaProperty);
+                        if (isCollectionDynamicAttribute(metaProperty) && fieldValue instanceof Collection) {
+                            jsonObject.add(metaProperty.getName() ,
+                                    serializeSimpleCollection((Collection) fieldValue, metaProperty));
+                        } else {
+                            writeSimpleProperty(jsonObject, fieldValue, metaProperty);
+                        }
                     } else if (propertyRange.isEnum()) {
                         jsonObject.addProperty(metaProperty.getName(), fieldValue.toString());
                     } else if (propertyRange.isClass()) {
@@ -323,6 +330,22 @@ public class EntitySerialization implements EntitySerializationAPI {
                     .forEach(e -> {
                         JsonObject jsonObject = serializeEntity((Entity) e, view, cyclicReferences);
                         jsonArray.add(jsonObject);
+                    });
+            return jsonArray;
+        }
+
+        protected JsonArray serializeSimpleCollection(Collection fieldValue, MetaProperty property) {
+            JsonArray jsonArray = new JsonArray();
+            fieldValue.stream()
+                    .forEach(item -> {
+                        if (item instanceof Number) {
+                            jsonArray.add((Number) item);
+                        } else if (item instanceof Boolean) {
+                            jsonArray.add((Boolean) item);
+                        } else {
+                            Datatype datatype = property.getRange().asDatatype();
+                            jsonArray.add(datatype.format(item));
+                        }
                     });
             return jsonArray;
         }
@@ -470,7 +493,12 @@ public class EntitySerialization implements EntitySerializationAPI {
                     Class<?> propertyType = metaProperty.getJavaType();
                     Range propertyRange = metaProperty.getRange();
                     if (propertyRange.isDatatype()) {
-                        Object value = readSimpleProperty(propertyValue, propertyRange.asDatatype());
+                        Object value;
+                        if (isCollectionDynamicAttribute(metaProperty)) {
+                            value = readSimpleCollection(propertyValue.getAsJsonArray(), metaProperty);
+                        } else {
+                            value = readSimpleProperty(propertyValue, propertyRange.asDatatype());
+                        }
                         entity.setValue(propertyName, value);
                     } else if (propertyRange.isEnum()) {
                         String stringValue = propertyValue.getAsString();
@@ -534,6 +562,15 @@ public class EntitySerialization implements EntitySerializationAPI {
             return entities;
         }
 
+        protected Collection readSimpleCollection(JsonArray jsonArray, MetaProperty metaProperty) {
+            Collection collection = new ArrayList();
+            jsonArray.forEach(jsonElement -> {
+                Object item = readSimpleProperty(jsonElement, metaProperty.getRange().asDatatype());
+                collection.add(item);
+            });
+            return collection;
+        }
+
         protected void clearFields(Entity entity) {
             for (MetaProperty metaProperty : entity.getMetaClass().getProperties()) {
                 if ("id".equals(metaProperty.getName())) continue;
@@ -562,5 +599,13 @@ public class EntitySerialization implements EntitySerializationAPI {
                 }
             }
         }
+    }
+
+    protected boolean isCollectionDynamicAttribute(MetaProperty metaProperty) {
+        if (DynamicAttributesUtils.isDynamicAttribute(metaProperty.getName())) {
+            CategoryAttribute attribute = ((DynamicAttributesMetaProperty)metaProperty).getAttribute();
+            return attribute != null && BooleanUtils.isTrue(attribute.getIsCollection());
+        }
+        return false;
     }
 }
