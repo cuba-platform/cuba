@@ -233,20 +233,19 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void sort(SortInfo[] sortInfos) {
-        if (sortInfos.length != 1)
+        if (sortInfos.length != 1) {
             throw new UnsupportedOperationException("Supporting sort by one field only");
+        }
 
-        if (!Arrays.equals(this.sortInfos, sortInfos)) {
-            //noinspection unchecked
-            this.sortInfos = sortInfos;
-            if (data.size() > 0) {
-                if (!sortOnDb || containsAllDataFromDb()) {
-                    doSort();
+        //noinspection unchecked
+        this.sortInfos = sortInfos;
+        if (data.size() > 0) {
+            if (!sortOnDb || containsAllDataFromDb()) {
+                doSort();
 
-                    fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
-                } else {
-                    refresh();
-                }
+                fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
+            } else {
+                refresh();
             }
         }
     }
@@ -261,6 +260,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected void doSort() {
+        @SuppressWarnings("unchecked")
         List<T> list = new ArrayList<>(data.values());
         list.sort(createEntityComparator());
         data.clear();

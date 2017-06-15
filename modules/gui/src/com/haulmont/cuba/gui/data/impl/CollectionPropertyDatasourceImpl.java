@@ -839,16 +839,15 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     //Implementation of CollectionDatasource.Sortable<T, K> interface
     @Override
     public void sort(SortInfo[] sortInfos) {
-        if (sortInfos.length != 1)
+        if (sortInfos.length != 1) {
             throw new UnsupportedOperationException("Supporting sort by one field only");
-
-        if (!Arrays.equals(this.sortInfos, sortInfos)) {
-            //noinspection unchecked
-            this.sortInfos = sortInfos;
-            doSort();
-
-            fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
         }
+
+        //noinspection unchecked
+        this.sortInfos = sortInfos;
+
+        doSort();
+        fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
     }
 
     @Override
