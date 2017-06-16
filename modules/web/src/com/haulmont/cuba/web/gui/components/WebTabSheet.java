@@ -40,6 +40,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
+
 public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements TabSheet, Component.UiPermissionAware {
 
     protected boolean postInitTaskAdded;
@@ -545,27 +547,34 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
                 contentComponent.setCaption(null);
                 contentComponent.setDescription(null);
 
-                Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(WebTabSheet.this);
+                Window window = ComponentsHelper.getWindow(WebTabSheet.this);
                 if (window != null) {
-                    com.haulmont.cuba.gui.ComponentsHelper.walkComponents(
-                            tabContent,
-                            (settingsComponent, name) -> {
-                                if (settingsComponent.getId() != null
-                                        && settingsComponent instanceof HasSettings) {
-                                    Settings settings = window.getSettings();
-                                    if (settings != null) {
-                                        Element e = settings.get(name);
-                                        ((HasSettings) settingsComponent).applySettings(e);
+                    walkComponents(tabContent, (settingsComponent, name) -> {
+                        if (settingsComponent.getId() != null
+                                && settingsComponent instanceof HasSettings) {
+                            Settings settings = window.getSettings();
+                            if (settings != null) {
+                                Element e = settings.get(name);
+                                ((HasSettings) settingsComponent).applySettings(e);
+
+                                if (component instanceof Component.HasPresentations
+                                        && e.attributeValue("presentation") != null) {
+                                    final String def = e.attributeValue("presentation");
+                                    if (!StringUtils.isEmpty(def)) {
+                                        UUID defaultId = UUID.fromString(def);
+                                        ((Component.HasPresentations) component).applyPresentationAsDefault(defaultId);
                                     }
                                 }
                             }
-                    );
+                        }
+                    });
 
                     // init debug ids after all
-                    if (AppUI.getCurrent().isTestMode()) {
-                        context.addPostInitTask((context1, window1) -> {
-                            Window.TopLevelWindow appWindow = AppUI.getCurrent().getTopLevelWindow();
-                            ((WebWindowManager) appWindow.getWindowManager()).initDebugIds(window1);
+                    AppUI appUI = AppUI.getCurrent();
+                    if (appUI.isTestMode()) {
+                        context.addPostInitTask((localContext, localWindow) -> {
+                            Window.TopLevelWindow appWindow = appUI.getTopLevelWindow();
+                            ((WebWindowManager) appWindow.getWindowManager()).initDebugIds(localWindow);
                         });
                     }
                 }
@@ -599,7 +608,8 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         public void onTabClose(com.vaadin.ui.TabSheet tabsheet, com.vaadin.ui.Component tabContent) {
             // have no other way to get tab from tab content
             for (Tab tab : tabs.values()) {
-                com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(tab.getComponent());
+                Component currentTabContent = tab.getComponent();
+                com.vaadin.ui.Component tabComponent = currentTabContent.unwrap(com.vaadin.ui.Component.class);
                 if (tabComponent == tabContent) {
                     if (tab.isClosable()) {
                         doHandleCloseTab(tab);

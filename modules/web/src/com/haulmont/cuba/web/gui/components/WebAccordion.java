@@ -43,6 +43,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
+
 public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements Accordion, Component.UiPermissionAware {
     protected boolean postInitTaskAdded;
     protected boolean componentTabChangeListenerInitialized;
@@ -525,26 +527,33 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
 
                 loader.loadComponent();
 
-                Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(WebAccordion.this);
+                Window window = ComponentsHelper.getWindow(WebAccordion.this);
                 if (window != null) {
-                    com.haulmont.cuba.gui.ComponentsHelper.walkComponents(
-                            tabContent,
-                            (settingsComponent, name) -> {
-                                if (settingsComponent.getId() != null
-                                        && settingsComponent instanceof HasSettings) {
-                                    Settings settings = window.getSettings();
-                                    if (settings != null) {
-                                        Element e = settings.get(name);
-                                        ((HasSettings) settingsComponent).applySettings(e);
+                    walkComponents(tabContent, (settingsComponent, name) -> {
+                        if (settingsComponent.getId() != null
+                                && settingsComponent instanceof HasSettings) {
+                            Settings settings = window.getSettings();
+                            if (settings != null) {
+                                Element e = settings.get(name);
+                                ((HasSettings) settingsComponent).applySettings(e);
+
+                                if (component instanceof Component.HasPresentations
+                                        && e.attributeValue("presentation") != null) {
+                                    final String def = e.attributeValue("presentation");
+                                    if (!StringUtils.isEmpty(def)) {
+                                        UUID defaultId = UUID.fromString(def);
+                                        ((Component.HasPresentations) component).applyPresentationAsDefault(defaultId);
                                     }
                                 }
                             }
-                    );
+                        }
+                    });
 
                     // init debug ids after all
-                    if (AppUI.getCurrent().isTestMode()) {
+                    AppUI appUI = AppUI.getCurrent();
+                    if (appUI.isTestMode()) {
                         context.addPostInitTask((context1, window1) -> {
-                            Window.TopLevelWindow appWindow = AppUI.getCurrent().getTopLevelWindow();
+                            Window.TopLevelWindow appWindow = appUI.getTopLevelWindow();
                             ((WebWindowManager) appWindow.getWindowManager()).initDebugIds(window1);
                         });
                     }
