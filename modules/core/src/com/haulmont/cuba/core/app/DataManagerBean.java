@@ -304,7 +304,7 @@ public class DataManagerBean implements DataManager {
                         } else {
                             Object refEntityId = refEntity.getId();
                             if (refEntityId instanceof IdProxy) {
-                                Long realId = ((IdProxy) refEntityId).get();
+                                Object realId = ((IdProxy) refEntityId).get();
                                 if (realId == null) {
                                     if (allEntities.stream().anyMatch(e -> e.getId().equals(refEntityId))) {
                                         repeatRequired = true;

@@ -23,6 +23,7 @@
         <class>com.haulmont.cuba.testmodel.many2many.Many2ManyA</class>
         <class>com.haulmont.cuba.testmodel.many2many.Many2ManyB</class>
         <class>com.haulmont.cuba.testmodel.primary_keys.IdentityEntity</class>
+        <class>com.haulmont.cuba.testmodel.primary_keys.IntIdentityEntity</class>
         <class>com.haulmont.cuba.testmodel.primary_keys.IdentityUuidEntity</class>
         <class>com.haulmont.cuba.testmodel.primary_keys.EntityKey</class>
         <class>com.haulmont.cuba.testmodel.primary_keys.CompositeKeyEntity</class>

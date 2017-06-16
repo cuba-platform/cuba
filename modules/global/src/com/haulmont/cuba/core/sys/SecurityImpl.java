@@ -263,8 +263,10 @@ public class SecurityImpl implements Security {
                     ((BaseLongIdEntity) entity).setId(Long.valueOf(string));
                 } else if (entity instanceof BaseStringIdEntity) {
                     ((BaseStringIdEntity) entity).setId(string);
-                } else if (entity instanceof BaseDbGeneratedIdEntity) {
-                    ((BaseDbGeneratedIdEntity) entity).setId(IdProxy.of(Long.valueOf(string)));
+                } else if (entity instanceof BaseIdentityIdEntity) {
+                    ((BaseIdentityIdEntity) entity).setId(IdProxy.of(Long.valueOf(string)));
+                } else if (entity instanceof BaseIntIdentityIdEntity) {
+                    ((BaseIntIdentityIdEntity) entity).setId(IdProxy.of(Integer.valueOf(string)));
                 } else if (entity instanceof HasUuid) {
                     ((HasUuid) entity).setUuid(UUID.fromString(string));
                 }

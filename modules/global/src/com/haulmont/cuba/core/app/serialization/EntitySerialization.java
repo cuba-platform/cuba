@@ -411,7 +411,7 @@ public class EntitySerialization implements EntitySerializationAPI {
                                 Datatype pkDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
                                 pkValue = pkDatatype.parse(idString);
                                 if (entity instanceof BaseDbGeneratedIdEntity) {
-                                    pkValue = IdProxy.of((Long) pkValue);
+                                    pkValue = IdProxy.of((Number) pkValue);
                                     JsonPrimitive uuidPrimitive = jsonObject.getAsJsonPrimitive("uuid");
                                     if (uuidPrimitive != null) {
                                         UUID uuid = UUID.fromString(uuidPrimitive.getAsString());
@@ -439,6 +439,7 @@ public class EntitySerialization implements EntitySerializationAPI {
 
             if (pkValue != null) {
                 if (pkValue instanceof IdProxy && entity instanceof BaseDbGeneratedIdEntity) {
+                    //noinspection unchecked
                     ((BaseDbGeneratedIdEntity) entity).setId((IdProxy) pkValue);
                 } else {
                     entity.setValue("id", pkValue);

@@ -28,26 +28,26 @@ import java.util.UUID;
  * Class that is used as an entity ID when an actual identifier value is not available until the object is persisted
  * to the database.
  * <p>
- * If you need to create a proxy for an existing ID, use {@link #of(Long)} method.
+ * If you need to create a proxy for an existing ID, use {@link #of(Number)} method.
  *
  * @see BaseDbGeneratedIdEntity
  * @see BaseIdentityIdEntity
  */
-public class IdProxy extends Number implements Serializable {
+public class IdProxy<T extends Number> extends Number implements Serializable {
 
     private static final long serialVersionUID = 1591247506604691467L;
 
-    private BaseDbGeneratedIdEntity entity;
+    private BaseDbGeneratedIdEntity<T> entity;
 
     private UUID uuid;
 
     private int hashCode;
 
-    private Long value;
+    private T value;
 
-    private IdProxy copy;
+    private IdProxy<T> copy;
 
-    IdProxy(BaseDbGeneratedIdEntity entity) {
+    IdProxy(BaseDbGeneratedIdEntity<T> entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
         this.entity = entity;
         if (entity instanceof HasUuid) {
@@ -61,7 +61,7 @@ public class IdProxy extends Number implements Serializable {
         }
     }
 
-    IdProxy(Long value) {
+    IdProxy(T value) {
         Preconditions.checkNotNullArgument(value, "value is null");
         this.value = value;
     }
@@ -74,14 +74,14 @@ public class IdProxy extends Number implements Serializable {
      * method.
      * @param value real ID value
      */
-    public static IdProxy of(Long value) {
-        return new IdProxy(value);
+    public static <T extends Number> IdProxy<T> of(T value) {
+        return new IdProxy<>(value);
     }
 
     /**
      * @return a copy of this IdProxy cleaned from a reference to entity
      */
-    public IdProxy copy() {
+    public IdProxy<T> copy() {
         if (copy == null
                 || !Objects.equals(value, copy.value)
                 || !Objects.equals(uuid, copy.uuid)
@@ -101,7 +101,7 @@ public class IdProxy extends Number implements Serializable {
      * @return  real ID value or null if it is not assigned yet
      */
     @Nullable
-    public Long get() {
+    public T get() {
         if (value != null)
             return value;
 
@@ -115,7 +115,7 @@ public class IdProxy extends Number implements Serializable {
      * @return  real ID value
      * @throws IllegalStateException if it is not assigned yet
      */
-    public Long getNN() {
+    public T getNN() {
         if (value != null)
             return value;
 
@@ -144,25 +144,25 @@ public class IdProxy extends Number implements Serializable {
 
     @Override
     public int intValue() {
-        Long v = get();
+        T v = get();
         return v == null ? 0 : v.intValue();
     }
 
     @Override
     public long longValue() {
-        Long v = get();
+        T v = get();
         return v == null ? 0 : v.longValue();
     }
 
     @Override
     public float floatValue() {
-        Long v = get();
+        T v = get();
         return v == null ? 0 : v.floatValue();
     }
 
     @Override
     public double doubleValue() {
-        Long v = get();
+        T v = get();
         return v == null ? 0 : v.doubleValue();
     }
 

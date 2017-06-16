@@ -140,7 +140,12 @@ public class FtsQueue extends BaseUuidEntity implements Creatable {
         } else if (objectEntityId instanceof String) {
             setStringEntityId((String) objectEntityId);
         } else if (objectEntityId instanceof IdProxy) {
-            setLongEntityId(((IdProxy) objectEntityId).getNN());
+            Number realId = ((IdProxy) objectEntityId).getNN();
+            if (realId instanceof Long) {
+                setLongEntityId((Long) realId);
+            } else {
+                setIntEntityId((Integer) realId);
+            }
         }
         else if (objectEntityId == null) {
             setEntityId(null);

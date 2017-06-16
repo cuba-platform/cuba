@@ -57,6 +57,13 @@ create table TEST_IDENTITY (
 
 ------------------------------------------------------------------------------------------------------------
 
+create table TEST_INT_IDENTITY (
+    ID int identity,
+    NAME varchar(50)
+)^
+
+------------------------------------------------------------------------------------------------------------
+
 create table TEST_IDENTITY_UUID (
     ID bigint identity,
     UUID varchar(36),

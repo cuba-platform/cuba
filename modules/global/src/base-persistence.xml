@@ -27,6 +27,7 @@
         <class>com.haulmont.cuba.core.entity.BaseStringIdEntity</class>
         <class>com.haulmont.cuba.core.entity.BaseDbGeneratedIdEntity</class>
         <class>com.haulmont.cuba.core.entity.BaseIdentityIdEntity</class>
+        <class>com.haulmont.cuba.core.entity.BaseIntIdentityIdEntity</class>
         <class>com.haulmont.cuba.core.entity.StandardEntity</class>
         <class>com.haulmont.cuba.core.entity.EmbeddableEntity</class>
 
@@ -34,6 +35,7 @@
         <class>com.haulmont.cuba.core.entity.dummy.DummyIntegerIdEntity</class>
         <class>com.haulmont.cuba.core.entity.dummy.DummyLongIdEntity</class>
         <class>com.haulmont.cuba.core.entity.dummy.DummyIdentityIdEntity</class>
+        <class>com.haulmont.cuba.core.entity.dummy.DummyIntIdentityIdEntity</class>
         <class>com.haulmont.cuba.core.entity.dummy.DummyEmbeddableEntity</class>
 
         <properties>

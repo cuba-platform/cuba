@@ -272,7 +272,15 @@ public class EntitiesControllerManager {
         try {
             Object id;
             if (BaseDbGeneratedIdEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
-                id = IdProxy.of(Long.valueOf(entityId));
+                Method getIdMethod =  metaClass.getJavaClass().getMethod("getDbGeneratedId");
+                Class<?> idClass = getIdMethod.getReturnType();
+                if (Integer.class.isAssignableFrom(idClass)) {
+                    id = IdProxy.of(Integer.valueOf(entityId));
+                } else if (Long.class.isAssignableFrom(idClass)) {
+                    id = IdProxy.of(Long.valueOf(entityId));
+                } else {
+                    throw new UnsupportedOperationException("Unsupported ID type in entity " + metaClass.getName());
+                }
             } else {
                 Method getIdMethod =  metaClass.getJavaClass().getMethod("getId");
                 Class<?> idClass = getIdMethod.getReturnType();
