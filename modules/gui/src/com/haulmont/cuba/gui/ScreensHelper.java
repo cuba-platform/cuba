@@ -153,6 +153,7 @@ public class ScreensHelper {
 
             visitedWindowIds.add(windowId);
         }
+        screensMap = Collections.unmodifiableMap(screensMap);
         cacheScreens(key, screensMap);
         return screensMap;
     }

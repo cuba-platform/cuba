@@ -530,29 +530,25 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
         MetaClass categorizedEntityMetaClass = metadata.getClass(attribute.getCategory().getEntityType());
         final Map<String, Object> optionsMap = categorizedEntityMetaClass != null ?
-                screensHelper.getAvailableScreens(categorizedEntityMetaClass.getJavaClass()) :
-                Collections.<String, Object>emptyMap();
+                new HashMap<>(screensHelper.getAvailableScreens(categorizedEntityMetaClass.getJavaClass())) :
+                Collections.emptyMap();
 
         targetScreensTable.addGeneratedColumn(
                 "screen",
-                new Table.ColumnGenerator<ScreenAndComponent>() {
-                    @Override
-                    public Component generateCell(ScreenAndComponent entity) {
-                        final LookupField lookupField = componentsFactory.createComponent(LookupField.class);
-                        lookupField.setDatasource(targetScreensTable.getItemDatasource(entity), "screen");
-                        lookupField.setOptionsMap(optionsMap);
-                        lookupField.setNewOptionAllowed(true);
-                        lookupField.setNewOptionHandler(new LookupField.NewOptionHandler() {
-                            @Override
-                            public void addNewOption(String caption) {
-                                optionsMap.put(caption, caption);
-                                lookupField.setValue(caption);
-                            }
-                        });
-                        lookupField.setRequired(true);
-                        lookupField.setWidth("100%");
-                        return lookupField;
-                    }
+                entity -> {
+                    final LookupField lookupField = componentsFactory.createComponent(LookupField.class);
+                    lookupField.setDatasource(targetScreensTable.getItemDatasource(entity), "screen");
+                    lookupField.setOptionsMap(optionsMap);
+                    lookupField.setNewOptionAllowed(true);
+                    lookupField.setNewOptionHandler(caption -> {
+                        if (caption != null && !optionsMap.containsKey(caption)) {
+                            optionsMap.put(caption, caption);
+                            lookupField.setValue(caption);
+                        }
+                    });
+                    lookupField.setRequired(true);
+                    lookupField.setWidth("100%");
+                    return lookupField;
                 }
         );
 
