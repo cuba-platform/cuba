@@ -208,21 +208,24 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
     @Override
     public void modified(T item) {
         super.modified(item);
-        ((DatasourceImplementation) masterDs).modified(masterDs.getItem());
+
+        if (masterDs != null) {
+            ((AbstractDatasource) masterDs).modified(masterDs.getItem());
+        }
     }
 
     @Override
     public Collection<T> getItemsToCreate() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
     public Collection<T> getItemsToUpdate() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
     public Collection<T> getItemsToDelete() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 }

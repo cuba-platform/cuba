@@ -23,8 +23,12 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
+import com.haulmont.cuba.gui.components.Frame.MessageType;
+import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
@@ -32,6 +36,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 
 import java.util.Set;
@@ -199,7 +204,8 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
                 return;
         }
 
-        Set selected = target.getSelected();
+        @SuppressWarnings("unchecked")
+        Set<Entity> selected = target.getSelected();
         if (!selected.isEmpty()) {
             if (confirm) {
                 confirmAndRemove(selected);
@@ -209,11 +215,11 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
         }
     }
 
-    protected void confirmAndRemove(final Set selected) {
+    protected void confirmAndRemove(Set<Entity> selected) {
         target.getFrame().showOptionDialog(
                 getConfirmationTitle(),
                 getConfirmationMessage(),
-                Frame.MessageType.CONFIRMATION,
+                MessageType.CONFIRMATION,
                 new Action[]{
                         new DialogAction(Type.OK, Status.PRIMARY).withHandler(event -> {
                             try {
@@ -224,7 +230,8 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
                                     //noinspection unchecked
                                     target.setSelected(selected);
                                 } catch (Exception e) {
-                                    // ignore
+                                    LoggerFactory.getLogger(RemoveAction.class)
+                                            .debug("Error after remove action", e);
                                 }
                             }
                         }),
@@ -236,7 +243,7 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
         );
     }
 
-    protected void remove(Set selected) {
+    protected void remove(Set<Entity> selected) {
         doRemove(selected, autocommit);
 
         // move focus to owner
@@ -312,10 +319,10 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
         this.confirmationTitle = confirmationTitle;
     }
 
-    protected void doRemove(Set selected, boolean autocommit) {
+    protected void doRemove(Set<Entity> selected, boolean autocommit) {
         CollectionDatasource datasource = target.getDatasource();
-        for (Object item : selected) {
-            datasource.removeItem((Entity) item);
+        for (Entity item : selected) {
+            datasource.removeItem(item);
         }
 
         if (autocommit && (datasource.getCommitMode() != Datasource.CommitMode.PARENT)) {

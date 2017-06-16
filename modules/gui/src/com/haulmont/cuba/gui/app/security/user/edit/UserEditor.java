@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.app.security.user.NameBuilderListener;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -41,11 +42,10 @@ import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
-import static com.haulmont.cuba.gui.components.PickerField.*;
+import static com.haulmont.cuba.gui.components.PickerField.LookupAction;
 
 public class UserEditor extends AbstractEditor<User> {
 
@@ -125,19 +125,19 @@ public class UserEditor extends AbstractEditor<User> {
         });
 
         AddRoleAction addRoleAction = new AddRoleAction();
-        addRoleAction.setEnabled(security.isEntityOpPermitted(metadata.getClass(UserRole.class), EntityOp.CREATE));
+        addRoleAction.setEnabled(security.isEntityOpPermitted(UserRole.class, EntityOp.CREATE));
         rolesTable.addAction(addRoleAction);
         EditRoleAction editRoleAction = new EditRoleAction();
         rolesTable.addAction(editRoleAction);
 
         RemoveRoleAction removeRoleAction = new RemoveRoleAction(rolesTable, false);
-        boolean isUserRoleDeletePermitted = security.isEntityOpPermitted(metadata.getClass(UserRole.class), EntityOp.DELETE);
-        boolean isUserUpdatePermitted = security.isEntityOpPermitted(metadata.getClass(User.class), EntityOp.UPDATE);
+        boolean isUserRoleDeletePermitted = security.isEntityOpPermitted(UserRole.class, EntityOp.DELETE);
+        boolean isUserUpdatePermitted = security.isEntityOpPermitted(User.class, EntityOp.UPDATE);
         removeRoleAction.setEnabled(isUserRoleDeletePermitted && isUserUpdatePermitted);
         rolesTable.addAction(removeRoleAction);
 
         AddSubstitutedAction addSubstitutedAction = new AddSubstitutedAction();
-        addSubstitutedAction.setEnabled(security.isEntityOpPermitted(metadata.getClass(UserSubstitution.class), EntityOp.CREATE));
+        addSubstitutedAction.setEnabled(security.isEntityOpPermitted(UserSubstitution.class, EntityOp.CREATE));
 
         substTable.addAction(addSubstitutedAction);
         EditSubstitutedAction editSubstitutedAction = new EditSubstitutedAction();
@@ -145,19 +145,19 @@ public class UserEditor extends AbstractEditor<User> {
         RemoveAction removeSubstitutedAction = new RemoveAction(substTable, false);
         substTable.addAction(removeSubstitutedAction);
 
-        boolean isUserRoleCreatePermitted = security.isEntityOpPermitted(metadata.getClass(UserRole.class), EntityOp.CREATE);
+        boolean isUserRoleCreatePermitted = security.isEntityOpPermitted(UserRole.class, EntityOp.CREATE);
         addRoleAction.setEnabled(isUserRoleCreatePermitted && isUserUpdatePermitted);
 
-        boolean isSubstitutedUserCreatePermitted = security.isEntityOpPermitted(metadata.getClass(UserSubstitution.class), EntityOp.CREATE);
+        boolean isSubstitutedUserCreatePermitted = security.isEntityOpPermitted(UserSubstitution.class, EntityOp.CREATE);
         addSubstitutedAction.setEnabled(isSubstitutedUserCreatePermitted && isUserUpdatePermitted);
 
-        boolean isSubstitutedUserDeletePermitted = security.isEntityOpPermitted(metadata.getClass(UserSubstitution.class), EntityOp.DELETE);
+        boolean isSubstitutedUserDeletePermitted = security.isEntityOpPermitted(UserSubstitution.class, EntityOp.DELETE);
         removeSubstitutedAction.setEnabled(isSubstitutedUserDeletePermitted && isUserUpdatePermitted);
 
-        boolean isRoleUpdatePermitted = security.isEntityOpPermitted(metadata.getClass(Role.class), EntityOp.UPDATE);
+        boolean isRoleUpdatePermitted = security.isEntityOpPermitted(Role.class, EntityOp.UPDATE);
         editRoleAction.setEnabled(isRoleUpdatePermitted);
 
-        boolean isSubstitutedUserUpdatePermitted = security.isEntityOpPermitted(metadata.getClass(UserSubstitution.class), EntityOp.UPDATE);
+        boolean isSubstitutedUserUpdatePermitted = security.isEntityOpPermitted(UserSubstitution.class, EntityOp.UPDATE);
         editSubstitutedAction.setEnabled(isSubstitutedUserUpdatePermitted);
 
         initCustomFields(PersistenceHelper.isNew(WindowParams.ITEM.getEntity(params)));
@@ -529,7 +529,7 @@ public class UserEditor extends AbstractEditor<User> {
         }
 
         @Override
-        protected void confirmAndRemove(Set selected) {
+        protected void confirmAndRemove(Set<Entity> selected) {
             hasDefaultRole = hasDefaultRole(selected);
 
             super.confirmAndRemove(selected);
@@ -553,7 +553,7 @@ public class UserEditor extends AbstractEditor<User> {
         }
     }
 
-    protected class AddSubstitutedAction extends AbstractAction {
+    protected class AddSubstitutedAction extends BaseAction {
         public AddSubstitutedAction() {
             super("add");
 

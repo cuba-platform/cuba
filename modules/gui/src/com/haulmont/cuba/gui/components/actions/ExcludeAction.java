@@ -145,7 +145,8 @@ public class ExcludeAction extends RemoveAction {
                 return;
         }
 
-        Set selected = target.getSelected();
+        @SuppressWarnings("unchecked")
+        Set<Entity> selected = target.getSelected();
         if (!selected.isEmpty()) {
             if (confirm) {
                 confirmAndRemove(selected);
@@ -162,7 +163,7 @@ public class ExcludeAction extends RemoveAction {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected void doRemove(Set selected, boolean autocommit) {
+    protected void doRemove(Set<Entity> selected, boolean autocommit) {
         @SuppressWarnings({"unchecked"})
         CollectionDatasource ds = target.getDatasource();
         if (ds instanceof NestedDatasource) {
@@ -177,16 +178,17 @@ public class ExcludeAction extends RemoveAction {
                     Class inversePropClass = extendedEntities.getEffectiveClass(inverseProp.getDomain());
                     Class dsClass = extendedEntities.getEffectiveClass(ds.getMetaClass());
                     if (inversePropClass.isAssignableFrom(dsClass)) {
-                        for (Object item : selected) {
-                            ((Entity) item).setValue(inverseProp.getName(), null);
+                        for (Entity item : selected) {
+                            item.setValue(inverseProp.getName(), null);
                         }
                     }
                 }
             }
         }
 
-        for (Object item : selected) {
-            ds.excludeItem((Entity) item);
+        for (Entity item : selected) {
+            ds.modifyItem(item);
+            ds.excludeItem(item);
         }
 
         if (autocommit && (ds.getCommitMode() != Datasource.CommitMode.PARENT)) {

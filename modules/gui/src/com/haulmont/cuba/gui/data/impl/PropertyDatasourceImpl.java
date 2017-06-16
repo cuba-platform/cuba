@@ -38,8 +38,8 @@ public class PropertyDatasourceImpl<T extends Entity>
 
     protected Datasource masterDs;
     protected MetaProperty metaProperty;
-    protected volatile MetaClass metaClass;
-    protected volatile View view;
+    protected MetaClass metaClass;
+    protected View view;
 
     @Override
     public void setup(String id, Datasource masterDs, String property) {
@@ -49,6 +49,7 @@ public class PropertyDatasourceImpl<T extends Entity>
         initParentDsListeners();
     }
 
+    @SuppressWarnings("unchecked")
     protected void initParentDsListeners() {
         masterDs.addItemChangeListener(e -> {
             Entity prevValue = getItem(e.getPrevItem());
@@ -57,7 +58,9 @@ public class PropertyDatasourceImpl<T extends Entity>
             fireItemChanged((T) prevValue);
         });
 
-        masterDs.addStateChangeListener(e -> fireStateChanged(e.getPrevState()));
+        masterDs.addStateChangeListener(e ->
+                fireStateChanged(e.getPrevState())
+        );
 
         masterDs.addItemPropertyChangeListener(e -> {
             if (e.getProperty().equals(metaProperty.getName()) && !ObjectUtils.equals(e.getPrevValue(), e.getValue())) {
@@ -115,7 +118,8 @@ public class PropertyDatasourceImpl<T extends Entity>
                 View masterView = masterDs.getView();
                 if (masterView == null) {
                     throw new DevelopmentException("No view for datasource " + masterDs.getId(),
-                            ParamsMap.of("masterDs", masterDs.getId(), "propertyDs", getId()));
+                            ParamsMap.of("masterDs", masterDs.getId(),
+                                         "propertyDs", getId()));
                 }
 
                 ViewProperty property = masterView.getProperty(metaProperty.getName());
@@ -125,7 +129,8 @@ public class PropertyDatasourceImpl<T extends Entity>
 
                 if (property.getView() == null) {
                     throw new DevelopmentException(
-                            "Invalid view definition: " + masterView + ". Property '" + property + "' must have a view",
+                            String.format("Invalid view definition: %s. Property '%s' must have a view",
+                                    masterView, property),
                             ParamsMap.of("masterDs", masterDs.getId(),
                                          "propertyDs", getId(),
                                          "masterView", masterView,
@@ -165,19 +170,19 @@ public class PropertyDatasourceImpl<T extends Entity>
 
             if (parentDs instanceof CollectionDatasource) {
                 CollectionDatasource parentCollectionDs = (CollectionDatasource) parentDs;
-                for (Object item : itemsToCreate) {
-                    parentCollectionDs.addItem((Entity) item);
+                for (Entity item : itemsToCreate) {
+                    parentCollectionDs.addItem(item);
                 }
-                for (Object item : itemsToUpdate) {
-                    parentCollectionDs.modifyItem((Entity) item);
+                for (Entity item : itemsToUpdate) {
+                    parentCollectionDs.modifyItem(item);
                 }
-                for (Object item : itemsToDelete) {
-                    parentCollectionDs.removeItem((Entity) item);
+                for (Entity item : itemsToDelete) {
+                    parentCollectionDs.removeItem(item);
                 }
                 // after repeated edit of new items the parent datasource can contain items-to-create which are deleted
                 // in this datasource, so we need to delete them
                 Collection<Entity> parentItemsToCreate = ((DatasourceImplementation) parentCollectionDs).getItemsToCreate();
-                for (Entity createdItem : new ArrayList<Entity>(parentItemsToCreate)) {
+                for (Entity createdItem : new ArrayList<>(parentItemsToCreate)) {
                     if (!this.itemsToCreate.contains(createdItem)) {
                         MetaProperty inverseProp = metaProperty.getInverse();
                         // delete only if they have the same master item
@@ -218,8 +223,9 @@ public class PropertyDatasourceImpl<T extends Entity>
     public void modified(T item) {
         super.modified(item);
 
-        if (masterDs != null)
-            ((AbstractDatasource) masterDs).setModified(true);
+        if (masterDs != null) {
+            ((AbstractDatasource) masterDs).modified(masterDs.getItem());
+        }
     }
 
     @Override
