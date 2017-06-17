@@ -224,7 +224,7 @@ public class DbUpdaterEngine implements DbUpdater {
         Set<String> scripts = getExecutedScripts();
         for (ScriptResource file : files) {
             String name = getScriptName(file);
-            if (!scripts.contains(name)) {
+            if (!containsIgnoringPrefix(scripts, name)) {
                 if (executeScript(file)) {
                     markScript(name, false);
                 }
@@ -243,18 +243,10 @@ public class DbUpdaterEngine implements DbUpdater {
                 List<ScriptResource> initScripts = getInitScripts(dirName);
                 if (!initScripts.isEmpty()) {
                     for (ScriptResource initScript : initScripts) {
-                        boolean executed = false;
                         String initScriptName = getScriptName(initScript);
                         log.trace("Checking script {}", initScriptName);
-                        for (String executedScript : executedScripts) {
-                            if (initScriptName.length() > 3 && executedScript.length() > 3
-                                    && initScriptName.substring(3).equals(executedScript.substring(3))) {
-                                executed = true;
-                                break;
-                            }
-                        }
-                        if (!executed) {
-                            log.info("Script " + initScriptName + " was not executed, running init scripts for " + dirName.substring(3));
+                        if (!containsIgnoringPrefix(executedScripts, initScriptName)) {
+                            log.info("Script " + initScriptName + " was not executed, running init scripts for " + distinguishingSubstring(dirName));
                             try {
                                 for (ScriptResource file : initScripts) {
                                     executeScript(file);
@@ -265,11 +257,21 @@ public class DbUpdaterEngine implements DbUpdater {
                                 for (ScriptResource file : updateFiles)
                                     markScript(getScriptName(file), true);
                             }
+                            break;
                         }
                     }
                 }
             }
         }
+    }
+
+    protected boolean containsIgnoringPrefix(Collection<String> strings, String s) {
+        return strings.stream()
+                .anyMatch(it -> distinguishingSubstring(it).equals(distinguishingSubstring(s)));
+    }
+
+    protected String distinguishingSubstring(String scriptName) {
+        return scriptName.length() > 3 ? scriptName.substring(3) : scriptName;
     }
 
     /**
