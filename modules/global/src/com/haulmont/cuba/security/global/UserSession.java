@@ -503,6 +503,22 @@ public class UserSession implements Serializable {
     }
 
     /**
+     * Set local attribute. Local attribute is a named object bound to session. Unlike normal user session attributes,
+     * local attributes are not passed between tiers and not replicated in cluster.
+     *
+     * @param name  attribute name
+     * @param value attribute value
+     * @return the previous value associated with the specified key, or
+     *         {@code null} if there was no mapping for the key.
+     *         (A {@code null} return can also indicate that the map
+     *         previously associated {@code null} with the key,
+     *         if the implementation supports null values.)
+     */
+    public Object setLocalAttributeIfAbsent(String name, Object value) {
+        return localAttributes.putIfAbsent(name, value);
+    }
+
+    /**
      * Local attribute names. Local attribute is a named object bound to session. Unlike normal user session attributes,
      * local attributes are not passed between tiers and not replicated in cluster.
      */

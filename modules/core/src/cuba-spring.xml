@@ -32,7 +32,7 @@
 
     <!-- Persistence setup -->
 
-    <bean id="cubaDataSource" class="com.haulmont.cuba.core.sys.CubaJndiObjectFactoryBean">
+    <bean id="cubaDataSource" class="com.haulmont.cuba.core.sys.CubaJndiDataSourceFactoryBean">
         <property name="jndiNameAppProperty" value="cuba.dataSourceJndiName"/>
         <property name="resourceRef" value="true"/>
     </bean>
