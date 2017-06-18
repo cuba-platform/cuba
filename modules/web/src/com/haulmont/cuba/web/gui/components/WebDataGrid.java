@@ -1901,7 +1901,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
     @Nullable
     protected Column getColumnByPropertyId(Object propertyId) {
         for (Column column : getColumns()) {
-            if (((ColumnImpl) column).getColumnPropertyId() == propertyId) {
+            Object columnPropertyId = ((ColumnImpl) column).getColumnPropertyId();
+            if (Objects.equals(columnPropertyId, propertyId)) {
                 return column;
             }
         }
