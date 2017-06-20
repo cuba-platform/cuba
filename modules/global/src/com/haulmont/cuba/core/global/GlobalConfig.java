@@ -195,4 +195,10 @@ public interface GlobalConfig extends Config {
     @DefaultBoolean(false)
     boolean getRestAnonymousEnabled();
 
+    /**
+     * @return response of the HTTP GET request on the health check URL
+     */
+    @Property("cuba.healthCheckResponse")
+    @Default("ok")
+    String getHealthCheckResponse();
 }

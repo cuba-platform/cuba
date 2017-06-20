@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.CubaDefaultXmlWebApplicationContext;
+import com.haulmont.cuba.core.sys.CubaXmlWebApplicationContext;
 import com.haulmont.cuba.core.sys.RemotingContextHolder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -169,6 +169,6 @@ public class RemotingServlet extends DispatcherServlet {
 
     @Override
     public Class<?> getContextClass() {
-        return CubaDefaultXmlWebApplicationContext.class;
+        return CubaXmlWebApplicationContext.class;
     }
 }
