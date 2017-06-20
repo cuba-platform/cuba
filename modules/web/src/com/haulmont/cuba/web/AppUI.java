@@ -207,7 +207,7 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
         processExternalLink(request);
     }
 
-    protected void showCriticalExceptionMessage(Exception e) {
+    protected void showCriticalExceptionMessage(Exception exception) {
         String initErrorCaption = messages.getMainMessage("app.initErrorCaption");
         String initErrorMessage = messages.getMainMessage("app.initErrorMessage");
 
@@ -253,8 +253,10 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
     }
 
     protected void setupUI() throws LoginException {
-        if (!app.getConnection().isConnected() && !app.loginOnStart()) {
-            app.getConnection().loginAnonymous(app.getLocale());
+        if (!app.getConnection().isConnected()) {
+            if (!app.loginOnStart()) {
+                app.getConnection().loginAnonymous(app.getLocale());
+            }
         } else {
             app.createTopLevelWindow(this);
         }

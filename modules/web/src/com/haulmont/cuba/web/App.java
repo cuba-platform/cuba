@@ -208,7 +208,7 @@ public abstract class App {
         return list;
     }
 
-    protected abstract boolean loginOnStart();
+    public abstract boolean loginOnStart();
 
     protected Connection createConnection() {
         return AppBeans.getPrototype(Connection.NAME);
