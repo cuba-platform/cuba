@@ -16,10 +16,13 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.notification;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.vaadin.client.ui.VNotification;
+
+import static com.haulmont.cuba.web.toolkit.ui.client.appui.AppUIConnector.CubaNotificationDelegate.CUBA_NOTIFICATION_MODALITY_CURTAIN;
 
 public class CubaNotification extends VNotification {
     public static final String TRAY_STYLE = "tray";
@@ -27,6 +30,15 @@ public class CubaNotification extends VNotification {
     @Override
     public boolean onEventPreview(Event event) {
         int type = DOM.eventGetType(event);
+
+        if ((type == Event.ONCLICK || type == Event.ONTOUCHEND)
+                && event.getEventTarget() != null) {
+            Element target = Element.as(event.getEventTarget());
+            if (target.getClassName() != null && target.getClassName().contains(CUBA_NOTIFICATION_MODALITY_CURTAIN)) {
+                hide();
+                return false;
+            }
+        }
 
         if (type == Event.ONKEYDOWN && event.getKeyCode() == KeyCodes.KEY_ESCAPE) {
             if (!getElement().getClassName().contains(TRAY_STYLE)) {
