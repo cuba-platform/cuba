@@ -26,11 +26,18 @@ import com.haulmont.cuba.portal.Connection;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import java.util.UUID;
 
 @Component(UserSessionSource.NAME)
 public class PortalUserSessionSource extends AbstractUserSessionSource {
+
+    public static final String REQUEST_ATTR = "CUBA_USER_SESSION";
 
     @Inject
     protected UserSessionService userSessionService;
@@ -52,7 +59,7 @@ public class PortalUserSessionSource extends AbstractUserSessionSource {
                 return true;
             else {
                 try {
-                    userSessionService.getUserSession(securityContext.getSessionId());
+                    getUserSessionFromMiddleware(securityContext.getSessionId());
                     return true;
                 } catch (Exception e) {
                     return false;
@@ -70,9 +77,31 @@ public class PortalUserSessionSource extends AbstractUserSessionSource {
             if (securityContext.getSession() != null)
                 return securityContext.getSession();
             else {
-                UserSession userSession = userSessionService.getUserSession(securityContext.getSessionId());
+                UserSession userSession = getUserSessionFromMiddleware(securityContext.getSessionId());
                 return portalSessionFactory.createPortalSession(userSession, null);
             }
         }
+    }
+
+    protected UserSession getUserSessionFromMiddleware(UUID sessionId) {
+        UserSession userSession = null;
+
+        HttpServletRequest request = null;
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (requestAttributes instanceof ServletRequestAttributes) {
+            request = ((ServletRequestAttributes) requestAttributes).getRequest();
+        }
+
+        if (request != null) {
+            userSession = (UserSession) request.getAttribute(REQUEST_ATTR);
+        }
+        if (userSession != null) {
+            return userSession;
+        }
+        userSession = userSessionService.getUserSession(sessionId);
+        if (request != null) {
+            request.setAttribute(REQUEST_ATTR, userSession);
+        }
+        return userSession;
     }
 }
