@@ -195,7 +195,7 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
     }
 
     @Override
-    protected boolean loginOnStart() {
+    public boolean loginOnStart() {
         if (tryLoginOnStart
                 && principal != null
                 && webAuthConfig.getExternalAuthentication()) {
