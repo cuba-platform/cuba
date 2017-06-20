@@ -56,8 +56,8 @@ public class StaticServerSelectorTest {
         StaticServerSelector selector = new StaticServerSelector() {
             @Nullable
             @Override
-            protected UserSession getUserSession() {
-                return currentSession;
+            protected SessionUrlsHolder getSessionUrlsHolder() {
+                return currentSession != null ? new UserSessionUrlsHolder(currentSession) : null;
             }
         };
         selector.setBaseUrl(urlList);

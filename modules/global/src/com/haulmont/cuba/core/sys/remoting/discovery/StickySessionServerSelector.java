@@ -43,11 +43,11 @@ public abstract class StickySessionServerSelector implements ServerSelector {
 
     protected Consumer<List<String>> serverSorter;
 
+    protected SessionUrlsHolder anonymousSessionUrlsHolder;
+
     protected Set<String> failedUrls = new CopyOnWriteArraySet<>();
 
     protected ThreadLocal<List<String>> lastNoSessionUrls = new ThreadLocal<>();
-
-    protected static final String SESSION_ATTR = StickySessionServerSelector.class.getName() + ".lastSessionUrls";
 
     protected static class Context {
         private List<String> urls;
@@ -74,6 +74,10 @@ public abstract class StickySessionServerSelector implements ServerSelector {
         this.serverSorter = serverSorter;
     }
 
+    public void setAnonymousSessionUrlsHolder(SessionUrlsHolder anonymousSessionUrlsHolder) {
+        this.anonymousSessionUrlsHolder = anonymousSessionUrlsHolder;
+    }
+
     /**
      * Must be implemented in concrete classes to return a list of available servers.
      */
@@ -83,20 +87,20 @@ public abstract class StickySessionServerSelector implements ServerSelector {
     public Object initContext() {
         List<String> sessionUrls;
         boolean isNewSession = false;
-        UserSession userSession = getUserSession();
-        if (userSession == null) {
+        SessionUrlsHolder sessionUrlsHolder = getSessionUrlsHolder();
+        if (sessionUrlsHolder == null) {
             sessionUrls = sortUrls();
             lastNoSessionUrls.set(sessionUrls);
         } else {
             //noinspection unchecked
-            sessionUrls = userSession.getLocalAttribute(SESSION_ATTR);
+            sessionUrls = sessionUrlsHolder.getUrls();
             if (sessionUrls == null) {
                 sessionUrls = lastNoSessionUrls.get();
                 isNewSession = true;
             }
             if (sessionUrls == null)
                 sessionUrls = sortUrls();
-            userSession.setLocalAttribute(SESSION_ATTR, sessionUrls);
+            sessionUrlsHolder.setUrls(sessionUrls);
             lastNoSessionUrls.remove();
         }
 
@@ -163,16 +167,15 @@ public abstract class StickySessionServerSelector implements ServerSelector {
     }
 
     @Nullable
-    protected UserSession getUserSession() {
+    protected SessionUrlsHolder getSessionUrlsHolder() {
         SecurityContext securityContext = AppContext.getSecurityContext();
         if (securityContext == null)
             return null;
 
         UserSession session = securityContext.getSession();
-        if (session == null
-                || (session instanceof ClientBasedSession && ((ClientBasedSession) session).hasRequestScopedInfo()))
-            return null;
+        if (session == null || session instanceof ClientBasedSession && ((ClientBasedSession) session).hasRequestScopedInfo())
+            return anonymousSessionUrlsHolder;
 
-        return session;
+        return new UserSessionUrlsHolder(session);
     }
 }

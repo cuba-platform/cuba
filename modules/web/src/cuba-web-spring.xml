@@ -60,9 +60,12 @@
 
     <bean id="cuba_ServerSorter" class="com.haulmont.cuba.core.sys.remoting.discovery.RandomServerSorter"/>
 
+    <bean id="cuba_AnonymousSessionUrlsHolder" class="com.haulmont.cuba.web.sys.remoting.discovery.WebHttpSessionUrlsHolder"/>
+
     <bean id="cuba_ServerSelector" class="com.haulmont.cuba.core.sys.remoting.discovery.StaticServerSelector" init-method="init">
         <property name="baseUrl" value="${cuba.connectionUrlList}"/>
         <property name="serverSorter" ref="cuba_ServerSorter"/>
+        <property name="anonymousSessionUrlsHolder" ref="cuba_AnonymousSessionUrlsHolder"/>
         <property name="servletPath" value="remoting"/>
     </bean>
 
