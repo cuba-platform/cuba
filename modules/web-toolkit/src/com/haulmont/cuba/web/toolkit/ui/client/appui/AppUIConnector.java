@@ -100,7 +100,7 @@ public class AppUIConnector extends UIConnector {
         return new CubaNotificationDelegate();
     }
 
-    protected class CubaNotificationDelegate implements NotificationDelegate {
+    public class CubaNotificationDelegate implements NotificationDelegate {
 
         public static final String CUBA_NOTIFICATION_MODALITY_CURTAIN = "c-notification-modalitycurtain";
 
@@ -108,7 +108,7 @@ public class AppUIConnector extends UIConnector {
 
         @Override
         public void show(Element overlayContainer, Element element, boolean isShowing, String style, int index) {
-            if ("error".equals(style) || "warning".equals(style)) {
+            if (style != null && (style.contains("error") || style.contains("warning"))) {
                 showModalityCurtain(overlayContainer, element, isShowing, index);
             }
         }
