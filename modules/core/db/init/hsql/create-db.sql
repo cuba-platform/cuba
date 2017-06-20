@@ -314,8 +314,8 @@ create table SEC_CONSTRAINT (
     ENTITY_NAME varchar(255) not null,
     JOIN_CLAUSE varchar(500),
     WHERE_CLAUSE varchar(1000),
-    GROOVY_SCRIPT varchar(1000),
-    FILTER_XML varchar(1000),
+    GROOVY_SCRIPT longvarchar,
+    FILTER_XML longvarchar,
     IS_ACTIVE boolean default true,
     GROUP_ID varchar(36),
     --

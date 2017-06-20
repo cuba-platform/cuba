@@ -381,8 +381,8 @@ create table SEC_CONSTRAINT (
     ENTITY_NAME varchar2(255) not null,
     JOIN_CLAUSE varchar2(500),
     WHERE_CLAUSE varchar2(1000),
-    GROOVY_SCRIPT varchar2(1000),
-    FILTER_XML varchar2(1000),
+    GROOVY_SCRIPT clob,
+    FILTER_XML clob,
     IS_ACTIVE char(1) default '1',
     GROUP_ID varchar2(36),
     --

@@ -49,10 +49,12 @@ public class Constraint extends StandardEntity {
     @Column(name = "WHERE_CLAUSE", length = 1000)
     protected String whereClause;
 
-    @Column(name = "GROOVY_SCRIPT", length = 1000)
+    @Lob
+    @Column(name = "GROOVY_SCRIPT")
     protected String groovyScript;
 
-    @Column(name = "FILTER_XML", length = 1000)
+    @Lob
+    @Column(name = "FILTER_XML")
     protected String filterXml;
 
     @Column(name = "IS_ACTIVE")
