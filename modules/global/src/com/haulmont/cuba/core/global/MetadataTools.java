@@ -739,6 +739,22 @@ public class MetadataTools {
     }
 
     /**
+     * Returns a {@link MetaPropertyPath} which can include the special MetaProperty for a dynamic attribute.
+     * Throws an IllegalArgumentException if MetaPropertyPath can't be resolved.
+     *
+     * @param metaClass    originating meta-class
+     * @param propertyPath path to the attribute
+     * @return MetaPropertyPath instance
+     */
+    public MetaPropertyPath resolveMetaPropertyPathNN(MetaClass metaClass, String propertyPath) {
+        MetaPropertyPath metaPropertyPath = resolveMetaPropertyPath(metaClass, propertyPath);
+
+        Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", propertyPath, metaClass);
+
+        return metaPropertyPath;
+    }
+
+    /**
      * Depth-first traversal of the object graph starting from the specified entity instance.
      * Visits all attributes.
      *

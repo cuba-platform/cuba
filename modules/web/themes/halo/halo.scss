@@ -75,6 +75,7 @@
 @import "components/sidemenu/sidemenu";
 @import "components/fileuploadwrapper/fileuploadwrapper";
 @import "components/suggestionfield/suggestionfield";
+@import "components/image/image";
 
 // Application specific
 @import "app/log-control";
@@ -133,6 +134,7 @@
   @include halo-textarea;
   @include halo-draganddrop;
   @include halo-colorpicker;
+  @include halo-cuba-image;
 
   @include halo-cuba-groupbox;
   @include halo-cuba-tokenlist;

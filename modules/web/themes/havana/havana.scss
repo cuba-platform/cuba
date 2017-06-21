@@ -80,6 +80,7 @@
 @import "components/scrollbox/scrollbox";
 @import "components/calendar/calendar";
 @import "components/colorpicker/colorpicker";
+@import "components/image/image";
 
 // Application specific
 @import "app/app-window";
@@ -162,6 +163,7 @@
   @include havana-cuba-fieldgrouplayout;
   @include havana-cuba-resizabletextarea;
   @include havana-cuba-fileupload-wrapper;
+  @include havana-cuba-image;
 
   @include cuba-login-window;
   @include cuba-menubar;
