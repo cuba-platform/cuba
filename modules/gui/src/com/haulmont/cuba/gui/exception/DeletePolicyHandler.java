@@ -77,15 +77,13 @@ public class DeletePolicyHandler implements GenericExceptionHandler, Ordered {
 
         MetaClass deletedEntityMetaClass = recognizeDeletedEntityMetaClass(message);
         if (deletedEntityMetaClass != null) {
-            String entityName = deletedEntityMetaClass.getName().split("\\$")[1];
-
-            String customCaptionKey = String.format("deletePolicy.caption.%s", entityName);
+            String customCaptionKey = String.format("deletePolicy.caption.%s", deletedEntityMetaClass.getName());
             String customCaption = messages.getMainMessage(customCaptionKey);
             if (!customCaptionKey.equals(customCaption)) {
                 caption = customCaption;
             }
 
-            String customMessageKey = String.format("deletePolicy.references.message.%s", entityName);
+            String customMessageKey = String.format("deletePolicy.references.message.%s", deletedEntityMetaClass.getName());
             String customMessage = messages.getMainMessage(customMessageKey);
             if (!customMessageKey.equals(customMessage)) {
                 notificationMessage = customMessage;
