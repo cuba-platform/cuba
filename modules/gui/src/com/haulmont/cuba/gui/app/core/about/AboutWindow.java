@@ -17,9 +17,39 @@
 
 package com.haulmont.cuba.gui.app.core.about;
 
+import com.haulmont.cuba.core.entity.KeyValueEntity;
+import com.haulmont.cuba.core.global.BuildInfo;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+
+import javax.inject.Inject;
+import java.util.Map;
 
 public class AboutWindow extends AbstractWindow {
+
+    @Inject
+    protected CollectionDatasource<KeyValueEntity, Object> buildInfoDs;
+
+    @Inject
+    protected BuildInfo buildInfo;
+
+    @Inject
+    protected Messages messages;
+
+    @Override
+    public void init(Map<String, Object> params) {
+        BuildInfo.Content content = buildInfo.getContent();
+        for (Map.Entry<String, String> entry : content.getProperties().entrySet()) {
+            KeyValueEntity entity = new KeyValueEntity();
+            String name = messages.getMainMessage("buildInfo." + entry.getKey());
+            if (name.equals("buildInfo." + entry.getKey()))
+                name = entry.getKey();
+            entity.setValue("name", name);
+            entity.setValue("value", entry.getValue());
+            buildInfoDs.includeItem(entity);
+        }
+    }
 
     public void close() {
         close(CLOSE_ACTION_ID);
