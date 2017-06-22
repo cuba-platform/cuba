@@ -18,13 +18,11 @@
 package com.haulmont.cuba.web.toolkit.ui.client.flowlayout;
 
 import com.haulmont.cuba.web.toolkit.ui.CubaFlowLayout;
-import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.client.ui.csslayout.CssLayoutConnector;
+import com.haulmont.cuba.web.toolkit.ui.client.cssactionslayout.CubaCssActionsLayoutConnector;
 import com.vaadin.shared.ui.Connect;
-import com.vaadin.shared.ui.MarginInfo;
 
 @Connect(CubaFlowLayout.class)
-public class CubaFlowLayoutConnector extends CssLayoutConnector {
+public class CubaFlowLayoutConnector extends CubaCssActionsLayoutConnector {
 
     @Override
     public CubaFlowLayoutState getState() {
@@ -34,13 +32,5 @@ public class CubaFlowLayoutConnector extends CssLayoutConnector {
     @Override
     public CubaFlowLayoutWidget getWidget() {
         return (CubaFlowLayoutWidget) super.getWidget();
-    }
-
-    @Override
-    public void onStateChanged(StateChangeEvent stateChangeEvent) {
-        super.onStateChanged(stateChangeEvent);
-
-        getWidget().setMargin(new MarginInfo(getState().marginsBitmask));
-        getWidget().setSpacing(getState().spacing);
     }
 }

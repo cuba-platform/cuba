@@ -18,9 +18,10 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.CssLayout;
+import com.haulmont.cuba.web.toolkit.ui.CubaCssActionsLayout;
 
 public class WebCssLayout extends WebAbstractOrderedLayout<com.vaadin.ui.CssLayout> implements CssLayout {
     public WebCssLayout() {
-        component = new com.vaadin.ui.CssLayout();
+        component = new CubaCssActionsLayout();
     }
 }

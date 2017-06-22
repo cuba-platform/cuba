@@ -18,9 +18,8 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.cubascrollboxlayout.CubaScrollBoxLayoutServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.cubascrollboxlayout.CubaScrollBoxLayoutState;
-import com.vaadin.ui.CssLayout;
 
-public class CubaScrollBoxLayout extends CssLayout {
+public class CubaScrollBoxLayout extends CubaCssActionsLayout {
 
     protected CubaScrollBoxLayoutServerRpc serverRpc;
 

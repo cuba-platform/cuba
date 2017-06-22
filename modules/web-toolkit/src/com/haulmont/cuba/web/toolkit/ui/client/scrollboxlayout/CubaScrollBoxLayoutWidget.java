@@ -19,11 +19,11 @@ package com.haulmont.cuba.web.toolkit.ui.client.scrollboxlayout;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.vaadin.client.ui.VCssLayout;
+import com.haulmont.cuba.web.toolkit.ui.client.cssactionslayout.CubaCssActionsLayoutWidget;
 
 import java.util.function.BiConsumer;
 
-public class CubaScrollBoxLayoutWidget extends VCssLayout {
+public class CubaScrollBoxLayoutWidget extends CubaCssActionsLayoutWidget {
 
     protected int scrollTop = 0;
     protected int scrollLeft = 0;
@@ -31,7 +31,7 @@ public class CubaScrollBoxLayoutWidget extends VCssLayout {
     public BiConsumer<Integer, Integer> onScrollHandler;
 
     protected CubaScrollBoxLayoutWidget() {
-        DOM.sinkEvents(getElement(), Event.ONSCROLL);
+        DOM.sinkEvents(getElement(), Event.ONKEYDOWN | Event.ONSCROLL);
     }
 
     @Override

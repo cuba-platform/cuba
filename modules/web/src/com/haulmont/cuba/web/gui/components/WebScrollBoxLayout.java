@@ -20,10 +20,12 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaScrollBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractOrderedLayout;
@@ -43,6 +45,8 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxLayout
 
     protected Orientation orientation = Orientation.VERTICAL;
     protected ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
+
+    protected Map<Component.ShortcutAction, ShortcutListener> shortcuts;
 
     public WebScrollBoxLayout() {
         component = new CubaScrollBoxLayout();
@@ -281,5 +285,29 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxLayout
     @Override
     public void setSpacing(boolean enabled) {
         getContent().setSpacing(enabled);
+    }
+
+    @Override
+    public void addShortcutAction(ShortcutAction action) {
+        KeyCombination keyCombination = action.getShortcutCombination();
+        com.vaadin.event.ShortcutListener shortcut =
+                new ContainerShortcutActionWrapper(action, this, keyCombination);
+        component.addShortcutListener(shortcut);
+
+        if (shortcuts == null) {
+            shortcuts = new HashMap<>();
+        }
+        shortcuts.put(action, shortcut);
+    }
+
+    @Override
+    public void removeShortcutAction(ShortcutAction action) {
+        if (shortcuts != null) {
+            component.removeShortcutListener(shortcuts.remove(action));
+
+            if (shortcuts.isEmpty()) {
+                shortcuts = null;
+            }
+        }
     }
 }

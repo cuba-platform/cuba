@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.MaskedField;
 import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
-import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 
 public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> implements MaskedField {
@@ -86,7 +86,7 @@ public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> im
         getEventRouter().addListener(EnterPressListener.class, listener);
 
         if (enterShortcutListener == null) {
-            enterShortcutListener = new ShortcutListener("enter", ShortcutAction.KeyCode.ENTER, null) {
+            enterShortcutListener = new ShortcutListener("enter", KeyCode.ENTER, null) {
                 @Override
                 public void handleAction(Object sender, Object target) {
                     EnterPressEvent event = new EnterPressEvent(WebMaskedField.this);

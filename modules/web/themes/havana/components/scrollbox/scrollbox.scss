@@ -17,6 +17,7 @@
 @mixin havana-scrollbox($primary-stylename: c-scrollbox) {
   .#{$primary-stylename} {
     overflow: auto;
+    outline: none;
 
     .#{$primary-stylename}-content {
       border: 0;

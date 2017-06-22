@@ -21,7 +21,9 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
 
 import javax.annotation.Nonnull;
@@ -30,10 +32,12 @@ import java.util.*;
 
 public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
         extends WebAbstractComponent<T>
-        implements Component.OrderedContainer, Component.BelongToFrame, Component.HasCaption, Component.HasIcon, Component.LayoutClickNotifier {
+        implements Component.OrderedContainer, Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
+        Component.LayoutClickNotifier, Component.ShortcutNotifier {
 
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected LayoutEvents.LayoutClickListener layoutClickListener;
+    protected Map<Component.ShortcutAction, ShortcutListener> shortcuts;
 
     @Override
     public void add(Component childComponent) {
@@ -200,6 +204,30 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
         if (!getEventRouter().hasListeners(LayoutClickListener.class)) {
             component.removeLayoutClickListener(layoutClickListener);
             layoutClickListener = null;
+        }
+    }
+
+    @Override
+    public void addShortcutAction(ShortcutAction action) {
+        KeyCombination keyCombination = action.getShortcutCombination();
+        com.vaadin.event.ShortcutListener shortcut =
+                new ContainerShortcutActionWrapper(action, this, keyCombination);
+        component.addShortcutListener(shortcut);
+
+        if (shortcuts == null) {
+            shortcuts = new HashMap<>();
+        }
+        shortcuts.put(action, shortcut);
+    }
+
+    @Override
+    public void removeShortcutAction(ShortcutAction action) {
+        if (shortcuts != null) {
+            component.removeShortcutListener(shortcuts.remove(action));
+
+            if (shortcuts.isEmpty()) {
+                shortcuts = null;
+            }
         }
     }
 }

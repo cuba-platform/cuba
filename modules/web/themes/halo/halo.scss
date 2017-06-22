@@ -50,6 +50,8 @@
 @import "components/scrollbox/scrollbox";
 @import "components/twincolumn/twincolumn";
 @import "components/flowlayout/flowlayout";
+@import "components/csslayout/csslayout";
+@import "components/gridlayout/gridlayout";
 @import "components/fileupload/fileupload";
 @import "components/pickerfield/pickerfield";
 @import "components/listeditor/listeditor";
@@ -134,6 +136,8 @@
   @include halo-textarea;
   @include halo-draganddrop;
   @include halo-colorpicker;
+  @include halo-gridlayout;
+  @include halo-csslayout;
   @include halo-cuba-image;
 
   @include halo-cuba-groupbox;

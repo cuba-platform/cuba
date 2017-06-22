@@ -371,4 +371,14 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     public void setDescription(String description) {
         impl.setToolTipText(description);
     }
+
+    @Override
+    public void addShortcutAction(ShortcutAction action) {
+        // do nothing
+    }
+
+    @Override
+    public void removeShortcutAction(ShortcutAction action) {
+        // do nothing
+    }
 }

@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.web.toolkit.ui.CubaTextField;
 import com.vaadin.event.FieldEvents;
-import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 
 public class WebTextField extends WebAbstractTextField<CubaTextField> implements TextField {
@@ -189,7 +189,7 @@ public class WebTextField extends WebAbstractTextField<CubaTextField> implements
         getEventRouter().addListener(EnterPressListener.class, listener);
 
         if (enterShortcutListener == null) {
-            enterShortcutListener = new ShortcutListener("", ShortcutAction.KeyCode.ENTER, null) {
+            enterShortcutListener = new ShortcutListener("", KeyCode.ENTER, null) {
                 @Override
                 public void handleAction(Object sender, Object target) {
                     EnterPressEvent event = new EnterPressEvent(WebTextField.this);

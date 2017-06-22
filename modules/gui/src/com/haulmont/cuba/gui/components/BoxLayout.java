@@ -17,7 +17,8 @@
 package com.haulmont.cuba.gui.components;
 
 public interface BoxLayout extends ExpandingLayout, Component.OrderedContainer, Component.Spacing, Component.Margin,
-                                   Component.BelongToFrame, Component.HasCaption, Component.HasIcon, Component.LayoutClickNotifier {
+                                   Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
+                                   Component.LayoutClickNotifier, Component.ShortcutNotifier {
     /**
      * @deprecated Use {@link VBoxLayout#NAME}
      */

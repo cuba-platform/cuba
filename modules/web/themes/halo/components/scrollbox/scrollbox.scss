@@ -21,6 +21,7 @@
     box-shadow: none;
     background: transparent;
     overflow: auto;
+    outline: none;
   }
 
   .#{$primary-stylename} > .v-panel-content {

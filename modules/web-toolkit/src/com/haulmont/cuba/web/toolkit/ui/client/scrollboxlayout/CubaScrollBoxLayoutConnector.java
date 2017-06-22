@@ -18,14 +18,14 @@ package com.haulmont.cuba.web.toolkit.ui.client.scrollboxlayout;
 
 import com.google.gwt.user.client.Element;
 import com.haulmont.cuba.web.toolkit.ui.CubaScrollBoxLayout;
+import com.haulmont.cuba.web.toolkit.ui.client.cssactionslayout.CubaCssActionsLayoutConnector;
 import com.haulmont.cuba.web.toolkit.ui.client.cubascrollboxlayout.CubaScrollBoxLayoutServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.cubascrollboxlayout.CubaScrollBoxLayoutState;
 import com.vaadin.client.ui.SimpleManagedLayout;
-import com.vaadin.client.ui.csslayout.CssLayoutConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaScrollBoxLayout.class)
-public class CubaScrollBoxLayoutConnector extends CssLayoutConnector implements SimpleManagedLayout {
+public class CubaScrollBoxLayoutConnector extends CubaCssActionsLayoutConnector implements SimpleManagedLayout {
 
     @Override
     public CubaScrollBoxLayoutState getState() {

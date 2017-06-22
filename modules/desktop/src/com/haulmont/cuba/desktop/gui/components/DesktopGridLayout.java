@@ -400,4 +400,14 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
     @Override
     public void removeLayoutClickListener(LayoutClickListener listener) {
     }
+
+    @Override
+    public void addShortcutAction(ShortcutAction action) {
+        // do nothing
+    }
+
+    @Override
+    public void removeShortcutAction(ShortcutAction action) {
+        // do nothing
+    }
 }

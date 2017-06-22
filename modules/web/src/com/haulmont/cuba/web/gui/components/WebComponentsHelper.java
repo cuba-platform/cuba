@@ -19,6 +19,8 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component.Container;
+import com.haulmont.cuba.gui.components.Component.ShortcutTriggeredEvent;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -27,10 +29,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
-import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
-import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
-import com.haulmont.cuba.web.toolkit.ui.CubaTextField;
-import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
+import com.haulmont.cuba.web.toolkit.ui.*;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
@@ -50,7 +49,6 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.lang.reflect.Field;
 
 public class WebComponentsHelper {
 
@@ -554,5 +552,60 @@ public class WebComponentsHelper {
                 LoggerFactory.getLogger(WebComponentsHelper.class).warn("Error while validation handling ", e);
             }
         }
+    }
+
+    public static ShortcutTriggeredEvent getShortcutEvent(com.haulmont.cuba.gui.components.Component source,
+                                                          Component target) {
+        Component vaadinSource = getVaadinSource(source);
+
+        if (vaadinSource == target) {
+            return new ShortcutTriggeredEvent(source, source);
+        }
+
+        if (source instanceof Container) {
+            Container container = (Container) source;
+            Component targetComponent = getDirectChildComponent(target, vaadinSource);
+            com.haulmont.cuba.gui.components.Component childComponent =
+                    findChildComponent(container, targetComponent);
+            return new ShortcutTriggeredEvent(source, childComponent);
+        }
+
+        return new ShortcutTriggeredEvent(source, null);
+    }
+
+    protected static Component getVaadinSource(com.haulmont.cuba.gui.components.Component source) {
+        Component component = source.unwrapComposition(Component.class);
+        if (component instanceof AbstractSingleComponentContainer) {
+            return ((AbstractSingleComponentContainer) component).getContent();
+        }
+
+        if (component instanceof CubaScrollBoxLayout) {
+            return ((CubaScrollBoxLayout) component).getComponent(0);
+        }
+
+        return component;
+    }
+
+    /**
+     * @return the direct child component of the layout which contains the component involved to event
+     */
+    protected static Component getDirectChildComponent(Component targetComponent, Component vaadinSource) {
+        while (targetComponent != null
+                && targetComponent.getParent() != vaadinSource) {
+            targetComponent = targetComponent.getParent();
+        }
+        return targetComponent;
+    }
+
+    @Nullable
+    protected static com.haulmont.cuba.gui.components.Component findChildComponent(Container container,
+                                                                                   Component target) {
+        Collection<com.haulmont.cuba.gui.components.Component> components = container.getComponents();
+        for (com.haulmont.cuba.gui.components.Component childComponent : components) {
+            if (childComponent.unwrapComposition(Component.class) == target) {
+                return childComponent;
+            }
+        }
+        return null;
     }
 }

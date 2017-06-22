@@ -17,10 +17,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.flowlayout;
 
-import com.vaadin.shared.ui.csslayout.CssLayoutState;
+import com.haulmont.cuba.web.toolkit.ui.client.cssactionslayout.CubaCssActionsLayoutState;
 
-public class CubaFlowLayoutState extends CssLayoutState {
-    public int marginsBitmask = 0;
-
-    public boolean spacing = false;
+public class CubaFlowLayoutState extends CubaCssActionsLayoutState {
 }

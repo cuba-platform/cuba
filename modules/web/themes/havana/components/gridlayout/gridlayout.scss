@@ -15,8 +15,11 @@
  *
  */
 
-@mixin havana-gridlayout {
+@mixin havana-gridlayout($primary-stylename: v-gridlayout) {
 
   // just a stub for possible extension
   // do not assign box defaults mixin to grid layout slot
+  .#{$primary-stylename} {
+    outline: none;
+  }
 }

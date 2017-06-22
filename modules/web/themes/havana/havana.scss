@@ -50,6 +50,7 @@
 @import "components/popupview/popupview";
 @import "components/fieldgroup/fieldgroup";
 @import "components/flowlayout/flowlayout";
+@import "components/csslayout/csslayout";
 @import "components/gridlayout/gridlayout";
 @import "components/splitpanel/splitpanel";
 @import "components/grouptable/grouptable";
@@ -147,6 +148,7 @@
   @include havana-scrollbox;
   @include havana-calendar;
   @include havana-colorpicker;
+  @include havana-csslayout;
 
   @include havana-cuba-groupbox;
   @include havana-cuba-tokenlist;

@@ -21,11 +21,13 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.GroupBoxLayout;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.compatibility.ComponentExpandCollapseListenerWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractOrderedLayout;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -44,6 +46,8 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     protected Orientation orientation = Orientation.VERTICAL;
 
     protected boolean settingsEnabled = true;
+
+    protected Map<Component.ShortcutAction, ShortcutListener> shortcuts;
 
     public WebGroupBox() {
         component = new CubaGroupBox();
@@ -376,5 +380,29 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     @Override
     public String getStyleName() {
         return StringUtils.normalizeSpace(super.getStyleName().replace(GROUPBOX_PANEL_STYLENAME, ""));
+    }
+
+    @Override
+    public void addShortcutAction(ShortcutAction action) {
+        KeyCombination keyCombination = action.getShortcutCombination();
+        com.vaadin.event.ShortcutListener shortcut =
+                new ContainerShortcutActionWrapper(action, this, keyCombination);
+        component.addShortcutListener(shortcut);
+
+        if (shortcuts == null) {
+            shortcuts = new HashMap<>();
+        }
+        shortcuts.put(action, shortcut);
+    }
+
+    @Override
+    public void removeShortcutAction(ShortcutAction action) {
+        if (shortcuts != null) {
+            component.removeShortcutListener(shortcuts.remove(action));
+
+            if (shortcuts.isEmpty()) {
+                shortcuts = null;
+            }
+        }
     }
 }

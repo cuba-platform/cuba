@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (c) 2008-2017 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.toolkit.ui.client.cubascrollboxlayout;
-
-import com.haulmont.cuba.web.toolkit.ui.client.cssactionslayout.CubaCssActionsLayoutState;
-
-public class CubaScrollBoxLayoutState extends CubaCssActionsLayoutState {
-
-    public int scrollTop = 0;
-    public int scrollLeft = 0;
+@mixin halo-gridlayout($primary-stylename: v-gridlayout) {
+  .#{$primary-stylename} {
+    outline: none;
+  }
 }

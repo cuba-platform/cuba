@@ -20,15 +20,15 @@ package com.haulmont.cuba.web.toolkit.ui.client.gridlayout;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaGridLayout;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
-import com.vaadin.client.ComponentConnector;
-import com.vaadin.client.VCaption;
+import com.vaadin.client.*;
+import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.client.ui.gridlayout.GridLayoutConnector;
 import com.vaadin.client.ui.layout.VLayoutSlot;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaGridLayout.class)
-public class CubaGridLayoutConnector extends GridLayoutConnector {
+public class CubaGridLayoutConnector extends GridLayoutConnector implements Paintable {
 
     @Override
     public CubaGridLayoutWidget getWidget() {
@@ -60,6 +60,20 @@ public class CubaGridLayoutConnector extends GridLayoutConnector {
         } else {
             layout.setCaption(childConnector.getWidget(), null);
             getLayoutManager().setNeedsLayout(this);
+        }
+    }
+
+    @Override
+    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+        final int cnt = uidl.getChildCount();
+        for (int i = 0; i < cnt; i++) {
+            UIDL childUidl = uidl.getChildUIDL(i);
+            if (childUidl.getTag().equals("actions")) {
+                if (getWidget().getShortcutHandler() == null) {
+                    getWidget().setShortcutHandler(new ShortcutActionHandler(uidl.getId(), client));
+                }
+                getWidget().getShortcutHandler().updateActionMap(childUidl);
+            }
         }
     }
 }

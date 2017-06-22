@@ -17,11 +17,22 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.gridlayout;
 
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.client.ui.layout.ComponentConnectorLayoutSlot;
 
 public class CubaGridLayoutWidget extends VGridLayout {
+
+    protected ShortcutActionHandler shortcutHandler;
+
+    public CubaGridLayoutWidget() {
+        super();
+        getElement().setTabIndex(-1);
+        DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
+    }
 
     public VGridLayout.Cell[][] getCellMatrix() {
         return cells;
@@ -45,5 +56,23 @@ public class CubaGridLayoutWidget extends VGridLayout {
         Cell cell = new CubaGridLayoutCell(row, col);
         cells[col][row] = cell;
         return cell;
+    }
+
+    @Override
+    public void onBrowserEvent(Event event) {
+        super.onBrowserEvent(event);
+
+        final int type = DOM.eventGetType(event);
+        if (type == Event.ONKEYDOWN && shortcutHandler != null) {
+            shortcutHandler.handleKeyboardEvent(event);
+        }
+    }
+
+    public ShortcutActionHandler getShortcutHandler() {
+        return shortcutHandler;
+    }
+
+    public void setShortcutHandler(ShortcutActionHandler shortcutHandler) {
+        this.shortcutHandler = shortcutHandler;
     }
 }

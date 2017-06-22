@@ -21,7 +21,9 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractOrderedLayout;
 
@@ -34,6 +36,7 @@ public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
 
     protected List<Component> ownComponents = new ArrayList<>();
     protected LayoutEvents.LayoutClickListener layoutClickListener;
+    protected Map<Component.ShortcutAction, ShortcutListener> shortcuts;
 
     @Override
     public void add(Component childComponent) {
@@ -229,6 +232,30 @@ public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
         if (!getEventRouter().hasListeners(LayoutClickListener.class)) {
             component.removeLayoutClickListener(layoutClickListener);
             layoutClickListener = null;
+        }
+    }
+
+    @Override
+    public void addShortcutAction(ShortcutAction action) {
+        KeyCombination keyCombination = action.getShortcutCombination();
+        com.vaadin.event.ShortcutListener shortcut =
+                new ContainerShortcutActionWrapper(action, this, keyCombination);
+        component.addShortcutListener(shortcut);
+
+        if (shortcuts == null) {
+            shortcuts = new HashMap<>();
+        }
+        shortcuts.put(action, shortcut);
+    }
+
+    @Override
+    public void removeShortcutAction(ShortcutAction action) {
+        if (shortcuts != null) {
+            component.removeShortcutListener(shortcuts.remove(action));
+
+            if (shortcuts.isEmpty()) {
+                shortcuts = null;
+            }
         }
     }
 }
