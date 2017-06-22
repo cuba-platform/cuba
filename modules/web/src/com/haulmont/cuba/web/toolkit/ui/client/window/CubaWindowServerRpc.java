@@ -24,4 +24,6 @@ public interface CubaWindowServerRpc extends ServerRpc {
     void onWindowContextMenu();
 
     void performContextMenuAction(String actionKey);
+
+    void performCloseAction();
 }

@@ -312,6 +312,7 @@ public interface Frame
 
         private Integer width;
         private Boolean modal;
+        private Boolean closeOnClickOutside;
 
         public MessageMode getMessageMode() {
             return messageMode;
@@ -357,6 +358,35 @@ public interface Frame
             MessageType instance = getMutableInstance();
 
             instance.modal = modal;
+            return instance;
+        }
+
+        /**
+         * @return true if a window can be closed by click on outside window area
+         */
+        public Boolean getCloseOnClickOutside() {
+            return closeOnClickOutside;
+        }
+
+        /**
+         * Set closeOnClickOutside to true if a window should be closed by click on outside window area.
+         * It works when a window has a modal mode.
+         */
+        public MessageType setCloseOnClickOutside(boolean closeOnClickOutside) {
+            MessageType instance = getMutableInstance();
+
+            instance.closeOnClickOutside = closeOnClickOutside;
+            return instance;
+        }
+
+        /**
+         * Set closeOnClickOutside to true if a window should be closed by click on outside window area.
+         * It works when a window has a modal mode.
+         */
+        public MessageType closeOnClickOutside(boolean closeOnClickOutside) {
+            MessageType instance = getMutableInstance();
+
+            instance.closeOnClickOutside = closeOnClickOutside;
             return instance;
         }
 

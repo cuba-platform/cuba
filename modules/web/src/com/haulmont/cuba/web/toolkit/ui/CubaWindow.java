@@ -75,6 +75,11 @@ public class CubaWindow extends Window {
                 contextActionMapper = null;
             }
         }
+
+        @Override
+        public void performCloseAction() {
+            close();
+        }
     };
 
     protected static final Method BEFORE_WINDOW_CLOSE_METHOD;
@@ -134,6 +139,14 @@ public class CubaWindow extends Window {
         removeCloseShortcut(KeyCode.ESCAPE);
     }
 
+    public void setCloseOnClickOutside(boolean informationDialog) {
+        getState(false).closeOnClickOutside = informationDialog;
+    }
+
+    public boolean getCloseOnClickOutside() {
+        return getState().closeOnClickOutside;
+    }
+
     protected HashSet<Action> getContextActions(Component actionTarget) {
         HashSet<Action> actions = new LinkedHashSet<>();
         if (contextActionHandlers != null) {
@@ -150,6 +163,11 @@ public class CubaWindow extends Window {
     @Override
     protected CubaWindowState getState() {
         return (CubaWindowState) super.getState();
+    }
+
+    @Override
+    protected CubaWindowState getState(boolean markAsDirty) {
+        return (CubaWindowState) super.getState(markAsDirty);
     }
 
     @Override

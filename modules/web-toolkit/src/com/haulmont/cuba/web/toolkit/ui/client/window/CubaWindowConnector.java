@@ -24,6 +24,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.action.StaticActionOwner;
 import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ClientAction;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.communication.RpcProxy;
+import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.Action;
 import com.vaadin.client.ui.window.WindowConnector;
 import com.vaadin.shared.ui.Connect;
@@ -95,5 +96,12 @@ public class CubaWindowConnector extends WindowConnector {
                 }
             }
         };
+        getWidget().clickOnModalityCurtain = () -> rpc.performCloseAction();
+    }
+
+    @Override
+    public void onStateChanged(StateChangeEvent stateChangeEvent) {
+        super.onStateChanged(stateChangeEvent);
+        getWidget().setCloseOnClickOutside(getState().closeOnClickOutside);
     }
 }

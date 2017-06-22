@@ -40,6 +40,7 @@ public class DialogOptions {
     private Boolean resizable;
     private Boolean closeable;
     private Boolean modal;
+    private Boolean closeOnClickOutside;
 
     private Boolean forceDialog;
 
@@ -167,5 +168,21 @@ public class DialogOptions {
      * */
     public DialogOptions center() {
         return this;
+    }
+
+    /**
+     * Set closeOnClickOutside to true if a window should be closed by click on outside window area.
+     * It works when a window has a modal mode.
+     */
+    public DialogOptions setCloseOnClickOutside(Boolean closeOnClickOutside) {
+        this.closeOnClickOutside = closeOnClickOutside;
+        return this;
+    }
+
+    /**
+     * @return true if a window can be closed by click on outside window area
+     */
+    public Boolean getCloseOnClickOutside() {
+        return closeOnClickOutside;
     }
 }

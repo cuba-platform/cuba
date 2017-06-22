@@ -111,6 +111,7 @@ public abstract class WindowManager {
         private Boolean resizable;
         private Boolean closeable;
         private Boolean modal;
+        private Boolean closeOnClickOutside;
 
         public OpenType(OpenMode openMode) {
             this.openMode = openMode;
@@ -233,6 +234,35 @@ public abstract class WindowManager {
             OpenType instance = getMutableInstance();
 
             instance.modal = modal;
+            return instance;
+        }
+
+        /**
+         * @return true if a window can be closed by click on outside window area
+         */
+        public Boolean getCloseOnClickOutside() {
+            return closeOnClickOutside;
+        }
+
+        /**
+         * Set closeOnClickOutside to true if a window should be closed by click on outside window area.
+         * It works when a window has a modal mode.
+         */
+        public OpenType closeOnClickOutside(Boolean closeOnClickOutside) {
+            OpenType instance = getMutableInstance();
+
+            instance.closeOnClickOutside = closeOnClickOutside;
+            return instance;
+        }
+
+        /**
+         * Set closeOnClickOutside to true if a window should be closed by click on outside window area.
+         * It works when a window has a modal mode.
+         */
+        public OpenType setCloseOnClickOutside(Boolean closeOnClickOutside) {
+            OpenType instance = getMutableInstance();
+
+            instance.closeOnClickOutside = closeOnClickOutside;
             return instance;
         }
 
@@ -951,6 +981,10 @@ public abstract class WindowManager {
 
         if (dialogOptions.getModal() != null) {
             mutableOpenType.setModal(dialogOptions.getModal());
+        }
+
+        if(dialogOptions.getCloseOnClickOutside() != null){
+            mutableOpenType.setCloseOnClickOutside(dialogOptions.getCloseOnClickOutside());
         }
 
         return mutableOpenType;

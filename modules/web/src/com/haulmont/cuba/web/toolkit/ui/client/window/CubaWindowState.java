@@ -26,4 +26,7 @@ public class CubaWindowState extends WindowState {
 
     @NoLayout
     public boolean hasContextActionHandlers = false;
+
+    @NoLayout
+    public boolean closeOnClickOutside = false;
 }
