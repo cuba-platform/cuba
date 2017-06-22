@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
@@ -130,11 +131,22 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
                         "application property to 'true' to initialize and update database on startup.\n" +
                         "============================================================================");
             }
+            List<String> scripts = updater.findUpdateDatabaseScripts();
+            if (!scripts.isEmpty()) {
+                log.warn("\n" +
+                        "====================================================================\n" +
+                        "WARNING: The application contains unapplied database update scripts:\n\n" +
+                        Joiner.on('\n').join(scripts) + "\n\n" +
+                        "Set 'cuba.automaticDatabaseUpdate' application property to 'true' to\n " +
+                        "initialize and update database on startup.\n" +
+                        "====================================================================");
+            }
         } catch (DbInitializationException e) {
             throw new RuntimeException("\n" +
                     "===================================================================\n" +
                     "ERROR: Cannot check database. See the stacktrace below for details.\n" +
                     "===================================================================", e);
         }
+
     }
 }
