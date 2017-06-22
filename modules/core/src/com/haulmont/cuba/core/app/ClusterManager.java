@@ -202,7 +202,16 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener, O
             channel.setDiscardOwnMessages(true); // do not receive a copy of our own messages
             channel.setReceiver(new ClusterReceiver());
             channel.connect(getClusterName());
-            channel.getState(null, clusterConfig.getStateReceiveTimeout());
+            try {
+                log.info("Receiving cluster state...");
+                channel.getState(null, clusterConfig.getStateReceiveTimeout());
+            } catch (Exception e) {
+                if (clusterConfig.getAbortOnStateReceivingFailure())
+                    throw e;
+                else {
+                    log.error("Receiving the cluster state has failed", e);
+                }
+            }
             registerJmxBeans();
         } catch (Exception e) {
             channel = null;
