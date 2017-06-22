@@ -1,3 +1,11 @@
 -- Increase length of SEC_CONSTRAINT columns
 
-alter table SEC_CONSTRAINT modify (GROOVY_SCRIPT clob, FILTER_XML clob)^
+alter table SEC_CONSTRAINT add (GROOVY_SCRIPT_1 clob, FILTER_XML_1 clob)^
+
+update SEC_CONSTRAINT set GROOVY_SCRIPT = GROOVY_SCRIPT_1, FILTER_XML_1 = FILTER_XML^
+
+alter table SEC_CONSTRAINT drop (GROOVY_SCRIPT, FILTER_XML)^
+
+alter table SEC_CONSTRAINT rename column GROOVY_SCRIPT_1 to GROOVY_SCRIPT^
+
+alter table SEC_CONSTRAINT rename column FILTER_XML_1 to FILTER_XML^
