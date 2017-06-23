@@ -117,6 +117,10 @@ public interface Image extends Component, Component.HasCaption {
      * A resource that represents a theme image, e.g., <code>VAADIN/themes/yourtheme/some/path/image.png</code>
      */
     interface ThemeImageResource extends ImageResource {
+        /**
+         * @param path path to the theme image, e.g. "some/path/image.png"
+         * @return current ThemeImageResource instance
+         */
         ThemeImageResource setPath(String path);
 
         String getPath();
@@ -130,6 +134,20 @@ public interface Image extends Component, Component.HasCaption {
         FileDescriptorImageResource setFileDescriptor(FileDescriptor fileDescriptor);
 
         FileDescriptor getFileDescriptor();
+    }
+
+    /**
+     * A resource that represents an image stored in the directory of your application, e.g.:
+     * <code>${catalina.base}/webapps/appName/static/image.png</code>
+     */
+    interface RelativePathImageResource extends ImageResource {
+        /**
+         * @param path path to the image, e.g. "static/image.png"
+         * @return current RelativePathImageResource instance
+         */
+        RelativePathImageResource setPath(String path);
+
+        String getPath();
     }
 
     /**

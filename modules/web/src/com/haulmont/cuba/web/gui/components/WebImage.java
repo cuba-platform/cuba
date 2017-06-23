@@ -68,6 +68,7 @@ public class WebImage extends WebAbstractComponent<CubaImage> implements Image {
         builder.put(FileDescriptorImageResource.class, WebFileDescriptorImageResource.class);
         builder.put(FileImageResource.class, WebFileImageResource.class);
         builder.put(StreamImageResource.class, WebStreamImageResource.class);
+        builder.put(RelativePathImageResource.class, WebRelativePathImageResource.class);
 
         resourcesClasses = builder.build();
     }
