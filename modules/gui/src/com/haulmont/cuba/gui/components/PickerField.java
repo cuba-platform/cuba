@@ -607,7 +607,7 @@ public interface PickerField extends Field, Component.ActionsHolder, Component.B
                 return (Entity) value;
             }
 
-            if (pickerField.getDatasource() != null) {
+            if (pickerField.getDatasource() != null && !pickerField.isBuffered()) {
                 Entity item = pickerField.getDatasource().getItem();
                 if (item != null) {
                     Object dsValue = item.getValue(pickerField.getMetaPropertyPath().getMetaProperty().getName());
