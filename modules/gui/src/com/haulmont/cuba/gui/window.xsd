@@ -1512,6 +1512,10 @@
         <xs:attribute name="url" type="xs:string"/>
     </xs:complexType>
 
+    <xs:complexType name="relativePathImageResource">
+        <xs:attribute name="path" type="xs:string"/>
+    </xs:complexType>
+
     <xs:simpleType name="scaleMode">
         <xs:restriction base="xs:string">
             <xs:enumeration value="NONE"/>
@@ -1529,6 +1533,7 @@
                     <xs:element name="theme" type="themeImageResource"/>
                     <xs:element name="classpath" type="classpathImageResource"/>
                     <xs:element name="url" type="urlImageResource"/>
+                    <xs:element name="relativePath" type="relativePathImageResource"/>
                 </xs:choice>
                 <xs:attribute name="scaleMode" type="scaleMode"/>
             </xs:extension>

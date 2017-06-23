@@ -73,7 +73,24 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
 
         if (loadClasspathImageResource(image, element)) return;
 
+        if (loadRelativePathImageResource(image, element)) return;
+
         loadUrlImageResource(image, element);
+    }
+
+    protected boolean loadRelativePathImageResource(Image resultComponent, Element element) {
+        Element relativePath = element.element("relativePath");
+        if (relativePath == null)
+            return false;
+
+        String path = relativePath.attributeValue("path");
+        if (StringUtils.isEmpty(path)) {
+            throw new GuiDevelopmentException("No path provided for the RelativePathImageResource", context.getFullFrameId());
+        }
+
+        resultComponent.setSource(Image.RelativePathImageResource.class).setPath(path);
+
+        return true;
     }
 
     protected void loadUrlImageResource(Image resultComponent, Element element) {
@@ -106,9 +123,7 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
             throw new GuiDevelopmentException("No path provided for the ClasspathImageResource", context.getFullFrameId());
         }
 
-        Image.ClasspathImageResource resource = resultComponent.createResource(Image.ClasspathImageResource.class);
-        resource.setPath(classpathPath);
-        resultComponent.setSource(resource);
+        resultComponent.setSource(Image.ClasspathImageResource.class).setPath(classpathPath);
 
         return true;
     }
@@ -123,9 +138,7 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
             throw new GuiDevelopmentException("No path provided for the ThemeImageResource", context.getFullFrameId());
         }
 
-        Image.ThemeImageResource resource = resultComponent.createResource(Image.ThemeImageResource.class);
-        resource.setPath(themePath);
-        resultComponent.setSource(resource);
+        resultComponent.setSource(Image.ThemeImageResource.class).setPath(themePath);
 
         return true;
     }
@@ -146,9 +159,7 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
             throw new GuiDevelopmentException(msg, context.getFullFrameId());
         }
 
-        Image.FileImageResource resource = resultComponent.createResource(Image.FileImageResource.class);
-        resource.setFile(file);
-        resultComponent.setSource(resource);
+        resultComponent.setSource(Image.FileImageResource.class).setFile(file);
 
         return true;
     }
