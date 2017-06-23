@@ -123,19 +123,17 @@ public class SettingsWindow extends AbstractWindow {
         initTimeZoneFields();
 
         User user = userSession.getUser();
-        changePasswordBtn.setAction(
-                new AbstractAction("changePassw") {
-                    @Override
-                    public void actionPerform(Component component) {
-                        Window passwordDialog = openWindow("sec$User.changePassword", OpenType.DIALOG,
-                                ParamsMap.of("currentPasswordRequired", true));
-                        passwordDialog.addCloseListener(actionId -> {
-                            // move focus back to window
-                            changePasswordBtn.requestFocus();
-                        });
-                    }
-                }
-        );
+        changePasswordBtn.setAction(new BaseAction("changePassw")
+                .withCaption(getMessage("changePassw"))
+                .withHandler(event -> {
+                    Window passwordDialog = openWindow("sec$User.changePassword", OpenType.DIALOG,
+                            ParamsMap.of("currentPasswordRequired", true));
+                    passwordDialog.addCloseListener(actionId -> {
+                        // move focus back to window
+                        changePasswordBtn.requestFocus();
+                    });
+                }));
+
         if (!user.equals(userSession.getCurrentOrSubstitutedUser())
                 || Boolean.TRUE.equals(userSession.getAttribute(EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE))) {
             changePasswordBtn.setEnabled(false);
@@ -150,6 +148,7 @@ public class SettingsWindow extends AbstractWindow {
         appLangField.setValue(userManagementService.loadOwnLocale());
 
         Action commitAction = new BaseAction("commit")
+                .withCaption(messages.getMainMessage("actions.Ok"))
                 .withShortcut(clientConfig.getCommitShortcut())
                 .withHandler(event ->
                         commit()
@@ -158,6 +157,7 @@ public class SettingsWindow extends AbstractWindow {
         okBtn.setAction(commitAction);
 
         cancelBtn.setAction(new BaseAction("cancel")
+                .withCaption(messages.getMainMessage("actions.Cancel"))
                 .withHandler(event ->
                         cancel()
                 ));
