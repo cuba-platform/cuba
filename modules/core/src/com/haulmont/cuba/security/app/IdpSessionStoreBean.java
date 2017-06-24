@@ -200,10 +200,7 @@ public class IdpSessionStoreBean implements IdpSessionStore {
                 log.debug("Removing ticket due to cluster message: {}", message);
                 sessionTickets.remove(id);
             } else {
-                IdpSessionTicketRecord ticketRecord = sessionTickets.get(id);
-                if (ticketRecord == null) {
-                    sessionTickets.put(id, message);
-                }
+                sessionTickets.putIfAbsent(id, message);
             }
         } finally {
             lock.writeLock().unlock();
@@ -409,6 +406,25 @@ public class IdpSessionStoreBean implements IdpSessionStore {
     }
 
     @Override
+    public void propagate(String sessionId) {
+        lock.readLock().lock();
+
+        IdpSessionRecord sessionRecord;
+        try {
+            sessionRecord = sessions.get(sessionId);
+        } finally {
+            lock.readLock().unlock();
+        }
+
+        if (sessionRecord != null) {
+            long now = timeSource.currentTimeMillis();
+            sessionRecord.setLastUsedTs(now);
+            sessionRecord.setLastSentTs(now);
+            clusterManager.sendSync(sessionRecord);
+        }
+    }
+
+    @Override
     public IdpSession getSession(String sessionId) {
         IdpSession session;
         IdpSessionRecord sessionRecord;
@@ -437,7 +453,14 @@ public class IdpSessionStoreBean implements IdpSessionStore {
 
     @Override
     public IdpSessionInfo getSessionInfo(String sessionId) {
-        IdpSessionRecord sessionRecord = sessions.get(sessionId);
+        lock.readLock().lock();
+
+        IdpSessionRecord sessionRecord;
+        try {
+            sessionRecord = sessions.get(sessionId);
+        } finally {
+            lock.readLock().unlock();
+        }
         return toSessionInfo(sessionRecord);
     }
 

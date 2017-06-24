@@ -43,10 +43,14 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * IDP login form endpoint.
+ */
 @Controller("cuba_IdpController")
 public class IdpController {
     public static final String CUBA_IDP_COOKIE_NAME = "IDP_SESSION_ID";
@@ -270,7 +274,7 @@ public class IdpController {
     protected String encodeUrlParameter(String url) {
         String encodedServiceProviderUrl;
         try {
-            encodedServiceProviderUrl = URLEncoder.encode(url, "UTF-8");
+            encodedServiceProviderUrl = URLEncoder.encode(url, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("Unable to encode SP URL");
         }

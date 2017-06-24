@@ -47,6 +47,13 @@ public interface IdpSessionStore {
 
     List<IdpSessionInfo> processEviction(int sessionExpirationTimeoutSec, int expirationTimeoutSec);
 
+    /**
+     * Propagates the IDP session state to the cluster
+     *
+     * @param sessionId session id. If session with this id is not found, does nothing.
+     */
+    void propagate(String sessionId);
+
     class IdpSessionTicketInfo implements Serializable {
         private final String sessionId;
         private final long createTs;

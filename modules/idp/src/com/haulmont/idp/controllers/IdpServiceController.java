@@ -31,6 +31,9 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
+/**
+ * Endpoint for server-to-server interaction between service providers and IDP.
+ */
 @RestController("cuba_IdpServiceController")
 @RequestMapping(value = "service", produces = "application/json; charset=UTF-8")
 public class IdpServiceController {

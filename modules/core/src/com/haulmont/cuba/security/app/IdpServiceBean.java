@@ -28,10 +28,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.io.Serializable;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service(IdpService.NAME)
@@ -62,7 +60,7 @@ public class IdpServiceBean implements IdpService {
 
         User user = loginWorker.authenticate(login, password, locale, parameters);
 
-        IdpSession session = new IdpSession(uuidSource.createUuid().toString().replace("-", ""));
+        IdpSession session = new IdpSession(createIdpSessionId());
         session.setLogin(user.getLogin());
         session.setEmail(user.getEmail());
 
@@ -76,6 +74,39 @@ public class IdpServiceBean implements IdpService {
         String serviceProviderTicket = sessionStore.putSession(session);
 
         return new IdpLoginResult(session.getId(), serviceProviderTicket);
+    }
+
+    protected String createIdpSessionId() {
+        return uuidSource.createUuid().toString().replace("-", "");
+    }
+
+    @Override
+    public IdpSession setSessionAttribute(String sessionId, String name, Serializable value) {
+        IdpSession session = sessionStore.getSession(sessionId);
+        if (session != null) {
+            Map<String, Serializable> attributes = session.getAttributes();
+            if (attributes == null) {
+                attributes = new HashMap<>();
+                session.setAttributes(attributes);
+            }
+            attributes.put(name, value);
+
+            sessionStore.propagate(session.getId());
+        }
+        return session;
+    }
+
+    @Override
+    public IdpSession removeSessionAttribute(String sessionId, String name) {
+        IdpSession session = sessionStore.getSession(sessionId);
+        if (session != null) {
+            Map<String, Serializable> attributes = session.getAttributes();
+            if (attributes != null) {
+                attributes.remove(name);
+            }
+            sessionStore.propagate(session.getId());
+        }
+        return session;
     }
 
     @Override

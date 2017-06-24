@@ -88,6 +88,27 @@ public interface IdpService {
     IdpSession getSession(String sessionId);
 
     /**
+     * Set a session attribute value, propagating changes to the cluster.
+     *
+     * @param sessionId an active session identifier
+     * @param name      attribute name
+     * @param value     attribute value
+     * @return updated user session or null if session not found.
+     */
+    @Nullable
+    IdpSession setSessionAttribute(String sessionId, String name, Serializable value);
+
+    /**
+     * Remove a session attribute, propagating changes to the cluster.
+     *
+     * @param sessionId an active session identifier
+     * @param name      attribute name
+     * @return updated user session or null if session not found.
+     */
+    @Nullable
+    IdpSession removeSessionAttribute(String sessionId, String name);
+
+    /**
      * Evict timed out sessions and their tickets from the session storage.
      *
      * @return removed session ids.
