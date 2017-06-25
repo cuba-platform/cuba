@@ -40,6 +40,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.function.Consumer;
 
 /**
  * Abstract class that encapsulates common connection behaviour for web-client.
@@ -110,6 +111,12 @@ public abstract class AbstractConnection implements Connection {
 
     @Override
     public void update(UserSession session, SessionMode sessionMode) throws LoginException {
+        update(session, sessionMode, null);
+    }
+
+    @Override
+    public void update(UserSession session, SessionMode sessionMode,
+                       @Nullable Consumer<UserSessionInitEvent> sessionInitializer) throws LoginException {
         LoginContextParameters lcp = getLoginContextParameters();
 
         ClientUserSession clientUserSession = new ClientUserSession(session);
@@ -120,7 +127,7 @@ public abstract class AbstractConnection implements Connection {
         connected = true;
 
         try {
-            internalLogin(clientUserSession);
+            internalLogin(clientUserSession, sessionInitializer);
         } catch (LoginException | RuntimeException e) {
             internalLogout(false);
 
@@ -146,7 +153,8 @@ public abstract class AbstractConnection implements Connection {
         this.connected = lcp.isConnected();
     }
 
-    protected void internalLogin(UserSession session) throws LoginException {
+    protected void internalLogin(UserSession session, @Nullable Consumer<UserSessionInitEvent> sessionInitializer)
+            throws LoginException {
         AppContext.setSecurityContext(new SecurityContext(session));
 
         App app = App.getInstance();
@@ -171,6 +179,10 @@ public abstract class AbstractConnection implements Connection {
 
         if (Boolean.TRUE.equals(session.getUser().getTimeZoneAuto())) {
             session.setTimeZone(detectTimeZone());
+        }
+
+        if (sessionInitializer != null) {
+            sessionInitializer.accept(new UserSessionInitEvent(this, session));
         }
 
         fireConnectionListeners();

@@ -49,6 +49,7 @@ public interface CubaAuthProvider extends Filter {
 
     /**
      * Handler for user session logged in event. Called by application UI tier when CUBA user session is created.
+     * Triggered after standard session initialization, right before UI initialization.
      *
      * @param userSession user session
      */

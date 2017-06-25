@@ -21,7 +21,9 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 
 import javax.annotation.Nullable;
+import java.util.EventObject;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 /**
  * Interface to be implemented by objects that connect web-client to the middleware.
@@ -111,10 +113,22 @@ public interface Connection {
 
     /**
      * Update internal state with the passed user session object. Also fires connection listeners.
-     * @param session           new UserSession object
-     * @throws LoginException   in case of unsuccessful update
+     *
+     * @param session new UserSession object
+     * @throws LoginException in case of unsuccessful update
      */
     void update(UserSession session, SessionMode sessionMode) throws LoginException;
+
+    /**
+     * Update internal state with the passed user session object. Also fires connection listeners.
+     *
+     * @param session            new UserSession object
+     * @param sessionInitializer optional callback that will be triggered after session setup and before triggering
+     *                           connection state change listeners
+     * @throws LoginException in case of unsuccessful update
+     */
+    void update(UserSession session, SessionMode sessionMode,
+                @Nullable Consumer<UserSessionInitEvent> sessionInitializer) throws LoginException;
 
     /**
      * Add a connection listener.
@@ -137,4 +151,25 @@ public interface Connection {
      * @param listener  listener to remove
      */
     void removeSubstitutionListener(UserSubstitutionListener listener);
+
+    /**
+     * Event that is used for additional initialization during {@link Connection#update(UserSession, SessionMode, Consumer)}.
+     */
+    class UserSessionInitEvent extends EventObject {
+        private final UserSession userSession;
+
+        public UserSessionInitEvent(Connection source, UserSession userSession) {
+            super(source);
+            this.userSession = userSession;
+        }
+
+        @Override
+        public Connection getSource() {
+            return (Connection) super.getSource();
+        }
+
+        public UserSession getUserSession() {
+            return userSession;
+        }
+    }
 }

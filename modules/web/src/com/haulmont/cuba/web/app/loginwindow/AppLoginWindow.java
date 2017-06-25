@@ -379,14 +379,21 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
             if (loginByRememberMe && webConfig.getRememberMeEnabled()) {
                 doLoginByRememberMe(login, password, selectedLocale);
             } else if (webAuthConfig.getExternalAuthentication()) {
-                // try to login as externally authenticated user, fallback to regular authentication
                 // we use resolved locale for error messages
-                if (authenticateExternally(login, password, selectedLocale)) {
+                try {
+                    // try to login as externally authenticated user, fallback to regular authentication if enabled
+                    authenticateExternally(login, password, selectedLocale);
                     login = convertLoginString(login);
-
                     ((ExternallyAuthenticatedConnection) connection).loginAfterExternalAuthentication(login, selectedLocale);
-                } else {
-                    doLogin(login, passwordEncryption.getPlainHash(password), selectedLocale);
+                } catch (LoginException e) {
+                    log.debug("External authentication failed", e);
+
+                    if (webAuthConfig.getStandardAuthenticationFallbackEnabled()
+                            && webAuthConfig.getStandardAuthenticationUsersWhiteList().contains(login)) {
+                        doLogin(login, passwordEncryption.getPlainHash(password), selectedLocale);
+                    } else {
+                        throw e;
+                    }
                 }
             } else {
                 doLogin(login, passwordEncryption.getPlainHash(password), selectedLocale);
@@ -427,14 +434,8 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
         app.getConnection().loginByRememberMe(login, rememberMeToken, locale);
     }
 
-    protected boolean authenticateExternally(String login, String passwordValue, Locale locale) {
-        try {
-            authProvider.authenticate(login, passwordValue, locale);
-        } catch (Exception e) {
-            log.debug("External authentication failed", e);
-            return false;
-        }
-        return true;
+    protected void authenticateExternally(String login, String passwordValue, Locale locale) throws LoginException {
+        authProvider.authenticate(login, passwordValue, locale);
     }
 
     protected boolean isBruteForceProtectionEnabled() {

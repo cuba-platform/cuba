@@ -19,7 +19,6 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.LoginFailedException;
 import com.haulmont.cuba.security.global.SessionParams;
@@ -132,15 +131,11 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
 
         String password = webAuthConfig.getTrustedClientPassword();
         UserSession userSession = doLoginTrusted(login, password, locale, getLoginParams());
-        update(userSession, SessionMode.AUTHENTICATED);
-
-        UserSession session = getSession();
-        if (session == null) {
-            throw new IllegalStateException("Null session after login");
-        }
-        session.setAttribute(EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE, true);
-
-        authProvider.userSessionLoggedIn(session);
+        update(userSession, SessionMode.AUTHENTICATED, sessionInitEvent -> {
+            UserSession session = sessionInitEvent.getUserSession();
+            session.setAttribute(EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE, true);
+            authProvider.userSessionLoggedIn(session);
+        });
     }
 
     @Override
