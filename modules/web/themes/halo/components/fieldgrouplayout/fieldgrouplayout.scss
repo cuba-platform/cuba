@@ -19,6 +19,10 @@
   @include valo-gridlayout-global($primary-stylename);
   @include valo-gridlayout($primary-stylename);
 
+  .#{$primary-stylename} {
+    outline: none;
+  }
+
   .#{$primary-stylename}-spacing-on {
     padding-top: $v-layout-spacing-vertical/2;
   }

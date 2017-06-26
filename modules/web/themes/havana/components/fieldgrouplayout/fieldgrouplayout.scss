@@ -18,6 +18,10 @@
 @mixin havana-cuba-fieldgrouplayout($primary-stylename: c-fglayout) {
   @include base-gridlayout($primary-stylename);
 
+  .#{$primary-stylename} {
+    outline: none;
+  }
+
   .#{$primary-stylename}-spacing-on {
     padding-left: 8px;
     padding-top: 4px;
