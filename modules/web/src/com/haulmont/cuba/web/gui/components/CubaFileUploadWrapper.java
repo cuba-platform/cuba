@@ -45,6 +45,8 @@ public class CubaFileUploadWrapper extends CustomField {
     public CubaFileUploadWrapper(UploadComponent uploadButton) {
         setPrimaryStyleName(FILE_UPLOAD_WRAPPER_STYLENAME);
         initLayout(uploadButton);
+
+        setValidationVisible(false);
     }
 
     protected void initLayout(UploadComponent uploadComponent) {
