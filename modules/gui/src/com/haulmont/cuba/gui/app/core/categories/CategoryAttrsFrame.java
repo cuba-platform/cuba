@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.app.core.categories;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.Category;
@@ -30,6 +31,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -152,7 +154,15 @@ public class CategoryAttrsFrame extends AbstractFrame {
     }
 
     protected void sortTableByOrderNo() {
-        categoryAttrsTable.sortBy(categoryAttrsDs.getMetaClass().getPropertyPath("orderNo"), true);
+        MetaPropertyPath mpp = categoryAttrsDs.getMetaClass().getPropertyPath("orderNo");
+
+        CollectionDatasource.Sortable.SortInfo<MetaPropertyPath> sortInfo =
+                new CollectionDatasource.Sortable.SortInfo<>();
+        sortInfo.setOrder(CollectionDatasource.Sortable.Order.ASC);
+        sortInfo.setPropertyPath(mpp);
+
+        categoryAttrsDs.resetSortOrder();
+        categoryAttrsDs.sort(new CollectionDatasource.Sortable.SortInfo[]{sortInfo});
     }
 
     protected void initDataTypeColumn() {
