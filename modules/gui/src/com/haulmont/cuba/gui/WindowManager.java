@@ -303,6 +303,7 @@ public abstract class WindowManager {
             openType.setCloseable(closeable);
             openType.setHeight(height);
             openType.setWidth(width);
+            openType.setCloseOnClickOutside(closeOnClickOutside);
 
             return openType;
         }
