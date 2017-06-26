@@ -39,6 +39,7 @@ import com.haulmont.restapi.transform.JsonTransformationDirection;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -272,7 +273,9 @@ public class EntitiesControllerManager {
         try {
             Object id;
             if (BaseDbGeneratedIdEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
-                Method getIdMethod =  metaClass.getJavaClass().getMethod("getDbGeneratedId");
+                Method getIdMethod = ReflectionUtils.findMethod(metaClass.getJavaClass(), "getDbGeneratedId");
+                if (getIdMethod == null)
+                    throw new IllegalArgumentException("Unable to find getDbGeneratedId method in " + metaClass.getJavaClass());
                 Class<?> idClass = getIdMethod.getReturnType();
                 if (Integer.class.isAssignableFrom(idClass)) {
                     id = IdProxy.of(Integer.valueOf(entityId));
