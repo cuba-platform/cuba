@@ -564,9 +564,8 @@ public class WebComponentsHelper {
 
         if (source instanceof Container) {
             Container container = (Container) source;
-            Component targetComponent = getDirectChildComponent(target, vaadinSource);
             com.haulmont.cuba.gui.components.Component childComponent =
-                    findChildComponent(container, targetComponent);
+                    findChildComponent(container, target);
             return new ShortcutTriggeredEvent(source, childComponent);
         }
 
@@ -600,10 +599,18 @@ public class WebComponentsHelper {
     @Nullable
     protected static com.haulmont.cuba.gui.components.Component findChildComponent(Container container,
                                                                                    Component target) {
-        Collection<com.haulmont.cuba.gui.components.Component> components = container.getComponents();
-        for (com.haulmont.cuba.gui.components.Component childComponent : components) {
-            if (childComponent.unwrapComposition(Component.class) == target) {
-                return childComponent;
+        Component vaadinSource = getVaadinSource(container);
+        Component targetComponent = getDirectChildComponent(target, vaadinSource);
+        Collection<com.haulmont.cuba.gui.components.Component> components = container.getOwnComponents();
+        for (com.haulmont.cuba.gui.components.Component component : components) {
+            Component unwrapped = component.unwrapComposition(Component.class);
+            if (unwrapped == targetComponent) {
+                if (component instanceof Container) {
+                    com.haulmont.cuba.gui.components.Component child =
+                            findChildComponent((Container) component, target);
+                    return child != null ? child : component;
+                }
+                return component;
             }
         }
         return null;
