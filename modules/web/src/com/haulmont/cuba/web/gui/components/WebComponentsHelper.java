@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component.Container;
+import com.haulmont.cuba.gui.components.Component.HasButtonsPanel;
 import com.haulmont.cuba.gui.components.Component.ShortcutTriggeredEvent;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
@@ -49,6 +50,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class WebComponentsHelper {
 
@@ -593,6 +595,11 @@ public class WebComponentsHelper {
                 && targetComponent.getParent() != vaadinSource) {
             targetComponent = targetComponent.getParent();
         }
+
+        if (targetComponent instanceof CubaFieldWrapper) {
+            targetComponent = ((CubaFieldWrapper) targetComponent).getContent();
+        }
+
         return targetComponent;
     }
 
@@ -600,17 +607,51 @@ public class WebComponentsHelper {
     protected static com.haulmont.cuba.gui.components.Component findChildComponent(Container container,
                                                                                    Component target) {
         Component vaadinSource = getVaadinSource(container);
-        Component targetComponent = getDirectChildComponent(target, vaadinSource);
         Collection<com.haulmont.cuba.gui.components.Component> components = container.getOwnComponents();
+
+        return findChildComponent(components, vaadinSource, target);
+    }
+
+    @Nullable
+    protected static com.haulmont.cuba.gui.components.Component findChildComponent(FieldGroup fieldGroup,
+                                                                                   Component target) {
+        Component vaadinSource = fieldGroup.unwrap(CubaFieldGroupLayout.class);
+        Collection<com.haulmont.cuba.gui.components.Component> components = fieldGroup.getFields().stream()
+                .map(FieldGroup.FieldConfig::getComponentNN)
+                .collect(Collectors.toList());
+
+        return findChildComponent(components, vaadinSource, target);
+    }
+
+    protected static com.haulmont.cuba.gui.components.Component findChildComponent(
+            Collection<com.haulmont.cuba.gui.components.Component> components,
+            Component vaadinSource, Component target) {
+        Component targetComponent = getDirectChildComponent(target, vaadinSource);
+
         for (com.haulmont.cuba.gui.components.Component component : components) {
             Component unwrapped = component.unwrapComposition(Component.class);
             if (unwrapped == targetComponent) {
+                com.haulmont.cuba.gui.components.Component child = null;
+
                 if (component instanceof Container) {
-                    com.haulmont.cuba.gui.components.Component child =
-                            findChildComponent((Container) component, target);
-                    return child != null ? child : component;
+                    child = findChildComponent((Container) component, target);
                 }
-                return component;
+
+                if (component instanceof HasButtonsPanel) {
+                    ButtonsPanel buttonsPanel = ((HasButtonsPanel) component).getButtonsPanel();
+                    if (getVaadinSource(buttonsPanel) == target) {
+                        return buttonsPanel;
+                    } else {
+                        child = findChildComponent(buttonsPanel, target);
+                    }
+                }
+
+                if (component instanceof FieldGroup) {
+                    FieldGroup fieldGroup = (FieldGroup) component;
+                    child = findChildComponent(fieldGroup, target);
+                }
+
+                return child != null ? child : component;
             }
         }
         return null;

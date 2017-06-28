@@ -38,6 +38,11 @@ public class CubaFieldWrapper extends CustomField {
     }
 
     @Override
+    public com.vaadin.ui.Component getContent() {
+        return super.getContent();
+    }
+
+    @Override
     public Class getType() {
         return Object.class;
     }
