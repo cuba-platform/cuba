@@ -202,12 +202,14 @@ orderby_clause
     : 'ORDER' 'BY' orderby_item (',' orderby_item)*
     -> ^(T_ORDER_BY<OrderByNode>[] 'ORDER' 'BY' orderby_item*);
 orderby_item
-    : orderby_variable sort?
-     -> ^(T_ORDER_BY_FIELD<OrderByFieldNode>[] orderby_variable sort?);
+    : orderby_variable sort? sortNulls?
+     -> ^(T_ORDER_BY_FIELD<OrderByFieldNode>[] orderby_variable sort? sortNulls?);
 orderby_variable
     : path_expression | general_identification_variable | result_variable | scalar_expression | aggregate_expression;
 sort
     : ('ASC' | 'DESC');
+sortNulls
+    : ('NULLS FIRST' | 'NULLS LAST');
 subquery
     : lp='(' 'SELECT' simple_select_clause subquery_from_clause (where_clause)? (groupby_clause)? (having_clause)? rp=')'
      -> ^(T_QUERY<QueryNode>[$lp,$rp] 'SELECT' simple_select_clause subquery_from_clause (where_clause)? (groupby_clause)? (having_clause)? );

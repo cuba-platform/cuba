@@ -98,6 +98,8 @@ public class JPA2Lexer extends Lexer {
 	public static final int T__142=142;
 	public static final int T__143=143;
 	public static final int T__144=144;
+	public static final int T__145=145;
+	public static final int T__146=146;
 	public static final int AND=4;
 	public static final int ASC=5;
 	public static final int AVG=6;
@@ -1945,10 +1947,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__119;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:92:8: ( 'OBJECT' )
-			// JPA2.g:92:10: 'OBJECT'
+			// JPA2.g:92:8: ( 'NULLS FIRST' )
+			// JPA2.g:92:10: 'NULLS FIRST'
 			{
-			match("OBJECT"); 
+			match("NULLS FIRST"); 
 
 			}
 
@@ -1966,10 +1968,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__120;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:93:8: ( 'OF' )
-			// JPA2.g:93:10: 'OF'
+			// JPA2.g:93:8: ( 'NULLS LAST' )
+			// JPA2.g:93:10: 'NULLS LAST'
 			{
-			match("OF"); 
+			match("NULLS LAST"); 
 
 			}
 
@@ -1987,10 +1989,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__121;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:94:8: ( 'ON' )
-			// JPA2.g:94:10: 'ON'
+			// JPA2.g:94:8: ( 'OBJECT' )
+			// JPA2.g:94:10: 'OBJECT'
 			{
-			match("ON"); 
+			match("OBJECT"); 
 
 			}
 
@@ -2008,10 +2010,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__122;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:95:8: ( 'QUARTER' )
-			// JPA2.g:95:10: 'QUARTER'
+			// JPA2.g:95:8: ( 'OF' )
+			// JPA2.g:95:10: 'OF'
 			{
-			match("QUARTER"); 
+			match("OF"); 
 
 			}
 
@@ -2029,10 +2031,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__123;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:96:8: ( 'REGEXP' )
-			// JPA2.g:96:10: 'REGEXP'
+			// JPA2.g:96:8: ( 'ON' )
+			// JPA2.g:96:10: 'ON'
 			{
-			match("REGEXP"); 
+			match("ON"); 
 
 			}
 
@@ -2050,10 +2052,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__124;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:97:8: ( 'SECOND' )
-			// JPA2.g:97:10: 'SECOND'
+			// JPA2.g:97:8: ( 'QUARTER' )
+			// JPA2.g:97:10: 'QUARTER'
 			{
-			match("SECOND"); 
+			match("QUARTER"); 
 
 			}
 
@@ -2071,10 +2073,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__125;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:98:8: ( 'SELECT' )
-			// JPA2.g:98:10: 'SELECT'
+			// JPA2.g:98:8: ( 'REGEXP' )
+			// JPA2.g:98:10: 'REGEXP'
 			{
-			match("SELECT"); 
+			match("REGEXP"); 
 
 			}
 
@@ -2092,10 +2094,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__126;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:99:8: ( 'SIZE(' )
-			// JPA2.g:99:10: 'SIZE('
+			// JPA2.g:99:8: ( 'SECOND' )
+			// JPA2.g:99:10: 'SECOND'
 			{
-			match("SIZE("); 
+			match("SECOND"); 
 
 			}
 
@@ -2113,10 +2115,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__127;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:100:8: ( 'SOME' )
-			// JPA2.g:100:10: 'SOME'
+			// JPA2.g:100:8: ( 'SELECT' )
+			// JPA2.g:100:10: 'SELECT'
 			{
-			match("SOME"); 
+			match("SELECT"); 
 
 			}
 
@@ -2134,10 +2136,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__128;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:101:8: ( 'SQRT(' )
-			// JPA2.g:101:10: 'SQRT('
+			// JPA2.g:101:8: ( 'SIZE(' )
+			// JPA2.g:101:10: 'SIZE('
 			{
-			match("SQRT("); 
+			match("SIZE("); 
 
 			}
 
@@ -2155,10 +2157,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__129;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:102:8: ( 'SUBSTRING(' )
-			// JPA2.g:102:10: 'SUBSTRING('
+			// JPA2.g:102:8: ( 'SOME' )
+			// JPA2.g:102:10: 'SOME'
 			{
-			match("SUBSTRING("); 
+			match("SOME"); 
 
 			}
 
@@ -2176,10 +2178,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__130;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:103:8: ( 'THEN' )
-			// JPA2.g:103:10: 'THEN'
+			// JPA2.g:103:8: ( 'SQRT(' )
+			// JPA2.g:103:10: 'SQRT('
 			{
-			match("THEN"); 
+			match("SQRT("); 
 
 			}
 
@@ -2197,10 +2199,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__131;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:104:8: ( 'TRAILING' )
-			// JPA2.g:104:10: 'TRAILING'
+			// JPA2.g:104:8: ( 'SUBSTRING(' )
+			// JPA2.g:104:10: 'SUBSTRING('
 			{
-			match("TRAILING"); 
+			match("SUBSTRING("); 
 
 			}
 
@@ -2218,10 +2220,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__132;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:105:8: ( 'TREAT(' )
-			// JPA2.g:105:10: 'TREAT('
+			// JPA2.g:105:8: ( 'THEN' )
+			// JPA2.g:105:10: 'THEN'
 			{
-			match("TREAT("); 
+			match("THEN"); 
 
 			}
 
@@ -2239,10 +2241,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__133;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:106:8: ( 'TRIM(' )
-			// JPA2.g:106:10: 'TRIM('
+			// JPA2.g:106:8: ( 'TRAILING' )
+			// JPA2.g:106:10: 'TRAILING'
 			{
-			match("TRIM("); 
+			match("TRAILING"); 
 
 			}
 
@@ -2260,10 +2262,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__134;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:107:8: ( 'TYPE(' )
-			// JPA2.g:107:10: 'TYPE('
+			// JPA2.g:107:8: ( 'TREAT(' )
+			// JPA2.g:107:10: 'TREAT('
 			{
-			match("TYPE("); 
+			match("TREAT("); 
 
 			}
 
@@ -2281,10 +2283,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__135;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:108:8: ( 'UPDATE' )
-			// JPA2.g:108:10: 'UPDATE'
+			// JPA2.g:108:8: ( 'TRIM(' )
+			// JPA2.g:108:10: 'TRIM('
 			{
-			match("UPDATE"); 
+			match("TRIM("); 
 
 			}
 
@@ -2302,10 +2304,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__136;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:109:8: ( 'UPPER(' )
-			// JPA2.g:109:10: 'UPPER('
+			// JPA2.g:109:8: ( 'TYPE(' )
+			// JPA2.g:109:10: 'TYPE('
 			{
-			match("UPPER("); 
+			match("TYPE("); 
 
 			}
 
@@ -2323,10 +2325,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__137;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:110:8: ( 'VALUE(' )
-			// JPA2.g:110:10: 'VALUE('
+			// JPA2.g:110:8: ( 'UPDATE' )
+			// JPA2.g:110:10: 'UPDATE'
 			{
-			match("VALUE("); 
+			match("UPDATE"); 
 
 			}
 
@@ -2344,10 +2346,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__138;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:111:8: ( 'WEEK' )
-			// JPA2.g:111:10: 'WEEK'
+			// JPA2.g:111:8: ( 'UPPER(' )
+			// JPA2.g:111:10: 'UPPER('
 			{
-			match("WEEK"); 
+			match("UPPER("); 
 
 			}
 
@@ -2365,10 +2367,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__139;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:112:8: ( 'WHEN' )
-			// JPA2.g:112:10: 'WHEN'
+			// JPA2.g:112:8: ( 'VALUE(' )
+			// JPA2.g:112:10: 'VALUE('
 			{
-			match("WHEN"); 
+			match("VALUE("); 
 
 			}
 
@@ -2386,10 +2388,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__140;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:113:8: ( 'WHERE' )
-			// JPA2.g:113:10: 'WHERE'
+			// JPA2.g:113:8: ( 'WEEK' )
+			// JPA2.g:113:10: 'WEEK'
 			{
-			match("WHERE"); 
+			match("WEEK"); 
 
 			}
 
@@ -2407,10 +2409,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__141;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:114:8: ( 'YEAR' )
-			// JPA2.g:114:10: 'YEAR'
+			// JPA2.g:114:8: ( 'WHEN' )
+			// JPA2.g:114:10: 'WHEN'
 			{
-			match("YEAR"); 
+			match("WHEN"); 
 
 			}
 
@@ -2428,10 +2430,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__142;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:115:8: ( 'false' )
-			// JPA2.g:115:10: 'false'
+			// JPA2.g:115:8: ( 'WHERE' )
+			// JPA2.g:115:10: 'WHERE'
 			{
-			match("false"); 
+			match("WHERE"); 
 
 			}
 
@@ -2449,10 +2451,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__143;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:116:8: ( 'true' )
-			// JPA2.g:116:10: 'true'
+			// JPA2.g:116:8: ( 'YEAR' )
+			// JPA2.g:116:10: 'YEAR'
 			{
-			match("true"); 
+			match("YEAR"); 
 
 			}
 
@@ -2470,10 +2472,11 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = T__144;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:117:8: ( '}' )
-			// JPA2.g:117:10: '}'
+			// JPA2.g:117:8: ( 'false' )
+			// JPA2.g:117:10: 'false'
 			{
-			match('}'); 
+			match("false"); 
+
 			}
 
 			state.type = _type;
@@ -2485,13 +2488,54 @@ public class JPA2Lexer extends Lexer {
 	}
 	// $ANTLR end "T__144"
 
+	// $ANTLR start "T__145"
+	public final void mT__145() throws RecognitionException {
+		try {
+			int _type = T__145;
+			int _channel = DEFAULT_TOKEN_CHANNEL;
+			// JPA2.g:118:8: ( 'true' )
+			// JPA2.g:118:10: 'true'
+			{
+			match("true"); 
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally {
+			// do for sure before leaving
+		}
+	}
+	// $ANTLR end "T__145"
+
+	// $ANTLR start "T__146"
+	public final void mT__146() throws RecognitionException {
+		try {
+			int _type = T__146;
+			int _channel = DEFAULT_TOKEN_CHANNEL;
+			// JPA2.g:119:8: ( '}' )
+			// JPA2.g:119:10: '}'
+			{
+			match('}'); 
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally {
+			// do for sure before leaving
+		}
+	}
+	// $ANTLR end "T__146"
+
 	// $ANTLR start "NOT"
 	public final void mNOT() throws RecognitionException {
 		try {
 			int _type = NOT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:309:4: ( 'NOT' )
-			// JPA2.g:309:6: 'NOT'
+			// JPA2.g:311:4: ( 'NOT' )
+			// JPA2.g:311:6: 'NOT'
 			{
 			match("NOT"); 
 
@@ -2511,8 +2555,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = IN;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:311:3: ( 'IN' )
-			// JPA2.g:311:5: 'IN'
+			// JPA2.g:313:3: ( 'IN' )
+			// JPA2.g:313:5: 'IN'
 			{
 			match("IN"); 
 
@@ -2532,8 +2576,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = TRIM_CHARACTER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:547:5: ( '\\'.\\'' )
-			// JPA2.g:547:7: '\\'.\\''
+			// JPA2.g:549:5: ( '\\'.\\'' )
+			// JPA2.g:549:7: '\\'.\\''
 			{
 			match("'.'"); 
 
@@ -2553,11 +2597,11 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = STRING_LITERAL;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:550:5: ( '\\'' (~ ( '\\'' | '\"' ) )* '\\'' )
-			// JPA2.g:550:7: '\\'' (~ ( '\\'' | '\"' ) )* '\\''
+			// JPA2.g:552:5: ( '\\'' (~ ( '\\'' | '\"' ) )* '\\'' )
+			// JPA2.g:552:7: '\\'' (~ ( '\\'' | '\"' ) )* '\\''
 			{
 			match('\''); 
-			// JPA2.g:550:12: (~ ( '\\'' | '\"' ) )*
+			// JPA2.g:552:12: (~ ( '\\'' | '\"' ) )*
 			loop1:
 			while (true) {
 				int alt1=2;
@@ -2603,8 +2647,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = WORD;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:553:5: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* )
-			// JPA2.g:553:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+			// JPA2.g:555:5: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* )
+			// JPA2.g:555:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
 			{
 			if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 				input.consume();
@@ -2614,7 +2658,7 @@ public class JPA2Lexer extends Lexer {
 				recover(mse);
 				throw mse;
 			}
-			// JPA2.g:553:31: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+			// JPA2.g:555:31: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
 			loop2:
 			while (true) {
 				int alt2=2;
@@ -2659,8 +2703,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = RUSSIAN_SYMBOLS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:556:5: ( ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' ) )
-			// JPA2.g:556:7: ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' )
+			// JPA2.g:558:5: ( ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' ) )
+			// JPA2.g:558:7: ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' )
 			{
 			if ( (input.LA(1) >= '\u0400' && input.LA(1) <= '\u052F') ) {
 				input.consume();
@@ -2687,11 +2731,11 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = NAMED_PARAMETER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:559:5: ( ':' ( '(?i)' | '(?I)' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )* )
-			// JPA2.g:559:7: ':' ( '(?i)' | '(?I)' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
+			// JPA2.g:561:5: ( ':' ( '(?i)' | '(?I)' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )* )
+			// JPA2.g:561:7: ':' ( '(?i)' | '(?I)' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
 			{
 			match(':'); 
-			// JPA2.g:559:11: ( '(?i)' | '(?I)' )?
+			// JPA2.g:561:11: ( '(?i)' | '(?I)' )?
 			int alt3=3;
 			int LA3_0 = input.LA(1);
 			if ( (LA3_0=='(') ) {
@@ -2708,14 +2752,14 @@ public class JPA2Lexer extends Lexer {
 			}
 			switch (alt3) {
 				case 1 :
-					// JPA2.g:559:12: '(?i)'
+					// JPA2.g:561:12: '(?i)'
 					{
 					match("(?i)"); 
 
 					}
 					break;
 				case 2 :
-					// JPA2.g:559:19: '(?I)'
+					// JPA2.g:561:19: '(?I)'
 					{
 					match("(?I)"); 
 
@@ -2732,7 +2776,7 @@ public class JPA2Lexer extends Lexer {
 				recover(mse);
 				throw mse;
 			}
-			// JPA2.g:559:52: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+			// JPA2.g:561:52: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
 			loop4:
 			while (true) {
 				int alt4=2;
@@ -2761,7 +2805,7 @@ public class JPA2Lexer extends Lexer {
 				}
 			}
 
-			// JPA2.g:559:90: ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
+			// JPA2.g:561:90: ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
 			loop6:
 			while (true) {
 				int alt6=2;
@@ -2772,15 +2816,15 @@ public class JPA2Lexer extends Lexer {
 
 				switch (alt6) {
 				case 1 :
-					// JPA2.g:559:91: ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
+					// JPA2.g:561:91: ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
 					{
-					// JPA2.g:559:91: ( '.' )
-					// JPA2.g:559:92: '.'
+					// JPA2.g:561:91: ( '.' )
+					// JPA2.g:561:92: '.'
 					{
 					match('.'); 
 					}
 
-					// JPA2.g:559:97: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
+					// JPA2.g:561:97: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
 					int cnt5=0;
 					loop5:
 					while (true) {
@@ -2837,8 +2881,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = WS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:561:5: ( ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' ) )
-			// JPA2.g:561:7: ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' )
+			// JPA2.g:563:5: ( ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' ) )
+			// JPA2.g:563:7: ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' )
 			{
 			if ( (input.LA(1) >= '\t' && input.LA(1) <= '\n')||(input.LA(1) >= '\f' && input.LA(1) <= '\r')||input.LA(1)==' ' ) {
 				input.consume();
@@ -2865,12 +2909,12 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = COMMENT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:565:5: ( '/*' ( . )* '*/' )
-			// JPA2.g:565:7: '/*' ( . )* '*/'
+			// JPA2.g:567:5: ( '/*' ( . )* '*/' )
+			// JPA2.g:567:7: '/*' ( . )* '*/'
 			{
 			match("/*"); 
 
-			// JPA2.g:565:12: ( . )*
+			// JPA2.g:567:12: ( . )*
 			loop7:
 			while (true) {
 				int alt7=2;
@@ -2891,7 +2935,7 @@ public class JPA2Lexer extends Lexer {
 
 				switch (alt7) {
 				case 1 :
-					// JPA2.g:565:12: .
+					// JPA2.g:567:12: .
 					{
 					matchAny(); 
 					}
@@ -2921,12 +2965,12 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = LINE_COMMENT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:568:5: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
-			// JPA2.g:568:7: '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
+			// JPA2.g:570:5: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
+			// JPA2.g:570:7: '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
 			{
 			match("//"); 
 
-			// JPA2.g:568:12: (~ ( '\\n' | '\\r' ) )*
+			// JPA2.g:570:12: (~ ( '\\n' | '\\r' ) )*
 			loop8:
 			while (true) {
 				int alt8=2;
@@ -2955,7 +2999,7 @@ public class JPA2Lexer extends Lexer {
 				}
 			}
 
-			// JPA2.g:568:26: ( '\\r' )?
+			// JPA2.g:570:26: ( '\\r' )?
 			int alt9=2;
 			int LA9_0 = input.LA(1);
 			if ( (LA9_0=='\r') ) {
@@ -2963,7 +3007,7 @@ public class JPA2Lexer extends Lexer {
 			}
 			switch (alt9) {
 				case 1 :
-					// JPA2.g:568:26: '\\r'
+					// JPA2.g:570:26: '\\r'
 					{
 					match('\r'); 
 					}
@@ -2989,8 +3033,8 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = ESCAPE_CHARACTER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:571:5: ( '\\'' (~ ( '\\'' | '\\\\' ) ) '\\'' )
-			// JPA2.g:571:7: '\\'' (~ ( '\\'' | '\\\\' ) ) '\\''
+			// JPA2.g:573:5: ( '\\'' (~ ( '\\'' | '\\\\' ) ) '\\'' )
+			// JPA2.g:573:7: '\\'' (~ ( '\\'' | '\\\\' ) ) '\\''
 			{
 			match('\''); 
 			if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '&')||(input.LA(1) >= '(' && input.LA(1) <= '[')||(input.LA(1) >= ']' && input.LA(1) <= '\uFFFF') ) {
@@ -3018,10 +3062,10 @@ public class JPA2Lexer extends Lexer {
 		try {
 			int _type = INT_NUMERAL;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// JPA2.g:574:5: ( ( '0' .. '9' )+ )
-			// JPA2.g:574:7: ( '0' .. '9' )+
+			// JPA2.g:576:5: ( ( '0' .. '9' )+ )
+			// JPA2.g:576:7: ( '0' .. '9' )+
 			{
-			// JPA2.g:574:7: ( '0' .. '9' )+
+			// JPA2.g:576:7: ( '0' .. '9' )+
 			int cnt10=0;
 			loop10:
 			while (true) {
@@ -3067,8 +3111,8 @@ public class JPA2Lexer extends Lexer {
 
 	@Override
 	public void mTokens() throws RecognitionException {
-		// JPA2.g:1:8: ( AND | ASC | AVG | BY | COUNT | DESC | DISTINCT | FETCH | GROUP | HAVING | INNER | JOIN | LEFT | LOWER | LPAREN | MAX | MIN | OR | ORDER | OUTER | RPAREN | SET | SUM | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | T__116 | T__117 | T__118 | T__119 | T__120 | T__121 | T__122 | T__123 | T__124 | T__125 | T__126 | T__127 | T__128 | T__129 | T__130 | T__131 | T__132 | T__133 | T__134 | T__135 | T__136 | T__137 | T__138 | T__139 | T__140 | T__141 | T__142 | T__143 | T__144 | NOT | IN | TRIM_CHARACTER | STRING_LITERAL | WORD | RUSSIAN_SYMBOLS | NAMED_PARAMETER | WS | COMMENT | LINE_COMMENT | ESCAPE_CHARACTER | INT_NUMERAL )
-		int alt11=123;
+		// JPA2.g:1:8: ( AND | ASC | AVG | BY | COUNT | DESC | DISTINCT | FETCH | GROUP | HAVING | INNER | JOIN | LEFT | LOWER | LPAREN | MAX | MIN | OR | ORDER | OUTER | RPAREN | SET | SUM | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | T__116 | T__117 | T__118 | T__119 | T__120 | T__121 | T__122 | T__123 | T__124 | T__125 | T__126 | T__127 | T__128 | T__129 | T__130 | T__131 | T__132 | T__133 | T__134 | T__135 | T__136 | T__137 | T__138 | T__139 | T__140 | T__141 | T__142 | T__143 | T__144 | T__145 | T__146 | NOT | IN | TRIM_CHARACTER | STRING_LITERAL | WORD | RUSSIAN_SYMBOLS | NAMED_PARAMETER | WS | COMMENT | LINE_COMMENT | ESCAPE_CHARACTER | INT_NUMERAL )
+		int alt11=125;
 		alt11 = dfa11.predict(input);
 		switch (alt11) {
 			case 1 :
@@ -3849,84 +3893,98 @@ public class JPA2Lexer extends Lexer {
 				}
 				break;
 			case 112 :
-				// JPA2.g:1:704: NOT
+				// JPA2.g:1:704: T__145
+				{
+				mT__145(); 
+
+				}
+				break;
+			case 113 :
+				// JPA2.g:1:711: T__146
+				{
+				mT__146(); 
+
+				}
+				break;
+			case 114 :
+				// JPA2.g:1:718: NOT
 				{
 				mNOT(); 
 
 				}
 				break;
-			case 113 :
-				// JPA2.g:1:708: IN
+			case 115 :
+				// JPA2.g:1:722: IN
 				{
 				mIN(); 
 
 				}
 				break;
-			case 114 :
-				// JPA2.g:1:711: TRIM_CHARACTER
+			case 116 :
+				// JPA2.g:1:725: TRIM_CHARACTER
 				{
 				mTRIM_CHARACTER(); 
 
 				}
 				break;
-			case 115 :
-				// JPA2.g:1:726: STRING_LITERAL
+			case 117 :
+				// JPA2.g:1:740: STRING_LITERAL
 				{
 				mSTRING_LITERAL(); 
 
 				}
 				break;
-			case 116 :
-				// JPA2.g:1:741: WORD
+			case 118 :
+				// JPA2.g:1:755: WORD
 				{
 				mWORD(); 
 
 				}
 				break;
-			case 117 :
-				// JPA2.g:1:746: RUSSIAN_SYMBOLS
+			case 119 :
+				// JPA2.g:1:760: RUSSIAN_SYMBOLS
 				{
 				mRUSSIAN_SYMBOLS(); 
 
 				}
 				break;
-			case 118 :
-				// JPA2.g:1:762: NAMED_PARAMETER
+			case 120 :
+				// JPA2.g:1:776: NAMED_PARAMETER
 				{
 				mNAMED_PARAMETER(); 
 
 				}
 				break;
-			case 119 :
-				// JPA2.g:1:778: WS
+			case 121 :
+				// JPA2.g:1:792: WS
 				{
 				mWS(); 
 
 				}
 				break;
-			case 120 :
-				// JPA2.g:1:781: COMMENT
+			case 122 :
+				// JPA2.g:1:795: COMMENT
 				{
 				mCOMMENT(); 
 
 				}
 				break;
-			case 121 :
-				// JPA2.g:1:789: LINE_COMMENT
+			case 123 :
+				// JPA2.g:1:803: LINE_COMMENT
 				{
 				mLINE_COMMENT(); 
 
 				}
 				break;
-			case 122 :
-				// JPA2.g:1:802: ESCAPE_CHARACTER
+			case 124 :
+				// JPA2.g:1:816: ESCAPE_CHARACTER
 				{
 				mESCAPE_CHARACTER(); 
 
 				}
 				break;
-			case 123 :
-				// JPA2.g:1:819: INT_NUMERAL
+			case 125 :
+				// JPA2.g:1:833: INT_NUMERAL
 				{
 				mINT_NUMERAL(); 
 
@@ -3948,21 +4006,21 @@ public class JPA2Lexer extends Lexer {
 		"\20\53\10\uffff\1\53\1\u0127\3\53\1\u012b\2\53\1\u012e\2\53\1\uffff\1"+
 		"\53\1\u0132\3\53\1\u0136\2\53\1\u0139\1\u013a\4\53\1\u013f\1\uffff\1\53"+
 		"\1\uffff\1\53\1\uffff\4\53\1\uffff\2\53\1\uffff\2\53\1\u014a\1\53\1\uffff"+
-		"\1\u014d\1\53\1\uffff\5\53\4\uffff\1\u0155\2\53\1\u0158\7\53\1\u0160\1"+
-		"\u0161\1\53\1\u0163\1\53\1\u0165\1\uffff\1\53\1\uffff\1\u0167\2\53\2\uffff"+
-		"\1\53\1\uffff\2\53\1\u016d\1\uffff\1\53\1\u016f\1\53\1\uffff\1\u0171\1"+
-		"\53\2\uffff\2\53\1\u0175\1\53\1\uffff\2\53\1\u0179\1\u017a\1\u017b\4\53"+
-		"\5\uffff\1\u0183\1\53\1\u0185\4\53\1\uffff\2\53\1\uffff\2\53\2\uffff\3"+
-		"\53\2\uffff\1\u0191\1\uffff\1\u0192\1\uffff\1\53\1\uffff\3\53\1\u0197"+
-		"\1\53\1\uffff\1\53\1\uffff\1\u019a\2\uffff\2\53\1\uffff\1\53\1\u019e\1"+
-		"\u019f\3\uffff\1\u01a0\1\u01a1\1\u01a2\1\53\6\uffff\1\u01a4\1\u01a5\3"+
-		"\53\1\u01a9\1\53\1\uffff\1\u01ab\4\uffff\1\u01ac\1\53\1\uffff\1\53\1\uffff"+
-		"\2\53\1\uffff\1\u01b1\7\uffff\1\53\2\uffff\1\53\1\uffff\1\u01b4\1\uffff"+
-		"\1\53\2\uffff\2\53\1\u01b9\1\53\1\uffff\1\53\2\uffff\1\u01bc\1\uffff\2"+
-		"\53\2\uffff\1\53\1\uffff\2\53\1\uffff\2\53\1\u01c4\1\u01c6\1\uffff\1\53"+
-		"\1\uffff\3\53\1\u01cb\1\uffff";
+		"\1\u014d\1\53\1\uffff\5\53\4\uffff\1\u0156\2\53\1\u0159\7\53\1\u0161\1"+
+		"\u0162\1\53\1\u0164\1\53\1\u0166\1\uffff\1\53\1\uffff\1\u0168\2\53\2\uffff"+
+		"\1\53\1\uffff\2\53\1\u016e\1\uffff\1\53\1\u0170\1\53\1\uffff\1\u0172\1"+
+		"\53\2\uffff\2\53\1\u0176\1\53\1\uffff\2\53\1\u017a\1\u017b\1\u017c\4\53"+
+		"\5\uffff\1\u0184\1\53\1\u0186\5\53\1\uffff\2\53\1\uffff\2\53\2\uffff\3"+
+		"\53\2\uffff\1\u0193\1\uffff\1\u0194\1\uffff\1\53\1\uffff\3\53\1\u0199"+
+		"\1\53\1\uffff\1\53\1\uffff\1\u019c\2\uffff\2\53\1\uffff\1\53\1\u01a0\1"+
+		"\u01a1\3\uffff\1\u01a2\1\u01a3\1\u01a4\1\53\6\uffff\1\u01a6\1\u01a7\2"+
+		"\53\1\uffff\1\53\1\u01ad\1\53\1\uffff\1\u01af\4\uffff\1\u01b0\1\53\1\uffff"+
+		"\1\53\1\uffff\2\53\1\uffff\1\u01b5\7\uffff\1\53\2\uffff\1\53\3\uffff\1"+
+		"\u01b8\1\uffff\1\53\2\uffff\2\53\1\u01bd\1\53\1\uffff\1\53\2\uffff\1\u01c0"+
+		"\1\uffff\2\53\2\uffff\1\53\1\uffff\2\53\1\uffff\2\53\1\u01c8\1\u01ca\1"+
+		"\uffff\1\53\1\uffff\3\53\1\u01cf\1\uffff";
 	static final String DFA11_eofS =
-		"\u01cc\uffff";
+		"\u01d0\uffff";
 	static final String DFA11_minS =
 		"\1\11\1\102\1\105\2\101\1\105\1\122\1\101\1\116\1\117\1\105\1\uffff\1"+
 		"\101\1\102\1\uffff\1\105\6\uffff\1\52\1\170\1\75\1\uffff\1\75\1\uffff"+
@@ -3988,15 +4046,15 @@ public class JPA2Lexer extends Lexer {
 		"\2\uffff\1\116\1\uffff\1\105\1\116\1\44\1\uffff\1\111\1\44\1\107\1\uffff"+
 		"\1\44\1\50\2\uffff\1\116\1\110\1\44\1\105\1\uffff\1\105\1\122\3\44\1\124"+
 		"\1\104\1\124\1\122\3\uffff\1\101\1\uffff\1\44\1\50\1\44\1\105\1\123\1"+
-		"\103\1\106\1\uffff\1\105\1\120\1\uffff\1\111\1\50\2\uffff\1\105\2\50\2"+
-		"\uffff\1\44\1\uffff\1\44\1\uffff\1\116\1\uffff\1\103\1\50\1\124\1\44\1"+
-		"\103\1\uffff\1\117\1\uffff\1\44\2\uffff\1\107\1\50\1\uffff\1\50\2\44\3"+
-		"\uffff\3\44\1\111\6\uffff\2\44\1\124\1\50\1\122\1\44\1\116\1\uffff\1\44"+
-		"\4\uffff\1\44\1\105\1\uffff\1\137\1\uffff\1\124\1\116\1\uffff\1\44\7\uffff"+
-		"\1\116\2\uffff\1\50\1\uffff\1\44\1\uffff\1\107\2\uffff\1\50\1\104\1\44"+
-		"\1\50\1\uffff\1\107\2\uffff\1\44\1\uffff\1\101\1\111\2\uffff\1\50\1\uffff"+
-		"\1\124\1\115\1\uffff\2\105\2\44\1\uffff\1\124\1\uffff\1\101\1\115\1\120"+
-		"\1\44\1\uffff";
+		"\103\1\106\1\40\1\uffff\1\105\1\120\1\uffff\1\111\1\50\2\uffff\1\105\2"+
+		"\50\2\uffff\1\44\1\uffff\1\44\1\uffff\1\116\1\uffff\1\103\1\50\1\124\1"+
+		"\44\1\103\1\uffff\1\117\1\uffff\1\44\2\uffff\1\107\1\50\1\uffff\1\50\2"+
+		"\44\3\uffff\3\44\1\111\6\uffff\2\44\1\124\1\50\1\106\1\122\1\44\1\116"+
+		"\1\uffff\1\44\4\uffff\1\44\1\105\1\uffff\1\137\1\uffff\1\124\1\116\1\uffff"+
+		"\1\44\7\uffff\1\116\2\uffff\1\50\3\uffff\1\44\1\uffff\1\107\2\uffff\1"+
+		"\50\1\104\1\44\1\50\1\uffff\1\107\2\uffff\1\44\1\uffff\1\101\1\111\2\uffff"+
+		"\1\50\1\uffff\1\124\1\115\1\uffff\2\105\2\44\1\uffff\1\124\1\uffff\1\101"+
+		"\1\115\1\120\1\44\1\uffff";
 	static final String DFA11_maxS =
 		"\1\u052f\1\126\1\131\1\125\1\111\1\125\1\122\1\117\1\123\2\117\1\uffff"+
 		"\1\117\1\125\1\uffff\1\125\6\uffff\1\57\1\170\1\76\1\uffff\1\75\1\uffff"+
@@ -4022,36 +4080,36 @@ public class JPA2Lexer extends Lexer {
 		"\1\172\1\123\1\124\2\uffff\1\116\1\uffff\1\105\1\116\1\172\1\uffff\1\111"+
 		"\1\172\1\107\1\uffff\1\172\1\50\2\uffff\1\116\1\110\1\172\1\105\1\uffff"+
 		"\1\105\1\122\3\172\1\124\1\104\1\124\1\122\3\uffff\1\105\1\uffff\1\172"+
-		"\1\50\1\172\1\105\1\123\1\103\1\106\1\uffff\1\105\1\120\1\uffff\1\111"+
-		"\1\50\2\uffff\1\105\2\50\2\uffff\1\172\1\uffff\1\172\1\uffff\1\116\1\uffff"+
-		"\1\103\1\50\1\124\1\172\1\103\1\uffff\1\117\1\uffff\1\172\2\uffff\1\107"+
-		"\1\50\1\uffff\1\50\2\172\3\uffff\3\172\1\111\6\uffff\2\172\1\124\1\50"+
-		"\1\122\1\172\1\116\1\uffff\1\172\4\uffff\1\172\1\105\1\uffff\1\137\1\uffff"+
-		"\1\124\1\116\1\uffff\1\172\7\uffff\1\116\2\uffff\1\50\1\uffff\1\172\1"+
-		"\uffff\1\107\2\uffff\1\50\1\124\1\172\1\50\1\uffff\1\107\2\uffff\1\172"+
-		"\1\uffff\1\101\1\111\2\uffff\1\50\1\uffff\1\124\1\115\1\uffff\2\105\2"+
-		"\172\1\uffff\1\124\1\uffff\1\101\1\115\1\120\1\172\1\uffff";
+		"\1\50\1\172\1\105\1\123\1\103\1\106\1\40\1\uffff\1\105\1\120\1\uffff\1"+
+		"\111\1\50\2\uffff\1\105\2\50\2\uffff\1\172\1\uffff\1\172\1\uffff\1\116"+
+		"\1\uffff\1\103\1\50\1\124\1\172\1\103\1\uffff\1\117\1\uffff\1\172\2\uffff"+
+		"\1\107\1\50\1\uffff\1\50\2\172\3\uffff\3\172\1\111\6\uffff\2\172\1\124"+
+		"\1\50\1\114\1\122\1\172\1\116\1\uffff\1\172\4\uffff\1\172\1\105\1\uffff"+
+		"\1\137\1\uffff\1\124\1\116\1\uffff\1\172\7\uffff\1\116\2\uffff\1\50\3"+
+		"\uffff\1\172\1\uffff\1\107\2\uffff\1\50\1\124\1\172\1\50\1\uffff\1\107"+
+		"\2\uffff\1\172\1\uffff\1\101\1\111\2\uffff\1\50\1\uffff\1\124\1\115\1"+
+		"\uffff\2\105\2\172\1\uffff\1\124\1\uffff\1\101\1\115\1\120\1\172\1\uffff";
 	static final String DFA11_acceptS =
 		"\13\uffff\1\17\2\uffff\1\25\1\uffff\1\30\1\31\1\32\1\33\1\34\1\35\3\uffff"+
-		"\1\43\1\uffff\1\46\15\uffff\1\157\1\uffff\1\164\1\165\1\166\1\167\1\173"+
-		"\50\uffff\1\170\1\171\1\36\1\37\1\41\1\42\1\40\1\45\1\44\1\47\1\uffff"+
-		"\1\53\1\54\30\uffff\1\172\1\163\3\uffff\1\60\3\uffff\1\4\23\uffff\1\161"+
-		"\1\110\15\uffff\1\22\2\uffff\1\127\1\130\45\uffff\1\162\1\163\1\1\1\57"+
+		"\1\43\1\uffff\1\46\15\uffff\1\161\1\uffff\1\166\1\167\1\170\1\171\1\175"+
+		"\50\uffff\1\172\1\173\1\36\1\37\1\41\1\42\1\40\1\45\1\44\1\47\1\uffff"+
+		"\1\53\1\54\30\uffff\1\174\1\165\3\uffff\1\60\3\uffff\1\4\23\uffff\1\163"+
+		"\1\110\15\uffff\1\22\2\uffff\1\131\1\132\45\uffff\1\164\1\165\1\1\1\57"+
 		"\1\2\1\3\1\55\1\56\13\uffff\1\72\17\uffff\1\20\1\uffff\1\21\1\uffff\1"+
 		"\120\4\uffff\1\26\2\uffff\1\27\7\uffff\1\76\5\uffff\1\111\1\122\1\123"+
-		"\1\160\21\uffff\1\162\1\uffff\1\62\3\uffff\1\63\1\64\1\uffff\1\6\3\uffff"+
-		"\1\104\3\uffff\1\106\2\uffff\1\14\1\15\4\uffff\1\114\11\uffff\1\135\1"+
-		"\136\1\137\1\uffff\1\74\7\uffff\1\124\2\uffff\1\141\2\uffff\1\144\1\145"+
-		"\3\uffff\1\151\1\152\1\uffff\1\154\1\uffff\1\156\1\uffff\1\5\5\uffff\1"+
+		"\1\162\21\uffff\1\164\1\uffff\1\62\3\uffff\1\63\1\64\1\uffff\1\6\3\uffff"+
+		"\1\104\3\uffff\1\106\2\uffff\1\14\1\15\4\uffff\1\114\11\uffff\1\137\1"+
+		"\140\1\141\1\uffff\1\74\10\uffff\1\124\2\uffff\1\143\2\uffff\1\146\1\147"+
+		"\3\uffff\1\153\1\154\1\uffff\1\156\1\uffff\1\160\1\uffff\1\5\5\uffff\1"+
 		"\10\1\uffff\1\11\1\uffff\1\13\1\107\2\uffff\1\16\3\uffff\1\121\1\23\1"+
-		"\24\4\uffff\1\50\1\51\1\52\1\75\1\77\1\100\7\uffff\1\143\1\uffff\1\147"+
-		"\1\150\1\153\1\155\2\uffff\1\66\1\uffff\1\73\2\uffff\1\12\1\uffff\1\113"+
-		"\1\115\1\117\1\116\1\126\1\133\1\134\1\uffff\1\101\1\102\1\uffff\1\125"+
-		"\1\uffff\1\132\1\uffff\1\146\1\61\4\uffff\1\112\1\uffff\1\103\1\131\1"+
-		"\uffff\1\65\2\uffff\1\7\1\105\1\uffff\1\142\2\uffff\1\140\4\uffff\1\67"+
-		"\1\uffff\1\70\4\uffff\1\71";
+		"\24\4\uffff\1\50\1\51\1\52\1\75\1\77\1\100\10\uffff\1\145\1\uffff\1\151"+
+		"\1\152\1\155\1\157\2\uffff\1\66\1\uffff\1\73\2\uffff\1\12\1\uffff\1\113"+
+		"\1\115\1\117\1\116\1\130\1\135\1\136\1\uffff\1\101\1\102\1\uffff\1\125"+
+		"\1\126\1\127\1\uffff\1\134\1\uffff\1\150\1\61\4\uffff\1\112\1\uffff\1"+
+		"\103\1\133\1\uffff\1\65\2\uffff\1\7\1\105\1\uffff\1\144\2\uffff\1\142"+
+		"\4\uffff\1\67\1\uffff\1\70\4\uffff\1\71";
 	static final String DFA11_specialS =
-		"\52\uffff\1\2\120\uffff\1\1\1\0\u014f\uffff}>";
+		"\52\uffff\1\0\120\uffff\1\2\1\1\u0153\uffff}>";
 	static final String[] DFA11_transitionS = {
 			"\2\56\1\uffff\2\56\22\uffff\1\56\3\uffff\1\20\2\uffff\1\52\1\13\1\16"+
 			"\1\21\1\22\1\23\1\24\1\25\1\26\1\27\11\57\1\55\1\uffff\1\30\1\31\1\32"+
@@ -4338,106 +4396,107 @@ public class JPA2Lexer extends Lexer {
 			"",
 			"",
 			"",
-			"\1\53\13\uffff\12\53\7\uffff\10\53\1\u0154\21\53\4\uffff\1\53\1\uffff"+
-			"\32\53",
-			"\1\u0156",
+			"\1\53\13\uffff\12\53\7\uffff\10\53\1\u0154\11\53\1\u0155\7\53\4\uffff"+
+			"\1\53\1\uffff\32\53",
 			"\1\u0157",
+			"\1\u0158",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"\1\u0159",
 			"\1\u015a",
 			"\1\u015b",
 			"\1\u015c",
 			"\1\u015d",
 			"\1\u015e",
 			"\1\u015f",
+			"\1\u0160",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"\1\u0162",
+			"\1\u0163",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"\1\u0164",
+			"\1\u0165",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
 			"",
-			"\1\u0166",
+			"\1\u0167",
 			"",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"\1\u0168",
 			"\1\u0169",
-			"",
-			"",
 			"\1\u016a",
 			"",
+			"",
 			"\1\u016b",
+			"",
 			"\1\u016c",
+			"\1\u016d",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
 			"",
-			"\1\u016e",
+			"\1\u016f",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"\1\u0170",
+			"\1\u0171",
 			"",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"\1\u0172",
-			"",
-			"",
 			"\1\u0173",
-			"\1\u0174",
-			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"\1\u0176",
 			"",
+			"",
+			"\1\u0174",
+			"\1\u0175",
+			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
 			"\1\u0177",
+			"",
 			"\1\u0178",
+			"\1\u0179",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"\1\u017c",
 			"\1\u017d",
 			"\1\u017e",
 			"\1\u017f",
+			"\1\u0180",
 			"",
 			"",
 			"",
-			"\1\u0180\1\u0181\2\uffff\1\u0182",
+			"\1\u0181\1\u0182\2\uffff\1\u0183",
 			"",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"\1\u0184",
+			"\1\u0185",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"\1\u0186",
 			"\1\u0187",
 			"\1\u0188",
 			"\1\u0189",
-			"",
 			"\1\u018a",
 			"\1\u018b",
 			"",
 			"\1\u018c",
 			"\1\u018d",
 			"",
-			"",
 			"\1\u018e",
 			"\1\u018f",
+			"",
+			"",
 			"\1\u0190",
+			"\1\u0191",
+			"\1\u0192",
 			"",
 			"",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
 			"",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
 			"",
-			"\1\u0193",
-			"",
-			"\1\u0194",
 			"\1\u0195",
+			"",
 			"\1\u0196",
-			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
+			"\1\u0197",
 			"\1\u0198",
-			"",
-			"\1\u0199",
-			"",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"",
+			"\1\u019a",
 			"",
 			"\1\u019b",
-			"\1\u019c",
+			"",
+			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
+			"",
 			"",
 			"\1\u019d",
+			"\1\u019e",
+			"",
+			"\1\u019f",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
 			"",
@@ -4446,7 +4505,7 @@ public class JPA2Lexer extends Lexer {
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"\1\u01a3",
+			"\1\u01a5",
 			"",
 			"",
 			"",
@@ -4455,73 +4514,76 @@ public class JPA2Lexer extends Lexer {
 			"",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"\1\u01a6",
-			"\1\u01a7",
 			"\1\u01a8",
+			"\1\u01a9",
+			"\1\u01aa\5\uffff\1\u01ab",
+			"\1\u01ac",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"\1\u01aa",
-			"",
-			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"",
-			"",
-			"",
-			"",
-			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"\1\u01ad",
-			"",
 			"\1\u01ae",
 			"",
-			"\1\u01af",
-			"\1\u01b0",
-			"",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
 			"",
 			"",
 			"",
 			"",
-			"",
-			"",
+			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
+			"\1\u01b1",
 			"",
 			"\1\u01b2",
 			"",
-			"",
 			"\1\u01b3",
+			"\1\u01b4",
 			"",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
 			"",
-			"\1\u01b5",
+			"",
+			"",
+			"",
+			"",
 			"",
 			"",
 			"\1\u01b6",
-			"\1\u01b7\17\uffff\1\u01b8",
+			"",
+			"",
+			"\1\u01b7",
+			"",
+			"",
+			"",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
+			"",
+			"\1\u01b9",
+			"",
+			"",
 			"\1\u01ba",
-			"",
-			"\1\u01bb",
-			"",
-			"",
+			"\1\u01bb\17\uffff\1\u01bc",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"",
-			"\1\u01bd",
 			"\1\u01be",
-			"",
 			"",
 			"\1\u01bf",
 			"",
-			"\1\u01c0",
-			"\1\u01c1",
 			"",
-			"\1\u01c2",
-			"\1\u01c3",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-			"\1\53\13\uffff\12\53\7\uffff\22\53\1\u01c5\7\53\4\uffff\1\53\1\uffff"+
+			"",
+			"\1\u01c1",
+			"\1\u01c2",
+			"",
+			"",
+			"\1\u01c3",
+			"",
+			"\1\u01c4",
+			"\1\u01c5",
+			"",
+			"\1\u01c6",
+			"\1\u01c7",
+			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
+			"\1\53\13\uffff\12\53\7\uffff\22\53\1\u01c9\7\53\4\uffff\1\53\1\uffff"+
 			"\32\53",
 			"",
-			"\1\u01c7",
+			"\1\u01cb",
 			"",
-			"\1\u01c8",
-			"\1\u01c9",
-			"\1\u01ca",
+			"\1\u01cc",
+			"\1\u01cd",
+			"\1\u01ce",
 			"\1\53\13\uffff\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
 			""
 	};
@@ -4557,7 +4619,7 @@ public class JPA2Lexer extends Lexer {
 		}
 		@Override
 		public String getDescription() {
-			return "1:1: Tokens : ( AND | ASC | AVG | BY | COUNT | DESC | DISTINCT | FETCH | GROUP | HAVING | INNER | JOIN | LEFT | LOWER | LPAREN | MAX | MIN | OR | ORDER | OUTER | RPAREN | SET | SUM | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | T__116 | T__117 | T__118 | T__119 | T__120 | T__121 | T__122 | T__123 | T__124 | T__125 | T__126 | T__127 | T__128 | T__129 | T__130 | T__131 | T__132 | T__133 | T__134 | T__135 | T__136 | T__137 | T__138 | T__139 | T__140 | T__141 | T__142 | T__143 | T__144 | NOT | IN | TRIM_CHARACTER | STRING_LITERAL | WORD | RUSSIAN_SYMBOLS | NAMED_PARAMETER | WS | COMMENT | LINE_COMMENT | ESCAPE_CHARACTER | INT_NUMERAL );";
+			return "1:1: Tokens : ( AND | ASC | AVG | BY | COUNT | DESC | DISTINCT | FETCH | GROUP | HAVING | INNER | JOIN | LEFT | LOWER | LPAREN | MAX | MIN | OR | ORDER | OUTER | RPAREN | SET | SUM | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | T__116 | T__117 | T__118 | T__119 | T__120 | T__121 | T__122 | T__123 | T__124 | T__125 | T__126 | T__127 | T__128 | T__129 | T__130 | T__131 | T__132 | T__133 | T__134 | T__135 | T__136 | T__137 | T__138 | T__139 | T__140 | T__141 | T__142 | T__143 | T__144 | T__145 | T__146 | NOT | IN | TRIM_CHARACTER | STRING_LITERAL | WORD | RUSSIAN_SYMBOLS | NAMED_PARAMETER | WS | COMMENT | LINE_COMMENT | ESCAPE_CHARACTER | INT_NUMERAL );";
 		}
 		@Override
 		public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
@@ -4565,6 +4627,16 @@ public class JPA2Lexer extends Lexer {
 			int _s = s;
 			switch ( s ) {
 					case 0 : 
+						int LA11_42 = input.LA(1);
+						s = -1;
+						if ( (LA11_42=='.') ) {s = 123;}
+						else if ( ((LA11_42 >= '\u0000' && LA11_42 <= '!')||(LA11_42 >= '#' && LA11_42 <= '&')||(LA11_42 >= '(' && LA11_42 <= '-')||(LA11_42 >= '/' && LA11_42 <= '[')||(LA11_42 >= ']' && LA11_42 <= '\uFFFF')) ) {s = 124;}
+						else if ( (LA11_42=='\"') ) {s = 125;}
+						else if ( (LA11_42=='\''||LA11_42=='\\') ) {s = 126;}
+						if ( s>=0 ) return s;
+						break;
+
+					case 1 : 
 						int LA11_124 = input.LA(1);
 						s = -1;
 						if ( (LA11_124=='\'') ) {s = 212;}
@@ -4572,21 +4644,11 @@ public class JPA2Lexer extends Lexer {
 						if ( s>=0 ) return s;
 						break;
 
-					case 1 : 
+					case 2 : 
 						int LA11_123 = input.LA(1);
 						s = -1;
 						if ( (LA11_123=='\'') ) {s = 211;}
 						else if ( ((LA11_123 >= '\u0000' && LA11_123 <= '!')||(LA11_123 >= '#' && LA11_123 <= '&')||(LA11_123 >= '(' && LA11_123 <= '\uFFFF')) ) {s = 126;}
-						if ( s>=0 ) return s;
-						break;
-
-					case 2 : 
-						int LA11_42 = input.LA(1);
-						s = -1;
-						if ( (LA11_42=='.') ) {s = 123;}
-						else if ( ((LA11_42 >= '\u0000' && LA11_42 <= '!')||(LA11_42 >= '#' && LA11_42 <= '&')||(LA11_42 >= '(' && LA11_42 <= '-')||(LA11_42 >= '/' && LA11_42 <= '[')||(LA11_42 >= ']' && LA11_42 <= '\uFFFF')) ) {s = 124;}
-						else if ( (LA11_42=='\"') ) {s = 125;}
-						else if ( (LA11_42=='\''||LA11_42=='\\') ) {s = 126;}
 						if ( s>=0 ) return s;
 						break;
 			}

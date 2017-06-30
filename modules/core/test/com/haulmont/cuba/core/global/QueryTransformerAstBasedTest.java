@@ -990,6 +990,20 @@ public class QueryTransformerAstBasedTest {
         assertEquals(
                 "select h from sec$GroupHierarchy h left join h.parent h_parent left join h_parent.other h_parent_other order by h_parent_other.token.name",
                 res);
+
+        transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h order by h.level desc nulls first");
+        res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h order by h.level desc nulls first",
+                res);
+
+        transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h order by h.level desc nulls last");
+        res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h order by h.level desc nulls last",
+                res);
     }
 
     @Test
