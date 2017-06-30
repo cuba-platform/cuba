@@ -706,6 +706,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                         if (isEditable()) {
                             addValueFromLookupPickerField();
                         }
+                        wrappedButton.focus();
                     }
                 });
             } else {
@@ -773,6 +774,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                                         afterLookupSelectionHandler.onSelect(items);
                                     }
                                 }
+                                wrappedButton.focus();
                             }
                         }, lookupOpenMode, params);
 
@@ -796,6 +798,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                     for (CubaTokenListLabel item : new ArrayList<>(itemComponents.values())) {
                         doRemove(item);
                     }
+                    wrappedClearButton.focus();
                 }
             });
             if (isSimple()) {
@@ -971,7 +974,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             }
         }
         lookupPickerField.setValue(null);
-
+        lookupPickerField.requestFocus();
 
         if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
             for (Object obj : getDatasource().getItems()) {
