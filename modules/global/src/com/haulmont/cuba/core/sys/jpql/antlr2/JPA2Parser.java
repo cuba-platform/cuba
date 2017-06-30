@@ -5078,7 +5078,7 @@ public class JPA2Parser extends Parser {
 
 
 	// $ANTLR start "aggregate_expression"
-	// JPA2.g:182:1: aggregate_expression : ( aggregate_expression_function_name '(' ( DISTINCT )? path_expression ')' -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' ) | 'COUNT' '(' ( DISTINCT )? count_argument ')' -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? count_argument ')' ) | function_invocation );
+	// JPA2.g:182:1: aggregate_expression : ( aggregate_expression_function_name '(' ( DISTINCT )? arithmetic_expression ')' -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? arithmetic_expression ')' ) | 'COUNT' '(' ( DISTINCT )? count_argument ')' -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? count_argument ')' ) | function_invocation );
 	public final JPA2Parser.aggregate_expression_return aggregate_expression() throws RecognitionException {
 		JPA2Parser.aggregate_expression_return retval = new JPA2Parser.aggregate_expression_return();
 		retval.start = input.LT(1);
@@ -5093,7 +5093,7 @@ public class JPA2Parser extends Parser {
 		Token DISTINCT126=null;
 		Token char_literal128=null;
 		ParserRuleReturnScope aggregate_expression_function_name119 =null;
-		ParserRuleReturnScope path_expression122 =null;
+		ParserRuleReturnScope arithmetic_expression122 =null;
 		ParserRuleReturnScope count_argument127 =null;
 		ParserRuleReturnScope function_invocation129 =null;
 
@@ -5108,17 +5108,17 @@ public class JPA2Parser extends Parser {
 		RewriteRuleTokenStream stream_LPAREN=new RewriteRuleTokenStream(adaptor,"token LPAREN");
 		RewriteRuleTokenStream stream_COUNT=new RewriteRuleTokenStream(adaptor,"token COUNT");
 		RewriteRuleTokenStream stream_RPAREN=new RewriteRuleTokenStream(adaptor,"token RPAREN");
+		RewriteRuleSubtreeStream stream_arithmetic_expression=new RewriteRuleSubtreeStream(adaptor,"rule arithmetic_expression");
 		RewriteRuleSubtreeStream stream_count_argument=new RewriteRuleSubtreeStream(adaptor,"rule count_argument");
-		RewriteRuleSubtreeStream stream_path_expression=new RewriteRuleSubtreeStream(adaptor,"rule path_expression");
 		RewriteRuleSubtreeStream stream_aggregate_expression_function_name=new RewriteRuleSubtreeStream(adaptor,"rule aggregate_expression_function_name");
 
 		try {
-			// JPA2.g:183:5: ( aggregate_expression_function_name '(' ( DISTINCT )? path_expression ')' -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' ) | 'COUNT' '(' ( DISTINCT )? count_argument ')' -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? count_argument ')' ) | function_invocation )
+			// JPA2.g:183:5: ( aggregate_expression_function_name '(' ( DISTINCT )? arithmetic_expression ')' -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? arithmetic_expression ')' ) | 'COUNT' '(' ( DISTINCT )? count_argument ')' -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? count_argument ')' ) | function_invocation )
 			int alt41=3;
 			alt41 = dfa41.predict(input);
 			switch (alt41) {
 				case 1 :
-					// JPA2.g:183:7: aggregate_expression_function_name '(' ( DISTINCT )? path_expression ')'
+					// JPA2.g:183:7: aggregate_expression_function_name '(' ( DISTINCT )? arithmetic_expression ')'
 					{
 					pushFollow(FOLLOW_aggregate_expression_function_name_in_aggregate_expression1500);
 					aggregate_expression_function_name119=aggregate_expression_function_name();
@@ -5146,16 +5146,16 @@ public class JPA2Parser extends Parser {
 
 					}
 
-					pushFollow(FOLLOW_path_expression_in_aggregate_expression1508);
-					path_expression122=path_expression();
+					pushFollow(FOLLOW_arithmetic_expression_in_aggregate_expression1508);
+					arithmetic_expression122=arithmetic_expression();
 					state._fsp--;
 					if (state.failed) return retval;
-					if ( state.backtracking==0 ) stream_path_expression.add(path_expression122.getTree());
+					if ( state.backtracking==0 ) stream_arithmetic_expression.add(arithmetic_expression122.getTree());
 					char_literal123=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_aggregate_expression1509); if (state.failed) return retval; 
 					if ( state.backtracking==0 ) stream_RPAREN.add(char_literal123);
 
 					// AST REWRITE
-					// elements: LPAREN, RPAREN, path_expression, aggregate_expression_function_name, DISTINCT
+					// elements: LPAREN, RPAREN, arithmetic_expression, aggregate_expression_function_name, DISTINCT
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -5166,9 +5166,9 @@ public class JPA2Parser extends Parser {
 					RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 					root_0 = (Object)adaptor.nil();
-					// 184:5: -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' )
+					// 184:5: -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? arithmetic_expression ')' )
 					{
-						// JPA2.g:184:8: ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' )
+						// JPA2.g:184:8: ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? arithmetic_expression ')' )
 						{
 						Object root_1 = (Object)adaptor.nil();
 						root_1 = (Object)adaptor.becomeRoot(new AggregateExpressionNode(T_AGGREGATE_EXPR), root_1);
@@ -5180,7 +5180,7 @@ public class JPA2Parser extends Parser {
 						}
 						stream_DISTINCT.reset();
 
-						adaptor.addChild(root_1, stream_path_expression.nextTree());
+						adaptor.addChild(root_1, stream_arithmetic_expression.nextTree());
 						adaptor.addChild(root_1, stream_RPAREN.nextNode());
 						adaptor.addChild(root_0, root_1);
 						}
@@ -21296,8 +21296,8 @@ public class JPA2Parser extends Parser {
 
 	// $ANTLR start synpred53_JPA2
 	public final void synpred53_JPA2_fragment() throws RecognitionException {
-		// JPA2.g:183:7: ( aggregate_expression_function_name '(' ( DISTINCT )? path_expression ')' )
-		// JPA2.g:183:7: aggregate_expression_function_name '(' ( DISTINCT )? path_expression ')'
+		// JPA2.g:183:7: ( aggregate_expression_function_name '(' ( DISTINCT )? arithmetic_expression ')' )
+		// JPA2.g:183:7: aggregate_expression_function_name '(' ( DISTINCT )? arithmetic_expression ')'
 		{
 		pushFollow(FOLLOW_aggregate_expression_function_name_in_synpred53_JPA21500);
 		aggregate_expression_function_name();
@@ -21323,8 +21323,8 @@ public class JPA2Parser extends Parser {
 
 		}
 
-		pushFollow(FOLLOW_path_expression_in_synpred53_JPA21508);
-		path_expression();
+		pushFollow(FOLLOW_arithmetic_expression_in_synpred53_JPA21508);
+		arithmetic_expression();
 		state._fsp--;
 		if (state.failed) return;
 
@@ -23379,9 +23379,9 @@ public class JPA2Parser extends Parser {
 	static final String DFA41_eofS =
 		"\30\uffff";
 	static final String DFA41_minS =
-		"\1\6\1\27\2\uffff\1\13\1\16\1\37\1\uffff\1\6\15\37\1\0\1\6";
+		"\1\6\1\27\2\uffff\2\6\1\37\1\uffff\1\6\15\37\1\0\1\6";
 	static final String DFA41_maxS =
-		"\1\146\1\27\2\uffff\2\67\1\76\1\uffff\1\u008f\15\76\1\0\1\u008f";
+		"\1\146\1\27\2\uffff\2\u0082\1\76\1\uffff\1\u008f\15\77\1\0\1\u008f";
 	static final String DFA41_acceptS =
 		"\2\uffff\1\1\1\3\3\uffff\1\2\20\uffff";
 	static final String DFA41_specialS =
@@ -23391,32 +23391,42 @@ public class JPA2Parser extends Parser {
 			"\1\4",
 			"",
 			"",
-			"\1\5\2\uffff\1\6\50\uffff\1\6",
-			"\1\6\50\uffff\1\6",
+			"\1\2\2\uffff\1\2\1\uffff\1\5\2\uffff\1\6\3\uffff\1\2\4\uffff\4\2\10"+
+			"\uffff\1\2\23\uffff\1\6\1\uffff\1\2\1\uffff\1\2\1\uffff\1\2\2\uffff\1"+
+			"\2\6\uffff\1\2\4\uffff\1\2\1\uffff\1\2\5\uffff\3\2\15\uffff\1\2\1\uffff"+
+			"\1\2\1\uffff\1\2\3\uffff\1\2\1\uffff\1\2\2\uffff\1\2\4\uffff\1\2\11\uffff"+
+			"\1\2\1\uffff\1\2",
+			"\1\2\2\uffff\1\2\4\uffff\1\6\3\uffff\1\2\4\uffff\4\2\10\uffff\1\2\23"+
+			"\uffff\1\6\1\uffff\1\2\1\uffff\1\2\1\uffff\1\2\2\uffff\1\2\6\uffff\1"+
+			"\2\4\uffff\1\2\1\uffff\1\2\5\uffff\3\2\15\uffff\1\2\1\uffff\1\2\1\uffff"+
+			"\1\2\3\uffff\1\2\1\uffff\1\2\2\uffff\1\2\4\uffff\1\2\11\uffff\1\2\1\uffff"+
+			"\1\2",
 			"\1\7\36\uffff\1\10",
 			"",
 			"\1\21\2\uffff\1\22\4\uffff\1\14\11\uffff\1\16\1\17\3\uffff\1\15\1\uffff"+
-			"\1\26\3\uffff\1\20\23\uffff\1\11\31\uffff\1\23\11\uffff\1\25\5\uffff"+
-			"\1\25\3\uffff\1\13\1\uffff\1\25\7\uffff\1\24\1\25\1\uffff\1\25\11\uffff"+
-			"\1\25\1\uffff\1\25\1\12\14\uffff\1\25\2\uffff\1\25",
-			"\1\26\36\uffff\1\27",
-			"\1\26\36\uffff\1\27",
-			"\1\26\36\uffff\1\27",
-			"\1\26\36\uffff\1\27",
-			"\1\26\36\uffff\1\27",
-			"\1\26\36\uffff\1\27",
-			"\1\26\36\uffff\1\27",
-			"\1\26\36\uffff\1\27",
-			"\1\26\36\uffff\1\27",
-			"\1\26\36\uffff\1\27",
-			"\1\26\36\uffff\1\27",
-			"\1\26\36\uffff\1\27",
-			"\1\26\36\uffff\1\27",
+			"\1\26\3\uffff\1\20\23\uffff\1\11\2\uffff\2\2\1\uffff\1\2\1\uffff\1\2"+
+			"\21\uffff\1\23\11\uffff\1\25\5\uffff\1\25\3\uffff\1\13\1\uffff\1\25\7"+
+			"\uffff\1\24\1\25\1\uffff\1\25\11\uffff\1\25\1\uffff\1\25\1\12\14\uffff"+
+			"\1\25\2\uffff\1\25",
+			"\1\26\32\uffff\2\2\1\uffff\1\2\1\27\1\2",
+			"\1\26\32\uffff\2\2\1\uffff\1\2\1\27\1\2",
+			"\1\26\32\uffff\2\2\1\uffff\1\2\1\27\1\2",
+			"\1\26\32\uffff\2\2\1\uffff\1\2\1\27\1\2",
+			"\1\26\32\uffff\2\2\1\uffff\1\2\1\27\1\2",
+			"\1\26\32\uffff\2\2\1\uffff\1\2\1\27\1\2",
+			"\1\26\32\uffff\2\2\1\uffff\1\2\1\27\1\2",
+			"\1\26\32\uffff\2\2\1\uffff\1\2\1\27\1\2",
+			"\1\26\32\uffff\2\2\1\uffff\1\2\1\27\1\2",
+			"\1\26\32\uffff\2\2\1\uffff\1\2\1\27\1\2",
+			"\1\26\32\uffff\2\2\1\uffff\1\2\1\27\1\2",
+			"\1\26\32\uffff\2\2\1\uffff\1\2\1\27\1\2",
+			"\1\26\32\uffff\2\2\1\uffff\1\2\1\27\1\2",
 			"\1\uffff",
 			"\1\21\2\uffff\1\22\4\uffff\1\14\11\uffff\1\16\1\17\3\uffff\1\15\1\uffff"+
-			"\1\26\3\uffff\1\20\23\uffff\1\11\31\uffff\1\23\11\uffff\1\25\5\uffff"+
-			"\1\25\3\uffff\1\13\1\uffff\1\25\7\uffff\1\24\1\25\1\uffff\1\25\11\uffff"+
-			"\1\25\1\uffff\1\25\1\12\14\uffff\1\25\2\uffff\1\25"
+			"\1\26\3\uffff\1\20\23\uffff\1\11\2\uffff\2\2\1\uffff\1\2\1\uffff\1\2"+
+			"\21\uffff\1\23\11\uffff\1\25\5\uffff\1\25\3\uffff\1\13\1\uffff\1\25\7"+
+			"\uffff\1\24\1\25\1\uffff\1\25\11\uffff\1\25\1\uffff\1\25\1\12\14\uffff"+
+			"\1\25\2\uffff\1\25"
 	};
 
 	static final short[] DFA41_eot = DFA.unpackEncodedString(DFA41_eotS);
@@ -23450,7 +23460,7 @@ public class JPA2Parser extends Parser {
 		}
 		@Override
 		public String getDescription() {
-			return "182:1: aggregate_expression : ( aggregate_expression_function_name '(' ( DISTINCT )? path_expression ')' -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' ) | 'COUNT' '(' ( DISTINCT )? count_argument ')' -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? count_argument ')' ) | function_invocation );";
+			return "182:1: aggregate_expression : ( aggregate_expression_function_name '(' ( DISTINCT )? arithmetic_expression ')' -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? arithmetic_expression ')' ) | 'COUNT' '(' ( DISTINCT )? count_argument ')' -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? count_argument ')' ) | function_invocation );";
 		}
 		@Override
 		public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
@@ -23602,9 +23612,9 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_aggregate_expression_in_constructor_item1481 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_identification_variable_in_constructor_item1489 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_aggregate_expression_function_name_in_aggregate_expression1500 = new BitSet(new long[]{0x0000000000800000L});
-	public static final BitSet FOLLOW_LPAREN_in_aggregate_expression1502 = new BitSet(new long[]{0x0080000000004800L});
-	public static final BitSet FOLLOW_DISTINCT_in_aggregate_expression1504 = new BitSet(new long[]{0x0080000000004000L});
-	public static final BitSet FOLLOW_path_expression_in_aggregate_expression1508 = new BitSet(new long[]{0x0000000080000000L});
+	public static final BitSet FOLLOW_LPAREN_in_aggregate_expression1502 = new BitSet(new long[]{0x2A80000807844A40L,0x0042515000705081L,0x0000000000000005L});
+	public static final BitSet FOLLOW_DISTINCT_in_aggregate_expression1504 = new BitSet(new long[]{0x2A80000807844240L,0x0042515000705081L,0x0000000000000005L});
+	public static final BitSet FOLLOW_arithmetic_expression_in_aggregate_expression1508 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_aggregate_expression1509 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_COUNT_in_aggregate_expression1543 = new BitSet(new long[]{0x0000000000800000L});
 	public static final BitSet FOLLOW_LPAREN_in_aggregate_expression1545 = new BitSet(new long[]{0x0080000000004800L});
@@ -24097,9 +24107,9 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_scalar_expression_in_synpred50_JPA21473 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_aggregate_expression_in_synpred51_JPA21481 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_aggregate_expression_function_name_in_synpred53_JPA21500 = new BitSet(new long[]{0x0000000000800000L});
-	public static final BitSet FOLLOW_LPAREN_in_synpred53_JPA21502 = new BitSet(new long[]{0x0080000000004800L});
-	public static final BitSet FOLLOW_DISTINCT_in_synpred53_JPA21504 = new BitSet(new long[]{0x0080000000004000L});
-	public static final BitSet FOLLOW_path_expression_in_synpred53_JPA21508 = new BitSet(new long[]{0x0000000080000000L});
+	public static final BitSet FOLLOW_LPAREN_in_synpred53_JPA21502 = new BitSet(new long[]{0x2A80000807844A40L,0x0042515000705081L,0x0000000000000005L});
+	public static final BitSet FOLLOW_DISTINCT_in_synpred53_JPA21504 = new BitSet(new long[]{0x2A80000807844240L,0x0042515000705081L,0x0000000000000005L});
+	public static final BitSet FOLLOW_arithmetic_expression_in_synpred53_JPA21508 = new BitSet(new long[]{0x0000000080000000L});
 	public static final BitSet FOLLOW_RPAREN_in_synpred53_JPA21509 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_COUNT_in_synpred55_JPA21543 = new BitSet(new long[]{0x0000000000800000L});
 	public static final BitSet FOLLOW_LPAREN_in_synpred55_JPA21545 = new BitSet(new long[]{0x0080000000004800L});

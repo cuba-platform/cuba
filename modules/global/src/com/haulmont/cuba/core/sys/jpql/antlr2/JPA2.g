@@ -180,8 +180,8 @@ constructor_item
     | aggregate_expression
     | identification_variable;
 aggregate_expression
-    : aggregate_expression_function_name '('(DISTINCT)? path_expression')'
-    -> ^(T_AGGREGATE_EXPR<AggregateExpressionNode>[] aggregate_expression_function_name '(' ('DISTINCT')? path_expression')')
+    : aggregate_expression_function_name '('(DISTINCT)? arithmetic_expression')'
+    -> ^(T_AGGREGATE_EXPR<AggregateExpressionNode>[] aggregate_expression_function_name '(' ('DISTINCT')? arithmetic_expression')')
     | 'COUNT' '('(DISTINCT)? count_argument ')'
     -> ^(T_AGGREGATE_EXPR<AggregateExpressionNode>[] 'COUNT' '(' ('DISTINCT')? count_argument ')')
     | function_invocation;

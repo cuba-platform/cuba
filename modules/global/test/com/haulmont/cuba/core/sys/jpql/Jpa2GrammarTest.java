@@ -372,10 +372,12 @@ public class Jpa2GrammarTest {
     }
 
     @Test
-    @Ignore
     public void testAggregateFunctions() throws RecognitionException {
-        testQuery("SELECT AVG(o.quantity)/2.0 FROM app$Order o");
+        testQuery("SELECT AVG(o.quantity)/2 FROM app$Order o");
+        //testQuery("SELECT AVG(o.quantity)/2.0 FROM app$Order o");
+        testQuery("SELECT AVG(o.price) FROM app$Order o");
         testQuery("SELECT AVG(o.quantity * o.price) FROM app$Order o");
+        testQuery("SELECT AVG(CASE WHEN o.orderType = 1 THEN o.price ELSE 0 END), AVG(CASE WHEN o.orderType = 2 THEN o.price ELSE 0 END) FROM app$Order o");
     }
 
     @Test
