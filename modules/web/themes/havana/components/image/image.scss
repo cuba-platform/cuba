@@ -20,19 +20,19 @@
     &.object-fit-fill {
       object-fit: fill;
       font-family: 'object-fit: fill;';
-      object-position: bottom;
+      object-position: center;
     }
 
     &.object-fit-contain {
       object-fit: contain;
       font-family: 'object-fit: contain;';
-      object-position: bottom;
+      object-position: center;
     }
 
     &.object-fit-scale-down {
       object-fit: scale-down;
       font-family: 'object-fit: scale-down;';
-      object-position: bottom;
+      object-position: center;
     }
 
     &.object-fit-none {
