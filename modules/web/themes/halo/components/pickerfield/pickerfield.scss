@@ -24,6 +24,10 @@
   .#{$primary-stylename}-layout {
     outline: none;
     display: table-row;
+
+    & > .v-caption {
+      display: none;
+    }
   }
 
   .#{$primary-stylename}-layout > * {
