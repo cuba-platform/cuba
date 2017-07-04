@@ -25,10 +25,7 @@ import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.app.importexport.EntityImportViewBuilderAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
-import com.haulmont.cuba.core.entity.BaseDbGeneratedIdEntity;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.IdProxy;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.validation.groups.RestApiChecks;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -39,7 +36,6 @@ import com.haulmont.restapi.transform.JsonTransformationDirection;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -271,37 +267,52 @@ public class EntitiesControllerManager {
 
     private Object getIdFromString(String entityId, MetaClass metaClass) {
         try {
-            Object id;
             if (BaseDbGeneratedIdEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
-                Method getIdMethod = ReflectionUtils.findMethod(metaClass.getJavaClass(), "getDbGeneratedId");
-                if (getIdMethod == null)
-                    throw new IllegalArgumentException("Unable to find getDbGeneratedId method in " + metaClass.getJavaClass());
-                Class<?> idClass = getIdMethod.getReturnType();
-                if (Integer.class.isAssignableFrom(idClass)) {
-                    id = IdProxy.of(Integer.valueOf(entityId));
-                } else if (Long.class.isAssignableFrom(idClass)) {
-                    id = IdProxy.of(Long.valueOf(entityId));
+                if (BaseIdentityIdEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
+                    return IdProxy.of(Long.valueOf(entityId));
+                } else if (BaseIntIdentityIdEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
+                    return IdProxy.of(Integer.valueOf(entityId));
                 } else {
-                    throw new UnsupportedOperationException("Unsupported ID type in entity " + metaClass.getName());
+                    Class<?> clazz = metaClass.getJavaClass();
+                    while (clazz != null) {
+                        Method[] methods = clazz.getDeclaredMethods();
+                        for (Method method : methods) {
+                            if (method.getName().equals("getDbGeneratedId")) {
+                                Class<?> idClass = method.getReturnType();
+                                if (Long.class.isAssignableFrom(idClass)) {
+                                    return Long.valueOf(entityId);
+                                } else if (Integer.class.isAssignableFrom(idClass)) {
+                                    return Integer.valueOf(entityId);
+                                } else if (Short.class.isAssignableFrom(idClass)) {
+                                    return Long.valueOf(entityId);
+                                } else if (UUID.class.isAssignableFrom(idClass)) {
+                                    return UUID.fromString(entityId);
+                                }
+                            }
+                        }
+                        clazz = clazz.getSuperclass();
+                    }
                 }
+                throw new UnsupportedOperationException("Unsupported ID type in entity " + metaClass.getName());
             } else {
+                //noinspection unchecked
                 Method getIdMethod =  metaClass.getJavaClass().getMethod("getId");
                 Class<?> idClass = getIdMethod.getReturnType();
                 if (UUID.class.isAssignableFrom(idClass)) {
-                    id = UUID.fromString(entityId);
+                    return UUID.fromString(entityId);
                 } else if (Integer.class.isAssignableFrom(idClass)) {
-                    id = Integer.valueOf(entityId);
+                    return Integer.valueOf(entityId);
                 } else if (Long.class.isAssignableFrom(idClass)) {
-                    id = Long.valueOf(entityId);
+                    return Long.valueOf(entityId);
                 } else {
-                    id = entityId;
+                    return entityId;
                 }
             }
-            return id;
         } catch (Exception e) {
             throw new RestAPIException("Invalid entity ID",
                     String.format("Cannot convert %s into valid entity ID", entityId),
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.BAD_REQUEST,
+                    e);
         }
     }
 
