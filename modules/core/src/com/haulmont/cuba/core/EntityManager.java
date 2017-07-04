@@ -55,25 +55,15 @@ public interface EntityManager {
     <T extends Entity> T merge(T entity);
 
     /**
-     * Merge the state of the given entity into the current persistence context.
-     * <p>Ensures that all attributes of the specified view are loaded in the returned instance.
-     *
-     * @param entity    entity instance
-     * @param view      view instance
-     * @return the instance that the state was merged to
-     * @throws IllegalArgumentException if instance is not an entity or is a removed entity
+     * DEPRECATED. Use {@code com.haulmont.cuba.core.sys.EntityFetcher#fetch(Entity, View)} if needed.
      */
+    @Deprecated
     <T extends Entity> T merge(T entity, @Nullable View view);
 
     /**
-     * Merge the state of the given entity into the current persistence context.
-     * <p>Ensures that all attributes of the specified view are loaded in the returned instance.
-     *
-     * @param entity    entity instance
-     * @param viewName  view name
-     * @return the instance that the state was merged to
-     * @throws IllegalArgumentException if instance is not an entity or is a removed entity
+     * DEPRECATED. Use {@code com.haulmont.cuba.core.sys.EntityFetcher#fetch(Entity, String)} if needed.
      */
+    @Deprecated
     <T extends Entity> T merge(T entity, @Nullable String viewName);
 
     /**

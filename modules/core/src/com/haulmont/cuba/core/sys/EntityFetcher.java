@@ -22,10 +22,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewProperty;
+import com.haulmont.cuba.core.global.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -38,7 +35,6 @@ import java.util.*;
 
 /**
  * Fetches entities by views by accessing reference attributes.
- * Used for cached entities.
  */
 @Component(EntityFetcher.NAME)
 public class EntityFetcher {
@@ -51,15 +47,61 @@ public class EntityFetcher {
     protected Metadata metadata;
 
     @Inject
+    protected ViewRepository viewRepository;
+
+    @Inject
     protected Persistence persistence;
 
+    @Inject
+    protected EntityStates entityStates;
+
+    /**
+     * Fetch instance by view object.
+     */
     public void fetch(Entity instance, View view) {
         if (view == null)
             return;
-        fetch(instance, view, new HashMap<>());
+        fetch(instance, view, new HashMap<>(), false);
     }
 
-    protected void fetch(Entity entity, View view, Map<Instance, Set<View>> visited) {
+    /**
+     * Fetch instance by view name.
+     */
+    public void fetch(Entity instance, String viewName) {
+        if (viewName == null)
+            return;
+        View view = viewRepository.getView(instance.getClass(), viewName);
+        fetch(instance, view, new HashMap<>(), false);
+    }
+
+    /**
+     * Fetch instance by view object.
+     *
+     * @param optimizeForDetached if true, detached objects encountered in the graph will be first checked whether all
+     *                            required attributes are already loaded, and reloaded only when needed.
+     *                            If the argument is false, all detached objects are reloaded anyway.
+     */
+    public void fetch(Entity instance, View view, boolean optimizeForDetached) {
+        if (view == null)
+            return;
+        fetch(instance, view, new HashMap<>(), optimizeForDetached);
+    }
+
+    /**
+     * Fetch instance by view name.
+     *
+     * @param optimizeForDetached if true, detached objects encountered in the graph will be first checked whether all
+     *                            required attributes are already loaded, and reloaded only when needed.
+     *                            If the argument is false, all detached objects are reloaded anyway.
+     */
+    public void fetch(Entity instance, String viewName, boolean optimizeForDetached) {
+        if (viewName == null)
+            return;
+        View view = viewRepository.getView(instance.getClass(), viewName);
+        fetch(instance, view, new HashMap<>(), optimizeForDetached);
+    }
+
+    protected void fetch(Entity entity, View view, Map<Instance, Set<View>> visited, boolean optimizeForDetached) {
         Set<View> views = visited.get(entity);
         if (views == null) {
             views = new HashSet<>();
@@ -85,28 +127,40 @@ public class EntityFetcher {
                 if (value instanceof Collection) {
                     for (Object item : ((Collection) value)) {
                         if (item instanceof Entity)
-                            fetch((Entity) item, propertyView, visited);
+                            fetch((Entity) item, propertyView, visited, optimizeForDetached);
                     }
                 } else if (value instanceof Entity) {
                     Entity e = (Entity) value;
                     if (PersistenceHelper.isDetached(value) && !(value instanceof EmbeddableEntity)) {
-                        if (log.isTraceEnabled()) {
-                            log.trace("Object " + value + " is detached, loading it");
+                        if (!optimizeForDetached || needReloading(e, propertyView)) {
+                            if (log.isTraceEnabled()) {
+                                log.trace("Object " + value + " is detached, loading it");
+                            }
+                            //noinspection unchecked
+                            value = persistence.getEntityManager().find(e.getClass(), e.getId());
+                            if (value == null) {
+                                // the instance is most probably deleted
+                                continue;
+                            }
+                            entity.setValue(property.getName(), value);
                         }
-                        value = persistence.getEntityManager().find(e.getClass(), e.getId());
-                        if (value == null) {
-                            // the instance is most probably deleted
-                            continue;
-                        }
-                        entity.setValue(property.getName(), value);
                     }
-                    fetch(e, propertyView, visited);
+                    fetch(e, propertyView, visited, optimizeForDetached);
                 }
             }
         }
     }
 
-    private boolean isLazyFetchedLocalAttribute(MetaProperty metaProperty) {
+    protected boolean needReloading(Entity entity, View view) {
+        for (ViewProperty viewProperty : view.getProperties()) {
+            if (!entityStates.isLoaded(entity, viewProperty.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected boolean isLazyFetchedLocalAttribute(MetaProperty metaProperty) {
         AnnotatedElement annotatedElement = metaProperty.getAnnotatedElement();
         Basic annotation = annotatedElement.getAnnotation(Basic.class);
         return annotation != null && annotation.fetch() == FetchType.LAZY;

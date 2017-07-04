@@ -28,6 +28,7 @@ import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.EntityFetcher;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -90,6 +91,9 @@ public class RdbmsStore implements DataStore {
 
     @Inject
     protected QueryTransformerFactory queryTransformerFactory;
+
+    @Inject
+    protected EntityFetcher entityFetcher;
 
     protected String storeName;
 
@@ -307,6 +311,7 @@ public class RdbmsStore implements DataStore {
                     em.persist(entity);
                     checkOperationPermitted(entity, ConstraintOperationType.CREATE);
                     if (!context.isDiscardCommitted()) {
+                        entityFetcher.fetch(entity, getViewFromContextOrNull(context, entity), true);
                         res.add(entity);
                     }
                     persisted.add(entity);
@@ -326,9 +331,10 @@ public class RdbmsStore implements DataStore {
                 if (!PersistenceHelper.isNew(entity)) {
                     security.restoreFilteredData((BaseGenericIdEntity) entity);
                     attributeSecurity.beforeMerge(entity);
-                    View view = getViewFromContext(context, entity);
 
-                    Entity merged = em.merge(entity, view);
+                    Entity merged = em.merge(entity);
+                    entityFetcher.fetch(merged, getViewFromContext(context, entity));
+
                     checkOperationPermitted(merged, ConstraintOperationType.UPDATE);
                     if (!context.isDiscardCommitted()) {
                         res.add(merged);
@@ -353,8 +359,8 @@ public class RdbmsStore implements DataStore {
                 Entity e;
                 if (entity instanceof SoftDelete) {
                     attributeSecurity.beforeMerge(entity);
-                    View view = getViewFromContext(context, entity);
-                    e = em.merge(entity, view);
+                    e = em.merge(entity);
+                    entityFetcher.fetch(e, getViewFromContext(context, entity));
                 } else {
                     e = em.merge(entity);
                 }
@@ -486,6 +492,15 @@ public class RdbmsStore implements DataStore {
         View view = context.getViews().get(entity);
         if (view == null) {
             view = viewRepository.getView(entity.getClass(), View.LOCAL);
+        }
+        return attributeSecurity.createRestrictedView(view);
+    }
+
+    @Nullable
+    protected View getViewFromContextOrNull(CommitContext context, Entity entity) {
+        View view = context.getViews().get(entity);
+        if (view == null) {
+            return null;
         }
         return attributeSecurity.createRestrictedView(view);
     }

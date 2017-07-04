@@ -112,6 +112,7 @@ public class EntityManagerImpl implements EntityManager {
     }
 
     @Override
+    @Deprecated
     public <T extends Entity> T merge(T entity, @Nullable View view) {
         T managed = merge(entity);
         if (view != null) {
@@ -121,6 +122,7 @@ public class EntityManagerImpl implements EntityManager {
     }
 
     @Override
+    @Deprecated
     public <T extends Entity> T merge(T entity, @Nullable String viewName) {
         if (viewName != null) {
             return merge(entity, metadata.getViewRepository().getView(entity.getClass(), viewName));
