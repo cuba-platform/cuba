@@ -162,6 +162,7 @@ public class GroupBrowser extends AbstractWindow {
                 .withHandler(event -> {
                     Set<User> selected = usersTable.getSelected();
                     if (!selected.isEmpty()) {
+                        Group selectedGroup = groupsTree.getSelected().iterator().next();
                         Lookup lookupWindow = openLookup(Group.class, items -> {
                             if (items.size() == 1) {
                                 Group group = (Group) items.iterator().next();
@@ -180,7 +181,7 @@ public class GroupBrowser extends AbstractWindow {
 
                                 usersTable.getDatasource().refresh();
                             }
-                        }, OpenType.DIALOG);
+                        }, OpenType.DIALOG, ParamsMap.of("exclude", selectedGroup));
 
                         lookupWindow.addCloseListener(actionId -> {
                             usersTable.requestFocus();
