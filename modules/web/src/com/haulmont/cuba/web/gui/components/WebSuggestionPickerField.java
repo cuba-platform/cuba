@@ -45,13 +45,7 @@ public class WebSuggestionPickerField extends WebSuggestionField implements Sugg
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
 
-        WebPickerField.Picker picker = new WebPickerField.Picker(this, component) {
-            @Override
-            public void setRequired(boolean required) {
-                super.setRequired(required);
-                component.setRequired(required);
-            }
-        };
+        WebPickerField.Picker picker = new WebPickerField.Picker(this, component);
 
         //noinspection IncorrectCreateGuiComponent
         pickerField = new WebPickerField(picker);
@@ -223,7 +217,6 @@ public class WebSuggestionPickerField extends WebSuggestionField implements Sugg
 
     @Override
     public void setRequired(boolean required) {
-        component.setRequired(required);
         pickerField.setRequired(required);
     }
 
