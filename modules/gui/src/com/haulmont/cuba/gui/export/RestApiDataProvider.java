@@ -35,8 +35,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
+ * DEPRECATED as obsolete.
  * Class providing data using Rest API by the query given
  */
+@Deprecated
 public class RestApiDataProvider implements ExportDataProvider {
 
     private final Logger log = LoggerFactory.getLogger(RestApiDataProvider.class);

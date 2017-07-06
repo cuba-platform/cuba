@@ -77,8 +77,10 @@ public interface GlobalConfig extends Config {
     String getDispatcherBaseUrl();
 
     /**
+     * DEPRECATED as obsolete.
      * @return REST API connection URL
      */
+    @Deprecated
     @Property("cuba.restApiUrl")
     @Source(type = SourceType.DATABASE)
     @DefaultString("http://localhost:8080/app-portal/api")
