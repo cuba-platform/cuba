@@ -24,10 +24,6 @@
   .#{$primary-stylename}-layout {
     outline: none;
     display: table-row;
-
-    & > .v-caption {
-      display: none;
-    }
   }
 
   .#{$primary-stylename}-layout > * {
@@ -151,7 +147,8 @@
   .#{$primary-stylename}-error {
     .v-filterselect .v-filterselect-input,
     .c-searchselect .c-searchselect-input,
-    .v-textfield.v-textfield-readonly {
+    .v-textfield.v-textfield-readonly,
+    .c-suggestionfield {
       @include valo-textfield-error-style;
     }
 
