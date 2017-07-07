@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.app.core.restore;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
@@ -32,6 +33,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
+import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -43,6 +45,7 @@ import org.dom4j.Element;
 
 import javax.inject.Inject;
 import java.lang.reflect.AnnotatedElement;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class EntityRestore extends AbstractWindow {
@@ -108,6 +111,15 @@ public class EntityRestore extends AbstractWindow {
                 RowsCount rowsCount = componentsFactory.createComponent(RowsCount.class);
                 entitiesTable.setRowsCount(rowsCount);
 
+                final SimpleDateFormat dateTimeFormat = new SimpleDateFormat(getMessage("dateTimeFormat"));
+                Formatter dateTimeFormatter = propertyValue -> {
+                    if (propertyValue == null) {
+                        return StringUtils.EMPTY;
+                    }
+
+                    return dateTimeFormat.format(propertyValue);
+                };
+
                 //collect properties in order to add non-system columns first
                 LinkedList<Table.Column> nonSystemPropertyColumns = new LinkedList<>();
                 LinkedList<Table.Column> systemPropertyColumns = new LinkedList<>();
@@ -130,6 +142,10 @@ public class EntityRestore extends AbstractWindow {
                     } else {
                         column.setCaption(metaProperty.getName());
                         systemPropertyColumns.add(column);
+                    }
+
+                    if (range.isDatatype() && DateTimeDatatype.NAME.equals(range.asDatatype().getName())) {
+                        column.setFormatter(dateTimeFormatter);
                     }
                 }
 

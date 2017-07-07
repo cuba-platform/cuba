@@ -49,8 +49,14 @@
                         <column id="from"/>
                         <column id="caption"/>
                         <column id="status"/>
-                        <column id="dateSent"/>
-                        <column id="updateTs"/>
+                        <column id="dateSent">
+                            <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter"
+                                       format="msg://dateTimeWithSeconds"/>
+                        </column>
+                        <column id="updateTs">
+                            <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter"
+                                       format="msg://dateTimeWithSeconds"/>
+                        </column>
                         <column id="attachmentsName"/>
                         <column id="attemptsCount"/>
                         <column id="deadline"/>

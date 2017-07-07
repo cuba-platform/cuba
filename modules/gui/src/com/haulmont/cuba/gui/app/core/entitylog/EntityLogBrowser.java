@@ -36,10 +36,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.security.entity.EntityLogItem;
-import com.haulmont.cuba.security.entity.LoggedAttribute;
-import com.haulmont.cuba.security.entity.LoggedEntity;
-import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.inject.Inject;
@@ -99,13 +96,13 @@ public class EntityLogBrowser extends AbstractWindow {
     protected CheckBox selectAllCheckBox;
 
     @Inject
-    protected Table loggedEntityTable;
+    protected Table<LoggedEntity> loggedEntityTable;
 
     @Inject
-    protected Table entityLogTable;
+    protected Table<EntityLogItem> entityLogTable;
 
     @Inject
-    protected Table entityLogAttrTable;
+    protected Table<EntityLogAttr> entityLogAttrTable;
 
     @Inject
     protected ScrollBoxLayout attributesBoxScroll;
@@ -158,8 +155,8 @@ public class EntityLogBrowser extends AbstractWindow {
 
         systemAttrsList = Arrays.asList("createTs", "createdBy", "updateTs", "updatedBy", "deleteTs", "deletedBy", "version", "id");
         Map<String, Object> changeTypeMap = new LinkedHashMap<>();
-        changeTypeMap.put(messages.getMessage(getClass(),"createField"), "C");
-        changeTypeMap.put(messages.getMessage(getClass(),"modifyField"),"M");
+        changeTypeMap.put(messages.getMessage(getClass(), "createField"), "C");
+        changeTypeMap.put(messages.getMessage(getClass(), "modifyField"), "M");
         changeTypeMap.put(messages.getMessage(getClass(), "deleteField"), "D");
         changeTypeMap.put(messages.getMessage(getClass(), "restoreField"), "R");
 
@@ -175,10 +172,10 @@ public class EntityLogBrowser extends AbstractWindow {
         addAction(new SaveAction());
         addAction(new CancelAction());
         Label label1 = factory.createComponent(Label.class);
-        label1.setValue(messages.getMessage(getClass(),"show"));
+        label1.setValue(messages.getMessage(getClass(), "show"));
         label1.setAlignment(Alignment.MIDDLE_LEFT);
         Label label2 = factory.createComponent(Label.class);
-        label2.setValue(messages.getMessage(getClass(),"rows"));
+        label2.setValue(messages.getMessage(getClass(), "rows"));
         label2.setAlignment(Alignment.MIDDLE_LEFT);
         ButtonsPanel panel = entityLogTable.getButtonsPanel();
         showRowField = factory.createComponent(TextField.class);
@@ -205,14 +202,11 @@ public class EntityLogBrowser extends AbstractWindow {
                     }
 
                     Window lookupWindow = (Window) pickerField.getFrame();
-                    Lookup.Handler lookupWindowHandler = new Lookup.Handler() {
-                        @Override
-                        public void handleLookup(Collection items) {
-                            if (!items.isEmpty()) {
-                                Object item = items.iterator().next();
-                                pickerField.setValue(item);
-                                afterSelect(items);
-                            }
+                    Lookup.Handler lookupWindowHandler = items -> {
+                        if (!items.isEmpty()) {
+                            Object item = items.iterator().next();
+                            pickerField.setValue(item);
+                            afterSelect(items);
                         }
                     };
 
@@ -221,7 +215,7 @@ public class EntityLogBrowser extends AbstractWindow {
                                 currentWindowAlias,
                                 lookupWindowHandler,
                                 lookupScreenOpenType,
-                                lookupScreenParams != null ? lookupScreenParams : Collections.<String, Object>emptyMap()
+                                lookupScreenParams != null ? lookupScreenParams : Collections.emptyMap()
                         );
                     } else {
                         lookupWindow.openLookup(EntityInspectorBrowse.SCREEN_NAME,
@@ -231,9 +225,8 @@ public class EntityLogBrowser extends AbstractWindow {
                         );
                     }
 
-                    lookupWindow.addCloseListener(actionId -> {
-                        pickerField.requestFocus();
-                    });
+                    lookupWindow.addCloseListener(actionId ->
+                            pickerField.requestFocus());
                 }
             }
         };
@@ -269,9 +262,8 @@ public class EntityLogBrowser extends AbstractWindow {
         selectAllCheckBox.addValueChangeListener(e -> enableAllCheckBoxes((boolean) e.getValue()));
 
         entityLogTable.addGeneratedColumn("entityId", entity -> {
-            EntityLogItem item = (EntityLogItem) entity;
-            if (item.getObjectEntityId() != null) {
-                return new Table.PlainTextCell(item.getObjectEntityId().toString());
+            if (entity.getObjectEntityId() != null) {
+                return new Table.PlainTextCell(entity.getObjectEntityId().toString());
             }
             return null;
         });
@@ -337,7 +329,7 @@ public class EntityLogBrowser extends AbstractWindow {
                         continue;
                     }
                     CheckBox checkBox = factory.createComponent(CheckBox.class);
-                    if (enabledAttr != null && isEntityHaveAtrribute(property.getName(), enabledAttr)) {
+                    if (enabledAttr != null && isEntityHaveAttribute(property.getName(), enabledAttr)) {
                         checkBox.setValue(true);
                     }
                     checkBox.setId(property.getName());
@@ -364,7 +356,7 @@ public class EntityLogBrowser extends AbstractWindow {
             for (Component c : attributesBoxScroll.getComponents()) {
                 if (!c.equals(selectAllCheckBox)) {
                     CheckBox checkBox = (CheckBox) c;
-                    if (!((boolean) checkBox.getValue())) {
+                    if (!checkBox.getValue()) {
                         setSelectAllCheckBox(false);
                         return;
                     }
@@ -412,8 +404,8 @@ public class EntityLogBrowser extends AbstractWindow {
                 entityLogDs.setMaxResults(maxRows);
             else
                 throw new NumberFormatException();
-        } catch (Exception e){
-            showNotification(messages.getMessage(getClass(),"invalidNumber"),NotificationType.HUMANIZED);
+        } catch (Exception e) {
+            showNotification(messages.getMessage(getClass(), "invalidNumber"), NotificationType.HUMANIZED);
             return;
         }
         Entity entity = instancePicker.getValue();
@@ -439,10 +431,10 @@ public class EntityLogBrowser extends AbstractWindow {
                 attributesBoxScroll.remove(c);
     }
 
-    public boolean isEntityHaveAtrribute(String metaPropertyName, Set<LoggedAttribute> enabledAttr) {
+    public boolean isEntityHaveAttribute(String metaPropertyName, Set<LoggedAttribute> enabledAttr) {
         if ((enabledAttr != null) && !systemAttrsList.contains(metaPropertyName)) {
-            for (LoggedAttribute logAtrr : enabledAttr)
-                if (logAtrr.getName().equals(metaPropertyName))
+            for (LoggedAttribute logAttr : enabledAttr)
+                if (logAttr.getName().equals(metaPropertyName))
                     return true;
         }
         return false;
@@ -490,20 +482,20 @@ public class EntityLogBrowser extends AbstractWindow {
 
         @Override
         public void actionPerform(Component component) {
-            LoggedEntity selectedEntity = (LoggedEntity) loggedEntityTable.getSelected().iterator().next();
+            LoggedEntity selectedEntity = loggedEntityTable.getSelected().iterator().next();
             Set<LoggedAttribute> enabledAttributes = selectedEntity.getAttributes();
             for (Component c : attributesBoxScroll.getComponents()) {
                 CheckBox currentCheckBox = (CheckBox) c;
                 if (currentCheckBox.getId().equals(SELECT_ALL_CHECK_BOX))
                     continue;
                 Boolean currentCheckBoxValue = currentCheckBox.getValue();
-                if (currentCheckBoxValue && !isEntityHaveAtrribute(currentCheckBox.getId(), enabledAttributes)) {   //add attribute if checked and not exist in table
+                if (currentCheckBoxValue && !isEntityHaveAttribute(currentCheckBox.getId(), enabledAttributes)) {   //add attribute if checked and not exist in table
                     LoggedAttribute newLoggedAttribute = metadata.create(LoggedAttribute.class);
                     newLoggedAttribute.setName(currentCheckBox.getId());
                     newLoggedAttribute.setEntity(selectedEntity);
                     loggedAttrDs.addItem(newLoggedAttribute);
                 }
-                if (!currentCheckBoxValue && isEntityHaveAtrribute(currentCheckBox.getId(), enabledAttributes)) {  //remove attribute if unchecked and exist in table
+                if (!currentCheckBoxValue && isEntityHaveAttribute(currentCheckBox.getId(), enabledAttributes)) {  //remove attribute if unchecked and exist in table
                     LoggedAttribute removeAtr = getLoggedAttribute(currentCheckBox.getId(), enabledAttributes);
                     if (removeAtr != null)
                         loggedAttrDs.removeItem(removeAtr);

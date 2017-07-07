@@ -107,7 +107,10 @@
                                 <button visible="false"/>
                             </buttonsPanel>
                             <columns>
-                                <column id="eventTs" caption="msg://when"/>
+                                <column id="eventTs" caption="msg://when">
+                                    <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter"
+                                               format="msg://dateTimeWithSeconds"/>
+                                </column>
                                 <column id="user" caption="msg://user"/>
                                 <column id="type" caption="msg://changeType"/>
                                 <column id="entity" caption="msg://entity"/>
