@@ -44,7 +44,8 @@ public class GroupLookup extends AbstractLookup {
         groups.expandTree();
 
         if (params.containsKey("exclude")) {
-            excludeItem((Group) params.get("exclude"));
+            boolean excludeChildren = (boolean) params.getOrDefault("excludeChildren", true);
+            excludeItem((Group) params.get("exclude"), excludeChildren);
         }
 
         if (groupsDs.size() > 1 && selectedGroup != null) {
@@ -59,9 +60,11 @@ public class GroupLookup extends AbstractLookup {
         }
     }
 
-    protected void excludeItem(Group group) {
-        for (UUID childId : groupsDs.getChildren(group.getId())) {
-            excludeItem(groupsDs.getItem(childId));
+    protected void excludeItem(Group group, boolean excludeChildren) {
+        if (excludeChildren) {
+            for (UUID childId : groupsDs.getChildren(group.getId())) {
+                excludeItem(groupsDs.getItem(childId), true);
+            }
         }
 
         groupsDs.excludeItem(group);
