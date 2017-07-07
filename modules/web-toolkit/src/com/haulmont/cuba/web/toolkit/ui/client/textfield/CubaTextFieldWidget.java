@@ -59,19 +59,21 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
     }-*/;
 
     public void handleInput() {
-        String text = getText();
-
-        if ("UPPER".equals(caseConversion)) {
-            text = text.toUpperCase();
-        } else if ("LOWER".equals(caseConversion)) {
-            text = text.toLowerCase();
-        } else {
-            return;
-        }
+        String text = applyCaseConversion(getText());
 
         int cursorPos = getCursorPos();
         setText(text);
         setCursorPos(cursorPos);
+    }
+
+    protected String applyCaseConversion(String text) {
+        if ("UPPER".equals(caseConversion)) {
+            return text.toUpperCase();
+        } else if ("LOWER".equals(caseConversion)) {
+            return text.toLowerCase();
+        } else {
+            return text;
+        }
     }
 
     @Override
@@ -146,12 +148,23 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
 
     @Override
     public void setText(String text) {
-        super.setText(text);
+        String styleName = getStyleName();
+        if (styleName.contains(PROMPT_STYLE) || styleName.contains(CUBA_EMPTY_VALUE)) {
+            super.setText(text);
+        } else {
+            String convertedText = applyCaseConversion(text);
+
+            super.setText(convertedText);
+
+            if (!convertedText.equals(text)) {
+                valueChange(false);
+            }
+        }
 
         if ("".equals(text) || text == null) {
             addStyleName(CUBA_EMPTY_VALUE);
         } else {
-            if (getStyleName().contains(PROMPT_STYLE)) {
+            if (styleName.contains(PROMPT_STYLE)) {
                 addStyleName(CUBA_EMPTY_VALUE);
             } else {
                 removeStyleName(CUBA_EMPTY_VALUE);

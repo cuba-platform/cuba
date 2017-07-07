@@ -29,6 +29,7 @@ import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEnumConverter;
 import com.vaadin.ui.AbstractTextField;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.Size;
 import java.text.ParseException;
 import java.util.Locale;
+import java.util.Map;
 
 public abstract class WebAbstractTextField<T extends AbstractTextField>
         extends
@@ -119,21 +121,39 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
     public void setDatasource(Datasource datasource, String property) {
         super.setDatasource(datasource, property);
 
-        if (metaProperty != null
-                && this instanceof TextInputField.MaxLengthLimited) {
-            Integer maxLength = (Integer) metaProperty.getAnnotations().get("length");
-            if (maxLength != null) {
-                ((TextInputField.MaxLengthLimited) this).setMaxLength(maxLength);
+        if (metaProperty != null) {
+            Map<String, Object> annotations = metaProperty.getAnnotations();
+
+            if (this instanceof CaseConversionSupported
+                    && ((CaseConversionSupported) this).getCaseConversion() == CaseConversion.NONE) {
+                String caseConversionAnnotation = com.haulmont.cuba.core.entity.annotation.CaseConversion.class.getName();
+                //noinspection unchecked
+                Map<String, Object> caseConversion = (Map<String, Object>) annotations.get(caseConversionAnnotation);
+                if (MapUtils.isNotEmpty(caseConversion)) {
+                    String conversionType = (String) caseConversion.get("type");
+                    CaseConversion conversion = CaseConversion.valueOf(conversionType);
+
+                    ((CaseConversionSupported) this).setCaseConversion(conversion);
+                }
             }
 
-            Integer sizeMax = (Integer) metaProperty.getAnnotations().get(Size.class.getName() + "_max");
-            if (sizeMax != null) {
-                ((TextInputField.MaxLengthLimited) this).setMaxLength(sizeMax);
-            }
+            if (this instanceof TextInputField.MaxLengthLimited) {
+                MaxLengthLimited maxLengthLimited = (MaxLengthLimited) this;
 
-            Integer lengthMax = (Integer) metaProperty.getAnnotations().get(Length.class.getName() + "_max");
-            if (lengthMax != null) {
-                ((TextInputField.MaxLengthLimited) this).setMaxLength(lengthMax);
+                Integer maxLength = (Integer) annotations.get("length");
+                if (maxLength != null) {
+                    maxLengthLimited.setMaxLength(maxLength);
+                }
+
+                Integer sizeMax = (Integer) annotations.get(Size.class.getName() + "_max");
+                if (sizeMax != null) {
+                    maxLengthLimited.setMaxLength(sizeMax);
+                }
+
+                Integer lengthMax = (Integer) annotations.get(Length.class.getName() + "_max");
+                if (lengthMax != null) {
+                    maxLengthLimited.setMaxLength(lengthMax);
+                }
             }
         }
     }

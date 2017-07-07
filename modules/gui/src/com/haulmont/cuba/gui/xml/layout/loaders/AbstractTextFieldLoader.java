@@ -16,9 +16,13 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.entity.annotation.CaseConversion;
 import com.haulmont.cuba.gui.components.TextInputField;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+
+import java.util.Map;
 
 public abstract class AbstractTextFieldLoader<T extends TextInputField> extends AbstractFieldLoader<T> {
 
@@ -48,6 +52,18 @@ public abstract class AbstractTextFieldLoader<T extends TextInputField> extends 
         final String caseConversion = element.attributeValue("caseConversion");
         if (StringUtils.isNotEmpty(caseConversion)) {
             component.setCaseConversion(TextInputField.CaseConversion.valueOf(caseConversion));
+            return;
+        }
+
+        if (resultComponent.getMetaPropertyPath() != null) {
+            Map<String, Object> annotations = resultComponent.getMetaPropertyPath().getMetaProperty().getAnnotations();
+
+            //noinspection unchecked
+            Map<String, Object> conversion = (Map<String, Object>) annotations.get(CaseConversion.class.getName());
+            if (MapUtils.isNotEmpty(conversion)) {
+                TextInputField.CaseConversion tfCaseConversion = TextInputField.CaseConversion.valueOf((String) conversion.get("type"));
+                component.setCaseConversion(tfCaseConversion);
+            }
         }
     }
 
