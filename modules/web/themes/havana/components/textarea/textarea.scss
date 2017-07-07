@@ -36,4 +36,8 @@
     background: transparent;
     border: $cuba-field-readonly-border-color 1px solid;
   }
+
+  .#{$primary-stylename}.c-disabled-or-readonly.c-empty-value {
+    color: transparent;
+  }
 }

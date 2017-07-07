@@ -25,4 +25,8 @@
       @include valo-textfield-error-style;
     }
   }
+
+  .#{$primary-stylename}.c-disabled-or-readonly.c-empty-value {
+    color: transparent;
+  }
 }

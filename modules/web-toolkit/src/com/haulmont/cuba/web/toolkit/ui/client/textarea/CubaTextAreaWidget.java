@@ -20,6 +20,9 @@ import com.google.gwt.dom.client.Element;
 import com.vaadin.client.ui.VTextArea;
 
 public class CubaTextAreaWidget extends VTextArea {
+    protected static final String PROMPT_STYLE = "prompt";
+    protected static final String CUBA_DISABLED_OR_READONLY = "c-disabled-or-readonly";
+    protected static final String CUBA_EMPTY_VALUE = "c-empty-value";
 
     protected String caseConversion = "NONE";
 
@@ -57,6 +60,43 @@ public class CubaTextAreaWidget extends VTextArea {
         int cursorPos = getCursorPos();
         setText(text);
         setCursorPos(cursorPos);
+    }
+
+    @Override
+    public void setText(String text) {
+        super.setText(text);
+
+        if ("".equals(text) || text == null) {
+            addStyleName(CUBA_EMPTY_VALUE);
+        } else {
+            if (getStyleName().contains(PROMPT_STYLE)) {
+                addStyleName(CUBA_EMPTY_VALUE);
+            } else {
+                removeStyleName(CUBA_EMPTY_VALUE);
+            }
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        refreshEnabledOrReadonly();
+    }
+
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        super.setReadOnly(readOnly);
+
+        refreshEnabledOrReadonly();
+    }
+
+    protected void refreshEnabledOrReadonly() {
+        if (!isEnabled() || isReadOnly()) {
+            addStyleName(CUBA_DISABLED_OR_READONLY);
+        } else {
+            removeStyleName(CUBA_DISABLED_OR_READONLY);
+        }
     }
 
     public void setCaseConversion(String caseConversion) {
