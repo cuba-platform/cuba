@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.sys.singleapp;
 
 import com.google.common.base.Splitter;
+import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.CubaClassPathXmlApplicationContext;
 import com.haulmont.cuba.core.sys.SingleAppResourcePatternResolver;
@@ -27,6 +28,7 @@ import com.haulmont.cuba.web.sys.CubaHttpFilter;
 import com.haulmont.cuba.web.sys.WebAppContextLoader;
 import com.haulmont.restapi.sys.CubaRestApiServlet;
 import com.haulmont.restapi.sys.SingleAppRestApiServlet;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.web.filter.DelegatingFilterProxy;
@@ -38,6 +40,7 @@ import java.net.MalformedURLException;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * {@link AppContext} loader of the web application block packed in a WAR together with the middleware block.
@@ -134,11 +137,13 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
             //Do nothing
         }
         if (hasFrontApp) {
-            DispatcherServlet frontServlet = new SingleAppFrontServlet(FRONT_CONTEXT_NAME);
+            DispatcherServlet frontServlet;
             try {
-                frontServlet.init(new CubaServletConfig("app_front_servlet", servletContext));
-            } catch (ServletException e) {
-                throw new RuntimeException("An error occurred while initializing app_servlet servlet", e);
+                Class frontServletClass = ReflectionHelper.getClass("com.haulmont.cuba.web.sys.AppFrontServlet");
+                frontServlet = (DispatcherServlet) ReflectionHelper.newInstance(frontServletClass,
+                        FRONT_CONTEXT_NAME, (Supplier<ApplicationContext>) AppContext::getApplicationContext);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException("Unable to instantiate app front servlet", e);
             }
             ServletRegistration.Dynamic cubaServletReg = servletContext.addServlet("app_front_servlet", frontServlet);
             cubaServletReg.setLoadOnStartup(3);

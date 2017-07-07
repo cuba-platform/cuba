@@ -14,30 +14,20 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.sys.singleapp;
+package com.haulmont.cuba.web.sys;
 
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.CubaXmlWebApplicationContext;
-import com.haulmont.cuba.web.controllers.StaticContentController;
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Properties;
+import java.util.function.Supplier;
 
-public class SingleAppFrontServlet extends DispatcherServlet {
+public class AppFrontServlet extends DispatcherServlet {
 
     /*
      * The field is used to prevent double initialization of the servlet.
@@ -46,11 +36,18 @@ public class SingleAppFrontServlet extends DispatcherServlet {
     protected volatile boolean initialized = false;
 
     protected String contextName;
+    protected Supplier<ApplicationContext> parentContextProvider;
 
-    public SingleAppFrontServlet(String contextName) {
+    public AppFrontServlet() {
+        this("", null);
+    }
+
+    public AppFrontServlet(String contextName, Supplier<ApplicationContext> parentContextProvider) {
         super();
         setContextClass(AnnotationConfigWebApplicationContext.class);
+        setContextConfigLocation(AppFrontConfig.class.getName());
         this.contextName = contextName;
+        this.parentContextProvider = parentContextProvider;
     }
 
     @Override
@@ -66,7 +63,10 @@ public class SingleAppFrontServlet extends DispatcherServlet {
     protected WebApplicationContext initWebApplicationContext() {
         WebApplicationContext wac = findWebApplicationContext();
         if (wac == null) {
-            ApplicationContext parent = AppContext.getApplicationContext();
+            ApplicationContext parent = null;
+            if (parentContextProvider != null) {
+                parent = parentContextProvider.get();
+            }
             wac = createWebApplicationContext(parent);
         }
 
@@ -81,44 +81,6 @@ public class SingleAppFrontServlet extends DispatcherServlet {
         }
 
         return wac;
-    }
-
-    @Override
-    protected WebApplicationContext createWebApplicationContext(ApplicationContext parent) {
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Servlet with name '" + getServletName() +
-                    "' will try to create custom WebApplicationContext context of class '" +
-                    CubaXmlWebApplicationContext.class.getName() + "'" + ", using parent context [" + parent + "]");
-        }
-        ConfigurableWebApplicationContext wac = new XmlWebApplicationContext() {
-            @Override
-            protected String[] getDefaultConfigLocations() {
-                return null;
-            }
-        };
-
-        wac.setEnvironment(getEnvironment());
-        wac.setParent(parent);
-        wac.setConfigLocation(getContextConfigLocation());
-
-        configureAndRefreshWebApplicationContext(wac);
-        initMappings((XmlWebApplicationContext) wac);
-
-        return wac;
-    }
-
-    protected void initMappings(XmlWebApplicationContext wac) {
-        BeanDefinitionRegistry beanDefinitionRegistry = (BeanDefinitionRegistry) wac.getBeanFactory();
-        beanDefinitionRegistry.registerBeanDefinition("staticContentController", new RootBeanDefinition(StaticContentController.class));
-
-        BeanDefinition mappingDefinition = new RootBeanDefinition(SimpleUrlHandlerMapping.class);
-        MutablePropertyValues propertyValues = mappingDefinition.getPropertyValues();
-
-        Properties urls = new Properties();
-        urls.put("/*", "staticContentController");
-
-        propertyValues.add("mappings", urls);
-        beanDefinitionRegistry.registerBeanDefinition("simpleUrlHandlerMapping", mappingDefinition);
     }
 
     @Override

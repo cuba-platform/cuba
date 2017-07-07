@@ -82,13 +82,14 @@ def webToolkitModule = project(':cuba-web-toolkit')
 def webModule = project(':cuba-web')
 def idpModule = project(':cuba-idp')
 def uberJarModule = project(':cuba-uberjar')
+def frontModule = project(':cuba-front')
 
 def webModuleThemesModule = project(':cuba-web-themes')
 def coreTestsModule = project(':cuba-core-tests')
 def clientTestsModule = project(':cuba-client-tests')
 
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
-           webModule, desktopModule, portalModule, webAuthModule, restApiModule, idpModule, uberJarModule]) {
+           webModule, desktopModule, portalModule, webAuthModule, restApiModule, idpModule, uberJarModule, frontModule]) {
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
@@ -914,6 +915,14 @@ configure(uberJarModule) {
         compile(bom['commons-cli:commons-cli'])
         compile(bom['commons-io:commons-io'])
         compile(bom['org.apache.commons:commons-dbcp2'])
+    }
+}
+
+configure(frontModule) {
+    dependencies {
+        compile(bom['org.springframework:spring-webmvc'])
+        compile(bom['org.springframework:spring-context-support'])
+        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
     }
 }
 

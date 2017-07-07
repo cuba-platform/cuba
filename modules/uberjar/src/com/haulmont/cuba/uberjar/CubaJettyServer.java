@@ -136,7 +136,7 @@ public class CubaJettyServer {
             handlers.add(createAppContext(serverClassLoader, sharedClassLoader, PORTAL_PATH_IN_JAR, portalContextPath));
         }
         if (hasFrontApp(serverClassLoader)) {
-            handlers.add(createFrontAppContext(serverClassLoader));
+            handlers.add(createFrontAppContext(serverClassLoader, sharedClassLoader));
         }
 
         HandlerCollection handlerCollection = new HandlerCollection();
@@ -162,12 +162,21 @@ public class CubaJettyServer {
     }
 
 
-    protected WebAppContext createFrontAppContext(ClassLoader serverClassLoader) throws URISyntaxException {
-        URL frontContentUrl = serverClassLoader.getResource(FRONT_PATH_IN_JAR);
+    protected WebAppContext createFrontAppContext(ClassLoader serverClassLoader, ClassLoader sharedClassLoader) throws URISyntaxException {
+        ClassLoader frontClassLoader = new URLClassLoader(pathsToURLs(serverClassLoader, getAppClassesPath(FRONT_PATH_IN_JAR)), sharedClassLoader);
+
         WebAppContext frontContext = new WebAppContext();
+        frontContext.setConfigurations(new Configuration[]{new WebXmlConfiguration()});
         frontContext.setContextPath(frontContextPath);
-        frontContext.setClassLoader(serverClassLoader);
-        frontContext.setResourceBase(frontContentUrl.toURI().toString());
+        frontContext.setClassLoader(frontClassLoader);
+
+        setResourceBase(serverClassLoader, frontContext, FRONT_PATH_IN_JAR);
+
+        System.setProperty("cuba.front.baseUrl", PATH_DELIMITER.equals(frontContextPath) ? frontContextPath :
+                frontContextPath + PATH_DELIMITER);
+        System.setProperty("cuba.front.apiUrl", PATH_DELIMITER.equals(contextPath) ? "/rest/" :
+                contextPath + PATH_DELIMITER + "rest" + PATH_DELIMITER);
+
         return frontContext;
     }
 
