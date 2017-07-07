@@ -399,12 +399,15 @@ configure(coreModule) {
     }
 
     def hsqlDbName = 'cubadb'
+    def hsqlPort = 9111
 
     task startDb(description: 'Starts local HSQLDB server', type: CubaHsqlStart) {
+        dbPort = hsqlPort
         dbName = hsqlDbName
     }
 
     task stopDb(description: 'Stops local HSQLDB server', type: CubaHsqlStop)  {
+        dbPort = hsqlPort
         dbName = hsqlDbName
     }
 
@@ -412,12 +415,13 @@ configure(coreModule) {
         delete new File("$rootProject.projectDir/data")
     }
 
-    task killDb(description: 'Kill local HSQLDB server process running on port 9001', type: CubaKillProcess) {
-        port = 9001
+    task killDb(description: "Kill local HSQLDB server process running on port $hsqlPort", type: CubaKillProcess) {
+        port = hsqlPort
     }
 
     task createDb(dependsOn: assembleDbScripts, description: 'Creates local HSQL database', type: CubaDbCreation) {
         dbms = 'hsql'
+        host = "localhost:$hsqlPort"
         dbName = hsqlDbName
         dbUser = 'sa'
         dbPassword = ''
@@ -425,6 +429,7 @@ configure(coreModule) {
 
     task createTestDb(dependsOn: assembleDbScripts, description: 'Creates local HSQL database', type: CubaDbCreation) {
         dbms = 'hsql'
+        host = "localhost:$hsqlPort"
         dbName = hsqlDbName
         dbUser = 'sa'
         dbPassword = ''

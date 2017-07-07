@@ -127,7 +127,7 @@ public class TestContainer extends ExternalResource {
         appComponents = Collections.emptyList();
         appPropertiesFiles = Arrays.asList("cuba-app.properties", "test-app.properties", "cuba-test-app.properties");
         dbDriver = "org.hsqldb.jdbc.JDBCDriver";
-        dbUrl = "jdbc:hsqldb:hsql://localhost/cubadb";
+        dbUrl = "jdbc:hsqldb:hsql://localhost:9111/cubadb";
         dbUser = "sa";
         dbPassword = "";
     }
