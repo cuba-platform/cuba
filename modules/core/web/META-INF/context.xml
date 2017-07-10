@@ -26,7 +26,7 @@
       driverClassName="org.hsqldb.jdbcDriver"
       username="sa"
       password=""
-      url="jdbc:hsqldb:hsql://localhost/cubadb"/>
+      url="jdbc:hsqldb:hsql://localhost:9111/cubadb"/>
 
     <!-- Switch off session serialization -->
     <Manager pathname=""/>
