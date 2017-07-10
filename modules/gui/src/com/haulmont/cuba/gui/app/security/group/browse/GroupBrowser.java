@@ -159,6 +159,7 @@ public class GroupBrowser extends AbstractWindow {
         usersTable.addAction(userCreateAction);
         Action moveToGroupAction = new ItemTrackingAction("moveToGroup")
                 .withIcon("icons/move.png")
+                .withCaption(getMessage("moveToGroup"))
                 .withHandler(event -> {
                     Set<User> selected = usersTable.getSelected();
                     if (!selected.isEmpty()) {

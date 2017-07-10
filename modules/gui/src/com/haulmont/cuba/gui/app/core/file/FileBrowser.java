@@ -52,6 +52,7 @@ public class FileBrowser extends AbstractLookup {
         super.init(params);
 
         filesTable.addAction(new ItemTrackingAction("download")
+                .withCaption(getMessage("download"))
                 .withHandler(event -> {
                     FileDescriptor fileDescriptor = filesTable.getSingleSelected();
                     if (fileDescriptor != null) {
@@ -60,6 +61,7 @@ public class FileBrowser extends AbstractLookup {
                 }));
 
         multiUploadBtn.setAction(new BaseAction("multiupload")
+                .withCaption(getMessage("multiupload"))
                 .withHandler(event -> {
                     Window window = openWindow("multiuploadDialog", OpenType.DIALOG);
                     window.addCloseListener(actionId -> {
