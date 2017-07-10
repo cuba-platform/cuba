@@ -974,19 +974,21 @@
 
     <!-- Label -->
     <xs:complexType name="labelComponent">
-        <xs:complexContent>
-            <xs:extension base="baseComponent">
-                <xs:sequence>
-                    <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
-                </xs:sequence>
+        <xs:sequence>
+            <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
+        </xs:sequence>
 
-                <xs:attributeGroup ref="hasDatasource"/>
+        <xs:attributeGroup ref="hasId"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasAlign"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasDatasource"/>
 
-                <xs:attribute name="stylename" type="labelStylename"/>
-                <xs:attribute name="value" type="resourceString"/>
-                <xs:attribute name="htmlEnabled" type="xs:boolean"/>
-            </xs:extension>
-        </xs:complexContent>
+        <xs:attribute name="value" type="resourceString"/>
+        <xs:attribute name="description" type="resourceString"/>
+        <xs:attribute name="htmlEnabled" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Link -->
