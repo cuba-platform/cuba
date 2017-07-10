@@ -18,15 +18,12 @@ package com.haulmont.cuba.security.app;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
-import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.app.ServerInfoAPI;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.entity.SessionAction;
 import com.haulmont.cuba.security.entity.SessionLogEntry;
-import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.SessionParams;
 import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.Logger;
@@ -40,15 +37,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-@Component(SessionHistoryAPI.NAME)
-public class SessionHistoryBean implements SessionHistoryAPI {
+@Component(UserSessionLog.NAME)
+public class UserSessionLogBean implements UserSessionLog {
 
     @Inject
-    protected ServerConfig serverConfig;
+    protected GlobalConfig globalConfig;
     @Inject
     protected DataManager dataManager;
     @Inject
@@ -62,11 +57,9 @@ public class SessionHistoryBean implements SessionHistoryAPI {
     @Inject
     protected UserSessionsAPI userSessionsAPI;
     @Inject
-    protected LoginWorker loginWorker;
+    protected Authentication authentication;
 
-    private Logger log = LoggerFactory.getLogger(SessionHistoryBean.class);
-
-    protected AtomicReference<SecurityContext> systemContext = new AtomicReference<>();
+    private Logger log = LoggerFactory.getLogger(UserSessionLogBean.class);
 
     @Override
     @Nullable
@@ -81,23 +74,23 @@ public class SessionHistoryBean implements SessionHistoryAPI {
         Preconditions.checkNotNullArgument(userSession);
         Preconditions.checkNotNullArgument(action);
 
-        if (!mayLogSession(userSession)) {
+        if (!shouldLogSession(userSession)) {
             return null;
         }
 
-        return AppContext.withSecurityContext(getSystemContext(), () -> {
+        return authentication.withUser(null, () -> {
             SessionLogEntry sessionLogEntry = metadata.create(SessionLogEntry.class);
             sessionLogEntry.setSessionId(userSession.getId());
             if (substitutedSession != null) {
-                sessionLogEntry.setUser(userSession.getSubstitutedUser());
-                sessionLogEntry.setSubstitutedUser(userSession.getUser());
+                sessionLogEntry.setUser(userSession.getUser());
+                sessionLogEntry.setSubstitutedUser(userSession.getSubstitutedUser());
             } else {
                 sessionLogEntry.setUser(userSession.getUser());
             }
             sessionLogEntry.setLastAction(action);
             sessionLogEntry.setAddress(userSession.getAddress());
             sessionLogEntry.setClientInfo(userSession.getClientInfo());
-            sessionLogEntry.setStartedWhen(timeSource.currentTimestamp());
+            sessionLogEntry.setStartedTs(timeSource.currentTimestamp());
             sessionLogEntry.setServer(serverInfoAPI.getServerId());
 
             if (params != null) {
@@ -118,26 +111,27 @@ public class SessionHistoryBean implements SessionHistoryAPI {
     @Override
     public void updateSessionLogRecord(UserSession userSession, @Nullable SessionAction action) {
         Preconditions.checkNotNullArgument(userSession);
-        if (!mayLogSession(userSession)) {
+        if (!shouldLogSession(userSession)) {
             return;
         }
 
-        AppContext.withSecurityContext(getSystemContext(), () -> {
+        authentication.withUser(null, () -> {
             SessionLogEntry sessionLogEntry = getLastSessionLogRecord(userSession.getId());
-            if (userSession.getClientInfo() != null) {
-                sessionLogEntry.setClientInfo(userSession.getClientInfo());
-            }
-            if (userSession.getAddress() != null) {
-                sessionLogEntry.setAddress(userSession.getAddress());
-            }
-            if (action != null) {
-                sessionLogEntry.setLastAction(action);
-                if (action != SessionAction.LOGIN) {
-                    sessionLogEntry.setFinishedWhen(timeSource.currentTimestamp());
+            if (sessionLogEntry != null) {
+                if (userSession.getClientInfo() != null) {
+                    sessionLogEntry.setClientInfo(userSession.getClientInfo());
                 }
+                if (userSession.getAddress() != null) {
+                    sessionLogEntry.setAddress(userSession.getAddress());
+                }
+                if (action != null) {
+                    sessionLogEntry.setLastAction(action);
+                    if (action != SessionAction.LOGIN) {
+                        sessionLogEntry.setFinishedTs(timeSource.currentTimestamp());
+                    }
+                }
+                dataManager.commit(sessionLogEntry);
             }
-
-            dataManager.commit(sessionLogEntry);
             return null;
         });
 
@@ -145,9 +139,9 @@ public class SessionHistoryBean implements SessionHistoryAPI {
 
     @Override
     public SessionLogEntry getLastSessionLogRecord(UUID userSessionId) {
-        return AppContext.withSecurityContext(getSystemContext(), () -> {
+        return authentication.withUser(null, () -> {
             LoadContext<SessionLogEntry> loadContext = LoadContext.create(SessionLogEntry.class).setView(SessionLogEntry.DEFAULT_VIEW)
-                    .setQuery(LoadContext.createQuery("select e from sec$SessionLogEntry e where e.sessionId = :sid order by e.startedWhen desc")
+                    .setQuery(LoadContext.createQuery("select e from sec$SessionLogEntry e where e.sessionId = :sid order by e.startedTs desc")
                             .setParameter("sid", userSessionId).setMaxResults(1));
             return dataManager.load(loadContext);
         });
@@ -155,23 +149,25 @@ public class SessionHistoryBean implements SessionHistoryAPI {
 
     @Override
     public List<SessionLogEntry> getAllSessionLogRecords(UUID userSessionId) {
-        return AppContext.withSecurityContext(getSystemContext(), () -> {
+        return authentication.withUser(null, () -> {
             LoadContext<SessionLogEntry> loadContext = LoadContext.create(SessionLogEntry.class).setView(SessionLogEntry.DEFAULT_VIEW)
-                    .setQuery(LoadContext.createQuery("select e from sec$SessionLogEntry e where e.sessionId = :sid order by e.startedWhen asc")
+                    .setQuery(LoadContext.createQuery("select e from sec$SessionLogEntry e where e.sessionId = :sid order by e.startedTs asc")
                             .setParameter("sid", userSessionId));
             return dataManager.loadList(loadContext);
         });
     }
 
-    @Override
-    public void closeDeadSessionsOnStartup() {
-        if (!serverConfig.getSessionHistoryEnabled()) {
+    /**
+     * Set <code>finishedTs</code> to all sessions that were interrupted by server reboot
+     */
+    protected void closeDeadSessionsOnStartup() {
+        if (!globalConfig.getUserSessionLogEnabled()) {
             return;
         }
         if (clusterManager.isMaster()) {
-            AppContext.withSecurityContext(getSystemContext(), () -> {
+            authentication.withUser(null, () -> {
                 LoadContext<SessionLogEntry> lc = LoadContext.create(SessionLogEntry.class).setView(SessionLogEntry.DEFAULT_VIEW)
-                        .setQuery(LoadContext.createQuery("select e from sec$SessionLogEntry e where e.finishedWhen is null"));
+                        .setQuery(LoadContext.createQuery("select e from sec$SessionLogEntry e where e.finishedTs is null"));
                 List<SessionLogEntry> sessionLogEntries = dataManager.loadList(lc);
                 CommitContext cc = new CommitContext();
                 Set<UUID> activeSessionsIds = userSessionsAPI.getUserSessionInfo().stream()
@@ -181,12 +177,13 @@ public class SessionHistoryBean implements SessionHistoryAPI {
                     if (activeSessionsIds.contains(entry.getSessionId())) {
                         continue;   // do not touch active session records
                     }
-                    entry.setFinishedWhen(timeSource.currentTimestamp());
+                    entry.setFinishedTs(timeSource.currentTimestamp());
                     entry.setLastAction(SessionAction.EXPIRATION);
                     cc.addInstanceToCommit(entry);
                 }
                 dataManager.commit(cc);
                 log.info("Dead session records have been closed");
+                return null;
             });
         }
     }
@@ -196,30 +193,7 @@ public class SessionHistoryBean implements SessionHistoryAPI {
         AppContext.addListener(new AppContext.Listener() {
             @Override
             public void applicationStarted() {
-                if (!serverConfig.getSessionHistoryEnabled()) {
-                    return;
-                }
-                if (!Boolean.valueOf(AppContext.getProperty("cuba.cluster.enabled"))) {
-                    closeDeadSessionsOnStartup();
-                    return;
-                }
-                CompletableFuture.runAsync(() -> {
-                    try {
-                        // wait for master election for 90 seconds max
-                        int triesNum = 9;
-                        while (!clusterManager.isMaster() && triesNum > 0) {
-                            Thread.sleep(10000);
-                            triesNum--;
-                        }
-                    } catch (InterruptedException e) {
-                        log.error("Interrupted while waiting");
-                        return;
-                    }
-                    if (clusterManager.isMaster())
-                        closeDeadSessionsOnStartup();
-                    else
-                        log.debug("Node is not master, no session records cleanup performed");
-                });
+                closeDeadSessionsOnStartup();
             }
 
             @Override
@@ -229,26 +203,7 @@ public class SessionHistoryBean implements SessionHistoryAPI {
         });
     }
 
-    protected SecurityContext getSystemContext() {
-        SecurityContext systemContext;
-        if (this.systemContext.get() == null) {
-            try {
-                String systemLogin = getSystemLogin();
-                UserSession systemSession = loginWorker.loginSystem(systemLogin);
-                this.systemContext.compareAndSet(null, new SecurityContext(systemSession.getId()));
-            } catch (LoginException e) {
-                throw new RuntimeException("Could not login as system user, check the \"cuba.jmxUserLogin\" property", e);
-            }
-        }
-        systemContext = this.systemContext.get();
-        return systemContext;
-    }
-
-    protected String getSystemLogin() {
-        return serverConfig.getJmxUserLogin();
-    }
-
-    protected boolean mayLogSession(UserSession userSession) {
-        return serverConfig.getSessionHistoryEnabled() && !userSession.isSystem();
+    protected boolean shouldLogSession(UserSession userSession) {
+        return globalConfig.getUserSessionLogEnabled() && !userSession.isSystem();
     }
 }

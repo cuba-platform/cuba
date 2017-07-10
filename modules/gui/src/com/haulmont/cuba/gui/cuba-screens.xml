@@ -64,7 +64,7 @@
             template="/com/haulmont/cuba/gui/app/security/session/browse/session-browse.xml"/>
 
     <screen id="sec$SessionLogEntry.browse"
-            template="/com/haulmont/cuba/gui/app/security/session/history/session-history-browse.xml"/>
+            template="/com/haulmont/cuba/gui/app/security/session/log/session-log-browse.xml"/>
 
     <screen id="sessionMessageWindow"
             template="/com/haulmont/cuba/gui/app/security/session/browse/session-message.xml"/>

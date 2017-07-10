@@ -51,7 +51,7 @@ public class UserSessionServiceBean implements UserSessionService {
     private UserSessionsAPI userSessions;
 
     @Inject
-    private SessionHistoryAPI sessionHistoryAPI;
+    private UserSessionLog userSessionLog;
 
     @Inject
     private UserSessionSource userSessionSource;
@@ -115,7 +115,7 @@ public class UserSessionServiceBean implements UserSessionService {
     @Override
     public void killSession(UUID id) {
         UserSession userSession = userSessions.get(id, false);
-        sessionHistoryAPI.updateSessionLogRecord(userSession, SessionAction.TERMINATION);
+        userSessionLog.updateSessionLogRecord(userSession, SessionAction.TERMINATION);
         userSessions.killSession(id);
     }
 

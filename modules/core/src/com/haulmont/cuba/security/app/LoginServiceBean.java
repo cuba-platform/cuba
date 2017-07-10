@@ -50,13 +50,13 @@ public class LoginServiceBean implements LoginService {
     protected BruteForceProtectionAPI bruteForceProtectionAPI;
 
     @Inject
-    protected SessionHistoryAPI sessionHistoryAPI;
+    protected UserSessionLog userSessionLog;
 
     @Override
     public UserSession login(String login, String password, Locale locale) throws LoginException {
         try {
             UserSession session = loginWorker.login(login, password, locale);
-            sessionHistoryAPI.createSessionLogRecord(session, SessionAction.LOGIN, Collections.EMPTY_MAP);
+            userSessionLog.createSessionLogRecord(session, SessionAction.LOGIN, Collections.emptyMap());
             return session;
         } catch (LoginException e) {
             log.info("Login failed: {}", e.toString());
@@ -71,7 +71,7 @@ public class LoginServiceBean implements LoginService {
     public UserSession login(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
         try {
             UserSession session = loginWorker.login(login, password, locale, params);
-            sessionHistoryAPI.createSessionLogRecord(session, SessionAction.LOGIN, params);
+            userSessionLog.createSessionLogRecord(session, SessionAction.LOGIN, params);
             return session;
         } catch (LoginException e) {
             log.info("Login failed: {}", e.toString());
@@ -85,7 +85,9 @@ public class LoginServiceBean implements LoginService {
     @Override
     public UserSession loginTrusted(String login, String password, Locale locale) throws LoginException {
         try {
-            return loginWorker.loginTrusted(login, password, locale);
+            UserSession session = loginWorker.loginTrusted(login, password, locale);
+            userSessionLog.createSessionLogRecord(session, SessionAction.LOGIN, Collections.emptyMap());
+            return session;
         } catch (LoginException e) {
             log.info("Login failed: {}", e.toString());
             throw e;
@@ -98,7 +100,9 @@ public class LoginServiceBean implements LoginService {
     @Override
     public UserSession loginTrusted(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
         try {
-            return loginWorker.loginTrusted(login, password, locale, params);
+            UserSession session = loginWorker.loginTrusted(login, password, locale, params);
+            userSessionLog.createSessionLogRecord(session, SessionAction.LOGIN, params);
+            return session;
         } catch (LoginException e) {
             log.info("Login failed: {}", e.toString());
             throw e;
@@ -111,7 +115,9 @@ public class LoginServiceBean implements LoginService {
     @Override
     public UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException {
         try {
-            return loginWorker.loginByRememberMe(login, rememberMeToken, locale);
+            UserSession session = loginWorker.loginByRememberMe(login, rememberMeToken, locale);
+            userSessionLog.createSessionLogRecord(session, SessionAction.LOGIN, Collections.emptyMap());
+            return session;
         } catch (LoginException e) {
             log.info("Login failed: {}", e.toString());
             throw e;
@@ -125,7 +131,9 @@ public class LoginServiceBean implements LoginService {
     public UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale, Map<String, Object> params)
             throws LoginException {
         try {
-            return loginWorker.loginByRememberMe(login, rememberMeToken, locale, params);
+            UserSession session = loginWorker.loginByRememberMe(login, rememberMeToken, locale, params);
+            userSessionLog.createSessionLogRecord(session, SessionAction.LOGIN, params);
+            return session;
         } catch (LoginException e) {
             log.info("Login failed: {}", e.toString());
             throw e;
@@ -157,10 +165,10 @@ public class LoginServiceBean implements LoginService {
                 throw new RuntimeException("Logout of system session from client is not permitted");
             }
 
-            sessionHistoryAPI.updateSessionLogRecord(session, SessionAction.LOGOUT);
+            userSessionLog.updateSessionLogRecord(session, SessionAction.LOGOUT);
 
             loginWorker.logout();
-            sessionHistoryAPI.updateSessionLogRecord(session, SessionAction.LOGOUT);
+            userSessionLog.updateSessionLogRecord(session, SessionAction.LOGOUT);
         } catch (Throwable e) {
             log.error("Logout error", e);
             throw new RuntimeException(e.toString());
@@ -170,11 +178,11 @@ public class LoginServiceBean implements LoginService {
     @Override
     public UserSession substituteUser(User substitutedUser) {
         UserSession currentSession = userSessionSource.getUserSession();
-        sessionHistoryAPI.updateSessionLogRecord(currentSession, SessionAction.SUBSTITUTION);
+        userSessionLog.updateSessionLogRecord(currentSession, SessionAction.SUBSTITUTION);
 
         UserSession substitutionSession = loginWorker.substituteUser(substitutedUser);
 
-        sessionHistoryAPI.createSessionLogRecord(substitutionSession, SessionAction.LOGIN, currentSession, Collections.EMPTY_MAP);
+        userSessionLog.createSessionLogRecord(substitutionSession, SessionAction.LOGIN, currentSession, Collections.emptyMap());
         return substitutionSession;
     }
 

@@ -16,16 +16,16 @@
   -->
 
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
-        class="com.haulmont.cuba.gui.app.security.session.history.SessionHistoryBrowser"
+        class="com.haulmont.cuba.gui.app.security.session.log.SessionLogBrowser"
         caption="msg://caption"
-        messagesPack="com.haulmont.cuba.gui.app.security.session.history"
+        messagesPack="com.haulmont.cuba.gui.app.security.session.log"
         focusComponent="sessionsTable">
 
     <dsContext>
         <groupDatasource id="sessionsDs" class="com.haulmont.cuba.security.entity.SessionLogEntry"
                          view="sessionLogEntry-view">
             <query>
-                select e from sec$SessionLogEntry e order by e.startedWhen desc
+                select e from sec$SessionLogEntry e order by e.startedTs desc
             </query>
         </groupDatasource>
     </dsContext>
@@ -40,31 +40,24 @@
         <filter id="sessFilter" datasource="sessionsDs">
             <properties include=".*"/>
         </filter>
-        <groupTable id="sessionsTable" multiselect="true" width="100%">
-            <actions>
-                <action id="refresh" caption="msg://refresh" invoke="refresh" shortcut="SHIFT-ENTER"/>
-            </actions>
+        <groupTable id="sessionsTable" multiselect="true" textSelectionEnabled="true" width="100%">
             <buttonsPanel>
-                <button id="sessionsTableRefreshBtn" action="sessionsTable.refresh"/>
+                <button id="enableBtn" invoke="enableLogging"/>
             </buttonsPanel>
             <rowsCount/>
             <columns>
-                <column id="sessionId" caption="msg://sessionId"/>
-                <column id="user" caption="msg://user"/>
-                <column id="substitutedUser" caption="msg://substitutedUser"/>
-                <column id="lastAction" caption="msg://lastAction"/>
-                <column id="address" caption="msg://address"/>
-                <column id="clientType" caption="msg://clientType"/>
-                <column id="server" caption="msg://server"/>
-                <column id="startedWhen" caption="msg://startedWhen"/>
-                <column id="finishedWhen" caption="msg://finishedWhen"/>
-                <column id="clientInfo" caption="msg://clientInfo"/>
+                <column id="sessionId"/>
+                <column id="user"/>
+                <column id="substitutedUser"/>
+                <column id="lastAction"/>
+                <column id="address"/>
+                <column id="clientType"/>
+                <column id="server"/>
+                <column id="startedTs"/>
+                <column id="finishedTs"/>
+                <column id="clientInfo"/>
             </columns>
             <rows datasource="sessionsDs"/>
         </groupTable>
-        <hbox spacing="true">
-            <label value="msg://lastUpdate"/>
-            <label id="lastUpdateTsLab"/>
-        </hbox>
     </layout>
 </window>

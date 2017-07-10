@@ -103,7 +103,7 @@ public class UserSessions implements UserSessionsAPI {
     protected Metadata metadata;
 
     @Inject
-    protected SessionHistoryAPI sessionHistoryAPI;
+    protected UserSessionLog userSessionLog;
 
     public UserSessions() {
         User noUser = new User();
@@ -326,7 +326,7 @@ public class UserSessions implements UserSessionsAPI {
             if (!usi.session.isSystem() && now > (usi.lastUsedTs + expirationTimeout * 1000)) {
                 log.debug("Removing session due to timeout: {}", usi);
 
-                sessionHistoryAPI.updateSessionLogRecord(usi.getSession(), SessionAction.EXPIRATION);
+                userSessionLog.updateSessionLogRecord(usi.getSession(), SessionAction.EXPIRATION);
                 it.remove();
 
                 usi.lastUsedTs = 0;

@@ -919,8 +919,8 @@ create table SEC_SESSION_LOG_ENTRY (
     CLIENT_INFO varchar(512),
     CLIENT_TYPE varchar(10),
     ADDRESS varchar(255),
-    STARTED_WHEN datetime,
-    FINISHED_WHEN datetime,
+    STARTED_TS datetime,
+    FINISHED_TS datetime,
     SERVER_ID varchar(128),
     --
     primary key (ID),

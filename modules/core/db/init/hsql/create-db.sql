@@ -854,8 +854,8 @@ create table SEC_SESSION_LOG_ENTRY (
     LAST_ACTION integer not null,
     CLIENT_INFO varchar(512),
     ADDRESS varchar(255),
-    STARTED_WHEN timestamp,
-    FINISHED_WHEN timestamp,
+    STARTED_TS timestamp,
+    FINISHED_TS timestamp,
     CLIENT_TYPE varchar(10),
     SERVER_ID varchar(128),
     --

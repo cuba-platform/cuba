@@ -24,14 +24,15 @@
         <item id="sec$Role.browse"/>
         <separator/>
         <item id="sec$UserSessionEntity.browse"/>
-        <item id="sec$SessionLogEntry.browse"/>
         <item id="sys$LockInfo.browse"/>
         <item id="sys$FileDescriptor.browse"/>
-        <item id="sys$SendingMessage.browse"/>
         <item id="sys$ScheduledTask.browse"/>
         <item id="entityRestore"/>
-        <item id="entityLog"/>
         <item id="entityInspector.browse"/>
+        <separator/>
+        <item id="entityLog"/>
+        <item id="sec$SessionLogEntry.browse"/>
+        <item id="sys$SendingMessage.browse"/>
     </menu>
 
     <menu id="help">

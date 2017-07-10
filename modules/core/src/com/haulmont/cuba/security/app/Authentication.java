@@ -34,6 +34,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.haulmont.cuba.core.sys.AppContext.getSecurityContext;
+import static com.haulmont.cuba.core.sys.AppContext.setSecurityContext;
+
 /**
  * Bean that provides authentication to an arbitrary code on the Middleware.
  * <br>
@@ -165,7 +168,29 @@ public class Authentication {
         }
     }
 
+    /**
+     * Execute code on behalf of the specified user.
+     *
+     * @param login     user login. If null, a value of {@code cuba.jmxUserLogin} app property is used.
+     * @param operation code to execute
+     * @return result of the execution
+     */
+    public <T> T withUser(@Nullable String login, AuthenticatedOperation<T> operation) {
+        SecurityContext previousSecurityContext = getSecurityContext();
+        setSecurityContext(null);
+        begin(login);
+        try {
+            return operation.call();
+        } finally {
+            setSecurityContext(previousSecurityContext);
+        }
+    }
+
     protected String getSystemLogin() {
         return serverConfig.getJmxUserLogin();
+    }
+
+    public interface AuthenticatedOperation<T> {
+        T call();
     }
 }

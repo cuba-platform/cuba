@@ -25,26 +25,26 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * API for persistent sessions logging
+ * API for user sessions logging.
  */
-public interface SessionHistoryAPI {
+public interface UserSessionLog {
 
     String NAME = "cuba_SessionHistory";
 
     /**
-     * Create log entry for session with custom params
+     * Create log entry for session with custom params.
      *
      * @param userSession log entry is created for this session
      * @param action      session action, like login, logout, etc
      * @param params      additional params for log entry, like client's address and other info.
-     *                    Use id property of SessionParams entry to pass in params map
+     *                    Use id property of SessionParams entry to pass in params map.
      * @return created log  entry
      * @see com.haulmont.cuba.security.global.SessionParams
      */
     SessionLogEntry createSessionLogRecord(UserSession userSession, SessionAction action, Map<String, Object> params);
 
     /**
-     * Create log entry for session with custom params
+     * Create log entry for session with custom params.
      *
      * @param userSession        log entry is created for this session
      * @param action             session action, like login, logout, etc
@@ -57,7 +57,7 @@ public interface SessionHistoryAPI {
     SessionLogEntry createSessionLogRecord(UserSession userSession, SessionAction action, UserSession substitutedSession, Map<String, Object> params);
 
     /**
-     * Updates params on provided session log record. Session is taken from
+     * Updates params on provided session log record.
      *
      * @param userSession update log record for this session
      * @param action      last session action
@@ -76,13 +76,7 @@ public interface SessionHistoryAPI {
      * Get all session log records. Session could have multiple log records in case of user substitution.
      *
      * @param userSessionId id of user session
-     * @return list of log records sorted by <code>startedWhen</code> asc
+     * @return list of log records sorted by <code>startedTs</code> asc
      */
     List<SessionLogEntry> getAllSessionLogRecords(UUID userSessionId);
-
-    /**
-     * Set <code>finishedWhen</code> to all sessions that were interrupted by server reboot
-     */
-    void closeDeadSessionsOnStartup();
-
 }

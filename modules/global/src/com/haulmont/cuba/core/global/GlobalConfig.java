@@ -203,4 +203,13 @@ public interface GlobalConfig extends Config {
     @Property("cuba.healthCheckResponse")
     @Default("ok")
     String getHealthCheckResponse();
+
+    /**
+     * @return whether the user session log is enabled
+     */
+    @Property("cuba.userSessionLogEnabled")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(false)
+    boolean getUserSessionLogEnabled();
+    void setUserSessionLogEnabled(boolean enabled);
 }

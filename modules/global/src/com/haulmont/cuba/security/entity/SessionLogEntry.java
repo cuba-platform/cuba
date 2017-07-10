@@ -59,12 +59,12 @@ public class SessionLogEntry extends StandardEntity {
     protected String address;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "STARTED_WHEN")
-    protected Date startedWhen;
+    @Column(name = "STARTED_TS")
+    protected Date startedTs;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "FINISHED_WHEN")
-    protected Date finishedWhen;
+    @Column(name = "FINISHED_TS")
+    protected Date finishedTs;
 
     @Column(name = "CLIENT_TYPE")
     protected String clientType;
@@ -80,20 +80,20 @@ public class SessionLogEntry extends StandardEntity {
         return lastAction == null ? null : SessionAction.fromId(lastAction);
     }
 
-    public void setStartedWhen(Date startedWhen) {
-        this.startedWhen = startedWhen;
+    public void setStartedTs(Date startedTs) {
+        this.startedTs = startedTs;
     }
 
-    public Date getStartedWhen() {
-        return startedWhen;
+    public Date getStartedTs() {
+        return startedTs;
     }
 
-    public void setFinishedWhen(Date finishedWhen) {
-        this.finishedWhen = finishedWhen;
+    public void setFinishedTs(Date finishedTs) {
+        this.finishedTs = finishedTs;
     }
 
-    public Date getFinishedWhen() {
-        return finishedWhen;
+    public Date getFinishedTs() {
+        return finishedTs;
     }
 
     public void setAddress(String address) {
