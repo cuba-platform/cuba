@@ -30,6 +30,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaSideMenu;
 import com.vaadin.server.ClientConnector;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -231,6 +232,14 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
 
         component.removeMenuItem(((MenuItemImpl) menuItem).getDelegateItem());
         unregisterItem(menuItem);
+    }
+
+    @Override
+    public void removeAllMenuItems() {
+        for (CubaSideMenu.MenuItem menuItem : new ArrayList<>(component.getMenuItems())) {
+            component.removeMenuItem(menuItem);
+            unregisterItem(((MenuItemWrapper) menuItem).getMenuItem());
+        }
     }
 
     @Override
@@ -463,6 +472,15 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
             delegateItem.removeChildItem(((MenuItemImpl) menuItem).getDelegateItem());
 
             menu.unregisterItem(menuItem);
+        }
+
+        @Override
+        public void removeAllChildItems() {
+            for (CubaSideMenu.MenuItem menuItem : new ArrayList<>(delegateItem.getChildren())) {
+                delegateItem.removeChildItem(menuItem);
+
+                menu.unregisterItem(((MenuItemWrapper) menuItem).getMenuItem());
+            }
         }
 
         @Override

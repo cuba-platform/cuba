@@ -137,6 +137,11 @@ public interface SideMenu extends Component.BelongToFrame, Component.Focusable {
     void removeMenuItem(int index);
 
     /**
+     * Remove all the root menu items.
+     */
+    void removeAllMenuItems();
+
+    /**
      * @param id item id
      * @return item from the menu tree by its id
      */
@@ -320,6 +325,11 @@ public interface SideMenu extends Component.BelongToFrame, Component.Focusable {
          * @param index index
          */
         void removeChildItem(int index);
+
+        /**
+         * Remove all child items from the children list.
+         */
+        void removeAllChildItems();
 
         /**
          * @return child items

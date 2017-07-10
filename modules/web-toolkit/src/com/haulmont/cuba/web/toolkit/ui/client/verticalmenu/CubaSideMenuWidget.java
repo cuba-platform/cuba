@@ -173,6 +173,56 @@ public class CubaSideMenuWidget extends FocusableFlowPanel
         this.enabled = enabled;
     }
 
+    public void buildMenu(JsonArray itemsJson) {
+        setFocusedItem(null);
+        setSelectedItem(null);
+
+        Iterator<Widget> iterator = this.iterator();
+        while (iterator.hasNext()) {
+            iterator.next();
+            iterator.remove();
+        }
+
+        addItems(itemsJson, this);
+    }
+
+    public String getTooltip(Element element) {
+        Object widget = WidgetUtil.findWidget(element, null);
+        if (widget instanceof MenuItemWidget) {
+            return ((MenuItemWidget) widget).getDescription();
+        }
+        return null;
+    }
+
+    public void selectItem(String itemId) {
+        if (itemId == null) {
+            setSelectedItem(null);
+        } else {
+            walkItems(this, menuItemWidget -> {
+                if (itemId.equals(menuItemWidget.getId())) {
+                    setSelectedItem(menuItemWidget);
+                    return true;
+                }
+                return false;
+            });
+        }
+    }
+
+    public void updateBadges(Map<String, String> badgeUpdates) {
+        if (!badgeUpdates.isEmpty()) {
+            Map<String, String> remainingUpdates = new HashMap<>(badgeUpdates);
+
+            walkItems(this, menuItemWidget -> {
+                String newBadgeText = remainingUpdates.remove(menuItemWidget.getId());
+
+                if (newBadgeText != null) {
+                    menuItemWidget.setBadgeText(newBadgeText);
+                }
+                return remainingUpdates.isEmpty();
+            });
+        }
+    }
+
     protected boolean handleNavigation(int keyCode, boolean ctrl, boolean shift) {
         if (keyCode == KeyCodes.KEY_TAB) {
             setFocusedItem(null);
@@ -287,13 +337,6 @@ public class CubaSideMenuWidget extends FocusableFlowPanel
         }
     }
 
-    public void buildMenu(JsonArray itemsJson) {
-        setFocusedItem(null);
-        setSelectedItem(null);
-
-        addItems(itemsJson, this);
-    }
-
     protected void addItems(JsonArray items, HasWidgets container) {
         for (int i = 0; i < items.length(); i++) {
             JsonObject itemJson = items.getObject(i);
@@ -336,43 +379,6 @@ public class CubaSideMenuWidget extends FocusableFlowPanel
                     menuContainerWidget.setExpanded(true);
                 }
             }
-        }
-    }
-
-    public String getTooltip(Element element) {
-        Object widget = WidgetUtil.findWidget(element, null);
-        if (widget instanceof MenuItemWidget) {
-            return ((MenuItemWidget) widget).getDescription();
-        }
-        return null;
-    }
-
-    public void selectItem(String itemId) {
-        if (itemId == null) {
-            setSelectedItem(null);
-        } else {
-            walkItems(this, menuItemWidget -> {
-                if (itemId.equals(menuItemWidget.getId())) {
-                    setSelectedItem(menuItemWidget);
-                    return true;
-                }
-                return false;
-            });
-        }
-    }
-
-    public void updateBadges(Map<String, String> badgeUpdates) {
-        if (!badgeUpdates.isEmpty()) {
-            Map<String, String> remainingUpdates = new HashMap<>(badgeUpdates);
-
-            walkItems(this, menuItemWidget -> {
-                String newBadgeText = remainingUpdates.remove(menuItemWidget.getId());
-
-                if (newBadgeText != null) {
-                    menuItemWidget.setBadgeText(newBadgeText);
-                }
-                return remainingUpdates.isEmpty();
-            });
         }
     }
 
