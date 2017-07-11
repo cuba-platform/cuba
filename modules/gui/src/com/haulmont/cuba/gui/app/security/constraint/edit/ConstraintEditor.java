@@ -49,6 +49,7 @@ import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang.text.StrBuilder;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.dom4j.Element;
 
@@ -326,6 +327,11 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
                 if (item.getCheckType().database()) {
                     String jpql = new SecurityJpqlGenerator().generateJpql(filterParser.getRoot());
                     constraint.setWhereClause(jpql);
+                    Set<String> joins = filterParser.getRoot().getJoins();
+                    if (!joins.isEmpty()) {
+                        String joinsStr = new StrBuilder().appendWithSeparators(joins, " ").toString();
+                        constraint.setJoinClause(joinsStr);
+                    }
                 }
 
                 if (item.getCheckType().memory()) {

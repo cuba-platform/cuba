@@ -54,6 +54,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrBuilder;
 import org.dom4j.Element;
 
 import javax.inject.Inject;
@@ -374,6 +375,11 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 com.haulmont.cuba.core.global.filter.FilterParser filterParser = new com.haulmont.cuba.core.global.filter.FilterParser(element);
                 String jpql = new SecurityJpqlGenerator().generateJpql(filterParser.getRoot());
                 attribute.setWhereClause(jpql);
+                Set<String> joins = filterParser.getRoot().getJoins();
+                if (!joins.isEmpty()) {
+                    String joinsStr = new StrBuilder().appendWithSeparators(joins, " ").toString();
+                    attribute.setJoinClause(joinsStr);
+                }
                 attribute.setFilterXml(filterEntity.getXml());
             }
         });

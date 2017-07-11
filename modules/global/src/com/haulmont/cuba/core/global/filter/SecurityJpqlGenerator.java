@@ -41,7 +41,9 @@ public class SecurityJpqlGenerator extends AbstractJpqlGenerator {
 
         String valueToString = valueToString(javaClass, parameterInfoValue, operator);
 
-        if (operator.isUnary()) {
+        if (condition.getType() == ConditionType.RUNTIME_PROPERTY) {
+            return condition.getContent().replace(":" + parameterInfo.getName(), valueToString);
+        } else if (operator.isUnary()) {
             return format("{E}.%s %s", condition.getName(), jpqlOperator);
         } else if (Entity.class.isAssignableFrom(javaClass)) {
             return String.format("{E}.%s.id %s %s", condition.getName(), jpqlOperator, valueToString);

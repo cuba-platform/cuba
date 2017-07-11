@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.core.global.filter.ConditionType;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.filter.condition.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;

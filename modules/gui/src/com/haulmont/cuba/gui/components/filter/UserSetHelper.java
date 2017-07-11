@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
-import com.haulmont.cuba.gui.components.filter.condition.ConditionType;
+import com.haulmont.cuba.core.global.filter.ConditionType;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;

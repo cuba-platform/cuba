@@ -70,4 +70,8 @@ public class Clause extends Condition {
     public Op getOperator() {
         return operator;
     }
+
+    public ConditionType getType() {
+        return ConditionType.valueOf(type);
+    }
 }
