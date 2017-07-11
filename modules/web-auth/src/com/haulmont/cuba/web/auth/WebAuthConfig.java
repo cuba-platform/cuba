@@ -52,13 +52,6 @@ public interface WebAuthConfig extends Config {
     String getExternalAuthenticationProviderClass();
 
     /**
-     * @return true if fallback to standard authentication is enabled
-     */
-    @Property("cuba.web.standardAuthenticationFallBackEnabled")
-    @DefaultBoolean(false)
-    boolean getStandardAuthenticationFallbackEnabled();
-
-    /**
      * @return list of users that are allowed to use fallback to standard authentication.
      *         Empty list means that no one is allowed to login using standard authentication.
      */

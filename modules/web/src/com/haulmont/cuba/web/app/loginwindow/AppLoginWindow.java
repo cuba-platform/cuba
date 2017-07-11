@@ -388,8 +388,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
                 } catch (LoginException e) {
                     log.debug("External authentication failed", e);
 
-                    if (webAuthConfig.getStandardAuthenticationFallbackEnabled()
-                            && webAuthConfig.getStandardAuthenticationUsersWhiteList().contains(login)) {
+                    if (webAuthConfig.getStandardAuthenticationUsersWhiteList().contains(login)) {
                         doLogin(login, passwordEncryption.getPlainHash(password), selectedLocale);
                     } else {
                         throw e;
