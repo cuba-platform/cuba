@@ -76,7 +76,7 @@ public interface WebConfig extends Config {
      *  @return Comma-separated list of URLs for CubaHttpFilter to bypass.
      */
     @Property("cuba.web.cubaHttpFilterBypassUrls")
-    @Default("/ws/,/dispatch/,/rest/")
+    @Default("/ws/,/dispatch/,/rest/,/idp/")
     String getCubaHttpFilterBypassUrls();
 
     /**
@@ -88,7 +88,7 @@ public interface WebConfig extends Config {
     String getAppWindowMode();
 
     /**
-     * @return Maximum number of open tabs. 0 for unlimited.
+     * @return Maximum number of opened tabs. 0 for unlimited.
      */
     @Property("cuba.web.maxTabCount")
     @DefaultInt(20)

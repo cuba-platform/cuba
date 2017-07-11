@@ -21,8 +21,8 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.AuthenticationKeyGenerator;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedHashMap;
@@ -31,7 +31,7 @@ import java.util.UUID;
 
 /**
  * Key generator that uses random UUID for authentication keys. This makes token endpoint return unique access token on
- * each token request
+ * each token request.
  */
 public class UniqueAuthenticationKeyGenerator implements AuthenticationKeyGenerator {
 
@@ -43,6 +43,7 @@ public class UniqueAuthenticationKeyGenerator implements AuthenticationKeyGenera
 
     private static final String UUID_KEY = "uuid";
 
+    @Override
     public String extractKey(OAuth2Authentication authentication) {
         Map<String, String> values = new LinkedHashMap<>();
         OAuth2Request authorizationRequest = authentication.getOAuth2Request();
@@ -59,17 +60,11 @@ public class UniqueAuthenticationKeyGenerator implements AuthenticationKeyGenera
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("MD5");
-        }
-        catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("MD5 algorithm not available.  Fatal (should be in the JDK).");
         }
 
-        try {
-            byte[] bytes = digest.digest(values.toString().getBytes("UTF-8"));
-            return String.format("%032x", new BigInteger(1, bytes));
-        }
-        catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("UTF-8 encoding not available.  Fatal (should be in the JDK).");
-        }
+        byte[] bytes = digest.digest(values.toString().getBytes(StandardCharsets.UTF_8));
+        return String.format("%032x", new BigInteger(1, bytes));
     }
 }

@@ -22,9 +22,16 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 
 /**
+ * REST-API config.
  */
 @Source(type = SourceType.APP)
 public interface RestApiConfig extends Config {
     @Property("cuba.trustedClientPassword")
     String getTrustedClientPassword();
+
+    /**
+     * @return authorized rest client id
+     */
+    @Property("cuba.rest.client.id")
+    String getRestClientId();
 }

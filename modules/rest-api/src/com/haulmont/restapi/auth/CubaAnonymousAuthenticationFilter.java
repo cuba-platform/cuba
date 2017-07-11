@@ -37,13 +37,14 @@ import java.util.UUID;
  */
 public class CubaAnonymousAuthenticationFilter implements Filter {
 
+    private final Logger log = LoggerFactory.getLogger(CubaAnonymousAuthenticationFilter.class);
+
     @Inject
     protected GlobalConfig globalConfig;
 
-    private Logger log = LoggerFactory.getLogger(CubaAnonymousAuthenticationFilter.class);
-
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        // do nothing
     }
 
     @Override
@@ -56,8 +57,8 @@ public class CubaAnonymousAuthenticationFilter implements Filter {
                 SecurityContextHolder.getContext().setAuthentication(anonymousAuthenticationToken);
                 AppContext.setSecurityContext(new SecurityContext(anonymousSessionId));
             } else {
-                log.debug("SecurityContextHolder not populated with cuba anonymous token, as it already contained: '"
-                        + SecurityContextHolder.getContext().getAuthentication() + "'");
+                log.debug("SecurityContextHolder not populated with cuba anonymous token, as it already contained: '{}'",
+                        SecurityContextHolder.getContext().getAuthentication());
             }
         } else {
             log.trace("Anonymous access for CUBA REST API is disabled");

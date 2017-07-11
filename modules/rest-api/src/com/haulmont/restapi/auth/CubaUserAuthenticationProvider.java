@@ -16,7 +16,7 @@
 
 package com.haulmont.restapi.auth;
 
-
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
@@ -44,6 +44,8 @@ import java.util.Map;
 
 public class CubaUserAuthenticationProvider implements AuthenticationProvider, Serializable {
 
+    protected static final String SESSION_ID_DETAILS_ATTRIBUTE = "sessionId";
+
     private final Logger log = LoggerFactory.getLogger(CubaUserAuthenticationProvider.class);
 
     @Inject
@@ -52,41 +54,49 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider, S
     @Inject
     protected PasswordEncryption passwordEncryption;
 
+    @Inject
+    protected Configuration configuration;
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+
+        String ipAddress = request.getRemoteAddr();
+
         if (authentication instanceof UsernamePasswordAuthenticationToken) {
             UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
 
-            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-            HttpServletRequest request = attributes.getRequest();
-
             String login = (String) token.getPrincipal();
-            String ipAddress = request.getRemoteAddr();
 
             checkBruteForceProtection(login, ipAddress);
 
+            UserSession session;
             try {
-                UserSession session = loginService.login(login, passwordEncryption.getPlainHash((String) token.getCredentials()), request.getLocale());
+                session = loginService.login(login, passwordEncryption.getPlainHash((String) token.getCredentials()), request.getLocale());
                 if (!session.isSpecificPermitted("cuba.restApi.enabled")) {
                     throw new BadCredentialsException("User is not allowed to use the REST API");
                 }
-                AppContext.setSecurityContext(new SecurityContext(session));
-                UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(),
-                        authentication.getCredentials(), getRoleUserAuthorities());
-                Map<String, String> details = (Map<String, String>) authentication.getDetails();
-                details.put("sessionId", session.getId().toString());
-                result.setDetails(details);
-                return result;
             } catch (LoginException e) {
-                log.error("REST API authentication failed: {} {}", login, ipAddress);
+                log.info("REST API authentication failed: {} {}", login, ipAddress);
                 throw new BadCredentialsException("Bad credentials");
             }
+
+            AppContext.setSecurityContext(new SecurityContext(session));
+
+            UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(),
+                    authentication.getCredentials(), getRoleUserAuthorities(authentication));
+            @SuppressWarnings("unchecked")
+            Map<String, String> details = (Map<String, String>) authentication.getDetails();
+            details.put(SESSION_ID_DETAILS_ATTRIBUTE, session.getId().toString());
+            result.setDetails(details);
+            return result;
         }
 
         return null;
     }
 
-    private void checkBruteForceProtection(String login, String ipAddress) {
+    protected void checkBruteForceProtection(String login, String ipAddress) {
         if (loginService.isBruteForceProtectionEnabled()) {
             if (loginService.loginAttemptsLeft(login, ipAddress) <= 0) {
                 log.info("Blocked user login attempt: login={}, ip={}", login, ipAddress);
@@ -100,7 +110,7 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider, S
         return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
     }
 
-    private List<GrantedAuthority> getRoleUserAuthorities() {
+    protected List<GrantedAuthority> getRoleUserAuthorities(Authentication authentication) {
         return new ArrayList<>();
     }
 }

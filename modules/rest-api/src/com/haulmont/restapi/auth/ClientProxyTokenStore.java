@@ -42,9 +42,11 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * A token store that redirects request from the client to to the {@link ServerTokenStore} located at the middleware.
+ * A token store that redirects request from the client to the {@link ServerTokenStore} located at the middleware.
  */
 public class ClientProxyTokenStore implements TokenStore {
+
+    private final Logger log = LoggerFactory.getLogger(ClientProxyTokenStore.class);
 
     @Inject
     protected ServerTokenStore serverTokenStore;
@@ -59,8 +61,6 @@ public class ClientProxyTokenStore implements TokenStore {
     protected LoginService loginService;
 
     protected AuthenticationKeyGenerator authenticationKeyGenerator;
-
-    private Logger log = LoggerFactory.getLogger(ClientProxyTokenStore.class);
 
     public void setAuthenticationKeyGenerator(AuthenticationKeyGenerator authenticationKeyGenerator) {
         this.authenticationKeyGenerator = authenticationKeyGenerator;
@@ -120,6 +120,7 @@ public class ClientProxyTokenStore implements TokenStore {
         UUID sessionId = serverTokenStore.getSessionIdByTokenValue(tokenValue);
 
         if (sessionId == null) {
+            @SuppressWarnings("unchecked")
             Map<String, String> userAuthenticationDetails = (Map<String, String>) authentication.getUserAuthentication().getDetails();
             //sessionId parameter was put in the CubaUserAuthenticationProvider
             String sessionIdStr = userAuthenticationDetails.get("sessionId");
@@ -134,6 +135,7 @@ public class ClientProxyTokenStore implements TokenStore {
         }
 
         if (session == null) {
+            @SuppressWarnings("unchecked")
             Map<String, String> userAuthenticationDetails = (Map<String, String>) authentication.getUserAuthentication().getDetails();
             String username = userAuthenticationDetails.get("username");
             try {
@@ -150,7 +152,7 @@ public class ClientProxyTokenStore implements TokenStore {
         }
     }
 
-    private Locale getDefaultLocale() {
+    protected Locale getDefaultLocale() {
         return globalConfig.getAvailableLocales().values().iterator().next();
     }
 
