@@ -60,6 +60,7 @@ import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaEnhancedTable;
 import com.haulmont.cuba.web.toolkit.ui.CubaResizableTextAreaWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaTextArea;
+import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.ResizeDirection;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
@@ -2262,7 +2263,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             textArea.setReadOnly(true);
 
             CubaResizableTextAreaWrapper content = new CubaResizableTextAreaWrapper(textArea);
-            content.setResizable(true);
+            content.setResizableDirection(ResizeDirection.BOTH);
 
             ThemeConstants theme = App.getInstance().getThemeConstants();
             if (theme != null) {

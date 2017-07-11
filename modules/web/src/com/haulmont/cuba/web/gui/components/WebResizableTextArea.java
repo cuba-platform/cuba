@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.gui.components.ResizableTextArea;
 import com.haulmont.cuba.gui.components.compatibility.ResizeListenerWrapper;
@@ -69,7 +70,7 @@ public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> impl
 
     @Override
     public boolean isResizable() {
-        return wrapper.isResizable();
+        return getResizableDirection() != ResizeDirection.NONE;
     }
 
     @Override
@@ -84,7 +85,8 @@ public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> impl
 
     @Override
     public void setResizable(boolean resizable) {
-        wrapper.setResizable(resizable);
+        ResizeDirection value = resizable ? ResizeDirection.BOTH : ResizeDirection.NONE;
+        setResizableDirection(value);
     }
 
     @Override
@@ -297,5 +299,16 @@ public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> impl
     @Override
     public void setTextChangeEventMode(TextChangeEventMode mode) {
         component.setTextChangeEventMode(WebWrapperUtils.toVaadinTextChangeEventMode(mode));
+    }
+
+    @Override
+    public void setResizableDirection(ResizeDirection direction) {
+        Preconditions.checkNotNullArgument(direction);
+        wrapper.setResizableDirection(WebComponentsHelper.convertToVaadinResizeDirection(direction));
+    }
+
+    @Override
+    public ResizeDirection getResizableDirection() {
+        return WebComponentsHelper.convertFromVaadinResizeDirection(wrapper.getResizableDirection());
     }
 }

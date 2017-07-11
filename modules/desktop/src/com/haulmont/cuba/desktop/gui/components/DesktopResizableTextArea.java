@@ -76,4 +76,15 @@ public class DesktopResizableTextArea extends DesktopTextArea implements Resizab
         this.settingsEnabled = settingsEnabled;
         //Do nothing, because desktop text area is not resizable
     }
+
+    @Override
+    public void setResizableDirection(ResizeDirection direction) {
+        //Do nothing, because desktop text area is not resizable
+    }
+
+    @Override
+    public ResizeDirection getResizableDirection() {
+        //Do nothing, because desktop text area is not resizable
+        return null;
+    }
 }

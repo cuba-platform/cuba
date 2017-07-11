@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.CubaResizableTextAreaWrapperServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.CubaResizableTextAreaWrapperState;
+import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.ResizeDirection;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
@@ -108,12 +109,21 @@ public class CubaResizableTextAreaWrapper extends CustomField {
         return Object.class;
     }
 
+    /**
+     * @deprecated Use {@link CubaResizableTextAreaWrapper#getResizableDirection()} instead
+     */
+    @Deprecated
     public boolean isResizable() {
-        return getState(false).resizable;
+        return getState(false).resizableDirection != ResizeDirection.NONE;
     }
 
+    /**
+     * @deprecated Use {@link CubaResizableTextAreaWrapper#setResizableDirection(ResizeDirection)} instead
+     */
+    @Deprecated
     public void setResizable(boolean resizable) {
-        getState().resizable = resizable;
+        ResizeDirection value = resizable ? ResizeDirection.BOTH : ResizeDirection.NONE;
+        setResizableDirection(value);
     }
 
     public boolean isEditable() {
@@ -171,12 +181,21 @@ public class CubaResizableTextAreaWrapper extends CustomField {
     public void beforeClientResponse(boolean initial) {
         super.beforeClientResponse(initial);
 
-        if (getState(false).resizable
-                && (textArea.getRows() > 0 && textArea.getColumns() > 0
-                || isPercentageSize())) {
+        if (getState(false).resizableDirection.equals(ResizeDirection.BOTH)
+                && isPercentageSize()) {
             LoggerFactory.getLogger(CubaResizableTextAreaWrapper.class).warn(
-                    "TextArea with fixed rows and cols or percentage size can not be resizable");
-            getState().resizable = false;
+                    "TextArea with percentage size can not be resizable");
+            getState().resizableDirection = ResizeDirection.NONE;
+        } else if (getState(false).resizableDirection.equals(ResizeDirection.VERTICAL)
+                && Unit.PERCENTAGE.equals(getHeightUnits())) {
+            LoggerFactory.getLogger(CubaResizableTextAreaWrapper.class).warn(
+                    "TextArea height with percentage size can not be resizable to vertical direction");
+            getState().resizableDirection = ResizeDirection.NONE;
+        } else if (getState(false).resizableDirection.equals(ResizeDirection.HORIZONTAL)
+                && (Unit.PERCENTAGE.equals(getWidthUnits()))) {
+            LoggerFactory.getLogger(CubaResizableTextAreaWrapper.class).warn(
+                    "TextArea width with percentage size can not be resizable to horizontal direction");
+            getState().resizableDirection = ResizeDirection.NONE;
         }
     }
 
@@ -192,5 +211,13 @@ public class CubaResizableTextAreaWrapper extends CustomField {
 
     public void removeResizeListener(ResizeListener resizeListener) {
         listeners.remove(resizeListener);
+    }
+
+    public void setResizableDirection(ResizeDirection direction) {
+        getState().resizableDirection = direction;
+    }
+
+    public ResizeDirection getResizableDirection() {
+        return getState(false).resizableDirection;
     }
 }

@@ -31,6 +31,8 @@ public class CubaResizableTextAreaWrapperWidget extends VCustomField {
     protected boolean dragDrop = false;
     protected boolean enabled = true;
 
+    protected ResizeDirection resizableDirection;
+
     protected Element resizeElement;
 
     protected ResizeHandler resizeHandler;
@@ -42,29 +44,28 @@ public class CubaResizableTextAreaWrapperWidget extends VCustomField {
         return resizeElement != null;
     }
 
-    public void setResizable(boolean resizable) {
-        if (isResizable() == resizable) {
-            return;
-        }
-
-        if (resizable) {
-            resizeElement = DOM.createDiv();
-            resizeElement.setClassName(RESIZE_ELEMENT);
-
-            getElement().appendChild(resizeElement);
-
-            DOM.sinkEvents(resizeElement, MOUSE_EVENTS);
-            DOM.setEventListener(resizeElement, new ResizeEventListener());
-        } else {
-            if (resizeElement != null) {
+    public void setResizableDirection(ResizeDirection resizableDirection) {
+        this.resizableDirection = resizableDirection;
+        if (resizableDirection == ResizeDirection.NONE) {
+            if (isResizable()) {
                 DOM.sinkEvents(resizeElement, 0);
                 DOM.setEventListener(resizeElement, null);
-
                 resizeElement.removeFromParent();
-
                 resizeElement = null;
             }
+        } else {
+            if (!isResizable()) {
+                resizeElement = DOM.createDiv();
+                resizeElement.setClassName(RESIZE_ELEMENT);
+                getElement().appendChild(resizeElement);
+                DOM.sinkEvents(resizeElement, MOUSE_EVENTS);
+                DOM.setEventListener(resizeElement, new ResizeEventListener());
+            }
         }
+    }
+
+    public ResizeDirection getResizableDirection() {
+        return this.resizableDirection;
     }
 
     public boolean isEnabled() {
@@ -138,8 +139,18 @@ public class CubaResizableTextAreaWrapperWidget extends VCustomField {
                 int width = mouseX - absoluteLeft + 2;
                 int height = mouseY - absoluteTop + 2;
 
-                setHeight(height + "px");
-                setWidth(width + "px");
+                switch (resizableDirection) {
+                    case BOTH:
+                        setHeight(height + "px");
+                        setWidth(width + "px");
+                        break;
+                    case VERTICAL:
+                        setHeight(height + "px");
+                        break;
+                    case HORIZONTAL:
+                        setWidth(width + "px");
+                        break;
+                }
 
                 if (resizeHandler != null) {
                     resizeHandler.handleResize();

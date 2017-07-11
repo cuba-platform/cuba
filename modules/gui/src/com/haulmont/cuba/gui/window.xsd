@@ -672,6 +672,15 @@
         </xs:union>
     </xs:simpleType>
 
+    <xs:simpleType name="resizableDirection">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="HORIZONTAL"/>
+            <xs:enumeration value="VERTICAL"/>
+            <xs:enumeration value="BOTH"/>
+            <xs:enumeration value="NONE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <!-- Interfaces -->
 
     <xs:attributeGroup name="hasId">
@@ -1133,6 +1142,7 @@
                 <xs:attribute name="stylename" type="textAreaStylename"/>
                 <xs:attribute name="maxLength" type="xs:int"/>
                 <xs:attribute name="resizable" type="xs:boolean"/>
+                <xs:attribute name="resizableDirection" type="resizableDirection"/>
                 <xs:attribute name="trim" type="xs:boolean"/>
                 <xs:attribute name="inputPrompt" type="resourceString"/>
                 <xs:attribute name="wordwrap" type="xs:boolean"/>

@@ -33,9 +33,13 @@ public class ResizableTextAreaLoader extends TextAreaLoader {
 
         ResizableTextArea textArea = (ResizableTextArea) resultComponent;
         String resizable = element.attributeValue("resizable");
-
         if (StringUtils.isNotEmpty(resizable)) {
             textArea.setResizable(Boolean.parseBoolean(resizable));
+        }
+
+        String resizableDirection = element.attributeValue("resizableDirection");
+        if (StringUtils.isNotEmpty(resizableDirection)) {
+            textArea.setResizableDirection(ResizableTextArea.ResizeDirection.valueOf(resizableDirection));
         }
 
         loadSettingsEnabled(textArea, element);
