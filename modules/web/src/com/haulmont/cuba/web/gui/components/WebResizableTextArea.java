@@ -304,11 +304,11 @@ public class WebResizableTextArea extends WebAbstractTextArea<CubaTextArea> impl
     @Override
     public void setResizableDirection(ResizeDirection direction) {
         Preconditions.checkNotNullArgument(direction);
-        wrapper.setResizableDirection(WebComponentsHelper.convertToVaadinResizeDirection(direction));
+        wrapper.setResizableDirection(WebWrapperUtils.toVaadinResizeDirection(direction));
     }
 
     @Override
     public ResizeDirection getResizableDirection() {
-        return WebComponentsHelper.convertFromVaadinResizeDirection(wrapper.getResizableDirection());
+        return WebWrapperUtils.toResizeDirection(wrapper.getResizableDirection());
     }
 }

@@ -21,7 +21,9 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Component.Alignment;
 import com.haulmont.cuba.gui.components.DataGrid.DataGridStaticCellType;
 import com.haulmont.cuba.gui.components.LookupField.FilterMode;
+import com.haulmont.cuba.gui.components.ResizableTextArea;
 import com.haulmont.cuba.gui.components.TextInputField;
+import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.ResizeDirection;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.shared.ui.grid.GridStaticCellType;
@@ -226,5 +228,35 @@ public final class WebWrapperUtils {
         }
 
         return type;
+    }
+
+    public static ResizeDirection toVaadinResizeDirection(ResizableTextArea.ResizeDirection direction) {
+        switch (direction) {
+            case BOTH:
+                return ResizeDirection.BOTH;
+            case VERTICAL:
+                return ResizeDirection.VERTICAL;
+            case HORIZONTAL:
+                return ResizeDirection.HORIZONTAL;
+            case NONE:
+                return ResizeDirection.NONE;
+            default:
+                throw new IllegalArgumentException("Unknown direction: " + direction);
+        }
+    }
+
+    public static ResizableTextArea.ResizeDirection toResizeDirection(ResizeDirection direction) {
+        switch (direction) {
+            case BOTH:
+                return ResizableTextArea.ResizeDirection.BOTH;
+            case VERTICAL:
+                return ResizableTextArea.ResizeDirection.VERTICAL;
+            case HORIZONTAL:
+                return ResizableTextArea.ResizeDirection.HORIZONTAL;
+            case NONE:
+                return ResizableTextArea.ResizeDirection.NONE;
+            default:
+                throw new IllegalArgumentException("Unknown direction: " + direction);
+        }
     }
 }

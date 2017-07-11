@@ -31,7 +31,6 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.*;
-import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.ResizeDirection;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
@@ -656,35 +655,5 @@ public class WebComponentsHelper {
             }
         }
         return null;
-    }
-
-    public static ResizeDirection convertToVaadinResizeDirection(ResizableTextArea.ResizeDirection direction) {
-        switch (direction) {
-            case BOTH:
-                return ResizeDirection.BOTH;
-            case VERTICAL:
-                return ResizeDirection.VERTICAL;
-            case HORIZONTAL:
-                return ResizeDirection.HORIZONTAL;
-            case NONE:
-                return ResizeDirection.NONE;
-            default:
-                throw new IllegalArgumentException("Unknown direction: " + direction);
-        }
-    }
-
-    public static ResizableTextArea.ResizeDirection convertFromVaadinResizeDirection(ResizeDirection direction) {
-        switch (direction) {
-            case BOTH:
-                return ResizableTextArea.ResizeDirection.BOTH;
-            case VERTICAL:
-                return ResizableTextArea.ResizeDirection.VERTICAL;
-            case HORIZONTAL:
-                return ResizableTextArea.ResizeDirection.HORIZONTAL;
-            case NONE:
-                return ResizableTextArea.ResizeDirection.NONE;
-            default:
-                throw new IllegalArgumentException("Unknown direction: " + direction);
-        }
     }
 }

@@ -21,18 +21,27 @@ public interface ResizableTextArea extends TextArea, Component.HasSettings {
     String NAME = TextArea.NAME;
 
     /**
-     * @deprecated Use {@link ResizableTextArea#setResizableDirection(ResizeDirection)} instead
+     * @deprecated Use {@link ResizableTextArea#setResizableDirection(ResizeDirection)} instead.
      */
     @Deprecated
     void setResizable(boolean resizable);
 
     /**
-     * @deprecated Use {@link ResizableTextArea#getResizableDirection()} instead
+     * @deprecated Use {@link ResizableTextArea#getResizableDirection()} instead.
      */
     @Deprecated
     boolean isResizable();
 
+    /**
+     * Allows resizing textArea in a given direction.
+     * @param direction the direction in which resizes textArea.
+     */
     void setResizableDirection(ResizeDirection direction);
+
+    /**
+     * Get the direction in which the textArea size changes.
+     * @return direction.
+     */
     ResizeDirection getResizableDirection();
 
     @Deprecated
@@ -76,6 +85,9 @@ public interface ResizableTextArea extends TextArea, Component.HasSettings {
         }
     }
 
+    /**
+     * Represents directions in which textArea can be resized.
+     */
     enum ResizeDirection{
         HORIZONTAL, VERTICAL, BOTH, NONE
     }
