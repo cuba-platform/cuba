@@ -34,6 +34,7 @@ import com.haulmont.cuba.gui.components.filter.condition.*;
 import com.haulmont.cuba.gui.components.filter.descriptor.GroupConditionDescriptor;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.FilterEntity;
+import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,6 +118,9 @@ public class FilterEditor extends AbstractWindow {
 
     @WindowParam(name = "useShortConditionForm")
     protected Boolean useShortConditionForm;
+
+    @WindowParam(name = "hideDynamicAttributes")
+    protected Boolean hideDynamicAttributes;
 
     protected final List<String> componentsToHideInShortForm = Arrays.asList("hiddenLabel", "hidden",
             "requiredLabel", "required", "widthLabel", "width", "captionLabel", "caption");
@@ -236,7 +240,7 @@ public class FilterEditor extends AbstractWindow {
             }
         });
 
-        addConditionHelper = new AddConditionHelper(filter, condition -> {
+        addConditionHelper = new AddConditionHelper(filter, BooleanUtils.isTrue(hideDynamicAttributes), condition -> {
             AbstractCondition item = conditionsDs.getItem();
             if (item != null && item instanceof GroupCondition) {
                 Node<AbstractCondition> newNode = new Node<>(condition);

@@ -178,13 +178,6 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
         } else {
             type.setEnabled(true);
         }
-
-//        if (item.getCheckType() == ConstraintCheckType.DATABASE_AND_MEMORY
-//                || item.getCheckType() == ConstraintCheckType.DATABASE) {
-//            testConstraint.setVisible(true);
-//        } else {
-//            testConstraint.setVisible(false);
-//        }
     }
 
     protected boolean isUnavailableInSecurityConstraints(MetaClass metaClass) {
@@ -312,6 +305,7 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
         params.put("filterEntity", filterEntity);
         params.put("conditions", conditionsTree);
         params.put("useShortConditionForm", true);
+        params.put("hideDynamicAttributes", constraint.getCheckType() != ConstraintCheckType.DATABASE);
 
         FilterEditor filterEditor = (FilterEditor) windowManagerProvider.get().openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
         filterEditor.addCloseListener(actionId -> {

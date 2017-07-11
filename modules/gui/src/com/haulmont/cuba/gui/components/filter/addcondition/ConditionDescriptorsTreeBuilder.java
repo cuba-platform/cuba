@@ -62,14 +62,25 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
     protected DynamicAttributes dynamicAttributes;
     protected List<String> excludedProperties;
     protected final String storeName;
+    protected final boolean hideDynamicAttributes;
 
     /**
      * @param filter filter
      * @param hierarchyDepth max level of properties hierarchy
      */
     public ConditionDescriptorsTreeBuilder(Filter filter, int hierarchyDepth) {
+        this(filter, hierarchyDepth, false);
+    }
+
+    /**
+     * @param filter filter
+     * @param hierarchyDepth max level of properties hierarchy
+     * @param hideDynamicAttributes hide dynamic attributes conditions from wizard
+     */
+    public ConditionDescriptorsTreeBuilder(Filter filter, int hierarchyDepth, boolean hideDynamicAttributes) {
         this.filter = filter;
         this.hierarchyDepth = hierarchyDepth;
+        this.hideDynamicAttributes = hideDynamicAttributes;
         security = AppBeans.get(Security.class);
         metadataTools = AppBeans.get(MetadataTools.NAME);
         dynamicAttributes = AppBeans.get(DynamicAttributes.class);
@@ -162,7 +173,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
             rootNodes.add(new Node<>(new CustomConditionCreator(filterComponentName, datasource)));
         }
 
-        if (!dynamicAttributes.getAttributesForMetaClass(datasource.getMetaClass()).isEmpty()) {
+        if (!hideDynamicAttributes && !dynamicAttributes.getAttributesForMetaClass(datasource.getMetaClass()).isEmpty()) {
             rootNodes.add(new Node<>(new DynamicAttributesConditionCreator(filterComponentName, datasource, "")));
         }
 
