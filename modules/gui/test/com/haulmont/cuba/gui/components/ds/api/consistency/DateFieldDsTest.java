@@ -34,7 +34,6 @@ public class DateFieldDsTest extends DsApiConsistencyTestCase {
     @Test
     public void testUnsubscribeComponentListener() {
         DateField dateField = (DateField) factory.createComponent(DateField.NAME);
-        dateField.setResolution(DateField.Resolution.SEC);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -42,6 +41,7 @@ public class DateFieldDsTest extends DsApiConsistencyTestCase {
         Date updateTs = new Date();
         user.setUpdateTs(updateTs);
         dateField.setDatasource(userDs, "updateTs");
+        dateField.setResolution(DateField.Resolution.SEC);
 
         // unbind
         dateField.setDatasource(null, null);
@@ -80,7 +80,6 @@ public class DateFieldDsTest extends DsApiConsistencyTestCase {
     @Test
     public void testUnsubscribeSubscribeComponentListener() {
         DateField dateField = (DateField) factory.createComponent(DateField.NAME);
-        dateField.setResolution(DateField.Resolution.SEC);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -93,6 +92,7 @@ public class DateFieldDsTest extends DsApiConsistencyTestCase {
 
         // datasource before listener
         dateField.setDatasource(userDs, "updateTs");
+        dateField.setResolution(DateField.Resolution.SEC);
         assertEquals(updateTs, dateField.getValue());
 
         boolean[] valueWasChanged = {false};
@@ -114,6 +114,7 @@ public class DateFieldDsTest extends DsApiConsistencyTestCase {
 
         dateField.addValueChangeListener(listener);
         dateField.setDatasource(userDs, "updateTs");
+        dateField.setResolution(DateField.Resolution.SEC);
         assertEquals(true, valueWasChanged[0]);
         assertEquals(updateTs2, dateField.getValue());
     }
@@ -121,7 +122,6 @@ public class DateFieldDsTest extends DsApiConsistencyTestCase {
     @Test
     public void testUnsubscribeSubscribeDsListener() {
         DateField dateField = (DateField) factory.createComponent(DateField.NAME);
-        dateField.setResolution(DateField.Resolution.SEC);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -137,6 +137,7 @@ public class DateFieldDsTest extends DsApiConsistencyTestCase {
         Datasource.ItemPropertyChangeListener<User> listener = e -> valueWasChanged[0] = true;
         userDs.addItemPropertyChangeListener(listener);
         dateField.setDatasource(userDs, "updateTs");
+        dateField.setResolution(DateField.Resolution.SEC);
 
         Date updateTs2 = new Date();
         dateField.setValue(updateTs2);

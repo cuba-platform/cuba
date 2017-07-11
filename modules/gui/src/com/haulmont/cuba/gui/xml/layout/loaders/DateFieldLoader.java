@@ -16,15 +16,11 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.DateDatatype;
-import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.DateField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import javax.persistence.TemporalType;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -44,15 +40,6 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
         super.loadComponent();
 
         loadTabIndex(resultComponent, element);
-
-        TemporalType tt = null;
-        if (resultComponent.getMetaProperty() != null) {
-            if (resultComponent.getMetaProperty().getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
-                tt = TemporalType.DATE;
-            } else if (resultComponent.getMetaProperty().getAnnotations() != null) {
-                tt = (TemporalType) resultComponent.getMetaProperty().getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
-            }
-        }
 
         final String resolution = element.attributeValue("resolution");
         String dateFormat = element.attributeValue("dateFormat");
@@ -74,23 +61,17 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
                         break;
                 }
             }
-        } else if (tt == TemporalType.DATE) {
-            resultComponent.setResolution(DateField.Resolution.DAY);
         }
 
-        String formatStr;
+        String formatStr = null;
         if (StringUtils.isNotEmpty(dateFormat)) {
             formatStr = loadResourceString(dateFormat);
         } else if (StringUtils.isNotEmpty(mainDateFormat)) {
             formatStr = messages.getMainMessage(mainDateFormat);
-        }else {
-            if (tt == TemporalType.DATE) {
-                formatStr = messages.getMainMessage("dateFormat");
-            } else {
-                formatStr = messages.getMainMessage("dateTimeFormat");
-            }
         }
-        resultComponent.setDateFormat(formatStr);
+        if (StringUtils.isNotEmpty(formatStr)) {
+            resultComponent.setDateFormat(formatStr);
+        }
 
         loadBuffered(resultComponent, element);
 

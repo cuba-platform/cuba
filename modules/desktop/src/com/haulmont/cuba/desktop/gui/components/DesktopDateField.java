@@ -19,6 +19,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -46,6 +47,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.swingx.JXDatePicker;
 
+import javax.persistence.TemporalType;
 import javax.swing.*;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
@@ -78,6 +80,8 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
     protected Date startDate;
     protected Date endDate;
+
+    protected boolean updateTimeFieldResolution = false;
 
     public DesktopDateField() {
         impl = new FocusableComposition();
@@ -112,7 +116,9 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
                 return;
             }
 
-            updateInstance();
+            if (!updateTimeFieldResolution) {
+                updateInstance();
+            }
         });
 
         datePicker.addPropertyChangeListener(evt -> {
@@ -160,6 +166,10 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         this.resolution = resolution;
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
             timeField.setResolution(resolution);
+            // while changing resolution, timeField loses its value, so we need to set it again
+            updateTimeFieldResolution = true;
+            timeField.setValue(datePicker.getDate());
+            updateTimeFieldResolution = false;
         }
     }
 
@@ -393,6 +403,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         }
 
         initRequired(metaPropertyPath);
+        initDateFormat(metaProperty);
 
         if (metaProperty.isReadOnly()) {
             setEditable(false);
@@ -400,6 +411,23 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
         initBeanValidator();
         setDateRangeByProperty(metaProperty);
+    }
+
+    protected void initDateFormat(MetaProperty metaProperty) {
+        TemporalType tt = null;
+        if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
+            tt = TemporalType.DATE;
+        } else if (metaProperty.getAnnotations() != null) {
+            tt = (TemporalType) metaProperty.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
+        }
+
+        setResolution(tt == TemporalType.DATE
+                ? DateField.Resolution.DAY
+                : Resolution.MIN);
+
+        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+        String formatStr = messageTools.getDefaultDateFormat(tt);
+        setDateFormat(formatStr);
     }
 
     protected void setDateRangeByProperty(MetaProperty metaProperty) {

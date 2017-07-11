@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -43,7 +42,6 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
-import javax.persistence.TemporalType;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
@@ -260,26 +258,14 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         DateField dateField = componentsFactory.createComponent(DateField.class);
         dateField.setDatasource(datasource, property);
 
-        MetaProperty metaProperty = mpp.getMetaProperty();
-        TemporalType tt = null;
-        if (metaProperty != null) {
-            if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
-                tt = TemporalType.DATE;
-            } else if (metaProperty.getAnnotations() != null) {
-                tt = (TemporalType) metaProperty.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
-            }
-        }
-
         final String resolution = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("resolution");
         String dateFormat = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("dateFormat");
 
         DateField.Resolution dateResolution = DateField.Resolution.MIN;
 
-        if (!StringUtils.isEmpty(resolution)) {
+        if (StringUtils.isNotEmpty(resolution)) {
             dateResolution = DateField.Resolution.valueOf(resolution);
             dateField.setResolution(dateResolution);
-        } else if (tt == TemporalType.DATE) {
-            dateField.setResolution(DateField.Resolution.DAY);
         }
 
         if (dateFormat == null) {
@@ -291,19 +277,11 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         }
         Messages messages = AppBeans.get(Messages.NAME);
 
-        if (!StringUtils.isEmpty(dateFormat)) {
+        if (StringUtils.isNotEmpty(dateFormat)) {
             if (dateFormat.startsWith("msg://")) {
                 dateFormat = messages.getMainMessage(dateFormat.substring(6, dateFormat.length()));
             }
             dateField.setDateFormat(dateFormat);
-        } else {
-            String formatStr;
-            if (tt == TemporalType.DATE) {
-                formatStr = messages.getMainMessage("dateFormat");
-            } else {
-                formatStr = messages.getMainMessage("dateTimeFormat");
-            }
-            dateField.setDateFormat(formatStr);
         }
 
         return dateField;

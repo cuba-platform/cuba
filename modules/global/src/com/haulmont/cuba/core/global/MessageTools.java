@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import java.util.Locale;
 import java.util.Map;
@@ -442,5 +443,15 @@ public class MessageTools {
         if (globalConfig.getAvailableLocales().isEmpty())
             throw new DevelopmentException("Invalid cuba.availableLocales application property");
         return globalConfig.getAvailableLocales().entrySet().iterator().next().getValue();
+    }
+
+    /**
+     * @param temporalType a temporal type
+     * @return default date format string for passed temporal type
+     */
+    public String getDefaultDateFormat(TemporalType temporalType) {
+        return temporalType == TemporalType.DATE
+                ? messages.getMainMessage("dateFormat")
+                : messages.getMainMessage("dateTimeFormat");
     }
 }

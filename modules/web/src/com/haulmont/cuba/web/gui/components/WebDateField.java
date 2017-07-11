@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -41,6 +42,7 @@ import com.vaadin.ui.Layout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
 import java.sql.Time;
@@ -74,6 +76,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     protected WeakItemChangeListener weakItemChangeListener;
 
     protected boolean buffered = false;
+    protected boolean updateTimeFieldResolution = false;
 
     public WebDateField() {
         innerLayout = new com.vaadin.ui.CssLayout();
@@ -125,8 +128,9 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             if (!checkRange(constructDate())) {
                 return;
             }
-
-            updateInstance();
+            if (!updateTimeFieldResolution) {
+                updateInstance();
+            }
         };
     }
 
@@ -283,6 +287,10 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     protected void __setResolution(Resolution resolution) {
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
             timeField.setResolution(resolution);
+            // while changing resolution, timeField loses its value, so we need to set it again
+            updateTimeFieldResolution = true;
+            timeField.setValue(dateField.getValue());
+            updateTimeFieldResolution = false;
         } else {
             dateField.setResolution(WebComponentsHelper.convertDateFieldResolution(resolution));
         }
@@ -512,6 +520,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             }
 
             initRequired(metaPropertyPath);
+            initDateFormat(metaProperty);
 
             if (metaProperty.isReadOnly()) {
                 setEditable(false);
@@ -520,6 +529,23 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             initBeanValidator();
             setDateRangeByProperty(metaProperty);
         }
+    }
+
+    protected void initDateFormat(MetaProperty metaProperty) {
+        TemporalType tt = null;
+        if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
+            tt = TemporalType.DATE;
+        } else if (metaProperty.getAnnotations() != null) {
+            tt = (TemporalType) metaProperty.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
+        }
+
+        setResolution(tt == TemporalType.DATE
+                ? DateField.Resolution.DAY
+                : Resolution.MIN);
+
+        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+        String formatStr = messageTools.getDefaultDateFormat(tt);
+        setDateFormat(formatStr);
     }
 
     protected void setDateRangeByProperty(MetaProperty metaProperty) {

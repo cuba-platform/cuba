@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -31,7 +30,6 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -40,7 +38,6 @@ import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
-import javax.persistence.TemporalType;
 import java.util.Collection;
 
 @org.springframework.stereotype.Component(DataGridEditorFieldFactory.NAME)
@@ -86,7 +83,7 @@ public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactor
                 } else if (typeName.equals(BooleanDatatype.NAME)) {
                     return createBooleanField(datasource, property);
                 } else if (typeName.equals(DateDatatype.NAME) || typeName.equals(DateTimeDatatype.NAME)) {
-                    return createDateField(datasource, property, mpp);
+                    return createDateField(datasource, property);
                 } else if (typeName.equals(TimeDatatype.NAME)) {
                     return createTimeField(datasource, property);
                 } else if (datatype instanceof NumberDatatype) {
@@ -163,31 +160,9 @@ public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactor
         return textField;
     }
 
-    protected Field createDateField(Datasource datasource, String property, MetaPropertyPath mpp) {
+    protected Field createDateField(Datasource datasource, String property) {
         DateField dateField = componentsFactory.createComponent(DateField.class);
         dateField.setDatasource(datasource, property);
-
-        MetaProperty metaProperty = mpp.getMetaProperty();
-        TemporalType tt = null;
-        if (metaProperty != null) {
-            if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
-                tt = TemporalType.DATE;
-            } else if (metaProperty.getAnnotations() != null) {
-                tt = (TemporalType) metaProperty.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
-            }
-        }
-
-        if (tt == TemporalType.DATE) {
-            dateField.setResolution(DateField.Resolution.DAY);
-        }
-        String formatStr;
-        if (tt == TemporalType.DATE) {
-            formatStr = messages.getMainMessage("dateFormat");
-        } else {
-            formatStr = messages.getMainMessage("dateTimeFormat");
-        }
-        dateField.setDateFormat(formatStr);
-
         return dateField;
     }
 
