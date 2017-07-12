@@ -905,7 +905,7 @@ create table SYS_REST_API_TOKEN (
 
 /**********************************************************************************************/
 
-create table SEC_SESSION_LOG_ENTRY (
+create table SEC_SESSION_LOG (
     ID varchar(32) not null,
     VERSION integer not null,
     CREATE_TS datetime(3),
@@ -932,9 +932,9 @@ create table SEC_SESSION_LOG_ENTRY (
     constraint FK_SESSION_LOG_ENTRY_SUBUSER foreign key (SUBSTITUTED_USER_ID) references SEC_USER(ID)
 )^
 
-create index IDX_SESSION_LOG_ENTRY_USER on SEC_SESSION_LOG_ENTRY (USER_ID)^
-create index IDX_SESSION_LOG_ENTRY_SUBUSER on SEC_SESSION_LOG_ENTRY (SUBSTITUTED_USER_ID)^
-create index IDX_SESSION_LOG_ENTRY_SESSION on SEC_SESSION_LOG_ENTRY (SESSION_ID)^
+create index IDX_SESSION_LOG_ENTRY_USER on SEC_SESSION_LOG (USER_ID)^
+create index IDX_SESSION_LOG_ENTRY_SUBUSER on SEC_SESSION_LOG (SUBSTITUTED_USER_ID)^
+create index IDX_SESSION_LOG_ENTRY_SESSION on SEC_SESSION_LOG (SESSION_ID)^
 
 /**********************************************************************************************/
 

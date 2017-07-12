@@ -1,4 +1,4 @@
-create table SEC_SESSION_LOG_ENTRY (
+create table SEC_SESSION_LOG (
     ID varchar(36) not null,
     VERSION integer not null,
     CREATE_TS timestamp,
@@ -23,7 +23,7 @@ create table SEC_SESSION_LOG_ENTRY (
     primary key (ID)
 )^
 
-alter table SEC_SESSION_LOG_ENTRY add constraint FK_SEC_SESSION_LOG_ENTRY_USER foreign key (USER_ID) references SEC_USER(ID)^
-create index IDX_SEC_SESSION_LOG_ENTRY_USER on SEC_SESSION_LOG_ENTRY (USER_ID)^
-alter table SEC_SESSION_LOG_ENTRY add constraint FK_SEC_SESSION_LOG_ENTRY_SUBUSER foreign key (SUBSTITUTED_USER_ID) references SEC_USER(ID)^
-create index IDX_SEC_SESSION_LOG_ENTRY_SUBUSER on SEC_SESSION_LOG_ENTRY (SUBSTITUTED_USER_ID)^
+alter table SEC_SESSION_LOG add constraint FK_SEC_SESSION_LOG_USER foreign key (USER_ID) references SEC_USER(ID)^
+create index IDX_SEC_SESSION_LOG_USER on SEC_SESSION_LOG (USER_ID)^
+alter table SEC_SESSION_LOG add constraint FK_SEC_SESSION_LOG_SUBUSER foreign key (SUBSTITUTED_USER_ID) references SEC_USER(ID)^
+create index IDX_SEC_SESSION_LOG_SUBUSER on SEC_SESSION_LOG (SUBSTITUTED_USER_ID)^

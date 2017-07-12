@@ -25,7 +25,7 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
 
-@Table(name = "SEC_SESSION_LOG_ENTRY")
+@Table(name = "SEC_SESSION_LOG")
 @Entity(name = "sec$SessionLogEntry")
 public class SessionLogEntry extends StandardEntity {
     private static final long serialVersionUID = -2218273202879030900L;
