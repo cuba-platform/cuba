@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.sys;
 
+import com.google.common.hash.HashCode;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
@@ -48,6 +49,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -317,19 +319,31 @@ public class CubaVaadinServletService extends VaadinServletService {
                             }
                         }
 
-                        List<String> idParts = new ArrayList<>(3);
+                        StringBuilder idParts = new StringBuilder();
                         if (login != null) {
-                            idParts.add(login);
+                            idParts.append(login);
                         }
                         if (locale != null) {
-                            idParts.add(locale);
+                            idParts.append(locale);
                         }
-                        idParts.add(id);
+                        idParts.append(id);
 
-                        String longId = StringUtils.join(idParts, "-");
-                        return md5().hashString(longId, StandardCharsets.UTF_8).toString();
+                        return toLongNumberString(idParts.toString());
                     }
                     return super.createConnectorId(connector);
+                }
+
+                protected String toLongNumberString(String data) {
+                    HashCode hashCode = md5().hashString(data, StandardCharsets.UTF_8);
+                    byte[] hashBytes = hashCode.asBytes();
+                    byte[] shortBytes = new byte[Long.BYTES];
+
+                    System.arraycopy(hashBytes, 0, shortBytes, 0, Long.BYTES);
+
+                    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+                    buffer.put(shortBytes);
+                    buffer.flip();
+                    return Long.toString(Math.abs(buffer.getLong()));
                 }
             };
         } else {
