@@ -24,6 +24,7 @@ public class DesktopResizableTextArea extends DesktopTextArea implements Resizab
 
     protected boolean resizable = false;
     protected boolean settingsEnabled = true;
+    protected ResizeDirection resizeDirection = ResizeDirection.NONE;
 
     @Override
     public boolean isResizable() {
@@ -79,12 +80,13 @@ public class DesktopResizableTextArea extends DesktopTextArea implements Resizab
 
     @Override
     public void setResizableDirection(ResizeDirection direction) {
+        resizeDirection = direction;
         //Do nothing, because desktop text area is not resizable
     }
 
     @Override
     public ResizeDirection getResizableDirection() {
         //Do nothing, because desktop text area is not resizable
-        return null;
+        return resizeDirection;
     }
 }
