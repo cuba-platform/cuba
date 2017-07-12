@@ -30,7 +30,6 @@ import java.util.List;
 
 @Source(type = SourceType.APP)
 public interface WebAuthConfig extends Config {
-
     /**
      * @return Short/User-friendly domain aliases for login window form
      */
@@ -52,12 +51,12 @@ public interface WebAuthConfig extends Config {
     String getExternalAuthenticationProviderClass();
 
     /**
-     * @return list of users that are allowed to use fallback to standard authentication.
+     * @return list of users that are not allowed to use external authentication. They can use only standard authentication.
      *         Empty list means that no one is allowed to login using standard authentication.
      */
-    @Property("cuba.web.standardAuthenticationUsersWhiteList")
+    @Property("cuba.web.standardAuthenticationUsers")
     @Factory(factory = CommaSeparatedStringListTypeFactory.class)
-    List<String> getStandardAuthenticationUsersWhiteList();
+    List<String> getStandardAuthenticationUsers();
 
     /**
      * @return Password used by LoginService.loginTrusted() method.

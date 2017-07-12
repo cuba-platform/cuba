@@ -293,7 +293,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
         return login;
     }
 
-    protected void showUnhandledExceptionOnLogin(Exception e) {
+    protected void showUnhandledExceptionOnLogin(@SuppressWarnings("unused") Exception e) {
         String title = messages.getMainMessage("loginWindow.loginFailed", userSessionSource.getLocale());
         String message = messages.getMainMessage("loginWindow.pleaseContactAdministrator", userSessionSource.getLocale());
 
@@ -378,25 +378,17 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
             if (loginByRememberMe && webConfig.getRememberMeEnabled()) {
                 doLoginByRememberMe(login, password, selectedLocale);
-            } else if (webAuthConfig.getExternalAuthentication()) {
+            } else if (webAuthConfig.getExternalAuthentication()
+                    && !webAuthConfig.getStandardAuthenticationUsers().contains(login)) {
                 // we use resolved locale for error messages
-                try {
-                    // try to login as externally authenticated user, fallback to regular authentication if enabled
-                    authenticateExternally(login, password, selectedLocale);
-                    login = convertLoginString(login);
-                    ((ExternallyAuthenticatedConnection) connection).loginAfterExternalAuthentication(login, selectedLocale);
-                } catch (LoginException e) {
-                    log.debug("External authentication failed", e);
-
-                    if (webAuthConfig.getStandardAuthenticationUsersWhiteList().contains(login)) {
-                        doLogin(login, passwordEncryption.getPlainHash(password), selectedLocale);
-                    } else {
-                        throw e;
-                    }
-                }
+                // try to login as externally authenticated user, fallback to regular authentication if enabled
+                authenticateExternally(login, password, selectedLocale);
+                login = convertLoginString(login);
+                ((ExternallyAuthenticatedConnection) connection).loginAfterExternalAuthentication(login, selectedLocale);
             } else {
                 doLogin(login, passwordEncryption.getPlainHash(password), selectedLocale);
             }
+
             // locale could be set on the server
             if (connection.getSession() != null) {
                 Locale loggedInLocale = userSessionSource.getLocale();
