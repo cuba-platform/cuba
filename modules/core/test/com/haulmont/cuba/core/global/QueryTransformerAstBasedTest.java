@@ -1048,6 +1048,18 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
+    public void testAddDistinct() throws RecognitionException {
+        DomainModel model = prepareDomainModel();
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h");
+        transformer.addDistinct();
+        String res = transformer.getResult();
+        assertEquals(
+                "select distinct h from sec$GroupHierarchy h",
+                res);
+    }
+
+    @Test
     public void testRemoveOrderBy() throws RecognitionException {
         DomainModel model = prepareDomainModel();
         QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,

@@ -50,6 +50,7 @@ public class DataServiceQueryBuilder {
     protected String queryString;
     protected Map<String, Object> queryParams;
     protected String entityName;
+    protected boolean singleResult;
 
     @Inject
     protected Metadata metadata;
@@ -73,6 +74,10 @@ public class DataServiceQueryBuilder {
             this.queryParams = new HashMap<>();
             this.queryParams.put("entityId", id);
         }
+    }
+
+    public void setSingleResult(boolean singleResult) {
+        this.singleResult = singleResult;
     }
 
     public void restrictByPreviousResults(UUID sessionId, int queryKey) {
@@ -164,8 +169,16 @@ public class DataServiceQueryBuilder {
 
     protected void applyConstraints(Query query) {
         boolean constraintsApplied = security.applyConstraints(query);
+        if (constraintsApplied && singleResult) {
+            QueryParser parser = QueryTransformerFactory.createParser(query.getQueryString());
+            if (parser.hasJoins()) {
+                QueryTransformer transformer = QueryTransformerFactory.createTransformer(query.getQueryString());
+                transformer.addDistinct();
+                query.setQueryString(transformer.getResult());
+            }
+        }
         if (constraintsApplied && log.isDebugEnabled())
-            log.debug("Constraints applyed: " + printQuery(query.getQueryString()));
+            log.debug("Constraints applied: {}", printQuery(query.getQueryString()));
     }
 
     public static String printQuery(String query) {

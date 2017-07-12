@@ -297,6 +297,11 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     @Override
+    public void addDistinct() {
+        //not supported
+    }
+
+    @Override
     public void replaceOrderBy(boolean desc, String... properties) {
         Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         String alias = findAlias(entityMatcher);
@@ -331,6 +336,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
 
     @Override
     public void addEntityInGroupBy(String entityAlias) {
+        //not supported
     }
 
     @Override

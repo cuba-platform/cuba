@@ -339,6 +339,25 @@ public class QueryParserAstBasedTest {
     }
 
     @Test
+    public void testHasJoins() throws Exception {
+        DomainModel model = prepareDomainModel();
+        QueryParserAstBased parser = new QueryParserAstBased(model,
+                "select h.group from sec$Constraint u, sec$GroupHierarchy h"
+        );
+        assertTrue(parser.hasJoins());
+
+        parser = new QueryParserAstBased(model,
+                "select g.group from sec$GroupHierarchy h join h.group g"
+        );
+        assertTrue(parser.hasJoins());
+
+        parser = new QueryParserAstBased(model,
+                "select h.parent.other from sec$GroupHierarchy h"
+        );
+        assertFalse(parser.hasJoins());
+    }
+
+    @Test
     public void testScalarExpressionInSelect() throws Exception {
         DomainModel model = prepareDomainModel();
         QueryParserAstBased transformer = new QueryParserAstBased(model,

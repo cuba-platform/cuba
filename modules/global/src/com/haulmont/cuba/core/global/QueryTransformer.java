@@ -64,6 +64,11 @@ public interface QueryTransformer {
      */
     boolean removeDistinct();
 
+    /**
+     * Replaces 'select' with 'select distinct'.
+     */
+    void addDistinct();
+
     /** Adds or replaces 'order by' clause */
     void replaceOrderBy(boolean desc, String... properties);
 

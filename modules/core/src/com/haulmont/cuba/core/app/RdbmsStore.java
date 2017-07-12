@@ -123,13 +123,12 @@ public class RdbmsStore implements DataStore {
                 em.setSoftDeletion(false);
             persistence.getEntityManagerContext(storeName).setDbHints(context.getDbHints());
 
-            com.haulmont.cuba.core.Query query = createQuery(em, context);
-            query.setView(createRestrictedView(context));
-
             // If maxResults=1 and the query is not by ID we should not use getSingleResult() for backward compatibility
-            boolean singleResult = !(context.getQuery() != null
-                    && context.getQuery().getMaxResults() == 1
+            boolean singleResult = !(context.getQuery() != null && context.getQuery().getMaxResults() == 1
                     && context.getQuery().getQueryString() != null);
+
+            com.haulmont.cuba.core.Query query = createQuery(em, context, singleResult);
+            query.setView(createRestrictedView(context));
 
             //noinspection unchecked
             List<E> resultList = executeQuery(query, singleResult);
@@ -193,7 +192,7 @@ public class RdbmsStore implements DataStore {
                     context.getQuery().setQueryString(transformer.getResult());
                 }
             }
-            Query query = createQuery(em, context);
+            Query query = createQuery(em, context, false);
             query.setView(createRestrictedView(context));
 
             resultList = getResultList(context, query, ensureDistinct);
@@ -252,7 +251,7 @@ public class RdbmsStore implements DataStore {
                 context.getQuery().setFirstResult(0);
                 context.getQuery().setMaxResults(0);
 
-                Query query = createQuery(em, context);
+                Query query = createQuery(em, context, false);
                 query.setView(createRestrictedView(context));
 
                 resultList = getResultList(context, query, ensureDistinct);
@@ -272,7 +271,7 @@ public class RdbmsStore implements DataStore {
                 em.setSoftDeletion(context.isSoftDeletion());
                 persistence.getEntityManagerContext(storeName).setDbHints(context.getDbHints());
 
-                Query query = createQuery(em, context);
+                Query query = createQuery(em, context, false);
                 result = (Number) query.getSingleResult();
 
                 tx.commit();
@@ -520,7 +519,7 @@ public class RdbmsStore implements DataStore {
                 && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null;
     }
 
-    protected Query createQuery(EntityManager em, LoadContext context) {
+    protected Query createQuery(EntityManager em, LoadContext context, boolean singleResult) {
         LoadContext.Query contextQuery = context.getQuery();
         if ((contextQuery == null || isBlank(contextQuery.getQueryString()))
                 && context.getId() == null)
@@ -532,6 +531,8 @@ public class RdbmsStore implements DataStore {
                 contextQuery == null ? null : contextQuery.getParameters(),
                 context.getId(), context.getMetaClass()
         );
+
+        queryBuilder.setSingleResult(singleResult);
 
         if (!context.getPrevQueries().isEmpty()) {
             log.debug("Restrict query by previous results");

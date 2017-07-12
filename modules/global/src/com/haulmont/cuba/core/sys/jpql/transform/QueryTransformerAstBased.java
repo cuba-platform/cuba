@@ -252,6 +252,11 @@ public class QueryTransformerAstBased implements QueryTransformer {
     }
 
     @Override
+    public void addDistinct() {
+        getQueryTransformer().addDistinct();
+    }
+
+    @Override
     public void replaceOrderBy(boolean desc, String... properties) {
         EntityReferenceInferer inferer = new EntityReferenceInferer(getReturnedEntityName());
         EntityReference ref = inferer.infer(getQueryTransformer());

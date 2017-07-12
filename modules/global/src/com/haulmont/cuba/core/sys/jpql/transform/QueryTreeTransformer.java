@@ -150,6 +150,15 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         return true;
     }
 
+    public void addDistinct() {
+        CommonTree selectedItems = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SELECTED_ITEMS);
+        boolean isDistinct = "distinct".equalsIgnoreCase(selectedItems.getChild(0).getText());
+        if (!isDistinct) {
+            selectedItems.insertChild(0, new CommonTree(new CommonToken(JPA2Lexer.DISTINCT, "distinct")));
+            selectedItems.freshenParentAndChildIndexes();
+        }
+    }
+
     public void replaceEntityName(String newEntityName) {
         IdentificationVariableNode identificationVariable = getMainEntityIdentification();
         if (identificationVariable != null) {

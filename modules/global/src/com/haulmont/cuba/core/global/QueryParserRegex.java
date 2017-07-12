@@ -136,6 +136,11 @@ public class QueryParserRegex implements QueryParser {
     }
 
     @Override
+    public boolean hasJoins() {
+        return false;
+    }
+
+    @Override
     public Set<String> getAllEntityNames() {
         Matcher entityNamesMatcher = ENTITY_PATTERN.matcher(source);
         Set<String> entityNames = Sets.newHashSet();

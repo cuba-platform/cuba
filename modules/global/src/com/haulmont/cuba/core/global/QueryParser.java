@@ -54,6 +54,11 @@ public interface QueryParser {
     boolean hasIsNullCondition(String attribute);
 
     /**
+     * Returns true if SELECT query contains joins
+     */
+    boolean hasJoins();
+
+    /**
      * @return Entity name if not main entity name is returned, otherwise null
      * Example: select u.group from sec$User u -&gt; sec$Group
      * Example: select g from sec$User u join u.group g -&gt; sec$Group

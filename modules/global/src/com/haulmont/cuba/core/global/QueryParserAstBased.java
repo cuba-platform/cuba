@@ -161,6 +161,11 @@ public class QueryParserAstBased implements QueryParser {
     }
 
     @Override
+    public boolean hasJoins() {
+        return getQueryAnalyzer().hasJoins();
+    }
+
+    @Override
     public String getEntityNameIfSecondaryReturnedInsteadOfMain() {
         EntityNameAndPath entityNameAndAlias = getEntityNameAndPathIfSecondaryReturnedInsteadOfMain();
         return entityNameAndAlias != null ? entityNameAndAlias.entityName : null;

@@ -199,6 +199,21 @@ public class QueryTreeAnalyzer {
         return nodesFinder.getFoundNodes();
     }
 
+    public boolean hasJoins() {
+        CommonTree sourceNode = (CommonTree) tree.getFirstChildWithType(JPA2Lexer.T_SOURCES);
+        List<SelectionSourceNode> selectionSourceNodes = getChildrenByClass(sourceNode, SelectionSourceNode.class);
+        if (selectionSourceNodes.size() > 1) {
+            return true;
+        } else if (selectionSourceNodes.size() == 1) {
+            NodesFinder<JoinVariableNode> nodesFinder = new NodesFinder<>(JoinVariableNode.class);
+            TreeVisitor treeVisitor = new TreeVisitor();
+            treeVisitor.visit(tree, nodesFinder);
+            return !nodesFinder.getFoundNodes().isEmpty();
+        } else {
+            return false;
+        }
+    }
+
 
     protected <T> List<T> getChildrenByClass(CommonTree commonTree, Class<T> clazz) {
         List<Object> childrenByClass = new ArrayList<>();
