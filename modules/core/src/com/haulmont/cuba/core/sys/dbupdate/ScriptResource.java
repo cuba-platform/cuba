@@ -17,12 +17,12 @@
 
 package com.haulmont.cuba.core.sys.dbupdate;
 
+import com.haulmont.bali.util.URLEncodeUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 
 public class ScriptResource {
     protected String dir;
@@ -35,7 +35,7 @@ public class ScriptResource {
         try {
             this.resource = resource;
             this.name = resource.getFilename();
-            this.path = URLDecoder.decode(resource.getURL().getPath(), "UTF-8");
+            this.path = URLEncodeUtils.decodeUtf8(resource.getURL().getPath());
             this.dir = StringUtils.substringBeforeLast(this.path, "/");
         } catch (IOException e) {
             throw new RuntimeException(e);

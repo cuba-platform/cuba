@@ -17,20 +17,25 @@
 
 package com.haulmont.cuba.core.jmx;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.bali.util.URLEncodeUtils;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Component("cuba_FileStorageMBean")
 public class FileStorage implements FileStorageMBean {
@@ -91,7 +96,6 @@ public class FileStorage implements FileStorageMBean {
 
     @Override
     public String findOrphanFiles() {
-        com.haulmont.cuba.core.app.filestorage.FileStorage fileStorage;
         FileStorageAPI fileStorageAPI = AppBeans.get(FileStorageAPI.class);
         if (!(fileStorageAPI instanceof com.haulmont.cuba.core.app.filestorage.FileStorage)) {
             return "<not supported>";
@@ -137,12 +141,8 @@ public class FileStorage implements FileStorageMBean {
             if (!descriptorsFileNames.contains(file.getName()))
                 //Encode file path if it contains non-ASCII characters
                 if (!file.getPath().matches("\\p{ASCII}+")) {
-                    try {
-                        String encodedFilePath = URLEncoder.encode(file.getPath(), "utf-8");
-                        sb.append(encodedFilePath).append("\n");
-                    } catch (UnsupportedEncodingException e) {
-                        return ExceptionUtils.getStackTrace(e);
-                    }
+                    String encodedFilePath = URLEncodeUtils.encodeUtf8(file.getPath());
+                    sb.append(encodedFilePath).append("\n");
                 } else {
                     sb.append(file.getPath()).append("\n");
                 }

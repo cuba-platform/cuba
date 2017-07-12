@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.restapi;
 
+import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.PasswordEncryption;
@@ -42,7 +43,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
@@ -103,8 +103,8 @@ public class LoginServiceController {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                     return;
                 }
-                String name = URLDecoder.decode(fields[0], StandardCharsets.UTF_8.name());
-                String value = URLDecoder.decode(fields[1], StandardCharsets.UTF_8.name());
+                String name = URLEncodeUtils.decodeUtf8(fields[0]);
+                String value = URLEncodeUtils.decodeUtf8(fields[1]);
                 name2value.put(name, value);
             }
             username = name2value.get("username");
@@ -211,7 +211,7 @@ public class LoginServiceController {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
-            sessionUUID = URLDecoder.decode(fields[1], StandardCharsets.UTF_8.name());
+            sessionUUID = URLEncodeUtils.decodeUtf8(fields[1]);
         } else {
             throw new IllegalStateException("Unsupported content type: " + contentType);
         }

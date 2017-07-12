@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.app.loginwindow;
 
 import com.google.common.base.Strings;
+import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -40,10 +41,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Map;
 
@@ -209,13 +206,8 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
         String rememberMeCookie = app.getCookieValue(COOKIE_REMEMBER_ME);
         if (Boolean.parseBoolean(rememberMeCookie)) {
-            String login;
             String encodedLogin = app.getCookieValue(COOKIE_LOGIN) != null ? app.getCookieValue(COOKIE_LOGIN) : "";
-            try {
-                login = URLDecoder.decode(encodedLogin, StandardCharsets.UTF_8.name());
-            } catch (UnsupportedEncodingException e) {
-                login = encodedLogin;
-            }
+            String login = URLEncodeUtils.decodeUtf8(encodedLogin);
 
             String rememberMeToken = app.getCookieValue(COOKIE_PASSWORD) != null ? app.getCookieValue(COOKIE_PASSWORD) : "";
             if (app.getConnection().checkRememberMe(login, rememberMeToken)) {
@@ -327,12 +319,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
                         String login = loginField.getValue();
 
-                        String encodedLogin;
-                        try {
-                            encodedLogin = URLEncoder.encode(login, StandardCharsets.UTF_8.name());
-                        } catch (UnsupportedEncodingException e) {
-                            encodedLogin = login;
-                        }
+                        String encodedLogin = URLEncodeUtils.encodeUtf8(login);
 
                         app.addCookie(COOKIE_LOGIN, StringEscapeUtils.escapeJava(encodedLogin));
 

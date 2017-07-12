@@ -17,13 +17,13 @@
 
 package com.haulmont.cuba.core.app.filestorage.amazon.util;
 
+import com.haulmont.bali.util.URLEncodeUtils;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Map;
 
 /**
@@ -123,12 +123,7 @@ public class HttpUtils {
     }
 
     public static String urlEncode(String url, boolean keepPathSlash) {
-        String encoded;
-        try {
-            encoded = URLEncoder.encode(url, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("UTF-8 encoding is not supported.", e);
-        }
+        String encoded = URLEncodeUtils.encodeUtf8(url);
         if (keepPathSlash) {
             encoded = encoded.replace("%2F", "/");
         }

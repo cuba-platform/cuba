@@ -41,7 +41,6 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.mail.internet.AddressException;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.RejectedExecutionException;
@@ -606,11 +605,7 @@ public class Emailer implements EmailerAPI {
     }
 
     protected String bodyTextFromByteArray(byte[] bodyContent) {
-        try {
-            return new String(bodyContent, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        return new String(bodyContent, StandardCharsets.UTF_8);
     }
 
     protected boolean isNeedToRetry(Exception e) {

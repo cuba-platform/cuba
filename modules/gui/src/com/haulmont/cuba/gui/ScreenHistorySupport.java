@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui;
 
+import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.DataService;
@@ -30,9 +31,6 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
 import org.apache.commons.lang.StringUtils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -125,11 +123,8 @@ public class ScreenHistorySupport {
                 Object value = param.getValue();
                 if (value instanceof String /*|| value instanceof Integer || value instanceof Double*/
                         || value instanceof Boolean) {
-                    try {
-                        sb.append(",").append(param.getKey()).append(":").append(URLEncoder.encode(value.toString(), StandardCharsets.UTF_8.name()));
-                    } catch (UnsupportedEncodingException e) {
-                        // impossible
-                    }
+                    sb.append(",").append(param.getKey()).append(":")
+                            .append(URLEncodeUtils.encodeUtf8(value.toString()));
                 }
             }
         }

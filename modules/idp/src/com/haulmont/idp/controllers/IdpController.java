@@ -18,6 +18,7 @@ package com.haulmont.idp.controllers;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
+import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
@@ -40,10 +41,7 @@ import javax.inject.Inject;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -130,7 +128,7 @@ public class IdpController {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
 
-        return "redirect:login.html?sp=" + encodeUrlParameter(serviceProviderUrl);
+        return "redirect:login.html?sp=" + URLEncodeUtils.encodeUtf8(serviceProviderUrl);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
@@ -168,7 +166,7 @@ public class IdpController {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
 
-        return "redirect:login.html?sp=" + encodeUrlParameter(serviceProviderUrl);
+        return "redirect:login.html?sp=" + URLEncodeUtils.encodeUtf8(serviceProviderUrl);
     }
 
     @RequestMapping(value = "/auth", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
@@ -269,15 +267,5 @@ public class IdpController {
         localesInfo.setLocales(locales);
 
         return localesInfo;
-    }
-
-    protected String encodeUrlParameter(String url) {
-        String encodedServiceProviderUrl;
-        try {
-            encodedServiceProviderUrl = URLEncoder.encode(url, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Unable to encode SP URL");
-        }
-        return encodedServiceProviderUrl;
     }
 }

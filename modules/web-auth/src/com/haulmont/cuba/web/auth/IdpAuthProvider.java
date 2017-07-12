@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.auth;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.app.IdpService;
@@ -43,10 +44,11 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.Arrays;
@@ -253,13 +255,8 @@ public class IdpAuthProvider implements CubaAuthProvider {
         if (!idpBaseURL.endsWith("/")) {
             idpBaseURL += "/";
         }
-        String idpRedirectUrl;
-        try {
-            idpRedirectUrl = idpBaseURL + "logout?sp=" +
-                    URLEncoder.encode(globalConfig.getWebAppUrl(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Unable to encode idp url", e);
-        }
+        String idpRedirectUrl = idpBaseURL + "logout?sp=" +
+                URLEncodeUtils.encodeUtf8(globalConfig.getWebAppUrl());
 
         return idpRedirectUrl;
     }
@@ -269,13 +266,8 @@ public class IdpAuthProvider implements CubaAuthProvider {
         if (!idpBaseURL.endsWith("/")) {
             idpBaseURL += "/";
         }
-        String idpRedirectUrl;
-        try {
-            idpRedirectUrl = idpBaseURL + "?sp=" +
-                    URLEncoder.encode(globalConfig.getWebAppUrl(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Unable to encode idp url", e);
-        }
+        String idpRedirectUrl = idpBaseURL + "?sp=" +
+                URLEncodeUtils.encodeUtf8(globalConfig.getWebAppUrl());
 
         return idpRedirectUrl;
     }

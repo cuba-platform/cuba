@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.export;
 
+import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
@@ -36,7 +37,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLEncoder;
 
 /**
  * Data provider for File on name and path
@@ -74,7 +74,7 @@ public class SimpleFileDataProvider implements ExportDataProvider {
         while (true) {
             String url = selectedUrl + fileDownloadContext +
                     "?s=" + userSessionSource.getUserSession().getId() +
-                    "&p=" + encodeUTF8(filePath);
+                    "&p=" + URLEncodeUtils.encodeUtf8(filePath);
 
             HttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager();
             HttpClient httpClient = HttpClientBuilder.create()
@@ -120,13 +120,5 @@ public class SimpleFileDataProvider implements ExportDataProvider {
         if (url != null)
             log.debug("Trying next URL");
         return url;
-    }
-
-    protected String encodeUTF8(String str) {
-        try {
-            return URLEncoder.encode(str, "UTF8");
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Encode string from URL param failed", e);
-        }
     }
 }

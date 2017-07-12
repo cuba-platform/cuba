@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.sys.dbupdate;
 
+import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.sys.ServletContextHolder;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -29,7 +30,6 @@ import org.springframework.web.context.support.ServletContextResourcePatternReso
 import javax.annotation.Nullable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -113,7 +113,7 @@ public class ScriptScanner {
             List<String> modules = Arrays.stream(resources)
                     .map(resource -> {
                         try {
-                            String decodedUrl = URLDecoder.decode(resource.getURL().toString(), "UTF-8");
+                            String decodedUrl = URLEncodeUtils.decodeUtf8(resource.getURL().toString());
                             String resourcePath = decodedUrl.replaceFirst(".+?:", "");
                             Matcher matcher = Pattern.compile(".*" + Pattern.quote(dbDirPath) + "/?(.+?)/.*").matcher(resourcePath);
                             return matcher.find() ? matcher.group(1) : null;

@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.controllers;
 
+import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileLoader;
@@ -43,9 +44,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 /**
@@ -93,14 +91,7 @@ public class FileDownloadController {
                 return null;
             }
 
-            String fileName;
-            try {
-                fileName = URLEncoder.encode(fd.getName(), StandardCharsets.UTF_8.name());
-            } catch (UnsupportedEncodingException e) {
-                log.error(e.toString());
-                error(response);
-                return null;
-            }
+            String fileName = URLEncodeUtils.encodeUtf8(fd.getName());
 
             response.setHeader(HttpHeaders.CACHE_CONTROL, "no-cache");
             response.setDateHeader(HttpHeaders.EXPIRES, 0);

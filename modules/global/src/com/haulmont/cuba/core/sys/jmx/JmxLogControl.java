@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.sys.jmx;
 
 import ch.qos.logback.classic.Level;
+import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
@@ -28,13 +29,10 @@ import com.haulmont.cuba.core.sys.jmx.exception.UnrecognizedLogLevelException;
 import com.haulmont.cuba.core.sys.jmx.exception.UnrecognizedLogThresholdException;
 import com.haulmont.cuba.core.sys.logging.LogControlException;
 import com.haulmont.cuba.core.sys.logging.LoggingHelper;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,12 +61,7 @@ public class JmxLogControl implements JmxLogControlMBean {
         Configuration configuration = AppBeans.get(Configuration.NAME);
         GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
 
-        String encodedFileName;
-        try {
-            encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        String encodedFileName = URLEncodeUtils.encodeUtf8(fileName);
 
         return globalConfig.getDispatcherBaseUrl() + "/log/" + encodedFileName;
     }

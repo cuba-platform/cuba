@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.restapi;
 
+import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
@@ -51,9 +52,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 /**
@@ -108,14 +106,7 @@ public class RestFileDownloadController {
                 return null;
             }
 
-            String fileName;
-            try {
-                fileName = URLEncoder.encode(fd.getName(), StandardCharsets.UTF_8.name());
-            } catch (UnsupportedEncodingException e) {
-                log.error(e.toString());
-                error(response);
-                return null;
-            }
+            String fileName = URLEncodeUtils.encodeUtf8(fd.getName());
 
             response.setHeader("Cache-Control", "no-cache");
             response.setHeader("Pragma", "no-cache");

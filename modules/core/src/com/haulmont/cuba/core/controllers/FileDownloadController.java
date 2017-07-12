@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.controllers;
 
+import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.FileDescriptor;
@@ -41,7 +42,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLDecoder;
 import java.util.UUID;
 
 /**
@@ -52,7 +52,7 @@ import java.util.UUID;
 @Controller
 public class FileDownloadController {
 
-    private static Logger log = LoggerFactory.getLogger(FileDownloadController.class);
+    private final Logger log = LoggerFactory.getLogger(FileDownloadController.class);
 
     @Inject
     private UserSessionManager userSessionManager;
@@ -122,7 +122,7 @@ public class FileDownloadController {
         return session;
     }
 
-    private FileDescriptor getFileDescriptor(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected FileDescriptor getFileDescriptor(HttpServletRequest request, HttpServletResponse response) throws IOException {
         UUID fileId;
         try {
             fileId = UUID.fromString(request.getParameter("f"));
@@ -137,9 +137,8 @@ public class FileDownloadController {
         return fileDescriptor;
     }
 
-
     public File getFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String filePath = decodeUTF8(request.getParameter("p"));
+        String filePath = URLEncodeUtils.decodeUtf8(request.getParameter("p"));
         if (filePath != null) {
             if (isPermittedDirectory(filePath)) {
                 return new File(filePath);
@@ -166,14 +165,5 @@ public class FileDownloadController {
             }
         }
         return false;
-    }
-
-    protected String decodeUTF8(String str) {
-        try {
-            return URLDecoder.decode(str, "UTF8");
-        } catch (Exception e) {
-            log.error("Decode string from URL param failed", e);
-            return null;
-        }
     }
 }
