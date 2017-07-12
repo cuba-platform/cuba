@@ -25,13 +25,17 @@ import com.haulmont.cuba.gui.components.Image;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.web.gui.components.WebImage;
 import com.vaadin.server.StreamResource;
+import org.apache.commons.lang.StringUtils;
 
-public class WebFileDescriptorImageResource extends WebImage.WebAbstractImageResource implements WebImageResource, Image.FileDescriptorImageResource {
+public class WebFileDescriptorImageResource extends WebImage.WebAbstractStreamSettingsImageResource
+        implements WebImageResource, Image.FileDescriptorImageResource {
 
     protected static final String FILE_STORAGE_EXCEPTION_MESSAGE = "Can't create FileDescriptorImageResource. " +
             "An error occurred while finding file in file storage";
 
     protected FileDescriptor fileDescriptor;
+
+    protected String mimeType;
 
     @Override
     public Image.FileDescriptorImageResource setFileDescriptor(FileDescriptor fileDescriptor) {
@@ -52,6 +56,8 @@ public class WebFileDescriptorImageResource extends WebImage.WebAbstractImageRes
 
     @Override
     protected void createResource() {
+        String name = StringUtils.isNotEmpty(fileName) ? fileName : fileDescriptor.getName();
+
         resource = new StreamResource(() -> {
             try {
                 return new ByteArrayDataProvider(AppBeans.get(FileStorageService.class).loadFile(fileDescriptor))
@@ -59,6 +65,25 @@ public class WebFileDescriptorImageResource extends WebImage.WebAbstractImageRes
             } catch (FileStorageException e) {
                 throw new RuntimeException(FILE_STORAGE_EXCEPTION_MESSAGE, e);
             }
-        }, fileDescriptor.getName());
+        }, name);
+
+        StreamResource streamResource = (StreamResource) this.resource;
+
+        streamResource.setCacheTime(cacheTime);
+        streamResource.setBufferSize(bufferSize);
+    }
+
+    @Override
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+
+        if (resource != null) {
+            ((StreamResource) resource).setMIMEType(mimeType);
+        }
+    }
+
+    @Override
+    public String getMimeType() {
+        return mimeType;
     }
 }

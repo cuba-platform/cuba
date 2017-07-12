@@ -25,9 +25,11 @@ import com.vaadin.server.ExternalResource;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class WebRelativePathImageResource extends WebImage.WebAbstractImageResource implements WebImageResource, Image.RelativePathImageResource {
+public class WebRelativePathImageResource extends WebImage.WebAbstractStreamSettingsImageResource implements WebImageResource, Image.RelativePathImageResource {
 
     protected String path;
+
+    protected String mimeType;
 
     @Override
     public Image.RelativePathImageResource setPath(String path) {
@@ -54,5 +56,19 @@ public class WebRelativePathImageResource extends WebImage.WebAbstractImageResou
         } catch (MalformedURLException e) {
             throw new RuntimeException("Can't create RelativePathImageResource", e);
         }
+    }
+
+    @Override
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+
+        if (resource != null) {
+            ((ExternalResource) resource).setMIMEType(mimeType);
+        }
+    }
+
+    @Override
+    public String getMimeType() {
+        return mimeType;
     }
 }

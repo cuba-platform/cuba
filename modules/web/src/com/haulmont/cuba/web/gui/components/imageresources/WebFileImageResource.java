@@ -23,7 +23,8 @@ import com.vaadin.server.FileResource;
 
 import java.io.File;
 
-public class WebFileImageResource extends WebImage.WebAbstractImageResource implements WebImageResource, Image.FileImageResource {
+public class WebFileImageResource extends WebImage.WebAbstractStreamSettingsImageResource
+        implements WebImageResource, Image.FileImageResource {
 
     protected File file;
 
@@ -47,5 +48,10 @@ public class WebFileImageResource extends WebImage.WebAbstractImageResource impl
     @Override
     protected void createResource() {
         resource = new FileResource(file);
+
+        FileResource fileResource = (FileResource) this.resource;
+
+        fileResource.setCacheTime(cacheTime);
+        fileResource.setBufferSize(bufferSize);
     }
 }

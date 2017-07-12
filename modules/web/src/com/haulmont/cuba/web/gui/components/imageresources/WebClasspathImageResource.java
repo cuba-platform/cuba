@@ -23,10 +23,14 @@ import com.haulmont.cuba.gui.components.Image;
 import com.haulmont.cuba.web.gui.components.WebImage;
 import com.vaadin.server.StreamResource;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
-public class WebClasspathImageResource extends WebImage.WebAbstractImageResource implements WebImageResource, Image.ClasspathImageResource {
+public class WebClasspathImageResource extends WebImage.WebAbstractStreamSettingsImageResource
+        implements WebImageResource, Image.ClasspathImageResource {
 
     protected String path;
+
+    protected String mimeType;
 
     @Override
     public Image.ClasspathImageResource setPath(String path) {
@@ -47,7 +51,29 @@ public class WebClasspathImageResource extends WebImage.WebAbstractImageResource
 
     @Override
     protected void createResource() {
+        String name = StringUtils.isNotEmpty(fileName) ? fileName : FilenameUtils.getName(path);
+
         resource = new StreamResource(() ->
-                AppBeans.get(Resources.class).getResourceAsStream(path), FilenameUtils.getName(path));
+                AppBeans.get(Resources.class).getResourceAsStream(path), name);
+
+        StreamResource streamResource = (StreamResource) this.resource;
+
+        streamResource.setMIMEType(mimeType);
+        streamResource.setCacheTime(cacheTime);
+        streamResource.setBufferSize(bufferSize);
+    }
+
+    @Override
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+
+        if (resource != null) {
+            ((StreamResource) resource).setMIMEType(mimeType);
+        }
+    }
+
+    @Override
+    public String getMimeType() {
+        return mimeType;
     }
 }

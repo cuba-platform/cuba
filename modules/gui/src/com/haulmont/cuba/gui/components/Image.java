@@ -55,7 +55,7 @@ public interface Image extends Component, Component.HasCaption {
     <T extends ImageResource> T setSource(Class<T> type);
 
     /**
-     * Set datasource and its property.
+     * Sets datasource and its property.
      */
     void setDatasource(Datasource datasource, String property);
 
@@ -96,9 +96,73 @@ public interface Image extends Component, Component.HasCaption {
     }
 
     /**
+     * Marker interface to indicate that the implementing class supports MIME type setting.
+     */
+    interface HasMimeType {
+        /**
+         * Sets the mime type of the resource.
+         *
+         * @param mimeType the MIME type to be set
+         */
+        void setMimeType(String mimeType);
+
+        /**
+         * @return resource MIME type
+         */
+        String getMimeType();
+    }
+
+    /**
+     * Marker interface to indicate that the implementing class has stream settings (such as cache time, buffer size
+     * or file name).
+     */
+    interface HasStreamSettings {
+        /**
+         * Sets the length of cache expiration time.
+         *
+         * <p>
+         * This gives the adapter the possibility cache streams sent to the client. The caching may be made in adapter
+         * or at the client if the client supports caching. Zero or negative value disables the caching of this stream.
+         * </p>
+         *
+         * @param cacheTime the cache time in milliseconds
+         */
+        void setCacheTime(long cacheTime);
+
+        /**
+         * @return resource cache time
+         */
+        long getCacheTime();
+
+        /**
+         * Sets the size of the download buffer used for this resource.
+         *
+         * @param bufferSize the size of the buffer in bytes
+         */
+        void setBufferSize(int bufferSize);
+
+        /**
+         * @return buffer size
+         */
+        int getBufferSize();
+
+        /**
+         * Sets the filename.
+         *
+         * @param fileName the filename to set
+         */
+        void setFileName(String fileName);
+
+        /**
+         * @return resource file name
+         */
+        String getFileName();
+    }
+
+    /**
      * A resource which represents an image which can be loaded from the given <code>URL</code>.
      */
-    interface UrlImageResource extends ImageResource {
+    interface UrlImageResource extends ImageResource, HasMimeType {
         UrlImageResource setUrl(URL url);
 
         URL getUrl();
@@ -107,14 +171,14 @@ public interface Image extends Component, Component.HasCaption {
     /**
      * A resource that represents an image stored in the file system as the given <code>File</code>.
      */
-    interface FileImageResource extends ImageResource {
+    interface FileImageResource extends ImageResource, HasStreamSettings {
         FileImageResource setFile(File file);
 
         File getFile();
     }
 
     /**
-     * A resource that represents a theme image, e.g., <code>VAADIN/themes/yourtheme/some/path/image.png</code>
+     * A resource that represents a theme image, e.g., <code>VAADIN/themes/yourtheme/some/path/image.png</code>.
      */
     interface ThemeImageResource extends ImageResource {
         /**
@@ -130,7 +194,7 @@ public interface Image extends Component, Component.HasCaption {
      * A resource that represents an image, which can be obtained from the <code>FileStorage</code> using the given
      * <code>FileDescriptor</code>.
      */
-    interface FileDescriptorImageResource extends ImageResource {
+    interface FileDescriptorImageResource extends ImageResource, HasMimeType, HasStreamSettings {
         FileDescriptorImageResource setFileDescriptor(FileDescriptor fileDescriptor);
 
         FileDescriptor getFileDescriptor();
@@ -138,9 +202,9 @@ public interface Image extends Component, Component.HasCaption {
 
     /**
      * A resource that represents an image stored in the directory of your application, e.g.:
-     * <code>${catalina.base}/webapps/appName/static/image.png</code>
+     * <code>${catalina.base}/webapps/appName/static/image.png</code>.
      */
-    interface RelativePathImageResource extends ImageResource {
+    interface RelativePathImageResource extends ImageResource, HasMimeType {
         /**
          * @param path path to the image, e.g. "static/image.png"
          * @return current RelativePathImageResource instance
@@ -152,8 +216,13 @@ public interface Image extends Component, Component.HasCaption {
 
     /**
      * A resource that represents an image located in classpath with the given <code>path</code>.
+     * <p>
+     * For obtaining resources the {@link com.haulmont.cuba.core.global.Resources} infrastructure interface is using.
+     * <p>
+     * For example if your image is located in the web module and has the following path: "com/company/app/web/images/image.png",
+     * ClassPathImageResource's path should be: "/com/company/app/web/images/image.png".
      */
-    interface ClasspathImageResource extends ImageResource {
+    interface ClasspathImageResource extends ImageResource, HasMimeType, HasStreamSettings {
         ClasspathImageResource setPath(String path);
 
         String getPath();
@@ -162,7 +231,7 @@ public interface Image extends Component, Component.HasCaption {
     /**
      * A resource that is a streaming representation of an image.
      */
-    interface StreamImageResource extends ImageResource {
+    interface StreamImageResource extends ImageResource, HasMimeType, HasStreamSettings {
         StreamImageResource setStreamSupplier(Supplier<InputStream> streamSupplier);
 
         Supplier<InputStream> getStreamSupplier();
@@ -215,7 +284,7 @@ public interface Image extends Component, Component.HasCaption {
     }
 
     /**
-     * Defines image scale mode
+     * Defines image scale mode.
      */
     enum ScaleMode {
         /**
@@ -229,7 +298,7 @@ public interface Image extends Component, Component.HasCaption {
         CONTAIN,
         /**
          * The content changes size by comparing the difference between NONE and CONTAIN, in order to find the smallest
-         * concrete size of the object
+         * concrete size of the object.
          */
         SCALE_DOWN,
         /**

@@ -31,7 +31,9 @@ import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.web.gui.components.imageresources.*;
 import com.haulmont.cuba.web.toolkit.ui.CubaImage;
+import com.vaadin.server.DownloadStream;
 import com.vaadin.server.Resource;
+import com.vaadin.server.StreamResource;
 import com.vaadin.shared.util.SharedUtil;
 
 import java.io.InputStream;
@@ -288,5 +290,53 @@ public class WebImage extends WebAbstractComponent<CubaImage> implements Image {
         }
 
         protected abstract void createResource();
+    }
+
+    public abstract static class WebAbstractStreamSettingsImageResource extends WebAbstractImageResource implements HasStreamSettings {
+        protected long cacheTime = DownloadStream.DEFAULT_CACHETIME;
+        protected int bufferSize;
+        protected String fileName;
+
+        @Override
+        public void setCacheTime(long cacheTime) {
+            this.cacheTime = cacheTime;
+
+            if (resource != null) {
+                ((StreamResource) resource).setCacheTime(cacheTime);
+            }
+        }
+
+        @Override
+        public long getCacheTime() {
+            return cacheTime;
+        }
+
+        @Override
+        public void setBufferSize(int bufferSize) {
+            this.bufferSize = bufferSize;
+
+            if (resource != null) {
+                ((StreamResource) resource).setBufferSize(bufferSize);
+            }
+        }
+
+        @Override
+        public int getBufferSize() {
+            return bufferSize;
+        }
+
+        @Override
+        public void setFileName(String fileName) {
+            this.fileName = fileName;
+
+            if (resource != null) {
+                ((StreamResource) resource).setFilename(fileName);
+            }
+        }
+
+        @Override
+        public String getFileName() {
+            return fileName;
+        }
     }
 }

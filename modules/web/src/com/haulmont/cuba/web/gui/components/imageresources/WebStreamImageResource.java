@@ -21,13 +21,16 @@ import com.haulmont.cuba.gui.components.Image;
 import com.haulmont.cuba.web.gui.components.WebImage;
 import com.vaadin.server.StreamResource;
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.InputStream;
 import java.util.function.Supplier;
 
-public class WebStreamImageResource extends WebImage.WebAbstractImageResource implements WebImageResource, Image.StreamImageResource {
+public class WebStreamImageResource extends WebImage.WebAbstractStreamSettingsImageResource implements WebImageResource, Image.StreamImageResource {
 
     protected Supplier<InputStream> streamSupplier;
+
+    protected String mimeType;
 
     @Override
     public Image.StreamImageResource setStreamSupplier(Supplier<InputStream> streamSupplier) {
@@ -48,7 +51,29 @@ public class WebStreamImageResource extends WebImage.WebAbstractImageResource im
 
     @Override
     protected void createResource() {
+        String name = StringUtils.isNotEmpty(fileName) ? fileName : RandomStringUtils.random(16, true, true);
+
         resource = new StreamResource(() ->
-                streamSupplier.get(), RandomStringUtils.random(16, true, true));
+                streamSupplier.get(), name);
+
+        StreamResource streamResource = (StreamResource) this.resource;
+
+        streamResource.setCacheTime(cacheTime);
+        streamResource.setBufferSize(bufferSize);
+        streamResource.setMIMEType(mimeType);
+    }
+
+    @Override
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+
+        if (resource != null) {
+            ((StreamResource) resource).setMIMEType(mimeType);
+        }
+    }
+
+    @Override
+    public String getMimeType() {
+        return mimeType;
     }
 }

@@ -27,6 +27,8 @@ public class WebUrlImageResource extends WebImage.WebAbstractImageResource imple
 
     protected URL url;
 
+    protected String mimeType;
+
     @Override
     public Image.UrlImageResource setUrl(URL url) {
         Preconditions.checkNotNullArgument(url);
@@ -47,5 +49,21 @@ public class WebUrlImageResource extends WebImage.WebAbstractImageResource imple
     @Override
     protected void createResource() {
         resource = new ExternalResource(url);
+
+        ((ExternalResource) resource).setMIMEType(mimeType);
+    }
+
+    @Override
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+
+        if (resource != null) {
+            ((ExternalResource) resource).setMIMEType(mimeType);
+        }
+    }
+
+    @Override
+    public String getMimeType() {
+        return mimeType;
     }
 }
