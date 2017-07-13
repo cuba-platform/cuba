@@ -88,7 +88,13 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
             throw new GuiDevelopmentException("No path provided for the RelativePathImageResource", context.getFullFrameId());
         }
 
-        resultComponent.setSource(Image.RelativePathImageResource.class).setPath(path);
+        Image.RelativePathImageResource resource = resultComponent.createResource(Image.RelativePathImageResource.class);
+
+        resource.setPath(path);
+
+        loadMimeType(resource, relativePath);
+
+        resultComponent.setSource(resource);
 
         return true;
     }
@@ -106,6 +112,9 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
         Image.UrlImageResource resource = resultComponent.createResource(Image.UrlImageResource.class);
         try {
             resource.setUrl(new URL(url));
+
+            loadMimeType(resource, urlResource);
+
             resultComponent.setSource(resource);
         } catch (MalformedURLException e) {
             String msg = String.format("An error occurred while creating UrlImageResource with the given url: %s", url);
@@ -123,7 +132,11 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
             throw new GuiDevelopmentException("No path provided for the ClasspathImageResource", context.getFullFrameId());
         }
 
-        resultComponent.setSource(Image.ClasspathImageResource.class).setPath(classpathPath);
+        Image.ClasspathImageResource resource = resultComponent.createResource(Image.ClasspathImageResource.class);
+
+        resource.setPath(classpathPath);
+
+        loadMimeType(resource, classpathResource);
 
         return true;
     }
@@ -181,6 +194,13 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
             }
 
             component.setDatasource(ds, property);
+        }
+    }
+
+    protected void loadMimeType(Image.HasMimeType resource, Element resourceElement) {
+        String mimeType = resourceElement.attributeValue("mimeType");
+        if (StringUtils.isNotEmpty(mimeType)) {
+            resource.setMimeType(mimeType);
         }
     }
 }

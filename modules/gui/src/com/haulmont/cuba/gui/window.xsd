@@ -1508,6 +1508,24 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <xs:simpleType name="mimeType">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="image/bmp"/>
+                    <xs:enumeration value="image/gif"/>
+                    <xs:enumeration value="image/jpeg"/>
+                    <xs:enumeration value="image/png"/>
+                    <xs:enumeration value="image/svg+xml"/>
+                    <xs:enumeration value="image/tiff"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
     <xs:complexType name="fileImageResource">
         <xs:attribute name="path" type="xs:string"/>
     </xs:complexType>
@@ -1518,14 +1536,17 @@
 
     <xs:complexType name="classpathImageResource">
         <xs:attribute name="path" type="xs:string"/>
+        <xs:attribute name="mimeType" type="mimeType"/>
     </xs:complexType>
 
     <xs:complexType name="urlImageResource">
         <xs:attribute name="url" type="xs:string"/>
+        <xs:attribute name="mimeType" type="mimeType"/>
     </xs:complexType>
 
     <xs:complexType name="relativePathImageResource">
         <xs:attribute name="path" type="xs:string"/>
+        <xs:attribute name="mimeType" type="mimeType"/>
     </xs:complexType>
 
     <xs:simpleType name="scaleMode">
