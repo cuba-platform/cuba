@@ -122,6 +122,9 @@ public class FilterEditor extends AbstractWindow {
     @WindowParam(name = "hideDynamicAttributes")
     protected Boolean hideDynamicAttributes;
 
+    @WindowParam(name = "hideCustomConditions")
+    protected Boolean hideCustomConditions;
+
     protected final List<String> componentsToHideInShortForm = Arrays.asList("hiddenLabel", "hidden",
             "requiredLabel", "required", "widthLabel", "width", "captionLabel", "caption");
 
@@ -240,7 +243,7 @@ public class FilterEditor extends AbstractWindow {
             }
         });
 
-        addConditionHelper = new AddConditionHelper(filter, BooleanUtils.isTrue(hideDynamicAttributes), condition -> {
+        addConditionHelper = new AddConditionHelper(filter, BooleanUtils.isTrue(hideDynamicAttributes), BooleanUtils.isTrue(hideCustomConditions), condition -> {
             AbstractCondition item = conditionsDs.getItem();
             if (item != null && item instanceof GroupCondition) {
                 Node<AbstractCondition> newNode = new Node<>(condition);

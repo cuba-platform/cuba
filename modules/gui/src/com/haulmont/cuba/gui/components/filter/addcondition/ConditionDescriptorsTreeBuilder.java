@@ -63,13 +63,14 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
     protected List<String> excludedProperties;
     protected final String storeName;
     protected final boolean hideDynamicAttributes;
+    protected final boolean hideCustomConditions;
 
     /**
      * @param filter filter
      * @param hierarchyDepth max level of properties hierarchy
      */
     public ConditionDescriptorsTreeBuilder(Filter filter, int hierarchyDepth) {
-        this(filter, hierarchyDepth, false);
+        this(filter, hierarchyDepth, false, false);
     }
 
     /**
@@ -77,10 +78,12 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
      * @param hierarchyDepth max level of properties hierarchy
      * @param hideDynamicAttributes hide dynamic attributes conditions from wizard
      */
-    public ConditionDescriptorsTreeBuilder(Filter filter, int hierarchyDepth, boolean hideDynamicAttributes) {
+    public ConditionDescriptorsTreeBuilder(Filter filter, int hierarchyDepth, boolean hideDynamicAttributes,
+                                           boolean hideCustomConditions) {
         this.filter = filter;
         this.hierarchyDepth = hierarchyDepth;
         this.hideDynamicAttributes = hideDynamicAttributes;
+        this.hideCustomConditions = hideCustomConditions;
         security = AppBeans.get(Security.class);
         metadataTools = AppBeans.get(MetadataTools.NAME);
         dynamicAttributes = AppBeans.get(DynamicAttributes.class);
@@ -169,7 +172,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         if (!customDescriptors.isEmpty())
             rootNodes.add(customHeaderNode);
 
-        if (security.isSpecificPermitted(CUSTOM_CONDITIONS_PERMISSION)) {
+        if (!hideCustomConditions && security.isSpecificPermitted(CUSTOM_CONDITIONS_PERMISSION)) {
             rootNodes.add(new Node<>(new CustomConditionCreator(filterComponentName, datasource)));
         }
 

@@ -306,6 +306,7 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
         params.put("conditions", conditionsTree);
         params.put("useShortConditionForm", true);
         params.put("hideDynamicAttributes", constraint.getCheckType() != ConstraintCheckType.DATABASE);
+        params.put("hideCustomConditions", constraint.getCheckType() != ConstraintCheckType.DATABASE);
 
         FilterEditor filterEditor = (FilterEditor) windowManagerProvider.get().openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
         filterEditor.addCloseListener(actionId -> {

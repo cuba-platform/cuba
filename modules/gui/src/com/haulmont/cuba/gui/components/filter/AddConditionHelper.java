@@ -56,15 +56,18 @@ public class AddConditionHelper {
     protected Handler handler;
     protected Tree<AbstractConditionDescriptor> descriptorsTree;
     protected boolean hideDynamicAttributes;
+    protected boolean hideCustomConditions;
 
     public AddConditionHelper(Filter filter, Handler handler) {
-        this(filter, false, handler);
+        this(filter, false, false, handler);
     }
 
-    public AddConditionHelper(Filter filter, boolean hideDynamicAttributes, Handler handler) {
+    public AddConditionHelper(Filter filter, boolean hideDynamicAttributes,
+                              boolean hideCustomConditions, Handler handler) {
         this.filter = filter;
         this.handler = handler;
         this.hideDynamicAttributes = hideDynamicAttributes;
+        this.hideCustomConditions = hideCustomConditions;
         windowManager = AppBeans.get(WindowManagerProvider.class).get();
         windowConfig = AppBeans.get(WindowConfig.class);
     }
@@ -83,7 +86,7 @@ public class AddConditionHelper {
         Map<String, Object> params = new HashMap<>();
         if (descriptorsTree == null) {
             ConditionDescriptorsTreeBuilderAPI descriptorsTreeBuilder = AppBeans.getPrototype(ConditionDescriptorsTreeBuilderAPI.NAME,
-                    filter, PROPERTIES_HIERARCHY_DEPTH, hideDynamicAttributes);
+                    filter, PROPERTIES_HIERARCHY_DEPTH, hideDynamicAttributes, hideCustomConditions);
             descriptorsTree = descriptorsTreeBuilder.build();
         }
         params.put("descriptorsTree", descriptorsTree);
