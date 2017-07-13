@@ -17,10 +17,10 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.config.type.TypeFactory;
+import org.apache.commons.lang.LocaleUtils;
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.LinkedHashMap;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class AvailableLocalesFactory extends TypeFactory {
 
@@ -29,19 +29,11 @@ public class AvailableLocalesFactory extends TypeFactory {
         if (string == null)
             return null;
 
-        String[] items = string.split(";");
-        Map<String, Locale> map = new LinkedHashMap<>(items.length);
-        for (String item : items) {
-            String[] parts = item.split("\\|");
-            String[] locParts = parts[1].split("_");
-            Locale loc;
-            if (locParts.length == 1)
-                loc = new Locale(parts[1]);
-            else
-                loc = new Locale(locParts[0], locParts[1]);
-
-            map.put(parts[0], loc);
-        }
-        return map;
+        return Arrays.stream(string.split(";"))
+                .map(item -> item.split("\\|"))
+                .collect(Collectors.toMap(
+                        parts -> parts[0],
+                        parts -> LocaleUtils.toLocale(parts[1])
+                ));
     }
 }
