@@ -875,6 +875,14 @@ public class QueryTransformerAstBasedTest {
         assertEquals(
                 "select u from sec$User u where lower ( u.name) = :name",
                 res);
+
+        transformer = new QueryTransformerAstBased(model, "select u from sec$User u where concat(u.name, ' ', u.login) = :name");
+
+        transformer.handleCaseInsensitiveParam("name");
+        res = transformer.getResult();
+        assertEquals(
+                "select u from sec$User u where concat( lower ( u.name), ' ', lower ( u.login)) = :name",
+                res);
     }
 
     @Test

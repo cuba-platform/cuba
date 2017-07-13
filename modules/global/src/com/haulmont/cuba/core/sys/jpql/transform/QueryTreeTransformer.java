@@ -223,14 +223,27 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         List<SimpleConditionNode> conditionNodesWithParameter = findConditionsForParameter(paramName);
 
         for (SimpleConditionNode simpleConditionNode : conditionNodesWithParameter) {
-            PathNode pathNode = (PathNode) simpleConditionNode.getFirstChildWithType(JPA2Lexer.T_SELECTED_FIELD);
-            CommonTree loweredPathNode = new CommonTree();
-            loweredPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.LOWER, "lower")));
-            loweredPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.LPAREN, "(")));
-            loweredPathNode.addChild(pathNode);
-            loweredPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.RPAREN, ")")));
-
-            simpleConditionNode.replaceChildren(0, 0, loweredPathNode);
+            List<PathNode> toProcess = new ArrayList<>();
+            for (int idx = 0; idx < simpleConditionNode.getChildCount(); idx++) {
+                Tree child = simpleConditionNode.getChild(idx);
+                if (child.getType() == JPA2Lexer.T_SELECTED_FIELD) {
+                    toProcess.add((PathNode) child);
+                }
+            }
+            for (PathNode pathNode : toProcess) {
+                for (int idx = 0; idx < simpleConditionNode.getChildCount(); idx++) {
+                    Tree child = simpleConditionNode.getChild(idx);
+                    if (child == pathNode) {
+                        CommonTree loweredPathNode = new CommonTree();
+                        loweredPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.LOWER, "lower")));
+                        loweredPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.LPAREN, "(")));
+                        loweredPathNode.addChild(pathNode);
+                        loweredPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.RPAREN, ")")));
+                        simpleConditionNode.replaceChildren(idx, idx, loweredPathNode);
+                        break;
+                    }
+                }
+            }
         }
         tree.freshenParentAndChildIndexes();
     }
