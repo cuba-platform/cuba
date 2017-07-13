@@ -18,7 +18,10 @@ package com.haulmont.cuba.web.toolkit.ui.client.grid;
 
 import com.haulmont.cuba.web.toolkit.ui.CubaGrid;
 import com.vaadin.client.connectors.GridConnector;
+import com.vaadin.client.widgets.Grid;
 import com.vaadin.shared.ui.Connect;
+import com.vaadin.shared.ui.grid.GridColumnState;
+import elemental.json.JsonObject;
 
 @Connect(CubaGrid.class)
 public class CubaGridConnector extends GridConnector {
@@ -26,5 +29,17 @@ public class CubaGridConnector extends GridConnector {
     @Override
     public CubaGridWidget getWidget() {
         return (CubaGridWidget) super.getWidget();
+    }
+
+    @Override
+    public CubaGridState getState() {
+        return (CubaGridState) super.getState();
+    }
+
+    @Override
+    protected void preUpdateColumnFromState(Grid.Column<?, JsonObject> column, GridColumnState columnState) {
+        if (getState().columnIds != null && getState().columnIds.containsKey(columnState.id)) {
+            getWidget().addColumnId(column, getState().columnIds.get(columnState.id));
+        }
     }
 }

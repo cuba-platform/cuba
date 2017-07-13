@@ -605,6 +605,11 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         gridColumn.setResizable(column.isResizable());
         gridColumn.setEditable(column.isEditable());
 
+        AppUI current = AppUI.getCurrent();
+        if (current != null && current.isTestMode()) {
+            addColumnId(gridColumn, column);
+        }
+
         // workaround to prevent exception from GridColumn while Grid is using default IndexedContainer
         if (getContainerDataSource() instanceof SortableDataGridIndexedCollectionDsWrapper) {
             gridColumn.setSortable(column.isSortable() && column.getOwner().isSortable());
@@ -628,6 +633,14 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
                 setDefaultRenderer(gridColumn, metaProperty, column.getType());
             }
         }
+    }
+
+    protected void addColumnId(Grid.Column gridColumn, Column column) {
+        component.addColumnId(gridColumn.getState().id, column.getId());
+    }
+
+    protected void removeColumnId(Grid.Column gridColumn) {
+        component.removeColumnId(gridColumn.getState().id);
     }
 
     protected void setDefaultRenderer(Grid.Column gridColumn, @Nullable MetaProperty metaProperty, Class type) {
@@ -3101,6 +3114,11 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         }
 
         public void setGridColumn(Grid.Column gridColumn) {
+            AppUI current = AppUI.getCurrent();
+            if (gridColumn == null && current != null && current.isTestMode()) {
+                owner.removeColumnId(this.gridColumn);
+            }
+
             this.gridColumn = gridColumn;
         }
 

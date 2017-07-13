@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.web.toolkit.ui.client.grid.CubaGridState;
 import com.vaadin.data.Container;
 import com.vaadin.data.Validatable;
 import com.vaadin.data.Validator;
@@ -81,6 +82,38 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
 
     public void setCollectionDatasource(CollectionDatasource collectionDatasource) {
         this.collectionDatasource = collectionDatasource;
+    }
+
+    @Override
+    protected CubaGridState getState() {
+        return (CubaGridState) super.getState();
+    }
+
+    @Override
+    protected CubaGridState getState(boolean markAsDirty) {
+        return (CubaGridState) super.getState(markAsDirty);
+    }
+
+    public Map<String, String> getColumnIds() {
+        return getState().columnIds;
+    }
+
+    public void setColumnIds(Map<String, String> ids) {
+        getState().columnIds = ids;
+    }
+
+    public void addColumnId(String column, String value) {
+        if (getState().columnIds == null) {
+            getState().columnIds = new HashMap<>();
+        }
+
+        getState().columnIds.put(column, value);
+    }
+
+    public void removeColumnId(String column) {
+        if (getState().columnIds != null) {
+            getState().columnIds.remove(column);
+        }
     }
 
     @Override
