@@ -214,12 +214,12 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
     protected void loadStreamSettings(Image.HasStreamSettings resource, Element resourceElement) {
         String cacheTime = resourceElement.attributeValue("cacheTime");
         if (StringUtils.isNotEmpty(cacheTime)) {
-            resource.setCacheTime(Long.valueOf(cacheTime));
+            resource.setCacheTime(Long.parseLong(cacheTime));
         }
 
         String bufferSize = resourceElement.attributeValue("bufferSize");
         if (StringUtils.isNotEmpty(bufferSize)) {
-            resource.setBufferSize(Integer.valueOf(bufferSize));
+            resource.setBufferSize(Integer.parseInt(bufferSize));
         }
     }
 }
