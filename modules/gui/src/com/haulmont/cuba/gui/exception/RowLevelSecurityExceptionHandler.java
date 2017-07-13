@@ -17,13 +17,12 @@
 package com.haulmont.cuba.gui.exception;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.RowLevelSecurityException;
+import com.haulmont.cuba.core.app.ConstraintLocalizationService;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
+import com.haulmont.cuba.security.entity.LocalizedConstraintMessage;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -31,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
+import java.util.Locale;
 
 @Component("cuba_RowLevelSecurityExceptionHandler")
 public class RowLevelSecurityExceptionHandler extends AbstractGenericExceptionHandler {
@@ -71,21 +71,39 @@ public class RowLevelSecurityExceptionHandler extends AbstractGenericExceptionHa
 
                     ConstraintOperationType operationType = exception.getOperationType();
                     if (operationType != null) {
-                        String operationId = operationType.getId();
-                        String customCaptionKey = String.format("rowLevelSecurity.caption.%s.%s", entityName, operationId);
-                        String customCaption = messages.getMainMessage(customCaptionKey);
-                        if (!customCaptionKey.equals(customCaption)) {
-                            userCaption = customCaption;
+                        ConstraintLocalizationService service = AppBeans.get(ConstraintLocalizationService.NAME);
+                        LocalizedConstraintMessage localizedMessage =
+                                service.findLocalizedConstraintMessage(entity, operationType);
+
+                        if (localizedMessage != null) {
+                            UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+                            Locale locale = userSessionSource.getLocale();
+
+                            String localeCode = messages.getTools().localeToString(locale);
+                            userCaption = localizedMessage.getLocalizedCaption(localeCode);
+                            userMessage = localizedMessage.getLocalizedMessage(localeCode);
                         }
 
-                        String customMessageKey = String.format("rowLevelSecurity.entityAndOperationMessage.%s.%s",
-                                entityName, operationId);
-                        String customMessage = messages.getMainMessage(customMessageKey);
-                        if (!customMessageKey.equals(customMessage)) {
-                            userMessage = customMessage;
-                        } else {
-                            userMessage = messages.formatMainMessage("rowLevelSecurity.entityAndOperationMessage",
-                                    messages.getMessage(operationType), entityCaption);
+                        String operationId = operationType.getId();
+                        if (StringUtils.isEmpty(userCaption)) {
+                            String customCaptionKey = String.format("rowLevelSecurity.caption.%s.%s",
+                                    entityName, operationId);
+                            String customCaption = messages.getMainMessage(customCaptionKey);
+                            if (!customCaptionKey.equals(customCaption)) {
+                                userCaption = customCaption;
+                            }
+                        }
+
+                        if (StringUtils.isEmpty(userMessage)) {
+                            String customMessageKey = String.format("rowLevelSecurity.entityAndOperationMessage.%s.%s",
+                                    entityName, operationId);
+                            String customMessage = messages.getMainMessage(customMessageKey);
+                            if (!customMessageKey.equals(customMessage)) {
+                                userMessage = customMessage;
+                            } else {
+                                userMessage = messages.formatMainMessage("rowLevelSecurity.entityAndOperationMessage",
+                                        messages.getMessage(operationType), entityCaption);
+                            }
                         }
                     } else {
                         String customCaptionKey = String.format("rowLevelSecurity.caption.%s", entityName);

@@ -1,0 +1,65 @@
+<!--
+  ~ Copyright (c) 2008-2017 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        caption="msg://editorCaption"
+        class="com.haulmont.cuba.gui.app.security.constraintloc.edit.ConstraintLocalizationEdit"
+        datasource="localizationDs"
+        messagesPack="com.haulmont.cuba.gui.app.security.constraintloc"
+        focusComponent="fieldGroup">
+
+    <dsContext>
+        <datasource id="localizationDs"
+                    class="com.haulmont.cuba.security.entity.LocalizedConstraintMessage"
+                    view="_local"/>
+    </dsContext>
+
+    <assign name="width" value="theme://cuba.gui.constraint-localization-edit.field.width"/>
+
+    <dialogMode forceDialog="true"
+                width="AUTO"/>
+
+    <layout spacing="true">
+        <fieldGroup id="fieldGroup"
+                    datasource="localizationDs">
+            <column width="${width}">
+                <field id="entityField">
+                    <textField id="entityName"
+                               caption="msg://com.haulmont.cuba.security.entity/LocalizedConstraintMessage.entityName"
+                               editable="false"/>
+                </field>
+                <field property="operationType"
+                       editable="false"/>
+                <field id="localesField">
+                    <lookupField id="localesSelect"
+                                 caption="msg://field.language.caption"
+                                 textInputAllowed="false"
+                                 nullOptionVisible="false"/>
+                </field>
+                <field id="captionField">
+                    <textField id="caption"
+                               caption="msg://field.caption.caption"/>
+                </field>
+                <field id="messageField">
+                    <textArea id="message"
+                              caption="msg://field.message.caption"/>
+                </field>
+            </column>
+        </fieldGroup>
+        <frame id="windowActions"
+               screen="editWindowActions"/>
+    </layout>
+</window>

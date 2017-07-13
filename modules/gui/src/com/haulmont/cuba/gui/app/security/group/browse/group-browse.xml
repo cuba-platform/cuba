@@ -123,12 +123,14 @@
                                 <button action="constraintsTable.activate" caption="msg://activate"/>
                                 <button action="constraintsTable.edit"/>
                                 <button action="constraintsTable.remove"/>
+                                <button action="constraintsTable.localizationEdit"/>
                             </buttonsPanel>
                             <actions>
                                 <action id="create"/>
                                 <action id="edit"/>
                                 <action id="remove"/>
                                 <action id="refresh"/>
+                                <action id="localizationEdit"/>
                             </actions>
                             <columns>
                                 <column id="entityName" caption="msg://com.haulmont.cuba.security.entity/Constraint.entityName"/>

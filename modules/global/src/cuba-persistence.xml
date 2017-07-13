@@ -45,6 +45,7 @@
         <class>com.haulmont.cuba.security.entity.GroupHierarchy</class>
         <class>com.haulmont.cuba.security.entity.Permission</class>
         <class>com.haulmont.cuba.security.entity.Constraint</class>
+        <class>com.haulmont.cuba.security.entity.LocalizedConstraintMessage</class>
         <class>com.haulmont.cuba.security.entity.SessionAttribute</class>
         <class>com.haulmont.cuba.security.entity.UserSetting</class>
         <class>com.haulmont.cuba.security.entity.UserSubstitution</class>

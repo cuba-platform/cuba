@@ -390,6 +390,26 @@ create table SEC_CONSTRAINT (
 )^
 create index IDX_SEC_CONSTRAINT_GROUP on SEC_CONSTRAINT(GROUP_ID)^
 
+create table SEC_LOCALIZED_CONSTRAINT_MSG (
+    ID varchar2(32) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar2(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar2(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar2(50),
+    --
+    ENTITY_NAME varchar2(255) not null,
+    OPERATION_TYPE varchar2(50) not null,
+    VALUES_ clob,
+    --
+    primary key (ID)
+)^
+
+create unique index IDX_SEC_LOC_CNSTRNT_MSG_UNIQUE
+  on SEC_LOCALIZED_CONSTRAINT_MSG (ENTITY_NAME, OPERATION_TYPE, DELETE_TS)^
+
 create table SEC_ENTITY_LOG (
     ID varchar2(32) not null,
     CREATE_TS timestamp,

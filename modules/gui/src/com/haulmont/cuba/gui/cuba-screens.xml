@@ -72,6 +72,9 @@
     <screen id="sec$Constraint.edit"
             template="/com/haulmont/cuba/gui/app/security/constraint/edit/constraint-edit.xml"/>
 
+    <screen id="sec$LocalizedConstraintMessage.edit"
+            template="/com/haulmont/cuba/gui/app/security/constraintloc/edit/constraint-localization-edit.xml"/>
+
     <screen id="sec$SessionAttribute.edit"
             template="/com/haulmont/cuba/gui/app/security/sessionattr/edit/session-attr-edit.xml"/>
 

@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.app.security.group.browse;
 import com.google.common.io.Files;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.app.ConstraintLocalizationService;
 import com.haulmont.cuba.core.app.importexport.CollectionImportPolicy;
 import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
@@ -109,6 +110,9 @@ public class GroupBrowser extends AbstractWindow {
 
     @Inject
     protected ViewRepository viewRepository;
+
+    @Inject
+    protected ConstraintLocalizationService constraintLocalizationService;
 
     protected boolean constraintsTabInitialized = false;
     protected boolean attributesTabInitialized = false;
@@ -279,8 +283,8 @@ public class GroupBrowser extends AbstractWindow {
                 .addManyToOneProperty("parent", ReferenceImportBehaviour.ERROR_ON_MISSING)
                 .addOneToManyProperty("hierarchyList",
                         new EntityImportView(GroupHierarchy.class)
-                        .addLocalProperties()
-                        .addManyToOneProperty("parent", ReferenceImportBehaviour.ERROR_ON_MISSING),
+                                .addLocalProperties()
+                                .addManyToOneProperty("parent", ReferenceImportBehaviour.ERROR_ON_MISSING),
                         CollectionImportPolicy.REMOVE_ABSENT_ITEMS)
                 .addOneToManyProperty("sessionAttributes",
                         new EntityImportView(SessionAttribute.class).addLocalProperties(),
@@ -319,10 +323,12 @@ public class GroupBrowser extends AbstractWindow {
                 });
         constraintsTable.addAction(activateAction);
 
+        constraintsTable.addAction(new ConstraintLocalizationEditAction(constraintsTable));
+
         constraintsDs.addItemChangeListener(e -> {
             if (e.getItem() != null) {
                 activateAction.setCaption(Boolean.TRUE.equals(e.getItem().getIsActive()) ?
-                                getMessage("deactivate") : getMessage("activate"));
+                        getMessage("deactivate") : getMessage("activate"));
             }
         });
 
@@ -356,6 +362,48 @@ public class GroupBrowser extends AbstractWindow {
 
         attributesTabInitialized = true;
         attributesTable.refresh();
+    }
+
+    protected class ConstraintLocalizationEditAction extends ItemTrackingAction {
+        public static final String ACTION_ID = "localizationEdit";
+
+        protected OpenType openType;
+
+        public ConstraintLocalizationEditAction(ListComponent<? extends Constraint> target) {
+            this(target, OpenType.DIALOG);
+        }
+
+        public ConstraintLocalizationEditAction(ListComponent<? extends Constraint> target, OpenType openType) {
+            super(target, ACTION_ID);
+            this.openType = openType;
+            setCaption(getMessage("action.localize.caption"));
+            setIcon("icons/globe.png");
+        }
+
+        @Override
+        public void actionPerform(Component component) {
+            final Set selected = target.getSelected();
+            if (selected.size() == 1) {
+                final CollectionDatasource datasource = target.getDatasource();
+                internalOpenEditor((Constraint) datasource.getItem());
+            }
+        }
+
+        protected void internalOpenEditor(Constraint constraint) {
+            LocalizedConstraintMessage localization = constraintLocalizationService.findLocalizedConstraintMessage(
+                    constraint.getEntityName(), constraint.getOperationType());
+            if (localization == null) {
+                localization = metadata.create(LocalizedConstraintMessage.class);
+                localization.setEntityName(constraint.getEntityName());
+                localization.setOperationType(constraint.getOperationType());
+            }
+            openEditor(localization, openType);
+        }
+
+        @Override
+        protected boolean isApplicable() {
+            return super.isApplicable() && target.getSelected().size() == 1;
+        }
     }
 
     /**

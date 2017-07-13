@@ -107,6 +107,7 @@
                 <entry key="cuba_ScreenProfilerService" value="com.haulmont.cuba.core.app.ScreenProfilerService"/>
                 <entry key="cuba_ServerTokenStore" value="com.haulmont.cuba.restapi.ServerTokenStore"/>
                 <entry key="cuba_IdpService" value="com.haulmont.cuba.security.app.IdpService"/>
+                <entry key="cuba_ConstraintLocalizationService" value="com.haulmont.cuba.core.app.ConstraintLocalizationService"/>
             </map>
         </property>
     </bean>
