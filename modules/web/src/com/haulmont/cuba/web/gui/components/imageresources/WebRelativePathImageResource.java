@@ -25,7 +25,7 @@ import com.vaadin.server.ExternalResource;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class WebRelativePathImageResource extends WebImage.WebAbstractStreamSettingsImageResource implements WebImageResource, Image.RelativePathImageResource {
+public class WebRelativePathImageResource extends WebImage.WebAbstractImageResource implements WebImageResource, Image.RelativePathImageResource {
 
     protected String path;
 

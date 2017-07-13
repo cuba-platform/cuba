@@ -137,6 +137,7 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
         resource.setPath(classpathPath);
 
         loadMimeType(resource, classpathResource);
+        loadStreamSettings(resource, classpathResource);
 
         return true;
     }
@@ -172,7 +173,13 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
             throw new GuiDevelopmentException(msg, context.getFullFrameId());
         }
 
-        resultComponent.setSource(Image.FileImageResource.class).setFile(file);
+        Image.FileImageResource resource = resultComponent.createResource(Image.FileImageResource.class);
+
+        resource.setFile(file);
+
+        loadStreamSettings(resource, fileResource);
+
+        resultComponent.setSource(resource);
 
         return true;
     }
@@ -201,6 +208,18 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
         String mimeType = resourceElement.attributeValue("mimeType");
         if (StringUtils.isNotEmpty(mimeType)) {
             resource.setMimeType(mimeType);
+        }
+    }
+
+    protected void loadStreamSettings(Image.HasStreamSettings resource, Element resourceElement) {
+        String cacheTime = resourceElement.attributeValue("cacheTime");
+        if (StringUtils.isNotEmpty(cacheTime)) {
+            resource.setCacheTime(Long.valueOf(cacheTime));
+        }
+
+        String bufferSize = resourceElement.attributeValue("bufferSize");
+        if (StringUtils.isNotEmpty(bufferSize)) {
+            resource.setBufferSize(Integer.valueOf(bufferSize));
         }
     }
 }
