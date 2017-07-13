@@ -64,6 +64,13 @@
         display: none !important;
     }
   }
+
+  .v-ios.v-webkit & {
+    .v-scrollable div,
+    .v-browserframe div {
+      -webkit-overflow-scrolling: initial;
+    }
+  }
 }
 
 @mixin box-defaults {
