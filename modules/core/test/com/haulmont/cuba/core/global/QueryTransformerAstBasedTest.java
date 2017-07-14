@@ -352,6 +352,17 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
+    public void getResult_noChangesMade_withGroupBy() throws RecognitionException {
+        EntityBuilder builder = new EntityBuilder();
+        JpqlEntityModel playerEntity = builder.produceImmediately("Player", "name", "nickname", "level");
+
+        DomainModel model = new DomainModel(playerEntity);
+        assertTransformsToSame(model, "select p from Player p group by p.level, p.name");
+
+        assertTransformsToSame(model, "select p from Player p group by p.level");
+    }
+
+    @Test
     public void getResult_noChangesMade_withGroupByHavingOrderBy() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
         JpqlEntityModel playerEntity = builder.produceImmediately("Player", "name", "nickname", "level");
