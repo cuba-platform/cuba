@@ -515,6 +515,13 @@ public class QueryTransformerAstBasedTest {
                 transformer.getResult());
     }
 
+    @Test
+    public void getResult_noChangesMade_delete() throws Exception {
+        DomainModel model = prepareDomainModel();
+        QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model, "delete from sec$GroupHierarchy g where g.createdBy = :createdBy");
+        assertEquals(transformerAstBased.getResult(), "delete from sec$GroupHierarchy g where g.createdBy = :createdBy");
+    }
+
 
     @Test
     public void addJoinAsId() throws RecognitionException {
@@ -1228,12 +1235,5 @@ public class QueryTransformerAstBasedTest {
         } catch (JpqlSyntaxException e) {
             //expected
         }
-    }
-
-    @Test
-    public void testDeleteJpql() throws Exception {
-        DomainModel model = prepareDomainModel();
-        QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model, "delete from sec$GroupHierarchy g where g.createdBy = :createdBy");
-        assertEquals(transformerAstBased.getResult(), "delete from sec$GroupHierarchy g where g.createdBy = :createdBy");
     }
 }

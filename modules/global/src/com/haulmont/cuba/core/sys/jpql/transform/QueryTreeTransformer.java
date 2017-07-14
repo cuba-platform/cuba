@@ -213,7 +213,6 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
     public void addEntityInGroupBy(String entityAlias) {
         Tree groupBy = tree.getFirstChildWithType(JPA2Lexer.T_GROUP_BY);
         if (groupBy != null) {
-            groupBy.addChild(new CommonTree(new CommonToken(JPA2Lexer.STRING_LITERAL, ",")));
             groupBy.addChild(new PathNode(JPA2Lexer.T_SELECTED_ENTITY, entityAlias));
             groupBy.freshenParentAndChildIndexes();
         }
