@@ -352,6 +352,17 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
+    public void getResult_noChangesMade_withGroupBy() throws RecognitionException {
+        EntityBuilder builder = new EntityBuilder();
+        JpqlEntityModel playerEntity = builder.produceImmediately("Player", "name", "nickname", "level");
+
+        DomainModel model = new DomainModel(playerEntity);
+        assertTransformsToSame(model, "select p from Player p group by p.level, p.name");
+
+        assertTransformsToSame(model, "select p from Player p group by p.level");
+    }
+
+    @Test
     public void getResult_noChangesMade_withGroupByHavingOrderBy() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
         JpqlEntityModel playerEntity = builder.produceImmediately("Player", "name", "nickname", "level");
@@ -502,6 +513,13 @@ public class QueryTransformerAstBasedTest {
         assertEquals(
                 "update sec$Car c set c.model=:model,c.vin=:vin where c.vin = :oldVin",
                 transformer.getResult());
+    }
+
+    @Test
+    public void getResult_noChangesMade_delete() throws Exception {
+        DomainModel model = prepareDomainModel();
+        QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model, "delete from sec$GroupHierarchy g where g.createdBy = :createdBy");
+        assertEquals(transformerAstBased.getResult(), "delete from sec$GroupHierarchy g where g.createdBy = :createdBy");
     }
 
 
@@ -1217,12 +1235,5 @@ public class QueryTransformerAstBasedTest {
         } catch (JpqlSyntaxException e) {
             //expected
         }
-    }
-
-    @Test
-    public void testDeleteJpql() throws Exception {
-        DomainModel model = prepareDomainModel();
-        QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model, "delete from sec$GroupHierarchy g where g.createdBy = :createdBy");
-        assertEquals(transformerAstBased.getResult(), "delete from sec$GroupHierarchy g where g.createdBy = :createdBy");
     }
 }
