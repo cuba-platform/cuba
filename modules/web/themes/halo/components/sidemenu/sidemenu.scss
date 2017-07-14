@@ -146,6 +146,8 @@ $cuba-sidemenu-top-offset: floor(($v-unit-size - $v-unit-size * 0.8) / 2);
 $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
 
 @mixin halo-cuba-sidemenu($primary-stylename: c-sidemenu) {
+  $bg: if(is-dark-color($v-app-background-color), darken($v-app-background-color, 4%), lighten($v-app-background-color, 8%)) !default;
+
   .#{$primary-stylename}-user {
     background: transparent;
     border: 0;
@@ -159,57 +161,6 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
 
   .#{$primary-stylename}-layout .c-main-tabsheet > .v-tabsheet-tabcontainer {
     border: 0;
-  }
-
-  .#{$primary-stylename}-panel {
-    @include valo-menu-style;
-
-    .#{$primary-stylename} {
-      background: transparent;
-      background-image: none;
-    }
-
-    .c-ftsfield-button,
-    .c-newwindow-button,
-    .c-logout-button {
-      color: valo-font-color($valo-menu-background-color, 0.5);
-
-      &:hover {
-        color: valo-font-color($valo-menu-background-color, 1);
-      }
-    }
-
-    .c-user-timezone-label {
-      color: valo-font-color($valo-menu-background-color, 0.5);
-    }
-
-    .c-app-icon {
-      height: 64px;
-
-      .v-ie9 > & {
-        width: 100%;
-
-        img {
-          width: 64px;
-        }
-      }
-    }
-
-    .v-button.c-ftsfield-button,
-    .v-button.c-logout-button,
-    .v-button.c-newwindow-button {
-      height: $v-unit-size;
-      padding: ceil($v-unit-size/10) ceil($v-unit-size/5);
-    }
-
-    .c-ftsfield {
-      padding-left: $v-layout-margin-left;
-      padding-right: $v-layout-margin-right;
-    }
-
-    .v-ie9 & {
-      width: 250px;
-    }
   }
 
   .#{$primary-stylename}-wrap {
@@ -240,13 +191,10 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
 
   .#{$primary-stylename} {
     outline: 0;
-    $bg: $valo-menu-background-color;
 
-    @include linear-gradient(to left, (darken($bg, valo-gradient-opacity() / 2) 0%, $bg round($v-unit-size/4)), $fallback: $bg);
-    color: valo-font-color($bg, 0.5);
+    color: valo-font-color($bg, 0.7);
     font-size: round($v-font-size * 0.9);
     line-height: round($v-unit-size * 0.8);
-    border-right: valo-border($color: $bg);
     white-space: nowrap;
 
     font-size: $v-font-size;
@@ -257,7 +205,7 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
   }
 
   .#{$primary-stylename}-item {
-    @include valo-menu-item-style;
+    @include valo-menu-item-style($bg);
 
     .#{$primary-stylename}-item-caption {
       width: 100%;
@@ -269,15 +217,19 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
       top: ($v-unit-size - round($v-font-size * 0.9) - round($v-unit-size/9) * 2) / 2;
     }
 
+    &:hover {
+      color: valo-font-color($v-selection-color, 0.1);
+    }
+
     .v-icon {
       font-size: 1.2em;
     }
   }
 
   .#{$primary-stylename}-item-header {
-    color: valo-font-color($valo-menu-background-color, 0.33);
+    color: valo-font-color($bg, 0.7);
     margin: round($v-unit-size/5) 0 round($v-unit-size/5) round($v-unit-size/2);
-    border-bottom: valo-border($color: $valo-menu-background-color, $strength: 0.5, $border: first-number($v-border) solid v-tone);
+    border-bottom: valo-border($color: $bg, $strength: 1, $border: first-number($v-border) solid v-tone);
 
     margin-left: 0;
 
@@ -323,7 +275,7 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
   }
 
   .#{$primary-stylename}-item-focused {
-    color: valo-font-color($valo-menu-background-color, 1);
+    color: valo-font-color($v-selection-color, 0.1);
   }
 
   .#{$primary-stylename}-item-selected {
@@ -477,6 +429,78 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
       .#{$primary-stylename}-toggle .v-button-caption {
         display: none;
       }
+    }
+  }
+
+  .#{$primary-stylename}-panel {
+    @include valo-menu-style;
+
+    .#{$primary-stylename} {
+      background: transparent;
+      background-image: none;
+    }
+
+    .c-ftsfield-button,
+    .c-newwindow-button,
+    .c-logout-button {
+      color: valo-font-color($valo-menu-background-color, 0.5);
+
+      &:hover {
+        color: valo-font-color($valo-menu-background-color, 1);
+      }
+    }
+
+    .c-user-timezone-label {
+      color: valo-font-color($valo-menu-background-color, 0.5);
+    }
+
+    .c-app-icon {
+      height: 64px;
+
+      .v-ie9 > & {
+        width: 100%;
+
+        img {
+          width: 64px;
+        }
+      }
+    }
+
+    .v-button.c-ftsfield-button,
+    .v-button.c-logout-button,
+    .v-button.c-newwindow-button {
+      height: $v-unit-size;
+      padding: ceil($v-unit-size/10) ceil($v-unit-size/5);
+    }
+
+    .c-ftsfield {
+      padding-left: $v-layout-margin-left;
+      padding-right: $v-layout-margin-right;
+    }
+
+    .v-ie9 & {
+      width: 250px;
+    }
+
+    .#{$primary-stylename} {
+      color: valo-font-color($valo-menu-background-color, 0.5);
+    }
+
+    .#{$primary-stylename}-item {
+      @include valo-menu-item-style;
+
+      :hover {
+        color: valo-font-color($valo-menu-background-color, 1);
+      }
+    }
+
+    .#{$primary-stylename}-item-header {
+      border-bottom: valo-border($color: $valo-menu-background-color, $strength: 0.5, $border: first-number($v-border) solid v-tone);
+      color: valo-font-color($valo-menu-background-color, 0.5);
+    }
+
+    .#{$primary-stylename}-item-focused {
+      color: valo-font-color($valo-menu-background-color, 1);
     }
   }
 }
