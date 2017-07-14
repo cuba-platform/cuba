@@ -47,6 +47,7 @@ tokens {
     GROUP = 'GROUP';
     BY = 'BY';
     SET = 'SET';
+    AS = 'AS';
 }
 
 
@@ -106,10 +107,10 @@ join_section :
     joined_clause*;
 joined_clause : join | fetch_join;
 range_variable_declaration
-     : entity_name ('AS')? identification_variable
+     : entity_name (AS)? identification_variable
      -> ^(T_ID_VAR<IdentificationVariableNode>[$identification_variable.text] entity_name);
 join
-     : join_spec join_association_path_expression ('AS')? identification_variable ('ON' conditional_expression)?
+     : join_spec join_association_path_expression (AS)? identification_variable ('ON' conditional_expression)?
      -> ^(T_JOIN_VAR<JoinVariableNode>[$join_spec.text, $identification_variable.text] join_association_path_expression conditional_expression?);
 fetch_join
      : join_spec 'FETCH' join_association_path_expression;
@@ -120,13 +121,13 @@ join_spec
 join_association_path_expression
      : identification_variable '.' (field'.')* field?
          -> ^(T_SELECTED_FIELD<PathNode>[$identification_variable.text] (field)*)
-     |  'TREAT(' identification_variable '.' (field'.')* field? 'AS' subtype ')'
+     |  'TREAT(' identification_variable '.' (field'.')* field? AS subtype ')'
          -> ^(T_SELECTED_FIELD<PathNode>[$identification_variable.text] (field)*)
      | entity_name;
 //End : here we have simplified joins
 
 collection_member_declaration
-    : 'IN''(' path_expression ')' ('AS')? identification_variable
+    : 'IN''(' path_expression ')' (AS)? identification_variable
     -> ^(T_COLLECTION_MEMBER<CollectionMemberNode>[$identification_variable.text] path_expression );
 
 qualified_identification_variable
@@ -164,7 +165,7 @@ select_clause
     : ('DISTINCT')? select_item (',' select_item)*
     -> ^(T_SELECTED_ITEMS<SelectedItemsNode>[] ('DISTINCT')? ^(T_SELECTED_ITEM<SelectedItemNode>[] select_item)*);
 select_item
-    : select_expression (('AS')? result_variable)?;
+    : select_expression ((AS)? result_variable)?;
 select_expression
     : path_expression (('+' | '-' | '*' | '/') scalar_expression)?
     | identification_variable -> ^(T_SELECTED_ENTITY<PathNode>[$identification_variable.text])
@@ -219,7 +220,7 @@ subquery_from_clause
 
 subselect_identification_variable_declaration
     : identification_variable_declaration
-    | derived_path_expression 'AS' identification_variable (join)*
+    | derived_path_expression AS identification_variable (join)*
     | derived_collection_member_declaration;
 derived_path_expression
     : general_derived_path'.'single_valued_object_field
@@ -232,7 +233,7 @@ simple_derived_path
     : superquery_identification_variable //todo eude ('.' single_valued_object_field)*
     ;
 treated_derived_path
-    : 'TREAT('general_derived_path 'AS' subtype ')';
+    : 'TREAT('general_derived_path AS subtype ')';
 derived_collection_member_declaration
     : 'IN' superquery_identification_variable'.'(single_valued_object_field '.')*collection_valued_field;
 

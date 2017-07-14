@@ -55,6 +55,7 @@ public class TreeToQuery implements TreeVisitorAction {
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_CONDITION && node.getType() == JPA2Lexer.LPAREN && (node.childIndex == 0 || node.parent.getChild(node.childIndex - 1).getType() != JPA2Lexer.LPAREN) ||
                 node.getType() == JPA2Lexer.AND ||
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_ORDER_BY_FIELD ||
+                node.parent != null && node.parent.getType() == JPA2Lexer.T_SELECTED_ITEM && node.getType() == JPA2Lexer.AS ||
                 node.getType() == JPA2Lexer.OR ||
                 node.getType() == JPA2Lexer.NOT ||
                 node.getType() == JPA2Lexer.DISTINCT && node.childIndex == 0 ||
@@ -121,8 +122,11 @@ public class TreeToQuery implements TreeVisitorAction {
         if (node.token == null)
             return t;
 
-        if (node.getType() == JPA2Lexer.DISTINCT || node.getType() == JPA2Lexer.FETCH)
+        if (node.getType() == JPA2Lexer.DISTINCT ||
+                node.getType() == JPA2Lexer.FETCH ||
+                node.parent != null && node.parent.getType() == JPA2Lexer.T_SELECTED_ITEM && node.getType() == JPA2Lexer.AS) {
             sb.appendSpace();
+        }
 
 
         if (node instanceof TreeToQueryCapable) {
