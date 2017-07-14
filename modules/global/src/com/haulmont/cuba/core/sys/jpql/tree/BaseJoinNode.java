@@ -61,11 +61,6 @@ public class BaseJoinNode extends BaseCustomNode {
             return;
         }
 
-        if (children.size() > 2) {
-            invalidNodes.add(new ErrorRec(this, "Number of children more than 2"));
-            return;
-        }
-
         CommonTree child0 = (CommonTree) children.get(0);
         if (child0 instanceof CommonErrorNode) {
             invalidNodes.add(new ErrorRec(this, "Child 0 is an error node"));
