@@ -63,6 +63,21 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
+    public void getResult_noChangesMade_withJoinAndSeveralJoinConditions() throws RecognitionException {
+        EntityBuilder builder = new EntityBuilder();
+        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name");
+        builder.startNewEntity("Player");
+        builder.addStringAttribute("name");
+        builder.addReferenceAttribute("as", "Team");
+        builder.addReferenceAttribute("member", "Team");
+        JpqlEntityModel playerEntity = builder.produce();
+        DomainModel model = new DomainModel(playerEntity, teamEntity);
+
+        assertTransformsToSame(model, "SELECT p FROM Player p JOIN Team t on p.member = t and p.name = :param");
+    }
+
+
+    @Test
     public void getResult_noChangesMade_withMultiFieldSelect() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
         builder.startNewEntity("Team");

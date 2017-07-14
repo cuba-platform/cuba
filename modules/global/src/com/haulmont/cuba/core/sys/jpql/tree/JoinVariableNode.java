@@ -60,21 +60,19 @@ public class JoinVariableNode extends BaseJoinNode {
             invalidNodes.add(new ErrorRec(this, "No children found"));
             return null;
         }
-        if (childCount > 2) {
-            invalidNodes.add(new ErrorRec(this, "Number of children more than 2"));
-            return null;
-        }
         sb.appendSpace();
         sb.appendString(joinSpec);
         sb.appendSpace();
         sb.appendString(toQuery(getChild(0)));
         sb.appendSpace();
         sb.appendString(variableName);
-        if (childCount == 2) {
+        if (childCount > 1) {
             sb.appendSpace();
             sb.appendString("on");
-            sb.appendSpace();
-            sb.appendString(toQuery(getChild(1)));
+            for (int idx = 1; idx < childCount; idx++) {
+                sb.appendSpace();
+                sb.appendString(toQuery(getChild(idx)));
+            }
         }
         return null;
     }
