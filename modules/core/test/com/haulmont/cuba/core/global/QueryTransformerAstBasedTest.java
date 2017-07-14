@@ -522,6 +522,16 @@ public class QueryTransformerAstBasedTest {
         assertEquals(transformerAstBased.getResult(), "delete from sec$GroupHierarchy g where g.createdBy = :createdBy");
     }
 
+    @Test
+    public void getResult_noChangesMade_AsInSelect() throws RecognitionException {
+        EntityBuilder builder = new EntityBuilder();
+        JpqlEntityModel playerEntity = builder.produceImmediately("Player", "name", "nickname", "level");
+
+        DomainModel model = new DomainModel(playerEntity);
+        assertTransformsToSame(model, "select p.name as name, p.nickname as nickname from Player p");
+        assertTransformsToSame(model, "select p.name as name from Player p");
+    }
+
 
     @Test
     public void addJoinAsId() throws RecognitionException {
