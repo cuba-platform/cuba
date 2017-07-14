@@ -445,6 +445,10 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
             fci.setToolTipButton(null);
         }
 
+        if (fieldImpl.getCaption() != null) {
+            fci.getLabel().setText(fieldImpl.getCaption());
+        }
+
         assignTypicalAttributes(fci.getComponentNN());
 
         if (mode == FieldAttachMode.APPLY_DEFAULTS) {
@@ -1415,6 +1419,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
             if (isWrapped()) {
                 if (targetCaption != null) {
                     label.setText(targetCaption);
+                } else {
+                    label.setText(composition.getCaption());
                 }
             }
         }
