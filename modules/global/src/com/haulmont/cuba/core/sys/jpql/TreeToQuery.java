@@ -71,6 +71,12 @@ public class TreeToQuery implements TreeVisitorAction {
             sb.appendString(", ");
         }
 
+        if (isGroupByItem(node)) {
+            if (node.childIndex > 0 && isGroupByItem((CommonTree) node.parent.getChild(node.childIndex - 1))) {
+                sb.appendString(", ");
+            }
+        }
+
         if (node instanceof TreeToQueryCapable) {
             return ((TreeToQueryCapable) t).treeToQueryPre(sb, invalidNodes);
         }
@@ -89,7 +95,16 @@ public class TreeToQuery implements TreeVisitorAction {
     }
 
     private boolean parentNodeHasPreviousLparen(CommonTree node) {
-        return (node.childIndex == 0 && node.parent.childIndex > 0 && node.parent.parent.getChild(node.parent.childIndex - 1).getType() == JPA2Lexer.LPAREN );
+        return (node.childIndex == 0 && node.parent.childIndex > 0 && node.parent.parent.getChild(node.parent.childIndex - 1).getType() == JPA2Lexer.LPAREN);
+    }
+
+    private boolean isGroupByItem(CommonTree node) {
+        if (node.parent != null && node.parent.getType() == JPA2Lexer.T_GROUP_BY) {
+            if (node.getType() != JPA2Lexer.BY && node.getType() != JPA2Lexer.GROUP) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
