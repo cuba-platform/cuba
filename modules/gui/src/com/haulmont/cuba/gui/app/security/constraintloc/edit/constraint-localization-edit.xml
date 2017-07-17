@@ -49,13 +49,29 @@
                                  textInputAllowed="false"
                                  nullOptionVisible="false"/>
                 </field>
-                <field id="captionField">
-                    <textField id="caption"
-                               caption="msg://field.caption.caption"/>
+                <field id="captionField"
+                       caption="msg://field.caption.caption">
+                    <hbox id="captionBox"
+                          expand="caption"
+                          spacing="true"
+                          width="100%">
+                        <textField id="caption"/>
+                        <linkButton id="captionFieldHelp"
+                                    icon="icons/question-white.png"
+                                    invoke="showHelp"/>
+                    </hbox>
                 </field>
-                <field id="messageField">
-                    <textArea id="message"
-                              caption="msg://field.message.caption"/>
+                <field id="messageField"
+                       caption="msg://field.message.caption">
+                    <hbox id="messageBox"
+                          expand="message"
+                          spacing="true"
+                          width="100%">
+                        <textArea id="message"/>
+                        <linkButton id="messageFieldHelp"
+                                    icon="icons/question-white.png"
+                                    invoke="showHelp"/>
+                    </hbox>
                 </field>
             </column>
         </fieldGroup>

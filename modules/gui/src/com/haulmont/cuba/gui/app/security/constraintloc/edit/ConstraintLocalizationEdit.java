@@ -134,6 +134,13 @@ public class ConstraintLocalizationEdit extends AbstractEditor<LocalizedConstrai
         };
     }
 
+    public void showHelp() {
+        showMessageDialog(getMessage("helpDialogCaption"), getMessage("helpDialogMessage"),
+                MessageType.CONFIRMATION_HTML
+                        .modal(false)
+                        .width(480));
+    }
+
     protected abstract class LocalizationValueChangeListener implements ValueChangeListener {
         protected boolean active = true;
 
