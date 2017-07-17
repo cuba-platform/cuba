@@ -171,6 +171,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
         panel.add(topPanel, "growx");
 
         scrollPane = new JScrollPane(impl);
+        impl.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         impl.setFillsViewportHeight(true);
         panel.add(scrollPane, "grow");
 
