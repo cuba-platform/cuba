@@ -139,6 +139,8 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
         loadMimeType(resource, classpathResource);
         loadStreamSettings(resource, classpathResource);
 
+        resultComponent.setSource(resource);
+
         return true;
     }
 
