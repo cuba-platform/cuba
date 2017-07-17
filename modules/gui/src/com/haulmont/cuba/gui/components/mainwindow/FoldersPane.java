@@ -19,9 +19,20 @@ package com.haulmont.cuba.gui.components.mainwindow;
 
 import com.haulmont.cuba.gui.components.Component;
 
+/**
+ * A component displaying a panel with application and search folders.
+ */
 public interface FoldersPane extends Component.BelongToFrame {
 
     String NAME = "foldersPane";
 
+    /**
+     * Initially show the panel and load folders. Invoked by the component loader.
+     */
     void loadFolders();
+
+    /**
+     * Refresh folders if the panel is visible.
+     */
+    void refreshFolders();
 }
