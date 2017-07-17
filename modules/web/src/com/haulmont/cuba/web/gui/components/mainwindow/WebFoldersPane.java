@@ -58,4 +58,9 @@ public class WebFoldersPane extends WebAbstractComponent<CubaFoldersPane> implem
     public void loadFolders() {
         component.loadFolders();
     }
+
+    @Override
+    public void refreshFolders() {
+        component.refreshFolders();
+    }
 }
