@@ -31,6 +31,8 @@ public class CubaJettyUtils {
 
     public static final String APP_PROPERTIES_PATH_IN_JAR = "WEB-INF/local.app.properties";
     public static final String PATH_DELIMITER = "/";
+    public static final String DEFAULT_STOP_KEY = "SHUTDOWN";
+    public static final int STOP_TIMEOUT = 20;
 
     private CubaJettyUtils() {
     }

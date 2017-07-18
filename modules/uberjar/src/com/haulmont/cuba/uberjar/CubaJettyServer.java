@@ -35,6 +35,8 @@ import static com.haulmont.cuba.uberjar.CubaJettyUtils.*;
 
 public class CubaJettyServer {
     protected int port;
+    protected int stopPort;
+    protected String stopKey;
     protected String contextPath;
     protected String portalContextPath;
     protected String frontContextPath;
@@ -89,10 +91,31 @@ public class CubaJettyServer {
         this.jettyConfUrl = jettyConfUrl;
     }
 
+    public int getStopPort() {
+        return stopPort;
+    }
+
+    public void setStopPort(int stopPort) {
+        this.stopPort = stopPort;
+    }
+
+    public String getStopKey() {
+        return stopKey;
+    }
+
+    public void setStopKey(String stopKey) {
+        this.stopKey = stopKey;
+    }
+
     public void start() {
         String appHome = System.getProperty("app.home");
         if (appHome == null || appHome.length() == 0) {
             System.setProperty("app.home", System.getProperty("user.dir"));
+        }
+        if (stopPort > 0) {
+            System.setProperty("STOP.PORT", Integer.toString(stopPort));
+            System.setProperty("STOP.KEY", stopKey);
+            System.setProperty("STOP.HOST", "127.0.0.1");
         }
         try {
             Server server = createServer();
@@ -113,6 +136,7 @@ public class CubaJettyServer {
         } else {
             server = new Server(port);
         }
+        server.setStopAtShutdown(true);
         List<Handler> handlers = new ArrayList<>();
         if (CubaJettyUtils.hasCoreApp(serverClassLoader)) {
             String coreContextPath = contextPath;
