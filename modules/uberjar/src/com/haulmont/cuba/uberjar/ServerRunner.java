@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.OutputStream;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.security.CodeSource;
 import java.util.Properties;
 
@@ -305,10 +306,10 @@ public class ServerRunner {
             try (Socket s = new Socket(InetAddress.getByName("127.0.0.1"), port)) {
                 s.setSoTimeout(STOP_TIMEOUT * 1000);
                 try (OutputStream out = s.getOutputStream()) {
-                    out.write((key + "\r\nstop\r\n").getBytes());
+                    out.write((key + "\r\nstop\r\n").getBytes(StandardCharsets.UTF_8));
                     out.flush();
                     System.out.println(String.format("Waiting %,d seconds for server to stop", STOP_TIMEOUT));
-                    LineNumberReader lin = new LineNumberReader(new InputStreamReader(s.getInputStream()));
+                    LineNumberReader lin = new LineNumberReader(new InputStreamReader(s.getInputStream(), StandardCharsets.UTF_8));
                     String response;
                     while ((response = lin.readLine()) != null) {
                         System.out.println(String.format("Received \"%s\"", response));
