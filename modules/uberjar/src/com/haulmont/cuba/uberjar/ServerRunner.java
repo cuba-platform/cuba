@@ -20,8 +20,10 @@ import org.apache.commons.cli.*;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.io.OutputStream;
+import java.net.*;
 import java.security.CodeSource;
 import java.util.Properties;
 
@@ -63,16 +65,30 @@ public class ServerRunner {
                 .hasArg()
                 .desc("jetty configuration xml path").argName("jettyConfPath").build();
 
+        Option stopPortOption = Option.builder("stopPort")
+                .hasArg()
+                .desc("port number on which this server waits for a shutdown command").argName("stopPort").build();
+
+        Option stopKeyOption = Option.builder("stopKey")
+                .hasArg()
+                .desc("secret key on startup which must also be present on the shutdown command to enhance security").argName("stopKey").build();
+
         Option helpOption = Option.builder("help")
                 .desc("print help information").build();
 
+        Option stopOption = Option.builder("stop")
+                .desc("stop server").build();
+
         cliOptions.addOption(helpOption);
+        cliOptions.addOption(stopOption);
         cliOptions.addOption(portOption);
         cliOptions.addOption(contextPathOption);
         cliOptions.addOption(frontContextPathOption);
         cliOptions.addOption(portalContextPathOption);
         cliOptions.addOption(jettyEnvPathOption);
         cliOptions.addOption(jettyConfOption);
+        cliOptions.addOption(stopPortOption);
+        cliOptions.addOption(stopKeyOption);
 
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
@@ -84,125 +100,153 @@ public class ServerRunner {
             return;
         }
 
-        if (cmd.hasOption("help"))
+        if (cmd.hasOption("help")) {
             printHelp(formatter, cliOptions);
-        else {
-            CubaJettyServer jettyServer = new CubaJettyServer();
-            if (cmd.hasOption(portOption.getOpt())) {
+        } else {
+            int stopPort = -1;
+            if (cmd.hasOption(stopPortOption.getOpt())) {
                 try {
-                    jettyServer.setPort(Integer.parseInt(cmd.getOptionValue(portOption.getOpt())));
+                    stopPort = Integer.parseInt(cmd.getOptionValue(stopPortOption.getOpt()));
                 } catch (NumberFormatException e) {
-                    System.out.println("port has to be number");
+                    System.out.println("stop port has to be number");
                     printHelp(formatter, cliOptions);
                     return;
                 }
+            }
+            String stopKey = null;
+            if (cmd.hasOption(stopKeyOption.getOpt())) {
+                stopKey = cmd.getOptionValue(stopKeyOption.getOpt());
+            }
+            if (stopKey == null || stopKey.isEmpty()) {
+                stopKey = DEFAULT_STOP_KEY;
+            }
+            if (cmd.hasOption("stop")) {
+                if (stopPort <= 0) {
+                    System.out.println("stop port has to be a positive number");
+                    printHelp(formatter, cliOptions);
+                    return;
+                }
+                stop(stopPort, stopKey);
             } else {
-                jettyServer.setPort(getDefaultWebPort());
-            }
-            String contextPath = null;
-            String frontContextPath = null;
-            String portalContextPath = null;
-            if (cmd.hasOption(contextPathOption.getOpt())) {
-                String contextName = cmd.getOptionValue(contextPathOption.getOpt());
-                if (contextName != null && !contextName.isEmpty()) {
-                    if (PATH_DELIMITER.equals(contextName)) {
-                        contextPath = PATH_DELIMITER;
-                    } else {
-                        contextPath = PATH_DELIMITER + contextName;
-                    }
-                }
-            }
-            if (cmd.hasOption(frontContextPathOption.getOpt())) {
-                String contextName = cmd.getOptionValue(frontContextPathOption.getOpt());
-                if (contextName != null && !contextName.isEmpty()) {
-                    if (PATH_DELIMITER.equals(contextName)) {
-                        frontContextPath = PATH_DELIMITER;
-                    } else {
-                        frontContextPath = PATH_DELIMITER + contextName;
-                    }
-                }
-            }
-
-            if (cmd.hasOption(portalContextPathOption.getOpt())) {
-                String contextName = cmd.getOptionValue(portalContextPathOption.getOpt());
-                if (contextName != null && !contextName.isEmpty()) {
-                    if (PATH_DELIMITER.equals(contextName)) {
-                        portalContextPath = PATH_DELIMITER;
-                    } else {
-                        portalContextPath = PATH_DELIMITER + contextName;
-                    }
-                }
-            }
-
-            if (contextPath == null) {
-                String jarName = getJarName();
-                if (jarName != null) {
-                    jettyServer.setContextPath(PATH_DELIMITER + FilenameUtils.getBaseName(jarName));
-                } else {
-                    jettyServer.setContextPath(PATH_DELIMITER);
-                }
-            } else {
-                jettyServer.setContextPath(contextPath);
-            }
-            if (frontContextPath == null) {
-                if (PATH_DELIMITER.equals(contextPath)) {
-                    jettyServer.setFrontContextPath(PATH_DELIMITER + "app-front");
-                } else {
-                    jettyServer.setFrontContextPath(jettyServer.getContextPath() + "-front");
-                }
-            } else {
-                jettyServer.setFrontContextPath(frontContextPath);
-            }
-            if (portalContextPath == null) {
-                if (PATH_DELIMITER.equals(contextPath)) {
-                    jettyServer.setPortalContextPath(PATH_DELIMITER + "app-portal");
-                } else {
-                    jettyServer.setPortalContextPath(jettyServer.getContextPath() + "-portal");
-                }
-            } else {
-                jettyServer.setPortalContextPath(frontContextPath);
-            }
-
-            if (cmd.hasOption(jettyEnvPathOption.getOpt())) {
-                String jettyEnvPath = cmd.getOptionValue(jettyEnvPathOption.getOpt());
-                if (jettyEnvPath != null && !jettyEnvPath.isEmpty()) {
-                    File file = new File(jettyEnvPath);
-                    if (!file.exists()) {
-                        System.out.println("jettyEnvPath should point to an existing file");
+                CubaJettyServer jettyServer = new CubaJettyServer();
+                jettyServer.setStopPort(stopPort);
+                jettyServer.setStopKey(stopKey);
+                if (cmd.hasOption(portOption.getOpt())) {
+                    try {
+                        jettyServer.setPort(Integer.parseInt(cmd.getOptionValue(portOption.getOpt())));
+                    } catch (NumberFormatException e) {
+                        System.out.println("port has to be number");
                         printHelp(formatter, cliOptions);
                         return;
                     }
-                    try {
-                        jettyServer.setJettyEnvPathUrl(file.toURI().toURL());
-                    } catch (MalformedURLException e) {
-                        throw new RuntimeException("Unable to create jettyEnvPathUrl", e);
+                } else {
+                    jettyServer.setPort(getDefaultWebPort());
+                }
+                String contextPath = null;
+                String frontContextPath = null;
+                String portalContextPath = null;
+                if (cmd.hasOption(contextPathOption.getOpt())) {
+                    String contextName = cmd.getOptionValue(contextPathOption.getOpt());
+                    if (contextName != null && !contextName.isEmpty()) {
+                        if (PATH_DELIMITER.equals(contextName)) {
+                            contextPath = PATH_DELIMITER;
+                        } else {
+                            contextPath = PATH_DELIMITER + contextName;
+                        }
                     }
                 }
-            }
+                if (cmd.hasOption(frontContextPathOption.getOpt())) {
+                    String contextName = cmd.getOptionValue(frontContextPathOption.getOpt());
+                    if (contextName != null && !contextName.isEmpty()) {
+                        if (PATH_DELIMITER.equals(contextName)) {
+                            frontContextPath = PATH_DELIMITER;
+                        } else {
+                            frontContextPath = PATH_DELIMITER + contextName;
+                        }
+                    }
+                }
 
-            if (cmd.hasOption(jettyConfOption.getOpt())) {
-                String jettyConf = cmd.getOptionValue(jettyConfOption.getOpt());
-                if (jettyConf != null && !jettyConf.isEmpty()) {
-                    File file = new File(jettyConf);
-                    if (!file.exists()) {
-                        System.out.println("jettyConf should point to an existing file");
-                        printHelp(formatter, cliOptions);
-                        return;
-                    }
-                    try {
-                        jettyServer.setJettyEnvPathUrl(file.toURI().toURL());
-                    } catch (MalformedURLException e) {
-                        throw new RuntimeException("Unable to create jettyConfUrl", e);
+                if (cmd.hasOption(portalContextPathOption.getOpt())) {
+                    String contextName = cmd.getOptionValue(portalContextPathOption.getOpt());
+                    if (contextName != null && !contextName.isEmpty()) {
+                        if (PATH_DELIMITER.equals(contextName)) {
+                            portalContextPath = PATH_DELIMITER;
+                        } else {
+                            portalContextPath = PATH_DELIMITER + contextName;
+                        }
                     }
                 }
-            } else {
-                URL jettyConfUrl = getJettyConfUrl();
-                if (jettyConfUrl != null) {
-                    jettyServer.setJettyConfUrl(jettyConfUrl);
+
+                if (contextPath == null) {
+                    String jarName = getJarName();
+                    if (jarName != null) {
+                        jettyServer.setContextPath(PATH_DELIMITER + FilenameUtils.getBaseName(jarName));
+                    } else {
+                        jettyServer.setContextPath(PATH_DELIMITER);
+                    }
+                } else {
+                    jettyServer.setContextPath(contextPath);
                 }
+                if (frontContextPath == null) {
+                    if (PATH_DELIMITER.equals(contextPath)) {
+                        jettyServer.setFrontContextPath(PATH_DELIMITER + "app-front");
+                    } else {
+                        jettyServer.setFrontContextPath(jettyServer.getContextPath() + "-front");
+                    }
+                } else {
+                    jettyServer.setFrontContextPath(frontContextPath);
+                }
+                if (portalContextPath == null) {
+                    if (PATH_DELIMITER.equals(contextPath)) {
+                        jettyServer.setPortalContextPath(PATH_DELIMITER + "app-portal");
+                    } else {
+                        jettyServer.setPortalContextPath(jettyServer.getContextPath() + "-portal");
+                    }
+                } else {
+                    jettyServer.setPortalContextPath(frontContextPath);
+                }
+
+                if (cmd.hasOption(jettyEnvPathOption.getOpt())) {
+                    String jettyEnvPath = cmd.getOptionValue(jettyEnvPathOption.getOpt());
+                    if (jettyEnvPath != null && !jettyEnvPath.isEmpty()) {
+                        File file = new File(jettyEnvPath);
+                        if (!file.exists()) {
+                            System.out.println("jettyEnvPath should point to an existing file");
+                            printHelp(formatter, cliOptions);
+                            return;
+                        }
+                        try {
+                            jettyServer.setJettyEnvPathUrl(file.toURI().toURL());
+                        } catch (MalformedURLException e) {
+                            throw new RuntimeException("Unable to create jettyEnvPathUrl", e);
+                        }
+                    }
+                }
+
+                if (cmd.hasOption(jettyConfOption.getOpt())) {
+                    String jettyConf = cmd.getOptionValue(jettyConfOption.getOpt());
+                    if (jettyConf != null && !jettyConf.isEmpty()) {
+                        File file = new File(jettyConf);
+                        if (!file.exists()) {
+                            System.out.println("jettyConf should point to an existing file");
+                            printHelp(formatter, cliOptions);
+                            return;
+                        }
+                        try {
+                            jettyServer.setJettyEnvPathUrl(file.toURI().toURL());
+                        } catch (MalformedURLException e) {
+                            throw new RuntimeException("Unable to create jettyConfUrl", e);
+                        }
+                    }
+                } else {
+                    URL jettyConfUrl = getJettyConfUrl();
+                    if (jettyConfUrl != null) {
+                        jettyServer.setJettyConfUrl(jettyConfUrl);
+                    }
+                }
+                System.out.println(format("Starting Jetty server on port: %s and contextPath: %s", jettyServer.getPort(), jettyServer.getContextPath()));
+                jettyServer.start();
             }
-            System.out.println(format("Starting Jetty server on port: %s and contextPath: %s", jettyServer.getPort(), jettyServer.getContextPath()));
-            jettyServer.start();
         }
     }
 
@@ -254,5 +298,30 @@ public class ServerRunner {
             return PORTAL_PATH_IN_JAR + PATH_DELIMITER + APP_PROPERTIES_PATH_IN_JAR;
         }
         return null;
+    }
+
+    protected void stop(int port, String key) {
+        try {
+            try (Socket s = new Socket(InetAddress.getByName("127.0.0.1"), port)) {
+                s.setSoTimeout(STOP_TIMEOUT * 1000);
+                try (OutputStream out = s.getOutputStream()) {
+                    out.write((key + "\r\nstop\r\n").getBytes());
+                    out.flush();
+                    System.out.println(String.format("Waiting %,d seconds for server to stop", STOP_TIMEOUT));
+                    LineNumberReader lin = new LineNumberReader(new InputStreamReader(s.getInputStream()));
+                    String response;
+                    while ((response = lin.readLine()) != null) {
+                        System.out.println(String.format("Received \"%s\"", response));
+                        if ("Stopped".equals(response)) {
+                            System.out.println("Server reports itself as Stopped");
+                        }
+                    }
+                }
+            }
+        } catch (SocketTimeoutException e) {
+            System.out.println("Timed out waiting for stop confirmation");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
