@@ -23,6 +23,7 @@ import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.MarginInfo;
 import net.miginfocom.layout.CC;
 import org.apache.commons.lang.StringUtils;
 
@@ -400,8 +401,23 @@ public abstract class DesktopAbstractBox
     }
 
     @Override
+    public void setMargin(MarginInfo marginInfo) {
+        layoutAdapter.setMargin(marginInfo);
+    }
+
+    @Override
+    public MarginInfo getMargin() {
+        return layoutAdapter.getMargin();
+    }
+
+    @Override
     public void setSpacing(boolean enabled) {
         layoutAdapter.setSpacing(enabled);
+    }
+
+    @Override
+    public boolean getSpacing() {
+        return layoutAdapter.getSpacing();
     }
 
     @Override

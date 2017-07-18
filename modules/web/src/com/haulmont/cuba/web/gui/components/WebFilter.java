@@ -176,6 +176,20 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
     }
 
     @Override
+    public void setMargin(com.haulmont.cuba.gui.components.MarginInfo marginInfo) {
+        MarginInfo vMargin = new MarginInfo(marginInfo.hasTop(), marginInfo.hasRight(), marginInfo.hasBottom(),
+                marginInfo.hasLeft());
+        component.setMargin(vMargin);
+    }
+
+    @Override
+    public com.haulmont.cuba.gui.components.MarginInfo getMargin() {
+        MarginInfo vMargin = component.getMargin();
+        return new com.haulmont.cuba.gui.components.MarginInfo(vMargin.hasTop(), vMargin.hasRight(), vMargin.hasBottom(),
+                vMargin.hasLeft());
+    }
+
+    @Override
     public String getCaption() {
         if (delegate.isBorderVisible()) {
             return delegate.getCaption();

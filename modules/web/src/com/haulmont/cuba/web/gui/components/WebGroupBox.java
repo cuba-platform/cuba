@@ -345,6 +345,11 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     }
 
     @Override
+    public boolean getSpacing() {
+        return getComponentContent().isSpacing();
+    }
+
+    @Override
     public Orientation getOrientation() {
         return orientation;
     }

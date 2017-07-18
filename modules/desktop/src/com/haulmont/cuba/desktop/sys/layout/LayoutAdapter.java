@@ -17,6 +17,8 @@
 
 package com.haulmont.cuba.desktop.sys.layout;
 
+import com.haulmont.cuba.gui.components.MarginInfo;
+
 import java.awt.*;
 
 public abstract class LayoutAdapter
@@ -56,9 +58,28 @@ public abstract class LayoutAdapter
     }
 
     @Override
+    public void setMargin(MarginInfo marginInfo) {
+        margins[0] = marginInfo.hasTop();
+        margins[1] = marginInfo.hasRight();
+        margins[2] = marginInfo.hasBottom();
+        margins[3] = marginInfo.hasLeft();
+        update();
+    }
+
+    @Override
+    public MarginInfo getMargin() {
+        return new MarginInfo(margins[0], margins[1], margins[2], margins[3]);
+    }
+
+    @Override
     public void setSpacing(boolean enabled) {
         spacing = enabled;
         update();
+    }
+
+    @Override
+    public boolean getSpacing() {
+        return spacing;
     }
 
     /*
