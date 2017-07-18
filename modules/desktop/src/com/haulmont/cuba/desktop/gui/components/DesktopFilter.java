@@ -23,6 +23,7 @@ import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.FilterImplementation;
+import com.haulmont.cuba.gui.components.MarginInfo;
 import com.haulmont.cuba.gui.components.compatibility.ComponentExpandCollapseListenerWrapper;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -188,16 +189,25 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         this.settingsEnabled = settingsEnabled;
     }
 
+    // just stub
     @Override
     public void setMargin(boolean enable) {
-        //todo gorbunkov
-//        component.setMargin(enable);
     }
 
+    // just stub
     @Override
     public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
-        //todo gorbunkov
-//        component.setMargin(new MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
+    }
+
+    // just stub
+    @Override
+    public void setMargin(MarginInfo marginInfo) {
+    }
+
+    // just stub
+    @Override
+    public MarginInfo getMargin() {
+        return null;
     }
 
     @Override

@@ -19,6 +19,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.MarginInfo;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -331,8 +332,23 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     }
 
     @Override
+    public void setMargin(MarginInfo marginInfo) {
+        content.setMargin(marginInfo);
+    }
+
+    @Override
+    public MarginInfo getMargin() {
+        return content.getMargin();
+    }
+
+    @Override
     public void setSpacing(boolean enabled) {
         content.setSpacing(enabled);
+    }
+
+    @Override
+    public boolean getSpacing() {
+        return content.getSpacing();
     }
 
     @Override

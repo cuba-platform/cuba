@@ -236,6 +236,14 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
+    public boolean getSpacing() {
+        if (getContainer() instanceof Layout.SpacingHandler) {
+            return ((Layout.SpacingHandler) getContainer()).isSpacing();
+        }
+        return false;
+    }
+
+    @Override
     public void setMargin(boolean enable) {
         if (getContainer() instanceof Layout.MarginHandler) {
             ((Layout.MarginHandler) getContainer()).setMargin(new MarginInfo(enable));
@@ -247,6 +255,24 @@ public class WebWindow implements Window, Component.Wrapper,
         if (getContainer() instanceof Layout.MarginHandler) {
             ((Layout.MarginHandler) getContainer()).setMargin(new MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
         }
+    }
+
+    @Override
+    public void setMargin(com.haulmont.cuba.gui.components.MarginInfo marginInfo) {
+        if (getContainer() instanceof Layout.MarginHandler) {
+            MarginInfo vMargin = new MarginInfo(marginInfo.hasTop(), marginInfo.hasRight(), marginInfo.hasBottom(),
+                    marginInfo.hasLeft());
+            ((Layout.MarginHandler) getContainer()).setMargin(vMargin);
+        }
+    }
+
+    @Override
+    public com.haulmont.cuba.gui.components.MarginInfo getMargin() {
+        if (getContainer() instanceof Layout.MarginHandler) {
+            MarginInfo vMargin = ((Layout.MarginHandler) getContainer()).getMargin();
+            return new com.haulmont.cuba.gui.components.MarginInfo(vMargin.hasTop(), vMargin.hasRight(), vMargin.hasBottom(), vMargin.hasLeft());
+        }
+        return new com.haulmont.cuba.gui.components.MarginInfo(false);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1238,8 +1238,23 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
+    public void setMargin(MarginInfo marginInfo) {
+        layoutAdapter.setMargin(marginInfo);
+    }
+
+    @Override
+    public MarginInfo getMargin() {
+        return layoutAdapter.getMargin();
+    }
+
+    @Override
     public void setSpacing(boolean enabled) {
         layoutAdapter.setSpacing(enabled);
+    }
+
+    @Override
+    public boolean getSpacing() {
+        return layoutAdapter.getSpacing();
     }
 
     @Override
