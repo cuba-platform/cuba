@@ -191,16 +191,6 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     // just stub
     @Override
-    public void setMargin(boolean enable) {
-    }
-
-    // just stub
-    @Override
-    public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
-    }
-
-    // just stub
-    @Override
     public void setMargin(MarginInfo marginInfo) {
     }
 

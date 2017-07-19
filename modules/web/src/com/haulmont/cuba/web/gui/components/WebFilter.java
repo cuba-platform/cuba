@@ -166,16 +166,6 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
     }
 
     @Override
-    public void setMargin(boolean enable) {
-        component.setMargin(enable);
-    }
-
-    @Override
-    public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
-        component.setMargin(new MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
-    }
-
-    @Override
     public void setMargin(com.haulmont.cuba.gui.components.MarginInfo marginInfo) {
         MarginInfo vMargin = new MarginInfo(marginInfo.hasTop(), marginInfo.hasRight(), marginInfo.hasBottom(),
                 marginInfo.hasLeft());

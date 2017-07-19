@@ -40,24 +40,6 @@ public abstract class LayoutAdapter
     protected abstract void update();
 
     @Override
-    public void setMargin(boolean enable) {
-        margins[0] = enable;
-        margins[1] = enable;
-        margins[2] = enable;
-        margins[3] = enable;
-        update();
-    }
-
-    @Override
-    public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
-        margins[0] = topEnable;
-        margins[1] = rightEnable;
-        margins[2] = bottomEnable;
-        margins[3] = leftEnable;
-        update();
-    }
-
-    @Override
     public void setMargin(MarginInfo marginInfo) {
         margins[0] = marginInfo.hasTop();
         margins[1] = marginInfo.hasRight();

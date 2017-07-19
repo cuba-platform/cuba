@@ -322,16 +322,6 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     }
 
     @Override
-    public void setMargin(boolean enable) {
-        content.setMargin(enable);
-    }
-
-    @Override
-    public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
-        content.setMargin(topEnable, rightEnable, bottomEnable, leftEnable);
-    }
-
-    @Override
     public void setMargin(MarginInfo marginInfo) {
         content.setMargin(marginInfo);
     }
