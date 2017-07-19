@@ -244,20 +244,6 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
-    public void setMargin(boolean enable) {
-        if (getContainer() instanceof Layout.MarginHandler) {
-            ((Layout.MarginHandler) getContainer()).setMargin(new MarginInfo(enable));
-        }
-    }
-
-    @Override
-    public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
-        if (getContainer() instanceof Layout.MarginHandler) {
-            ((Layout.MarginHandler) getContainer()).setMargin(new MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
-        }
-    }
-
-    @Override
     public void setMargin(com.haulmont.cuba.gui.components.MarginInfo marginInfo) {
         if (getContainer() instanceof Layout.MarginHandler) {
             MarginInfo vMargin = new MarginInfo(marginInfo.hasTop(), marginInfo.hasRight(), marginInfo.hasBottom(),

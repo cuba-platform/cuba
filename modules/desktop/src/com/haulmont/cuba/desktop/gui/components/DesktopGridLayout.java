@@ -302,11 +302,6 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
     }
 
     @Override
-    public void setMargin(boolean enable) {
-        layoutAdapter.setMargin(enable);
-    }
-
-    @Override
     public void setMargin(MarginInfo marginInfo) {
         layoutAdapter.setMargin(marginInfo);
     }
@@ -314,11 +309,6 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
     @Override
     public MarginInfo getMargin() {
         return layoutAdapter.getMargin();
-    }
-
-    @Override
-    public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
-        layoutAdapter.setMargin(topEnable, rightEnable, bottomEnable, leftEnable);
     }
 
     @Override

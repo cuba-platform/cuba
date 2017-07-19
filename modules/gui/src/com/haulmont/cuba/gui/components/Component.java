@@ -848,7 +848,9 @@ public interface Component {
      * A class that implements this interface can have indentation between the outer borders and the container content.
      */
     interface Margin {
-        void setMargin(boolean enable);
+        default void setMargin(boolean enable) {
+            setMargin(new MarginInfo(enable, enable, enable, enable));
+        }
 
         default void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
             setMargin(new MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));

@@ -391,16 +391,6 @@ public abstract class DesktopAbstractBox
     }
 
     @Override
-    public void setMargin(boolean enable) {
-        layoutAdapter.setMargin(enable);
-    }
-
-    @Override
-    public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
-        layoutAdapter.setMargin(topEnable, rightEnable, bottomEnable, leftEnable);
-    }
-
-    @Override
     public void setMargin(MarginInfo marginInfo) {
         layoutAdapter.setMargin(marginInfo);
     }
