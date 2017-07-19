@@ -10,6 +10,8 @@ The simplest way to start using the platform is to [download](https://www.cuba-p
 
 You can also build a snapshot version of the platform from the source code and use it in your project.
 
+To contribute, first refer to [Contributing Code](https://github.com/cuba-platform/cuba/blob/master/CONTRIBUTING.md) for general instructions and requirements for contributing code to the platform.
+
 ## Building from Source
 
 In order to build the platform from source, you need to install the following:
