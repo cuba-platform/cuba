@@ -144,4 +144,4 @@ Start the following command to run static code analysis:
 1. Respond to review comments: review comments are meant to improve the quality of the code by pointing out defects or readability issues.
 1. Most PRs take a few iterations of review before they are merged.
 
-__We are looking forward to seeing your contributions!__
+__We are looking forward to getting your contributions!__
