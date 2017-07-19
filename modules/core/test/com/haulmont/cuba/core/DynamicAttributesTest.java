@@ -252,4 +252,15 @@ public class DynamicAttributesTest {
         assertTrue(intCollection.contains(1));
         assertTrue(intCollection.contains(3));
     }
+
+    @Test
+    public void testPropertyChangeListener() {
+        User loadedUser = dataManager.load(LoadContext.create(User.class).setId(user.getId()).setLoadDynamicAttributes(true));
+        assertEquals("userName", loadedUser.getValue("+userAttribute"));
+        loadedUser.addPropertyChangeListener(e -> {
+            assertEquals("userName", e.getPrevValue());
+            assertEquals("newName", e.getValue());
+        });
+        loadedUser.setValue("+userAttribute", "newName");
+    }
 }
