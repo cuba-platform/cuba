@@ -123,7 +123,7 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
                             dynamicAttributesBean.getAttributeForMetaClass(getMetaClass(), attributeCode));
                     dynamicAttributes.put(attributeCode, categoryAttributeValue);
                 }
-                propertyChanged(property, null, newValue);
+                propertyChanged(property, oldValue, newValue);
             }
         } else {
             super.setValue(property, newValue, checkEquals);
