@@ -310,7 +310,8 @@ public interface Frame
             this.mutable = mutable;
         }
 
-        private Integer width;
+        private Float width;
+        private SizeUnit widthUnit;
         private Boolean modal;
         private Boolean closeOnClickOutside;
 
@@ -318,28 +319,68 @@ public interface Frame
             return messageMode;
         }
 
-        public Integer getWidth() {
+        public Float getWidth() {
             return width;
         }
 
+        /**
+         * @deprecated Use {@link #width(Float)} instead.
+         */
+        @Deprecated
         public MessageType width(Integer width) {
+            return width(width.floatValue());
+        }
+
+        /**
+         * @deprecated Use {@link #setWidth(Float)} instead.
+         */
+        @Deprecated
+        public MessageType setWidth(Integer width) {
+            return setWidth(width.floatValue());
+        }
+
+        public MessageType width(Float width) {
             MessageType instance = getMutableInstance();
 
             instance.width = width;
             return instance;
         }
 
-        public MessageType setWidth(Integer width) {
+        public MessageType setWidth(Float width) {
             MessageType instance = getMutableInstance();
 
             instance.width = width;
+            return instance;
+        }
+
+        public MessageType width(String width) {
+            return setWidth(width);
+        }
+
+        public MessageType setWidth(String width) {
+            MessageType instance = getMutableInstance();
+
+            SizeWithUnit size = SizeWithUnit.parseStringSize(width);
+
+            instance.width = size.getSize();
+            instance.widthUnit = size.getUnit();
+            return instance;
+        }
+
+        public SizeUnit getWidthUnit() {
+            return widthUnit;
+        }
+
+        public MessageType setWidthUnit(SizeUnit widthUnit) {
+            MessageType instance = getMutableInstance();
+            instance.widthUnit = widthUnit;
             return instance;
         }
 
         public MessageType widthAuto() {
             MessageType instance = getMutableInstance();
 
-            instance.width = -1;
+            instance.width = -1.0f;
             return instance;
         }
 

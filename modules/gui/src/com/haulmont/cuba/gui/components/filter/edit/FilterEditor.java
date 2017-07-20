@@ -141,8 +141,8 @@ public class FilterEditor extends AbstractWindow {
         }
 
         getDialogOptions()
-                .setWidth(theme.getInt("cuba.gui.filterEditor.dialog.width"))
-                .setHeight(theme.getInt("cuba.gui.filterEditor.dialog.height"))
+                .setWidth(theme.get("cuba.gui.filterEditor.dialog.width"))
+                .setHeight(theme.get("cuba.gui.filterEditor.dialog.height"))
                 .setResizable(true);
 
         filterEntity = (FilterEntity) params.get("filterEntity");

@@ -16,15 +16,13 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component.Alignment;
 import com.haulmont.cuba.gui.components.DataGrid.DataGridStaticCellType;
 import com.haulmont.cuba.gui.components.LookupField.FilterMode;
-import com.haulmont.cuba.gui.components.ResizableTextArea;
-import com.haulmont.cuba.gui.components.TextInputField;
 import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.ResizeDirection;
 import com.vaadin.event.MouseEvents;
+import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.shared.ui.grid.GridStaticCellType;
 import com.vaadin.ui.AbstractSelect;
@@ -257,6 +255,32 @@ public final class WebWrapperUtils {
                 return ResizableTextArea.ResizeDirection.NONE;
             default:
                 throw new IllegalArgumentException("Unknown direction: " + direction);
+        }
+    }
+
+    public static Sizeable.Unit toVaadinUnit(SizeUnit sizeUnit) {
+        checkNotNullArgument(sizeUnit);
+
+        switch (sizeUnit) {
+            case PIXELS:
+                return Sizeable.Unit.PIXELS;
+            case PERCENTAGE:
+                return Sizeable.Unit.PERCENTAGE;
+            default:
+                throw new UnsupportedOperationException("Unsupported Size Unit");
+        }
+    }
+
+    public static SizeUnit toSizeUnit(Sizeable.Unit units) {
+        checkNotNullArgument(units);
+
+        switch (units) {
+            case PIXELS:
+                return SizeUnit.PIXELS;
+            case PERCENTAGE:
+                return SizeUnit.PERCENTAGE;
+            default:
+                throw new UnsupportedOperationException("Unsupported Size Unit");
         }
     }
 }

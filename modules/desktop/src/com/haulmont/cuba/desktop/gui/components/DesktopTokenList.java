@@ -800,8 +800,8 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
                     dialogParams.setWidth(lookupScreenDialogParams.getWidth());
                     dialogParams.setHeight(lookupScreenDialogParams.getHeight());
                 } else {
-                    dialogParams.setWidth(800);
-                    dialogParams.setHeight(600);
+                    dialogParams.setWidth("800px");
+                    dialogParams.setHeight("600px");
                 }
             }
 

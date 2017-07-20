@@ -266,21 +266,21 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
         showMessageDialog(getMessage("joinClause"), getMessage("joinClauseHelp"),
                 MessageType.CONFIRMATION_HTML
                         .modal(false)
-                        .width(600));
+                        .width("600px"));
     }
 
     public void getWhereClauseHelp() {
         showMessageDialog(getMessage("whereClause"), getMessage("whereClauseHelp"),
                 MessageType.CONFIRMATION_HTML
                         .modal(false)
-                        .width(600));
+                        .width("600px"));
     }
 
     public void getGroovyScriptHelp() {
         showMessageDialog(getMessage("groovyScript"), getMessage("groovyScriptHelp"),
                 MessageType.CONFIRMATION_HTML
                         .modal(false)
-                        .width(600));
+                        .width("600px"));
     }
 
     public void openWizard() {

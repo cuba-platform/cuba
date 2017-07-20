@@ -56,8 +56,8 @@ public class ControlLoggerWindow extends AbstractWindow {
         super.init(params);
 
         getDialogOptions()
-                .setWidth(themeConstants.getInt("cuba.web.ControlLoggerWindow.width"))
-                .setHeight(themeConstants.getInt("cuba.web.ControlLoggerWindow.height"))
+                .setWidth(themeConstants.get("cuba.web.ControlLoggerWindow.width"))
+                .setHeight(themeConstants.get("cuba.web.ControlLoggerWindow.height"))
                 .setResizable(true);
 
         loggersMap = (Map<String, Level>) params.get("loggersMap");

@@ -113,8 +113,8 @@ public class ListEditorPopupWindow extends AbstractWindow {
         super.init(params);
 
         getDialogOptions()
-                .setWidth(theme.getInt("cuba.gui.listEditor.popup.dialog.width"))
-                .setHeight(theme.getInt("cuba.gui.listEditor.popup.dialog.height"))
+                .setWidth(theme.get("cuba.gui.listEditor.popup.dialog.width"))
+                .setHeight(theme.get("cuba.gui.listEditor.popup.dialog.height"))
                 .setResizable(true);
 
         if (editable == null) {

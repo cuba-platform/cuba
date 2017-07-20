@@ -57,7 +57,7 @@ public class MultiUploader extends AbstractWindow {
         multiUpload.setDropZone(new UploadField.DropZone(this));
 
         getDialogOptions()
-                .setHeight(themeConstants.getInt("cuba.gui.multiupload.height"))
+                .setHeight(themeConstants.get("cuba.gui.multiupload.height"))
                 .setResizable(true);
 
         filesDs.refresh();

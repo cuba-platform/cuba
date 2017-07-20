@@ -49,7 +49,7 @@ public class JmxInstanceEditor extends AbstractEditor<JmxInstance> {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogOptions().setWidth(themeConstants.getInt("cuba.web.JmxInstanceEditor.width"));
+        getDialogOptions().setWidth(themeConstants.get("cuba.web.JmxInstanceEditor.width"));
 
         jmxFieldGroup.addCustomField("password", new FieldGroup.CustomFieldGenerator() {
             @Override

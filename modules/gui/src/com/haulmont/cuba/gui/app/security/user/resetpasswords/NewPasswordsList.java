@@ -51,7 +51,7 @@ public class NewPasswordsList extends AbstractWindow {
 
         getDialogOptions()
                 .setResizable(true)
-                .setHeight(themeConstants.getInt("cuba.gui.NewPasswordsList.height"));
+                .setHeight(themeConstants.get("cuba.gui.NewPasswordsList.height"));
 
         passwordsTable.getColumn("id").setFormatter(new Formatter<UUID>() {
             @Override

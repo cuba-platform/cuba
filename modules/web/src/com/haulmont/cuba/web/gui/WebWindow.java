@@ -1340,18 +1340,28 @@ public class WebWindow implements Window, Component.Wrapper,
 
     protected class WebDialogOptions extends DialogOptions {
         @Override
-        public Integer getWidth() {
+        public Float getWidth() {
             com.vaadin.ui.Window dialogWindow = asDialogWindow();
             if (dialogWindow != null) {
-                return (int)dialogWindow.getWidth();
+                return dialogWindow.getWidth();
             }
 
             return super.getWidth();
         }
 
         @Override
-        public DialogOptions setWidth(Integer width) {
-            super.setWidth(width);
+        public SizeUnit getWidthUnit() {
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                return WebWrapperUtils.toSizeUnit(dialogWindow.getWidthUnits());
+            }
+
+            return super.getWidthUnit();
+        }
+
+        @Override
+        protected DialogOptions setWidth(Float width, SizeUnit sizeUnit) {
+            super.setWidth(width, sizeUnit);
 
             if (width != null) {
                 com.vaadin.ui.Window dialogWindow = asDialogWindow();
@@ -1361,7 +1371,10 @@ public class WebWindow implements Window, Component.Wrapper,
                         component.setWidthUndefined();
                         getContainer().setWidthUndefined();
                     } else {
-                        dialogWindow.setWidth(width, Unit.PIXELS);
+                        Unit unit = sizeUnit != null
+                                ? WebWrapperUtils.toVaadinUnit(sizeUnit)
+                                : Unit.PIXELS;
+                        dialogWindow.setWidth(width, unit);
                         component.setWidth(100, Unit.PERCENTAGE);
                     }
                 }
@@ -1371,18 +1384,28 @@ public class WebWindow implements Window, Component.Wrapper,
         }
 
         @Override
-        public Integer getHeight() {
+        public Float getHeight() {
             com.vaadin.ui.Window dialogWindow = asDialogWindow();
             if (dialogWindow != null) {
-                return (int)dialogWindow.getHeight();
+                return dialogWindow.getHeight();
             }
 
             return super.getHeight();
         }
 
         @Override
-        public DialogOptions setHeight(Integer height) {
-            super.setHeight(height);
+        public SizeUnit getHeightUnit() {
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                return WebWrapperUtils.toSizeUnit(dialogWindow.getHeightUnits());
+            }
+
+            return super.getHeightUnit();
+        }
+
+        @Override
+        protected DialogOptions setHeight(Float height, SizeUnit sizeUnit) {
+            super.setHeight(height, sizeUnit);
 
             if (height != null) {
                 com.vaadin.ui.Window dialogWindow = asDialogWindow();
@@ -1392,7 +1415,10 @@ public class WebWindow implements Window, Component.Wrapper,
                         component.setHeightUndefined();
                         getContainer().setHeightUndefined();
                     } else {
-                        dialogWindow.setHeight(height, Unit.PIXELS);
+                        Unit unit = sizeUnit != null
+                                ? WebWrapperUtils.toVaadinUnit(sizeUnit)
+                                : Unit.PIXELS;
+                        dialogWindow.setHeight(height, unit);
                         component.setHeight(100, Unit.PERCENTAGE);
                     }
                 }

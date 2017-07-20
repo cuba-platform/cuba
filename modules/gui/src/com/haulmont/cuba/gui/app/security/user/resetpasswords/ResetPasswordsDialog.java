@@ -45,7 +45,7 @@ public class ResetPasswordsDialog extends AbstractWindow {
         super.init(params);
 
         getDialogOptions()
-                .setWidth(theme.getInt("cuba.gui.ResetPasswordsDialog.width"))
+                .setWidth(theme.get("cuba.gui.ResetPasswordsDialog.width"))
                 .setResizable(false);
 
         generatePasswordsCheckBox.addValueChangeListener(e -> {
