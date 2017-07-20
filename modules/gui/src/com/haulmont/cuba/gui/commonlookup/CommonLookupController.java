@@ -59,8 +59,8 @@ public class CommonLookupController extends AbstractLookup {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        getDialogOptions().setWidth(themeConstantsManager.getThemeValueInt("cuba.gui.commonLookup.width"))
-                .setHeight(themeConstantsManager.getThemeValueInt("cuba.gui.commonLookup.height"))
+        getDialogOptions().setWidth(themeConstantsManager.getThemeValue("cuba.gui.commonLookup.width"))
+                .setHeight(themeConstantsManager.getThemeValue("cuba.gui.commonLookup.height"))
                 .setResizable(true);
         setCaption(messageTools.getEntityCaption(metaClass));
         initView();

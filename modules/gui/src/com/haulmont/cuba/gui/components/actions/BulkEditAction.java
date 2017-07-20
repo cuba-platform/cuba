@@ -126,8 +126,8 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
             ThemeConstants theme = themeManager.getConstants();
 
             target.getFrame().getDialogParams()
-                    .setWidth(theme.getInt("cuba.gui.BulkEditAction.editorDialog.width"))
-                    .setHeight(theme.getInt("cuba.gui.BulkEditAction.editorDialog.height"))
+                    .setWidth(theme.get("cuba.gui.BulkEditAction.editorDialog.width"))
+                    .setHeight(theme.get("cuba.gui.BulkEditAction.editorDialog.height"))
                     .setResizable(true);
         }
 

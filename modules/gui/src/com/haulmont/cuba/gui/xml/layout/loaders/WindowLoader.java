@@ -92,29 +92,17 @@ public class WindowLoader extends FrameLoader<Window> {
 
             String xmlWidthValue = dialogModeElement.attributeValue("width");
             if (StringUtils.isNotEmpty(xmlWidthValue)) {
-                if ("auto".equalsIgnoreCase(xmlWidthValue)) {
-                    dialogOptions.setWidth(Component.AUTO_SIZE_PX);
-                } else if (!StringUtils.isBlank(xmlWidthValue)) {
+                if (StringUtils.isNotBlank(xmlWidthValue)) {
                     String themeWidthValue = loadThemeString(xmlWidthValue);
-                    if (themeWidthValue.contains("px")) {
-                        themeWidthValue = themeWidthValue.replace("px", "");
-                    }
-
-                    dialogOptions.setWidth(Integer.parseInt(themeWidthValue));
+                    dialogOptions.setWidth(themeWidthValue);
                 }
             }
 
             String xmlHeightValue = dialogModeElement.attributeValue("height");
             if (StringUtils.isNotEmpty(xmlHeightValue)) {
-                if ("auto".equalsIgnoreCase(xmlHeightValue)) {
-                    dialogOptions.setHeight(Component.AUTO_SIZE_PX);
-                } else if (!StringUtils.isBlank(xmlHeightValue)) {
+                if (StringUtils.isNotBlank(xmlHeightValue)) {
                     String themeHeightValue = loadThemeString(xmlHeightValue);
-                    if (themeHeightValue.contains("px")) {
-                        themeHeightValue = themeHeightValue.replace("px", "");
-                    }
-
-                    dialogOptions.setHeight(Integer.parseInt(themeHeightValue));
+                    dialogOptions.setHeight(themeHeightValue);
                 }
             }
 

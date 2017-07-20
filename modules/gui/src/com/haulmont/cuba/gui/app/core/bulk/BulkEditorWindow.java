@@ -120,8 +120,8 @@ public class BulkEditorWindow extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        int width = themeConstants.getInt("cuba.gui.BulkEditorWindow.width");
-        int height = themeConstants.getInt("cuba.gui.BulkEditorWindow.height");
+        String width = themeConstants.get("cuba.gui.BulkEditorWindow.width");
+        String height = themeConstants.get("cuba.gui.BulkEditorWindow.height");
 
         getDialogOptions()
                 .setWidth(width)

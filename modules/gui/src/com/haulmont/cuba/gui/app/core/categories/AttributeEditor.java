@@ -163,7 +163,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogOptions().setWidth(themeConstants.getInt("cuba.gui.AttributeEditor.width"));
+        getDialogOptions().setWidth(themeConstants.get("cuba.gui.AttributeEditor.width"));
 
         fieldWidth = themeConstants.get("cuba.gui.AttributeEditor.field.width");
 

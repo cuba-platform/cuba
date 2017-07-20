@@ -51,6 +51,7 @@ import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
@@ -734,11 +735,13 @@ public class WebWindowManager extends WindowManager {
                 layout.setWidthUndefined();
                 window.setWidthAuto();
             } else {
-                vWindow.setWidth(openType.getWidth().floatValue(), Unit.PIXELS);
+                vWindow.setWidth(openType.getWidth(),
+                        WebWrapperUtils.toVaadinUnit(openType.getWidthUnit()));
             }
 
             if (openType.getHeight() != null && openType.getHeight() != AUTO_SIZE_PX) {
-                vWindow.setHeight(openType.getHeight().floatValue(), Unit.PIXELS);
+                vWindow.setHeight(openType.getHeight(),
+                        WebWrapperUtils.toVaadinUnit(openType.getHeightUnit()));
                 layout.setHeight("100%");
                 window.setHeightFull();
             } else {
@@ -1176,16 +1179,24 @@ public class WebWindowManager extends WindowManager {
         layout.setComponentAlignment(button, Alignment.BOTTOM_RIGHT);
 
         float width;
+        SizeUnit unit;
         DialogParams dialogParams = getDialogParams();
         if (messageType.getWidth() != null) {
-            width = messageType.getWidth().floatValue();
+            width = messageType.getWidth();
+            unit = messageType.getWidthUnit();
         } else if (dialogParams.getWidth() != null) {
-            width = dialogParams.getWidth().floatValue();
+            width = dialogParams.getWidth();
+            unit = dialogParams.getWidthUnit();
         } else {
-            width = app.getThemeConstants().getInt("cuba.web.WebWindowManager.messageDialog.width");
+            SizeWithUnit size = SizeWithUnit.parseStringSize(
+                    app.getThemeConstants().get("cuba.web.WebWindowManager.messageDialog.width"));
+            width = size.getSize();
+            unit = size.getUnit();
         }
 
-        vWindow.setWidth(width, Unit.PIXELS);
+        vWindow.setWidth(width, unit != null
+                ? WebWrapperUtils.toVaadinUnit(unit)
+                : Unit.PIXELS);
         vWindow.setResizable(false);
 
         boolean modal = true;
@@ -1237,12 +1248,18 @@ public class WebWindowManager extends WindowManager {
         }
 
         float width;
+        SizeUnit unit;
         if (messageType.getWidth() != null) {
-            width = messageType.getWidth().floatValue();
+            width = messageType.getWidth();
+            unit = messageType.getWidthUnit();
         } else if (getDialogParams().getWidth() != null) {
-            width = getDialogParams().getWidth().floatValue();
+            width = getDialogParams().getWidth();
+            unit = getDialogParams().getWidthUnit();
         } else {
-            width = app.getThemeConstants().getInt("cuba.web.WebWindowManager.optionDialog.width");
+            SizeWithUnit size = SizeWithUnit.parseStringSize(
+                    app.getThemeConstants().get("cuba.web.WebWindowManager.optionDialog.width"));
+            width = size.getSize();
+            unit = size.getUnit();
         }
 
         if (messageType.getModal() != null) {
@@ -1251,7 +1268,9 @@ public class WebWindowManager extends WindowManager {
 
         getDialogParams().reset();
 
-        window.setWidth(width, Unit.PIXELS);
+        window.setWidth(width, unit != null
+                ? WebWrapperUtils.toVaadinUnit(unit)
+                : Unit.PIXELS);
         window.setResizable(false);
         window.setModal(true);
 

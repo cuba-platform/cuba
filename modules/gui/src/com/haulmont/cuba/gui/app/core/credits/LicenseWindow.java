@@ -35,8 +35,8 @@ public class LicenseWindow extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         getDialogOptions()
-                .setWidth(themeConstants.getInt("cuba.gui.LicenseWindow.width"))
-                .setHeight(themeConstants.getInt("cuba.gui.LicenseWindow.height"))
+                .setWidth(themeConstants.get("cuba.gui.LicenseWindow.width"))
+                .setHeight(themeConstants.get("cuba.gui.LicenseWindow.height"))
                 .setResizable(false);
 
         String licenseText = (String) params.get("licenseText");

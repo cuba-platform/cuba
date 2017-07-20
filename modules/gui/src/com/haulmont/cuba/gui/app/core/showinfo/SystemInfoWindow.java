@@ -137,8 +137,9 @@ public class SystemInfoWindow extends AbstractWindow {
         expand(scriptArea);
         infoTable.setHeight("250px");
 
-        if (getDialogOptions().getHeight() < 510) {
-            getDialogOptions().setHeight(510);
+        if (getDialogOptions().getHeightUnit().equals(SizeUnit.PIXELS)
+                && getDialogOptions().getHeight() < 510.0f) {
+            getDialogOptions().setHeight("510px");
         }
     }
 }

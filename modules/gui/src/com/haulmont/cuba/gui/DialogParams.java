@@ -17,6 +17,8 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.SizeUnit;
+import com.haulmont.cuba.gui.components.SizeWithUnit;
 import com.haulmont.cuba.gui.components.Window;
 
 /**
@@ -35,10 +37,12 @@ import com.haulmont.cuba.gui.components.Window;
 @Deprecated
 public class DialogParams {
 
-    public static final int AUTO_SIZE_PX = -1;
+    public static final float AUTO_SIZE_PX = -1.0f;
 
-    private Integer width;
-    private Integer height;
+    private Float width;
+    private SizeUnit widthUnit;
+    private Float height;
+    private SizeUnit heightUnit;
     private Boolean resizable;
     private Boolean closeable;
     private Boolean modal;
@@ -48,33 +52,87 @@ public class DialogParams {
 
     public DialogParams copyFrom(DialogParams dialogParams) {
         setHeight(dialogParams.getHeight());
+        setHeightUnit(dialogParams.getHeightUnit());
         setModal(dialogParams.getModal());
         setWidth(dialogParams.getWidth());
+        setWidthUnit(dialogParams.getWidthUnit());
         setCloseable(dialogParams.getCloseable());
         setResizable(dialogParams.getResizable());
         return this;
     }
 
-    public Integer getHeight() {
+    public Float getHeight() {
         return height;
     }
 
+    /**
+     * @deprecated Use {@link #setHeight(Float)} instead.
+     */
+    @Deprecated
     public DialogParams setHeight(Integer height) {
+        return setHeight(height.floatValue());
+    }
+
+    public DialogParams setHeight(Float height) {
         this.height = height;
         return this;
     }
 
-    public Integer getWidth() {
+    public DialogParams setHeight(String height) {
+        SizeWithUnit size = SizeWithUnit.parseStringSize(height);
+
+        this.height = size.getSize();
+        this.heightUnit = size.getUnit();
+
+        return this;
+    }
+
+    public SizeUnit getHeightUnit() {
+        return heightUnit;
+    }
+
+    public DialogParams setHeightUnit(SizeUnit heightUnit) {
+        this.heightUnit = heightUnit;
+        return this;
+    }
+
+    public Float getWidth() {
         return width;
     }
 
+    /**
+     * @deprecated Use {@link #setWidth(Float)} instead.
+     */
     public DialogParams setWidth(Integer width) {
+        return setWidth(width.floatValue());
+    }
+
+    public DialogParams setWidth(Float width) {
         this.width = width;
+        return this;
+    }
+
+    public DialogParams setWidth(String width) {
+        SizeWithUnit size = SizeWithUnit.parseStringSize(width);
+
+        this.width = size.getSize();
+        this.widthUnit = size.getUnit();
+
+        return this;
+    }
+
+    public SizeUnit getWidthUnit() {
+        return widthUnit;
+    }
+
+    public DialogParams setWidthUnit(SizeUnit widthUnit) {
+        this.widthUnit = widthUnit;
         return this;
     }
 
     public DialogParams setWidthAuto() {
         this.width = AUTO_SIZE_PX;
+        this.widthUnit = SizeUnit.PIXELS;
         return this;
     }
 
@@ -108,7 +166,9 @@ public class DialogParams {
     @Deprecated
     public DialogParams reset() {
         this.height = null;
+        this.heightUnit = null;
         this.width = null;
+        this.widthUnit = null;
         this.resizable = null;
         this.closeable = null;
         this.modal = null;

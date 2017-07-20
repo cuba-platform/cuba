@@ -673,8 +673,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                                 wm.getDialogParams().setHeight(lookupScreenDialogParams.getHeight());
                             } else {
                                 ThemeConstants theme = App.getInstance().getThemeConstants();
-                                int width = theme.getInt("cuba.web.WebTokenList.lookupDialog.width");
-                                int height = theme.getInt("cuba.web.WebTokenList.lookupDialog.height");
+                                String width = theme.get("cuba.web.WebTokenList.lookupDialog.width");
+                                String height = theme.get("cuba.web.WebTokenList.lookupDialog.height");
 
                                 wm.getDialogParams().setWidth(width);
                                 wm.getDialogParams().setHeight(height);

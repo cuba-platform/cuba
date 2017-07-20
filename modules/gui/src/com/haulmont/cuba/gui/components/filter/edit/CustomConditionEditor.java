@@ -41,7 +41,7 @@ public class CustomConditionEditor extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogOptions().setWidth(theme.getInt("cuba.gui.customConditionEditor.dialog.width"));
+        getDialogOptions().setWidth(theme.get("cuba.gui.customConditionEditor.dialog.width"));
 
         hideUnnecessaryFields();
     }

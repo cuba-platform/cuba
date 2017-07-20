@@ -47,8 +47,8 @@ public class LayoutAnalyzerWindow extends AbstractWindow {
 
         getDialogOptions()
                 .setResizable(true)
-                .setWidth(themeConstants.getInt("cuba.gui.LayoutAnalyzerWindow.width"))
-                .setHeight(themeConstants.getInt("cuba.gui.LayoutAnalyzerWindow.height"));
+                .setWidth(themeConstants.get("cuba.gui.LayoutAnalyzerWindow.width"))
+                .setHeight(themeConstants.get("cuba.gui.LayoutAnalyzerWindow.height"));
 
         StringBuilder analysisText = new StringBuilder();
         for (LayoutTip tip : tipsList) {

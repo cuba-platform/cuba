@@ -18,13 +18,17 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.SizeUnit;
+import com.haulmont.cuba.gui.components.SizeWithUnit;
+
+import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
 
 /**
  * Dialog options of a window. Can be changed at run time from the window controller:
  * <pre>
  * getDialogOptions()
- *     .setWidth(640)
- *     .setHeight(480);
+ *     .setWidth("640px')
+ *     .setHeight("480px");
  * </pre>
  * <p>
  * A window can be forced to open as a dialog in {@link AbstractWindow#init} using the {@link #setForceDialog(Boolean)} method:
@@ -32,11 +36,12 @@ import com.haulmont.cuba.gui.components.AbstractWindow;
  * getDialogOptions()
  *     .setForceDialog(true);
  * </pre>
- *
  */
 public class DialogOptions {
-    private Integer width;
-    private Integer height;
+    private Float width;
+    private SizeUnit widthUnit;
+    private Float height;
+    private SizeUnit heightUnit;
     private Boolean resizable;
     private Boolean closeable;
     private Boolean modal;
@@ -65,19 +70,67 @@ public class DialogOptions {
     }
 
     /**
-     * @return actual height in pixels if window opened as a dialog or if value is set from window controller
+     * @return units used in height property
      */
-    public Integer getHeight() {
+    public SizeUnit getHeightUnit() {
+        return heightUnit;
+    }
+
+    /**
+     * Sets the unit used for the height.
+     *
+     * @param heightUnit the unit used for the height
+     */
+    public DialogOptions setHeightUnit(SizeUnit heightUnit) {
+        return setHeight(this.height, heightUnit);
+    }
+
+    /**
+     * @return actual height if window opened as a dialog or if value is set from window controller
+     */
+    public Float getHeight() {
         return height;
     }
 
     /**
-     * Set height of a window if it will be opened as a dialog or change height at run time if the window is already opened as a dialog.
+     * Set height of a window if it will be opened as a dialog or change height
+     * at run time if the window is already opened as a dialog.
      *
-     * @param height height in pixels
+     * @param height height
+     * @deprecated Use {@link #setHeight(Float)} instead.
      */
+    @Deprecated
     public DialogOptions setHeight(Integer height) {
+        return setHeight(height.floatValue());
+    }
+
+    /**
+     * Set height of a window if it will be opened as a dialog or change height
+     * at run time if the window is already opened as a dialog.
+     *
+     * @param height height
+     */
+    public DialogOptions setHeight(Float height) {
+        return setHeight(height, this.heightUnit);
+    }
+
+    /**
+     * Sets the height of a window if it will be opened as a dialog
+     * using String presentation or change height at run time if the window is already opened as a dialog.
+     * <p>
+     * Null, empty or 'AUTO' string will produce undefined height and set units to pixels.
+     *
+     * @param height height string representation
+     */
+    public DialogOptions setHeight(String height) {
+        SizeWithUnit size = SizeWithUnit.parseStringSize(height);
+        return setHeight(size.getSize(), size.getUnit());
+    }
+
+    protected DialogOptions setHeight(Float height, SizeUnit unit) {
         this.height = height;
+        this.heightUnit = unit;
+
         return this;
     }
 
@@ -116,19 +169,66 @@ public class DialogOptions {
     }
 
     /**
-     * @return actual width in pixels if window opened as a dialog or if value is set from window controller
+     * @return units used in width property
      */
-    public Integer getWidth() {
+    public SizeUnit getWidthUnit() {
+        return widthUnit;
+    }
+
+    /**
+     * Sets the unit used for the width.
+     *
+     * @param widthUnit the unit used for the width
+     */
+    public DialogOptions setWidthUnit(SizeUnit widthUnit) {
+        return setWidth(this.width, widthUnit);
+    }
+
+    /**
+     * @return actual width if window opened as a dialog or if value is set from window controller
+     */
+    public Float getWidth() {
         return width;
     }
 
     /**
-     * Set width of a window if it will be opened as a dialog or change width at run time if the window is already opened as a dialog.
+     * Set width of a window if it will be opened as a dialog or change width
+     * at run time if the window is already opened as a dialog.
      *
-     * @param width width in pixels
+     * @param width width
+     * @deprecated Use {@link #setWidth(Float)} instead.
      */
+    @Deprecated
     public DialogOptions setWidth(Integer width) {
+        return setWidth(width.floatValue());
+    }
+
+    /**
+     * Set width of a window if it will be opened as a dialog or change width
+     * at run time if the window is already opened as a dialog.
+     *
+     * @param width width
+     */
+    public DialogOptions setWidth(Float width) {
+        return setWidth(width, this.widthUnit);
+    }
+
+    /**
+     * Sets the width of a window if it will be opened as a dialog
+     * using String presentation or change width at run time if the window is already opened as a dialog.
+     * <p>
+     * Null, empty or 'AUTO' string will produce undefined width and set units to pixels.
+     *
+     * @param width width string representation
+     */
+    public DialogOptions setWidth(String width) {
+        SizeWithUnit size = SizeWithUnit.parseStringSize(width);
+        return setWidth(size.getSize(), size.getUnit());
+    }
+
+    protected DialogOptions setWidth(Float width, SizeUnit unit) {
         this.width = width;
+        this.widthUnit = unit;
         return this;
     }
 
@@ -153,19 +253,19 @@ public class DialogOptions {
      * Set width of a window to AUTO if it will be opened as a dialog or change width at run time if the window is already opened as a dialog.
      */
     public DialogOptions setWidthAuto() {
-        return setWidth(-1);
+        return setWidth(AUTO_SIZE);
     }
 
     /**
      * Set height of a window to AUTO if it will be opened as a dialog or change height at run time if the window is already opened as a dialog.
      */
     public DialogOptions setHeightAuto() {
-        return setHeight(-1);
+        return setHeight(AUTO_SIZE);
     }
 
     /**
      * Center window only if it is already opened
-     * */
+     */
     public DialogOptions center() {
         return this;
     }

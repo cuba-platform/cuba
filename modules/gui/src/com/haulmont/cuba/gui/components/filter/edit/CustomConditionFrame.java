@@ -497,19 +497,19 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
     }
 
     public void getJoinClauseHelp() {
-        getDialogParams().setModal(false).setWidth(600);
+        getDialogParams().setModal(false).setWidth("600px");
         showMessageDialog(messages.getMainMessage("filter.customConditionFrame.join"),
                 messages.getMainMessage("filter.customConditionFrame.joinClauseHelp"), MessageType.CONFIRMATION_HTML);
     }
 
     public void getWhereClauseHelp() {
-        getDialogParams().setModal(false).setWidth(600);
+        getDialogParams().setModal(false).setWidth("600px");
         showMessageDialog(messages.getMainMessage("filter.customConditionFrame.where"),
                 messages.getMainMessage("filter.customConditionFrame.whereClauseHelp"), MessageType.CONFIRMATION_HTML);
     }
 
     public void getParamWhereClauseHelp() {
-        getDialogParams().setModal(false).setWidth(600);
+        getDialogParams().setModal(false).setWidth("600px");
         showMessageDialog(messages.getMainMessage("filter.customConditionFrame.entityParamWhere"),
                 messages.getMainMessage("filter.customConditionFrame.paramWhereClauseHelp"), MessageType.CONFIRMATION_HTML);
     }
