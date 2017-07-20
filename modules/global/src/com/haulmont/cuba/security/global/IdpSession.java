@@ -24,7 +24,7 @@ public class IdpSession implements Serializable {
     private String login;
     private String email;
     private String locale;
-    private Map<String, Serializable> attributes;
+    private Map<String, Object> attributes;
 
     public IdpSession(String id) {
         this.id = id;
@@ -38,11 +38,11 @@ public class IdpSession implements Serializable {
         this.id = id;
     }
 
-    public Map<String, Serializable> getAttributes() {
+    public Map<String, Object> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(Map<String, Serializable> attributes) {
+    public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
 
