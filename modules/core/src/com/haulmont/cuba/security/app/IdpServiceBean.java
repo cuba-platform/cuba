@@ -84,7 +84,7 @@ public class IdpServiceBean implements IdpService {
     public IdpSession setSessionAttribute(String sessionId, String name, Serializable value) {
         IdpSession session = sessionStore.getSession(sessionId);
         if (session != null) {
-            Map<String, Serializable> attributes = session.getAttributes();
+            Map<String, Object> attributes = session.getAttributes();
             if (attributes == null) {
                 attributes = new HashMap<>();
                 session.setAttributes(attributes);
@@ -100,7 +100,7 @@ public class IdpServiceBean implements IdpService {
     public IdpSession removeSessionAttribute(String sessionId, String name) {
         IdpSession session = sessionStore.getSession(sessionId);
         if (session != null) {
-            Map<String, Serializable> attributes = session.getAttributes();
+            Map<String, Object> attributes = session.getAttributes();
             if (attributes != null) {
                 attributes.remove(name);
             }
