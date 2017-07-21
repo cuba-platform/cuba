@@ -736,12 +736,16 @@ public class WebWindowManager extends WindowManager {
                 window.setWidthAuto();
             } else {
                 vWindow.setWidth(openType.getWidth(),
-                        WebWrapperUtils.toVaadinUnit(openType.getWidthUnit()));
+                        openType.getWidthUnit() != null
+                                ? WebWrapperUtils.toVaadinUnit(openType.getWidthUnit())
+                                : Unit.PIXELS);
             }
 
             if (openType.getHeight() != null && openType.getHeight() != AUTO_SIZE_PX) {
                 vWindow.setHeight(openType.getHeight(),
-                        WebWrapperUtils.toVaadinUnit(openType.getHeightUnit()));
+                        openType.getHeightUnit() != null
+                                ? WebWrapperUtils.toVaadinUnit(openType.getHeightUnit())
+                                : Unit.PIXELS);
                 layout.setHeight("100%");
                 window.setHeightFull();
             } else {
