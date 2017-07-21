@@ -85,18 +85,26 @@ public class EntityImportViewBuilder implements EntityImportViewBuilderAPI {
                             MetaClass propertyMetaClass = metadata.getClass(propertyType);
                             if (metaProperty.getType() == MetaProperty.Type.COMPOSITION) {
                                 JsonElement propertyJsonObject = entry.getValue();
-                                if (!propertyJsonObject.isJsonObject()) {
-                                    throw new RuntimeException("JsonObject was expected for property " + propertyName);
-                                }
                                 if (security.isEntityAttrUpdatePermitted(metaClass, propertyName)) {
-                                    EntityImportView propertyImportView = buildFromJsonObject(propertyJsonObject.getAsJsonObject(), propertyMetaClass);
-                                    if (metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_ONE) {
-                                        view.addManyToOneProperty(propertyName, propertyImportView);
+                                    if (propertyJsonObject.isJsonNull()) {
+                                        //in case of null we must add such import behavior to update the reference with null value later
+                                        if (metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_ONE) {
+                                            view.addManyToOneProperty(propertyName, ReferenceImportBehaviour.IGNORE_MISSING);
+                                        } else {
+                                            view.addOneToOneProperty(propertyName, ReferenceImportBehaviour.IGNORE_MISSING);
+                                        }
                                     } else {
-                                        view.addOneToOneProperty(propertyName, propertyImportView);
+                                        if (!propertyJsonObject.isJsonObject()) {
+                                            throw new RuntimeException("JsonObject was expected for property " + propertyName);
+                                        }
+                                        EntityImportView propertyImportView = buildFromJsonObject(propertyJsonObject.getAsJsonObject(), propertyMetaClass);
+                                        if (metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_ONE) {
+                                            view.addManyToOneProperty(propertyName, propertyImportView);
+                                        } else {
+                                            view.addOneToOneProperty(propertyName, propertyImportView);
+                                        }
                                     }
                                 }
-
                             } else {
                                 if (security.isEntityAttrUpdatePermitted(metaClass, propertyName))
                                     if (metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_ONE) {
