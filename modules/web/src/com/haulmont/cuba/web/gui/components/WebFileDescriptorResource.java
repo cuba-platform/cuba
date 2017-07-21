@@ -14,29 +14,33 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.gui.components.imageresources;
+package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.cuba.core.app.FileStorageService;
+import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Resources;
-import com.haulmont.cuba.gui.components.Image;
-import com.haulmont.cuba.web.gui.components.WebImage;
+import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.gui.components.FileDescriptorResource;
+import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.vaadin.server.StreamResource;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
-public class WebClasspathImageResource extends WebImage.WebAbstractStreamSettingsImageResource
-        implements WebImageResource, Image.ClasspathImageResource {
+public class WebFileDescriptorResource extends WebAbstractStreamSettingsResource
+        implements WebResource, FileDescriptorResource {
 
-    protected String path;
+    protected static final String FILE_STORAGE_EXCEPTION_MESSAGE = "Can't create FileDescriptorResource. " +
+            "An error occurred while obtaining a file from the storage";
+
+    protected FileDescriptor fileDescriptor;
 
     protected String mimeType;
 
     @Override
-    public Image.ClasspathImageResource setPath(String path) {
-        Preconditions.checkNotNullArgument(path);
+    public FileDescriptorResource setFileDescriptor(FileDescriptor fileDescriptor) {
+        Preconditions.checkNotNullArgument(fileDescriptor);
 
-        this.path = path;
+        this.fileDescriptor = fileDescriptor;
         hasSource = true;
 
         fireResourceUpdateEvent();
@@ -45,20 +49,25 @@ public class WebClasspathImageResource extends WebImage.WebAbstractStreamSetting
     }
 
     @Override
-    public String getPath() {
-        return path;
+    public FileDescriptor getFileDescriptor() {
+        return fileDescriptor;
     }
 
     @Override
     protected void createResource() {
-        String name = StringUtils.isNotEmpty(fileName) ? fileName : FilenameUtils.getName(path);
+        String name = StringUtils.isNotEmpty(fileName) ? fileName : fileDescriptor.getName();
 
-        resource = new StreamResource(() ->
-                AppBeans.get(Resources.class).getResourceAsStream(path), name);
+        resource = new StreamResource(() -> {
+            try {
+                return new ByteArrayDataProvider(AppBeans.get(FileStorageService.class).loadFile(fileDescriptor))
+                        .provide();
+            } catch (FileStorageException e) {
+                throw new RuntimeException(FILE_STORAGE_EXCEPTION_MESSAGE, e);
+            }
+        }, name);
 
         StreamResource streamResource = (StreamResource) this.resource;
 
-        streamResource.setMIMEType(mimeType);
         streamResource.setCacheTime(cacheTime);
         streamResource.setBufferSize(bufferSize);
     }

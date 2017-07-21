@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.gui.components.imageresources;
+package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.gui.components.Image;
-import com.haulmont.cuba.web.gui.components.WebImage;
+import com.haulmont.cuba.gui.components.RelativePathResource;
+import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.vaadin.server.ExternalResource;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
-public class WebUrlImageResource extends WebImage.WebAbstractImageResource implements WebImageResource, Image.UrlImageResource {
+public class WebRelativePathResource extends WebAbstractResource implements WebResource, RelativePathResource {
 
-    protected URL url;
+    protected String path;
 
     protected String mimeType;
 
     @Override
-    public Image.UrlImageResource setUrl(URL url) {
-        Preconditions.checkNotNullArgument(url);
+    public RelativePathResource setPath(String path) {
+        Preconditions.checkNotNullArgument(path);
 
-        this.url = url;
+        this.path = path;
         hasSource = true;
 
         fireResourceUpdateEvent();
@@ -42,15 +43,18 @@ public class WebUrlImageResource extends WebImage.WebAbstractImageResource imple
     }
 
     @Override
-    public URL getUrl() {
-        return url;
+    public String getPath() {
+        return path;
     }
 
     @Override
     protected void createResource() {
-        resource = new ExternalResource(url);
-
-        ((ExternalResource) resource).setMIMEType(mimeType);
+        try {
+            URL context = new URL(ControllerUtils.getLocationWithoutParams());
+            resource = new ExternalResource(new URL(context, path));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Can't create RelativePathResource", e);
+        }
     }
 
     @Override

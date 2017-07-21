@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.gui.components.imageresources;
+package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.gui.components.Image;
-import com.haulmont.cuba.web.controllers.ControllerUtils;
-import com.haulmont.cuba.web.gui.components.WebImage;
-import com.vaadin.server.ExternalResource;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.gui.components.ClasspathResource;
+import com.vaadin.server.StreamResource;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
-public class WebRelativePathImageResource extends WebImage.WebAbstractImageResource implements WebImageResource, Image.RelativePathImageResource {
+public class WebClasspathResource extends WebAbstractStreamSettingsResource implements WebResource, ClasspathResource {
 
     protected String path;
 
     protected String mimeType;
 
     @Override
-    public Image.RelativePathImageResource setPath(String path) {
+    public ClasspathResource setPath(String path) {
         Preconditions.checkNotNullArgument(path);
 
         this.path = path;
@@ -50,12 +49,16 @@ public class WebRelativePathImageResource extends WebImage.WebAbstractImageResou
 
     @Override
     protected void createResource() {
-        try {
-            URL context = new URL(ControllerUtils.getLocationWithoutParams());
-            resource = new ExternalResource(new URL(context, path));
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Can't create RelativePathImageResource", e);
-        }
+        String name = StringUtils.isNotEmpty(fileName) ? fileName : FilenameUtils.getName(path);
+
+        resource = new StreamResource(() ->
+                AppBeans.get(Resources.class).getResourceAsStream(path), name);
+
+        StreamResource streamResource = (StreamResource) this.resource;
+
+        streamResource.setMIMEType(mimeType);
+        streamResource.setCacheTime(cacheTime);
+        streamResource.setBufferSize(bufferSize);
     }
 
     @Override
@@ -63,7 +66,7 @@ public class WebRelativePathImageResource extends WebImage.WebAbstractImageResou
         this.mimeType = mimeType;
 
         if (resource != null) {
-            ((ExternalResource) resource).setMIMEType(mimeType);
+            ((StreamResource) resource).setMIMEType(mimeType);
         }
     }
 
