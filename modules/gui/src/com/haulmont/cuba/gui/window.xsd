@@ -1531,28 +1531,28 @@
         </xs:union>
     </xs:simpleType>
 
-    <xs:complexType name="fileImageResource">
-        <xs:attribute name="path" type="xs:string"/>
+    <xs:complexType name="fileResource">
+        <xs:attribute name="path" type="xs:string" use="required"/>
         <xs:attributeGroup ref="hasStreamSettings"/>
     </xs:complexType>
 
-    <xs:complexType name="themeImageResource">
-        <xs:attribute name="path" type="xs:string"/>
+    <xs:complexType name="themeResource">
+        <xs:attribute name="path" type="xs:string" use="required"/>
     </xs:complexType>
 
-    <xs:complexType name="classpathImageResource">
-        <xs:attribute name="path" type="xs:string"/>
+    <xs:complexType name="classpathResource">
+        <xs:attribute name="path" type="xs:string" use="required"/>
         <xs:attribute name="mimeType" type="mimeType"/>
         <xs:attributeGroup ref="hasStreamSettings"/>
     </xs:complexType>
 
-    <xs:complexType name="urlImageResource">
-        <xs:attribute name="url" type="xs:string"/>
+    <xs:complexType name="urlResource">
+        <xs:attribute name="url" type="xs:string" use="required"/>
         <xs:attribute name="mimeType" type="mimeType"/>
     </xs:complexType>
 
-    <xs:complexType name="relativePathImageResource">
-        <xs:attribute name="path" type="xs:string"/>
+    <xs:complexType name="relativePathResource">
+        <xs:attribute name="path" type="xs:string" use="required"/>
         <xs:attribute name="mimeType" type="mimeType"/>
     </xs:complexType>
 
@@ -1564,18 +1564,30 @@
             <xs:enumeration value="SCALE_DOWN"/>
         </xs:restriction>
     </xs:simpleType>
-    
+
+    <xs:complexType name="resourceViewComponent">
+        <xs:complexContent>
+            <xs:extension base="baseComponent">
+                <xs:choice minOccurs="0">
+                    <xs:element name="file" type="fileResource"/>
+                    <xs:element name="theme" type="themeResource"/>
+                    <xs:element name="classpath" type="classpathResource"/>
+                    <xs:element name="url" type="urlResource"/>
+                    <xs:element name="relativePath" type="relativePathResource"/>
+                </xs:choice>
+                <xs:attribute name="alternateText" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     <xs:complexType name="imageComponent">
         <xs:complexContent>
-            <xs:extension base="baseFieldComponent">
-                <xs:choice minOccurs="0" maxOccurs="1">
-                    <xs:element name="file" type="fileImageResource"/>
-                    <xs:element name="theme" type="themeImageResource"/>
-                    <xs:element name="classpath" type="classpathImageResource"/>
-                    <xs:element name="url" type="urlImageResource"/>
-                    <xs:element name="relativePath" type="relativePathImageResource"/>
-                </xs:choice>
+            <xs:extension base="resourceViewComponent">
                 <xs:attribute name="scaleMode" type="scaleMode"/>
+
+                <xs:attributeGroup ref="hasEditable"/>
+                <xs:attributeGroup ref="hasRequirements"/>
+                <xs:attributeGroup ref="hasDatasource"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

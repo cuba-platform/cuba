@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.gui.components.imageresources;
+package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.components.Image;
-
-public interface WebImageResource extends Image.ImageResource {
-
-    com.vaadin.server.Resource getResource();
+/**
+ * Marker interface to indicate that the implementing class can be used as a resource.
+ */
+public interface Resource {
 }

@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.Image;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -55,6 +55,14 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
         loadImageResource(resultComponent, element);
 
         loadScaleMode(resultComponent, element);
+        loadAlternateText(resultComponent, element);
+    }
+
+    protected void loadAlternateText(Image resultComponent, Element element) {
+        String alternateText = element.attributeValue("alternateText");
+        if (StringUtils.isNotEmpty(alternateText)) {
+            resultComponent.setAlternateText(alternateText);
+        }
     }
 
     protected void loadScaleMode(Image image, Element element) {
@@ -85,10 +93,10 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
 
         String path = relativePath.attributeValue("path");
         if (StringUtils.isEmpty(path)) {
-            throw new GuiDevelopmentException("No path provided for the RelativePathImageResource", context.getFullFrameId());
+            throw new GuiDevelopmentException("No path provided for the RelativePathResource", context.getFullFrameId());
         }
 
-        Image.RelativePathImageResource resource = resultComponent.createResource(Image.RelativePathImageResource.class);
+        RelativePathResource resource = resultComponent.createResource(RelativePathResource.class);
 
         resource.setPath(path);
 
@@ -106,10 +114,10 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
 
         String url = urlResource.attributeValue("url");
         if (StringUtils.isEmpty(url)) {
-            throw new GuiDevelopmentException("No url provided for the UrlImageResource", context.getFullFrameId());
+            throw new GuiDevelopmentException("No url provided for the UrlResource", context.getFullFrameId());
         }
 
-        Image.UrlImageResource resource = resultComponent.createResource(Image.UrlImageResource.class);
+        UrlResource resource = resultComponent.createResource(UrlResource.class);
         try {
             resource.setUrl(new URL(url));
 
@@ -117,7 +125,7 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
 
             resultComponent.setSource(resource);
         } catch (MalformedURLException e) {
-            String msg = String.format("An error occurred while creating UrlImageResource with the given url: %s", url);
+            String msg = String.format("An error occurred while creating UrlResource with the given url: %s", url);
             throw new GuiDevelopmentException(msg, context.getFullFrameId());
         }
     }
@@ -129,10 +137,10 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
 
         String classpathPath = classpathResource.attributeValue("path");
         if (StringUtils.isEmpty(classpathPath)) {
-            throw new GuiDevelopmentException("No path provided for the ClasspathImageResource", context.getFullFrameId());
+            throw new GuiDevelopmentException("No path provided for the ClasspathResource", context.getFullFrameId());
         }
 
-        Image.ClasspathImageResource resource = resultComponent.createResource(Image.ClasspathImageResource.class);
+        ClasspathResource resource = resultComponent.createResource(ClasspathResource.class);
 
         resource.setPath(classpathPath);
 
@@ -151,10 +159,10 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
 
         String themePath = themeResource.attributeValue("path");
         if (StringUtils.isEmpty(themePath)) {
-            throw new GuiDevelopmentException("No path provided for the ThemeImageResource", context.getFullFrameId());
+            throw new GuiDevelopmentException("No path provided for the ThemeResource", context.getFullFrameId());
         }
 
-        resultComponent.setSource(Image.ThemeImageResource.class).setPath(themePath);
+        resultComponent.setSource(ThemeResource.class).setPath(themePath);
 
         return true;
     }
@@ -166,16 +174,16 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
 
         String filePath = fileResource.attributeValue("path");
         if (StringUtils.isEmpty(filePath)) {
-            throw new GuiDevelopmentException("No path provided for the FileImageResource", context.getFullFrameId());
+            throw new GuiDevelopmentException("No path provided for the FileResource", context.getFullFrameId());
         }
 
         File file = new File(filePath);
         if (!file.exists()) {
-            String msg = String.format("Can't load FileImageResource. File with given path does not exists: %s", filePath);
+            String msg = String.format("Can't load FileResource. File with given path does not exists: %s", filePath);
             throw new GuiDevelopmentException(msg, context.getFullFrameId());
         }
 
-        Image.FileImageResource resource = resultComponent.createResource(Image.FileImageResource.class);
+        FileResource resource = resultComponent.createResource(FileResource.class);
 
         resource.setFile(file);
 
@@ -206,14 +214,14 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
         }
     }
 
-    protected void loadMimeType(Image.HasMimeType resource, Element resourceElement) {
+    protected void loadMimeType(ResourceView.HasMimeType resource, Element resourceElement) {
         String mimeType = resourceElement.attributeValue("mimeType");
         if (StringUtils.isNotEmpty(mimeType)) {
             resource.setMimeType(mimeType);
         }
     }
 
-    protected void loadStreamSettings(Image.HasStreamSettings resource, Element resourceElement) {
+    protected void loadStreamSettings(ResourceView.HasStreamSettings resource, Element resourceElement) {
         String cacheTime = resourceElement.attributeValue("cacheTime");
         if (StringUtils.isNotEmpty(cacheTime)) {
             resource.setCacheTime(Long.parseLong(cacheTime));

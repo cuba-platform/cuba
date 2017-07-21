@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.gui.components.imageresources;
+package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.gui.components.Image;
-import com.haulmont.cuba.web.gui.components.WebImage;
-import com.vaadin.server.ThemeResource;
+import com.haulmont.cuba.gui.components.ThemeResource;
 
-public class WebThemeImageResource extends WebImage.WebAbstractImageResource implements WebImageResource, Image.ThemeImageResource {
+public class WebThemeResource extends WebAbstractResource implements WebResource, ThemeResource {
 
     protected String path;
 
     @Override
-    public Image.ThemeImageResource setPath(String path) {
+    public ThemeResource setPath(String path) {
         Preconditions.checkNotNullArgument(path);
 
         this.path = path;
@@ -44,6 +42,6 @@ public class WebThemeImageResource extends WebImage.WebAbstractImageResource imp
 
     @Override
     protected void createResource() {
-        resource = new ThemeResource(path);
+        resource = new com.vaadin.server.ThemeResource(path);
     }
 }

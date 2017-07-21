@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.gui.components.imageresources;
+package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.gui.components.Image;
-import com.haulmont.cuba.web.gui.components.WebImage;
-import com.vaadin.server.FileResource;
+import com.haulmont.cuba.gui.components.FileResource;
 
 import java.io.File;
 
-public class WebFileImageResource extends WebImage.WebAbstractStreamSettingsImageResource
-        implements WebImageResource, Image.FileImageResource {
+public class WebFileResource extends WebAbstractStreamSettingsResource implements WebResource, FileResource {
 
     protected File file;
 
     @Override
-    public Image.FileImageResource setFile(File file) {
+    public FileResource setFile(File file) {
         Preconditions.checkNotNullArgument(file);
 
         this.file = file;
@@ -47,11 +44,11 @@ public class WebFileImageResource extends WebImage.WebAbstractStreamSettingsImag
 
     @Override
     protected void createResource() {
-        resource = new FileResource(file);
+        resource = new com.vaadin.server.FileResource(file);
 
-        FileResource fileResource = (FileResource) this.resource;
+        com.vaadin.server.FileResource vFileResource = (com.vaadin.server.FileResource) this.resource;
 
-        fileResource.setCacheTime(cacheTime);
-        fileResource.setBufferSize(bufferSize);
+        vFileResource.setCacheTime(cacheTime);
+        vFileResource.setBufferSize(bufferSize);
     }
 }
