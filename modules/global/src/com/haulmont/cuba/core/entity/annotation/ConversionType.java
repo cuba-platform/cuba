@@ -16,23 +16,16 @@
 
 package com.haulmont.cuba.core.entity.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Indicates that auto case conversion should be used for text input fields bound with marked entity field.
+ * Defines a case conversion type.
  */
-
-@Target({ElementType.FIELD})
-@Retention(RetentionPolicy.RUNTIME)
-@MetaAnnotation
-public @interface CaseConversion {
-
+public enum ConversionType {
     /**
-     * A conversion type to be used: <code>ConversionType.UPPER</code> or
-     * <code>ConversionType.LOWER</code>
+     * A value will be upper cased
      */
-    ConversionType type() default ConversionType.UPPER;
+    LOWER,
+    /**
+     * A value will be lower cased
+     */
+    UPPER
 }

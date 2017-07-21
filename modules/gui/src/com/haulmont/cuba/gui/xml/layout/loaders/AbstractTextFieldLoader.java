@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.core.entity.annotation.CaseConversion;
+import com.haulmont.cuba.core.entity.annotation.ConversionType;
 import com.haulmont.cuba.gui.components.TextInputField;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -61,7 +62,8 @@ public abstract class AbstractTextFieldLoader<T extends TextInputField> extends 
             //noinspection unchecked
             Map<String, Object> conversion = (Map<String, Object>) annotations.get(CaseConversion.class.getName());
             if (MapUtils.isNotEmpty(conversion)) {
-                TextInputField.CaseConversion tfCaseConversion = TextInputField.CaseConversion.valueOf((String) conversion.get("type"));
+                ConversionType conversionType = (ConversionType) conversion.get("type");
+                TextInputField.CaseConversion tfCaseConversion = TextInputField.CaseConversion.valueOf(conversionType.name());
                 component.setCaseConversion(tfCaseConversion);
             }
         }
