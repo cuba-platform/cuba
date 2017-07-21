@@ -28,8 +28,6 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.external.org.slf4j.Logger;
-import com.vaadin.external.org.slf4j.LoggerFactory;
 import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -49,8 +47,6 @@ import java.util.function.Consumer;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class MenuBuilder {
     public static final String NAME = "cuba_AppMenuBuilder";
-
-    private final Logger log = LoggerFactory.getLogger(MenuBuilder.class);
 
     @Inject
     protected UserSession session;

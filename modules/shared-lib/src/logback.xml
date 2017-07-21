@@ -83,6 +83,8 @@
 
     <logger name="org.eclipse.jetty" level="INFO"/>
 
+    <logger name="org.atmosphere" level="INFO"/>
+
     <logger name="org.docx4j.utils.ResourceUtils" level="ERROR"/>
 
     <logger name="org.docx4j.Docx4jProperties" level="ERROR"/>
