@@ -421,14 +421,12 @@ public class DesktopWindowManager extends WindowManager {
 
         dimension.width = 800;
         if (openType.getWidth() != null) {
-            // TODO: gg,
-//            dimension.width = openType.getWidth();
+            dimension.width = openType.getWidth().intValue();
         }
 
         dimension.height = 500;
         if (openType.getHeight() != null) {
-            // TODO: gg,
-//            dimension.height = openType.getHeight();
+            dimension.height = openType.getHeight().intValue();
         }
 
         boolean resizable = true;
