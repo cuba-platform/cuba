@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.cuba.core.entity.annotation.ConversionType;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -130,8 +131,8 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
                 //noinspection unchecked
                 Map<String, Object> caseConversion = (Map<String, Object>) annotations.get(caseConversionAnnotation);
                 if (MapUtils.isNotEmpty(caseConversion)) {
-                    String conversionType = (String) caseConversion.get("type");
-                    CaseConversion conversion = CaseConversion.valueOf(conversionType);
+                    ConversionType conversionType = (ConversionType) caseConversion.get("type");
+                    CaseConversion conversion = CaseConversion.valueOf(conversionType.name());
 
                     ((CaseConversionSupported) this).setCaseConversion(conversion);
                 }

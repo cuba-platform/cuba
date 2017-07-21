@@ -149,7 +149,7 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
     @Override
     public void setText(String text) {
         String styleName = getStyleName();
-        if (styleName.contains(PROMPT_STYLE) || styleName.contains(CUBA_EMPTY_VALUE)) {
+        if (prompting) {
             super.setText(text);
         } else {
             String convertedText = applyCaseConversion(text);
