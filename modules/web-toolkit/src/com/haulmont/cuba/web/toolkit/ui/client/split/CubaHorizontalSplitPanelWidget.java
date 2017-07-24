@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.split;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.toolkit.ui.client.placeholder.CubaPlaceHolderWidget;
 import com.vaadin.client.ui.VOverlay;
 import com.vaadin.client.ui.VSplitPanelHorizontal;
@@ -38,6 +39,9 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
 
     protected static final int BUTTON_WIDTH_SPACE = 20;
     protected boolean reversed;
+
+    protected int splitHeight;
+    protected int splitTop;
 
     protected enum DockButtonState {
         LEFT,
@@ -198,7 +202,7 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
     }
 
     private int getDockBtnContainerVerticalPosition() {
-        return splitter.getAbsoluteTop() + splitter.getOffsetHeight() / 2 - dockButton.getOffsetHeight() / 2;
+        return splitTop + splitHeight / 2 - dockButton.getOffsetHeight() / 2;
     }
 
     public int getAbsoluteRight() {
@@ -209,9 +213,21 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
     public void updateSizes() {
         super.updateSizes();
 
+        splitHeight = splitter.getOffsetHeight();
+        if (splitTop == 0) {
+            splitTop = splitter.getAbsoluteTop();
+        }
+
         if (isAttached()) {
             updateDockButtonPosition();
         }
+    }
+
+    @Override
+    public void onMouseUp(Event event) {
+        super.onMouseUp(event);
+
+        splitHeight = splitter.getOffsetHeight();
     }
 
     @Override
