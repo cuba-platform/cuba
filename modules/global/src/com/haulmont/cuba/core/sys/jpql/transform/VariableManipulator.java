@@ -33,7 +33,7 @@ public class VariableManipulator implements TreeVisitorAction {
 
     @Override
     public Object pre(Object o) {
-        // todo небезопасен, если изменяемое дерево определяет свои собственные переменные
+        // todo unsafe, if we change a tree and it declares its own variables
         if (o instanceof PathNode) {
             PathNode pathNode = (PathNode) o;
             variableUses.add(pathNode);

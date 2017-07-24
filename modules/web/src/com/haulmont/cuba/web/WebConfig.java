@@ -233,7 +233,7 @@ public interface WebConfig extends Config {
     boolean getRememberMeEnabled();
 
     /**
-     * @return true if PNG icon names are converted to font icons if there is a mapping png->FontAwesome in -theme.properties
+     * @return true if PNG icon names are converted to font icons if there is a mapping png -&gt; FontAwesome in -theme.properties
      */
     @Property("cuba.web.useFontIcons")
     @DefaultBoolean(true)
