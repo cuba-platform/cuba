@@ -148,9 +148,9 @@ public class QueryTransformerAstBased implements QueryTransformer {
     }
 
     /**
-     * в реальности это копирование из другого запроса
+     * copy from another statement
      *
-     * @param statement выражение, из которого скопировать where часть
+     * @param statement from we copy where clause
      */
     @Override
     public void mergeWhere(String statement) {
@@ -298,7 +298,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
         if (replaceVariableName) {
             Set<String> variables = variableManip.getUsedVariableNames();
             if (variables.size() > 1) {
-                // предположение, что добавляемый where  использует только одну переменную и не определяет собственных
+                // we assume that adding where that use only one variable and does not add its own variables
                 throw new IllegalStateException("Multiple variables used in condition");
             }
             String assumedEntityVariableInWhere = variableManip.getVariableNameInUse(0);
