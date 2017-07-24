@@ -40,11 +40,13 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 @Component(EntityLogAPI.NAME)
 public class EntityLog implements EntityLogAPI {
 
-    protected Logger log = LoggerFactory.getLogger(EntityLog.class);
+    private final Logger log = LoggerFactory.getLogger(EntityLog.class);
+
     @Inject
     protected TimeSource timeSource;
     @Inject
@@ -135,7 +137,7 @@ public class EntityLog implements EntityLogAPI {
         }
     }
 
-    private void loadEntities() {
+    protected void loadEntities() {
         log.debug("Loading entities");
         entitiesManual = new HashMap<>();
         entitiesAuto = new HashMap<>();
@@ -170,7 +172,7 @@ public class EntityLog implements EntityLogAPI {
         log.debug("Loaded: entitiesAuto={}, entitiesManual={}", entitiesAuto.size(), entitiesManual.size());
     }
 
-    private String getEntityName(Entity entity) {
+    protected String getEntityName(Entity entity) {
         MetaClass metaClass = metadata.getSession().getClassNN(entity.getClass());
         MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
         return originalMetaClass != null ? originalMetaClass.getName() : metaClass.getName();
@@ -210,7 +212,11 @@ public class EntityLog implements EntityLogAPI {
             if (attributes == null) {
                 return;
             }
-            String storeName = metadata.getTools().getStoreName(metadata.getClassNN(entityName));
+
+            MetaClass metaClass = metadata.getClassNN(entityName);
+            attributes = filterRemovedAttributes(metaClass, attributes);
+
+            String storeName = metadata.getTools().getStoreName(metaClass);
             if (Stores.isMain(storeName)) {
                 internalRegisterCreate(entity, entityName, attributes);
             } else {
@@ -223,6 +229,13 @@ public class EntityLog implements EntityLogAPI {
         } catch (Exception e) {
             logError(entity, e);
         }
+    }
+
+    protected Set<String> filterRemovedAttributes(MetaClass metaClass, Set<String> attributes) {
+        // filter attributes that do not exists in entity anymore
+        return attributes.stream()
+                .filter(attributeName -> metaClass.getProperty(attributeName) != null)
+                .collect(Collectors.toSet());
     }
 
     protected void internalRegisterCreate(Entity entity, String entityName, Set<String> attributes) throws IOException {
@@ -286,6 +299,8 @@ public class EntityLog implements EntityLogAPI {
             }
 
             MetaClass metaClass = metadata.getClassNN(entityName);
+            attributes = filterRemovedAttributes(metaClass, attributes);
+
             String storeName = metadataTools.getStoreName(metaClass);
             if (Stores.isMain(storeName)) {
                 internalRegisterModify(entity, changes, metaClass, storeName, attributes);
@@ -346,7 +361,7 @@ public class EntityLog implements EntityLogAPI {
         }
     }
 
-    private String getChanges(Properties properties) throws IOException {
+    protected String getChanges(Properties properties) throws IOException {
         StringWriter writer = new StringWriter();
         properties.store(writer, null);
         String changes = writer.toString();
@@ -391,7 +406,11 @@ public class EntityLog implements EntityLogAPI {
             if (attributes == null) {
                 return;
             }
-            String storeName = metadata.getTools().getStoreName(metadata.getClassNN(entityName));
+
+            MetaClass metaClass = metadata.getClassNN(entityName);
+            attributes = filterRemovedAttributes(metaClass, attributes);
+
+            String storeName = metadata.getTools().getStoreName(metaClass);
             if (Stores.isMain(storeName)) {
                 internalRegisterDelete(entity, entityName, attributes);
             } else {
