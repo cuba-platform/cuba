@@ -136,6 +136,9 @@ public interface WebConfig extends Config {
     @DefaultInt(200)
     int getFoldersPaneDefaultWidth();
 
+    /**
+     * @return true if WindowBreadCrumbs is shown, false - otherwise
+     */
     @Property("cuba.web.showBreadCrumbs")
     @DefaultBoolean(true)
     boolean getShowBreadCrumbs();
@@ -222,10 +225,16 @@ public interface WebConfig extends Config {
     @DefaultBoolean(true)
     boolean getUseSessionFixationProtection();
 
+    /**
+     * @return true if remember me checkbox is enabled on login window
+     */
     @Property("cuba.web.rememberMeEnabled")
     @DefaultBoolean(true)
     boolean getRememberMeEnabled();
 
+    /**
+     * @return true if PNG icon names are converted to font icons if there is a mapping png->FontAwesome in -theme.properties
+     */
     @Property("cuba.web.useFontIcons")
     @DefaultBoolean(true)
     boolean getUseFontIcons();
@@ -300,14 +309,24 @@ public interface WebConfig extends Config {
     @Default("com.haulmont.cuba.web.toolkit.ui.WidgetSet")
     String getWidgetSet();
 
+    /**
+     * @return true if device width is used as view port width. Affects "viewport" meta tag of Vaadin HTML pages.
+     */
     @Property("cuba.web.useDeviceWidthForViewport")
     @DefaultBoolean(false)
     boolean getUseDeviceWidthForViewport();
 
+    /**
+     * @return custom view port width for HTML page. Affects "viewport" meta tag of Vaadin HTML pages.
+     */
     @Property("cuba.web.customDeviceWidthForViewport")
     @DefaultInt(-1)
     int getCustomDeviceWidthForViewport();
 
+    /**
+     * @return initial scale of HTML page if cuba.web.customDeviceWidthForViewport is set or cuba.web.useDeviceWidthForViewport is true.
+     *         Affects "viewport" meta tag of Vaadin HTML pages.
+     */
     @Property("cuba.web.pageInitialScale")
     @DefaultString("0.8")
     String getPageInitialScale();
