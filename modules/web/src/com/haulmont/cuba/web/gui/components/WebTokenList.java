@@ -528,6 +528,16 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         return tokenStyleGenerator;
     }
 
+    @Override
+    public String getLookupInputPrompt() {
+        return lookupPickerField.getInputPrompt();
+    }
+
+    @Override
+    public void setLookupInputPrompt(String inputPrompt) {
+        this.lookupPickerField.setInputPrompt(inputPrompt);
+    }
+
     protected String instanceCaption(Instance instance) {
         if (instance == null) {
             return "";

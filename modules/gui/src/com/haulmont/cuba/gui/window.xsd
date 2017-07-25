@@ -1900,6 +1900,7 @@
                             <xs:attribute name="filterMode" type="filterMode"/>
                             <xs:attribute name="openType" type="openType"/>
                             <xs:attribute name="multiselect" type="xs:boolean"/>
+                            <xs:attribute name="inputPrompt" type="resourceString"/>
                         </xs:complexType>
                     </xs:element>
                     <xs:element name="addButton" minOccurs="0" maxOccurs="1">

@@ -108,6 +108,9 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
         }
     };
 
+    // stub
+    protected String lookupInputPrompt;
+
     public DesktopTokenList() {
         rootPanel = new TokenListImpl();
 
@@ -492,6 +495,16 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     @Override
     public TokenStyleGenerator getTokenStyleGenerator() {
         return tokenStyleGenerator;
+    }
+
+    @Override
+    public String getLookupInputPrompt() {
+        return lookupInputPrompt;
+    }
+
+    @Override
+    public void setLookupInputPrompt(String inputPrompt) {
+        this.lookupInputPrompt = inputPrompt;
     }
 
     @Override

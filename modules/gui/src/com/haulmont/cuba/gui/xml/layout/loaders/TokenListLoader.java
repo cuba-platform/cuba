@@ -190,6 +190,11 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
             component.setMultiSelect(Boolean.parseBoolean(multiSelect));
         }
 
+        String inputPrompt = lookupElement.attributeValue("inputPrompt");
+        if (StringUtils.isNotEmpty(inputPrompt)) {
+            component.setLookupInputPrompt(loadResourceString(inputPrompt));
+        }
+
         loadFilterMode(component, lookupElement);
     }
 
