@@ -134,6 +134,18 @@ public interface TokenList extends Field, Component.BelongToFrame, Component.Has
     void setTokenStyleGenerator(TokenStyleGenerator tokenStyleGenerator);
     TokenStyleGenerator getTokenStyleGenerator();
 
+    /**
+     * @return input prompt of LookupField
+     */
+    String getLookupInputPrompt();
+    /**
+     * Sets the input prompt - a textual prompt that is displayed when the LookupField
+     * would otherwise be empty, to prompt the user for input.
+     *
+     * @param inputPrompt input prompt
+     */
+    void setLookupInputPrompt(String inputPrompt);
+
     interface TokenStyleGenerator {
         String getStyle(Object itemId);
     }
