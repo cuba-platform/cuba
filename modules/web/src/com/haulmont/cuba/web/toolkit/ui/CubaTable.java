@@ -663,7 +663,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         Context context = new Context(getAggregationItemIds());
         Map<Object, Object> aggregations = ((AggregationContainer) items).aggregate(context);
         for (final Object columnId : visibleColumns) {
-            if (columnId == null || isColumnCollapsed(columnId)) {
+            if (columnId == null || isColumnCollapsed(columnId) || !aggregations.containsKey(columnId)) {
                 continue;
             }
 
