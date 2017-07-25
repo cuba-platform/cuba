@@ -755,7 +755,7 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
         }
         Map<Object, Object> aggregations = ((AggregationContainer) items).aggregate(new Context(items.getItemIds()));
         for (final Object columnId : visibleColumns) {
-            if (columnId == null || isColumnCollapsed(columnId)) {
+            if (columnId == null || isColumnCollapsed(columnId) || !aggregations.containsKey(columnId)) {
                 continue;
             }
 
