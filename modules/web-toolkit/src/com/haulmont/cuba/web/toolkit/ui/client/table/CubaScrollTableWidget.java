@@ -222,6 +222,10 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
     @Override
     protected void reassignHeaderCellWidth(int colIndex, HeaderCell hcell, int minWidth) {
+        // it means that column is not visible
+        if (colIndex < 0)
+            return;
+
         _delegate.reassignHeaderCellWidth(colIndex, hcell, minWidth);
     }
 
