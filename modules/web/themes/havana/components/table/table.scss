@@ -418,4 +418,9 @@
       margin-top: -31px;
     }
   }
+
+  .#{$primary-stylename}-column-selector-popup .gwt-MenuBar {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 }
