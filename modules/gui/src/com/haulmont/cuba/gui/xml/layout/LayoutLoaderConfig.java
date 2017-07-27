@@ -103,6 +103,7 @@ public class LayoutLoaderConfig {
         config.register(Accordion.NAME, AccordionLoader.class);
         config.register(Embedded.NAME, EmbeddedLoader.class);
         config.register(Image.NAME, ImageLoader.class);
+        config.register(BrowserFrame.NAME, BrowserFrameLoader.class);
         config.register(Filter.NAME, FilterLoader.class);
         config.register(ButtonsPanel.NAME, ButtonsPanelLoader.class);
         config.register(PopupButton.NAME, PopupButtonLoader.class);

@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -24,22 +23,21 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.FileDescriptorResource;
+import com.haulmont.cuba.gui.components.Image;
+import com.haulmont.cuba.gui.components.Resource;
+import com.haulmont.cuba.gui.components.StreamResource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
 import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.web.toolkit.ui.CubaImage;
-import com.vaadin.shared.util.SharedUtil;
 
 import java.io.InputStream;
-import java.util.Map;
 import java.util.function.Supplier;
 
-public class WebImage extends WebAbstractComponent<CubaImage> implements Image {
+public class WebImage extends WebAbstractResourceView<CubaImage> implements Image {
     protected static final String IMAGE_STYLENAME = "c-image";
-
-    protected Resource value;
 
     protected Datasource datasource;
     protected MetaPropertyPath metaPropertyPath;
@@ -52,33 +50,11 @@ public class WebImage extends WebAbstractComponent<CubaImage> implements Image {
     protected Datasource.ItemChangeListener itemChangeListener;
     protected WeakItemChangeListener weakItemChangeListener;
 
-    protected Runnable imageResourceUpdateHandler;
-
-    protected static final Map<Class<? extends Resource>, Class<? extends Resource>> resourcesClasses;
-
-    static {
-        ImmutableMap.Builder<Class<? extends Resource>, Class<? extends Resource>> builder =
-                new ImmutableMap.Builder<>();
-
-        builder.put(UrlResource.class, WebUrlResource.class);
-        builder.put(ClasspathResource.class, WebClasspathResource.class);
-        builder.put(ThemeResource.class, WebThemeResource.class);
-        builder.put(FileDescriptorResource.class, WebFileDescriptorResource.class);
-        builder.put(FileResource.class, WebFileResource.class);
-        builder.put(StreamResource.class, WebStreamResource.class);
-        builder.put(RelativePathResource.class, WebRelativePathResource.class);
-
-        resourcesClasses = builder.build();
-    }
-
     public WebImage() {
+        super();
+
         component = new CubaImage();
         component.setPrimaryStyleName(IMAGE_STYLENAME);
-
-        imageResourceUpdateHandler = () -> {
-            com.vaadin.server.Resource vRes = this.value == null ? null : ((WebAbstractResource) this.value).getResource();
-            component.setSource(vRes);
-        };
     }
 
     @Override
@@ -150,28 +126,6 @@ public class WebImage extends WebAbstractComponent<CubaImage> implements Image {
         updateValue(resource);
     }
 
-    protected void updateValue(Resource value) {
-        Resource oldValue = this.value;
-        if (oldValue != null) {
-            ((WebAbstractResource) oldValue).setResourceUpdatedHandler(null);
-        }
-
-        this.value = value;
-
-        com.vaadin.server.Resource vResource = null;
-        if (value != null && ((WebAbstractResource) value).hasSource()) {
-            vResource = ((WebAbstractResource) value).getResource();
-        }
-        component.setSource(vResource);
-
-        if (value != null) {
-            ((WebAbstractResource) value).setResourceUpdatedHandler(imageResourceUpdateHandler);
-        }
-
-        getEventRouter().fireEvent(SourceChangeListener.class, SourceChangeListener::sourceChanged,
-                new SourceChangeEvent(this, oldValue, this.value));
-    }
-
     protected Resource createImageResource(final Object resourceObject) {
         if (resourceObject == null) {
             return null;
@@ -195,53 +149,6 @@ public class WebImage extends WebAbstractComponent<CubaImage> implements Image {
     }
 
     @Override
-    public Resource getSource() {
-        return value;
-    }
-
-    @Override
-    public void setSource(Resource resource) {
-        if (SharedUtil.equals(this.value, resource)) {
-            return;
-        }
-        updateValue(resource);
-    }
-
-    @Override
-    public <T extends Resource> T setSource(Class<T> type) {
-        T resource = createResource(type);
-
-        updateValue(resource);
-
-        return resource;
-    }
-
-    @Override
-    public <T extends Resource> T createResource(Class<T> type) {
-        Class<? extends Resource> imageResourceClass = resourcesClasses.get(type);
-        if (imageResourceClass == null) {
-            throw new IllegalStateException(String.format("Can't find image resource class for '%s'", type.getTypeName()));
-        }
-
-        try {
-            return type.cast(imageResourceClass.newInstance());
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(String.format("Error creating the '%s' image resource instance",
-                    type.getTypeName()), e);
-        }
-    }
-
-    @Override
-    public void addSourceChangeListener(SourceChangeListener listener) {
-        getEventRouter().addListener(SourceChangeListener.class, listener);
-    }
-
-    @Override
-    public void removeSourceChangeListener(SourceChangeListener listener) {
-        getEventRouter().removeListener(SourceChangeListener.class, listener);
-    }
-
-    @Override
     public ScaleMode getScaleMode() {
         return this.scaleMode;
     }
@@ -253,15 +160,5 @@ public class WebImage extends WebAbstractComponent<CubaImage> implements Image {
         this.scaleMode = scaleMode;
 
         component.setScaleMode(scaleMode.name().toLowerCase().replace("_", "-"));
-    }
-
-    @Override
-    public void setAlternateText(String alternateText) {
-        component.setAlternateText(alternateText);
-    }
-
-    @Override
-    public String getAlternateText() {
-        return component.getAlternateText();
     }
 }

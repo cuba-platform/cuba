@@ -17,16 +17,12 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Image;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-public class ImageLoader extends AbstractComponentLoader<Image> {
+public class ImageLoader extends AbstractResourceViewLoader<Image> {
 
     @Override
     public void createComponent() {
@@ -36,33 +32,11 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
 
     @Override
     public void loadComponent() {
-        assignXmlDescriptor(resultComponent, element);
-
-        loadVisible(resultComponent, element);
-        loadEnable(resultComponent, element);
-
-        loadStyleName(resultComponent, element);
-
-        loadCaption(resultComponent, element);
-        loadDescription(resultComponent, element);
-
-        loadWidth(resultComponent, element);
-        loadHeight(resultComponent, element);
-        loadAlign(resultComponent, element);
+        super.loadComponent();
 
         loadDatasource(resultComponent, element);
 
-        loadImageResource(resultComponent, element);
-
         loadScaleMode(resultComponent, element);
-        loadAlternateText(resultComponent, element);
-    }
-
-    protected void loadAlternateText(Image resultComponent, Element element) {
-        String alternateText = element.attributeValue("alternateText");
-        if (StringUtils.isNotEmpty(alternateText)) {
-            resultComponent.setAlternateText(alternateText);
-        }
     }
 
     protected void loadScaleMode(Image image, Element element) {
@@ -72,126 +46,6 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
             scaleMode = Image.ScaleMode.valueOf(scaleModeString);
         }
         image.setScaleMode(scaleMode);
-    }
-
-    protected void loadImageResource(Image image, Element element) {
-        if (loadFileImageResource(image, element)) return;
-
-        if (loadThemeImageResource(image, element)) return;
-
-        if (loadClasspathImageResource(image, element)) return;
-
-        if (loadRelativePathImageResource(image, element)) return;
-
-        loadUrlImageResource(image, element);
-    }
-
-    protected boolean loadRelativePathImageResource(Image resultComponent, Element element) {
-        Element relativePath = element.element("relativePath");
-        if (relativePath == null)
-            return false;
-
-        String path = relativePath.attributeValue("path");
-        if (StringUtils.isEmpty(path)) {
-            throw new GuiDevelopmentException("No path provided for the RelativePathResource", context.getFullFrameId());
-        }
-
-        RelativePathResource resource = resultComponent.createResource(RelativePathResource.class);
-
-        resource.setPath(path);
-
-        loadMimeType(resource, relativePath);
-
-        resultComponent.setSource(resource);
-
-        return true;
-    }
-
-    protected void loadUrlImageResource(Image resultComponent, Element element) {
-        Element urlResource = element.element("url");
-        if (urlResource == null)
-            return;
-
-        String url = urlResource.attributeValue("url");
-        if (StringUtils.isEmpty(url)) {
-            throw new GuiDevelopmentException("No url provided for the UrlResource", context.getFullFrameId());
-        }
-
-        UrlResource resource = resultComponent.createResource(UrlResource.class);
-        try {
-            resource.setUrl(new URL(url));
-
-            loadMimeType(resource, urlResource);
-
-            resultComponent.setSource(resource);
-        } catch (MalformedURLException e) {
-            String msg = String.format("An error occurred while creating UrlResource with the given url: %s", url);
-            throw new GuiDevelopmentException(msg, context.getFullFrameId());
-        }
-    }
-
-    protected boolean loadClasspathImageResource(Image resultComponent, Element element) {
-        Element classpathResource = element.element("classpath");
-        if (classpathResource == null)
-            return false;
-
-        String classpathPath = classpathResource.attributeValue("path");
-        if (StringUtils.isEmpty(classpathPath)) {
-            throw new GuiDevelopmentException("No path provided for the ClasspathResource", context.getFullFrameId());
-        }
-
-        ClasspathResource resource = resultComponent.createResource(ClasspathResource.class);
-
-        resource.setPath(classpathPath);
-
-        loadMimeType(resource, classpathResource);
-        loadStreamSettings(resource, classpathResource);
-
-        resultComponent.setSource(resource);
-
-        return true;
-    }
-
-    protected boolean loadThemeImageResource(Image resultComponent, Element element) {
-        Element themeResource = element.element("theme");
-        if (themeResource == null)
-            return false;
-
-        String themePath = themeResource.attributeValue("path");
-        if (StringUtils.isEmpty(themePath)) {
-            throw new GuiDevelopmentException("No path provided for the ThemeResource", context.getFullFrameId());
-        }
-
-        resultComponent.setSource(ThemeResource.class).setPath(themePath);
-
-        return true;
-    }
-
-    protected boolean loadFileImageResource(Image resultComponent, Element element) {
-        Element fileResource = element.element("file");
-        if (fileResource == null)
-            return false;
-
-        String filePath = fileResource.attributeValue("path");
-        if (StringUtils.isEmpty(filePath)) {
-            throw new GuiDevelopmentException("No path provided for the FileResource", context.getFullFrameId());
-        }
-
-        File file = new File(filePath);
-        if (!file.exists()) {
-            String msg = String.format("Can't load FileResource. File with given path does not exists: %s", filePath);
-            throw new GuiDevelopmentException(msg, context.getFullFrameId());
-        }
-
-        FileResource resource = resultComponent.createResource(FileResource.class);
-
-        resource.setFile(file);
-
-        loadStreamSettings(resource, fileResource);
-
-        resultComponent.setSource(resource);
-
-        return true;
     }
 
     protected void loadDatasource(Image component, Element element) {
@@ -211,25 +65,6 @@ public class ImageLoader extends AbstractComponentLoader<Image> {
             }
 
             component.setDatasource(ds, property);
-        }
-    }
-
-    protected void loadMimeType(ResourceView.HasMimeType resource, Element resourceElement) {
-        String mimeType = resourceElement.attributeValue("mimeType");
-        if (StringUtils.isNotEmpty(mimeType)) {
-            resource.setMimeType(mimeType);
-        }
-    }
-
-    protected void loadStreamSettings(ResourceView.HasStreamSettings resource, Element resourceElement) {
-        String cacheTime = resourceElement.attributeValue("cacheTime");
-        if (StringUtils.isNotEmpty(cacheTime)) {
-            resource.setCacheTime(Long.parseLong(cacheTime));
-        }
-
-        String bufferSize = resourceElement.attributeValue("bufferSize");
-        if (StringUtils.isNotEmpty(bufferSize)) {
-            resource.setBufferSize(Integer.parseInt(bufferSize));
         }
     }
 }

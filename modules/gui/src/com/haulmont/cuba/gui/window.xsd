@@ -2615,6 +2615,7 @@
                 <xs:element name="multiUpload" type="multiuploadComponent"/>
                 <xs:element name="embedded" type="embeddedComponent"/>
                 <xs:element name="image" type="imageComponent"/>
+                <xs:element name="browserFrame" type="resourceViewComponent"/>
 
                 <xs:element name="tree" type="treeComponent"/>
                 <xs:element name="table" type="tableComponent"/>
