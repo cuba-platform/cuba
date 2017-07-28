@@ -78,7 +78,7 @@ public class SingleAppCoreServletListener implements ServletContextListener {
             URLClassLoader coreClassLoader = new CubaSingleAppClassLoader(urls, contextClassLoader);
 
             Thread.currentThread().setContextClassLoader(coreClassLoader);
-            Class<?> appContextLoaderClass = coreClassLoader.loadClass("com.haulmont.cuba.core.sys.singleapp.SingleAppCoreContextLoader");
+            Class<?> appContextLoaderClass = coreClassLoader.loadClass(getAppContextLoaderClassName());
             appContextLoader = appContextLoaderClass.newInstance();
 
             Method setJarsNamesMethod = ReflectionUtils.findMethod(appContextLoaderClass, "setJarNames", String.class);
@@ -97,5 +97,9 @@ public class SingleAppCoreServletListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         Method contextInitialized = ReflectionUtils.findMethod(appContextLoader.getClass(), "contextDestroyed", ServletContextEvent.class);
         ReflectionUtils.invokeMethod(contextInitialized, appContextLoader, sce);
+    }
+
+    protected String getAppContextLoaderClassName() {
+        return "com.haulmont.cuba.core.sys.singleapp.SingleAppCoreContextLoader";
     }
 }

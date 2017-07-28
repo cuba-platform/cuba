@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.sys.singleapp;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.CubaClassPathXmlApplicationContext;
@@ -48,6 +49,7 @@ import java.util.function.Supplier;
 public class SingleAppWebContextLoader extends WebAppContextLoader {
 
     private Set<String> dependencyJars;
+    private ServletContextListener webServletContextListener;
 
     protected static final String FRONT_CONTEXT_NAME = "front";
 
@@ -81,6 +83,16 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
         registerFrontAppServlet(servletContext);
 
         registerClassLoaderFilter(servletContext);
+
+        initWebServletContextListener(servletContextEvent, servletContext);
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent servletContextEvent) {
+        super.contextDestroyed(servletContextEvent);
+        if (webServletContextListener != null) {
+            webServletContextListener.contextDestroyed(servletContextEvent);
+        }
     }
 
     protected void registerAppServlet(ServletContext servletContext) {
@@ -189,6 +201,19 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
     @Override
     protected String getAppPropertiesConfig(ServletContext sc) {
         return sc.getInitParameter("appPropertiesConfigWeb");
+    }
+
+    protected void initWebServletContextListener(ServletContextEvent servletContextEvent, ServletContext sc) {
+        String className = sc.getInitParameter("webServletContextListener");
+        if (!Strings.isNullOrEmpty(className)) {
+            try {
+                Class<?> clazz = this.getClass().getClassLoader().loadClass(className);
+                webServletContextListener = (ServletContextListener) clazz.newInstance();
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException("An error occurred while starting single WAR application", e);
+            }
+            webServletContextListener.contextInitialized(servletContextEvent);
+        }
     }
 
     protected static class SetClassLoaderFilter implements Filter {
