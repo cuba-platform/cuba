@@ -458,10 +458,13 @@ public abstract class App {
         }
 
         AppUI currentUi = AppUI.getCurrent();
+        // it can be null if we handle request in a custom RequestHandler
+        if (currentUi != null) {
+            currentUi.setLocale(locale);
+            currentUi.updateClientSystemMessages(locale);
+        }
 
-        currentUi.setLocale(locale);
-        currentUi.getSession().setLocale(locale);
-        currentUi.updateClientSystemMessages(locale);
+        VaadinSession.getCurrent().setLocale(locale);
 
         for (AppUI ui : getAppUIs()) {
             if (ui != currentUi) {

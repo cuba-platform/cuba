@@ -28,9 +28,7 @@ import com.haulmont.cuba.security.global.IpMatcher;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.vaadin.server.Page;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.server.WebBrowser;
+import com.vaadin.server.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,8 +190,8 @@ public abstract class AbstractConnection implements Connection {
     }
 
     protected String makeClientInfo() {
-        Page page = AppUI.getCurrent().getPage();
-        WebBrowser webBrowser = page.getWebBrowser();
+        WebBrowser webBrowser = new WebBrowser();
+        webBrowser.updateRequestDetails(VaadinService.getCurrentRequest());
 
         //noinspection UnnecessaryLocalVariable
         String serverInfo = String.format("Web (%s:%s/%s) %s",
@@ -206,7 +204,8 @@ public abstract class AbstractConnection implements Connection {
     }
 
     protected TimeZone detectTimeZone() {
-        WebBrowser webBrowser = Page.getCurrent().getWebBrowser();
+        WebBrowser webBrowser = new WebBrowser();
+        webBrowser.updateRequestDetails(VaadinService.getCurrentRequest());
 
         int offset = webBrowser.getTimezoneOffset() / 1000 / 60;
         char sign = offset >= 0 ? '+' : '-';
