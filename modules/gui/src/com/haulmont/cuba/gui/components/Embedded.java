@@ -29,6 +29,7 @@ import java.util.Map;
  * <p>
  * Web implementation may require a browser plugin. Only images support is mandatory for all implementations.
  *
+ * @deprecated use {@link Image} and {@link BrowserFrame} instead
  */
 public interface Embedded extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasIcon {
 
