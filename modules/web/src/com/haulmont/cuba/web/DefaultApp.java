@@ -105,7 +105,9 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
             initExceptionHandlers(true);
 
             AppUI currentUi = AppUI.getCurrent();
-            createTopLevelWindow(currentUi);
+            if (currentUi != null) {
+                createTopLevelWindow(currentUi);
+            }
 
             for (AppUI ui : getAppUIs()) {
                 if (currentUi != ui) {
@@ -128,9 +130,11 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
                 String loggedOutUrl = ((ExternallyAuthenticatedConnection) connection).logoutExternalAuthentication();
                 if (!Strings.isNullOrEmpty(loggedOutUrl)) {
                     AppUI currentUi = AppUI.getCurrent();
-
-                    currentUi.setContent(null);
-                    currentUi.getPage().setLocation(loggedOutUrl);
+                    // it can be null if we handle request in a custom RequestHandler
+                    if (currentUi != null) {
+                        currentUi.setContent(null);
+                        currentUi.getPage().setLocation(loggedOutUrl);
+                    }
 
                     VaadinSession vaadinSession = VaadinSession.getCurrent();
                     for (UI ui : vaadinSession.getUIs()) {
@@ -224,7 +228,10 @@ public class DefaultApp extends App implements ConnectionListener, UserSubstitut
         closeAllWindows();
 
         AppUI currentUi = AppUI.getCurrent();
-        createTopLevelWindow(currentUi);
+        // it can be null if we came from a custom Vaadin RequestHandler
+        if (currentUi != null) {
+            createTopLevelWindow(currentUi);
+        }
 
         for (AppUI ui : getAppUIs()) {
             if (currentUi != ui) {
