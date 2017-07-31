@@ -118,7 +118,12 @@ public interface UploadField extends Component, Component.HasCaption, Component.
     void setAccept(String accept);
 
     /**
-     * Set white list of comma separated file extensions.
+     * Set white list of file extensions. Each extension should start with dot symbol, e.g. ".png".
+     * <pre>{@code
+     *    private FileUploadField uploadField;
+     *    ...
+     *    uploadField.setPermittedExtensions(Sets.newHashSet(".png", ".jpg"));
+     * }</pre>
      *
      * @param permittedExtensions permitted extensions.
      */
