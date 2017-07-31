@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.io.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -95,11 +95,14 @@ public class ExecutionsImpl implements Executions {
         if (context == null) {
             throw new IllegalStateException("No execution context found");
         }
-        log.debug("End execution context: group={}, key={}", context.getGroup(), context.getKey());
-        UserSession userSession = userSessionSource.getUserSession();
-        removeExecutionContextFromUserSession(userSession, context);
-        context.setState(ExecutionContextImpl.State.COMPLETED);
-        ExecutionContextHolder.removeContext();
+        try {
+            log.debug("End execution context: group={}, key={}", context.getGroup(), context.getKey());
+            UserSession userSession = userSessionSource.getUserSession();
+            removeExecutionContextFromUserSession(userSession, context);
+            context.setState(ExecutionContextImpl.State.COMPLETED);
+        } finally {
+            ExecutionContextHolder.removeContext();
+        }
     }
 
     public void cancelExecution(UUID userSessionId, String group, String key) {
