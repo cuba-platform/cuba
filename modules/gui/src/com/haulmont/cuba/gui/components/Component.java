@@ -28,7 +28,7 @@ import java.util.EventObject;
 import java.util.function.Consumer;
 
 /**
- * Root of the GenericUI components hierarchy
+ * Root of the GenericUI components hierarchy.
  */
 public interface Component {
 
@@ -59,7 +59,6 @@ public interface Component {
      * @return Parent of component.
      */
     Component getParent();
-
     /**
      * INTERNAL.<br>
      *
@@ -266,11 +265,17 @@ public interface Component {
         Collection<Component> getComponents();
     }
 
+    /**
+     * Component which can contain other components and provides indexed access to children.
+     */
     interface OrderedContainer extends Container {
         void add(Component childComponent, int index);
         int indexOf(Component component);
     }
 
+    /**
+     * Component which can contain other components and provides access "by-name" to children.
+     */
     interface HasNamedComponents {
         /**
          * Get subcomponent by name.
@@ -566,8 +571,13 @@ public interface Component {
         Action getActionNN(String id);
     }
 
+    /**
+     * An {@link ActionsHolder} component that loads and controls permissions on owned actions.
+     */
     interface SecuredActionsHolder extends ActionsHolder {
-
+        /**
+         * @return permissions container
+         */
         ActionsPermissions getActionsPermissions();
     }
 
@@ -755,18 +765,24 @@ public interface Component {
     }
 
     /**
-     * Component having an icon
+     * Component having an icon.
      */
     interface HasIcon {
         String getIcon();
         void setIcon(String icon);
     }
 
+    /**
+     * Component having a buttons pancel.
+     */
     interface HasButtonsPanel {
         ButtonsPanel getButtonsPanel();
         void setButtonsPanel(ButtonsPanel panel);
     }
 
+    /**
+     * Component having a {@link RowsCount} component.
+     */
     interface HasRowsCount {
         RowsCount getRowsCount();
         void setRowsCount(RowsCount rowsCount);
@@ -780,6 +796,9 @@ public interface Component {
         void validate() throws ValidationException;
     }
 
+    /**
+     * Data aware component that supports buffered write mode.
+     */
     interface Buffered {
         /**
          * Updates all changes since the previous commit to the data source.
@@ -821,6 +840,9 @@ public interface Component {
         boolean isModified();
     }
 
+    /**
+     * Component having presentations.
+     */
     interface HasPresentations extends HasSettings {
         void usePresentations(boolean b);
         boolean isUsePresentations();
