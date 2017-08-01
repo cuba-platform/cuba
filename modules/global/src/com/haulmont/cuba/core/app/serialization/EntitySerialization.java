@@ -576,7 +576,8 @@ public class EntitySerialization implements EntitySerializationAPI {
 
         protected void clearFields(Entity entity) {
             for (MetaProperty metaProperty : entity.getMetaClass().getProperties()) {
-                if ("id".equals(metaProperty.getName())) continue;
+                if ("id".equals(metaProperty.getName()) ||
+                        (entity instanceof HasUuid && "uuid".equals(metaProperty.getName()))) continue;
                 Field field = getField(entity.getClass(), metaProperty.getName());
                 if (field != null) {
                     makeFieldAccessible(field);
