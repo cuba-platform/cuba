@@ -50,7 +50,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 @Component(FileLoader.NAME)
 public class FileLoaderClientImpl implements FileLoader {
 
-    protected final Logger log = LoggerFactory.getLogger(FileLoaderClientImpl.class);
+    private final Logger log = LoggerFactory.getLogger(FileLoaderClientImpl.class);
 
     @Inject
     protected ServerSelector serverSelector;
@@ -242,6 +242,8 @@ public class FileLoaderClientImpl implements FileLoader {
                 if (selectedUrl == null) {
                     throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fd.getName(), ex);
                 }
+            } finally {
+                connectionManager.shutdown();
             }
         }
     }
