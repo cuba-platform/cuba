@@ -79,14 +79,26 @@ public class IdProxy<T extends Number> extends Number implements Serializable {
     }
 
     /**
-     * @return a copy of this IdProxy cleaned from a reference to entity
+     * Returns a shared copy of this IdProxy cleaned from a reference to entity.
+     * <p>DO NOT use shared copies when assigning the same ID to another entity!
+     * @see #copy(boolean)
      */
     public IdProxy<T> copy() {
+        return copy(true);
+    }
+
+    /**
+     * Returns a copy of this IdProxy cleaned from a reference to entity.
+     * @param shared if true, a shared instance of the copy will be returned to avoid creating new object.
+     *               DO NOT use shared copies when assigning the same ID to another entity!
+     */
+    public IdProxy<T> copy(boolean shared) {
         if (copy == null
+                || !shared
                 || !Objects.equals(value, copy.value)
                 || !Objects.equals(uuid, copy.uuid)
                 || (copy.value == null && entity != null && entity.getDbGeneratedId() != null)) {
-            copy = new IdProxy();
+            copy = new IdProxy<>();
             if (value != null)
                 copy.value = value;
             else if (entity != null && entity.getDbGeneratedId() != null)
@@ -140,6 +152,13 @@ public class IdProxy<T extends Number> extends Number implements Serializable {
      */
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
+    }
+
+    /**
+     * INTERNAL
+     */
+    void setEntity(BaseDbGeneratedIdEntity<T> entity) {
+        this.entity = entity;
     }
 
     @Override
