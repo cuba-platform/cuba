@@ -44,8 +44,9 @@ public abstract class BaseDbGeneratedIdEntity<K extends Number> extends BaseGene
 
     @Override
     public void setId(IdProxy<K> idProxy) {
-        this.idProxy = idProxy;
-        setDbGeneratedId(idProxy.get());
+        this.idProxy = idProxy.copy(false);
+        setDbGeneratedId(this.idProxy.get());
+        this.idProxy.setEntity(this);
     }
 
     protected abstract void setDbGeneratedId(K dbId);

@@ -254,4 +254,17 @@ public class IdentityTest {
         }
     }
 
+    @Test
+    public void testIdCopying() {
+        IdentityEntity entity1 = metadata.create(IdentityEntity.class);
+        assertNull(entity1.getId().get());
+
+        IdentityEntity entity2 = metadata.create(IdentityEntity.class);
+        entity2.setId(entity1.getId());
+
+        IdentityEntity entity3 = metadata.create(IdentityEntity.class);
+        entity3.setId(entity1.getId());
+
+        assertTrue(entity2.getId() != entity3.getId());
+    }
 }
