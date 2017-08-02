@@ -41,8 +41,12 @@
             <properties include=".*"/>
         </filter>
         <groupTable id="sessionsTable" multiselect="true" textSelectionEnabled="true" width="100%">
+            <actions>
+                <action id="excel"/>
+            </actions>
             <buttonsPanel>
                 <button id="enableBtn" invoke="enableLogging"/>
+                <button id="excelBtn" action="sessionsTable.excel"/>
             </buttonsPanel>
             <rowsCount/>
             <columns>
