@@ -72,7 +72,7 @@ THE POSSIBILITY OF SUCH DAMAGE.]]></license>
 
         <item name="Apache Commons" web="http://commons.apache.org/" license="apache-2.0"/>
 
-        <item name="DOM4J" web="http://dom4j.sourceforge.net/dom4j-1.6.1/">
+        <item name="DOM4J" web="http://www.dom4j.org/dom4j-1.6.1/">
             <license><![CDATA[
 Redistribution and use of this software and associated documentation ("Software"), with or without modification, are permitted provided that the following conditions are met:
 
@@ -174,7 +174,7 @@ included both in freemarker.jar and in the source code:
 
         <item name="JGroups" web="http://www.jgroups.org/" license="lgpl-2.1"/>
 
-        <item name="JSON" web="http://json.org/java/">
+        <item name="JSON" web="https://github.com/stleary/JSON-java">
             <license><![CDATA[
 Copyright (c) 2002 JSON.org
 
