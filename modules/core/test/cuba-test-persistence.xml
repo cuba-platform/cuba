@@ -50,5 +50,12 @@
         <class>com.haulmont.cuba.testmodel.fetchsameentity.FetchSameMainEntity</class>
         <class>com.haulmont.cuba.testmodel.fetchsameentity.FetchSameLinkAEntity</class>
         <class>com.haulmont.cuba.testmodel.fetchsameentity.FetchSameLinkBEntity</class>
+
+        <class>com.haulmont.cuba.testmodel.fetchjoin.Customer</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.Order</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.OrderLine</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.Party</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.Product</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.SalesPerson</class>
     </persistence-unit>
 </persistence>
