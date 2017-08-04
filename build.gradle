@@ -556,7 +556,6 @@ configure(webModule) {
         compile(restApiModule)
         compile(idpModule)
 
-        compile(bom['commons-fileupload:commons-fileupload'])
         compile(bom['org.springframework:spring-webmvc'])
 
         compile(bom['com.vaadin:vaadin-push']) {
@@ -810,7 +809,6 @@ configure(restApiModule) {
 
         compile(bom['com.fasterxml.jackson.core:jackson-databind'])
         compile(bom['com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'])
-        compile(bom['commons-fileupload:commons-fileupload'])
 
         compile(bom['org.springframework.security:spring-security-core'])
         compile(bom['org.springframework.security:spring-security-web'])
