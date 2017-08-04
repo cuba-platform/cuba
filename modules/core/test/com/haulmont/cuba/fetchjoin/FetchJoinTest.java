@@ -23,10 +23,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.testmodel.fetchjoin.*;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -89,6 +86,7 @@ public class FetchJoinTest {
     }
 
     @Test
+    @Ignore
     public void testNotLoadingJoinB() throws Exception {
         try (Transaction tx = cont.persistence().createTransaction()) {
             EntityManager em = cont.persistence().getEntityManager();
