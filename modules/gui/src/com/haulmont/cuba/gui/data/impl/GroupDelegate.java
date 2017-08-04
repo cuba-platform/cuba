@@ -22,8 +22,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.map.LinkedMap;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.commons.lang.ArrayUtils;
 
 import java.util.*;
@@ -103,11 +103,7 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
                 throw new IllegalStateException("Item group cannot be NULL");
             }
 
-            List<K> itemsIds = groupItems.get(groupInfo);
-            if (itemsIds == null) {
-                itemsIds = new ArrayList<>();
-                groupItems.put(groupInfo, itemsIds);
-            }
+            List<K> itemsIds = groupItems.computeIfAbsent(groupInfo, k -> new ArrayList<>());
             itemsIds.add(id);
         }
     }
@@ -129,11 +125,8 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
             children.add(groupInfo);
         }
 
-        List<GroupInfo> groupChildren = this.children.get(groupInfo);
-        if (groupChildren == null) {
-            groupChildren = new ArrayList<>();
-            this.children.put(groupInfo, groupChildren);
-        }
+        List<GroupInfo> groupChildren =
+                this.children.computeIfAbsent(groupInfo, k -> new ArrayList<>());
 
         if (propertyIndex < groupProperties.length) {
             groupInfo = groupItems(propertyIndex, groupInfo, groupChildren, item, groupValues);
@@ -152,13 +145,13 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
             final int index = Arrays.asList(groupProperties).indexOf(propertyPath);
             if (index > -1) {
                 if (index == 0) { // Sort roots
-                    Collections.sort(roots, new GroupInfoComparator(asc));
+                    roots.sort(new GroupInfoComparator(asc));
                 } else {
                     final Object parentProperty = groupProperties[index - 1];
                     for (final Map.Entry<GroupInfo, List<GroupInfo>> entry : children.entrySet()) {
                         Object property = entry.getKey().getProperty();
                         if (property.equals(parentProperty)) {
-                            Collections.sort(entry.getValue(), new GroupInfoComparator(asc));
+                            entry.getValue().sort(new GroupInfoComparator(asc));
                         }
                     }
                 }
@@ -167,7 +160,7 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
                 for (final GroupInfo groupInfo : groups) {
                     List<K> items = groupItems.get(groupInfo);
                     if (items != null) {
-                        Collections.sort(items, new EntityByIdComparator<>(propertyPath, datasource, asc));
+                        items.sort(new EntityByIdComparator<>(propertyPath, datasource, asc));
                     }
                 }
             }

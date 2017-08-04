@@ -30,7 +30,7 @@ import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.security.entity.EntityOp;
-import org.apache.commons.collections.map.LinkedMap;
+import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.log4j.Logger;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;

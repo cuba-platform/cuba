@@ -27,7 +27,7 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestSupport;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;

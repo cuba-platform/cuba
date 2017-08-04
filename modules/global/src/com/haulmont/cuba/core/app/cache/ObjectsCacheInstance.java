@@ -18,13 +18,12 @@
 package com.haulmont.cuba.core.app.cache;
 
 import com.haulmont.bali.datastruct.Pair;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 import java.util.Collection;
 
 /**
  * Objects cache interface
- *
  */
 public interface ObjectsCacheInstance {
     String getName();

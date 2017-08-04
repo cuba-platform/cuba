@@ -35,7 +35,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.sys.MetadataBuildSupport.XmlAnnotation;
 import com.haulmont.cuba.core.sys.MetadataBuildSupport.XmlAnnotations;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;

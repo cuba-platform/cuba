@@ -47,7 +47,7 @@ import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;

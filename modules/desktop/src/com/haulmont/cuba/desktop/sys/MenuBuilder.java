@@ -26,7 +26,7 @@ import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 public class MenuBuilder {
@@ -112,9 +111,8 @@ public class MenuBuilder {
     }
 
     private void createSubMenu(JMenu jMenu, MenuItem item) {
-        List<MenuItem> itemChildren = new LinkedList<>(item.getChildren());
-        CollectionUtils.filter(itemChildren, object ->
-                ((MenuItem) object).isPermitted(userSession));
+        List<MenuItem> itemChildren = new ArrayList<>(item.getChildren());
+        CollectionUtils.filter(itemChildren, object -> object.isPermitted(userSession));
 
         List<MenuItemContainer> items = new ArrayList<>();
 

@@ -35,7 +35,6 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.collections.map.SingletonMap;
 import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
@@ -227,15 +226,14 @@ public class UserBrowser extends AbstractLookup {
     public void copySettings() {
         Set<User> selected = usersTable.getSelected();
         if (!selected.isEmpty()) {
-            @SuppressWarnings("unchecked")
             Window copySettingsWindow = openWindow(
                     "sec$User.copySettings",
                     OpenType.DIALOG,
-                    new SingletonMap("users", selected)
+                    ParamsMap.of("users", selected)
             );
-            copySettingsWindow.addCloseListener(actionId -> {
-                usersTable.requestFocus();
-            });
+            copySettingsWindow.addCloseListener(actionId ->
+                    usersTable.requestFocus()
+            );
         }
     }
 
@@ -290,7 +288,7 @@ public class UserBrowser extends AbstractLookup {
                 for (Map.Entry<UUID, String> entry : changedPasswords.entrySet()) {
                     userPasswords.put(usersDs.getItem(entry.getKey()), entry.getValue());
                 }
-                Map<String, Object> params = Collections.singletonMap("passwords", (Object) userPasswords);
+                Map<String, Object> params = Collections.singletonMap("passwords", userPasswords);
                 Window newPasswordsWindow = openWindow("sec$User.newPasswords", OpenType.DIALOG, params);
                 newPasswordsWindow.addCloseListener(actionId -> {
                     usersTable.requestFocus();

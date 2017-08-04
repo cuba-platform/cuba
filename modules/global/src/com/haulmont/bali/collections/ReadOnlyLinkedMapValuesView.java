@@ -16,8 +16,8 @@
 
 package com.haulmont.bali.collections;
 
-import org.apache.commons.collections.map.AbstractLinkedMap;
-import org.apache.commons.collections.map.LinkedMap;
+import org.apache.commons.collections4.map.AbstractLinkedMap;
+import org.apache.commons.collections4.map.LinkedMap;
 
 import javax.annotation.Nonnull;
 import java.io.Serializable;

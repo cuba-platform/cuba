@@ -23,8 +23,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.UI;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.IterableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -181,13 +180,9 @@ public class ObjectContainer implements com.vaadin.data.Container, Container.Ite
         private String getNameFromReflection(Object value) {
             final Method[] methods = value.getClass().getMethods();
             if (methods != null) {
-                Method method = (Method) CollectionUtils.find(Arrays.asList(methods), new Predicate() {
-                    @Override
-                    public boolean evaluate(Object o) {
-                        Method m = (Method) o;
-                        return methodsName.contains(m.getName());
-                    }
-                });
+                Method method = IterableUtils.find(Arrays.asList(methods),
+                        o -> methodsName.contains(o.getName())
+                );
 
                 if (method != null) {
                     try {

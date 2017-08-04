@@ -33,7 +33,8 @@ import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.DeclarativeColumnGenerator;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -185,8 +186,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 for (CategoryAttribute attribute : attributesToShow) {
                     final MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(ds.getMetaClass(), attribute);
 
-                    Object columnWithSameId = CollectionUtils.find(availableColumns,
-                            o -> ((Table.Column) o).getId().equals(metaPropertyPath));
+                    Object columnWithSameId = IterableUtils.find(availableColumns,
+                            o -> o.getId().equals(metaPropertyPath));
 
                     if (columnWithSameId != null) {
                         continue;

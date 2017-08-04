@@ -32,7 +32,7 @@ import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleDatasourceListene
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -861,7 +861,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             return;
 
         List<T> list = new LinkedList<>(collection);
-        Collections.sort(list, createEntityComparator());
+        list.sort(createEntityComparator());
         collection.clear();
         collection.addAll(list);
     }

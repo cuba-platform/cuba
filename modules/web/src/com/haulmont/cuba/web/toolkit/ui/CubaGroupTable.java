@@ -29,7 +29,7 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.KeyMapper;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;

@@ -28,7 +28,7 @@ import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.eclipse.persistence.internal.helper.CubaUtil;
 import org.eclipse.persistence.sessions.UnitOfWork;

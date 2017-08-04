@@ -25,7 +25,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import net.miginfocom.swing.MigLayout;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -304,6 +304,7 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getValue() {
         if (multiselect) {
@@ -319,6 +320,7 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> T wrapAsCollection(Object o) {
         if (isMultiSelect()) {
             if (o != null) {

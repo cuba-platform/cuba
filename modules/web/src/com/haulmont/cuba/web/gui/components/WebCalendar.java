@@ -29,7 +29,7 @@ import com.haulmont.cuba.web.gui.components.calendar.CalendarEventProviderWrappe
 import com.haulmont.cuba.web.gui.components.calendar.CalendarEventWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaCalendar;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.time.DayOfWeek;
 import java.time.Month;

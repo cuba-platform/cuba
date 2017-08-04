@@ -18,9 +18,8 @@
 package com.haulmont.cuba.web.jmx;
 
 import com.haulmont.cuba.core.entity.JmxInstance;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.jmx.support.MBeanServerConnectionFactoryBean;
 
@@ -29,10 +28,7 @@ import javax.management.*;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.rmi.UnmarshalException;
-import java.util.Collection;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public final class JmxConnectionHelper {
 
@@ -50,43 +46,34 @@ public final class JmxConnectionHelper {
                                               final Class objectClass) throws IOException {
 
         Set<ObjectName> names = connection.queryNames(null, null);
-        return (ObjectName) CollectionUtils.find(names, new Predicate() {
-            @Override
-            public boolean evaluate(Object o) {
-                ObjectName objectName = (ObjectName) o;
-                MBeanInfo info;
-                try {
-                    info = connection.getMBeanInfo(objectName);
-                } catch (InstanceNotFoundException | UnmarshalException e) {
-                    return false;
-                } catch (Exception e) {
-                    throw new JmxControlException(e);
-                }
-                return StringUtils.equals(objectClass.getName(), info.getClassName());
+        return IterableUtils.find(names, o -> {
+            MBeanInfo info;
+            try {
+                info = connection.getMBeanInfo(o);
+            } catch (InstanceNotFoundException | UnmarshalException e) {
+                return false;
+            } catch (Exception e) {
+                throw new JmxControlException(e);
             }
+            return StringUtils.equals(objectClass.getName(), info.getClassName());
         });
     }
 
     protected static ObjectName getObjectName(final MBeanServerConnection connection, final String remoteContext,
                                               final Class objectClass) throws IOException {
         Set<ObjectName> names = connection.queryNames(null, null);
-        return (ObjectName) CollectionUtils.find(names, new Predicate() {
-            @Override
-            public boolean evaluate(Object o) {
-                ObjectName objectName = (ObjectName) o;
-
-                if (!StringUtils.equals(remoteContext, objectName.getDomain())) {
-                    return false;
-                }
-
-                MBeanInfo info;
-                try {
-                    info = connection.getMBeanInfo(objectName);
-                } catch (Exception e) {
-                    throw new JmxControlException(e);
-                }
-                return StringUtils.equals(objectClass.getName(), info.getClassName());
+        return IterableUtils.find(names, o -> {
+            if (!StringUtils.equals(remoteContext, o.getDomain())) {
+                return false;
             }
+
+            MBeanInfo info;
+            try {
+                info = connection.getMBeanInfo(o);
+            } catch (Exception e) {
+                throw new JmxControlException(e);
+            }
+            return StringUtils.equals(objectClass.getName(), info.getClassName());
         });
     }
 
@@ -96,18 +83,14 @@ public final class JmxConnectionHelper {
 
         // find all suitable beans
         @SuppressWarnings("unchecked")
-        Collection<ObjectName> suitableNames = CollectionUtils.select(names, new Predicate() {
-            @Override
-            public boolean evaluate(Object o) {
-                ObjectName objectName = (ObjectName) o;
-                MBeanInfo info;
-                try {
-                    info = connection.getMBeanInfo(objectName);
-                } catch (Exception e) {
-                    throw new JmxControlException(e);
-                }
-                return StringUtils.equals(objectClass.getName(), info.getClassName());
+        Collection<ObjectName> suitableNames = CollectionUtils.select(names, o -> {
+            MBeanInfo info;
+            try {
+                info = connection.getMBeanInfo(o);
+            } catch (Exception e) {
+                throw new JmxControlException(e);
             }
+            return StringUtils.equals(objectClass.getName(), info.getClassName());
         });
 
         return suitableNames;
@@ -119,7 +102,7 @@ public final class JmxConnectionHelper {
 
     protected static <T> T withConnection(JmxInstance instance, JmxAction<T> action) {
         try {
-            if (ObjectUtils.equals(instance.getId(), LOCAL_JMX_INSTANCE_ID)) {
+            if (Objects.equals(instance.getId(), LOCAL_JMX_INSTANCE_ID)) {
                 return action.perform(instance, getLocalConnection());
             } else {
                 MBeanServerConnectionFactoryBean factoryBean = new MBeanServerConnectionFactoryBean();

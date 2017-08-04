@@ -23,7 +23,6 @@ import com.haulmont.cuba.core.sys.DbInitializationException;
 import com.haulmont.cuba.core.sys.dbupdate.DbUpdaterEngine;
 import com.haulmont.cuba.core.sys.dbupdate.ScriptResource;
 import org.apache.commons.cli.*;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +36,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class DbUpdaterUtil extends DbUpdaterEngine {
 
@@ -251,14 +250,9 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
         if (executeGroovy) {
             return super.getUpdateScripts();
         } else {
-            final List<ScriptResource> files = new ArrayList<>(super.getUpdateScripts());
-
-            CollectionUtils.filter(files, object -> {
-                File file = ((File) object);
-                return !(file.getName().endsWith("groovy"));
-            });
-
-            return files;
+            return super.getUpdateScripts().stream()
+                    .filter(r -> !(r.getName().endsWith("groovy")))
+                    .collect(Collectors.toList());
         }
     }
 

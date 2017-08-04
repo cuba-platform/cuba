@@ -23,7 +23,7 @@ import freemarker.cache.TemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import org.apache.commons.collections.map.LazyMap;
+import org.apache.commons.collections4.map.LazyMap;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -78,9 +78,7 @@ public class TemplateHelper {
         parameterValuesWithStats.put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> params = LazyMap.decorate(parameterValuesWithStats, name -> {
-            String propertyName = (String) name;
-
+        Map<String, Object> params = LazyMap.lazyMap(parameterValuesWithStats, propertyName -> {
             for (String appProperty : AppContext.getPropertyNames()) {
                 if (appProperty.replace(".", "_").equals(propertyName)) {
                     return AppContext.getProperty(propertyName);

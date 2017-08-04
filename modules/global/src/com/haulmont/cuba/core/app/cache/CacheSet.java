@@ -19,8 +19,8 @@ package com.haulmont.cuba.core.app.cache;
 
 import com.google.common.collect.Sets;
 import com.haulmont.bali.datastruct.Pair;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 
 import java.util.*;
 
@@ -38,7 +38,7 @@ public class CacheSet implements Cloneable {
     private Collection<Object> items;
 
     public CacheSet() {
-        this(Collections.<Object>emptyList());
+        this(Collections.emptyList());
     }
 
     public CacheSet(Collection<Object> items) {

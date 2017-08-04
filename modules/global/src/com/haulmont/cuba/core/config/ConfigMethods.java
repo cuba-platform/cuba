@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.core.config;
 
-import org.apache.commons.collections.map.MultiKeyMap;
+import org.apache.commons.collections4.map.MultiKeyMap;
 
 import java.lang.reflect.Method;
 
@@ -62,6 +62,7 @@ public class ConfigMethods {
      * @param method          The method.
      * @return The method implementation.
      */
+    @SuppressWarnings("unchecked")
     public static synchronized ConfigMethod getInstance(Class<?> configInterface, Method method) {
         ConfigMethod configMethod = (ConfigMethod) configMethods.get(configInterface, method);
         if (configMethod == null) {

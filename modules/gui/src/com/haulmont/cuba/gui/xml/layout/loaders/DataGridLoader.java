@@ -36,7 +36,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -409,8 +410,8 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
                     final MetaPropertyPath metaPropertyPath =
                             DynamicAttributesUtils.getMetaPropertyPath(ds.getMetaClass(), attribute);
 
-                    Object columnWithSameId = CollectionUtils.find(availableColumns, column -> {
-                        MetaPropertyPath propertyPath = ((Column) column).getPropertyPath();
+                    Object columnWithSameId = IterableUtils.find(availableColumns, column -> {
+                        MetaPropertyPath propertyPath = column.getPropertyPath();
                         return propertyPath != null && propertyPath.equals(metaPropertyPath);
                     });
 

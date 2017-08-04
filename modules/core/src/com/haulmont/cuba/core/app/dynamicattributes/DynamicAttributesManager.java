@@ -29,7 +29,7 @@ import com.haulmont.cuba.core.app.ClusterListenerAdapter;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

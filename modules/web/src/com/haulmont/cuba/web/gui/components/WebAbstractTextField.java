@@ -30,7 +30,7 @@ import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEnumConverter;
 import com.vaadin.ui.AbstractTextField;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
@@ -80,7 +80,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
                 return (V) datatype.parse(value, locale);
             } catch (ParseException e) {
                 Logger log = LoggerFactory.getLogger(WebAbstractTextField.class);
-                log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
+                log.debug("Unable to parse value of component {}\n{}", getId(), e.getMessage());
                 return null;
             }
         } else {

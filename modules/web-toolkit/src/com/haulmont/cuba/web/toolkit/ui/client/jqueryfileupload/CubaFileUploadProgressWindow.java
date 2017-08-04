@@ -648,7 +648,7 @@ public class CubaFileUploadProgressWindow extends VOverlay implements KeyDownHan
             // dblclick handled in connector
             if (type != Event.ONDBLCLICK && draggable) {
                 if (type == Event.ONMOUSEDOWN) {
-                    /**
+                    /*
                      * Prevents accidental selection of window caption or
                      * content. (#12726)
                      */

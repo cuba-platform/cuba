@@ -24,7 +24,6 @@ import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
@@ -35,15 +34,17 @@ import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
 public class SendingMessageBrowser extends AbstractWindow {
 
@@ -149,17 +150,11 @@ public class SendingMessageBrowser extends AbstractWindow {
     }
 
     protected void selectAttachmentDialog(SendingMessage message) {
-        openLookup("sys$SendingMessage.attachments",
-                new Lookup.Handler() {
-                    @Override
-                    public void handleLookup(Collection items) {
-                        if (items.size() == 1) {
-                            exportFile((SendingAttachment) CollectionUtils.get(items, 0));
-                        }
-                    }
-                },
-                WindowManager.OpenType.DIALOG,
-                ParamsMap.of("message", message));
+        openLookup("sys$SendingMessage.attachments", items -> {
+            if (items.size() == 1) {
+                exportFile((SendingAttachment) IterableUtils.get(items, 0));
+            }
+        }, OpenType.DIALOG, ParamsMap.of("message", message));
     }
 
     protected List<SendingAttachment> getAttachments(SendingMessage message) {

@@ -235,9 +235,8 @@ configure(globalModule) {
         compile(bom['org.codehaus.groovy:groovy-all'])
 
         compile(bom['commons-lang:commons-lang'])
-        compile(bom['commons-collections:commons-collections'])
+        compile(bom['org.apache.commons:commons-collections4'])
         compile(bom['commons-io:commons-io'])
-        compile(bom['commons-codec:commons-codec'])
         compile(bom['commons-cli:commons-cli'])
 
         compile(bom['org.apache.httpcomponents:httpclient']) // simplify version management for selenium

@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -84,15 +84,8 @@ public class MultiplePermissionTarget extends AbstractPermissionTarget
     }
 
     public AttributePermissionVariant getPermissionVariant(final String attribute) {
-        AttributeTarget attrTarget = (AttributeTarget) CollectionUtils.find(getPermissions(),
-                new org.apache.commons.collections.Predicate() {
-                    @Override
-                    public boolean evaluate(Object object) {
-                        @SuppressWarnings("unchecked")
-                        AttributeTarget variantPair = (AttributeTarget) object;
-                        return variantPair != null && attribute.equals(variantPair.getId());
-                    }
-                });
+        AttributeTarget attrTarget = IterableUtils.find(getPermissions(),
+                object -> object != null && attribute.equals(object.getId()));
         if (attrTarget != null)
             return attrTarget.getPermissionVariant();
         else
@@ -100,16 +93,8 @@ public class MultiplePermissionTarget extends AbstractPermissionTarget
     }
 
     public void assignPermissionVariant(final String attribute, AttributePermissionVariant permissionVariant) {
-        AttributeTarget attrTarget = (AttributeTarget) CollectionUtils.find(getPermissions(),
-                new org.apache.commons.collections.Predicate() {
-                    @Override
-                    public boolean evaluate(Object object) {
-                        @SuppressWarnings("unchecked")
-                        AttributeTarget variantPair = (AttributeTarget) object;
-                        return variantPair != null && attribute.equals(variantPair.getId());
-                    }
-                });
-
+        AttributeTarget attrTarget = IterableUtils.find(getPermissions(),
+                object -> object != null && attribute.equals(object.getId()));
         if (attrTarget != null) {
             attrTarget.setPermissionVariant(permissionVariant);
         }

@@ -53,7 +53,7 @@ import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.settings.Settings;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;

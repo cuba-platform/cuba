@@ -16,7 +16,7 @@
  */
 package com.haulmont.cuba.gui.data;
 
-import org.apache.commons.collections.map.LinkedMap;
+import org.apache.commons.collections4.map.LinkedMap;
 
 public class GroupInfo<P> {
 

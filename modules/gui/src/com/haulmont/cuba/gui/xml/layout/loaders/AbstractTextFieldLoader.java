@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.core.entity.annotation.CaseConversion;
 import com.haulmont.cuba.core.entity.annotation.ConversionType;
 import com.haulmont.cuba.gui.components.TextInputField;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
