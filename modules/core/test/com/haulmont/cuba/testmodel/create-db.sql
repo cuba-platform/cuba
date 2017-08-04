@@ -401,3 +401,106 @@ create table TEST_FETCH_SAME_LINK_B_ENTITY (
     primary key (ID)
 )^
 
+
+create table JOINTEST_PARTY (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    ADDRESS varchar(255),
+    PHONE varchar(255),
+    --
+    primary key (ID)
+)^
+create table JOINTEST_CUSTOMER (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    CUSTOMER_NUMBER integer,
+    PARTY_ID varchar(36),
+    --
+    primary key (ID)
+)^
+create table JOINTEST_SALES_PERSON (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    SALESPERSON_NUMBER integer,
+    PARTY_ID varchar(36),
+    --
+    primary key (ID)
+)^
+create table JOINTEST_PRODUCT (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    PRICE decimal(19, 2),
+    --
+    primary key (ID)
+)^
+create table JOINTEST_ORDER (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    ORDER_NUMBER integer,
+    CUSTOMER_ID varchar(36),
+    SALES_PERSON_ID varchar(36),
+    ORDER_DATE date,
+    ORDER_AMOUNT decimal(19, 2),
+    --
+    primary key (ID)
+)^
+create table JOINTEST_ORDER_LINE (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    PRODUCT_ID varchar(36),
+    QUANTITY integer,
+    ORDER_ID varchar(36),
+    --
+    primary key (ID)
+)^
+
+alter table JOINTEST_CUSTOMER add constraint FK_JOINTEST_CUSTOMER_PARTY foreign key (PARTY_ID) references JOINTEST_PARTY(ID)^
+alter table JOINTEST_SALES_PERSON add constraint FK_JOINTEST_SALES_PERSON_PARTY foreign key (PARTY_ID) references JOINTEST_PARTY(ID)^
+alter table JOINTEST_ORDER_LINE add constraint FK_JOINTEST_ORDER_LINE_PRODUCT foreign key (PRODUCT_ID) references JOINTEST_PRODUCT(ID)^
+alter table JOINTEST_ORDER_LINE add constraint FK_JOINTEST_ORDER_LINE_ORDER foreign key (ORDER_ID) references JOINTEST_ORDER(ID)^
+alter table JOINTEST_ORDER add constraint FK_JOINTEST_ORDER_CUSTOMER foreign key (CUSTOMER_ID) references JOINTEST_CUSTOMER(ID)^
+alter table JOINTEST_ORDER add constraint FK_JOINTEST_ORDER_SALES_PERSON foreign key (SALES_PERSON_ID) references JOINTEST_SALES_PERSON(ID)^

@@ -23,8 +23,13 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.testmodel.fetchjoin.*;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
+import java.math.BigDecimal;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class FetchJoinTest {
@@ -37,6 +42,13 @@ public class FetchJoinTest {
     protected JoinF joinF;
     protected JoinB joinB;
     protected JoinA joinA;
+
+    protected Party partyCustomer, partyPerson;
+    protected Customer customer;
+    protected SalesPerson salesPerson;
+    protected Product product;
+    protected Order order;
+    protected OrderLine orderLine;
 
     @Before
     public void setUp() throws Exception {
@@ -74,6 +86,41 @@ public class FetchJoinTest {
             joinA.setB(joinB);
             em.persist(joinA);
 
+            product = metadata.create(Product.class);
+            product.setName("Product");
+            em.persist(product);
+
+            partyCustomer = metadata.create(Party.class);
+            partyCustomer.setName("Customer");
+            em.persist(partyCustomer);
+
+            partyPerson = metadata.create(Party.class);
+            partyPerson.setName("Person");
+            em.persist(partyPerson);
+
+            customer = metadata.create(Customer.class);
+            customer.setParty(partyCustomer);
+            customer.setCustomerNumber(1);
+            em.persist(customer);
+
+            salesPerson = metadata.create(SalesPerson.class);
+            salesPerson.setParty(partyPerson);
+            salesPerson.setSalespersonNumber(1);
+            em.persist(salesPerson);
+
+            order = metadata.create(Order.class);
+            order.setOrderNumber(1);
+            order.setOrderAmount(BigDecimal.ONE);
+            order.setCustomer(customer);
+            order.setSalesPerson(salesPerson);
+            em.persist(order);
+
+            orderLine = metadata.create(OrderLine.class);
+            orderLine.setOrder(order);
+            orderLine.setProduct(product);
+            orderLine.setQuantity(1);
+            em.persist(orderLine);
+
             tx.commit();
         } finally {
             tx.end();
@@ -83,10 +130,10 @@ public class FetchJoinTest {
     @After
     public void tearDown() throws Exception {
         cont.deleteRecord(joinA, joinB, joinC, joinD, joinE, joinF);
+        cont.deleteRecord(orderLine, order, product, salesPerson, customer, partyCustomer, partyPerson);
     }
 
     @Test
-    @Ignore
     public void testNotLoadingJoinB() throws Exception {
         try (Transaction tx = cont.persistence().createTransaction()) {
             EntityManager em = cont.persistence().getEntityManager();
@@ -107,6 +154,37 @@ public class FetchJoinTest {
             assertNotNull(loadedA.getB().getC().getD());
             assertNotNull(loadedA.getB().getC().getE());
             assertNotNull(loadedA.getB().getC().getE().getF());
+            tx.commit();
+        }
+    }
+
+    @Test
+    public void testNotLoadingCustomer() throws Exception {
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            EntityManager em = cont.persistence().getEntityManager();
+
+            View partyView = new View(Party.class).addProperty("name");
+            View productView = new View(Product.class).addProperty("name");
+            View customerView = new View(Customer.class)
+                    .addProperty("customerNumber")
+                    .addProperty("party", partyView);
+            View salesPersonView = new View(SalesPerson.class)
+                    .addProperty("salespersonNumber")
+                    .addProperty("party", partyView);
+            View orderView = new View(Order.class)
+                    .addProperty("orderNumber")
+                    .addProperty("customer", customerView)
+                    .addProperty("salesPerson", salesPersonView);
+            View orderLineView = new View(OrderLine.class)
+                    .addProperty("order", orderView)
+                    .addProperty("product", productView);
+
+            OrderLine reloadedOrderLine = em.find(OrderLine.class, orderLine.getId(), orderLineView);
+            assertNotNull(reloadedOrderLine);
+            assertNotNull(reloadedOrderLine.getOrder().getCustomer());
+            assertEquals(partyCustomer, reloadedOrderLine.getOrder().getCustomer().getParty());
+            assertNotNull(reloadedOrderLine.getOrder().getSalesPerson());
+            assertEquals(partyPerson, reloadedOrderLine.getOrder().getSalesPerson().getParty());
             tx.commit();
         }
     }
