@@ -346,7 +346,6 @@ configure(coreModule) {
         compile(bom['com.haulmont.thirdparty:xstream'])
         runtime(bom['xpp3:xpp3_min'])
         runtime(bom['xmlpull:xmlpull'])
-		compile(bom['org.ocpsoft.prettytime:prettytime-nlp'])
         compile(bom['org.jgroups:jgroups'])
         compile(bom['org.aspectj:aspectjrt'])
         compile(bom['org.aspectj:aspectjweaver'])

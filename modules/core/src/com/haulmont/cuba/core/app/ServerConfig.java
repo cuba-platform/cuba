@@ -157,10 +157,6 @@ public interface ServerConfig extends Config {
     @DefaultBoolean(false)
     boolean getSyncNewUserSessionReplication();
 
-    @Property("cuba.prettyTimeProperties")
-    @DefaultString("com/haulmont/cuba/core/app/prettytime/prettytime.properties")
-    String getPrettyTimeProperties();
-
     /**
      * If set to false, attribute permissions are not enforced on Middleware. This is appropriate if only server-side
      * clients are used.
