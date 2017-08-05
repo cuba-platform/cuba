@@ -238,6 +238,7 @@ configure(globalModule) {
         compile(bom['org.apache.commons:commons-collections4'])
         compile(bom['commons-io:commons-io'])
         compile(bom['commons-cli:commons-cli'])
+        compile(bom['commons-codec:commons-codec'])
 
         compile(bom['org.apache.httpcomponents:httpclient']) // simplify version management for selenium
         compile(bom['org.apache.commons:commons-pool2'])
@@ -556,6 +557,7 @@ configure(webModule) {
         compile(idpModule)
 
         compile(bom['org.springframework:spring-webmvc'])
+        compile(bom['commons-fileupload:commons-fileupload']) // required for Spring multipart resolver
 
         compile(bom['com.vaadin:vaadin-push']) {
             exclude(group: 'com.vaadin.external.atmosphere', module: 'atmosphere-runtime')
@@ -800,6 +802,8 @@ configure(restApiModule) {
         compile(globalModule)
         compile(clientModule)
         compile(sharedLibModule)
+
+        compile(bom['commons-fileupload:commons-fileupload']) // required for Spring multipart resolver
 
         compile(bom['org.springframework:spring-webmvc'])
         compile(bom['org.springframework:spring-context-support'])
