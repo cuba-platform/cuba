@@ -45,6 +45,7 @@ import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -52,6 +53,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+@SuppressWarnings("IncorrectCreateGuiComponent")
 public class DesktopTokenList extends DesktopAbstractField<JPanel> implements TokenList {
 
     protected TokenStyleGenerator tokenStyleGenerator;
@@ -288,7 +290,75 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     public void setLookup(boolean lookup) {
         if (this.lookup != lookup) {
             if (lookup) {
-                lookupAction = lookupPickerField.addLookupAction();
+                lookupAction = new PickerField.LookupAction(lookupPickerField) {
+                    @Nonnull
+                    @Override
+                    protected Map<String, Object> prepareScreenParams() {
+                        Map<String, Object> screenParams = super.prepareScreenParams();
+                        if (isMultiSelect()) {
+                            screenParams = new HashMap<>(screenParams);
+                            WindowParams.MULTI_SELECT.set(screenParams, true);
+                            // for backward compatibility
+                            screenParams.put("multiSelect", "true");
+                        }
+
+                        return screenParams;
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    protected void handleLookupWindowSelection(Collection items) {
+                        if (items.isEmpty()) {
+                            return;
+                        }
+
+                        @SuppressWarnings("unchecked")
+                        Collection<Entity> selected = items;
+
+                        CollectionDatasource optionsDatasource = lookupPickerField.getOptionsDatasource();
+                        if (optionsDatasource != null
+                                && lookupPickerField.isRefreshOptionsOnLookupClose()) {
+                            optionsDatasource.refresh();
+
+                            if (datasource != null) {
+                                for (Object obj : getDatasource().getItems()) {
+                                    Entity entity = (Entity) obj;
+                                    if (getOptionsDatasource().containsItem(entity.getId())) {
+                                        datasource.updateItem(getOptionsDatasource().getItem(entity.getId()));
+                                    }
+                                }
+                            }
+                        }
+
+                        // add all selected items to tokens
+                        if (itemChangeHandler != null) {
+                            for (Entity newItem : selected) {
+                                itemChangeHandler.addItem(newItem);
+                            }
+                        } else if (datasource != null) {
+                            // get master entity and inverse attribute in case of nested datasource
+                            Entity masterEntity = getMasterEntity(datasource);
+                            MetaProperty inverseProp = getInverseProperty(datasource);
+
+                            for (Entity newItem : selected) {
+                                if (!datasource.containsItem(newItem.getId())) {
+                                    // Initialize reference to master entity
+                                    if (inverseProp != null && isInitializeMasterReference(inverseProp)) {
+                                        newItem.setValue(inverseProp.getName(), masterEntity);
+                                    }
+
+                                    datasource.addItem(newItem);
+                                }
+                            }
+                        }
+
+                        afterSelect(items);
+                        if (afterLookupSelectionHandler != null) {
+                            afterLookupSelectionHandler.onSelect(items);
+                        }
+                    }
+                };
+                lookupPickerField.addAction(lookupAction);
 
                 if (getLookupScreen() != null) {
                     lookupAction.setLookupScreen(getLookupScreen());
