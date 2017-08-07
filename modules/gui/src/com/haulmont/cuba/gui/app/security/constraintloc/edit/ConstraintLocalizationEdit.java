@@ -54,9 +54,6 @@ public class ConstraintLocalizationEdit extends AbstractEditor<LocalizedConstrai
     @Inject
     protected Metadata metadata;
 
-    @Inject
-    protected ExtendedEntities extendedEntities;
-
     protected LocalizationValueChangeListener captionValueChangeListener;
     protected LocalizationValueChangeListener messageValueChangeListener;
 
