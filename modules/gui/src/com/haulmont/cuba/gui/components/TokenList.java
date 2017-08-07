@@ -88,7 +88,7 @@ public interface TokenList extends Field, Component.BelongToFrame, Component.Has
     boolean isMultiSelect();
     /**
      * Enables multiselect mode. It leads to the passing {@link com.haulmont.cuba.gui.WindowParams#MULTI_SELECT} param
-     * to the lookup screen. Should be used only with <code>setSimple(true)</code>.
+     * to the lookup screen.
      *
      * @param multiselect multiselect
      */
