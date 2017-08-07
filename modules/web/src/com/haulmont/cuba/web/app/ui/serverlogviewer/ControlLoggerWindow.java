@@ -61,28 +61,28 @@ public class ControlLoggerWindow extends AbstractWindow {
                 .setResizable(true);
 
         loggersMap = (Map<String, Level>) params.get("loggersMap");
-        fillLoggerGrid();
+        fillLoggerGrid(null);
 
         newLoggerTextField.addEnterPressListener(e -> filterLogger());
     }
 
-    protected void fillLoggerGrid() {
+    protected void fillLoggerGrid(String keyword) {
         loggersGrid.removeAll();
 
         for (Map.Entry<String, Level> levelEntry : loggersMap.entrySet()) {
             String loggerName = levelEntry.getKey();
-            Level level;
-            if (levels.get(loggerName) != null && levelEntry.getValue() != levels.get(loggerName)) {
-                level = levels.get(loggerName);
-            } else {
-                level = levelEntry.getValue();
+            if (StringUtils.isEmpty(keyword)
+                    || StringUtils.containsIgnoreCase(loggerName, keyword)) {
+                Level level = levels.containsKey(loggerName)
+                        ? levels.get(loggerName)
+                        : levelEntry.getValue();
+
+                Pair<TextField, HBoxLayout> editComponents = createEditComponents(loggerName, level);
+                fieldMap.put(loggerName, editComponents.getSecond());
+
+                loggersGrid.add(editComponents.getFirst());
+                loggersGrid.add(editComponents.getSecond());
             }
-
-            Pair<TextField, HBoxLayout> editComponents = createEditComponents(loggerName, level);
-            fieldMap.put(loggerName, editComponents.getSecond());
-
-            loggersGrid.add(editComponents.getFirst());
-            loggersGrid.add(editComponents.getSecond());
         }
     }
 
@@ -157,26 +157,6 @@ public class ControlLoggerWindow extends AbstractWindow {
     }
 
     public void filterLogger() {
-        if (newLoggerTextField.getValue() == null) {
-            fillLoggerGrid();
-        } else {
-            loggersGrid.removeAll();
-
-            for (Map.Entry<String, Level> levelEntry : loggersMap.entrySet()) {
-                String keyword = newLoggerTextField.getValue().toString();
-                String loggerName = levelEntry.getKey();
-
-                if (loggerName.toLowerCase().contains(keyword.toLowerCase())) {
-                    Level level = levelEntry.getValue();
-
-                    Pair<TextField, HBoxLayout> editComponents = createEditComponents(loggerName, level);
-
-                    fieldMap.put(loggerName, editComponents.getSecond());
-
-                    loggersGrid.add(editComponents.getFirst());
-                    loggersGrid.add(editComponents.getSecond());
-                }
-            }
-        }
+        fillLoggerGrid(newLoggerTextField.getValue());
     }
 }
