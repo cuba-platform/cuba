@@ -318,8 +318,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                 lookupAction = new PickerField.LookupAction(lookupPickerField) {
                     @Nonnull
                     @Override
-                    protected Map<String, Object> prepareScreenParams() {
-                        Map<String, Object> screenParams = super.prepareScreenParams();
+                    public Map<String, Object> getLookupScreenParams() {
+                        Map<String, Object> screenParams = super.getLookupScreenParams();
                         if (isMultiSelect()) {
                             screenParams = new HashMap<>(screenParams);
                             WindowParams.MULTI_SELECT.set(screenParams, true);
@@ -361,17 +361,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                                 itemChangeHandler.addItem(newItem);
                             }
                         } else if (datasource != null) {
-                            // get master entity and inverse attribute in case of nested datasource
-                            Entity masterEntity = getMasterEntity(datasource);
-                            MetaProperty inverseProp = getInverseProperty(datasource);
-
                             for (Entity newItem : selected) {
                                 if (!datasource.containsItem(newItem.getId())) {
-                                    // Initialize reference to master entity
-                                    if (inverseProp != null && isInitializeMasterReference(inverseProp)) {
-                                        newItem.setValue(inverseProp.getName(), masterEntity);
-                                    }
-
                                     datasource.addItem(newItem);
                                 }
                             }
