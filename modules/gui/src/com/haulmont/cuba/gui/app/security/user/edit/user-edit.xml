@@ -33,8 +33,6 @@
         </datasource>
     </dsContext>
 
-    <assign name="width" value="theme://cuba.gui.user-edit.field.width"/>
-
     <dialogMode height="theme://cuba.gui.dialogSize.height.xlarge"
                 width="theme://cuba.gui.dialogSize.width.xlarge"
                 resizable="true"/>
@@ -49,7 +47,7 @@
                 <rows>
                     <row id="propertiesRow">
                         <fieldGroup id="fieldGroupLeft" datasource="userDs" width="AUTO">
-                            <column width="${width}">
+                            <column width="250px">
                                 <field id="login" required="true" requiredMessage="msg://loginMsg"/>
                                 <field id="passw" custom="true" caption="msg://password"/>
                                 <field id="confirmPassw" custom="true" caption="msg://confirmPassword"/>
@@ -65,7 +63,7 @@
                         </fieldGroup>
 
                         <fieldGroup id="fieldGroupRight" datasource="userDs" width="AUTO">
-                            <column width="${width}">
+                            <column width="250px">
                                 <field id="group" custom="true"/>
                                 <field id="position"/>
                                 <field id="language" custom="true"/>
