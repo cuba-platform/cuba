@@ -667,8 +667,8 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         columnsOrder.remove(column);
         columnGenerators.remove(column.getId());
 
-        column.setOwner(null);
         ((ColumnImpl) column).setGridColumn(null);
+        column.setOwner(null);
     }
 
     protected void removeContainerProperty(Column column) {
