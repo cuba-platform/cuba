@@ -74,6 +74,22 @@
             </xs:simpleType>
         </xs:union>
     </xs:simpleType>
+    
+    <xs:simpleType name="numericDatatypeEnum">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="decimal"/>
+                    <xs:enumeration value="double"/>
+                    <xs:enumeration value="int"/>
+                    <xs:enumeration value="long"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
 
     <xs:simpleType name="fileStoragePutMode">
         <xs:restriction base="xs:string">
@@ -672,6 +688,22 @@
         </xs:union>
     </xs:simpleType>
 
+    <xs:simpleType name="currencyFieldStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="huge"/>
+                    <xs:enumeration value="large"/>
+                    <xs:enumeration value="small"/>
+                    <xs:enumeration value="tiny"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
     <xs:simpleType name="resizableDirection">
         <xs:restriction base="xs:string">
             <xs:enumeration value="HORIZONTAL"/>
@@ -1122,6 +1154,26 @@
                 <xs:attribute name="caseConversion" type="caseConversion"/>
                 <xs:attribute name="textChangeEventMode" type="textChangeEventMode"/>
                 <xs:attribute name="textChangeTimeout" type="xs:int"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- CurrencyField -->
+    <xs:simpleType name="currencyAlignMode">
+        <xs:restriction>
+            <xs:enumeration value="LEFT"/>
+            <xs:enumeration value="RIGHT"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="currencyFieldComponent">
+        <xs:complexContent>
+            <xs:extension base="baseFieldComponent">
+                <xs:attribute name="currency" type="xs:string"/>
+                <xs:attribute name="showCurrencyLabel" type="xs:boolean"/>
+                <xs:attribute name="currencyLabelPosition" type="currencyAlignMode"/>
+                <xs:attribute name="datatype" type="numericDatatypeEnum"/>
+                <xs:attribute name="stylename" type="currencyFieldStylename"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2590,6 +2642,7 @@
 
                 <xs:element name="textArea" type="textAreaComponent"/>
                 <xs:element name="textField" type="textFieldComponent"/>
+                <xs:element name="currencyField" type="currencyFieldComponent"/>
                 <xs:element name="passwordField" type="passwordFieldComponent"/>
                 <xs:element name="richTextArea" type="richTextAreaComponent"/>
                 <xs:element name="sourceCodeEditor" type="sourceCodeEditorComponent"/>

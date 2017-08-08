@@ -28,6 +28,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -143,9 +144,28 @@ public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactor
     }
 
     protected Field createNumberField(Datasource datasource, String property) {
+        Field currencyField = createCurrencyField(datasource, property);
+        if (currencyField != null) {
+            return currencyField;
+        }
+
         TextField numberField = componentsFactory.createComponent(TextField.class);
         numberField.setDatasource(datasource, property);
         return numberField;
+    }
+
+    protected Field createCurrencyField(Datasource datasource, String property) {
+        MetaProperty metaProperty = datasource.getMetaClass().getPropertyNN(property);
+
+        Object obj = metaProperty.getAnnotations().get(CurrencyValue.class.getName());
+        if (obj == null) {
+            return null;
+        }
+
+        CurrencyField currencyField = componentsFactory.createComponent(CurrencyField.class);
+        currencyField.setDatasource(datasource, property);
+
+        return currencyField;
     }
 
     protected Field createBooleanField(Datasource datasource, String property) {

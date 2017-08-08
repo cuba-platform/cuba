@@ -132,6 +132,25 @@
       @include box-shadow(none);
     }
 
+    .c-currencyfield {
+      .c-currencyfield-layout {
+
+        &.currency-visible {
+          &.left,
+          &.right {
+            .c-currencyfield-currency {
+              border: valo-border();
+
+              border-top: 0;
+              border-bottom: 0;
+              
+              border-radius: 0;
+            }
+          }
+        }
+      }
+    }
+
     .c-maskedfield-focus {
       position: relative;
     }

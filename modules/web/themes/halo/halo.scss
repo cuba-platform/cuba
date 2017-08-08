@@ -42,6 +42,7 @@
 @import "components/textarea/textarea";
 @import "components/tokenlist/tokenlist";
 @import "components/datefield/datefield";
+@import "components/currencyfield/currencyfield";
 @import "components/datepicker/datepicker";
 @import "components/grouptable/grouptable";
 @import "components/fieldgroup/fieldgroup";
@@ -139,6 +140,7 @@
   @include halo-gridlayout;
   @include halo-csslayout;
   @include halo-cuba-image;
+  @include halo-cuba-currencyfield;
 
   @include halo-cuba-groupbox;
   @include halo-cuba-tokenlist;

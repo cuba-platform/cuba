@@ -86,6 +86,7 @@ public class LayoutLoaderConfig {
         config.register(OptionsList.NAME, OptionsListLoader.class);
         config.register(FileUploadField.NAME, FileUploadFieldLoader.class);
         config.register(FileMultiUploadField.NAME, FileMultiUploadFieldLoader.class);
+        config.register(CurrencyField.NAME, CurrencyFieldLoader.class);
 
         config.register(Table.NAME, TableLoader.class);
         config.register(TreeTable.NAME, TreeTableLoader.class);

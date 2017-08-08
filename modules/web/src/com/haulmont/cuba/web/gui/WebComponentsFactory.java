@@ -80,6 +80,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(OptionsList.NAME, WebOptionsList.class);
         classes.put(FileUploadField.NAME, WebFileUploadField.class);
         classes.put(FileMultiUploadField.NAME, WebFileMultiUploadField.class);
+        classes.put(CurrencyField.NAME, WebCurrencyField.class);
         classes.put(SplitPanel.NAME, WebSplitPanel.class);
         classes.put(Tree.NAME, WebTree.class);
         classes.put(TabSheet.NAME, WebTabSheet.class);

@@ -28,6 +28,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.MetadataTools;
@@ -188,9 +189,28 @@ public abstract class AbstractFieldFactory implements FieldFactory {
     }
 
     protected Component createNumberField(Datasource datasource, String property) {
+        Component currencyField = createCurrencyField(datasource, property);
+        if (currencyField != null) {
+            return currencyField;
+        }
+
         TextField textField = componentsFactory.createComponent(TextField.class);
         textField.setDatasource(datasource, property);
         return textField;
+    }
+
+    protected Component createCurrencyField(Datasource datasource, String property) {
+        MetaProperty metaProperty = datasource.getMetaClass().getPropertyNN(property);
+
+        Object obj = metaProperty.getAnnotations().get(CurrencyValue.class.getName());
+        if (obj == null) {
+            return null;
+        }
+
+        CurrencyField currencyField = componentsFactory.createComponent(CurrencyField.class);
+        currencyField.setDatasource(datasource, property);
+
+        return currencyField;
     }
 
     protected Component createBooleanField(Datasource datasource, String property) {

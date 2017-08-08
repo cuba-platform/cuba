@@ -28,6 +28,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
@@ -113,6 +114,11 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
                         maskedField.setSendNullRepresentation(false);
                         return new GeneratedField(maskedField);
                     } else {
+                        GeneratedField currencyField = createCurrencyField(fc);
+                        if (currencyField != null) {
+                            return currencyField;
+                        }
+
                         return createNumberField(fc);
                     }
                 }
@@ -138,6 +144,20 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
             exceptionMessage = String.format("Can't create field \"%s\" with given data type", fc.getProperty());
         }
         throw new UnsupportedOperationException(exceptionMessage);
+    }
+
+    protected GeneratedField createCurrencyField(FieldGroup.FieldConfig fc) {
+        MetaProperty metaProperty = fc.getTargetDatasource().getMetaClass().getPropertyNN(fc.getProperty());
+
+        Object obj = metaProperty.getAnnotations().get(CurrencyValue.class.getName());
+        if (obj == null) {
+            return null;
+        }
+
+        CurrencyField currencyField = componentsFactory.createComponent(CurrencyField.class);
+        currencyField.setDatasource(fc.getTargetDatasource(), fc.getProperty());
+
+        return new GeneratedField(currencyField);
     }
 
     protected GeneratedField createUuidField(FieldGroup.FieldConfig fc) {

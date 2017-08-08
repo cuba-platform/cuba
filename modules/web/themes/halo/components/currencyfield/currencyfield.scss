@@ -1,0 +1,126 @@
+/*
+ * Copyright (c) 2008-2016 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+@mixin halo-cuba-currencyfield($primary-stylename: c-currencyfield) {
+  .#{$primary-stylename} {
+    display: inline-table;
+
+    height: $v-unit-size;
+    width: $v-default-field-width;
+
+    &.huge {
+      .#{$primary-stylename}-text {
+        @include valo-textfield-style($unit-size: $v-unit-size--huge, $states: normal, $background-color: null, $border: null, $gradient: null, $bevel: null, $shadow: null);
+        font-size: $v-font-size--huge;
+      }
+    }
+
+    &.large {
+      .#{$primary-stylename}-text {
+        @include valo-textfield-style($unit-size: $v-unit-size--large, $states: normal, $background-color: null, $border: null, $gradient: null, $bevel: null, $shadow: null);
+        font-size: $v-font-size--large;
+      }
+    }
+
+    &.small {
+      .#{$primary-stylename}-text {
+        @include valo-textfield-style($unit-size: $v-unit-size--small, $states: normal, $background-color: null, $border: null, $gradient: null, $bevel: null, $shadow: null);
+        font-size: $v-font-size--small;
+      }
+    }
+
+    &.tiny {
+      .#{$primary-stylename}-text {
+        @include valo-textfield-style($unit-size: $v-unit-size--tiny, $states: normal, $background-color: null, $border: null, $gradient: null, $bevel: null, $shadow: null);
+        font-size: $v-font-size--tiny;
+      }
+    }
+  }
+
+  .#{$primary-stylename}-layout {
+    & > .v-caption {
+      display: none;
+    }
+
+    white-space: nowrap;
+    display: table-row;
+
+    & > * {
+      display: table-cell;
+    }
+
+    &.currency-visible {
+      &.left {
+        .#{$primary-stylename}-currency {
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+          border-right: 0;
+        }
+
+        .#{$primary-stylename}-text {
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+        }
+      }
+
+      &.right {
+        .#{$primary-stylename}-currency {
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+          border-left: 0;
+        }
+
+        .#{$primary-stylename}-text {
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+      }
+    }
+  }
+
+  .#{$primary-stylename}-currency {
+    $bg: scale-color(adjust-color($v-background-color, $lightness: -2%),
+                                  $saturation: -1.5%);
+
+    background: $bg;
+    border-radius: $v-border-radius;
+    border: valo-border();
+
+    color: valo-font-color($bg);
+
+    padding-left: $v-layout-spacing-horizontal/2;
+    padding-right: $v-layout-spacing-horizontal/2;
+
+    text-align: center;
+    vertical-align: middle;
+
+    min-width: $v-unit-size;
+
+    .v-ie9 & {
+      background-clip: padding-box;
+    }
+  }
+
+  .#{$primary-stylename}-text {
+    text-align: right;
+
+    &.v-readonly,
+    &.v-disabled {
+      @include valo-textfield-readonly-style;
+    }
+  }
+}
