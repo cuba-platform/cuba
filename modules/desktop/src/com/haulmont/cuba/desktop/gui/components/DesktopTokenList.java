@@ -296,7 +296,11 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
                     public Map<String, Object> getLookupScreenParams() {
                         Map<String, Object> screenParams = super.getLookupScreenParams();
                         if (isMultiSelect()) {
-                            screenParams = new HashMap<>(screenParams);
+                            if (screenParams == null) {
+                                screenParams = new HashMap<>();
+                            } else {
+                                screenParams = new HashMap<>(screenParams);
+                            }
                             WindowParams.MULTI_SELECT.set(screenParams, true);
                             // for backward compatibility
                             screenParams.put("multiSelect", "true");
