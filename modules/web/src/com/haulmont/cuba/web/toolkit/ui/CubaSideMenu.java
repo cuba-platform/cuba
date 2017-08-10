@@ -68,19 +68,30 @@ public class CubaSideMenu extends AbstractComponent implements Component.Focusab
     protected Consumer<MenuItem> beforeMenuItemTriggeredHandler = null;
 
     public CubaSideMenu() {
-        CubaSideMenuServerRpc menuRpc = (CubaSideMenuServerRpc) itemId -> {
-            MenuItem menuItem = menuItemIdMapper.get(itemId);
-            if (menuItem != null) {
-                if (isSelectOnClick()) {
-                    this.selectedItem = menuItem;
+        CubaSideMenuServerRpc menuRpc = new CubaSideMenuServerRpc() {
+            @Override
+            public void menuItemTriggered(String itemId) {
+                MenuItem menuItem = menuItemIdMapper.get(itemId);
+                if (menuItem != null) {
+                    if (isSelectOnClick()) {
+                        selectedItem = menuItem;
+                    }
+                    if (beforeMenuItemTriggeredHandler != null) {
+                        beforeMenuItemTriggeredHandler.accept(menuItem);
+                    }
+                    if (menuItem.getCommand() != null) {
+                        menuItem.getCommand().accept(new MenuItemTriggeredEvent(CubaSideMenu.this, menuItem));
+                    }
+                    removeStyleName(HaloTheme.SIDEMENU_PANEL_OPEN);
                 }
-                if (beforeMenuItemTriggeredHandler != null) {
-                    beforeMenuItemTriggeredHandler.accept(menuItem);
+            }
+
+            @Override
+            public void headerItemExpandChanged(String itemId, boolean expanded) {
+                MenuItem menuItem = menuItemIdMapper.get(itemId);
+                if (menuItem != null) {
+                    menuItem.expanded = expanded;
                 }
-                if (menuItem.getCommand() != null) {
-                    menuItem.getCommand().accept(new MenuItemTriggeredEvent(this, menuItem));
-                }
-                removeStyleName(HaloTheme.SIDEMENU_PANEL_OPEN);
             }
         };
         registerRpc(menuRpc);
