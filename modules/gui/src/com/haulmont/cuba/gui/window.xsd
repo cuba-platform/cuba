@@ -2819,6 +2819,7 @@
 
                         <xs:attribute name="forceDialog" type="xs:boolean"/>
                         <xs:attribute name="closeOnClickOutside" type="xs:boolean"/>
+                        <xs:attribute name="maximized" type="xs:boolean"/>
                     </xs:complexType>
                 </xs:element>
 

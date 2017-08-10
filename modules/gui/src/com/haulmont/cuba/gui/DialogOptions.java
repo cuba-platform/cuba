@@ -46,6 +46,7 @@ public class DialogOptions {
     private Boolean closeable;
     private Boolean modal;
     private Boolean closeOnClickOutside;
+    private Boolean maximized;
 
     private Boolean forceDialog;
 
@@ -284,5 +285,20 @@ public class DialogOptions {
      */
     public Boolean getCloseOnClickOutside() {
         return closeOnClickOutside;
+    }
+
+    /**
+     * Set maximized to true if a window should be maximized across the screen.
+     */
+    public DialogOptions setMaximized(Boolean maximized) {
+        this.maximized = maximized;
+        return this;
+    }
+
+    /**
+     * @return true if a window is maximized across the screen.
+     */
+    public Boolean getMaximized() {
+        return maximized;
     }
 }

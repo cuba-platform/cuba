@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -129,6 +128,11 @@ public class WindowLoader extends FrameLoader<Window> {
             String closeOnClickOutside = dialogModeElement.attributeValue("closeOnClickOutside");
             if (StringUtils.isNotEmpty(closeOnClickOutside)) {
                 dialogOptions.setCloseOnClickOutside(Boolean.parseBoolean(closeOnClickOutside));
+            }
+
+            String maximized = dialogModeElement.attributeValue("maximized");
+            if (StringUtils.isNotEmpty(maximized)) {
+                dialogOptions.setMaximized(Boolean.parseBoolean(maximized));
             }
         }
     }

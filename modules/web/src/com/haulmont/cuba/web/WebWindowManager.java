@@ -63,6 +63,7 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.BorderStyle;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -774,6 +775,14 @@ public class WebWindowManager extends WindowManager {
             vWindow.setCloseOnClickOutside(informationDialog);
         }
 
+        if (openType.getMaximized() != null) {
+            if (openType.getMaximized()) {
+                vWindow.setWindowMode(WindowMode.MAXIMIZED);
+            } else {
+                vWindow.setWindowMode(WindowMode.NORMAL);
+            }
+        }
+
         getDialogParams().reset();
 
         ui.addWindow(vWindow);
@@ -1221,6 +1230,14 @@ public class WebWindowManager extends WindowManager {
         }
         ((CubaWindow) vWindow).setCloseOnClickOutside(closeOnClickOutside);
 
+        if (messageType.getMaximized() != null) {
+            if (messageType.getMaximized()) {
+                vWindow.setWindowMode(WindowMode.MAXIMIZED);
+            } else {
+                vWindow.setWindowMode(WindowMode.NORMAL);
+            }
+        }
+
         dialogParams.reset();
 
         ui.addWindow(vWindow);
@@ -1285,6 +1302,15 @@ public class WebWindowManager extends WindowManager {
             }
         }
         ((CubaWindow) window).setCloseOnClickOutside(closeOnClickOutside);
+
+
+        if (messageType.getMaximized() != null) {
+            if (messageType.getMaximized()) {
+                window.setWindowMode(WindowMode.MAXIMIZED);
+            } else {
+                window.setWindowMode(WindowMode.NORMAL);
+            }
+        }
 
         VerticalLayout layout = new VerticalLayout();
         layout.setStyleName("c-app-option-dialog");

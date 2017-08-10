@@ -114,6 +114,7 @@ public abstract class WindowManager {
         private Boolean closeable;
         private Boolean modal;
         private Boolean closeOnClickOutside;
+        private Boolean maximized;
 
         public OpenType(OpenMode openMode) {
             this.openMode = openMode;
@@ -350,6 +351,33 @@ public abstract class WindowManager {
             return instance;
         }
 
+        /**
+         * @return true if a window is maximized across the screen.
+         */
+        public Boolean getMaximized() {
+            return maximized;
+        }
+
+        /**
+         * Set maximized to true if a window should be maximized across the screen.
+         */
+        public OpenType maximized(Boolean maximized) {
+            OpenType instance = getMutableInstance();
+
+            instance.maximized = maximized;
+            return instance;
+        }
+
+        /**
+         * Set maximized to true if a window should be maximized across the screen.
+         */
+        public OpenType setMaximized(Boolean maximized) {
+            OpenType instance = getMutableInstance();
+
+            instance.maximized = maximized;
+            return instance;
+        }
+
         private OpenType getMutableInstance() {
             if (!mutable) {
                 return copy();
@@ -390,6 +418,7 @@ public abstract class WindowManager {
             openType.setWidth(width);
             openType.setWidthUnit(widthUnit);
             openType.setCloseOnClickOutside(closeOnClickOutside);
+            openType.setMaximized(maximized);
 
             return openType;
         }
@@ -1086,6 +1115,10 @@ public abstract class WindowManager {
 
         if(dialogOptions.getCloseOnClickOutside() != null){
             mutableOpenType.setCloseOnClickOutside(dialogOptions.getCloseOnClickOutside());
+        }
+
+        if (dialogOptions.getMaximized() != null) {
+            mutableOpenType.setMaximized(dialogOptions.getMaximized());
         }
 
         return mutableOpenType;

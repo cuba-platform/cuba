@@ -314,6 +314,7 @@ public interface Frame
         private SizeUnit widthUnit;
         private Boolean modal;
         private Boolean closeOnClickOutside;
+        private Boolean maximized;
 
         public MessageMode getMessageMode() {
             return messageMode;
@@ -428,6 +429,33 @@ public interface Frame
             MessageType instance = getMutableInstance();
 
             instance.closeOnClickOutside = closeOnClickOutside;
+            return instance;
+        }
+
+        /**
+         * @return true if a window is maximized across the screen.
+         */
+        public Boolean getMaximized() {
+            return maximized;
+        }
+
+        /**
+         * Set maximized to true if a window should be maximized across the screen.
+         */
+        public MessageType maximized(Boolean maximized) {
+            MessageType instance = getMutableInstance();
+
+            instance.maximized = maximized;
+            return instance;
+        }
+
+        /**
+         * Set maximized to true if a window should be maximized across the screen.
+         */
+        public MessageType setMaximized(Boolean maximized) {
+            MessageType instance = getMutableInstance();
+
+            instance.maximized = maximized;
             return instance;
         }
 

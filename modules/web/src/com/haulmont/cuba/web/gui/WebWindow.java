@@ -49,6 +49,7 @@ import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TabSheet;
@@ -1503,6 +1504,34 @@ public class WebWindow implements Window, Component.Wrapper,
             }
 
             return this;
+        }
+
+        @Override
+        public DialogOptions setMaximized(Boolean maximized) {
+            super.setMaximized(maximized);
+
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                if (BooleanUtils.isTrue(maximized)) {
+                    dialogWindow.setWindowMode(WindowMode.MAXIMIZED);
+                } else {
+                    dialogWindow.setWindowMode(WindowMode.NORMAL);
+                }
+            }
+            return this;
+        }
+
+        @Override
+        public Boolean getMaximized() {
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                if (dialogWindow.getWindowMode() == WindowMode.MAXIMIZED) {
+                    return true;
+                }
+                return false;
+            }
+
+            return super.getMaximized();
         }
     }
 
