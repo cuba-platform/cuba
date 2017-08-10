@@ -567,6 +567,17 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
         }
     }
 
+    @Override
+    public void setColumnWidth(Object propertyId, int width) {
+        super.setColumnWidth(propertyId, width);
+
+        final int pageIndex = getCurrentPageFirstItemIndex();
+        setCurrentPageFirstItemIndex(pageIndex, false);
+        resetPageBuffer();
+        refreshRenderedCells();
+        markAsDirty();
+    }
+
     public GroupPropertyValueFormatter getGroupPropertyValueFormatter() {
         return groupPropertyValueFormatter;
     }
