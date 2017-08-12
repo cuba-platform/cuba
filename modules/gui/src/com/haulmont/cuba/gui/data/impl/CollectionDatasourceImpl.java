@@ -270,7 +270,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public int indexOfId(Object itemId) {
+    public int indexOfId(K itemId) {
         return data.indexOf(itemId);
     }
 
