@@ -3069,7 +3069,14 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             if (gridColumn != null) {
                 return gridColumn.isEditable();
             }
-            return editable && !generated && !isRepresentsCollection() && isEditingPermitted();
+            return isColumnShouldBeEditable();
+        }
+
+        protected boolean isColumnShouldBeEditable() {
+            return editable
+                    && (!generated || fieldGenerator != null)
+                    && (!isRepresentsCollection() || fieldGenerator != null)
+                    && isEditingPermitted();
         }
 
         protected boolean isRepresentsCollection() {
@@ -3092,10 +3099,12 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         @Override
         public void setEditable(boolean editable) {
             this.editable = editable;
+            updateEditable();
+        }
+
+        protected void updateEditable() {
             if (gridColumn != null) {
-                gridColumn.setEditable(editable && !generated
-                        && !isRepresentsCollection()
-                        && isEditingPermitted());
+                gridColumn.setEditable(isColumnShouldBeEditable());
             }
         }
 
@@ -3107,6 +3116,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
         @Override
         public void setEditorFieldGenerator(ColumnEditorFieldGenerator fieldFactory) {
             this.fieldGenerator = fieldFactory;
+            updateEditable();
         }
 
         public Grid.Column getGridColumn() {
