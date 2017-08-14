@@ -21,6 +21,7 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -40,6 +41,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 /**
  * Class is used for loading and storing an information about service methods that are available for REST API.
@@ -67,7 +69,12 @@ public class RestServicesConfiguration {
     @Inject
     protected Resources resources;
 
+    /**
+     * @deprecated the method will be removed in one of next releases. Use {@link #getRestMethodInfo(String, String,
+     * List)} instead
+     */
     @Nullable
+    @Deprecated
     public Method getServiceMethod(String serviceName, String methodName, List<String> methodParamNames) {
         lock.readLock().lock();
         try {
@@ -87,14 +94,29 @@ public class RestServicesConfiguration {
         return null;
     }
 
+    @Nullable
+    public RestMethodInfo getRestMethodInfo(String serviceName, String methodName, List<String> methodParamNames) {
+        lock.readLock().lock();
+        try {
+            checkInitialized();
+            RestServiceInfo restServiceInfo = serviceInfosMap.get(serviceName);
+            if (restServiceInfo == null) return null;
+            return restServiceInfo.getMethods().stream()
+                    .filter(restMethodInfo -> methodName.equals(restMethodInfo.getName())
+                            && paramsMatches(restMethodInfo.getParams(), methodParamNames))
+                    .findFirst()
+                    .orElse(null);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
     protected boolean paramsMatches(List<RestMethodParamInfo> paramInfos, List<String> paramNames) {
         if (paramInfos.size() != paramNames.size()) return false;
-        for (int i = 0; i < paramInfos.size(); i++) {
-            if (!paramInfos.get(i).getName().equals(paramNames.get(i))) {
-                return false;
-            }
-        }
-        return true;
+        List<String> paramInfosNames = paramInfos.stream()
+                .map(RestMethodParamInfo::getName)
+                .collect(Collectors.toList());
+        return CollectionUtils.isEqualCollection(paramInfosNames, paramNames);
     }
 
     protected void checkInitialized() {
@@ -220,7 +242,8 @@ public class RestServicesConfiguration {
             for (Class<?> serviceInterface : serviceInterfaces) {
                 try {
                     serviceMethod = serviceInterface.getMethod(methodName, paramTypes.toArray(new Class[paramTypes.size()]));
-                } catch (NoSuchMethodException ignored) {}
+                } catch (NoSuchMethodException ignored) {
+                }
             }
             if (serviceMethod == null) {
                 log.error("Method not found. Service: {}, method: {}, argument types: {}", serviceName, methodName, paramTypes);
