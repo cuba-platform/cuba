@@ -108,17 +108,19 @@ public class ServicesControllerManager {
     protected ServiceCallResult _invokeServiceMethod(String serviceName, String methodName, List<String> paramNames,
                                                      List<String> paramValuesStr, String modelVersion) {
         Object service = AppBeans.get(serviceName);
-        Method serviceMethod = restServicesConfiguration.getServiceMethod(serviceName, methodName, paramNames);
-        if (serviceMethod == null) {
+        RestServicesConfiguration.RestMethodInfo restMethodInfo = restServicesConfiguration.getRestMethodInfo(serviceName, methodName, paramNames);
+        if (restMethodInfo == null) {
             throw new RestAPIException("Service method not found",
                     serviceName + "." + methodName + "(" + paramNames.stream().collect(Collectors.joining(",")) + ")",
                     HttpStatus.NOT_FOUND);
         }
+        Method serviceMethod = restMethodInfo.getMethod();
         List<Object> paramValues = new ArrayList<>();
-        Type[] types = serviceMethod.getGenericParameterTypes();
+        Type[] types = restMethodInfo.getMethod().getGenericParameterTypes();
         for (int i = 0; i < types.length; i++) {
             try {
-                paramValues.add(restParseUtils.toObject(types[i], paramValuesStr.get(i), modelVersion));
+                int idx = paramNames.indexOf(restMethodInfo.getParams().get(i).getName());
+                paramValues.add(restParseUtils.toObject(types[i], paramValuesStr.get(idx), modelVersion));
             } catch (Exception e) {
                 log.error("Error on parsing service param value", e);
                 throw new RestAPIException("Invalid parameter value",
