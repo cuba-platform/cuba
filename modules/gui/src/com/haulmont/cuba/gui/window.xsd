@@ -401,6 +401,10 @@
             </xs:simpleType>
             <xs:simpleType>
                 <xs:restriction base="xs:string">
+                    <xs:enumeration value="tiny"/>
+                    <xs:enumeration value="small"/>
+                    <xs:enumeration value="large"/>
+                    <xs:enumeration value="huge"/>
                     <xs:enumeration value="h1"/>
                     <xs:enumeration value="h2"/>
                     <xs:enumeration value="h3"/>
@@ -425,6 +429,10 @@
             </xs:simpleType>
             <xs:simpleType>
                 <xs:restriction base="xs:string">
+                    <xs:enumeration value="tiny"/>
+                    <xs:enumeration value="small"/>
+                    <xs:enumeration value="large"/>
+                    <xs:enumeration value="huge"/>
                     <xs:enumeration value="borderless"/>
                     <xs:enumeration value="align-right"/>
                     <xs:enumeration value="align-center"/>
@@ -454,6 +462,10 @@
             </xs:simpleType>
             <xs:simpleType>
                 <xs:restriction base="xs:string">
+                    <xs:enumeration value="tiny"/>
+                    <xs:enumeration value="small"/>
+                    <xs:enumeration value="large"/>
+                    <xs:enumeration value="huge"/>
                     <xs:enumeration value="primary"/>
                     <xs:enumeration value="friendly"/>
                     <xs:enumeration value="danger"/>
@@ -581,6 +593,10 @@
             </xs:simpleType>
             <xs:simpleType>
                 <xs:restriction base="xs:string">
+                    <xs:enumeration value="tiny"/>
+                    <xs:enumeration value="small"/>
+                    <xs:enumeration value="large"/>
+                    <xs:enumeration value="huge"/>
                     <xs:enumeration value="borderless"/>
                     <xs:enumeration value="align-right"/>
                     <xs:enumeration value="align-center"/>
@@ -596,6 +612,10 @@
             </xs:simpleType>
             <xs:simpleType>
                 <xs:restriction base="xs:string">
+                    <xs:enumeration value="tiny"/>
+                    <xs:enumeration value="small"/>
+                    <xs:enumeration value="large"/>
+                    <xs:enumeration value="huge"/>
                     <xs:enumeration value="borderless"/>
                     <xs:enumeration value="align-right"/>
                     <xs:enumeration value="align-center"/>
@@ -611,6 +631,10 @@
             </xs:simpleType>
             <xs:simpleType>
                 <xs:restriction base="xs:string">
+                    <xs:enumeration value="tiny"/>
+                    <xs:enumeration value="small"/>
+                    <xs:enumeration value="large"/>
+                    <xs:enumeration value="huge"/>
                     <xs:enumeration value="borderless"/>
                     <xs:enumeration value="align-right"/>
                     <xs:enumeration value="align-center"/>
@@ -626,6 +650,10 @@
             </xs:simpleType>
             <xs:simpleType>
                 <xs:restriction base="xs:string">
+                    <xs:enumeration value="tiny"/>
+                    <xs:enumeration value="small"/>
+                    <xs:enumeration value="large"/>
+                    <xs:enumeration value="huge"/>
                     <xs:enumeration value="borderless"/>
                     <xs:enumeration value="align-right"/>
                     <xs:enumeration value="align-center"/>
@@ -641,6 +669,8 @@
             </xs:simpleType>
             <xs:simpleType>
                 <xs:restriction base="xs:string">
+                    <xs:enumeration value="tiny"/>
+                    <xs:enumeration value="small"/>
                     <xs:enumeration value="borderless"/>
                 </xs:restriction>
             </xs:simpleType>
@@ -1024,9 +1054,9 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasAlign"/>
-        <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasDatasource"/>
 
+        <xs:attribute name="stylename" type="labelStylename"/>
         <xs:attribute name="value" type="resourceString"/>
         <xs:attribute name="description" type="resourceString"/>
         <xs:attribute name="htmlEnabled" type="xs:boolean"/>

@@ -43,6 +43,34 @@
         text-align: center;
       }
     }
+
+    &.tiny {
+      .v-textarea {
+        @include valo-textarea-style($unit-size: $v-unit-size--tiny, $states: normal, $background-color: null, $border: null, $bevel: null, $shadow: null);
+        font-size: $v-font-size--tiny;
+      }
+    }
+
+    &.small {
+      .v-textarea {
+        @include valo-textarea-style($unit-size: $v-unit-size--small, $states: normal, $background-color: null, $border: null, $bevel: null, $shadow: null);
+        font-size: $v-font-size--small;
+      }
+    }
+
+    &.large {
+      .v-textarea {
+        @include valo-textarea-style($unit-size: $v-unit-size--large, $states: normal, $background-color: null, $border: null, $bevel: null, $shadow: null);
+        font-size: $v-font-size--large;
+      }
+    }
+
+    &.huge {
+      .v-textarea {
+        @include valo-textarea-style($unit-size: $v-unit-size--huge, $states: normal, $background-color: null, $border: null, $bevel: null, $shadow: null);
+        font-size: $v-font-size--huge;
+      }
+    }
   }
 
   .#{$primary-stylename}-resize-corner {

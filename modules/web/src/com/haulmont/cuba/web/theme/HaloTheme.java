@@ -414,4 +414,28 @@ public class HaloTheme {
      * Style for layouts to hide overflow of nested content.
      */
     public static final String HIDE_CONTAINER_OVERFLOW = "c-hide-overflow";
+
+    /**
+     * Tiny component size. Can be combined with any other component style.
+     */
+    public static final String SIZE_TINY = "tiny";
+
+    /**
+     * Small component size. Can be combined with any other component style.
+     */
+    public static final String SIZE_SMALL = "small";
+
+    /**
+     * Large component size. Can be combined with any other component style.
+     * <p>
+     * Not supported by the DateField component.
+     */
+    public static final String SIZE_LARGE = "large";
+
+    /**
+     * Huge component size. Can be combined with any other component style.
+     * <p>
+     * Not supported by the DateField component.
+     */
+    public static final String SIZE_HUGE = "huge";
 }
