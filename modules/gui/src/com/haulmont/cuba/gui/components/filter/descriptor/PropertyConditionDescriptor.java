@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.components.filter.descriptor;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -103,9 +104,13 @@ public class PropertyConditionDescriptor extends AbstractConditionDescriptor {
 
     @Override
     public String getTreeCaption() {
-        MessageTools messageTools = AppBeans.get(MessageTools.class);
-        MetaPropertyPath mpp = datasourceMetaClass.getPropertyPath(name);
-        return mpp != null ? messageTools.getPropertyCaption(datasourceMetaClass, name) : name;
+        if (!Strings.isNullOrEmpty(this.caption)) {
+            return locCaption;
+        } else {
+            MessageTools messageTools = AppBeans.get(MessageTools.class);
+            MetaPropertyPath mpp = datasourceMetaClass.getPropertyPath(name);
+            return mpp != null ? messageTools.getPropertyCaption(datasourceMetaClass, name) : name;
+        }
     }
 
     @Nullable
