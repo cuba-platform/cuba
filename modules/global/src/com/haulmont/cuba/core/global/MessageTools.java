@@ -199,12 +199,30 @@ public class MessageTools {
      * @return              localized name
      */
     public String getPropertyCaption(MetaClass metaClass, String propertyName) {
+        return getPropertyCaption(metaClass, propertyName, null);
+    }
+
+    /**
+     * Get localized name of an entity property. Messages pack must be located in the same package as entity.
+     *
+     * @param metaClass    MetaClass containing the property
+     * @param propertyName property's name
+     * @param locale       locale, if value is null locale of current user is used
+     * @return localized name
+     */
+    public String getPropertyCaption(MetaClass metaClass, String propertyName, @Nullable Locale locale) {
         Class originalClass = extendedEntities.getOriginalClass(metaClass);
         Class<?> ownClass = originalClass != null ? originalClass : metaClass.getJavaClass();
         String className = ownClass.getSimpleName();
 
         String key = className + "." + propertyName;
-        String message = messages.getMessage(ownClass, key);
+        String message;
+        if (locale == null) {
+            message = messages.getMessage(ownClass, key);
+        } else {
+            message = messages.getMessage(ownClass, key, locale);
+        }
+
         if (!message.equals(key)) {
             return message;
         }
@@ -219,16 +237,33 @@ public class MessageTools {
 
     /**
      * Get localized name of an entity property. Messages pack must be located in the same package as entity.
-     * @param property  MetaProperty
+     *
+     * @param property MetaProperty
      * @return localized name
      */
     public String getPropertyCaption(MetaProperty property) {
+        return getPropertyCaption(property, null);
+    }
+
+    /**
+     * Get localized name of an entity property. Messages pack must be located in the same package as entity.
+     *
+     * @param property MetaProperty
+     * @param locale   locale, if value is null locale of current user is used
+     * @return localized name
+     */
+    public String getPropertyCaption(MetaProperty property, @Nullable Locale locale) {
         Class<?> declaringClass = property.getDeclaringClass();
-        if (declaringClass == null)
+        if (declaringClass == null) {
             return property.getName();
+        }
 
         String className = declaringClass.getSimpleName();
-        return messages.getMessage(declaringClass, className + "." + property.getName());
+        if (locale == null) {
+            return messages.getMessage(declaringClass, className + "." + property.getName());
+        }
+
+        return messages.getMessage(declaringClass, className + "." + property.getName(), locale);
     }
 
     /**
