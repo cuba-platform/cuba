@@ -24,7 +24,9 @@ public class CubaTextAreaWidget extends VTextArea {
     protected static final String PROMPT_STYLE = "prompt";
     protected static final String CUBA_EMPTY_VALUE = "c-empty-value";
 
-    protected String caseConversion = "NONE";
+    protected static final String CASE_CONVERSION_MODE_NONE = "NONE";
+
+    protected String caseConversion = CASE_CONVERSION_MODE_NONE;
 
     protected CubaTextAreaWidget() {
         super();
@@ -47,6 +49,9 @@ public class CubaTextAreaWidget extends VTextArea {
     }-*/;
 
     public void handleInput() {
+        if (CASE_CONVERSION_MODE_NONE.equals(caseConversion))
+            return;
+
         String text = applyCaseConversion(getText());
 
         int cursorPos = getCursorPos();
