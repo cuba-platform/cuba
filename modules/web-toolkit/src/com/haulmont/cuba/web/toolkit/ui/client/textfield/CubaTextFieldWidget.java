@@ -32,10 +32,12 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
     protected static final String CUBA_DISABLED_OR_READONLY = "c-disabled-or-readonly";
     protected static final String CUBA_EMPTY_VALUE = "c-empty-value";
 
+    protected static final String CASE_CONVERSION_MODE_NONE = "NONE";
+
     protected ShortcutActionHandler shortcutHandler;
 
     protected boolean readOnlyFocusable = false;
-    protected String caseConversion = "NONE";
+    protected String caseConversion = CASE_CONVERSION_MODE_NONE;
 
     public CubaTextFieldWidget() {
         // handle shortcuts
@@ -59,6 +61,9 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
     }-*/;
 
     public void handleInput() {
+        if (CASE_CONVERSION_MODE_NONE.equals(caseConversion))
+            return;
+
         String text = applyCaseConversion(getText());
 
         int cursorPos = getCursorPos();
