@@ -62,7 +62,11 @@ public class RestParseUtils {
             ParameterizedType parameterizedType = (ParameterizedType) type;
             Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
             if (actualTypeArguments.length > 0) {
-                argumentTypeClass = (Class) actualTypeArguments[0];
+                if (actualTypeArguments[0] instanceof Class) {
+                    argumentTypeClass = (Class) actualTypeArguments[0];
+                } else if (actualTypeArguments[0] instanceof ParameterizedType) {
+                    argumentTypeClass = (Class) ((ParameterizedType) actualTypeArguments[0]).getRawType();
+                }
             }
             clazz = (Class) parameterizedType.getRawType();
         } else {
