@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
@@ -137,7 +138,14 @@ public class EntityFetcher {
                                 log.trace("Object " + value + " is detached, loading it");
                             }
                             //noinspection unchecked
-                            value = persistence.getEntityManager().find(e.getClass(), e.getId());
+                            String storeName = metadata.getTools().getStoreName(e.getMetaClass());
+                            EntityManager em;
+                            if (storeName == null) {
+                                em = persistence.getEntityManager();
+                            } else {
+                                em = persistence.getEntityManager(storeName);
+                            }
+                            value = em.find(e.getClass(), e.getId());
                             if (value == null) {
                                 // the instance is most probably deleted
                                 continue;
