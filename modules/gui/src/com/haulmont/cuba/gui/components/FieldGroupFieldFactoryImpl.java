@@ -90,20 +90,20 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
                 if (fc.getXmlDescriptor() != null
                         && "true".equalsIgnoreCase(fc.getXmlDescriptor().attributeValue("link"))) {
                     return createDatatypeLinkField(fc);
-                } else if (typeName.equals(StringDatatype.NAME)) {
+                } else if (datatype instanceof StringDatatype) {
                     if (fc.getXmlDescriptor() != null
                             && fc.getXmlDescriptor().attribute("mask") != null) {
                         return createMaskedField(fc);
                     } else {
                         return createStringField(fc);
                     }
-                } else if (typeName.equals(UUIDDatatype.NAME)) {
+                } else if (datatype instanceof UUIDDatatype) {
                     return createUuidField(fc);
-                } else if (typeName.equals(BooleanDatatype.NAME)) {
+                } else if (datatype instanceof BooleanDatatype) {
                     return createBooleanField(fc);
-                } else if (typeName.equals(DateDatatype.NAME) || typeName.equals(DateTimeDatatype.NAME)) {
+                } else if ((datatype instanceof DateDatatype) || (datatype instanceof DateTimeDatatype)) {
                     return createDateField(fc);
-                } else if (typeName.equals(TimeDatatype.NAME)) {
+                } else if (datatype instanceof TimeDatatype) {
                     return createTimeField(fc);
                 } else if (datatype instanceof NumberDatatype) {
                     if (fc.getXmlDescriptor() != null
