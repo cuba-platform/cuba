@@ -151,6 +151,7 @@ public class EntityFetcher {
                                 continue;
                             }
                             entity.setValue(property.getName(), value);
+                            e = (Entity) value;
                         }
                     }
                     fetch(e, propertyView, visited, optimizeForDetached);
