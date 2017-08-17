@@ -178,6 +178,21 @@ $cuba-menubar-menuitem-text-selected-color: #e8e8e8 !default;
     }
   }
 
+  .c-ftsfield {
+    padding-right: $v-unit-size;
+    font-size: 0;
+    white-space: nowrap;
+
+    & > * {
+      font-size: $v-font-size;
+    }
+  }
+
+  .c-ftsfield-button {
+    width: $v-unit-size;
+    margin-right: -$v-unit-size;
+  }
+
   @if ($v-support-inverse-menu) {
     .c-inverse-header.c-app-menubar {
       background: $cuba-menubar-background-color;
@@ -208,20 +223,6 @@ $cuba-menubar-menuitem-text-selected-color: #e8e8e8 !default;
 
       .c-user-timezone-label {
         color: $cuba-menubar-text-color;
-      }
-
-      .c-ftsfield {
-        padding-right: $v-unit-size;
-        font-size: 0;
-        white-space: nowrap;
-
-        & > * {
-          font-size: $v-font-size;
-        }
-      }
-
-      .c-ftsfield-button {
-        margin-right: -$v-unit-size;
       }
 
       .c-ftsfield-button,
