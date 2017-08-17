@@ -122,6 +122,17 @@
         <cors configuration-source-ref="cuba_RestCorsSource"/>
     </security:http>
 
+    <!-- LDAP auth -->
+    <security:http pattern="/rest/v2/ldap/**"
+                   create-session="stateless"
+                   authentication-manager-ref="clientAuthenticationManager"
+                   xmlns="http://www.springframework.org/schema/security">
+        <intercept-url pattern="/**" access="isAuthenticated()"/>
+        <http-basic entry-point-ref="clientAuthenticationEntryPoint"/>
+        <csrf disabled="true"/>
+        <cors configuration-source-ref="cuba_RestCorsSource"/>
+    </security:http>
+
     <!-- API controllers endpoints -->
     <security:http pattern="/rest/v2/**"
                    create-session="stateless"

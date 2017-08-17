@@ -679,7 +679,6 @@ configure(webAuthModule) {
     dependencies {
         compile(globalModule)
 
-        compile(bom['org.springframework:spring-tx'])
         compile(bom['org.springframework.ldap:spring-ldap-core']) {
             exclude(group: 'org.slf4j', module: 'jcl-over-slf4j') // removed because it defines its own Log4j LogFactory via JDK services mechanism
         }
@@ -808,6 +807,10 @@ configure(restApiModule) {
         compile(bom['org.springframework:spring-webmvc'])
         compile(bom['org.springframework:spring-context-support'])
 
+        compile(bom['org.springframework.ldap:spring-ldap-core']) {
+            exclude(group: 'org.slf4j', module: 'jcl-over-slf4j') // removed because it defines its own Log4j LogFactory via JDK services mechanism
+        }
+
         compile(bom['org.json:json'])
 
         compile(bom['com.fasterxml.jackson.core:jackson-databind'])
@@ -835,7 +838,6 @@ configure(portalModule) {
 
         compile(bom['org.springframework:spring-webmvc'])
         compile(bom['org.springframework:spring-context-support'])
-        compile(bom['org.springframework:spring-tx'])
         compile(bom['org.springframework:spring-jdbc'])
 
         compile(bom['org.springframework.security:spring-security-core'])

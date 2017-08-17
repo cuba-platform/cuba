@@ -18,6 +18,8 @@ package com.haulmont.restapi.auth;
 
 import com.google.common.base.Preconditions;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -73,6 +75,14 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
         try {
             session = loginService.loginTrusted(login, config.getTrustedClientPassword(), locale, loginParams);
             if (!session.isSpecificPermitted("cuba.restApi.enabled")) {
+                try {
+                    AppContext.withSecurityContext(new SecurityContext(session), () -> {
+                        loginService.logout();
+                    });
+                } catch (Exception e) {
+                    log.error("Unable to logout", e);
+                }
+
                 throw new BadCredentialsException("User is not allowed to use the REST API");
             }
         } catch (LoginException e) {

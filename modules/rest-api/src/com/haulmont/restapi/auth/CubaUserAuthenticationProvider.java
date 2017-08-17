@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.restapi.RestConfig;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -32,6 +33,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -65,6 +67,13 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider, S
         String ipAddress = request.getRemoteAddr();
 
         if (authentication instanceof UsernamePasswordAuthenticationToken) {
+            RestConfig config = configuration.getConfig(RestConfig.class);
+            if (!config.getStandardAuthenticationEnabled()) {
+                log.debug("Standard authentication is disabled. Property cuba.rest.standardAuthenticationEnabled is false");
+
+                throw new InvalidGrantException("Authentication disabled");
+            }
+
             UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
 
             String login = (String) token.getPrincipal();
@@ -73,8 +82,17 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider, S
 
             UserSession session;
             try {
-                session = loginService.login(login, passwordEncryption.getPlainHash((String) token.getCredentials()), request.getLocale());
+                String passwordHash = passwordEncryption.getPlainHash((String) token.getCredentials());
+                session = loginService.login(login, passwordHash, request.getLocale());
                 if (!session.isSpecificPermitted("cuba.restApi.enabled")) {
+                    try {
+                        AppContext.withSecurityContext(new SecurityContext(session), () -> {
+                            loginService.logout();
+                        });
+                    } catch (Exception e) {
+                        log.error("Unable to logout", e);
+                    }
+
                     throw new BadCredentialsException("User is not allowed to use the REST API");
                 }
             } catch (LoginException e) {

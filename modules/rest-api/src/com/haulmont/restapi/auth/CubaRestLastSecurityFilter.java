@@ -17,7 +17,6 @@
 package com.haulmont.restapi.auth;
 
 import com.google.common.base.Strings;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
@@ -30,6 +29,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 
+import javax.inject.Inject;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -47,13 +47,21 @@ import java.util.UUID;
  */
 public class CubaRestLastSecurityFilter implements Filter {
 
-    private Logger log = LoggerFactory.getLogger(CubaRestLastSecurityFilter.class);
+    private final Logger log = LoggerFactory.getLogger(CubaRestLastSecurityFilter.class);
+
+    @Inject
+    protected Configuration configuration;
+    @Inject
+    protected MessageTools messageTools;
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {}
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // do nothing
+    }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         logRequest(request);
         parseRequestLocale(request);
         chain.doFilter(request, response);
@@ -88,15 +96,14 @@ public class CubaRestLastSecurityFilter implements Filter {
     protected void parseRequestLocale(ServletRequest request) {
         //Take the locale value either from the 'Accept-Language' http header or take the default one
         Locale locale = null;
-        if (!Strings.isNullOrEmpty(((HttpServletRequest)request).getHeader("Accept-Language"))) {
+        if (!Strings.isNullOrEmpty(((HttpServletRequest) request).getHeader("Accept-Language"))) {
             Locale requestLocale = request.getLocale();
-            Map<String, Locale> availableLocales = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getAvailableLocales();
+            Map<String, Locale> availableLocales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
             if (availableLocales.values().contains(requestLocale)) {
                 locale = requestLocale;
             }
         }
         if (locale == null) {
-            MessageTools messageTools = AppBeans.get(MessageTools.class);
             locale = messageTools.getDefaultLocale();
         }
         SecurityContext securityContext = AppContext.getSecurityContext();
@@ -114,5 +121,7 @@ public class CubaRestLastSecurityFilter implements Filter {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        // do nothing
+    }
 }
