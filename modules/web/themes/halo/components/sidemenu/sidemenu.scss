@@ -475,7 +475,7 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
 
     .c-ftsfield {
       padding-left: $v-layout-margin-left;
-      padding-right: $v-layout-margin-right;
+      padding-right: $v-layout-margin-right + $v-unit-size;
     }
 
     .v-ie9 & {
