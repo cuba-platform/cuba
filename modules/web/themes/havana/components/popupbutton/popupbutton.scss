@@ -35,6 +35,10 @@
       background: transparent;
       background-image: url(sprites/popup-button.png);  /** sprite-ref: components; */
       background-repeat: no-repeat;
+
+      &:before {
+        content: none;
+      }
     }
   }
 }

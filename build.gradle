@@ -569,7 +569,10 @@ configure(webModule) {
         }
 
         /* Vaadin addons */
-        compile(bom['com.haulmont.thirdparty:popupbutton'])
+        compile(bom['org.vaadin.hene:popupbutton']) {
+            exclude(group: 'com.vaadin', module: 'vaadin-client')
+            exclude(group: 'com.vaadin', module: 'vaadin-server')
+        }
         compile(bom['org.vaadin.addons:aceeditor'])
         compile(bom['org.vaadin.addons:dragdroplayouts'])
         compile(bom['com.vaadin.addon:vaadin-context-menu']) {
