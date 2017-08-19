@@ -569,7 +569,7 @@ configure(webModule) {
         }
 
         /* Vaadin addons */
-        compile(bom['org.vaadin.hene:popupbutton']) {
+        compile(bom['org.vaadin.addons:popupbutton']) {
             exclude(group: 'com.vaadin', module: 'vaadin-client')
             exclude(group: 'com.vaadin', module: 'vaadin-server')
         }
