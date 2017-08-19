@@ -16,15 +16,27 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PopupButton;
+import com.haulmont.cuba.gui.components.PopupButton.PopupOpenDirection;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import java.util.List;
+
 public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
+
+    protected ComponentLoader popupComponentLoader;
+
     @Override
     public void createComponent() {
         resultComponent = (PopupButton) factory.createComponent(PopupButton.NAME);
         loadId(resultComponent, element);
+
+        createContent();
     }
 
     @Override
@@ -43,24 +55,96 @@ public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
         loadIcon(resultComponent, element);
 
         loadWidth(resultComponent, element);
+        loadHeight(resultComponent, element);
 
         loadTabIndex(resultComponent, element);
 
         loadShowActionIcons(resultComponent, element);
         loadActions(resultComponent, element);
 
+        loadPopupComponent();
+
+        loadAutoClose(resultComponent, element);
+        loadTogglePopupVisibilityOnClick(resultComponent, element);
+        loadClosePopupOnOutsideClick(resultComponent, element);
+        loadPopupOpenDirection(resultComponent, element);
+        loadMenuWidth(resultComponent, element);
+
         String menuWidth = element.attributeValue("menuWidth");
-        if (!StringUtils.isEmpty(menuWidth)) {
+        if (StringUtils.isNotEmpty(menuWidth)) {
             resultComponent.setMenuWidth(menuWidth);
         }
 
         loadFocusable(resultComponent, element);
     }
 
+    protected void loadAutoClose(PopupButton component, Element element) {
+        String autoClose = element.attributeValue("autoClose");
+        if (StringUtils.isNotEmpty(autoClose)) {
+            component.setAutoClose(Boolean.parseBoolean(autoClose));
+        }
+    }
+
+    protected void loadMenuWidth(PopupButton component, Element element) {
+        String menuWidth = element.attributeValue("menuWidth");
+        if (StringUtils.isNotEmpty(menuWidth)) {
+            if ("auto".equalsIgnoreCase(menuWidth)) {
+                component.setMenuWidth(Component.AUTO_SIZE);
+            } else {
+                component.setMenuWidth(loadThemeString(menuWidth));
+            }
+        }
+    }
+
+    protected void loadTogglePopupVisibilityOnClick(PopupButton component, Element element) {
+        String togglePopupVisibilityOnClick = element.attributeValue("togglePopupVisibilityOnClick");
+        if (StringUtils.isNotEmpty(togglePopupVisibilityOnClick)) {
+            component.setTogglePopupVisibilityOnClick(Boolean.parseBoolean(togglePopupVisibilityOnClick));
+        }
+    }
+
+    protected void loadClosePopupOnOutsideClick(PopupButton component, Element element) {
+        String closePopupOnOutsideClick = element.attributeValue("closePopupOnOutsideClick");
+        if (StringUtils.isNotEmpty(closePopupOnOutsideClick)) {
+            component.setClosePopupOnOutsideClick(Boolean.parseBoolean(closePopupOnOutsideClick));
+        }
+    }
+
+    protected void loadPopupOpenDirection(PopupButton component, Element element) {
+        String popupOpenDirection = element.attributeValue("popupOpenDirection");
+        if (StringUtils.isNotEmpty(popupOpenDirection)) {
+            component.setPopupOpenDirection(PopupOpenDirection.valueOf(popupOpenDirection));
+        }
+    }
+
     protected void loadShowActionIcons(PopupButton component, Element element) {
         String showActionIcons = element.attributeValue("showActionIcons");
-        if (!StringUtils.isEmpty(showActionIcons)) {
+        if (StringUtils.isNotEmpty(showActionIcons)) {
             component.setShowActionIcons(Boolean.parseBoolean(showActionIcons));
+        }
+    }
+
+    protected void createContent() {
+        if (element != null && element.element("popup") != null) {
+            LayoutLoader loader = new LayoutLoader(context, factory, layoutLoaderConfig);
+            loader.setLocale(getLocale());
+            loader.setMessagesPack(getMessagesPack());
+
+            List<Element> elements = Dom4j.elements(element.element("popup"));
+            if (elements.size() != 0) {
+                Element innerElement = elements.get(0);
+                if (innerElement != null) {
+                    popupComponentLoader = loader.createComponent(innerElement);
+                    resultComponent.setPopupContent(popupComponentLoader.getResultComponent());
+                    resultComponent.setAutoClose(false);
+                }
+            }
+        }
+    }
+
+    protected void loadPopupComponent() {
+        if (popupComponentLoader != null) {
+            popupComponentLoader.loadComponent();
         }
     }
 }

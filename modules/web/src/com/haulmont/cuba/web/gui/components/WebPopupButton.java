@@ -25,7 +25,6 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.CubaPopupButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaPopupButtonLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -43,6 +42,8 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
 
     protected Component popupComponent;
     protected com.vaadin.ui.Component vPopupComponent;
+    protected CubaPopupButtonLayout vActionsContainer;
+
     protected boolean showActionIcons;
 
     protected List<Action> actionOrder = new ArrayList<>(3);
@@ -52,7 +53,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         component = new CubaPopupButton() {
             @Override
             public void setPopupVisible(boolean popupVisible) {
-                if (vPopupComponent instanceof VerticalLayout
+                if (vPopupComponent == vActionsContainer
                         && popupVisible && !hasVisibleActions()) {
                     return;
                 }
@@ -61,8 +62,14 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
             }
         };
         component.setImmediate(true);
+        component.addPopupVisibilityListener(event ->
+                getEventRouter().fireEvent(PopupVisibilityListener.class,
+                        PopupVisibilityListener::popupVisibilityChange,
+                        new PopupVisibilityEvent(this))
+        );
 
-        vPopupComponent = new CubaPopupButtonLayout();
+        this.vActionsContainer = createActionsContainer();
+        this.vPopupComponent = vActionsContainer;
         component.setContent(vPopupComponent);
 
         component.setDescription(null);
@@ -70,6 +77,10 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         showActionIcons = clientConfig.getShowIconsForPopupMenuActions();
+    }
+
+    protected CubaPopupButtonLayout createActionsContainer() {
+        return new CubaPopupButtonLayout();
     }
 
     protected boolean hasVisibleActions() {
@@ -91,22 +102,6 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         component.setTabIndex(tabIndex);
     }
 
-    public void setPopupComponent(Component component) {
-        this.popupComponent = component;
-        vPopupComponent = WebComponentsHelper.unwrap(popupComponent);
-        this.component.setContent(vPopupComponent);
-    }
-
-    public void removePopupComponent() {
-        popupComponent = null;
-        this.component.setContent(null);
-        vPopupComponent = null;
-    }
-
-    public Component getPopupComponent() {
-        return popupComponent;
-    }
-
     @Override
     public boolean isPopupVisible() {
         return component.isPopupVisible();
@@ -119,9 +114,17 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
 
     @Override
     public void setMenuWidth(String width) {
-        if (vPopupComponent != null && width != null) {
-            vPopupComponent.setWidth(width);
-        }
+        vPopupComponent.setWidth(width);
+    }
+
+    @Override
+    public float getMenuWidth() {
+        return vPopupComponent.getWidth();
+    }
+
+    @Override
+    public int getMenuWidthUnits() {
+        return UNIT_SYMBOLS.indexOf(vPopupComponent.getWidthUnits());
     }
 
     @Override
@@ -143,6 +146,63 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     }
 
     @Override
+    public boolean isTogglePopupVisibilityOnClick() {
+        return component.isButtonClickTogglesPopupVisibility();
+    }
+
+    @Override
+    public void setTogglePopupVisibilityOnClick(boolean togglePopupVisibilityOnClick) {
+        component.setButtonClickTogglesPopupVisibility(togglePopupVisibilityOnClick);
+    }
+
+    @Override
+    public PopupOpenDirection getPopupOpenDirection() {
+        return WebWrapperUtils.toPopupOpenDirection(component.getDirection());
+    }
+
+    @Override
+    public void setPopupOpenDirection(PopupOpenDirection direction) {
+        component.setDirection(WebWrapperUtils.toVaadinAlignment(direction));
+    }
+
+    @Override
+    public boolean isClosePopupOnOutsideClick() {
+        return component.isClosePopupOnOutsideClick();
+    }
+
+    @Override
+    public void setClosePopupOnOutsideClick(boolean closePopupOnOutsideClick) {
+        component.setClosePopupOnOutsideClick(closePopupOnOutsideClick);
+    }
+
+    @Override
+    public void setPopupContent(Component popupContent) {
+        this.popupComponent = popupContent;
+
+        if (popupContent != null) {
+            this.vPopupComponent = popupComponent.unwrapComposition(com.vaadin.ui.Component.class);
+        } else {
+            this.vPopupComponent = vActionsContainer;
+        }
+        this.component.setContent(vPopupComponent);
+    }
+
+    @Override
+    public Component getPopupContent() {
+        return popupComponent;
+    }
+
+    @Override
+    public void addPopupVisibilityListener(PopupVisibilityListener listener) {
+        getEventRouter().addListener(PopupVisibilityListener.class, listener);
+    }
+
+    @Override
+    public void removePopupVisibilityListener(PopupVisibilityListener listener) {
+        getEventRouter().removeListener(PopupVisibilityListener.class, listener);
+    }
+
+    @Override
     public void setAutoClose(boolean autoClose) {
         component.setAutoClose(autoClose);
     }
@@ -161,23 +221,21 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     public void addAction(Action action, int index) {
         checkNotNullArgument(action, "action must be non null");
 
-        if (vPopupComponent instanceof com.vaadin.ui.AbstractOrderedLayout) {
-            int oldIndex = findActionById(actionOrder, action.getId());
-            if (oldIndex >= 0) {
-                removeAction(actionOrder.get(oldIndex));
-                if (index > oldIndex) {
-                    index--;
-                }
+        int oldIndex = findActionById(actionOrder, action.getId());
+        if (oldIndex >= 0) {
+            removeAction(actionOrder.get(oldIndex));
+            if (index > oldIndex) {
+                index--;
             }
-
-            Button vButton = createActionButton(action);
-
-            ((com.vaadin.ui.AbstractOrderedLayout) vPopupComponent).addComponent(vButton, index);
-            component.markAsDirty();
-            actionOrder.add(index, action);
-
-            actionsPermissions.apply(action);
         }
+
+        Button vButton = createActionButton(action);
+
+        vActionsContainer.addComponent(vButton, index);
+        component.markAsDirty();
+        actionOrder.add(index, action);
+
+        actionsPermissions.apply(action);
     }
 
     protected void updateActionsIcons() {
@@ -241,15 +299,13 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
 
     @Override
     public void removeAction(@Nullable Action action) {
-        if (vPopupComponent instanceof com.vaadin.ui.Layout) {
-            if (actionOrder.remove(action)) {
-                //noinspection ConstantConditions
-                for (ActionOwner owner : new LinkedList<>(action.getOwners())) {
-                    if (owner instanceof PopupButtonActionButton) {
-                        owner.setAction(null);
-                        Button vButton = (Button) WebComponentsHelper.unwrap((PopupButtonActionButton) owner);
-                        ((com.vaadin.ui.Layout) vPopupComponent).removeComponent(vButton);
-                    }
+        if (actionOrder.remove(action)) {
+            //noinspection ConstantConditions
+            for (ActionOwner owner : new LinkedList<>(action.getOwners())) {
+                if (owner instanceof PopupButtonActionButton) {
+                    owner.setAction(null);
+                    Button vButton = (Button) WebComponentsHelper.unwrap((PopupButtonActionButton) owner);
+                    vActionsContainer.removeComponent(vButton);
                 }
             }
         }
@@ -273,11 +329,9 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     @Override
     @Nullable
     public Action getAction(String id) {
-        if (vPopupComponent instanceof com.vaadin.ui.Layout && id != null) {
-            for (Action action : actionOrder) {
-                if (id.equals(action.getId())) {
-                    return action;
-                }
+        for (Action action : actionOrder) {
+            if (id.equals(action.getId())) {
+                return action;
             }
         }
         return null;
@@ -303,15 +357,15 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         return actionsPermissions;
     }
 
-    private class PopupActionWrapper implements Action {
+    protected class PopupActionWrapper implements Action {
 
-        private Action action;
+        protected Action action;
 
-        private PopupActionWrapper(Action action) {
+        public PopupActionWrapper(Action action) {
             this.action = action;
         }
 
-        private Action getAction() {
+        protected Action getAction() {
             return action;
         }
 

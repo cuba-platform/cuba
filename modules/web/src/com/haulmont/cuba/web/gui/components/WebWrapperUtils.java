@@ -283,4 +283,34 @@ public final class WebWrapperUtils {
                 throw new UnsupportedOperationException("Unsupported Size Unit");
         }
     }
+
+    public static PopupButton.PopupOpenDirection toPopupOpenDirection(com.vaadin.ui.Alignment alignment) {
+        checkNotNullArgument(alignment);
+
+        if (alignment == com.vaadin.ui.Alignment.BOTTOM_LEFT)
+            return PopupButton.PopupOpenDirection.BOTTOM_LEFT;
+
+        if (alignment == com.vaadin.ui.Alignment.BOTTOM_RIGHT)
+            return PopupButton.PopupOpenDirection.BOTTOM_RIGHT;
+
+        if (alignment == com.vaadin.ui.Alignment.BOTTOM_CENTER)
+            return PopupButton.PopupOpenDirection.BOTTOM_CENTER;
+
+        throw new UnsupportedOperationException("Unsupported alignment");
+    }
+
+    public static com.vaadin.ui.Alignment toVaadinAlignment(PopupButton.PopupOpenDirection direction) {
+        checkNotNullArgument(direction);
+
+        switch (direction) {
+            case BOTTOM_CENTER:
+                return com.vaadin.ui.Alignment.BOTTOM_CENTER;
+            case BOTTOM_RIGHT:
+                return com.vaadin.ui.Alignment.BOTTOM_RIGHT;
+            case BOTTOM_LEFT:
+                return com.vaadin.ui.Alignment.BOTTOM_LEFT;
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
 }

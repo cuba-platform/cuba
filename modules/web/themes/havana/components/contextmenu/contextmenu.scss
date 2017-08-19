@@ -45,14 +45,14 @@
 }
 
 // custom cuba context menu with normal buttons
-@mixin havana-cuba-contextmenu($primary-stylename: c-cm-container) {
+@mixin havana-cuba-contextmenu($primary-stylename: c-cm-container, $item-stylename: v-button) {
   .#{$primary-stylename} {
     background: $cuba-contextmenu-background-color;
     overflow: auto;
     padding: 3px;
     border: 1px solid $cuba-field-focused-border-color;
 
-    .v-button {
+    .c-cm-button.v-button {
       background: transparent;
       height: 20px;
       width: 100%;
@@ -61,19 +61,19 @@
       text-decoration: none;
     }
 
-    .v-button-wrap {
+    .c-cm-button .v-button-wrap {
       text-align: left;
-      margin-top: 0px;
+      margin-top: 0;
     }
 
-    .v-button-caption {
+    .c-cm-button .v-button-caption {
       vertical-align: text-top;
       color: #000;
       padding: 1px 3px;
       text-decoration: none;
     }
 
-    .c-cm-button-selected {
+    .c-cm-button.c-cm-button-selected {
       background: $cuba-field-selection-color;
       color: #fff;
       text-decoration: none;
@@ -96,7 +96,7 @@
     }
 
     .v-ie9 & {
-      .v-button:hover {
+      .c-cm-button.v-button:hover {
         background: transparent;
 
         .v-button-caption {
@@ -104,7 +104,7 @@
         }
       }
 
-      .v-button.ie9-hover:hover {
+      .c-cm-button.v-button.ie9-hover:hover {
         background: $cuba-field-selection-color;
 
         .v-button-caption {
@@ -113,7 +113,7 @@
       }
     }
 
-    .v-button-link:focus {
+    .c-cm-button.v-button-link:focus {
       border: 1px solid transparent;
     }
   }

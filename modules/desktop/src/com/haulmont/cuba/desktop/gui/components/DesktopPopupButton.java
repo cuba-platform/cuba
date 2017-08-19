@@ -54,6 +54,11 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
     protected final JLabel captionLabel;
     protected final JLabel rightIcon;
 
+    protected boolean togglePopupVisibilityOnClick = true; // just stub
+    protected PopupOpenDirection popupOpenDirection = PopupOpenDirection.BOTTOM_RIGHT; // just stub
+    protected boolean closePopupOnOutsideClick = true; // just stub
+    protected Component popupContent; // just stub
+
     public DesktopPopupButton() {
         popup = new JPopupMenu();
 
@@ -164,6 +169,17 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
 
     @Override
     public void setMenuWidth(String width) {
+        // unsupported
+    }
+
+    @Override
+    public float getMenuWidth() {
+        return 0; // unsupported
+    }
+
+    @Override
+    public int getMenuWidthUnits() {
+        return UNITS_PIXELS; // unsupported
     }
 
     @Override
@@ -183,6 +199,56 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
     @Override
     public boolean isShowActionIcons() {
         return false;
+    }
+
+    @Override
+    public boolean isTogglePopupVisibilityOnClick() {
+        return togglePopupVisibilityOnClick;
+    }
+
+    @Override
+    public void setTogglePopupVisibilityOnClick(boolean togglePopupVisibilityOnClick) {
+        this.togglePopupVisibilityOnClick = togglePopupVisibilityOnClick;
+    }
+
+    @Override
+    public PopupOpenDirection getPopupOpenDirection() {
+        return popupOpenDirection;
+    }
+
+    @Override
+    public void setPopupOpenDirection(PopupOpenDirection popupOpenDirection) {
+        this.popupOpenDirection = popupOpenDirection;
+    }
+
+    @Override
+    public boolean isClosePopupOnOutsideClick() {
+        return closePopupOnOutsideClick;
+    }
+
+    @Override
+    public void setClosePopupOnOutsideClick(boolean closePopupOnOutsideClick) {
+        this.closePopupOnOutsideClick = closePopupOnOutsideClick;
+    }
+
+    @Override
+    public void setPopupContent(Component popupContent) {
+        this.popupContent = popupContent;
+    }
+
+    @Override
+    public Component getPopupContent() {
+        return popupContent;
+    }
+
+    @Override
+    public void addPopupVisibilityListener(PopupVisibilityListener listener) {
+        // stub
+    }
+
+    @Override
+    public void removePopupVisibilityListener(PopupVisibilityListener listener) {
+        // stub
     }
 
     @Override

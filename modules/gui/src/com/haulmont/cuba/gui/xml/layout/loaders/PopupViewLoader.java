@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.gui.components.PopupView;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
@@ -25,7 +26,7 @@ import org.dom4j.Element;
 import java.util.List;
 
 public class PopupViewLoader extends AbstractComponentLoader<PopupView> {
-    private ComponentLoader popupComponentLoader;
+    protected ComponentLoader popupComponentLoader;
 
     @Override
     public void createComponent() {
@@ -87,7 +88,7 @@ public class PopupViewLoader extends AbstractComponentLoader<PopupView> {
             loader.setLocale(getLocale());
             loader.setMessagesPack(getMessagesPack());
 
-            List<Element> elements = element.elements();
+            List<Element> elements = Dom4j.elements(element);
             if (elements.size() != 0) {
                 Element innerElement = elements.get(0);
                 if (innerElement != null) {

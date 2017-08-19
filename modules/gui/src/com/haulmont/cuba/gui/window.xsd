@@ -743,6 +743,14 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="popupOpenDirection">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="BOTTOM_LEFT"/>
+            <xs:enumeration value="BOTTOM_RIGHT"/>
+            <xs:enumeration value="BOTTOM_CENTER"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <!-- Interfaces -->
 
     <xs:attributeGroup name="hasId">
@@ -1348,7 +1356,7 @@
         <xs:complexContent>
             <xs:extension base="baseComponent">
                 <xs:attribute name="stylename" type="progressBarStylename"/>
-                <xs:attribute name="indeterminate" type="xs:string"/>
+                <xs:attribute name="indeterminate" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1718,19 +1726,35 @@
         <xs:complexContent>
             <xs:extension base="baseComponent">
                 <xs:sequence>
-                    <xs:element name="actions" nillable="true" minOccurs="0" maxOccurs="1">
-                        <xs:complexType>
-                            <xs:sequence>
-                                <xs:choice minOccurs="1" maxOccurs="unbounded">
-                                    <xs:element name="action" type="popupButtonAction"/>
-                                </xs:choice>
-                            </xs:sequence>
-                        </xs:complexType>
-                    </xs:element>
+                    <xs:choice>
+                        <xs:element name="actions" nillable="true" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:choice minOccurs="1" maxOccurs="unbounded">
+                                        <xs:element name="action" type="popupButtonAction"/>
+                                    </xs:choice>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+
+                        <xs:element name="popup">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:group ref="singleLayoutOrComponent"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:choice>
                 </xs:sequence>
 
                 <xs:attribute name="showActionIcons" type="xs:boolean"/>
                 <xs:attribute name="focusable" type="xs:boolean"/>
+
+                <xs:attribute name="menuWidth" type="componentSize"/>
+                <xs:attribute name="autoClose" type="xs:boolean"/>
+                <xs:attribute name="closePopupOnOutsideClick" type="xs:boolean"/>
+                <xs:attribute name="togglePopupVisibilityOnClick" type="xs:boolean"/>
+                <xs:attribute name="popupOpenDirection" type="popupOpenDirection"/>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>

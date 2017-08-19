@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.gui.components;
 
+import java.util.EventObject;
+
 public interface PopupView extends Component.HasCaption, Component.BelongToFrame, Component.HasIcon {
     String NAME = "popupView";
 
@@ -84,19 +86,30 @@ public interface PopupView extends Component.HasCaption, Component.BelongToFrame
         void popupVisibilityChange(PopupVisibilityEvent popupVisibilityEvent);
     }
 
-    class PopupVisibilityEvent {
-        protected PopupView popupView;
-
+    /**
+     * This event is received by the PopupVisibilityListeners when the visibility of the popup changes.
+     */
+    class PopupVisibilityEvent extends EventObject {
         public PopupVisibilityEvent(PopupView popupView) {
-            this.popupView = popupView;
+            super(popupView);
         }
 
+        @Override
+        public PopupView getSource() {
+            return (PopupView) super.getSource();
+        }
+
+        /**
+         * @return popup view
+         * @deprecated Use {@link #getSource()}
+         */
+        @Deprecated
         public PopupView getPopupView() {
-            return popupView;
+            return getSource();
         }
 
         public boolean isPopupVisible() {
-            return popupView.isPopupVisible();
+            return getSource().isPopupVisible();
         }
     }
 }

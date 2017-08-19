@@ -29,11 +29,11 @@ public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> 
     public WebPopupView() {
         component = new com.vaadin.ui.PopupView(new EmptyContent());
 
-        component.addPopupVisibilityListener(e -> {
-            PopupVisibilityEvent event = new PopupVisibilityEvent(WebPopupView.this);
-
-            getEventRouter().fireEvent(PopupVisibilityListener.class, PopupVisibilityListener::popupVisibilityChange, event);
-        });
+        component.addPopupVisibilityListener(e ->
+                getEventRouter().fireEvent(PopupVisibilityListener.class,
+                        PopupVisibilityListener::popupVisibilityChange,
+                        new PopupVisibilityEvent(this))
+        );
     }
 
     @Override
