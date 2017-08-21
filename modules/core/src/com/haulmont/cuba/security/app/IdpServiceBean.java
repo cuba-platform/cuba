@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.IdpSession;
 import com.haulmont.cuba.security.global.LoginException;
+import org.apache.commons.lang.LocaleUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -66,7 +67,7 @@ public class IdpServiceBean implements IdpService {
 
         Locale userLocale = locale;
         if (user.getLanguage() != null && !globalConfig.getLocaleSelectVisible()) {
-            userLocale = new Locale(user.getLanguage());
+            userLocale = LocaleUtils.toLocale(user.getLanguage());
         }
 
         session.setLocale(userLocale.toLanguageTag());

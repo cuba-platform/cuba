@@ -27,6 +27,7 @@ import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -130,7 +131,7 @@ public class LoginServiceController {
     protected Locale localeFromString(String localeStr) {
         return StringUtils.isBlank(localeStr) ?
                 globalConfig.getAvailableLocales().values().iterator().next()
-                : new Locale(localeStr);
+                : LocaleUtils.toLocale(localeStr);
     }
 
     protected void doLogin(String username, String password, String localeStr,
