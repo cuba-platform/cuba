@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Calendar;
 import com.haulmont.cuba.gui.components.calendar.EntityCalendarEventProvider;
@@ -25,7 +26,11 @@ import org.dom4j.Element;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.Month;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CalendarLoader extends AbstractComponentLoader<Calendar> {
     protected static final String DATE_PATTERN_DAY = "yyyy-MM-dd";
@@ -60,6 +65,15 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
         loadStartDate(resultComponent, element);
         loadResponsive(resultComponent, element);
         loadNavigationButtonsVisible(resultComponent, element);
+
+        loadFirstVisibleHourOfDay(resultComponent, element);
+        loadLastVisibleHourOfDay(resultComponent, element);
+        loadFirstVisibleDayOfWeek(resultComponent, element);
+        loadLastVisibleDayOfWeek(resultComponent, element);
+        loadWeeklyCaptionFormat(resultComponent, element);
+
+        loadDayNames(resultComponent, element);
+        loadMonthNames(resultComponent, element);
     }
 
     protected void loadDatasource(Calendar component, Element element) {
@@ -164,5 +178,96 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
                         context.getFullFrameId(), "Calendar ID", resultComponent.getId());
             }
         }
+    }
+
+    protected void loadFirstVisibleHourOfDay(Calendar resultComponent, Element element) {
+        String firstVisibleHourOfDay = element.attributeValue("firstVisibleHourOfDay");
+        if (StringUtils.isNotEmpty(firstVisibleHourOfDay)) {
+            int hour = Integer.parseInt(firstVisibleHourOfDay);
+            resultComponent.setFirstVisibleHourOfDay(hour);
+        }
+    }
+
+    protected void loadLastVisibleHourOfDay(Calendar resultComponent, Element element) {
+        String lastVisibleHourOfDay = element.attributeValue("lastVisibleHourOfDay");
+        if (StringUtils.isNotEmpty(lastVisibleHourOfDay)) {
+            int hour = Integer.parseInt(lastVisibleHourOfDay);
+            resultComponent.setLastVisibleHourOfDay(hour);
+        }
+    }
+
+    protected void loadFirstVisibleDayOfWeek(Calendar resultComponent, Element element) {
+        String firstVisibleDayOfWeek = element.attributeValue("firstVisibleDayOfWeek");
+        if (StringUtils.isNotEmpty(firstVisibleDayOfWeek)) {
+            int day = Integer.parseInt(firstVisibleDayOfWeek);
+            resultComponent.setFirstVisibleDayOfWeek(day);
+        }
+    }
+
+    protected void loadLastVisibleDayOfWeek(Calendar resultComponent, Element element) {
+        String lastVisibleDayOfWeek = element.attributeValue("lastVisibleDayOfWeek");
+        if (StringUtils.isNotEmpty(lastVisibleDayOfWeek)) {
+            int day = Integer.parseInt(lastVisibleDayOfWeek);
+            resultComponent.setLastVisibleDayOfWeek(day);
+        }
+    }
+
+    protected void loadWeeklyCaptionFormat(Calendar resultComponent, Element element) {
+        String weeklyCaptionFormat = element.attributeValue("weeklyCaptionFormat");
+        if (StringUtils.isNotEmpty(weeklyCaptionFormat)) {
+            resultComponent.setWeeklyCaptionFormat(weeklyCaptionFormat);
+        }
+    }
+
+    protected void loadDayNames(Calendar resultComponent, Element element) {
+        Element dayNames = element.element("dayNames");
+        if (dayNames == null) {
+            return;
+        }
+
+        Map<DayOfWeek, String> dayNamesMap = new HashMap<>();
+        for (Element dayName : Dom4j.elements(dayNames, "day")) {
+
+            String dayKey = dayName.attributeValue("dayOfWeek");
+            DayOfWeek dayOfWeek = null;
+            if (StringUtils.isNotEmpty(dayKey)) {
+                dayOfWeek = DayOfWeek.valueOf(dayKey);
+            }
+
+            String dayValue = dayName.attributeValue("value");
+            if (StringUtils.isNotEmpty(dayValue)) {
+                if (dayOfWeek != null) {
+                    dayValue = loadResourceString(dayValue);
+                    dayNamesMap.put(dayOfWeek, dayValue);
+                }
+            }
+        }
+        resultComponent.setDayNames(dayNamesMap);
+    }
+
+    protected void loadMonthNames(Calendar resultComponent, Element element) {
+        Element monthNames = element.element("monthNames");
+        if (monthNames == null) {
+            return;
+        }
+
+        Map<Month, String> monthNamesMap = new HashMap<>();
+        for (Element monthName : Dom4j.elements(monthNames, "month")) {
+
+            String monthKey = monthName.attributeValue("month");
+            Month monthOfYear = null;
+            if (StringUtils.isNotEmpty(monthKey)) {
+                monthOfYear = Month.valueOf(monthKey);
+            }
+
+            String monthValue = monthName.attributeValue("value");
+            if (StringUtils.isNotEmpty(monthValue)) {
+                if (monthOfYear != null) {
+                    monthValue = loadResourceString(monthValue);
+                    monthNamesMap.put(monthOfYear, monthValue);
+                }
+            }
+        }
+        resultComponent.setMonthNames(monthNamesMap);
     }
 }

@@ -681,6 +681,35 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="daysOfWeek">
+        <xs:restriction>
+            <xs:enumeration value="MONDAY"/>
+            <xs:enumeration value="TUESDAY"/>
+            <xs:enumeration value="WEDNESDAY"/>
+            <xs:enumeration value="THURSDAY"/>
+            <xs:enumeration value="FRIDAY"/>
+            <xs:enumeration value="SATURDAY"/>
+            <xs:enumeration value="SUNDAY"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="monthOfYear">
+        <xs:restriction>
+            <xs:enumeration value="JANUARY"/>
+            <xs:enumeration value="FEBRUARY"/>
+            <xs:enumeration value="MARCH"/>
+            <xs:enumeration value="APRIL"/>
+            <xs:enumeration value="MAY"/>
+            <xs:enumeration value="JUNE"/>
+            <xs:enumeration value="JULY"/>
+            <xs:enumeration value="AUGUST"/>
+            <xs:enumeration value="SEPTEMBER"/>
+            <xs:enumeration value="OCTOBER"/>
+            <xs:enumeration value="NOVEMBER"/>
+            <xs:enumeration value="DECEMBER"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <!-- Interfaces -->
 
     <xs:attributeGroup name="hasId">
@@ -944,6 +973,32 @@
         </xs:choice>
     </xs:complexType>
 
+    <xs:complexType name="days">
+        <xs:sequence>
+            <xs:choice minOccurs="7" maxOccurs="7">
+                <xs:element name="day" type="day"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="day">
+        <xs:attribute name="dayOfWeek" type="daysOfWeek"/>
+        <xs:attribute name="value" type="resourceString"/>
+    </xs:complexType>
+
+    <xs:complexType name="months">
+        <xs:sequence>
+            <xs:choice minOccurs="12" maxOccurs="12">
+                <xs:element name="month" type="month"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="month">
+        <xs:attribute name="month" type="monthOfYear"/>
+        <xs:attribute name="value" type="resourceString"/>
+    </xs:complexType>
+
     <xs:complexType name="frameAction">
         <xs:attributeGroup ref="requiresId"/>
         <xs:attributeGroup ref="hasCaption"/>
@@ -1087,6 +1142,11 @@
     <xs:complexType name="calendarComponent">
         <xs:complexContent>
             <xs:extension base="baseComponent">
+                <xs:all>
+                    <xs:element name="dayNames" minOccurs="0" maxOccurs="1"  type="days"/>
+                    <xs:element name="monthNames" minOccurs="0" maxOccurs="1"  type="months"/>
+                </xs:all>
+
                 <xs:attribute name="datasource" type="xs:string"/>
 
                 <xs:attribute name="startDate" type="xs:string"/>
@@ -1100,6 +1160,13 @@
                 <xs:attribute name="descriptionProperty" type="xs:string"/>
                 <xs:attribute name="stylenameProperty" type="xs:string"/>
                 <xs:attribute name="isAllDayProperty" type="xs:string"/>
+
+                <xs:attribute name="firstVisibleHourOfDay" type="xs:int"/>
+                <xs:attribute name="lastVisibleHourOfDay" type="xs:int"/>
+                <xs:attribute name="firstVisibleDayOfWeek" type="xs:int"/>
+                <xs:attribute name="lastVisibleDayOfWeek" type="xs:int"/>
+
+                <xs:attribute name="weeklyCaptionFormat" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
