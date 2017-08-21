@@ -118,13 +118,14 @@ public class ServicesControllerManager {
         List<Object> paramValues = new ArrayList<>();
         Type[] types = restMethodInfo.getMethod().getGenericParameterTypes();
         for (int i = 0; i < types.length; i++) {
+            int idx = i;
             try {
-                int idx = paramNames.indexOf(restMethodInfo.getParams().get(i).getName());
+                idx = paramNames.indexOf(restMethodInfo.getParams().get(i).getName());
                 paramValues.add(restParseUtils.toObject(types[i], paramValuesStr.get(idx), modelVersion));
             } catch (Exception e) {
                 log.error("Error on parsing service param value", e);
                 throw new RestAPIException("Invalid parameter value",
-                        "Invalid parameter value for " + paramNames.get(i),
+                        "Invalid parameter value for " + paramNames.get(idx),
                         HttpStatus.BAD_REQUEST);
             }
         }
