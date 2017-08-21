@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.components.ListEditor;
 import com.haulmont.cuba.gui.components.listeditor.ListEditorDelegate;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
@@ -146,6 +147,7 @@ public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor
         if (newValue != null && !(newValue instanceof List)) {
             throw new IllegalArgumentException("Value type must be List");
         }
+
         super.setValue(newValue);
         delegate.setValue((List) newValue);
 
@@ -188,6 +190,11 @@ public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor
         @Override
         public Class<List> getType() {
             return List.class;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return super.isEmpty() || CollectionUtils.isEmpty(getValue());
         }
     }
 
