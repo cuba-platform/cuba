@@ -272,7 +272,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 } else {
                     attribute.setObjectDefaultEntityId(null);
                 }
-                ((AbstractDatasource)attributeDs).modified(attribute);
+                ((AbstractDatasource) attributeDs).modified(attribute);
             });
             entityLookupAction = defaultEntityField.addLookupAction();
             defaultEntityField.addClearAction();
@@ -284,6 +284,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             enumerationListEditor = factory.createComponent(ListEditor.class);
             enumerationListEditor.setWidth("100%");
             enumerationListEditor.setItemType(ListEditor.ItemType.STRING);
+            enumerationListEditor.setRequired(true);
+            enumerationListEditor.setRequiredMessage(getMessage("enumRequired"));
             enumerationListEditor.addValueChangeListener(e -> {
                 List<String> value = (List<String>) e.getValue();
                 attribute.setEnumeration(Joiner.on(",").join(value));
