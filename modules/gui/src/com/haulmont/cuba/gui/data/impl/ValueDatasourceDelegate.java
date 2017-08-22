@@ -16,22 +16,27 @@
 
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Enumeration;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.keyvalue.KeyValueMetaClass;
 import com.haulmont.cuba.core.app.keyvalue.KeyValueMetaProperty;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.ValueLoadContext;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class ValueDatasourceDelegate {
 
-    private String storeName;
+    protected String storeName;
 
-    private String idName;
+    protected String idName;
 
     protected CollectionDatasourceImpl ds;
 
@@ -52,19 +57,22 @@ public class ValueDatasourceDelegate {
     }
 
     public void addProperty(String name) {
-        Preconditions.checkNotNullArgument(name, "name is null");
+        checkNotNullArgument(name, "name is null");
+
         ((KeyValueMetaClass) ds.metaClass).addProperty(new KeyValueMetaProperty(ds.metaClass, name, String.class));
     }
 
     public void addProperty(String name, Class type) {
-        Preconditions.checkNotNullArgument(name, "name is null");
-        Preconditions.checkNotNullArgument(name, "type is null");
+        checkNotNullArgument(name, "name is null");
+        checkNotNullArgument(type, "type is null");
+
         ((KeyValueMetaClass) ds.metaClass).addProperty(new KeyValueMetaProperty(ds.metaClass, name, type));
     }
 
     public void addProperty(String name, Datatype datatype) {
-        Preconditions.checkNotNullArgument(name, "name is null");
-        Preconditions.checkNotNullArgument(name, "type is null");
+        checkNotNullArgument(name, "name is null");
+        checkNotNullArgument(datatype, "type is null");
+
         ((KeyValueMetaClass) ds.metaClass).addProperty(new KeyValueMetaProperty(ds.metaClass, name, datatype));
     }
 
@@ -119,10 +127,45 @@ public class ValueDatasourceDelegate {
         ds.detachListener(ds.data.values());
         ds.data.clear();
 
-        for (KeyValueEntity entity : entities) {
-            ds.data.put(entity.getId(), entity);
-            ds.attachListener(entity);
-            entity.setMetaClass(ds.metaClass);
+        boolean hasEnumerations = ds.metaClass.getOwnProperties().stream()
+                .anyMatch(p -> p.getRange().isEnum());
+
+        if (!hasEnumerations) {
+            for (KeyValueEntity entity : entities) {
+                ds.data.put(entity.getId(), entity);
+                ds.attachListener(entity);
+                entity.setMetaClass(ds.metaClass);
+            }
+        } else {
+            List<MetaProperty> enumProperties = getEnumProperties(ds.metaClass);
+
+            for (KeyValueEntity entity : entities) {
+                convertEnumValues(entity, enumProperties);
+
+                ds.data.put(entity.getId(), entity);
+                ds.attachListener(entity);
+                entity.setMetaClass(ds.metaClass);
+            }
+        }
+    }
+
+    protected List<MetaProperty> getEnumProperties(MetaClass metaClass) {
+        return metaClass.getOwnProperties().stream()
+                        .filter(p -> p.getRange().isEnum())
+                        .collect(Collectors.toList());
+    }
+
+    protected void convertEnumValues(KeyValueEntity entity, List<MetaProperty> enumProperties) {
+        try {
+            for (MetaProperty enumProperty : enumProperties) {
+                Object enumValue = entity.getValue(enumProperty.getName());
+                if (enumValue != null) {
+                    Enumeration enumeration = enumProperty.getRange().asEnumeration();
+                    entity.setValue(enumProperty.getName(), enumeration.parse(String.valueOf(enumValue)));
+                }
+            }
+        } catch (ParseException e) {
+            throw new RuntimeException("Unable to convert enum id to enum instance for EnumClass");
         }
     }
 }

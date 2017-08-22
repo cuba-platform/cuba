@@ -19,9 +19,12 @@ package com.haulmont.cuba.core.app.keyvalue;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.chile.core.datatypes.impl.EnumerationImpl;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.impl.ClassRange;
 import com.haulmont.chile.core.model.impl.DatatypeRange;
+import com.haulmont.chile.core.model.impl.EnumerationRange;
 import com.haulmont.chile.core.model.impl.MetadataObjectImpl;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
@@ -57,6 +60,11 @@ public class KeyValueMetaProperty extends MetadataObjectImpl implements MetaProp
         if (Entity.class.isAssignableFrom(javaClass)) {
             range = new ClassRange(metadataSession.getClass(javaClass));
             this.type = Type.ASSOCIATION;
+        } else if (EnumClass.class.isAssignableFrom(javaClass)) {
+            @SuppressWarnings("unchecked")
+            EnumerationImpl enumeration = new EnumerationImpl(javaClass);
+            this.range = new EnumerationRange(enumeration);
+            this.type = Type.ENUM;
         } else {
             this.range = new DatatypeRange(Datatypes.getNN(javaClass));
             this.type = Type.DATATYPE;
