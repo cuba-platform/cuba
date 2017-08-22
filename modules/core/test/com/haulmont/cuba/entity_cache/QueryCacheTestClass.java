@@ -176,7 +176,7 @@ public class QueryCacheTestClass {
         assertEquals(this.group, u.getGroup());
         assertEquals(1, queryCache.size());
 
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         u = getSingleResultUserByLoginPositional(user, null);
@@ -184,7 +184,7 @@ public class QueryCacheTestClass {
         assertEquals(this.group, u.getGroup());
         assertEquals(1, queryCache.size());
 
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.startsWith("> SELECT")).count());
         appender.clearMessages();
 
         u = getSingleResultUserByLoginPositional(user, query -> query.setCacheable(false));
@@ -192,7 +192,7 @@ public class QueryCacheTestClass {
         assertEquals(this.group, u.getGroup());
         assertEquals(1, queryCache.size());
 
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count());
         appender.clearMessages();
 
         u = getSingleResultUserByLoginPositional(user2, null);
@@ -200,7 +200,7 @@ public class QueryCacheTestClass {
         assertEquals(this.group, u.getGroup());
         assertEquals(2, queryCache.size());
 
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         u = getSingleResultUserByLoginPositional(user2, null);
@@ -208,7 +208,7 @@ public class QueryCacheTestClass {
         assertEquals(this.group, u.getGroup());
         assertEquals(2, queryCache.size());
 
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
     }
 
@@ -224,7 +224,7 @@ public class QueryCacheTestClass {
             //It's OK
         }
         assertEquals(1, queryCache.size());
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         try {
@@ -234,7 +234,7 @@ public class QueryCacheTestClass {
             //It's OK
         }
         assertEquals(1, queryCache.size());
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
 
@@ -249,7 +249,7 @@ public class QueryCacheTestClass {
         assertEquals(this.group, u.getGroup());
         assertEquals(1, queryCache.size());
 
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         u = getSingleResultUserByLoginNamed(user, null);
@@ -257,7 +257,7 @@ public class QueryCacheTestClass {
         assertEquals(this.group, u.getGroup());
         assertEquals(1, queryCache.size());
 
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
         appender.clearMessages();
 
         u = getSingleResultUserByLoginNamed(user, query -> query.setCacheable(false));
@@ -265,7 +265,7 @@ public class QueryCacheTestClass {
         assertEquals(this.group, u.getGroup());
         assertEquals(1, queryCache.size());
 
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count());
         appender.clearMessages();
 
         u = getSingleResultUserByLoginNamed(user2, null);
@@ -273,7 +273,7 @@ public class QueryCacheTestClass {
         assertEquals(this.group, u.getGroup());
         assertEquals(2, queryCache.size());
 
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         u = getSingleResultUserByLoginNamed(user2, null);
@@ -281,7 +281,7 @@ public class QueryCacheTestClass {
         assertEquals(this.group, u.getGroup());
         assertEquals(2, queryCache.size());
 
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
     }
 
@@ -297,7 +297,7 @@ public class QueryCacheTestClass {
         assertEquals(this.group, u.getGroup());
         assertEquals(1, queryCache.size());
 
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         u = dataManager_getResultListUserByLoginNamed();
@@ -306,7 +306,7 @@ public class QueryCacheTestClass {
         assertEquals(this.group, u.getGroup());
         assertEquals(1, queryCache.size());
 
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -319,14 +319,14 @@ public class QueryCacheTestClass {
 
         assertNull(u);
         assertEquals(1, queryCache.size());
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         u = this.getResultListUserByLoginNamed(user3, true, null, null);
 
         assertNull(u);
         assertEquals(1, queryCache.size());
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         u = this.getResultListUserByLoginNamed(user3, true, em -> em.setSoftDeletion(false), null);
@@ -336,7 +336,7 @@ public class QueryCacheTestClass {
         assertEquals(this.group, u.getGroup());
         assertEquals(2, queryCache.size());
 
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         u = this.getResultListUserByLoginNamed(user3, true, em -> em.setSoftDeletion(false), null);
@@ -346,7 +346,7 @@ public class QueryCacheTestClass {
         assertEquals(this.group, u.getGroup());
         assertEquals(2, queryCache.size());
 
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
     }
 
@@ -415,7 +415,7 @@ public class QueryCacheTestClass {
             assertEquals(this.group, result.get(1).getGroup());
             tx.commit();
         }
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
         assertEquals(1, queryCache.size());
         try (Transaction tx = cont.persistence().createTransaction()) {
@@ -433,7 +433,7 @@ public class QueryCacheTestClass {
             assertEquals(this.group, result.get(1).getGroup());
             tx.commit();
         }
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         assertEquals(1, queryCache.size());
         appender.clearMessages();
     }
@@ -456,7 +456,7 @@ public class QueryCacheTestClass {
             assertEquals(this.group, result.get(0).getGroup());
             tx.commit();
         }
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
         assertEquals(1, queryCache.size());
 
@@ -474,7 +474,7 @@ public class QueryCacheTestClass {
             assertEquals(this.group, result.get(0).getGroup());
             tx.commit();
         }
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
         assertEquals(1, queryCache.size());
 
@@ -492,7 +492,7 @@ public class QueryCacheTestClass {
             assertEquals(this.group, result.get(0).getGroup());
             tx.commit();
         }
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         assertEquals(2, queryCache.size());
         appender.clearMessages();
 
@@ -510,7 +510,7 @@ public class QueryCacheTestClass {
             assertEquals(this.group, result.get(0).getGroup());
             tx.commit();
         }
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         assertEquals(2, queryCache.size());
 
         appender.clearMessages();
@@ -524,12 +524,12 @@ public class QueryCacheTestClass {
         assertNull(getResultListUserByLoginNamed(user, false, null, null));
 
         assertEquals(1, queryCache.size());
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         assertNull(getResultListUserByLoginNamed(user, false, null, null));
         assertEquals(1, queryCache.size());
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -537,7 +537,7 @@ public class QueryCacheTestClass {
         appender.clearMessages();
 
         User u = getResultListUserByLoginNamed(user, true, null, null);
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
         assertEquals(1, queryCache.size());
 
@@ -551,7 +551,7 @@ public class QueryCacheTestClass {
         appender.clearMessages();
         assertEquals(0, queryCache.size());
         u = getResultListUserByLoginNamed(user, true, null, null);
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -559,7 +559,7 @@ public class QueryCacheTestClass {
         appender.clearMessages();
 
         User u = getResultListUserByLoginNamed(user, true, null, null);
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
         assertEquals(1, queryCache.size());
 
@@ -571,7 +571,7 @@ public class QueryCacheTestClass {
         appender.clearMessages();
         assertEquals(0, queryCache.size());
         u = getResultListUserByLoginNamed(user, true, null, null);
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -580,7 +580,7 @@ public class QueryCacheTestClass {
 
         getResultListUserByRole("TestRole");
 
-        assertEquals(5, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(5, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         assertEquals(1, queryCache.size());
         appender.clearMessages();
 
@@ -594,7 +594,7 @@ public class QueryCacheTestClass {
         getResultListUserByRole("TestRole");
         assertEquals(1, queryCache.size());
 
-        assertEquals(3, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(3, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -657,7 +657,7 @@ public class QueryCacheTestClass {
         List<User> resultList;
         getResultListUserByRole("TestRole");
 
-        assertEquals(5, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(5, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         assertEquals(1, queryCache.size());
         appender.clearMessages();
 
@@ -674,7 +674,7 @@ public class QueryCacheTestClass {
         assertEquals("new position", resultList.get(0).getPosition());
         assertEquals(1, queryCache.size());
 
-        assertEquals(3, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(3, appender.filterMessages(m -> m.contains("> SELECT")).count());
 
         try (Transaction tx = cont.persistence().createTransaction()) {
             Query query = cont.entityManager().createQuery("update sec$Role r set r.description = ?1 where r.name = ?2");
@@ -688,7 +688,7 @@ public class QueryCacheTestClass {
         getResultListUserByRole("TestRole");
         assertEquals(1, queryCache.size());
 
-        assertEquals(4, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(4, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -723,7 +723,7 @@ public class QueryCacheTestClass {
             query.getResultList();
             tx.commit();
         }
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count());
         appender.clearMessages();
         assertEquals(1, queryCache.size());
 
@@ -736,7 +736,7 @@ public class QueryCacheTestClass {
             query.getResultList();
             tx.commit();
         }
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
         appender.clearMessages();
         assertEquals(1, queryCache.size());
     }
@@ -756,7 +756,7 @@ public class QueryCacheTestClass {
             query.getResultList();
             tx.commit();
         }
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count());
         appender.clearMessages();
         assertEquals(1, queryCache.size());
 
@@ -770,7 +770,7 @@ public class QueryCacheTestClass {
             tx.commit();
         }
         assertEquals(1, queryCache.size());
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -786,7 +786,7 @@ public class QueryCacheTestClass {
             query.getResultList();
             tx.commit();
         }
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count());
         appender.clearMessages();
         assertEquals(1, queryCache.size());
 
@@ -800,7 +800,7 @@ public class QueryCacheTestClass {
             tx.commit();
         }
         assertEquals(1, queryCache.size());
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -831,7 +831,7 @@ public class QueryCacheTestClass {
         user = reserialize(resultList.get(1));
         assertNotNull(user.getLogin());
         assertNotNull(user.getName());
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // user
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count()); // user
 
         appender.clearMessages();
 
@@ -852,7 +852,7 @@ public class QueryCacheTestClass {
         user = reserialize(resultList.get(1));
         assertNotNull(user.getLogin());
         assertNotNull(user.getName());
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // user
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // user
 
         appender.clearMessages();
 
@@ -883,7 +883,7 @@ public class QueryCacheTestClass {
         assertNotNull(user.getName());
         assertEquals(user.getGroup(), group);
         assertEquals(user.getGroup().getName(), group.getName());
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT") && m.contains("SEC_GROUP")).count());
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT") && m.contains("SEC_GROUP")).count());
 
         appender.clearMessages();
 
@@ -908,7 +908,7 @@ public class QueryCacheTestClass {
         assertNotNull(user.getName());
         assertEquals(user.getGroup(), group);
         assertEquals(user.getGroup().getName(), group.getName());
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
 
         appender.clearMessages();
 
@@ -931,7 +931,7 @@ public class QueryCacheTestClass {
         assertNotNull(user.getLogin());
         assertNotNull(user.getName());
         assertFail(user::getGroup);
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
 
         appender.clearMessages();
 
@@ -956,7 +956,7 @@ public class QueryCacheTestClass {
         assertNotNull(user.getName());
         assertEquals(user.getGroup(), group);
         assertEquals(user.getGroup().getName(), group.getName());
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -987,7 +987,7 @@ public class QueryCacheTestClass {
         user = reserialize(resultList.get(1));
         assertNotNull(user.getLogin());
         assertNotNull(user.getName());
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // user
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count()); // user
 
         appender.clearMessages();
 
@@ -1008,7 +1008,7 @@ public class QueryCacheTestClass {
         user = reserialize(resultList.get(1));
         assertNotNull(user.getLogin());
         assertNotNull(user.getName());
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // user
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // user
 
         appender.clearMessages();
 
@@ -1039,7 +1039,7 @@ public class QueryCacheTestClass {
         assertNotNull(user.getName());
         assertEquals(user.getGroup(), group);
         assertEquals(user.getGroup().getName(), group.getName());
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT") && m.contains("SEC_GROUP")).count());
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT") && m.contains("SEC_GROUP")).count());
 
         appender.clearMessages();
 
@@ -1064,7 +1064,7 @@ public class QueryCacheTestClass {
         assertNotNull(user.getName());
         assertEquals(user.getGroup(), group);
         assertEquals(user.getGroup().getName(), group.getName());
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
 
         appender.clearMessages();
 
@@ -1087,7 +1087,7 @@ public class QueryCacheTestClass {
         assertNotNull(user.getLogin());
         assertNotNull(user.getName());
         assertFail(user::getGroup);
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
 
         appender.clearMessages();
 
@@ -1112,7 +1112,7 @@ public class QueryCacheTestClass {
         assertNotNull(user.getName());
         assertEquals(user.getGroup(), group);
         assertEquals(user.getGroup().getName(), group.getName());
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
 

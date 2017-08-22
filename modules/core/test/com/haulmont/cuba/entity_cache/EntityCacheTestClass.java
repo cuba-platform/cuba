@@ -148,12 +148,12 @@ public class EntityCacheTestClass {
 
         loadUserAlone();
 
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count());
         appender.clearMessages();
 
         loadUserAlone();
 
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -173,7 +173,7 @@ public class EntityCacheTestClass {
         assertEquals(this.user.getLogin(), u.getLogin());
         assertEquals(this.group, u.getGroup());
 
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         try (Transaction tx = cont.persistence().createTransaction()) {
@@ -187,7 +187,7 @@ public class EntityCacheTestClass {
         assertEquals(this.user.getLogin(), u.getLogin());
         assertEquals(this.group, u.getGroup());
 
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -204,7 +204,7 @@ public class EntityCacheTestClass {
         user = reserialize(user);
         assertNotNull(user.getGroup());
 
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // user, group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // user, group
         appender.clearMessages();
 
         try (Transaction tx = cont.persistence().createTransaction()) {
@@ -219,7 +219,7 @@ public class EntityCacheTestClass {
         assertNotNull(g.getName());
         assertFail(g::getParent);
 
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -233,7 +233,7 @@ public class EntityCacheTestClass {
         }
         checkUser(u);
 
-        assertEquals(5, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group, UserRoles, Role, UserSubstitution
+        assertEquals(5, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group, UserRoles, Role, UserSubstitution
         appender.clearMessages();
 
         try (Transaction tx = cont.persistence().createTransaction()) {
@@ -242,7 +242,7 @@ public class EntityCacheTestClass {
         }
         checkUser(u);
 
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // 1 because UserSubstitution is not cached
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count()); // 1 because UserSubstitution is not cached
     }
 
     private void checkUser(User u) throws Exception {
@@ -290,7 +290,7 @@ public class EntityCacheTestClass {
         assertEquals(this.group, g);
         assertNotNull(g.getName()); // due to caching, we load all attributes anyway
 
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // user, group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // user, group
         appender.clearMessages();
 
         // second time - from cache
@@ -305,7 +305,7 @@ public class EntityCacheTestClass {
         assertEquals(this.group, g);
         assertNotNull(g.getName());
 
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // user, group
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // user, group
         appender.clearMessages();
 
         // name in group - from cache again
@@ -327,7 +327,7 @@ public class EntityCacheTestClass {
         assertEquals(this.group, g);
         assertNotNull(g.getName());
 
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // user, group
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // user, group
         appender.clearMessages();
     }
 
@@ -336,11 +336,11 @@ public class EntityCacheTestClass {
         appender.clearMessages();
 
         loadUser();
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         loadUser();
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
         appender.clearMessages();
 
         User newUser = cont.metadata().create(User.class);
@@ -352,7 +352,7 @@ public class EntityCacheTestClass {
         }
 
         loadUser();
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // inserting new entities does not affect existing in cache
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // inserting new entities does not affect existing in cache
 
         cont.deleteRecord(newUser);
     }
@@ -362,11 +362,11 @@ public class EntityCacheTestClass {
         appender.clearMessages();
 
         loadUser();
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         loadUser();
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
         appender.clearMessages();
 
 
@@ -378,11 +378,11 @@ public class EntityCacheTestClass {
 
         User u = loadUser();
         assertEquals("new name", u.getName());
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // no DB requests - the User has been updated in cache
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // no DB requests - the User has been updated in cache
         appender.clearMessages();
 
         loadUser();
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -390,27 +390,27 @@ public class EntityCacheTestClass {
         appender.clearMessages();
 
         loadUser();
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         loadUser();
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
         appender.clearMessages();
 
         DataManager dataManager = AppBeans.get(DataManager.class);
         User u = dataManager.load(LoadContext.create(User.class).setId(this.user.getId()).setView("user.browse"));
         u.setName("new name");
         dataManager.commit(u);
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // no DB requests - the User has been updated in cache
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // no DB requests - the User has been updated in cache
         appender.clearMessages();
 
         u = loadUser();
         assertEquals("new name", u.getName());
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // no DB requests - the User has been updated in cache
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count()); // no DB requests - the User has been updated in cache
         appender.clearMessages();
 
         loadUser();
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -418,11 +418,11 @@ public class EntityCacheTestClass {
         appender.clearMessages();
 
         loadUserWithRoles();
-        assertEquals(4, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group, UserRoles, Role
+        assertEquals(4, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group, UserRoles, Role
         appender.clearMessages();
 
         loadUserWithRoles();
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
         appender.clearMessages();
 
         Role newRole;
@@ -449,7 +449,7 @@ public class EntityCacheTestClass {
                 .map(UserRole::getRole)
                 .anyMatch(r -> r.getName().equals("new role")));
 
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, UserRoles
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, UserRoles
 
         cont.deleteRecord(newUserRole, newRole);
     }
@@ -459,11 +459,11 @@ public class EntityCacheTestClass {
         appender.clearMessages();
 
         loadUserWithRoles();
-        assertEquals(4, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group, UserRoles, Role
+        assertEquals(4, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group, UserRoles, Role
         appender.clearMessages();
 
         loadUserWithRoles();
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
         appender.clearMessages();
 
         try (Transaction tx = cont.persistence().createTransaction()) {
@@ -476,7 +476,7 @@ public class EntityCacheTestClass {
         User u = loadUserWithRoles();
         assertEquals(0, u.getUserRoles().size());
 
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, UserRoles
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, UserRoles
     }
 
     @Test
@@ -484,11 +484,11 @@ public class EntityCacheTestClass {
         appender.clearMessages();
 
         loadUserWithRoles();
-        assertEquals(4, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group, UserRoles, Role
+        assertEquals(4, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group, UserRoles, Role
         appender.clearMessages();
 
         loadUserWithRoles();
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
         appender.clearMessages();
 
         try (Transaction tx = cont.persistence().createTransaction()) {
@@ -505,7 +505,7 @@ public class EntityCacheTestClass {
         User u = loadUserWithRoles();
         assertEquals(0, u.getUserRoles().size());
 
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, UserRoles
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, UserRoles
     }
 
     @Test
@@ -513,11 +513,11 @@ public class EntityCacheTestClass {
         appender.clearMessages();
 
         loadUserWithRoles();
-        assertEquals(4, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group, UserRoles, Role
+        assertEquals(4, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group, UserRoles, Role
         appender.clearMessages();
 
         loadUserWithRoles();
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
         appender.clearMessages();
 
         try (Transaction tx = cont.persistence().createTransaction()) {
@@ -536,7 +536,7 @@ public class EntityCacheTestClass {
         User u = loadUserWithRoles();
         assertTrue(u.getUserRoles().get(0).getRole().getName().equals("new role"));
 
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -544,11 +544,11 @@ public class EntityCacheTestClass {
         appender.clearMessages();
 
         loadUserSetting();
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // UserSetting, User
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // UserSetting, User
         appender.clearMessages();
 
         loadUserSetting();
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
         appender.clearMessages();
 
         User u;
@@ -565,7 +565,7 @@ public class EntityCacheTestClass {
 
         us = loadUserSetting();
         assertTrue(us.getUser().isDeleted());
-        assertEquals(0, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -585,7 +585,7 @@ public class EntityCacheTestClass {
             tx.commit();
         }
         assertNull(u);
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count());
 
         appender.clearMessages();
         // loading second time - select again because the previous query returned nothing
@@ -594,7 +594,7 @@ public class EntityCacheTestClass {
             tx.commit();
         }
         assertNull(u);
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
     @Test
@@ -614,7 +614,7 @@ public class EntityCacheTestClass {
             tx.commit();
         }
         assertNotNull(u);
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count());
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count());
 
         appender.clearMessages();
         try (Transaction tx = cont.persistence().createTransaction()) {
@@ -646,7 +646,7 @@ public class EntityCacheTestClass {
         assertEquals(this.user2.getLogin(), u2.getLogin());
         assertEquals(this.group, u2.getGroup());
 
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         try (Transaction tx = cont.persistence().createTransaction()) {
@@ -664,7 +664,7 @@ public class EntityCacheTestClass {
         assertEquals(this.user2.getLogin(), u2.getLogin());
         assertEquals(this.group, u2.getGroup());
 
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User only
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User only
     }
 
     private User loadUser() throws Exception {
@@ -736,7 +736,7 @@ public class EntityCacheTestClass {
 
         loadUser();
 
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         try (Transaction tx = cont.persistence().createTransaction()) {
@@ -751,7 +751,7 @@ public class EntityCacheTestClass {
         User u = loadUser();
         assertEquals("new position", u.getPosition());
 
-        assertEquals(1, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // Group
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count()); // Group
     }
 
     @Test
@@ -760,7 +760,7 @@ public class EntityCacheTestClass {
 
         loadUser();
 
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User, Group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, Group
         appender.clearMessages();
 
         try (Transaction tx = cont.persistence().createTransaction()) {
@@ -784,7 +784,7 @@ public class EntityCacheTestClass {
         assertNotNull(g.getName());
         assertEquals("new position", u.getPosition());
 
-        assertEquals(2, appender.filterMessages(m -> m.startsWith("SELECT")).count()); // User,Group
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User,Group
     }
 
     private void loadUserAlone() {
