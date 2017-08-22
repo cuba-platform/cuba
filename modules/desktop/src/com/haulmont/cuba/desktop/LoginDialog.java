@@ -24,6 +24,7 @@ import com.haulmont.cuba.desktop.sys.LoginProperties;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -250,11 +251,7 @@ public class LoginDialog extends JDialog {
         Locale appLocale;
         String lastLocale = this.loginProperties.loadLastLocale();
         if (StringUtils.isNotEmpty(lastLocale)) {
-            String[] locParts = lastLocale.split("_");
-            if (locParts.length == 1)
-                appLocale = new Locale(locParts[0]);
-            else
-                appLocale = new Locale(locParts[0], locParts[1]);
+            appLocale = LocaleUtils.toLocale(lastLocale);
         } else {
             appLocale = Locale.getDefault();
         }

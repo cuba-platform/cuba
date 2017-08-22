@@ -32,6 +32,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.TrustedLoginHandler;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,7 +142,7 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
 
             Locale userLocale = locale;
             if (user.getLanguage() != null && !globalConfig.getLocaleSelectVisible()) {
-                userLocale = new Locale(user.getLanguage());
+                userLocale = LocaleUtils.toLocale(user.getLanguage());
             }
 
             UserSession session = userSessionManager.createSession(user, userLocale, false);
@@ -297,7 +298,7 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
             Locale userLocale = locale;
             if (user.getLanguage() != null &&
                     BooleanUtils.isFalse(globalConfig.getLocaleSelectVisible())) {
-                userLocale = new Locale(user.getLanguage());
+                userLocale = LocaleUtils.toLocale(user.getLanguage());
             }
             UserSession session = userSessionManager.createSession(user, userLocale, false);
             checkPermissions(login, params, userLocale, session);
@@ -339,7 +340,7 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
             Locale userLocale = locale;
             if (user.getLanguage() != null &&
                     BooleanUtils.isFalse(globalConfig.getLocaleSelectVisible())) {
-                userLocale = new Locale(user.getLanguage());
+                userLocale = LocaleUtils.toLocale(user.getLanguage());
             }
             UserSession session = userSessionManager.createSession(user, userLocale, false);
             checkPermissions(login, params, userLocale, session);
@@ -459,7 +460,7 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
             Locale userLocale = locale;
             if (user.getLanguage() != null &&
                     BooleanUtils.isFalse(globalConfig.getLocaleSelectVisible())) {
-                userLocale = new Locale(user.getLanguage());
+                userLocale = LocaleUtils.toLocale(user.getLanguage());
             }
 
             UserSession session = userSessionManager.createSession(user, userLocale, false);
