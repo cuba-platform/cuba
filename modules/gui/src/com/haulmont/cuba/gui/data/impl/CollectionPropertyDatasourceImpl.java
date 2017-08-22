@@ -101,6 +101,11 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 }
             }
 
+            if (item != null) {
+                T prevItem = item;
+                item = null;
+                fireItemChanged(prevItem);
+            }
             fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
         });
 
