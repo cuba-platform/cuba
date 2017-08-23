@@ -42,6 +42,8 @@ public enum ClientType {
             return WEB;
         } else if ("D".equals(id)) {
             return DESKTOP;
+        } else if ("P".equals(id)) {
+            return PORTAL;
         } else {
             return null;
         }
