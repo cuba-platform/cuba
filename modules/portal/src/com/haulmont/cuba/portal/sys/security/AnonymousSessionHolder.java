@@ -17,9 +17,10 @@
 
 package com.haulmont.cuba.portal.sys.security;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.portal.config.PortalConfig;
@@ -28,6 +29,7 @@ import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
+import com.haulmont.cuba.security.global.SessionParams;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -35,8 +37,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.Locale;
 import java.util.Objects;
 
 @Component("cuba_PortalAnonymousSessionHolder")
@@ -56,7 +56,10 @@ public class AnonymousSessionHolder {
     @Inject
     protected UserSessionService userSessionService;
 
-    private volatile UserSession anonymousSession;
+    @Inject
+    protected MessageTools messagesTools;
+
+    protected volatile UserSession anonymousSession;
 
     public UserSession getSession() {
         boolean justLoggedIn = false;
@@ -74,29 +77,29 @@ public class AnonymousSessionHolder {
         return anonymousSession;
     }
 
-    private UserSession loginAsAnonymous() {
+    protected UserSession loginAsAnonymous() {
         String login = portalConfig.getAnonymousUserLogin();
         String password = portalConfig.getTrustedClientPassword();
 
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
-        Collection<Locale> locales = globalConfig.getAvailableLocales().values();
-
-        Locale defaultLocale = locales.iterator().next();
         UserSession userSession;
         try {
-            userSession = loginService.loginTrusted(login, password, defaultLocale);
-            // Set client info on middleware
-            AppContext.setSecurityContext(new SecurityContext(userSession));
-
             String portalLocationString = getPortalNetworkLocation();
             String portalClientInfo = "Portal Anonymous Session";
             if (StringUtils.isNotBlank(portalLocationString)) {
                 portalClientInfo += " (" + portalLocationString + ")";
             }
 
-            userSessionService.setSessionClientInfo(userSession.getId(), portalClientInfo);
-            AppContext.setSecurityContext(null);
+            userSession = loginService.loginTrusted(login, password, messagesTools.getDefaultLocale(),
+                    ParamsMap.of(
+                            ClientType.class.getName(), AppContext.getProperty("cuba.clientType"),
+                            SessionParams.CLIENT_INFO.getId(), portalClientInfo
+                    ));
+
+            String finalPortalClientInfo = portalClientInfo;
+            AppContext.withSecurityContext(new SecurityContext(userSession), () ->
+                    // Set client info on middleware
+                    userSessionService.setSessionClientInfo(userSession.getId(), finalPortalClientInfo)
+            );
         } catch (LoginException e) {
             throw new NoMiddlewareConnectionException("Unable to login as anonymous portal user", e);
         } catch (Exception e) {
@@ -105,10 +108,10 @@ public class AnonymousSessionHolder {
         return userSession;
     }
 
-    private String getPortalNetworkLocation() {
+    protected String getPortalNetworkLocation() {
         return globalConfig.getWebHostName() + ":" +
-               globalConfig.getWebPort() + "/" +
-               globalConfig.getWebContextName();
+                globalConfig.getWebPort() + "/" +
+                globalConfig.getWebContextName();
     }
 
     /**
@@ -123,20 +126,21 @@ public class AnonymousSessionHolder {
         }
     }
 
-    private void pingSession(UserSession userSession) {
-        AppContext.setSecurityContext(new SecurityContext(userSession));
-        UserSession savedSession = anonymousSession;
-        try {
-            userSessionService.getMessages();
-        } catch (NoUserSessionException e) {
-            log.warn("Anonymous session has been lost, restoring it");
-            synchronized (this) {
-                if (Objects.equals(savedSession, anonymousSession)) {
-                    // auto restore anonymous session
-                    anonymousSession = loginAsAnonymous();
+    protected void pingSession(UserSession userSession) {
+        AppContext.withSecurityContext(new SecurityContext(userSession), () -> {
+            UserSession savedSession = anonymousSession;
+            try {
+                userSessionService.getMessages();
+            } catch (NoUserSessionException e) {
+                log.warn("Anonymous session has been lost, restoring it");
+
+                synchronized (this) {
+                    if (Objects.equals(savedSession, anonymousSession)) {
+                        // auto restore anonymous session
+                        anonymousSession = loginAsAnonymous();
+                    }
                 }
             }
-        }
-        AppContext.setSecurityContext(null);
+        });
     }
 }

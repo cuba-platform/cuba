@@ -303,6 +303,8 @@ public class LoginWorkerBean implements LoginWorker, AppContext.Listener, Ordere
             UserSession session = userSessionManager.createSession(user, userLocale, false);
             checkPermissions(login, params, userLocale, session);
 
+            setSessionParams(session, params);
+
             log.info("Logged in: {}", session);
 
             tx.commit();
