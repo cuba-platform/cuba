@@ -16,10 +16,12 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.verticalmenu;
 
+import com.vaadin.shared.annotations.Delayed;
 import com.vaadin.shared.communication.ServerRpc;
 
 public interface CubaSideMenuServerRpc extends ServerRpc {
     void menuItemTriggered(String itemId);
 
+    @Delayed
     void headerItemExpandChanged(String itemId, boolean expanded);
 }
