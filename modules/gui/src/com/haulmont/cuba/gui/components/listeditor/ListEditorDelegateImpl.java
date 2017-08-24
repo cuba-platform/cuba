@@ -261,11 +261,17 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
 
     @Override
     public void setClearButtonVisible(boolean visible) {
-        if (visible) {
+        if (visible && (layout.indexOf(clearBtn) == -1)) {
             addClearBtn();
-        } else {
+        }
+        if (!visible && (clearBtn != null)) {
             layout.remove(clearBtn);
         }
+    }
+
+    @Override
+    public boolean isClearButtonVisible() {
+        return layout.indexOf(clearBtn) != -1;
     }
 
     @Override

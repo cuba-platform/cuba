@@ -74,6 +74,8 @@ public interface ListEditor extends Field, Component.Focusable {
 
     void setClearButtonVisible(boolean visible);
 
+    boolean isClearButtonVisible();
+
     enum ItemType {
         STRING,
         DATE,

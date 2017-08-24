@@ -125,6 +125,11 @@ public class DesktopListEditor extends DesktopAbstractField<JPanel> implements L
     }
 
     @Override
+    public boolean isClearButtonVisible() {
+        return delegate.isClearButtonVisible();
+    }
+
+    @Override
     public String getEntityJoinClause() {
         return delegate.getEntityJoinClause();
     }

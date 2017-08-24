@@ -71,4 +71,5 @@ public interface ListEditorDelegate {
     void setEditable(boolean editable);
 
     void setClearButtonVisible(boolean visible);
+    boolean isClearButtonVisible();
 }
