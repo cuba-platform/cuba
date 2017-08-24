@@ -471,7 +471,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
 
     @Override
     public List<Column> getColumns() {
-        return columnsOrder;
+        return Collections.unmodifiableList(columnsOrder);
     }
 
     @Override

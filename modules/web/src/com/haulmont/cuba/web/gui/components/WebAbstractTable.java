@@ -154,7 +154,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public java.util.List<Table.Column> getColumns() {
-        return columnsOrder;
+        return Collections.unmodifiableList(columnsOrder);
     }
 
     @Override
