@@ -32,6 +32,7 @@ import static java.lang.String.format;
  */
 public class SerializationSupport {
     private final static Serialization serialization;
+    private final static KryoSerialization kryoSerialization = new KryoSerialization();
 
     static {
         String serializationClassStr = AppContext.getProperty("cuba.serialization.impl");
@@ -62,5 +63,9 @@ public class SerializationSupport {
 
     public static Object deserialize(byte[] bytes) {
         return serialization.deserialize(bytes);
+    }
+
+    public static KryoSerialization getKryoSerialization() {
+        return kryoSerialization;
     }
 }

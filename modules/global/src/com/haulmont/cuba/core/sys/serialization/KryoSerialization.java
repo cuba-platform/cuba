@@ -166,6 +166,13 @@ public class KryoSerialization implements Serialization {
         return deserialize(new ByteArrayInputStream(bytes));
     }
 
+    public Object copy(Object object) {
+        if (object == null) {
+            return null;
+        }
+        return kryos.get().copy(object);
+    }
+
     public static class IndirectContainerSerializer extends CollectionSerializer {
         @Override
         public void write(Kryo kryo, Output output, Collection collection) {
