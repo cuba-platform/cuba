@@ -39,6 +39,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -227,8 +228,10 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
                             } finally {
                                 target.requestFocus();
                                 try {
+                                    Set<Entity> filtered = new HashSet<>(selected);
+                                    filtered.retainAll(target.getDatasource().getItems());
                                     //noinspection unchecked
-                                    target.setSelected(selected);
+                                    target.setSelected(filtered);
                                 } catch (Exception e) {
                                     LoggerFactory.getLogger(RemoveAction.class)
                                             .debug("Error after remove action", e);
