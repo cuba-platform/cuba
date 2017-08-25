@@ -43,9 +43,9 @@
             </column>
         </fieldGroup>
         <label id="cannotEditValueLabel" value="msg://cannotEditValue" visible="false" width="100%"/>
-        <hbox spacing="true" align="BOTTOM_RIGHT">
-            <button caption="mainMsg://actions.Ok" action="okAction"/>
-            <button caption="mainMsg://actions.Cancel" action="cancelAction"/>
+        <hbox spacing="true" align="BOTTOM_LEFT">
+            <button caption="mainMsg://actions.Ok" action="okAction" icon="theme://actions.Editor.Ok.icon"/>
+            <button caption="mainMsg://actions.Cancel" action="cancelAction" icon="theme://actions.Editor.Cancel.icon"/>
         </hbox>
     </layout>
 </window>
