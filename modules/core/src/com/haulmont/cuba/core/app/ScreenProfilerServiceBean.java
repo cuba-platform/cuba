@@ -102,6 +102,15 @@ public class ScreenProfilerServiceBean implements ScreenProfilerService {
         return enabled;
     }
 
+    public long getTimeThreshold() {
+        return timeThreshold;
+    }
+
+    public Set<UUID> getUserIds() {
+        Set<UUID> localUserIds = userIds;
+        return new HashSet<>(localUserIds);
+    }
+
     @Override
     public boolean isProfilingEnabledForUser(UUID userId) {
         if (isProfilingEnabled()) {

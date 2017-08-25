@@ -30,6 +30,10 @@ public interface ScreenProfilerService {
 
     boolean isProfilingEnabledForUser(UUID userId);
 
+    long getTimeThreshold();
+
+    Set<UUID> getUserIds();
+
     void enableProfiling(Set<UUID> userIds, long timeThreshold);
 
     void disableProfiling();
