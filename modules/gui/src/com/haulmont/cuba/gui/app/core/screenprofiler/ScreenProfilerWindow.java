@@ -20,7 +20,6 @@ import com.haulmont.cuba.core.app.ScreenProfilerService;
 import com.haulmont.cuba.core.entity.ScreenProfilerEvent;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.User;
 
 import javax.inject.Inject;
@@ -97,14 +96,12 @@ public class ScreenProfilerWindow extends AbstractWindow {
             Set<UUID> userIds = screenProfilerService.getUserIds();
             if (userIds != null && !userIds.isEmpty()) {
                 allUsersDs.refresh();
-                if (allUsersDs.getState() == Datasource.State.VALID) {
-                    userIds.forEach(id -> {
-                        User user = allUsersDs.getItem(id);
-                        if (user != null) {
-                            usersDs.addItem(user);
-                        }
-                    });
-                }
+                userIds.forEach(id -> {
+                    User user = allUsersDs.getItem(id);
+                    if (user != null) {
+                        usersDs.addItem(user);
+                    }
+                });
             }
         }
     }
