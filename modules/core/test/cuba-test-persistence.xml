@@ -57,5 +57,7 @@
         <class>com.haulmont.cuba.testmodel.fetchjoin.Party</class>
         <class>com.haulmont.cuba.testmodel.fetchjoin.Product</class>
         <class>com.haulmont.cuba.testmodel.fetchjoin.SalesPerson</class>
+
+        <class>com.haulmont.cuba.testmodel.checkview.UserRelatedNews</class>
     </persistence-unit>
 </persistence>

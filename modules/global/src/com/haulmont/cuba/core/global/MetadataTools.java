@@ -18,7 +18,6 @@
 package com.haulmont.cuba.core.global;
 
 import com.google.common.collect.ImmutableList;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
@@ -212,8 +211,8 @@ public class MetadataTools {
      * @return true if the first MetaClass is equal or an ancestor of the second.
      */
     public boolean isAssignableFrom(MetaClass metaClass, MetaClass other) {
-        Preconditions.checkNotNullArgument(metaClass);
-        Preconditions.checkNotNullArgument(other);
+        checkNotNullArgument(metaClass);
+        checkNotNullArgument(other);
         return metaClass.equals(other) || metaClass.getDescendants().contains(other);
     }
 
@@ -319,7 +318,7 @@ public class MetadataTools {
      * Determine whether the given property is on the owning side of an association.
      */
     public boolean isOwningSide(MetaProperty metaProperty) {
-        Preconditions.checkNotNullArgument(metaProperty, "metaProperty is null");
+        checkNotNullArgument(metaProperty, "metaProperty is null");
         if (!metaProperty.getRange().isClass())
             return false;
 
@@ -673,7 +672,7 @@ public class MetadataTools {
      * or empty list
      */
     public List<String> getRelatedProperties(Class<?> entityClass, String property) {
-        Preconditions.checkNotNullArgument(entityClass, "entityClass is null");
+        checkNotNullArgument(entityClass, "entityClass is null");
 
         MetaClass metaClass = metadata.getClassNN(entityClass);
         return getRelatedProperties(metaClass.getPropertyNN(property));
@@ -684,12 +683,12 @@ public class MetadataTools {
      * or empty list
      */
     public List<String> getRelatedProperties(MetaProperty metaProperty) {
-        Preconditions.checkNotNullArgument(metaProperty, "metaProperty is null");
+        checkNotNullArgument(metaProperty, "metaProperty is null");
 
-        List<String> result = new ArrayList<>();
         String relatedProperties = (String) metaProperty.getAnnotations().get("relatedProperties");
+        List<String> result = Collections.emptyList();
         if (relatedProperties != null) {
-            result.addAll(Arrays.asList(relatedProperties.split(",")));
+            result = Arrays.asList(relatedProperties.split(","));
         }
         return result;
     }
@@ -705,7 +704,7 @@ public class MetadataTools {
      */
     @Nullable
     public String getCrossDataStoreReferenceIdProperty(String thisStore, MetaProperty metaProperty) {
-        Preconditions.checkNotNullArgument(metaProperty, "metaProperty is null");
+        checkNotNullArgument(metaProperty, "metaProperty is null");
         if (!metaProperty.getRange().isClass())
             return null;
 
@@ -729,7 +728,7 @@ public class MetadataTools {
      */
     @Nullable
     public MetaPropertyPath resolveMetaPropertyPath(MetaClass metaClass, String propertyPath) {
-        Preconditions.checkNotNullArgument(metaClass, "metaClass is null");
+        checkNotNullArgument(metaClass, "metaClass is null");
 
         MetaPropertyPath metaPropertyPath = metaClass.getPropertyPath(propertyPath);
         if (metaPropertyPath == null && DynamicAttributesUtils.isDynamicAttribute(propertyPath)) {
@@ -749,7 +748,7 @@ public class MetadataTools {
     public MetaPropertyPath resolveMetaPropertyPathNN(MetaClass metaClass, String propertyPath) {
         MetaPropertyPath metaPropertyPath = resolveMetaPropertyPath(metaClass, propertyPath);
 
-        Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", propertyPath, metaClass);
+        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", propertyPath, metaClass);
 
         return metaPropertyPath;
     }
@@ -762,8 +761,8 @@ public class MetadataTools {
      * @param visitor the attribute visitor implementation
      */
     public void traverseAttributes(Entity entity, EntityAttributeVisitor visitor) {
-        Preconditions.checkNotNullArgument(entity, "entity is null");
-        Preconditions.checkNotNullArgument(visitor, "visitor is null");
+        checkNotNullArgument(entity, "entity is null");
+        checkNotNullArgument(visitor, "visitor is null");
 
         internalTraverseAttributes(entity, visitor, new HashSet<>());
     }
@@ -777,9 +776,9 @@ public class MetadataTools {
      * @param visitor the attribute visitor implementation
      */
     public void traverseAttributesByView(View view, Entity entity, EntityAttributeVisitor visitor) {
-        Preconditions.checkNotNullArgument(view, "view is null");
-        Preconditions.checkNotNullArgument(entity, "entity is null");
-        Preconditions.checkNotNullArgument(visitor, "visitor is null");
+        checkNotNullArgument(view, "view is null");
+        checkNotNullArgument(entity, "entity is null");
+        checkNotNullArgument(visitor, "visitor is null");
 
         internalTraverseAttributesByView(view, entity, visitor, new HashMap<>());
     }

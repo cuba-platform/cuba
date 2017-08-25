@@ -505,3 +505,23 @@ alter table JOINTEST_ORDER_LINE add constraint FK_JOINTEST_ORDER_LINE_PRODUCT fo
 alter table JOINTEST_ORDER_LINE add constraint FK_JOINTEST_ORDER_LINE_ORDER foreign key (ORDER_ID) references JOINTEST_ORDER(ID)^
 alter table JOINTEST_ORDER add constraint FK_JOINTEST_ORDER_CUSTOMER foreign key (CUSTOMER_ID) references JOINTEST_CUSTOMER(ID)^
 alter table JOINTEST_ORDER add constraint FK_JOINTEST_ORDER_SALES_PERSON foreign key (SALES_PERSON_ID) references JOINTEST_SALES_PERSON(ID)^
+
+create table TEST_USER_RELATED_NEWS (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    USER_ID varchar(36),
+    PARENT_ID varchar(36),
+    --
+    primary key (ID),
+    constraint TEST_USER_RELATED_NEWS_USER foreign key (USER_ID) references SEC_USER(ID)
+)^
+
+alter table TEST_USER_RELATED_NEWS add constraint TEST_USER_RELATED_NEWS_PARENT foreign key (PARENT_ID) references TEST_USER_RELATED_NEWS(ID)^

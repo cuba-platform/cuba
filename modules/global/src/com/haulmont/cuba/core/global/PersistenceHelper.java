@@ -17,6 +17,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.Entity;
 
 /**
  * Utility class providing information about entity states.
@@ -87,6 +88,23 @@ public class PersistenceHelper {
             entityStates.checkLoaded(entity, properties);
         } else {
             _entityStates.checkLoaded(entity, properties);
+        }
+    }
+
+    /**
+     * Check that all properties of the view are loaded from DB for the passed entity.
+     * Throws exception if some property is not loaded.
+     *
+     * @param entity   entity
+     * @param viewName view name
+     * @throws IllegalArgumentException if at least one of properties is not loaded
+     */
+    public static void checkLoadedView(Entity entity, String viewName) {
+        EntityStates entityStates = AppBeans.get(EntityStates.class);
+        if (entityStates != null) {
+            entityStates.checkLoadedView(entity, viewName);
+        } else {
+            _entityStates.checkLoadedView(entity, viewName);
         }
     }
 
