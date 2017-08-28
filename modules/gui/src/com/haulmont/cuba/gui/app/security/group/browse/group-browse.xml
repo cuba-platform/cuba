@@ -20,7 +20,9 @@
         class="com.haulmont.cuba.gui.app.security.group.browse.GroupBrowser"
         caption="msg://browser.caption"
         focusComponent="groupsTree">
-
+    <companions>
+        <web class="com.haulmont.cuba.web.app.accessgroup.AccessGroupCompanion"/>
+    </companions>
     <dsContext>
         <hierarchicalDatasource
                 id="groupsDs"
