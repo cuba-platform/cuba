@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core.sys.validation;
 
+import com.haulmont.cuba.core.global.EntityStates;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import org.hibernate.validator.internal.engine.resolver.DefaultTraversableResolver;
@@ -30,9 +31,11 @@ public class CubaValidationTraversableResolver extends DefaultTraversableResolve
     private final Logger log = LoggerFactory.getLogger(CubaValidationTraversableResolver.class);
 
     protected Metadata metadata;
+    protected EntityStates entityStates;
 
-    public CubaValidationTraversableResolver(Metadata metadata) {
+    public CubaValidationTraversableResolver(Metadata metadata, EntityStates entityStates) {
         this.metadata = metadata;
+        this.entityStates = entityStates;
     }
 
     @Override
@@ -48,6 +51,6 @@ public class CubaValidationTraversableResolver extends DefaultTraversableResolve
             return true;
         }
 
-        return PersistenceHelper.isLoaded(traversableObject, traversableProperty.getName());
+        return entityStates.isLoaded(traversableObject, traversableProperty.getName());
     }
 }

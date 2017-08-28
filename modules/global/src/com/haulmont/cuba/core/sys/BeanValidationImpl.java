@@ -49,6 +49,9 @@ public class BeanValidationImpl implements BeanValidation {
     @Inject
     protected UserSessionSource userSessionSource;
 
+    @Inject
+    protected EntityStates entityStates;
+
     protected ConcurrentHashMap<Locale, ValidatorFactory> validatorFactoriesCache = new ConcurrentHashMap<>();
 
     @Override
@@ -113,7 +116,7 @@ public class BeanValidationImpl implements BeanValidation {
         HibernateValidatorConfiguration configuration = Validation.byProvider(HibernateValidator.class)
                 .configure()
                 .timeProvider(new CubaValidationTimeProvider(timeSource))
-                .traversableResolver(new CubaValidationTraversableResolver(metadata))
+                .traversableResolver(new CubaValidationTraversableResolver(metadata, entityStates))
                 .messageInterpolator(new CubaValidationMessagesInterpolator(messages, locale));
 
         return configuration;
