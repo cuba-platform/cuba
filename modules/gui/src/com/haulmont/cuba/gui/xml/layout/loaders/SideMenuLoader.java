@@ -48,7 +48,10 @@ public class SideMenuLoader extends AbstractComponentLoader<SideMenu> {
 
         loadSidePanel(resultComponent, element);
         loadSidePanelToggleButton(resultComponent, element);
+
+        loadCollapsibleSubMenu(resultComponent, element);
     }
+
     protected void loadMenuConfigIfNeeded(SideMenu component, Element element) {
         String loadMenuConfig = element.attributeValue("loadMenuConfig");
         if (StringUtils.isEmpty(loadMenuConfig) || Boolean.parseBoolean(loadMenuConfig)) {
@@ -84,6 +87,13 @@ public class SideMenuLoader extends AbstractComponentLoader<SideMenu> {
                         context.getFullFrameId(), "sidePanelToggleButton", toggleButtonId);
             }
             component.setSidePanelToggleButton((Button) toggleButton);
+        }
+    }
+
+    protected void loadCollapsibleSubMenu(SideMenu component, Element element) {
+        String singleExpandedMenu = element.attributeValue("showSingleExpandedMenu");
+        if (StringUtils.isNotEmpty(singleExpandedMenu)) {
+            component.setShowSingleExpandedMenu(Boolean.parseBoolean(singleExpandedMenu));
         }
     }
 }

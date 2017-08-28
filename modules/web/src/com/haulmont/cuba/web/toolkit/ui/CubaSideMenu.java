@@ -173,6 +173,16 @@ public class CubaSideMenu extends AbstractComponent implements Component.Focusab
         }
     }
 
+    public void setShowSingleExpandedMenu(boolean singleExpandedMenu) {
+        if (getState(false).singleExpandedMenu != singleExpandedMenu) {
+            getState().singleExpandedMenu = singleExpandedMenu;
+        }
+    }
+
+    public boolean isShowSingleExpandedMenu() {
+        return getState(false).singleExpandedMenu;
+    }
+
     public MenuItem getSelectedItem() {
         return selectedItem;
     }

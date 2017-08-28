@@ -81,6 +81,7 @@
                     <xs:attribute name="loadMenuConfig" type="xs:boolean"/>
                     <xs:attribute name="sidePanel" type="xs:string"/>
                     <xs:attribute name="sidePanelToggleButton" type="xs:string"/>
+                    <xs:attribute name="showSingleExpandedMenu" type="xs:boolean"/>
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>

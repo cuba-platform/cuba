@@ -166,6 +166,18 @@ public interface SideMenu extends Component.BelongToFrame, Component.Focusable {
     boolean hasMenuItems();
 
     /**
+     * Set true for collapsing a submenu when another parent menu item is clicked
+     *
+     * @param singleExpandedMenu
+     */
+    void setShowSingleExpandedMenu(boolean singleExpandedMenu);
+
+    /**
+     * @return true if a submenu is collapsing when another parent menu item is clicked
+     */
+    boolean isShowSingleExpandedMenu();
+
+    /**
      * Menu item
      */
     interface MenuItem {
