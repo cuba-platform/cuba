@@ -18,6 +18,7 @@
 package com.haulmont.cuba.gui.components.autocomplete.impl;
 
 import com.haulmont.cuba.core.sys.jpql.*;
+import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2RecognitionException;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.NoJpqlEntityModel;
@@ -41,6 +42,7 @@ public class HintProvider {
     private static final char CARET_POSITION_SYMBOL = '~';
     public static final Pattern COLLECTION_MEMBER_PATTERN = Pattern.compile(".*\\sin\\s*[(]\\s*[a-zA-Z0-9]+[.][a-zA-Z0-9.]*$");
     public static final Pattern JOIN_PATTERN = Pattern.compile(".*\\sjoin\\s*[a-zA-Z0-9]+[.][a-zA-Z0-9.]*$");
+    public static final String[] ARITHMETIC_OPERATIONS = {"+", "-", "*", "/"};
 
     public HintProvider(DomainModel model) {
         if (model == null)
@@ -70,11 +72,18 @@ public class HintProvider {
         }
 
         int leftBracketsIdx = result.lastIndexOf('(');
-        if (leftBracketsIdx < 0 || (leftBracketsIdx >= result.length())) {
-            return result;
+        if (leftBracketsIdx >= 0 && leftBracketsIdx < result.length()) {
+            return result.substring(leftBracketsIdx + 1);
         }
 
-        return result.substring(leftBracketsIdx + 1);
+        if (!result.contains("'")) {
+            int operationIdx = StringUtils.lastIndexOfAny(result, ARITHMETIC_OPERATIONS);
+            if (operationIdx >= 0 && operationIdx < result.length()) {
+                return result.substring(operationIdx + 1);
+            }
+        }
+
+        return result;
     }
 
     public HintResponse requestHint(String queryStringWithCaret) throws RecognitionException {
@@ -116,12 +125,18 @@ public class HintProvider {
 
     private HintResponse hintFieldName(String lastWord, String input, int caretPosition, Set<InferredType> expectedTypes) throws RecognitionException {
         QueryTreeAnalyzer queryAnalyzer = new QueryTreeAnalyzer();
-        queryAnalyzer.prepare(model, input, false);
+        try {
+            queryAnalyzer.prepare(model, input, false);
+        } catch (RecognitionException | JPA2RecognitionException e) {
+            List<String> errorMessages = new ArrayList<>();
+            errorMessages.add(e.getMessage());
+            return new HintResponse("Query error", errorMessages);
+        }
         List<ErrorRec> errorRecs = queryAnalyzer.getInvalidIdVarNodes();
         QueryVariableContext root = queryAnalyzer.getRootQueryVariableContext();
         if (root == null) {
             List<String> errorMessages = prepareErrorMessages(errorRecs);
-            errorMessages.add("Query variable context is null");
+            errorMessages.add(0, "Query variable context is null");
             return new HintResponse("Query error", errorMessages);
         }
         QueryVariableContext queryVC = root.getContextByCaretPosition(caretPosition);
