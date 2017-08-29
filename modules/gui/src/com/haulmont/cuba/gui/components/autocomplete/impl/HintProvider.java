@@ -119,6 +119,11 @@ public class HintProvider {
         queryAnalyzer.prepare(model, input, false);
         List<ErrorRec> errorRecs = queryAnalyzer.getInvalidIdVarNodes();
         QueryVariableContext root = queryAnalyzer.getRootQueryVariableContext();
+        if (root == null) {
+            List<String> errorMessages = prepareErrorMessages(errorRecs);
+            errorMessages.add("Query variable context is null");
+            return new HintResponse("Query error", errorMessages);
+        }
         QueryVariableContext queryVC = root.getContextByCaretPosition(caretPosition);
 
         EntityPath path = EntityPath.parseEntityPath(lastWord);
