@@ -21,6 +21,7 @@ import ch.qos.logback.classic.LoggerContext;
 import com.google.common.base.Splitter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,6 +141,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
         tokenizer.setQuoteChar('"');
         for (String str : tokenizer.getTokenArray()) {
             log.trace("Processing properties location: {}", str);
+            str = StrSubstitutor.replaceSystemProperties(str);
             InputStream stream = null;
             try {
                 if (ResourceUtils.isUrl(str) || str.startsWith(ResourceLoader.CLASSPATH_URL_PREFIX)) {
