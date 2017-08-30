@@ -15,21 +15,29 @@
  *
  */
 
-@mixin halo-checkbox($primary-stylename: v-checkbox) {
-  :root & .#{$primary-stylename} > input {
-    left: 0;
-    top: 0;
-  }
+$cuba-checkbox-extra-height: ceil($v-unit-size / 10);
 
+$cuba-checkbox-line-height: round($v-unit-size / 1.8);
+$cuba-checkbox-line-height--small: round($v-unit-size / 2);
+$cuba-checkbox-line-height--large: round($v-unit-size / 1.6);
+
+@mixin halo-checkbox($primary-stylename: v-checkbox) {
   .#{$primary-stylename} {
-    line-height: round($v-unit-size / 1.75);
+    line-height: $cuba-checkbox-line-height;
+    height: $cuba-checkbox-line-height + $cuba-checkbox-extra-height;
 
     label {
       @include user-select(text);
     }
   }
 
-  :root & .#{$primary-stylename} > input ~ label:before {
-    margin-top: 1px;
+  .#{$primary-stylename}-small {
+    line-height: round($v-unit-size / 2);
+    height: round($v-unit-size / 2) + $cuba-checkbox-extra-height;
+  }
+
+  .#{$primary-stylename}-large {
+    line-height: round($v-unit-size / 1.6);
+    height: round($v-unit-size / 1.6) + $cuba-checkbox-extra-height;
   }
 }
