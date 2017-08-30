@@ -49,8 +49,8 @@ public class RestFilterParser {
     protected OpManager opManager;
 
     /**
-     * Parses the JSON with entities filter and returns an object with JPQL query string and query parameters.
-     * The method expects a JSON object like this:
+     * Parses the JSON with entities filter and returns an object with JPQL query string and query parameters. The
+     * method expects a JSON object like this:
      * <p>
      * <pre>
      * {
@@ -60,12 +60,12 @@ public class RestFilterParser {
      *          "conditions": [
      *              {
      *                  "property": "stringField",
-     *                  "operator": "<>",
+     *                  "operator": "&lt;&gt;",
      *                  "value": "stringValue"
      *              },
      *              {
      *                  "property": "intField",
-     *                  "operator": ">",
+     *                  "operator": "&gt;",
      *                  "value": 100
      *              }
      *          ]
@@ -266,11 +266,11 @@ public class RestFilterParser {
         switch (operator) {
             case CONTAINS:
             case DOES_NOT_CONTAIN:
-                return ParametersHelper.CASE_INSENSITIVE_MARKER + "%"  + QueryUtils.escapeForLike((String) value) + "%";
+                return ParametersHelper.CASE_INSENSITIVE_MARKER + "%" + QueryUtils.escapeForLike((String) value) + "%";
             case STARTS_WITH:
                 return ParametersHelper.CASE_INSENSITIVE_MARKER + QueryUtils.escapeForLike((String) value) + "%";
             case ENDS_WITH:
-                return ParametersHelper.CASE_INSENSITIVE_MARKER + "%"  + QueryUtils.escapeForLike((String) value);
+                return ParametersHelper.CASE_INSENSITIVE_MARKER + "%" + QueryUtils.escapeForLike((String) value);
         }
 
         return value;
