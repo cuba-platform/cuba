@@ -1,0 +1,8 @@
+{
+  "conditions": [
+    {
+      "property": "stringField",
+      "operator": "notEmpty"
+    }
+  ]
+}

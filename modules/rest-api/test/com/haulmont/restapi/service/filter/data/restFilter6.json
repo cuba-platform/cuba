@@ -1,0 +1,9 @@
+{
+  "conditions": [
+    {
+      "property": "stringField",
+      "operator": "startsWith",
+      "value": "AAA"
+    }
+  ]
+}

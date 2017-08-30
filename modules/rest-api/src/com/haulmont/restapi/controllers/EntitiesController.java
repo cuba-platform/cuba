@@ -16,10 +16,9 @@
 
 package com.haulmont.restapi.controllers;
 
-import com.haulmont.restapi.config.RestQueriesConfiguration;
 import com.haulmont.restapi.data.CreatedEntityInfo;
+import com.haulmont.restapi.data.EntitiesSearchResult;
 import com.haulmont.restapi.service.EntitiesControllerManager;
-import com.haulmont.restapi.service.QueriesControllerManager;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,7 +30,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 
 /**
  * Controller that performs CRUD entity operations
@@ -42,9 +40,6 @@ public class EntitiesController {
 
     @Inject
     protected EntitiesControllerManager entitiesControllerManager;
-
-    @Inject
-    protected QueriesControllerManager queriesControllerManager;
 
     @GetMapping("/{entityName}/{entityId}")
     public String loadEntity(@PathVariable String entityName,
@@ -58,21 +53,41 @@ public class EntitiesController {
 
     @GetMapping("/{entityName}")
     public ResponseEntity<String> loadEntitiesList(@PathVariable String entityName,
-                                   @RequestParam(required = false) String view,
-                                   @RequestParam(required = false) Integer limit,
-                                   @RequestParam(required = false) Integer offset,
-                                   @RequestParam(required = false) String sort,
-                                   @RequestParam(required = false) Boolean returnNulls,
-                                   @RequestParam(required = false) Boolean returnCount,
-                                   @RequestParam(required = false) Boolean dynamicAttributes,
-                                   @RequestParam(required = false) String modelVersion) {
-        String resultJson = entitiesControllerManager.loadEntitiesList(entityName, view, limit, offset, sort, returnNulls, dynamicAttributes, modelVersion);
+                                                   @RequestParam(required = false) String view,
+                                                   @RequestParam(required = false) Integer limit,
+                                                   @RequestParam(required = false) Integer offset,
+                                                   @RequestParam(required = false) String sort,
+                                                   @RequestParam(required = false) Boolean returnNulls,
+                                                   @RequestParam(required = false) Boolean returnCount,
+                                                   @RequestParam(required = false) Boolean dynamicAttributes,
+                                                   @RequestParam(required = false) String modelVersion) {
+        EntitiesSearchResult entitiesSearchResult = entitiesControllerManager.loadEntitiesList(entityName, view, limit,
+                offset, sort, returnNulls, returnCount, dynamicAttributes, modelVersion);
         ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(HttpStatus.OK);
         if (BooleanUtils.isTrue(returnCount)) {
-            String count = queriesControllerManager.getCountGet(entityName, RestQueriesConfiguration.ALL_ENTITIES_QUERY_NAME, modelVersion, new HashMap<>());
-            responseBuilder.header("X-Total-Count", count);
+            responseBuilder.header("X-Total-Count", entitiesSearchResult.getCount().toString());
         }
-        return responseBuilder.body(resultJson);
+        return responseBuilder.body(entitiesSearchResult.getJson());
+    }
+
+    @PostMapping("/{entityName}/search")
+    public ResponseEntity<String> searchEntitiesList(@PathVariable String entityName,
+                                                     @RequestBody String filterJson,
+                                                     @RequestParam(required = false) String view,
+                                                     @RequestParam(required = false) Integer limit,
+                                                     @RequestParam(required = false) Integer offset,
+                                                     @RequestParam(required = false) String sort,
+                                                     @RequestParam(required = false) Boolean returnNulls,
+                                                     @RequestParam(required = false) Boolean returnCount,
+                                                     @RequestParam(required = false) Boolean dynamicAttributes,
+                                                     @RequestParam(required = false) String modelVersion) {
+        EntitiesSearchResult entitiesSearchResult = entitiesControllerManager.searchEntities(entityName, filterJson,
+                view, limit, offset, sort, returnNulls, returnCount, dynamicAttributes, modelVersion);
+        ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(HttpStatus.OK);
+        if (BooleanUtils.isTrue(returnCount)) {
+            responseBuilder.header("X-Total-Count", entitiesSearchResult.getCount().toString());
+        }
+        return responseBuilder.body(entitiesSearchResult.getJson());
     }
 
     @PostMapping("/{entityName}")
@@ -93,9 +108,9 @@ public class EntitiesController {
 
     @PutMapping("/{entityName}/{entityId}")
     public String updateEntity(@RequestBody String entityJson,
-                             @PathVariable String entityName,
-                             @PathVariable String entityId,
-                             @RequestParam(required = false) String modelVersion) {
+                               @PathVariable String entityName,
+                               @PathVariable String entityId,
+                               @RequestParam(required = false) String modelVersion) {
         CreatedEntityInfo entityInfo = entitiesControllerManager.updateEntity(entityJson, entityName, entityId, modelVersion);
         return entityInfo.getJson();
     }

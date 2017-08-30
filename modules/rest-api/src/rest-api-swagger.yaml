@@ -655,7 +655,7 @@ paths:
         - $ref: '#/parameters/dynamicAttributesParam'
       responses:
         200:
-          description: Success. The entitiy is returned in the response body.
+          description: Success. The entity is returned in the response body.
           schema:
             $ref: '#/definitions/entityFull'
         403:
@@ -706,6 +706,130 @@ paths:
             MetaClass not found or entity with the given identifier not found.
           schema:
             $ref: '#/definitions/error'
+
+
+  /entities/{entityName}/search:
+    post:
+      tags:
+        - Entities
+      summary: Find entities by filter conditions
+      description: |
+
+        Finds entities by filter conditions. The filter is defined by JSON object that is passed in the request body.
+
+        Request body example:
+
+        ```json
+        {
+            "conditions": [
+                {
+                    "group": "OR",
+                    "conditions": [
+                        {
+                            "property": "stringField",
+                            "operator": "startsWith",
+                            "value": "ABC"
+                        },
+                        {
+                            "property": "relatedEntity.intField",
+                            "operator": ">",
+                            "value": 100
+                        }
+                    ]
+                },
+                {
+                    "property": "booleanField",
+                    "operator": "=",
+                    "value": true
+                }
+            ]
+        }
+        ```
+
+        Filter supports OR and AND grouping. All conditions in the root "conditions" field are automatically added to the AND group.
+
+        Conditions for properties that are references to other entities must have values with string representation of
+        entitiy primary key.
+
+        If the operator is "in" or "notIn" then the value should be a JSON array.
+
+        ```
+        {
+            "conditions": [
+                {
+                    "property": "linkedEntityField",
+                    "operator": "=",
+                    "value": "2de6a78f-7bef-89a7-eb5e-b725582f23af"
+                },
+                {
+                  "property": "intField",
+                  "operator": "in",
+                  "value": [100, 200, 300]
+                }
+            ]
+        }
+        ```
+
+        Supported operators:
+
+        * =
+        * &lt;&gt;
+        * &lt;
+        * &lt;=
+        * &gt;
+        * &gt;=
+        * startsWith
+        * endsWith
+        * contains
+        * notEmpty
+        * in
+        * notIn
+
+      parameters:
+        - $ref: '#/parameters/entityNameParam'
+        - name: entityJson
+          description: |
+            A JSON object with filter conditions
+          in: body
+        - $ref: '#/parameters/entityViewParam'
+        - name: limit
+          in: query
+          description: Number of extracted entities
+          type: string
+          default: ""
+        - name: offset
+          in: query
+          description: Position of the first result to retrieve
+          type: string
+          default: ""
+        - name: sort
+          in: query
+          description: |
+            Name of the field to be sorted by. If the name is preceeding by the '+' character, then
+            the sort order is ascending, if by the '-' character then descending. If there is no special
+            character before the property name, then ascending sort will be used.
+          type: string
+          default: ""
+        - $ref: '#/parameters/returnNullsParam'
+        - $ref: '#/parameters/returnCountParam'
+        - $ref: '#/parameters/dynamicAttributesParam'
+      responses:
+        200:
+          description: Success. Entities that conforms filter conditions are returned in the response body.
+          schema:
+            type: array
+            items:
+              "$ref": "#/definitions/entityFull"
+        400:
+          description: Bad request. For example, the condition value cannot be parsed.
+          schema:
+            $ref: '#/definitions/error'
+        403:
+          description: Forbidden. The user doesn't have permissions to read the entity
+          schema:
+            $ref: '#/definitions/error'
+        404:
+          $ref: '#/responses/metaClassNotFoundResponse'
 
 ############################### Queries ########################################
   /queries/{entityName}:

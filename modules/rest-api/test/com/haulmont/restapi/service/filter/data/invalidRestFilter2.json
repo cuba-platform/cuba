@@ -1,0 +1,9 @@
+{
+  "conditions": [
+    {
+      "property": "intField",
+      "operator": "=",
+      "value": "string"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "conditions": [
+    {
+      "property": "stringField",
+      "operator": "<>",
+      "value": "stringValue"
+    },
+    {
+      "property": "intField",
+      "operator": ">",
+      "value": 100
+    },
+    {
+      "property": "booleanField",
+      "operator": "=",
+      "value": true
+    }
+  ]
+}

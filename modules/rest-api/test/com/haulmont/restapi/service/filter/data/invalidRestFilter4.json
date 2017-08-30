@@ -1,0 +1,9 @@
+{
+  "conditions": [
+    {
+      "property": "missingProperty",
+      "operator": "=",
+      "value": "string"
+    }
+  ]
+}

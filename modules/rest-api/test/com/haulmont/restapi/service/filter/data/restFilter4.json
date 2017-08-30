@@ -1,0 +1,9 @@
+{
+  "conditions": [
+    {
+      "property": "enumField",
+      "operator": "=",
+      "value": "ENUM_VALUE_1"
+    }
+  ]
+}
