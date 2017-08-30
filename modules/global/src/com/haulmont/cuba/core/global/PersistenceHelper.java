@@ -99,12 +99,28 @@ public class PersistenceHelper {
      * @param viewName view name
      * @throws IllegalArgumentException if at least one of properties is not loaded
      */
-    public static void checkLoadedView(Entity entity, String viewName) {
+    public static void checkLoadedWithView(Entity entity, String viewName) {
         EntityStates entityStates = AppBeans.get(EntityStates.class);
         if (entityStates != null) {
-            entityStates.checkLoadedView(entity, viewName);
+            entityStates.checkLoadedWithView(entity, viewName);
         } else {
-            _entityStates.checkLoadedView(entity, viewName);
+            _entityStates.checkLoadedWithView(entity, viewName);
+        }
+    }
+
+    /**
+     * Check that all properties of the view are loaded from DB for the passed entity.
+     *
+     * @param entity   entity
+     * @param viewName view name
+     * @return false if at least one of properties is not loaded
+     */
+    public static boolean isLoadedWithView(Entity entity, String viewName) {
+        EntityStates entityStates = AppBeans.get(EntityStates.class);
+        if (entityStates != null) {
+            return entityStates.isLoadedWithView(entity, viewName);
+        } else {
+            return _entityStates.isLoadedWithView(entity, viewName);
         }
     }
 

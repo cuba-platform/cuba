@@ -37,12 +37,12 @@ public class RequiredViewValidator implements ConstraintValidator<RequiredView, 
     public boolean isValid(Object value, ConstraintValidatorContext context) {
         try {
             if (value instanceof Entity) {
-                PersistenceHelper.checkLoadedView((Entity) value, view);
+                PersistenceHelper.checkLoadedWithView((Entity) value, view);
             } else if (value instanceof Collection) {
                 @SuppressWarnings("unchecked")
                 Collection<Entity> entities = (Collection<Entity>) value;
                 for (Entity entity : entities) {
-                    PersistenceHelper.checkLoadedView(entity, view);
+                    PersistenceHelper.checkLoadedWithView(entity, view);
                 }
             }
 

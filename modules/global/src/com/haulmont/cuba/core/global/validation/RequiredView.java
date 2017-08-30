@@ -27,6 +27,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Annotation that can be added to service method definitions to ensure that entity instances are loaded with all the
  * attributes specified in the view.
+ *
+ * If the validated value is null then the value is considered as valid.
+ * Use separate {@link javax.validation.constraints.NotNull} if needed.
  */
 @Target({FIELD, METHOD, PARAMETER, ANNOTATION_TYPE, TYPE})
 @Retention(RUNTIME)

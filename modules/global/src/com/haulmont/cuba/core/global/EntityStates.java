@@ -154,7 +154,7 @@ public class EntityStates {
         }
     }
 
-    protected void checkLoadedView(Entity entity, View view, Set<Entity> visited) {
+    protected void checkLoadedWithView(Entity entity, View view, Set<Entity> visited) {
         if (visited.contains(entity)) {
             return;
         }
@@ -179,13 +179,13 @@ public class EntityStates {
 
                     if (value != null) {
                         if (!metaProperty.getRange().getCardinality().isMany()) {
-                            checkLoadedView((Entity) value, propertyView, visited);
+                            checkLoadedWithView((Entity) value, propertyView, visited);
                         } else {
                             @SuppressWarnings("unchecked")
                             Collection<Entity> collection = (Collection) value;
 
                             for (Entity item : collection) {
-                                checkLoadedView(item, propertyView, visited);
+                                checkLoadedWithView(item, propertyView, visited);
                             }
                         }
                     }
@@ -206,11 +206,11 @@ public class EntityStates {
      * @throws IllegalArgumentException if at least one of properties is not loaded
      */
     @SuppressWarnings("unchecked")
-    public void checkLoadedView(Entity entity, View view) {
+    public void checkLoadedWithView(Entity entity, View view) {
         checkNotNullArgument(entity);
         checkNotNullArgument(view);
 
-        checkLoadedView(entity, view, new IdentityHashSet());
+        checkLoadedWithView(entity, view, new IdentityHashSet());
     }
 
     /**
@@ -222,8 +222,86 @@ public class EntityStates {
      * @throws IllegalArgumentException if at least one of properties is not loaded
      */
     @SuppressWarnings("unchecked")
-    public void checkLoadedView(Entity entity, String viewName) {
-        checkLoadedView(entity, viewRepository.getView(entity.getMetaClass(), viewName));
+    public void checkLoadedWithView(Entity entity, String viewName) {
+        checkNotNullArgument(viewName);
+
+        checkLoadedWithView(entity, viewRepository.getView(entity.getMetaClass(), viewName));
+    }
+
+    protected boolean isLoadedWithView(Entity entity, View view, Set<Entity> visited) {
+        if (visited.contains(entity)) {
+            return true;
+        }
+
+        visited.add(entity);
+
+        for (ViewProperty property : view.getProperties()) {
+            MetaClass metaClass = entity.getMetaClass();
+            MetaProperty metaProperty = metaClass.getPropertyNN(property.getName());
+
+            if (!isLoaded(entity, property.getName())) {
+                return false;
+            }
+
+            if (metaProperty.getRange().isClass()) {
+                View propertyView = property.getView();
+
+                if (propertyView != null && metadataTools.isPersistent(metaProperty)) {
+                    Object value = entity.getValue(metaProperty.getName());
+
+                    if (value != null) {
+                        if (!metaProperty.getRange().getCardinality().isMany()) {
+                            if (!isLoadedWithView((Entity) value, propertyView, visited)) {
+                                return false;
+                            }
+                        } else {
+                            @SuppressWarnings("unchecked")
+                            Collection<Entity> collection = (Collection) value;
+
+                            for (Entity item : collection) {
+                                if (!isLoadedWithView(item, propertyView, visited)) {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // after check we remove item from visited because different subtrees may have different view for one instance
+        visited.remove(entity);
+
+        return true;
+    }
+
+    /**
+     * Check that all properties of the view are loaded from DB for the passed entity.
+     *
+     * @param entity entity
+     * @param view   view name
+     * @return false if at least one of properties is not loaded
+     */
+    @SuppressWarnings("unchecked")
+    public boolean isLoadedWithView(Entity entity, View view) {
+        checkNotNullArgument(entity);
+        checkNotNullArgument(view);
+
+        return isLoadedWithView(entity, view, new IdentityHashSet());
+    }
+
+    /**
+     * Check that all properties of the view are loaded from DB for the passed entity.
+     *
+     * @param entity   entity
+     * @param viewName view name
+     * @return false if at least one of properties is not loaded
+     */
+    @SuppressWarnings("unchecked")
+    public boolean isLoadedWithView(Entity entity, String viewName) {
+        checkNotNullArgument(viewName);
+
+        return isLoadedWithView(entity, viewRepository.getView(entity.getMetaClass(), viewName));
     }
 
     /**

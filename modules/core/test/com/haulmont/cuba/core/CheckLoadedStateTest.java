@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class CheckLoadedStateTest {
     @ClassRule
@@ -101,14 +103,18 @@ public class CheckLoadedStateTest {
                 .setId(UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"))
                 .setView(View.LOCAL));
 
-        entityStates.checkLoadedView(user, View.LOCAL);
+        assertTrue(entityStates.isLoadedWithView(user, View.LOCAL));
+
+        entityStates.checkLoadedWithView(user, View.LOCAL);
 
         User userMinimal = dataManager.load(LoadContext.create(User.class)
                 .setId(UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"))
                 .setView(View.MINIMAL));
 
         try {
-            entityStates.checkLoadedView(userMinimal, View.LOCAL);
+            assertFalse(entityStates.isLoadedWithView(userMinimal, View.LOCAL));
+
+            entityStates.checkLoadedWithView(userMinimal, View.LOCAL);
 
             Assert.fail("user local attributes are not loaded");
         } catch (IllegalArgumentException e) {
@@ -126,7 +132,9 @@ public class CheckLoadedStateTest {
                 .setView("user.browse"));
 
         try {
-            entityStates.checkLoadedView(user, "user.edit");
+            assertFalse(entityStates.isLoadedWithView(user, "user.edit"));
+
+            entityStates.checkLoadedWithView(user, "user.edit");
 
             Assert.fail("user edit attributes are not loaded");
         } catch (IllegalArgumentException e) {
@@ -137,7 +145,9 @@ public class CheckLoadedStateTest {
                 .setId(UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"))
                 .setView("user.edit"));
 
-        entityStates.checkLoadedView(userEdit, "user.edit");
+        assertTrue(entityStates.isLoadedWithView(userEdit, "user.edit"));
+
+        entityStates.checkLoadedWithView(userEdit, "user.edit");
     }
 
     @Test
@@ -162,14 +172,18 @@ public class CheckLoadedStateTest {
         view.addProperty("userLogin");
         view.addProperty("name");
 
-        entityStates.checkLoadedView(testRecord, view);
+        entityStates.checkLoadedWithView(testRecord, view);
+
+        assertTrue(entityStates.isLoadedWithView(testRecord, view));
 
         UserRelatedNews minimalRecord = dataManager.load(LoadContext.create(UserRelatedNews.class)
                 .setId(userRelatedNewsId)
                 .setView(View.MINIMAL));
 
         try {
-            entityStates.checkLoadedView(minimalRecord, view);
+            assertFalse(entityStates.isLoadedWithView(minimalRecord, view));
+
+            entityStates.checkLoadedWithView(minimalRecord, view);
 
             Assert.fail("minimal record attributes are not loaded");
         } catch (IllegalArgumentException e) {
@@ -207,14 +221,18 @@ public class CheckLoadedStateTest {
         view.addProperty("parent");
         view.addProperty("name");
 
-        entityStates.checkLoadedView(committedRecord, view);
+        assertTrue(entityStates.isLoadedWithView(committedRecord, view));
+
+        entityStates.checkLoadedWithView(committedRecord, view);
 
         UserRelatedNews localRecord = dataManager.load(LoadContext.create(UserRelatedNews.class)
                 .setId(committedRecord.getId())
                 .setView(View.LOCAL));
 
         try {
-            entityStates.checkLoadedView(localRecord, view);
+            assertFalse(entityStates.isLoadedWithView(localRecord, view));
+
+            entityStates.checkLoadedWithView(localRecord, view);
 
             Assert.fail("local record attributes are not loaded");
         } catch (IllegalArgumentException e) {
