@@ -1104,6 +1104,16 @@
         <xs:attribute name="invoke" type="xs:string"/>
     </xs:complexType>
 
+    <xs:complexType name="suggestionFieldQuery">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="entityClass" type="xs:string" use="required"/>
+                <xs:attribute name="searchStringFormat" type="xs:string" />
+                <xs:attribute name="escapeValueForLike" type="xs:boolean"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
     <!-- Components -->
 
     <!-- Label -->
@@ -1486,6 +1496,10 @@
     <xs:complexType name="suggestionFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
+                <xs:all>
+                    <xs:element name="query" minOccurs="0" maxOccurs="1" type="suggestionFieldQuery"/>
+                </xs:all>
+
                 <xs:attribute name="asyncSearchDelayMs" type="xs:integer"/>
                 <xs:attribute name="minSearchStringLength" type="xs:integer"/>
                 <xs:attribute name="suggestionsLimit" type="xs:integer"/>
