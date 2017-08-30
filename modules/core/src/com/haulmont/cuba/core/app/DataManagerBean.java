@@ -22,7 +22,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.security.app.EntityLog;
+import com.haulmont.cuba.security.app.EntityLogAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -53,7 +53,7 @@ public class DataManagerBean implements DataManager {
     protected StoreFactory storeFactory;
 
     @Inject
-    protected EntityLog entityLog;
+    protected EntityLogAPI entityLog;
 
     @Nullable
     @Override
