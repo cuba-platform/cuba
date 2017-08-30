@@ -3090,7 +3090,7 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
 
         protected boolean isEditingPermitted() {
             if (propertyPath != null) {
-                MetaClass metaClass = propertyPath.getMetaProperty().getDomain();
+                MetaClass metaClass = propertyPath.getMetaClass();
                 return owner.security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString());
             }
             return true;
