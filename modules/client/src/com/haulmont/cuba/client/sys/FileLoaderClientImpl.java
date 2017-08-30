@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,7 +53,7 @@ public class FileLoaderClientImpl implements FileLoader {
 
     private final Logger log = LoggerFactory.getLogger(FileLoaderClientImpl.class);
 
-    @Inject
+    @Resource(name = ServerSelector.NAME)
     protected ServerSelector serverSelector;
 
     @Inject
