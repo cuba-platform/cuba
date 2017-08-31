@@ -16,7 +16,10 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
@@ -521,6 +524,19 @@ public interface Table<E extends Entity>
         public Column(Object id, String caption) {
             this.id = id;
             this.caption = caption;
+        }
+
+        public Column(Class<? extends Entity> entityClass, String propertyPath) {
+            MetaClass metaClass = AppBeans.get(Metadata.class).getClassNN(entityClass);
+            MetaPropertyPath mpp = metaClass.getPropertyPath(propertyPath);
+
+            if (mpp == null) {
+                throw new IllegalArgumentException(String.format("Unable to find %s in %s", propertyPath, entityClass));
+            }
+
+            this.id = mpp;
+            this.caption = AppBeans.get(MessageTools.class).getPropertyCaption(metaClass, propertyPath);
+            this.type = mpp.getRangeJavaClass();
         }
 
         public Object getId() {
