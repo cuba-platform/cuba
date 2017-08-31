@@ -257,6 +257,7 @@ public class WebDatePicker extends WebAbstractField<InlineDateField> implements 
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
             calendar.set(Calendar.MILLISECOND, 0);
+            calendar.add(Calendar.DATE, 1);
 
             setRangeStart(calendar.getTime());
         }

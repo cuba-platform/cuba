@@ -571,6 +571,9 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
             calendar.set(Calendar.MILLISECOND, 0);
+            if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
+                calendar.add(Calendar.DATE, 1);
+            }
 
             setRangeStart(calendar.getTime());
         }
