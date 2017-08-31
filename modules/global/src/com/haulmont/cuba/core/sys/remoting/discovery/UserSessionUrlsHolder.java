@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class UserSessionUrlsHolder implements SessionUrlsHolder {
 
-    protected static final String SESSION_ATTR = UserSessionUrlsHolder.class.getName() + ".lastSessionUrls";
+    private static final String SESSION_ATTR = UserSessionUrlsHolder.class.getName() + ".lastSessionUrls";
 
     private UserSession userSession;
 
@@ -34,12 +34,16 @@ public class UserSessionUrlsHolder implements SessionUrlsHolder {
     }
 
     @Override
-    public List<String> getUrls() {
-        return userSession.getLocalAttribute(SESSION_ATTR);
+    public List<String> getUrls(String selectorId) {
+        return userSession.getLocalAttribute(getAttributeName(selectorId));
     }
 
     @Override
-    public void setUrls(List<String> urls) {
-        userSession.setLocalAttribute(SESSION_ATTR, urls);
+    public void setUrls(String selectorId, List<String> urls) {
+        userSession.setLocalAttribute(getAttributeName(selectorId), urls);
+    }
+
+    private String getAttributeName(String selectorId) {
+        return SESSION_ATTR + (selectorId != null ? "." + selectorId : "");
     }
 }

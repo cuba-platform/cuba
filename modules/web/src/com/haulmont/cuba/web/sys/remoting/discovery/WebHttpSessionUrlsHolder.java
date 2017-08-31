@@ -38,25 +38,25 @@ public class WebHttpSessionUrlsHolder implements SessionUrlsHolder {
     @SuppressWarnings("unchecked")
     @Override
     @Nullable
-    public List<String> getUrls() {
+    public List<String> getUrls(String selectorId) {
         VaadinRequest vaadinRequest = VaadinService.getCurrentRequest();
         if (vaadinRequest != null)
-            return (List) vaadinRequest.getWrappedSession().getAttribute(SESSION_ATTR);
+            return (List) vaadinRequest.getWrappedSession().getAttribute(getAttributeName(selectorId));
         else {
             HttpSession httpSession = getHttpSession();
-            return httpSession != null ? (List<String>) httpSession.getAttribute(SESSION_ATTR) : null;
+            return httpSession != null ? (List<String>) httpSession.getAttribute(getAttributeName(selectorId)) : null;
         }
     }
 
     @Override
-    public void setUrls(List<String> urls) {
+    public void setUrls(String selectorId, List<String> urls) {
         VaadinRequest vaadinRequest = VaadinService.getCurrentRequest();
         if (vaadinRequest != null)
-            vaadinRequest.getWrappedSession().setAttribute(SESSION_ATTR, urls);
+            vaadinRequest.getWrappedSession().setAttribute(getAttributeName(selectorId), urls);
         else {
             HttpSession httpSession = getHttpSession();
             if (httpSession != null) {
-                httpSession.setAttribute(SESSION_ATTR, urls);
+                httpSession.setAttribute(getAttributeName(selectorId), urls);
             }
         }
     }
@@ -69,5 +69,9 @@ public class WebHttpSessionUrlsHolder implements SessionUrlsHolder {
         } else {
             return null;
         }
+    }
+
+    protected String getAttributeName(String selectorId) {
+        return SESSION_ATTR + (selectorId != null ? "." + selectorId : "");
     }
 }
