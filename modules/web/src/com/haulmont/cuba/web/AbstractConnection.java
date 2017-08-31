@@ -190,7 +190,8 @@ public abstract class AbstractConnection implements Connection {
     }
 
     protected String makeClientInfo() {
-        WebBrowser webBrowser = new WebBrowser();
+        // timezone info is passed only on VaadinSession creation
+        WebBrowser webBrowser = VaadinSession.getCurrent().getBrowser();
         webBrowser.updateRequestDetails(VaadinService.getCurrentRequest());
 
         //noinspection UnnecessaryLocalVariable
@@ -204,7 +205,8 @@ public abstract class AbstractConnection implements Connection {
     }
 
     protected TimeZone detectTimeZone() {
-        WebBrowser webBrowser = new WebBrowser();
+        // timezone info is passed only on VaadinSession creation
+        WebBrowser webBrowser = VaadinSession.getCurrent().getBrowser();
         webBrowser.updateRequestDetails(VaadinService.getCurrentRequest());
 
         int offset = webBrowser.getTimezoneOffset() / 1000 / 60;
