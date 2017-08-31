@@ -242,22 +242,26 @@ public class DbUpdaterEngine implements DbUpdater {
             for (String dirName : dirs.subList(0, dirs.size() - 1)) {
                 List<ScriptResource> initScripts = getInitScripts(dirName);
                 if (!initScripts.isEmpty()) {
+                    boolean anInitScriptHasBeenExecuted = false;
                     for (ScriptResource initScript : initScripts) {
                         String initScriptName = getScriptName(initScript);
                         log.trace("Checking script {}", initScriptName);
-                        if (!containsIgnoringPrefix(executedScripts, initScriptName)) {
-                            log.info("Script " + initScriptName + " was not executed, running init scripts for " + distinguishingSubstring(dirName));
-                            try {
-                                for (ScriptResource file : initScripts) {
-                                    executeScript(file);
-                                    markScript(getScriptName(file), true);
-                                }
-                            } finally {
-                                List<ScriptResource> updateFiles = getUpdateScripts(dirName);
-                                for (ScriptResource file : updateFiles)
-                                    markScript(getScriptName(file), true);
-                            }
+                        if (containsIgnoringPrefix(executedScripts, initScriptName)) {
+                            anInitScriptHasBeenExecuted = true;
                             break;
+                        }
+                    }
+                    if (!anInitScriptHasBeenExecuted) {
+                        log.info("No init scripts from " + dirName + " have been executed, running init scripts for " + distinguishingSubstring(dirName));
+                        try {
+                            for (ScriptResource file : initScripts) {
+                                executeScript(file);
+                                markScript(getScriptName(file), true);
+                            }
+                        } finally {
+                            List<ScriptResource> updateFiles = getUpdateScripts(dirName);
+                            for (ScriptResource file : updateFiles)
+                                markScript(getScriptName(file), true);
                         }
                     }
                 }
