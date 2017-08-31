@@ -45,6 +45,8 @@ public abstract class StickySessionServerSelector implements ServerSelector {
 
     protected SessionUrlsHolder anonymousSessionUrlsHolder;
 
+    protected String id;
+
     protected Set<String> failedUrls = new CopyOnWriteArraySet<>();
 
     protected ThreadLocal<List<String>> lastNoSessionUrls = new ThreadLocal<>();
@@ -78,6 +80,10 @@ public abstract class StickySessionServerSelector implements ServerSelector {
         this.anonymousSessionUrlsHolder = anonymousSessionUrlsHolder;
     }
 
+    public void setSelectorId(String id) {
+        this.id = id;
+    }
+
     /**
      * Must be implemented in concrete classes to return a list of available servers.
      */
@@ -93,14 +99,14 @@ public abstract class StickySessionServerSelector implements ServerSelector {
             lastNoSessionUrls.set(sessionUrls);
         } else {
             //noinspection unchecked
-            sessionUrls = sessionUrlsHolder.getUrls();
+            sessionUrls = sessionUrlsHolder.getUrls(id);
             if (sessionUrls == null) {
                 sessionUrls = lastNoSessionUrls.get();
                 isNewSession = true;
             }
             if (sessionUrls == null)
                 sessionUrls = sortUrls();
-            sessionUrlsHolder.setUrls(sessionUrls);
+            sessionUrlsHolder.setUrls(id, sessionUrls);
             lastNoSessionUrls.remove();
         }
 

@@ -36,16 +36,16 @@ public class PortalHttpSessionUrlsHolder implements SessionUrlsHolder {
     @SuppressWarnings("unchecked")
     @Override
     @Nullable
-    public List<String> getUrls() {
+    public List<String> getUrls(String selectorId) {
         HttpSession httpSession = getHttpSession();
-        return httpSession != null ? (List<String>) httpSession.getAttribute(SESSION_ATTR) : null;
+        return httpSession != null ? (List<String>) httpSession.getAttribute(getAttributeName(selectorId)) : null;
     }
 
     @Override
-    public void setUrls(List<String> urls) {
+    public void setUrls(String selectorId, List<String> urls) {
         HttpSession httpSession = getHttpSession();
         if (httpSession != null) {
-            httpSession.setAttribute(SESSION_ATTR, urls);
+            httpSession.setAttribute(getAttributeName(selectorId), urls);
         }
     }
 
@@ -57,5 +57,9 @@ public class PortalHttpSessionUrlsHolder implements SessionUrlsHolder {
         } else {
             return null;
         }
+    }
+
+    private String getAttributeName(String selectorId) {
+        return SESSION_ATTR + (selectorId != null ? "." + selectorId : "");
     }
 }

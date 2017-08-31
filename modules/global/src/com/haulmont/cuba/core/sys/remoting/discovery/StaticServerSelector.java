@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core.sys.remoting.discovery;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,13 +51,18 @@ public class StaticServerSelector extends StickySessionServerSelector {
     public void init() {
         if (baseUrl == null)
             throw new IllegalStateException("baseUrl is null");
-        log.info("Server URL(s): {}", baseUrl);
         String[] strings = baseUrl.split("[,;]");
         for (String string : strings) {
             if (!StringUtils.isBlank(string)) {
                 urls.add(string + "/" + servletPath);
             }
         }
-        log.debug("Server URLs: {}", urls);
+        log.info("Server URLs: {}", urls);
+        initSelectorId();
+    }
+
+    protected void initSelectorId() {
+        id = DigestUtils.md5Hex(baseUrl);
+        log.trace("Selector id for '" + baseUrl + "' is '" + id + "'");
     }
 }

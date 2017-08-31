@@ -25,7 +25,7 @@ import java.util.List;
 public interface SessionUrlsHolder {
 
     @Nullable
-    List<String> getUrls();
+    List<String> getUrls(String selectorId);
 
-    void setUrls(List<String> urls);
+    void setUrls(String selectorId, List<String> urls);
 }
