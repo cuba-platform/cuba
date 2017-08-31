@@ -19,12 +19,9 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FtsChangeType;
 
-import java.util.UUID;
-
 /**
- * Interface that is used to enque changed entities for indexing in Full Text Search engine.
- * It is implemented outside CUBA in the FTS project.
- *
+ * Interface that is used to enqueue changed entities for indexing in Full Text Search engine.
+ * It is implemented outside CUBA in the FTS app component.
  */
 public interface FtsSender {
 
