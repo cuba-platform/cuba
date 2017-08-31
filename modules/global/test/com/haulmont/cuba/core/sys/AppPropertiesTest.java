@@ -16,12 +16,18 @@
 
 package com.haulmont.cuba.core.sys;
 
+import org.apache.commons.lang.text.StrTokenizer;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.*;
 
 public class AppPropertiesTest {
+
+    private Logger log = LoggerFactory.getLogger(AppPropertiesTest.class);
 
     AppProperties appProperties;
 
@@ -80,5 +86,20 @@ public class AppPropertiesTest {
         assertArrayEquals(
                 new String[] {"prop1", "prop2", "prop3", "prop4", "prop5", "prop6"},
                 appProperties.getPropertyNames());
+    }
+
+    @Test
+    public void testEmptyStringSubstitution() {
+        AppProperties appProperties = new AppProperties(new AppComponents("test"));
+        appProperties.setProperty("refapp.myConfig", "1.xml ${ext.myConfig} 2.xml");
+        appProperties.setProperty("ext.myConfig", "");
+
+        String propValue = appProperties.getProperty("refapp.myConfig");
+        log.debug("Property value: '" + propValue + "'");
+
+        StrTokenizer tokenizer = new StrTokenizer(propValue);
+        String[] locations = tokenizer.getTokenArray();
+
+        Assert.assertArrayEquals(new String[] {"1.xml", "2.xml"}, locations);
     }
 }

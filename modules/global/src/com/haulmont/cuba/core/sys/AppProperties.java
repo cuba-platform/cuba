@@ -129,7 +129,7 @@ public class AppProperties {
             value = properties.get(key);
         }
 
-        if (StringUtils.isNotEmpty(value)) {
+        if (value != null) {
             // escaped +
             if (value.startsWith("\\+")) {
                 return handleInterpolation(value.substring(1));

@@ -331,27 +331,19 @@ public class TestContainer extends ExternalResource {
             }
         }
 
-        StrSubstitutor substitutor = new StrSubstitutor(new StrLookup() {
-            @Override
-            public String lookup(String key) {
-                String subst = properties.getProperty(key);
-                return subst != null ? subst : System.getProperty(key);
-            }
-        });
         for (Object key : properties.keySet()) {
-            String value = substitutor.replace(properties.getProperty((String) key));
-            AppContext.setProperty((String) key, value);
+            String value = properties.getProperty((String) key);
             appProperties.put((String) key, value);
         }
 
         File dir;
-        dir = new File(AppContext.getProperty("cuba.confDir"));
+        dir = new File(appProperties.get("cuba.confDir"));
         dir.mkdirs();
-        dir = new File(AppContext.getProperty("cuba.logDir"));
+        dir = new File(appProperties.get("cuba.logDir"));
         dir.mkdirs();
-        dir = new File(AppContext.getProperty("cuba.tempDir"));
+        dir = new File(appProperties.get("cuba.tempDir"));
         dir.mkdirs();
-        dir = new File(AppContext.getProperty("cuba.dataDir"));
+        dir = new File(appProperties.get("cuba.dataDir"));
         dir.mkdirs();
     }
 
