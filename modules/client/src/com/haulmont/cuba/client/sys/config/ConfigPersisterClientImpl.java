@@ -28,11 +28,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConfigPersisterClientImpl implements ConfigPersister {
-    protected static final Logger log = LoggerFactory.getLogger(ConfigPersisterClientImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ConfigPersisterClientImpl.class);
 
-    private Map<String, String> cache = new ConcurrentHashMap<>();
+    protected Map<String, String> cache = new ConcurrentHashMap<>();
 
-    private volatile boolean cacheLoaded;
+    protected volatile boolean cacheLoaded;
     protected boolean caching;
 
     protected ConfigStorageService configStorageService;
@@ -44,7 +44,7 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
 
     @Override
     public String getProperty(SourceType sourceType, String name) {
-        log.trace("Getting property '" + name + "', source=" + sourceType.name());
+        log.trace("Getting property '{}', source={}", name, sourceType.name());
         String value;
         switch (sourceType) {
             case SYSTEM:
@@ -70,7 +70,7 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
         return value;
     }
 
-    private void loadCache() {
+    protected void loadCache() {
         if (!cacheLoaded) {
             synchronized (this) {
                 if (!cacheLoaded) {
@@ -85,7 +85,7 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
 
     @Override
     public void setProperty(SourceType sourceType, String name, String value) {
-        log.debug("Setting property '" + name + "' to '" + value + "', source=" + sourceType.name());
+        log.debug("Setting property '{}' to '{}', source={}", name, value, sourceType.name());
         switch (sourceType) {
             case SYSTEM:
                 System.setProperty(name, value);
