@@ -379,7 +379,6 @@ public interface ClientConfig extends Config {
      *
      * @return one of com.haulmont.cuba.gui.components.Frame.NotificationType values
      */
-    @SuppressWarnings("JavadocReference")
     @Property("cuba.gui.validationNotificationType")
     @Default("TRAY")
     String getValidationNotificationType();
