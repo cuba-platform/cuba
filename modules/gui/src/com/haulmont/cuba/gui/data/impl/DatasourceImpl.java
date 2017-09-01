@@ -245,8 +245,10 @@ public class DatasourceImpl<T extends Entity> extends AbstractDatasource<T> impl
         for (Entity entity : entities) {
             if (entity.equals(item)) {
                 detachListener(item);
+                T prevItem = item;
                 item = (T) entity;
                 attachListener(item);
+                fireItemChanged(prevItem);
             }
         }
 

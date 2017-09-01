@@ -489,7 +489,9 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         checkState();
 
         if (this.item != null && this.item.equals(item)) {
+            T prevItem = item;
             this.item = item;
+            fireItemChanged(prevItem);
         }
 
         if (data.containsKey(item.getId())) {
