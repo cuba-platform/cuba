@@ -373,4 +373,14 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.suggestionField.asyncSearchDelayMs")
     @DefaultInt(300)
     int getSuggestionFieldAsyncSearchDelayMs();
+
+    /**
+     * Standard Window validation error notification type.
+     *
+     * @return one of com.haulmont.cuba.gui.components.Frame.NotificationType values
+     */
+    @SuppressWarnings("JavadocReference")
+    @Property("cuba.gui.validationNotificationType")
+    @Default("TRAY")
+    String getValidationNotificationType();
 }

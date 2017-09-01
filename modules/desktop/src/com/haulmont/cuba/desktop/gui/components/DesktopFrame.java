@@ -202,23 +202,14 @@ public class DesktopFrame
 
         DesktopComponentsHelper.focusProblemComponent(errors);
 
-        showValidationErrors(errors);
+        Window window = ComponentsHelper.getWindow(wrapper);
+        if (window instanceof AbstractFrame) {
+            SwingUtilities.invokeLater(() -> {
+                ((AbstractFrame) window).showValidationErrors(errors);
+            });
+        }
 
         return false;
-    }
-
-    protected void showValidationErrors(final ValidationErrors errors) {
-        SwingUtilities.invokeLater(() -> {
-            StringBuilder buffer = new StringBuilder();
-            for (ValidationErrors.Item error : errors.getAll()) {
-                buffer.append(error.description).append("\n");
-            }
-            showNotification(
-                    messages.getMainMessage("validationFail.caption"),
-                    buffer.toString(),
-                    NotificationType.HUMANIZED
-            );
-        });
     }
 
     private DesktopWindowManager getWindowManager() {

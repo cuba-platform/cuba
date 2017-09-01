@@ -16,7 +16,10 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.DialogParams;
@@ -407,6 +410,24 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     @Override
     public boolean validateAll() {
         return frame.validateAll();
+    }
+
+    /**
+     * Show validation errors alert. Can be overriden in subclasses.
+     *
+     * @param errors the list of validation errors. Caller fills it by errors found during the default validation.
+     */
+    public void showValidationErrors(ValidationErrors errors) {
+        StringBuilder buffer = new StringBuilder();
+        for (ValidationErrors.Item error : errors.getAll()) {
+            buffer.append(error.description).append("\n");
+        }
+
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
+        NotificationType notificationType = NotificationType.valueOf(clientConfig.getValidationNotificationType());
+        showNotification(messages.getMainMessage("validationFail.caption"), buffer.toString(), notificationType);
     }
 
     /**

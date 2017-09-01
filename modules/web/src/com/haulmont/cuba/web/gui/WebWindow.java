@@ -390,21 +390,11 @@ public class WebWindow implements Window, Component.Wrapper,
         if (errors.isEmpty())
             return true;
 
-        showValidationErrors(errors);
+        delegate.showValidationErrors(errors);
 
         WebComponentsHelper.focusProblemComponent(errors);
 
         return false;
-    }
-
-    protected void showValidationErrors(ValidationErrors errors) {
-        StringBuilder buffer = new StringBuilder();
-        for (ValidationErrors.Item error : errors.getAll()) {
-            buffer.append(error.description).append("\n");
-        }
-
-        showNotification(messages.getMessage(WebWindow.class, "validationFail.caption"),
-                buffer.toString(), NotificationType.TRAY);
     }
 
     @Override

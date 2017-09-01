@@ -1392,23 +1392,11 @@ public class DesktopWindow implements Window, Component.Disposable,
 
         DesktopComponentsHelper.focusProblemComponent(errors);
 
-        showValidationErrors(errors);
+        SwingUtilities.invokeLater(() -> {
+            delegate.showValidationErrors(errors);
+        });
 
         return false;
-    }
-
-    protected void showValidationErrors(final ValidationErrors errors) {
-        SwingUtilities.invokeLater(() -> {
-            StringBuilder buffer = new StringBuilder();
-            for (ValidationErrors.Item error : errors.getAll()) {
-                buffer.append(error.description).append("\n");
-            }
-            showNotification(
-                    messages.getMainMessage("validationFail.caption"),
-                    buffer.toString(),
-                    NotificationType.HUMANIZED
-            );
-        });
     }
 
     @Override

@@ -202,6 +202,12 @@ public class WindowDelegate {
         }
     }
 
+    public void showValidationErrors(ValidationErrors errors) {
+        if (wrapper instanceof AbstractWindow) {
+            ((AbstractWindow) wrapper).showValidationErrors(errors);
+        }
+    }
+
     public boolean preClose(String actionId) {
         if (wrapper instanceof AbstractWindow) {
             return ((AbstractWindow) wrapper).preClose(actionId);

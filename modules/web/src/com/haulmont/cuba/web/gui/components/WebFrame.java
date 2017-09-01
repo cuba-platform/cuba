@@ -18,7 +18,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.FrameContext;
@@ -240,22 +239,14 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
         if (errors.isEmpty())
             return true;
 
-        showValidationErrors(errors);
+        Window window = ComponentsHelper.getWindow(wrapper);
+        if (window instanceof AbstractFrame) {
+            ((AbstractFrame) window).showValidationErrors(errors);
+        }
 
         WebComponentsHelper.focusProblemComponent(errors);
 
         return false;
-    }
-
-    protected void showValidationErrors(ValidationErrors errors) {
-        StringBuilder buffer = new StringBuilder();
-        for (ValidationErrors.Item error : errors.getAll()) {
-            buffer.append(error.description).append("\n");
-        }
-
-        Messages messages = AppBeans.get(Messages.NAME);
-        showNotification(messages.getMainMessage("validationFail.caption"),
-                buffer.toString(), NotificationType.TRAY);
     }
 
     @Override
