@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.*;
 import java.util.*;
@@ -209,6 +210,13 @@ public class UserSessions implements UserSessionsAPI {
         }
     }
 
+    @Nullable
+    @Override
+    public UserSession get(UUID id) {
+        return get(id, false);
+    }
+
+    @Nullable
     @Override
     public UserSession get(UUID id, boolean propagate) {
         if (!AppContext.isStarted())
