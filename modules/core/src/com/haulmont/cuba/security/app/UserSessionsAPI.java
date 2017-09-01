@@ -19,6 +19,7 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.security.global.UserSession;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -35,12 +36,22 @@ public interface UserSessionsAPI {
     void remove(UserSession session);
 
     /**
+     * Get user session from cache.
+     *
+     * @param id        session id
+     * @return user session instance or null if not found
+     */
+    @Nullable
+    UserSession get(UUID id);
+
+    /**
      * Get user session from cache, updating its "last used" timestamp.
      *
      * @param id        session id
      * @param propagate whether to propagate the new "last used" timestamp to the cluster
      * @return user session instance or null if not found
      */
+    @Nullable
     UserSession get(UUID id, boolean propagate);
 
     /**
