@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -44,6 +45,7 @@ public class DatasourceImpl<T extends Entity> extends AbstractDatasource<T> impl
     @Override
     public void setup(DsContext dsContext, DataSupplier dataSupplier, String id,
                       MetaClass metaClass, @Nullable View view) {
+        Preconditions.checkNotNullArgument(metaClass, "metaClass is null");
         this.id = id;
         this.dsContext = dsContext;
         this.dataSupplier = dataSupplier;

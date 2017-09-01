@@ -28,9 +28,9 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.global.filter.QueryFilter;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.*;
-import com.haulmont.cuba.core.global.filter.QueryFilter;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -162,6 +162,8 @@ public class DsContextLoader {
 
     protected Datasource loadHierarchicalDatasource(Element element) {
         MetaClass metaClass = loadMetaClass(element);
+        if (metaClass == null)
+            throw new DevelopmentException("'class' attribute is not set for the datasource");
         initCollectionDatasourceAttributes(element, metaClass);
 
         HierarchicalDatasource datasource = builder
@@ -203,6 +205,8 @@ public class DsContextLoader {
 
     protected Datasource loadGroupDatasource(Element element) {
         MetaClass metaClass = loadMetaClass(element);
+        if (metaClass == null)
+            throw new DevelopmentException("'class' attribute is not set for the datasource");
         initCollectionDatasourceAttributes(element, metaClass);
 
         GroupDatasource datasource = builder
@@ -366,6 +370,8 @@ public class DsContextLoader {
 
     protected CollectionDatasource loadCollectionDatasource(Element element) {
         MetaClass metaClass = loadMetaClass(element);
+        if (metaClass == null)
+            throw new DevelopmentException("'class' attribute is not set for the datasource");
         initCollectionDatasourceAttributes(element, metaClass);
 
         CollectionDatasource datasource = builder
