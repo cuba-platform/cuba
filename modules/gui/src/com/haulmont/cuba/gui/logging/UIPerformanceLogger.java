@@ -18,13 +18,15 @@
 package com.haulmont.cuba.gui.logging;
 
 /**
- * Logger class for UI performance stats
- * Contains constants for screen life cycle
- *
+ * Logger class for UI performance stats.
+ * Contains constants for screen life cycle.
  */
-public interface UIPerformanceLogger {
+public final class UIPerformanceLogger {
 
-    enum LifeCycle {
+    private UIPerformanceLogger() {
+    }
+
+    public enum LifeCycle {
         LOAD("load"),
         XML("xml"),
         INIT("init"),
