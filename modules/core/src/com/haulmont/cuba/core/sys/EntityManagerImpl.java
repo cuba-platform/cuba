@@ -46,18 +46,18 @@ import java.util.UUID;
 
 public class EntityManagerImpl implements EntityManager {
 
-    private javax.persistence.EntityManager delegate;
+    protected javax.persistence.EntityManager delegate;
 
-    private UserSession userSession;
-    private Metadata metadata;
-    private EntityListenerManager entityListenerMgr;
-    private PersistenceImplSupport support;
+    protected UserSession userSession;
+    protected Metadata metadata;
+    protected EntityListenerManager entityListenerMgr;
+    protected PersistenceImplSupport support;
 
-    private boolean softDeletion = true;
+    protected boolean softDeletion = true;
 
     private Logger log = LoggerFactory.getLogger(EntityManagerImpl.class);
 
-    EntityManagerImpl(javax.persistence.EntityManager jpaEntityManager, UserSession userSession) {
+    protected EntityManagerImpl(javax.persistence.EntityManager jpaEntityManager, UserSession userSession) {
         this.delegate = jpaEntityManager;
         this.userSession = userSession;
         this.metadata = AppBeans.get(Metadata.NAME);
@@ -188,7 +188,7 @@ public class EntityManagerImpl implements EntityManager {
         return find(entityClass, id, viewArray);
     }
 
-    private <T extends Entity> T findWithViews(MetaClass metaClass, Object id, List<View> views) {
+    protected <T extends Entity> T findWithViews(MetaClass metaClass, Object id, List<View> views) {
         Object realId = getRealId(id);
         log.debug("find {} by id={}, views={}", metaClass.getJavaClass().getSimpleName(), realId, views);
 
@@ -216,41 +216,44 @@ public class EntityManagerImpl implements EntityManager {
         return reference;
     }
 
+    protected <T> TypedQuery<T> createQueryInstance(boolean isNative, Class<T> resultClass) {
+        return new QueryImpl<>(this, isNative, resultClass);
+    }
+
     @Override
     public Query createQuery() {
-        return new QueryImpl(this, false, null);
+        return createQueryInstance(false, null);
     }
 
     @Override
     public Query createQuery(String qlStr) {
-        QueryImpl query = new QueryImpl(this, false, null);
+        Query query = createQueryInstance(false, null);
         query.setQueryString(qlStr);
         return query;
     }
 
     @Override
     public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass) {
-        QueryImpl<T> query = new QueryImpl<>(this, false, resultClass);
+        TypedQuery<T> query = createQueryInstance(false, resultClass);
         query.setQueryString(qlString);
         return query;
     }
 
     @Override
     public Query createNativeQuery() {
-        return new QueryImpl(this, true, null);
+        return createQueryInstance(true, null);
     }
 
     @Override
     public Query createNativeQuery(String sql) {
-        QueryImpl query = new QueryImpl(this, true, null);
+        Query query = createQueryInstance(true, null);
         query.setQueryString(sql);
         return query;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T> TypedQuery<T> createNativeQuery(String sql, Class<T> resultClass) {
-        QueryImpl query = new QueryImpl(this, true, resultClass);
+        TypedQuery<T> query = createQueryInstance(true, resultClass);
         query.setQueryString(sql);
         return query;
     }
@@ -444,7 +447,7 @@ public class EntityManagerImpl implements EntityManager {
         }
     }
 
-    private Object getRealId(Object id) {
+    protected Object getRealId(Object id) {
         return id instanceof IdProxy ? ((IdProxy) id).getNN() : id;
     }
 }

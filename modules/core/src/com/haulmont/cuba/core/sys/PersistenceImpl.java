@@ -51,20 +51,20 @@ public class PersistenceImpl implements Persistence {
     public static final String RUN_BEFORE_COMMIT_ATTR = "cuba.runBeforeCommit";
     public static final String RUN_AFTER_COMPLETION_ATTR = "cuba.runAfterCompletion";
 
-    private volatile boolean softDeletion = true;
+    protected volatile boolean softDeletion = true;
 
-    private EntityManagerContextHolder contextHolder = new EntityManagerContextHolder();
+    protected EntityManagerContextHolder contextHolder = new EntityManagerContextHolder();
 
     @Inject
-    private PersistenceTools tools;
+    protected PersistenceTools tools;
 
-    private EntityManagerFactory jpaEmf;
+    protected EntityManagerFactory jpaEmf;
 
     @Inject @Named("transactionManager")
-    private PlatformTransactionManager transactionManager;
+    protected PlatformTransactionManager transactionManager;
 
     @Inject
-    private UserSessionSource userSessionSource;
+    protected UserSessionSource userSessionSource;
 
     @Inject @Named("entityManagerFactory")
     public void setFactory(LocalContainerEntityManagerFactoryBean factoryBean) {
@@ -162,26 +162,29 @@ public class PersistenceImpl implements Persistence {
         if (!jpaEm.isJoinedToTransaction())
             throw new IllegalStateException("No active transaction for " + store + " database");
 
-        UserSession userSession = userSessionSource.checkCurrentUserSession() ? userSessionSource.getUserSession() : null;
-
-        EntityManagerImpl impl = new EntityManagerImpl(jpaEm, userSession);
+        EntityManager entityManager = createEntityManager(jpaEm);
 
         EntityManagerContext ctx = contextHolder.get(store);
         if (ctx != null) {
-            impl.setSoftDeletion(ctx.isSoftDeletion());
+            entityManager.setSoftDeletion(ctx.isSoftDeletion());
         } else {
             ctx = new EntityManagerContext();
             ctx.setSoftDeletion(isSoftDeletion());
             contextHolder.set(ctx, store);
-            impl.setSoftDeletion(isSoftDeletion());
+            entityManager.setSoftDeletion(isSoftDeletion());
         }
 
-        EntityManager em = (EntityManager) Proxy.newProxyInstance(
+        EntityManager emProxy = (EntityManager) Proxy.newProxyInstance(
                 getClass().getClassLoader(),
                 new Class[]{EntityManager.class},
-                new EntityManagerInvocationHandler(impl, store)
+                new EntityManagerInvocationHandler(entityManager, store)
         );
-        return em;
+        return emProxy;
+    }
+
+    protected EntityManager createEntityManager(javax.persistence.EntityManager jpaEm) {
+        UserSession userSession = userSessionSource.checkCurrentUserSession() ? userSessionSource.getUserSession() : null;
+        return new EntityManagerImpl(jpaEm, userSession);
     }
 
     @Override
@@ -234,11 +237,11 @@ public class PersistenceImpl implements Persistence {
         return new EntityManagerContextSynchronization(store);
     }
 
-    private class EntityManagerContextSynchronization implements TransactionSynchronization, Ordered {
+    protected class EntityManagerContextSynchronization implements TransactionSynchronization, Ordered {
 
-        private final boolean prevSoftDeletion;
-        private EntityManagerContext context;
-        private String store;
+        protected final boolean prevSoftDeletion;
+        protected EntityManagerContext context;
+        protected String store;
 
         public EntityManagerContextSynchronization(String store) {
             this.store = store;
@@ -329,13 +332,13 @@ public class PersistenceImpl implements Persistence {
         return tm;
     }
 
-    private class EntityManagerInvocationHandler implements InvocationHandler {
+    protected class EntityManagerInvocationHandler implements InvocationHandler {
 
-        private EntityManagerImpl impl;
-        private String store;
+        protected EntityManager entityManager;
+        protected String store;
 
-        private EntityManagerInvocationHandler(EntityManagerImpl impl, String store) {
-            this.impl = impl;
+        public EntityManagerInvocationHandler(EntityManager entityManager, String store) {
+            this.entityManager = entityManager;
             this.store = store;
         }
 
@@ -350,9 +353,7 @@ public class PersistenceImpl implements Persistence {
                 contextHolder.set(ctx, store);
             }
             try {
-                return method.invoke(impl, args);
-            } catch (IllegalAccessException | IllegalArgumentException e) {
-                throw e;
+                return method.invoke(entityManager, args);
             } catch (InvocationTargetException e) {
                 throw e.getTargetException();
             }

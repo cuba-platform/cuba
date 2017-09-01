@@ -54,29 +54,29 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     private final Logger log = LoggerFactory.getLogger(QueryImpl.class);
 
-    private Metadata metadata;
-    private javax.persistence.EntityManager emDelegate;
-    private JpaQuery query;
-    private EntityManagerImpl entityManager;
-    private PersistenceImplSupport support;
-    private boolean isNative;
-    private String queryString;
-    private String transformedQueryString;
-    private Class resultClass;
-    private FetchGroupManager fetchGroupMgr;
-    private EntityFetcher entityFetcher;
-    private QueryCacheManager queryCacheMgr;
-    private QueryTransformerFactory queryTransformerFactory;
-    private Set<Param> params = new HashSet<>();
-    private LockModeType lockMode;
-    private List<View> views = new ArrayList<>();
-    private Integer maxResults;
-    private Integer firstResult;
-    private boolean singleResultExpected;
-    private boolean cacheable;
-    private FlushModeType flushMode;
+    protected Metadata metadata;
+    protected javax.persistence.EntityManager emDelegate;
+    protected JpaQuery query;
+    protected EntityManagerImpl entityManager;
+    protected PersistenceImplSupport support;
+    protected boolean isNative;
+    protected String queryString;
+    protected String transformedQueryString;
+    protected Class resultClass;
+    protected FetchGroupManager fetchGroupMgr;
+    protected EntityFetcher entityFetcher;
+    protected QueryCacheManager queryCacheMgr;
+    protected QueryTransformerFactory queryTransformerFactory;
+    protected Set<Param> params = new HashSet<>();
+    protected LockModeType lockMode;
+    protected List<View> views = new ArrayList<>();
+    protected Integer maxResults;
+    protected Integer firstResult;
+    protected boolean singleResultExpected;
+    protected boolean cacheable;
+    protected FlushModeType flushMode;
 
-    private Collection<QueryMacroHandler> macroHandlers;
+    protected Collection<QueryMacroHandler> macroHandlers;
 
     public QueryImpl(EntityManagerImpl entityManager, boolean isNative, @Nullable Class resultClass) {
         this.entityManager = entityManager;
@@ -94,7 +94,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         this.queryTransformerFactory = AppBeans.get(QueryTransformerFactory.NAME);
     }
 
-    private JpaQuery<T> getQuery() {
+    protected JpaQuery<T> getQuery() {
         if (query == null) {
             View view = views.isEmpty() ? null : views.get(0);
 
@@ -175,7 +175,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
     }
 
     @Nullable
-    private Class getEffectiveResultClass() {
+    protected Class getEffectiveResultClass() {
         if (resultClass == null) {
             return null;
         }
@@ -185,12 +185,12 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return resultClass;
     }
 
-    private void checkState() {
+    protected void checkState() {
         if (query != null)
             throw new IllegalStateException("Query delegate has already been created");
     }
 
-    private String transformQueryString() {
+    protected String transformQueryString() {
         String result = expandMacros(queryString);
 
         boolean rebuildParser = false;
@@ -228,7 +228,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return result;
     }
 
-    private String expandMacros(String queryStr) {
+    protected String expandMacros(String queryStr) {
         String result = queryStr;
         if (macroHandlers != null) {
             for (QueryMacroHandler handler : macroHandlers) {
@@ -238,7 +238,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return result;
     }
 
-    private String replaceParams(String query, QueryParser parser) {
+    protected String replaceParams(String query, QueryParser parser) {
         String result = query;
         Set<String> paramNames = Sets.newHashSet(parser.getParamNames());
         for (Iterator<Param> iterator = params.iterator(); iterator.hasNext(); ) {
@@ -274,19 +274,19 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return result;
     }
 
-    private String replaceCaseInsensitiveParam(String query, String paramName) {
+    protected String replaceCaseInsensitiveParam(String query, String paramName) {
         QueryTransformer transformer = queryTransformerFactory.transformer(query);
         transformer.handleCaseInsensitiveParam(paramName);
         return transformer.getResult();
     }
 
-    private String replaceInCollectionParam(String query, String paramName) {
+    protected String replaceInCollectionParam(String query, String paramName) {
         QueryTransformer transformer = queryTransformerFactory.transformer(query);
         transformer.replaceInCondition(paramName);
         return transformer.getResult();
     }
 
-    private void addMacroParams(javax.persistence.TypedQuery jpaQuery) {
+    protected void addMacroParams(javax.persistence.TypedQuery jpaQuery) {
         if (macroHandlers != null) {
             for (QueryMacroHandler handler : macroHandlers) {
 
@@ -433,7 +433,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return this;
     }
 
-    private Object handleImplicitConversions(Object value) {
+    protected Object handleImplicitConversions(Object value) {
         if (value instanceof Entity)
             value = ((Entity) value).getId();
         else if (value instanceof Collection) {
@@ -627,9 +627,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
     }
 
     protected static class Param {
-        private Object name;
-        private Object value;
-        private TemporalType temporalType;
+        protected Object name;
+        protected Object value;
+        protected TemporalType temporalType;
 
         public Param(Object name, Object value) {
             this.name = name;
