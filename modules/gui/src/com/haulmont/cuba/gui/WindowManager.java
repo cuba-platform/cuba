@@ -31,6 +31,7 @@ import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataSupplier;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
+import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
@@ -499,7 +500,7 @@ public abstract class WindowManager {
         }
 
         StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
-                UIPerformanceLogger.LifeCycle.LOAD,
+                LifeCycle.LOAD,
                 Logger.getLogger(UIPerformanceLogger.class));
 
         String templatePath = windowInfo.getTemplate();
@@ -519,7 +520,7 @@ public abstract class WindowManager {
         }
 
         StopWatch xmlLoadWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
-                UIPerformanceLogger.LifeCycle.XML,
+                LifeCycle.XML,
                 Logger.getLogger(UIPerformanceLogger.class));
 
         Document document = screenXmlCache.get(template);
@@ -576,7 +577,7 @@ public abstract class WindowManager {
         }
 
         StopWatch uiPermissionsWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
-                UIPerformanceLogger.LifeCycle.UI_PERMISSIONS,
+                LifeCycle.UI_PERMISSIONS,
                 Logger.getLogger(UIPerformanceLogger.class));
 
         // apply ui permissions
@@ -587,7 +588,7 @@ public abstract class WindowManager {
         return windowWrapper;
     }
 
-    private void preloadMainScreenClass(Element element) {
+    protected void preloadMainScreenClass(Element element) {
         String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
             scripting.loadClass(screenClass);
@@ -656,7 +657,7 @@ public abstract class WindowManager {
         return dsContext;
     }
 
-    protected Window createWindow(WindowInfo windowInfo, Map params) {
+    protected Window createWindow(WindowInfo windowInfo, Map<String, Object> params) {
         Window window;
         try {
             window = (Window) windowInfo.getScreenClass().newInstance();
@@ -670,7 +671,7 @@ public abstract class WindowManager {
         init(window, params);
 
         StopWatch uiPermissionsWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
-                UIPerformanceLogger.LifeCycle.UI_PERMISSIONS,
+                LifeCycle.UI_PERMISSIONS,
                 Logger.getLogger(UIPerformanceLogger.class));
 
         // apply ui permissions
@@ -705,7 +706,8 @@ public abstract class WindowManager {
 
         if (obj instanceof Callable) {
             try {
-                Window window = ((Callable<Window>) obj).call();
+                Callable callable = (Callable) obj;
+                Window window = (Window) callable.call();
                 return window;
             } catch (Exception e) {
                 throw new RuntimeException("Unable to instantiate window class", e);
@@ -758,7 +760,7 @@ public abstract class WindowManager {
     }
 
     public Window openWindow(WindowInfo windowInfo, OpenType openType) {
-        return openWindow(windowInfo, openType, Collections.<String, Object>emptyMap());
+        return openWindow(windowInfo, openType, Collections.emptyMap());
     }
 
     protected abstract void putToWindowMap(Window window, Integer hashCode);
@@ -809,11 +811,11 @@ public abstract class WindowManager {
 
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType,
                                     Datasource parentDs) {
-        return openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap(), parentDs);
+        return openEditor(windowInfo, item, openType, Collections.emptyMap(), parentDs);
     }
 
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType) {
-        return openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap());
+        return openEditor(windowInfo, item, openType, Collections.emptyMap());
     }
 
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params) {
@@ -831,19 +833,23 @@ public abstract class WindowManager {
 
         Integer hashCode = getHash(windowInfo, params);
         String template = windowInfo.getTemplate();
-        Window window = getWindow(hashCode);
-        if (window != null) {
-            params = createParametersMap(windowInfo, params);
-            String caption = loadCaption(window, params);
-            String description = loadDescription(window, params);
 
-            showWindow(window, caption, description, openType, false);
-            return (Window.Editor) window;
+        if (openType.getOpenMode() != OpenMode.DIALOG) {
+            Window existingWindow = getWindow(hashCode);
+            if (existingWindow != null) {
+                params = createParametersMap(windowInfo, params);
+                String caption = loadCaption(existingWindow, params);
+                String description = loadDescription(existingWindow, params);
+
+                showWindow(existingWindow, caption, description, openType, false);
+                return (Window.Editor) existingWindow;
+            }
         }
 
         params = createParametersMap(windowInfo, params);
         WindowParams.ITEM.set(params, item instanceof Datasource ? ((Datasource) item).getItem() : item);
 
+        Window window;
         if (template != null) {
             window = createWindow(windowInfo, openType, params, LayoutLoaderConfig.getEditorLoaders(), false);
         } else {
@@ -861,7 +867,7 @@ public abstract class WindowManager {
         ((Window.Editor) window).setParentDs(parentDs);
 
         StopWatch setItemWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
-                UIPerformanceLogger.LifeCycle.SET_ITEM,
+                LifeCycle.SET_ITEM,
                 Logger.getLogger(UIPerformanceLogger.class));
 
         ((Window.Editor) window).setItem(item);
@@ -925,11 +931,11 @@ public abstract class WindowManager {
     }
 
     public Window.Lookup openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler, OpenType openType) {
-        return openLookup(windowInfo, handler, openType, Collections.<String, Object>emptyMap());
+        return openLookup(windowInfo, handler, openType, Collections.emptyMap());
     }
 
     public Frame openFrame(Frame parentFrame, Component parent, WindowInfo windowInfo) {
-        return openFrame(parentFrame, parent, windowInfo, Collections.<String, Object>emptyMap());
+        return openFrame(parentFrame, parent, windowInfo, Collections.emptyMap());
     }
 
     public Frame openFrame(Frame parentFrame, Component parent, WindowInfo windowInfo, Map<String, Object> params) {
@@ -962,7 +968,7 @@ public abstract class WindowManager {
         }
 
         StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
-                UIPerformanceLogger.LifeCycle.LOAD,
+                LifeCycle.LOAD,
                 Logger.getLogger(UIPerformanceLogger.class));
 
         Frame component;
@@ -1138,7 +1144,7 @@ public abstract class WindowManager {
 
         if (window instanceof AbstractWindow) {
             StopWatch readyStopWatch = new Log4JStopWatch(window.getId() + "#" +
-                    UIPerformanceLogger.LifeCycle.READY,
+                    LifeCycle.READY,
                     Logger.getLogger(UIPerformanceLogger.class));
 
             ((AbstractWindow) window).ready();
@@ -1176,7 +1182,7 @@ public abstract class WindowManager {
             Element companionsElem = element.element("companions");
             if (companionsElem != null) {
                 StopWatch companionStopWatch = new Log4JStopWatch(wrappingWindow.getId() + "#" +
-                        UIPerformanceLogger.LifeCycle.COMPANION,
+                        LifeCycle.COMPANION,
                         Logger.getLogger(UIPerformanceLogger.class));
 
                 initCompanion(companionsElem, (AbstractWindow) wrappingWindow);
@@ -1186,7 +1192,7 @@ public abstract class WindowManager {
         }
 
         StopWatch injectStopWatch = new Log4JStopWatch(wrappingWindow.getId() + "#" +
-                UIPerformanceLogger.LifeCycle.INJECTION,
+                LifeCycle.INJECTION,
                 Logger.getLogger(UIPerformanceLogger.class));
 
         ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingWindow, params);
@@ -1205,7 +1211,7 @@ public abstract class WindowManager {
     protected void init(Window window, Map<String, Object> params) {
         if (window instanceof AbstractWindow) {
             StopWatch initStopWatch = new Log4JStopWatch(window.getId() +
-                    "#" + UIPerformanceLogger.LifeCycle.INIT,
+                    "#" + LifeCycle.INIT,
                     Logger.getLogger(UIPerformanceLogger.class));
 
             ((AbstractWindow) window).init(params);
