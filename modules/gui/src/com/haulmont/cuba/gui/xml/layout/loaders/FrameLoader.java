@@ -189,6 +189,7 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
         parentContext.getInjectTasks().addAll(innerContext.getInjectTasks());
         parentContext.getInitTasks().addAll(innerContext.getInitTasks());
         parentContext.getPostInitTasks().addAll(innerContext.getPostInitTasks());
+        parentContext.getPostWrapTasks().addAll(innerContext.getPostWrapTasks());
 
         setContext(parentContext);
     }
