@@ -31,13 +31,10 @@ import com.haulmont.cuba.core.app.importexport.ReferenceImportBehaviour;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.actions.ExcelAction;
-import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
-import com.haulmont.cuba.gui.components.actions.RefreshAction;
-import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.gui.components.actions.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -75,7 +72,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
     }
 
     public static final String SCREEN_NAME = "entityInspector.browse";
-    public static final WindowManager.OpenType WINDOW_OPEN_TYPE = WindowManager.OpenType.THIS_TAB;
+    public static final OpenType WINDOW_OPEN_TYPE = OpenType.THIS_TAB;
     public static final int MAX_TEXT_LENGTH = 50;
 
     protected static final Logger log = LoggerFactory.getLogger(EntityInspectorBrowse.class);
@@ -218,17 +215,16 @@ public class EntityInspectorBrowse extends AbstractLookup {
         };
 
         //collect properties in order to add non-system columns first
-        LinkedList<Table.Column> nonSystemPropertyColumns = new LinkedList<>();
-        LinkedList<Table.Column> systemPropertyColumns = new LinkedList<>();
+        List<Table.Column> nonSystemPropertyColumns = new ArrayList<>(10);
+        List<Table.Column> systemPropertyColumns = new ArrayList<>(10);
         for (MetaProperty metaProperty : meta.getProperties()) {
-            //don't show embedded & multiple referred entities
-            if (isEmbedded(metaProperty))
+            //don't show embedded, transient & multiple referred entities
+            if (isEmbedded(metaProperty) || metadata.getTools().isTransient(metaProperty))
                 continue;
 
             Range range = metaProperty.getRange();
             if (range.getCardinality().isMany())
                 continue;
-
 
             Table.Column column = new Table.Column(meta.getPropertyPath(metaProperty.getName()));
 
@@ -426,9 +422,14 @@ public class EntityInspectorBrowse extends AbstractLookup {
     }
 
     protected EntityImportView createEntityImportView(MetaClass metaClass) {
-        EntityImportView entityImportView = new EntityImportView(metaClass.getJavaClass());
+        @SuppressWarnings("unchecked")
+        Class<? extends Entity> javaClass = metaClass.getJavaClass();
+        EntityImportView entityImportView = new EntityImportView(javaClass);
+
         for (MetaProperty metaProperty : metaClass.getProperties()) {
-            if (!metadata.getTools().isPersistent(metaProperty)) continue;
+            if (!metadata.getTools().isPersistent(metaProperty))
+                continue;
+
             switch (metaProperty.getType()) {
                 case DATATYPE:
                 case ENUM:
@@ -453,7 +454,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         return entityImportView;
     }
 
-    protected class CreateAction extends AbstractAction {
+    protected class CreateAction extends BaseAction {
 
         public CreateAction() {
             super("create");
@@ -462,9 +463,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
         @Override
         public void actionPerform(Component component) {
-            Map<String, Object> editorParams = new HashMap<>();
-            editorParams.put("metaClass", selectedMeta.getName());
-            Window window = openWindow("entityInspector.edit", WINDOW_OPEN_TYPE, editorParams);
+            Window window = openWindow("entityInspector.edit", WINDOW_OPEN_TYPE,
+                    ParamsMap.of("metaClass", selectedMeta.getName()));
             window.addCloseListener(actionId -> {
                 entitiesDs.refresh();
                 entitiesTable.requestFocus();
@@ -484,9 +484,10 @@ public class EntityInspectorBrowse extends AbstractLookup {
             if (selected.size() != 1)
                 return;
 
-            Entity item = (Entity) selected.toArray()[0];
+            Entity item = (Entity) selected.iterator().next();
 
-            Window window = openWindow("entityInspector.edit", WINDOW_OPEN_TYPE, ParamsMap.of("item", item));
+            Window window = openWindow("entityInspector.edit", WINDOW_OPEN_TYPE,
+                    ParamsMap.of("item", item));
             window.addCloseListener(actionId -> {
                 entitiesDs.refresh();
                 entitiesTable.requestFocus();
@@ -518,17 +519,20 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
         @Override
         public void actionPerform(Component component) {
+            @SuppressWarnings("unchecked")
             Set<Entity> selected = entitiesTable.getSelected();
+
             if (!selected.isEmpty()) {
                 try {
                     if (exportFormat == ZIP) {
-                        exportDisplay.show(new ByteArrayDataProvider(entityImportExportService.exportEntitiesToZIP(selected)),
-                                selectedMeta.getJavaClass().getSimpleName() + ".zip", ZIP);
+                        byte[] data = entityImportExportService.exportEntitiesToZIP(selected);
+                        String resourceName = selectedMeta.getJavaClass().getSimpleName() + ".zip";
+                        exportDisplay.show(new ByteArrayDataProvider(data), resourceName, ZIP);
                     } else if (exportFormat == JSON) {
                         byte[] data = entityImportExportService.exportEntitiesToJSON(selected)
                                 .getBytes(StandardCharsets.UTF_8);
-                        exportDisplay.show(new ByteArrayDataProvider(data),
-                                selectedMeta.getJavaClass().getSimpleName() + ".json", JSON);
+                        String resourceName = selectedMeta.getJavaClass().getSimpleName() + ".json";
+                        exportDisplay.show(new ByteArrayDataProvider(data), resourceName, JSON);
                     }
                 } catch (Exception e) {
                     showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);
