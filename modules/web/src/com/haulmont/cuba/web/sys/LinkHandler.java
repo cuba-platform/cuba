@@ -36,10 +36,14 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
 import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.app.folders.Folders;
 import com.vaadin.server.Page;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.WrappedSession;
 import com.vaadin.ui.JavaScript;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -64,7 +68,7 @@ public class LinkHandler {
 
     public static final String NAME = "cuba_LinkHandler";
 
-    private Logger log = LoggerFactory.getLogger(LinkHandler.class);
+    private final Logger log = LoggerFactory.getLogger(LinkHandler.class);
 
     @Inject
     protected Messages messages;
@@ -155,7 +159,10 @@ public class LinkHandler {
         } catch (EntityAccessException e) {
             entityAccessExceptionHandler.handle(e, app.getWindowManager());
         } finally {
-            requestParams.clear();
+            VaadinRequest request = VaadinService.getCurrentRequest();
+            WrappedSession wrappedSession = request.getWrappedSession();
+            wrappedSession.removeAttribute(AppUI.LAST_REQUEST_PARAMS_ATTR);
+            wrappedSession.removeAttribute(AppUI.LAST_REQUEST_ACTION_ATTR);
         }
     }
 
@@ -163,7 +170,7 @@ public class LinkHandler {
         UserSession userSession = app.getConnection().getSession();
         final User substitutedUser = loadUser(userId, userSession.getUser());
         if (substitutedUser != null) {
-            final Map<String, String> currentRequestParams = new HashMap<>(requestParams);
+            Map<String, String> currentRequestParams = new HashMap<>(requestParams);
 
             app.getWindowManager().showOptionDialog(
                     messages.getMainMessage("toSubstitutedUser.title"),
@@ -336,7 +343,8 @@ public class LinkHandler {
             return metadata.create(info.getMetaClass());
         }
 
-        LoadContext ctx = new LoadContext(info.getMetaClass()).setId(info.getId());
+        @SuppressWarnings("unchecked")
+        LoadContext<Entity> ctx = new LoadContext(info.getMetaClass()).setId(info.getId());
         if (info.getViewName() != null)
             ctx.setView(info.getViewName());
         Entity entity;
