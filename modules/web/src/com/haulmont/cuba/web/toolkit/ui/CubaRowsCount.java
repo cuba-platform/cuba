@@ -16,9 +16,6 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.theme.ThemeConstants;
-import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -55,14 +52,11 @@ public class CubaRowsCount extends CustomComponent {
 
     protected AbstractOrderedLayout createContentLayout() {
         HorizontalLayout contentLayout = new HorizontalLayout();
+        contentLayout.setStyleName("c-paging-wrap");
         contentLayout.setSpacing(true);
-        contentLayout.setHeight("-1px");
 
-        ThemeConstants themeConstants = AppBeans.get(ThemeConstantsManager.class).getConstants();
-        String buttonWidth = themeConstants.get("cuba.gui.rowsCount.arrowButton.width");
         firstButton = new CubaButton();
         firstButton.setIcon(WebComponentsHelper.getIcon("icons/rows-count-first.png"));
-        firstButton.setWidth(buttonWidth);
         firstButton.setStyleName("c-paging-change-page");
         firstButton.addStyleName("c-paging-first");
         contentLayout.addComponent(firstButton);
@@ -71,19 +65,19 @@ public class CubaRowsCount extends CustomComponent {
 
         prevButton = new CubaButton();
         prevButton.setIcon(WebComponentsHelper.getIcon("icons/rows-count-prev.png"));
-        prevButton.setWidth(buttonWidth);
         prevButton.setStyleName("c-paging-change-page");
         prevButton.addStyleName("c-paging-prev");
         contentLayout.addComponent(prevButton);
         contentLayout.setComponentAlignment(prevButton, Alignment.MIDDLE_CENTER);
 
         label = new Label();
-        label.setWidth("-1px");
+        label.setWidthUndefined();
         label.setStyleName("c-paging-status");
         contentLayout.addComponent(label);
+        contentLayout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
 
         countButton = new CubaButton("[?]");
-        countButton.setWidth("-1px");
+        countButton.setWidthUndefined();
         countButton.setStyleName(BaseTheme.BUTTON_LINK);
         countButton.addStyleName("c-paging-count");
         countButton.setTabIndex(-1);
@@ -92,7 +86,6 @@ public class CubaRowsCount extends CustomComponent {
 
         nextButton = new CubaButton();
         nextButton.setIcon(WebComponentsHelper.getIcon("icons/rows-count-next.png"));
-        nextButton.setWidth(buttonWidth);
         nextButton.setStyleName("c-paging-change-page");
         nextButton.addStyleName("c-paging-next");
         contentLayout.addComponent(nextButton);
@@ -100,7 +93,6 @@ public class CubaRowsCount extends CustomComponent {
 
         lastButton = new CubaButton();
         lastButton.setIcon(WebComponentsHelper.getIcon("icons/rows-count-last.png"));
-        lastButton.setWidth(buttonWidth);
         lastButton.setStyleName("c-paging-change-page");
         lastButton.addStyleName("c-paging-last");
         contentLayout.addComponent(lastButton);
