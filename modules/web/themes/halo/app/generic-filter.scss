@@ -100,4 +100,11 @@
   .#{$primary-stylename}-margin-right {
     padding-right: $v-layout-margin-right;
   }
+
+  .c-maxresults {
+    height: $v-unit-size !important; // fix for high dpi
+  }
+  .c-maxresults-label {
+    line-height: $v-unit-size;
+  }
 }

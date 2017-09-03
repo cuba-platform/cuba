@@ -40,6 +40,7 @@ import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
+import com.haulmont.cuba.gui.components.Component.Alignment;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Frame.MessageType;
 import com.haulmont.cuba.gui.components.KeyCombination.Key;
@@ -295,7 +296,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         filterHelper.setInternalDebugId(filtersLookup, "filtersLookup");
 
         addConditionBtn = componentsFactory.createComponent(LinkButton.class);
-        addConditionBtn.setAlignment(Component.Alignment.MIDDLE_LEFT);
+        addConditionBtn.setAlignment(Alignment.MIDDLE_LEFT);
         addConditionBtn.setCaption(getMainMessage("filter.addCondition"));
         addConditionBtn.setAction(new AbstractAction("openAddConditionDlg") {
             @Override
@@ -318,7 +319,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         createMaxResultsLayout();
         createFtsSwitch();
-        ftsSwitch.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        ftsSwitch.setAlignment(Alignment.MIDDLE_RIGHT);
         filterHelper.setInternalDebugId(ftsSwitch, "ftsSwitch");
 
         String layoutDescription = clientConfig.getGenericFilterControlsLayout();
@@ -338,7 +339,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         controlsLayout.setWidth("100%");
 
         ftsSearchCriteriaField = componentsFactory.createComponent(TextField.class);
-        ftsSearchCriteriaField.setAlignment(Component.Alignment.MIDDLE_LEFT);
+        ftsSearchCriteriaField.setAlignment(Alignment.MIDDLE_LEFT);
         ftsSearchCriteriaField.setWidth(theme.get("cuba.gui.filter.ftsSearchCriteriaField.width"));
         ftsSearchCriteriaField.setInputPrompt(getMainMessage("filter.enterSearchPhrase"));
         filterHelper.setInternalDebugId(ftsSearchCriteriaField, "ftsSearchCriteriaField");
@@ -368,7 +369,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         createFtsSwitch();
-        ftsSwitch.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        ftsSwitch.setAlignment(Alignment.MIDDLE_RIGHT);
         controlsLayout.add(ftsSwitch);
     }
 
@@ -429,20 +430,24 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected void createMaxResultsLayout() {
         maxResultsLayout = componentsFactory.createComponent(HBoxLayout.class);
+        maxResultsLayout.setStyleName("c-maxresults");
         maxResultsLayout.setSpacing(true);
-        maxResultsLayout.setAlignment(Component.Alignment.MIDDLE_RIGHT);
-        Label maxResultsLabel1 = componentsFactory.createComponent(Label.class);
-        maxResultsLabel1.setValue(messages.getMainMessage("filter.maxResults.label1"));
-        maxResultsLabel1.setAlignment(Component.Alignment.MIDDLE_RIGHT);
-        maxResultsLayout.add(maxResultsLabel1);
+        maxResultsLayout.setAlignment(Alignment.MIDDLE_RIGHT);
+        Label maxResultsLabel = componentsFactory.createComponent(Label.class);
+        maxResultsLabel.setStyleName("c-maxresults-label");
+        maxResultsLabel.setValue(messages.getMainMessage("filter.maxResults.label1"));
+        maxResultsLabel.setAlignment(Alignment.MIDDLE_RIGHT);
+        maxResultsLayout.add(maxResultsLabel);
 
         maxResultsTextField = componentsFactory.createComponent(TextField.class);
-        maxResultsTextField.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        maxResultsTextField.setStyleName("c-maxresults-input");
+        maxResultsTextField.setAlignment(Alignment.MIDDLE_RIGHT);
         maxResultsTextField.setMaxLength(4);
         maxResultsTextField.setWidth(theme.get("cuba.gui.Filter.maxResults.width"));
         maxResultsTextField.setDatatype(Datatypes.get("int"));
 
         maxResultsLookupField = maxResultsFieldHelper.createMaxResultsLookupField();
+        maxResultsLookupField.setStyleName("c-maxresults-select");
 
         maxResultsField = textMaxResults ? maxResultsTextField : maxResultsLookupField;
         maxResultsLayout.add(maxResultsField);
@@ -848,7 +853,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     labelAndOperationCellContent.setMargin(false, false, false, true);
             }
             if (paramEditComponentCellContent != null) {
-                paramEditComponentCellContent.setAlignment(Component.Alignment.MIDDLE_LEFT);
+                paramEditComponentCellContent.setAlignment(Alignment.MIDDLE_LEFT);
                 grid.add(paramEditComponentCellContent, nextColumnStart * 2 + 1, row, nextColumnEnd * 2 + 1, row);
             }
 
@@ -1175,7 +1180,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         Label label = componentsFactory.createComponent(Label.class);
         label.setValue(lastAppliedFilter.getText());
         layout.add(label);
-        label.setAlignment(Component.Alignment.MIDDLE_LEFT);
+        label.setAlignment(Alignment.MIDDLE_LEFT);
 
         LinkButton button = componentsFactory.createComponent(LinkButton.class);
         button.setIcon("icons/item-remove.png");

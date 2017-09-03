@@ -16,8 +16,14 @@
  */
 
 @mixin cuba-table-paging {
+  .c-paging,
+  .c-paging-wrap {
+    height: $v-unit-size;
+  }
+
   .v-button.c-paging-change-page {
     height: round($v-unit-size/1.5);
+    width: ceil($v-unit-size * 2 / 3);
     padding: 0 round($v-unit-size/6);
     line-height: $v-font-size;
 
@@ -27,7 +33,7 @@
   }
 
   .c-paging-status {
-    line-height: round($v-unit-size/1.5);
+    line-height: $v-unit-size;
   }
 
   .c-paging-count {
