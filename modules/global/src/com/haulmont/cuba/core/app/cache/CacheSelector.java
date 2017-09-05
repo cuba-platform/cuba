@@ -23,6 +23,7 @@ import java.util.Collection;
  * Select items from CacheSet
  *
  */
+@Deprecated
 public interface CacheSelector {
     Collection select(CacheSet cacheSet);
 }

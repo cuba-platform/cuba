@@ -40,8 +40,11 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Cache for application objects
+ * Cache for application objects.
+ *
+ * @deprecated Will be removed in release 7.0.
  */
+@Deprecated
 public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheController {
 
     private final Logger log = LoggerFactory.getLogger(ObjectsCache.class);

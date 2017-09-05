@@ -22,7 +22,9 @@ import java.util.Date;
 /**
  * Statistics cache life cycle
  *
+ * @deprecated Will be removed in release 7.0
  */
+@Deprecated
 public class CacheStatistics {
 
     private String cacheName;

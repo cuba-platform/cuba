@@ -20,6 +20,10 @@ package com.haulmont.cuba.core.app.cache;
 import java.io.Serializable;
 import java.util.Collection;
 
+/**
+ * @deprecated Will be removed in release 7.0.
+ */
+@Deprecated
 public class CacheUpdateMessage implements Serializable {
     protected String cacheName;
     protected Collection<Object> itemsToRemove;

@@ -22,7 +22,9 @@ import java.util.Map;
 /**
  * Interface defining methods for manage cache content and modify cache properties in runtime
  *
+ * @deprecated Will be removed in release 7.0
  */
+@Deprecated
 public interface ObjectsCacheController {
 
     /**

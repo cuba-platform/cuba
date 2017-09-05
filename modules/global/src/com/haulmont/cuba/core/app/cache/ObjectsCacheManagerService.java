@@ -20,9 +20,11 @@ package com.haulmont.cuba.core.app.cache;
 import java.util.Map;
 
 /**
- * Service for manage application caches
+ * Service for manage application caches.
  *
+ * @deprecated Will be removed in release 7.0.
  */
+@Deprecated
 public interface ObjectsCacheManagerService {
     String NAME = "cuba_ObjectsCacheManagerService";
 

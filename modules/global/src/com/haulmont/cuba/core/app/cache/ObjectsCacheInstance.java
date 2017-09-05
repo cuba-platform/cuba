@@ -23,8 +23,11 @@ import org.apache.commons.collections4.Predicate;
 import java.util.Collection;
 
 /**
- * Objects cache interface
+ * Objects cache interface.
+ *
+ * @deprecated Will be removed in release 7.0
  */
+@Deprecated
 public interface ObjectsCacheInstance {
     String getName();
 

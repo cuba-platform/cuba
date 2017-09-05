@@ -31,6 +31,10 @@ import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * @deprecated Will be removed in release 7.0.
+ */
+@Deprecated
 @Component(ObjectsCacheManagerAPI.NAME)
 public class ObjectsCacheManager implements ObjectsCacheManagerAPI {
 

@@ -27,9 +27,12 @@ import java.util.*;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Set of elements for ObjectsCache
+ * Set of elements for ObjectsCache.
+ *
+ * @deprecated Will be removed in release 7.0
  */
 @SuppressWarnings({"unused"})
+@Deprecated
 public class CacheSet implements Cloneable {
     protected boolean forUpdate = false;
     protected Set<Object> addedItems = Sets.newHashSet();

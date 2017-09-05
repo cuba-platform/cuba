@@ -23,7 +23,9 @@ import java.util.Collection;
 /**
  * Interface to provide "Data in memory" caches and controllers.
  *
+ * @deprecated Will be removed in release 7.0.
  */
+@Deprecated
 public interface ObjectsCacheManagerAPI {
 
     String NAME = "cuba_ObjectsCacheManager";

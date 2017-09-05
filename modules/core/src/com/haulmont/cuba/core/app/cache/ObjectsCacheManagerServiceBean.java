@@ -22,6 +22,10 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.Map;
 
+/**
+ * @deprecated Will be removed in release 7.0.
+ */
+@Deprecated
 @Service(ObjectsCacheManagerService.NAME)
 public class ObjectsCacheManagerServiceBean implements ObjectsCacheManagerService {
 

@@ -36,8 +36,11 @@ import java.util.Map;
 
 /**
  * JPQL cache loader <br>
- * Loads objects tree with jpql query and view
+ * Loads objects tree with jpql query and view.
+ *
+ * @deprecated Will be removed in release 7.0
  */
+@Deprecated
 public class StandardCacheLoader implements CacheLoader {
 
     @Inject

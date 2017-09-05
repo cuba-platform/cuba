@@ -22,7 +22,9 @@ import java.util.Map;
 /**
  * Data loader interface for ObjectsCache
  *
+ * @deprecated Will be removed in release 7.0.
  */
+@Deprecated
 public interface CacheLoader {
     CacheSet loadData(ObjectsCache cache) throws CacheException;
 
