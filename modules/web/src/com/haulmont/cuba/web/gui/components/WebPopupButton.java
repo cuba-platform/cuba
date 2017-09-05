@@ -27,7 +27,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaPopupButtonLayout;
 import com.vaadin.ui.Button;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.beans.PropertyChangeListener;
 import java.util.*;
@@ -335,16 +334,6 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
             }
         }
         return null;
-    }
-
-    @Nonnull
-    @Override
-    public Action getActionNN(String id) {
-        Action action = getAction(id);
-        if (action == null) {
-            throw new IllegalStateException("Unable to find action with id " + id);
-        }
-        return action;
     }
 
     @Override

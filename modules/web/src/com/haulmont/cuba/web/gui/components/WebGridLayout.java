@@ -27,9 +27,10 @@ import com.vaadin.event.LayoutEvents;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.shared.ui.MarginInfo;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+
+import static com.haulmont.cuba.web.gui.components.WebWrapperUtils.toVaadinAlignment;
 
 public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implements GridLayout {
 
@@ -47,10 +48,10 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
             throw new IllegalStateException("Component already has parent");
         }
 
-        final com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
+        com.vaadin.ui.Component vComponent = childComponent.unwrapComposition(com.vaadin.ui.Component.class);
 
         component.addComponent(vComponent);
-        component.setComponentAlignment(vComponent, WebWrapperUtils.toVaadinAlignment(childComponent.getAlignment()));
+        component.setComponentAlignment(vComponent, toVaadinAlignment(childComponent.getAlignment()));
 
         if (frame != null) {
             if (childComponent instanceof BelongToFrame
@@ -97,10 +98,10 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
             throw new IllegalStateException("Component already has parent");
         }
 
-        final com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
+        com.vaadin.ui.Component vComponent = childComponent.unwrapComposition(com.vaadin.ui.Component.class);
 
         component.addComponent(vComponent, col, row, col2, row2);
-        component.setComponentAlignment(vComponent, WebWrapperUtils.toVaadinAlignment(childComponent.getAlignment()));
+        component.setComponentAlignment(vComponent, toVaadinAlignment(childComponent.getAlignment()));
 
         if (frame != null) {
             if (childComponent instanceof BelongToFrame
@@ -136,9 +137,30 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
         component.setColumns(columns);
     }
 
+    @Nullable
+    @Override
+    public Component getComponent(int columnIndex, int rowIndex) {
+        com.vaadin.ui.Component vComponent = this.component.getComponent(columnIndex, rowIndex);
+        return findChildComponent(vComponent);
+    }
+
+    @Nullable
+    @Override
+    public Area getComponentArea(Component childComponent) {
+        com.vaadin.ui.Component vComponent = childComponent.unwrapComposition(com.vaadin.ui.Component.class);
+        com.vaadin.ui.GridLayout.Area vArea = component.getComponentArea(vComponent);
+        if (vArea == null) {
+            return null;
+        }
+
+        return new Area(childComponent,
+                vArea.getColumn1(), vArea.getRow1(),
+                vArea.getColumn2(), vArea.getRow2());
+    }
+
     @Override
     public void remove(Component childComponent) {
-        component.removeComponent(WebComponentsHelper.getComposition(childComponent));
+        component.removeComponent(childComponent.unwrapComposition(com.vaadin.ui.Component.class));
         ownComponents.remove(childComponent);
 
         childComponent.setParent(null);
@@ -186,16 +208,6 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
         return ComponentsHelper.getComponent(this, id);
     }
 
-    @Nonnull
-    @Override
-    public Component getComponentNN(String id) {
-        Component component = getComponent(id);
-        if (component == null) {
-            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
-        }
-        return component;
-    }
-
     @Override
     public Collection<Component> getOwnComponents() {
         return Collections.unmodifiableCollection(ownComponents);
@@ -240,7 +252,7 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
 
         if (layoutClickListener == null) {
             layoutClickListener = event -> {
-                Component childComponent = findChildComponent(this, event.getChildComponent());
+                Component childComponent = findChildComponent(event.getChildComponent());
                 MouseEventDetails mouseEventDetails = WebWrapperUtils.toMouseEventDetails(event);
 
                 LayoutClickEvent layoutClickEvent = new LayoutClickEvent(this, childComponent, mouseEventDetails);
@@ -251,9 +263,9 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
         }
     }
 
-    protected Component findChildComponent(GridLayout layout, com.vaadin.ui.Component clickedComponent) {
-        for (Component component : layout.getComponents()) {
-            if (WebComponentsHelper.getComposition(component) == clickedComponent) {
+    protected Component findChildComponent(com.vaadin.ui.Component vComponent) {
+        for (Component component : getComponents()) {
+            if (component.unwrapComposition(com.vaadin.ui.Component.class) == vComponent) {
                 return component;
             }
         }

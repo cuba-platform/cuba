@@ -30,7 +30,6 @@ import com.haulmont.cuba.gui.data.DsContext;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collection;
@@ -260,15 +259,6 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
         return frame.getComponent(id);
     }
 
-    @Nonnull
-    @Override
-    public Component getComponentNN(String id) {
-        Component component = getComponent(id);
-        if (component == null)
-            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
-        return component;
-    }
-
     @Override
     public Collection<Component> getOwnComponents() {
         return frame.getOwnComponents();
@@ -447,6 +437,12 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     @Override
     public int indexOf(Component component) {
         return frame.indexOf(component);
+    }
+
+    @Nullable
+    @Override
+    public Component getComponent(int index) {
+        return frame.getComponent(index);
     }
 
     /**
@@ -694,15 +690,5 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     @Nullable
     public Action getAction(String id) {
         return frame.getAction(id);
-    }
-
-    @Nonnull
-    @Override
-    public Action getActionNN(String id) {
-        Action action = getAction(id);
-        if (action == null) {
-            throw new IllegalStateException("Unable to find action with id " + id);
-        }
-        return action;
     }
 }

@@ -29,7 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.dom4j.Element;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -162,16 +161,6 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     @Override
     public Component getComponent(String id) {
         return ComponentsHelper.getComponent(this, id);
-    }
-
-    @Nonnull
-    @Override
-    public Component getComponentNN(String id) {
-        Component component = getComponent(id);
-        if (component == null) {
-            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
-        }
-        return component;
     }
 
     @Override

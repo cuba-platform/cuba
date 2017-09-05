@@ -35,7 +35,6 @@ import com.haulmont.cuba.gui.data.DsContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.event.HierarchyEvent;
@@ -511,15 +510,5 @@ public class DesktopFrame
     @Nullable
     public Action getAction(String id) {
         return actionsHolder.getAction(id);
-    }
-
-    @Nonnull
-    @Override
-    public Action getActionNN(String id) {
-        Action action = getAction(id);
-        if (action == null) {
-            throw new IllegalStateException("Unable to find action with id " + id);
-        }
-        return action;
     }
 }

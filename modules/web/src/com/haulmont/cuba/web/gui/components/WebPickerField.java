@@ -39,7 +39,6 @@ import com.vaadin.ui.Button;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -401,16 +400,6 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
             }
         }
         return null;
-    }
-
-    @Nonnull
-    @Override
-    public Action getActionNN(String id) {
-        Action action = getAction(id);
-        if (action == null) {
-            throw new IllegalStateException("Unable to find action with id " + id);
-        }
-        return action;
     }
 
     protected void initActionHandler() {

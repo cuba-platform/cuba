@@ -16,20 +16,19 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.HtmlBoxLayout;
 import com.vaadin.ui.CustomLayout;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
 public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> implements HtmlBoxLayout {
 
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
-    protected Map<String, Component> componentByIds = new HashMap<>();
 
     public WebHtmlBoxLayout() {
         component = new CustomLayout("");
@@ -55,7 +54,6 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
 
         if (childComponent.getId() != null) {
             component.addComponent(vComponent, childComponent.getId());
-            componentByIds.put(childComponent.getId(), childComponent);
         } else {
             component.addComponent(vComponent);
         }
@@ -78,7 +76,6 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
     public void remove(Component childComponent) {
         if (childComponent.getId() != null) {
             component.removeComponent(childComponent.getId());
-            componentByIds.remove(childComponent.getId());
         } else {
             component.removeComponent(WebComponentsHelper.getComposition(childComponent));
         }
@@ -90,7 +87,6 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
     @Override
     public void removeAll() {
         component.removeAllComponents();
-        componentByIds.clear();
 
         List<Component> components = new ArrayList<>(ownComponents);
         ownComponents.clear();
@@ -117,23 +113,18 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
     @Nullable
     @Override
     public Component getOwnComponent(String id) {
-        return componentByIds.get(id);
+        Preconditions.checkNotNullArgument(id);
+
+        return ownComponents.stream()
+                .filter(component -> Objects.equals(id, component.getId()))
+                .findFirst()
+                .orElse(null);
     }
 
     @Nullable
     @Override
     public Component getComponent(String id) {
         return ComponentsHelper.getComponent(this, id);
-    }
-
-    @Nonnull
-    @Override
-    public Component getComponentNN(String id) {
-        Component component = getComponent(id);
-        if (component == null) {
-            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
-        }
-        return component;
     }
 
     @Override

@@ -36,7 +36,6 @@ import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import javax.swing.*;
@@ -555,16 +554,6 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
             }
         }
         return null;
-    }
-
-    @Nonnull
-    @Override
-    public Action getActionNN(String id) {
-        Action action = getAction(id);
-        if (action == null) {
-            throw new IllegalStateException("Unable to find action with id " + id);
-        }
-        return action;
     }
 
     @Override

@@ -17,13 +17,12 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.cuba.gui.ComponentsHelper;
+import com.google.common.collect.Iterables;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.MarginInfo;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import org.apache.commons.lang.ObjectUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
@@ -166,8 +165,14 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     }
 
     @Override
-    public int indexOf(Component component) {
-        return ComponentsHelper.indexOf(components, component);
+    public int indexOf(Component child) {
+        return Iterables.indexOf(components, c -> c == child);
+    }
+
+    @Nullable
+    @Override
+    public Component getComponent(int index) {
+        return Iterables.get(components, index);
     }
 
     @Override
@@ -225,16 +230,6 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     @Override
     public Component getComponent(String id) {
         return content.getComponent(id);
-    }
-
-    @Nonnull
-    @Override
-    public Component getComponentNN(String id) {
-        Component component = getComponent(id);
-        if (component == null) {
-            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
-        }
-        return component;
     }
 
     @Override

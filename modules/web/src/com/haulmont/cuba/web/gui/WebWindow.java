@@ -59,7 +59,6 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -316,16 +315,6 @@ public class WebWindow implements Window, Component.Wrapper,
         return actionsHolder.getAction(id);
     }
 
-    @Nonnull
-    @Override
-    public Action getActionNN(String id) {
-        Action action = getAction(id);
-        if (action == null) {
-            throw new IllegalStateException("Unable to find action with id " + id);
-        }
-        return action;
-    }
-
     @Override
     public boolean isValid() {
         return delegate.isValid();
@@ -560,7 +549,7 @@ public class WebWindow implements Window, Component.Wrapper,
             if (focusComponent != null) {
                 focusComponent.requestFocus();
             } else {
-                log.error("Can't find focus component: " + componentId);
+                log.error("Can't find focus component: {}", componentId);
             }
         } else {
             findAndFocusChildComponent();
@@ -774,7 +763,13 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public int indexOf(Component component) {
-        return ComponentsHelper.indexOf(ownComponents, component);
+        return ownComponents.indexOf(component);
+    }
+
+    @Nullable
+    @Override
+    public Component getComponent(int index) {
+        return ownComponents.get(index);
     }
 
     @Override
@@ -959,16 +954,6 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public Component getComponent(String id) {
         return ComponentsHelper.getWindowComponent(this, id);
-    }
-
-    @Nonnull
-    @Override
-    public Component getComponentNN(String id) {
-        Component component = getComponent(id);
-        if (component == null) {
-            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
-        }
-        return component;
     }
 
     @Override

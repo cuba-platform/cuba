@@ -33,7 +33,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -120,7 +119,21 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
     @Override
     public int indexOf(Component component) {
-        return ComponentsHelper.indexOf(ownComponents, component);
+        return ownComponents.indexOf(component);
+    }
+
+    @Nullable
+    @Override
+    public Component getComponent(int index) {
+        com.vaadin.ui.Component vComponent = getComponentContent().getComponent(index);
+
+        for (Component ownComponent : ownComponents) {
+            if (ownComponent.unwrapComposition(com.vaadin.ui.Component.class) == vComponent) {
+                return ownComponent;
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -175,16 +188,6 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     @Override
     public Component getComponent(String id) {
         return ComponentsHelper.getComponent(this, id);
-    }
-
-    @Nonnull
-    @Override
-    public Component getComponentNN(String id) {
-        Component component = getComponent(id);
-        if (component == null) {
-            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
-        }
-        return component;
     }
 
     @Override

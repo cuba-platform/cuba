@@ -32,7 +32,6 @@ import com.haulmont.cuba.web.WebWindowManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
@@ -449,15 +448,5 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
     @Nullable
     public com.haulmont.cuba.gui.components.Action getAction(String id) {
         return actionsHolder.getAction(id);
-    }
-
-    @Nonnull
-    @Override
-    public Action getActionNN(String id) {
-        Action action = getAction(id);
-        if (action == null) {
-            throw new IllegalStateException("Unable to find action with id " + id);
-        }
-        return action;
     }
 }

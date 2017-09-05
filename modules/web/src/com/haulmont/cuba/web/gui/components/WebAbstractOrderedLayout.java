@@ -26,16 +26,14 @@ import com.vaadin.event.LayoutEvents;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
-        extends WebAbstractComponent<T>
+public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout> extends WebAbstractComponent<T>
         implements Component.OrderedContainer, Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
         Component.LayoutClickNotifier, Component.ShortcutNotifier {
 
-    protected Collection<Component> ownComponents = new LinkedHashSet<>();
+    protected List<Component> ownComponents = new ArrayList<>();
     protected LayoutEvents.LayoutClickListener layoutClickListener;
     protected Map<Component.ShortcutAction, ShortcutListener> shortcuts;
 
@@ -74,11 +72,7 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
         if (index == ownComponents.size()) {
             ownComponents.add(childComponent);
         } else {
-            List<Component> componentsTempList = new ArrayList<>(ownComponents);
-            componentsTempList.add(index, childComponent);
-
-            ownComponents.clear();
-            ownComponents.addAll(componentsTempList);
+            ownComponents.add(index, childComponent);
         }
 
         childComponent.setParent(this);
@@ -86,7 +80,13 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
 
     @Override
     public int indexOf(Component component) {
-        return ComponentsHelper.indexOf(ownComponents, component);
+        return ownComponents.indexOf(component);
+    }
+
+    @Nullable
+    @Override
+    public Component getComponent(int index) {
+        return ownComponents.get(index);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
     public void removeAll() {
         component.removeAllComponents();
 
-        List<Component> components = new ArrayList<>(ownComponents);
+        Component[] components = ownComponents.toArray(new Component[ownComponents.size()]);
         ownComponents.clear();
 
         for (Component childComponent : components) {
@@ -138,16 +138,6 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout>
     @Override
     public Component getComponent(String id) {
         return ComponentsHelper.getComponent(this, id);
-    }
-
-    @Nonnull
-    @Override
-    public Component getComponentNN(String id) {
-        Component component = getComponent(id);
-        if (component == null) {
-            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
-        }
-        return component;
     }
 
     @Override

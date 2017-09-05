@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.google.common.collect.Iterables;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
@@ -27,7 +28,6 @@ import com.haulmont.cuba.gui.components.MarginInfo;
 import net.miginfocom.layout.CC;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.*;
@@ -144,8 +144,8 @@ public abstract class DesktopAbstractBox
     }
 
     @Override
-    public int indexOf(Component component) {
-        return ComponentsHelper.indexOf(ownComponents, component);
+    public int indexOf(Component child) {
+        return Iterables.indexOf(ownComponents, c -> c == child);
     }
 
     protected void attachToFrame(Component component) {
@@ -325,14 +325,10 @@ public abstract class DesktopAbstractBox
         return ComponentsHelper.getComponent(this, id);
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public Component getComponentNN(String id) {
-        Component component = getComponent(id);
-        if (component == null) {
-            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
-        }
-        return component;
+    public Component getComponent(int index) {
+        return Iterables.get(ownComponents, index);
     }
 
     @Override

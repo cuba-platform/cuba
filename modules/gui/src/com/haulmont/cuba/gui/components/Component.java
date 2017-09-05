@@ -256,7 +256,13 @@ public interface Component {
          * @return component. Throws exception if not found.
          */
         @Nonnull
-        Component getComponentNN(String id);
+        default Component getComponentNN(String id) {
+            Component component = getComponent(id);
+            if (component == null) {
+                throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
+            }
+            return component;
+        }
 
         /** Get all components directly owned by this container */
         Collection<Component> getOwnComponents();
@@ -271,6 +277,33 @@ public interface Component {
     interface OrderedContainer extends Container {
         void add(Component childComponent, int index);
         int indexOf(Component component);
+
+        /**
+         * Returns the component at the given position.
+         *
+         * @param index component index
+         * @return the component at the given index or null.
+         */
+        @Nullable
+        Component getComponent(int index);
+
+        /**
+         * Returns the component at the given position.
+         *
+         * @param index component index
+         * @return the component at the given index. Throws exception if not found.
+         */
+        @Nonnull
+        default Component getComponentNN(int index) {
+            Component component = getComponent(index);
+            if (component == null) {
+                throw new IllegalArgumentException(
+                        String.format("Not found component by index %s", index)
+                );
+            }
+
+            return component;
+        }
     }
 
     /**
@@ -568,7 +601,13 @@ public interface Component {
          * @throws java.lang.IllegalArgumentException if not found
          */
         @Nonnull
-        Action getActionNN(String id);
+        default Action getActionNN(String id) {
+            Action action = getAction(id);
+            if (action == null) {
+                throw new IllegalStateException("Unable to find action with id " + id);
+            }
+            return action;
+        }
     }
 
     /**

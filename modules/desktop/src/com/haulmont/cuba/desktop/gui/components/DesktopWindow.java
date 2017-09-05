@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.google.common.collect.Iterables;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
@@ -60,7 +61,6 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -466,16 +466,6 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Nullable
     public Action getAction(String id) {
         return actionsHolder.getAction(id);
-    }
-
-    @Nonnull
-    @Override
-    public Action getActionNN(String id) {
-        Action action = getAction(id);
-        if (action == null) {
-            throw new IllegalStateException("Unable to find action with id " + id);
-        }
-        return action;
     }
 
     @Nullable
@@ -952,7 +942,13 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public int indexOf(Component component) {
-        return ComponentsHelper.indexOf(ownComponents, component);
+        return Iterables.indexOf(ownComponents, c -> c == component);
+    }
+
+    @Nullable
+    @Override
+    public Component getComponent(int index) {
+        return Iterables.get(ownComponents, index);
     }
 
     @Override
@@ -1034,16 +1030,6 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public Component getComponent(String id) {
         return ComponentsHelper.getWindowComponent(this, id);
-    }
-
-    @Nonnull
-    @Override
-    public Component getComponentNN(String id) {
-        Component component = getComponent(id);
-        if (component == null) {
-            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
-        }
-        return component;
     }
 
     @Override

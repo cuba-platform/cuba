@@ -28,7 +28,6 @@ import com.haulmont.cuba.gui.components.GridLayout;
 import com.haulmont.cuba.gui.components.MarginInfo;
 import net.miginfocom.layout.CC;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.*;
@@ -171,6 +170,18 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
         layoutAdapter.setColumns(columns);
     }
 
+    @Nullable
+    @Override
+    public Component getComponent(int columnIndex, int rowIndex) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Area getComponentArea(Component component) {
+        return null;
+    }
+
     @Override
     public void add(Component component) {
         if (component.getParent() != null && component.getParent() != this) {
@@ -279,16 +290,6 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
     @Override
     public Component getComponent(String id) {
         return ComponentsHelper.getComponent(this, id);
-    }
-
-    @Nonnull
-    @Override
-    public Component getComponentNN(String id) {
-        Component component = getComponent(id);
-        if (component == null) {
-            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
-        }
-        return component;
     }
 
     @Override

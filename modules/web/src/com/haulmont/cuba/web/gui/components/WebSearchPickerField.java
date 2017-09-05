@@ -30,7 +30,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import org.apache.commons.lang.ObjectUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
@@ -193,16 +192,6 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
     @Nullable
     public Action getAction(String id) {
         return pickerField.getAction(id);
-    }
-
-    @Nonnull
-    @Override
-    public Action getActionNN(String id) {
-        Action action = getAction(id);
-        if (action == null) {
-            throw new IllegalStateException("Unable to find action with id " + id);
-        }
-        return action;
     }
 
     @Override

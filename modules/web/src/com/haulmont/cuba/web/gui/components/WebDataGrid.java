@@ -68,7 +68,6 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.beans.PropertyChangeListener;
 import java.util.*;
@@ -1492,16 +1491,6 @@ public class WebDataGrid<E extends Entity> extends WebAbstractComponent<CubaGrid
             }
         }
         return null;
-    }
-
-    @Nonnull
-    @Override
-    public Action getActionNN(String id) {
-        Action action = getAction(id);
-        if (action == null) {
-            throw new IllegalStateException("Unable to find action with id " + id);
-        }
-        return action;
     }
 
     @Override

@@ -23,11 +23,9 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SuggestionPickerField;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.vaadin.data.Property;
 import com.vaadin.ui.Component;
 import org.apache.commons.lang.ObjectUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,8 +35,6 @@ public class WebSuggestionPickerField extends WebSuggestionField implements Sugg
     protected WebPickerField pickerField;
 
     protected boolean updateComponentValue = false;
-
-    protected Metadata metadata = AppBeans.get(Metadata.NAME);
 
     public WebSuggestionPickerField() {
         component.setImmediate(true);
@@ -73,7 +69,7 @@ public class WebSuggestionPickerField extends WebSuggestionField implements Sugg
         return pickerField.getDescription();
     }
 
-    protected void initValueSync(final WebPickerField.Picker picker) {
+    protected void initValueSync(WebPickerField.Picker picker) {
         component.addValueChangeListener(e -> {
             if (updateComponentValue)
                 return;
@@ -86,7 +82,7 @@ public class WebSuggestionPickerField extends WebSuggestionField implements Sugg
             updateComponentValue = false;
         });
 
-        picker.addValueChangeListener((Property.ValueChangeListener) event -> {
+        picker.addValueChangeListener(event -> {
             if (updateComponentValue)
                 return;
 
@@ -183,16 +179,6 @@ public class WebSuggestionPickerField extends WebSuggestionField implements Sugg
     @Override
     public Action getAction(String id) {
         return pickerField.getAction(id);
-    }
-
-    @Nonnull
-    @Override
-    public Action getActionNN(String id) {
-        Action action = getAction(id);
-        if (action == null) {
-            throw new IllegalStateException("Unable to find action with id " + id);
-        }
-        return action;
     }
 
     @Override

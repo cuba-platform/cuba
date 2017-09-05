@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
 import org.apache.commons.lang.ObjectUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -140,16 +139,6 @@ public class DesktopAbstractActionsHolderComponent<C extends JComponent> extends
             }
         }
         return null;
-    }
-
-    @Nonnull
-    @Override
-    public Action getActionNN(String id) {
-        Action action = getAction(id);
-        if (action == null) {
-            throw new IllegalStateException("Unable to find action with id " + id);
-        }
-        return action;
     }
 
     @Override

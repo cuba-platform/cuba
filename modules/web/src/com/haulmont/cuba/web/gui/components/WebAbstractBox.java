@@ -27,7 +27,6 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractOrderedLayout;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -81,8 +80,14 @@ public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
     }
 
     @Override
-    public int indexOf(Component component) {
-        return ComponentsHelper.indexOf(ownComponents, component);
+    public int indexOf(Component childComponent) {
+        return ownComponents.indexOf(childComponent);
+    }
+
+    @Nullable
+    @Override
+    public Component getComponent(int index) {
+        return ownComponents.get(index);
     }
 
     protected void attachToFrame(Component childComponent) {
@@ -137,16 +142,6 @@ public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
     @Override
     public Component getComponent(String id) {
         return ComponentsHelper.getComponent(this, id);
-    }
-
-    @Nonnull
-    @Override
-    public Component getComponentNN(String id) {
-        Component component = getComponent(id);
-        if (component == null) {
-            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
-        }
-        return component;
     }
 
     @Override
@@ -215,7 +210,7 @@ public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
         getEventRouter().addListener(LayoutClickListener.class, listener);
         if (layoutClickListener == null) {
             layoutClickListener = event -> {
-                Component childComponent = findChildComponent(this, event.getChildComponent());
+                Component childComponent = findChildComponent(event.getChildComponent());
                 MouseEventDetails mouseEventDetails = WebWrapperUtils.toMouseEventDetails(event);
                 LayoutClickEvent layoutClickEvent = new LayoutClickEvent(this, childComponent, mouseEventDetails);
 
@@ -225,9 +220,9 @@ public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
         }
     }
 
-    protected Component findChildComponent(BoxLayout layout, com.vaadin.ui.Component clickedComponent) {
-        for (Component component : layout.getComponents()) {
-            if (component.unwrapComposition(com.vaadin.ui.Component.class) == clickedComponent) {
+    protected Component findChildComponent(com.vaadin.ui.Component childComponent) {
+        for (Component component : getComponents()) {
+            if (component.unwrapComposition(com.vaadin.ui.Component.class) == childComponent) {
                 return component;
             }
         }

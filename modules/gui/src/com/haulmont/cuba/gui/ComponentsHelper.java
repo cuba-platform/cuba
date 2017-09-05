@@ -16,6 +16,8 @@
  */
 package com.haulmont.cuba.gui;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -30,7 +32,6 @@ import com.haulmont.cuba.gui.components.actions.*;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -52,12 +53,16 @@ public abstract class ComponentsHelper {
      * @return          collection of components
      */
     public static Collection<Component> getComponents(Component.Container container) {
-        Collection<Component> res = new LinkedHashSet<>();
+        // do not return LinkedHashSet, it uses much more memory than ArrayList
+        Collection<Component> res = new ArrayList<>();
 
         fillChildComponents(container, res);
 
-        // do not return LinkedHashSet, it uses much more memory than ArrayList
-        return new ArrayList<>(res);
+        if (res.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return Collections.unmodifiableCollection(res);
     }
 
     @Nullable
@@ -507,6 +512,10 @@ public abstract class ComponentsHelper {
         }
     }
 
+    /**
+     * @deprecated Use guava {@link Iterables#indexOf(Iterable, Predicate)}
+     */
+    @Deprecated
     public static int indexOf(Iterable<Component> components, Component component) {
         Preconditions.checkNotNullArgument(components);
 
@@ -562,7 +571,7 @@ public abstract class ComponentsHelper {
         int oldIndex = -1;
         for (int i = 0; i < actionList.size(); i++) {
             Action a = actionList.get(i);
-            if (ObjectUtils.equals(a.getId(), actionId)) {
+            if (Objects.equals(a.getId(), actionId)) {
                 oldIndex = i;
                 break;
             }
