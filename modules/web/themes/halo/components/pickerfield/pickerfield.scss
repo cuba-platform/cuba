@@ -19,19 +19,23 @@
   & .v-caption-on-right > .#{$primary-stylename},
   .#{$primary-stylename} {
     display: inline-table;
+    height: $v-unit-size
   }
 
   .#{$primary-stylename}-layout {
     outline: none;
     display: table-row;
+
+    height: 100%;
+
+    & .v-filterselect,
+    & input {
+      height: 100%;
+    }
   }
 
   .#{$primary-stylename}-layout > * {
     display: table-cell;
-  }
-
-  .#{$primary-stylename}-layout > .v-filterselect > input {
-    height: 100%;
   }
 
   .v-textfield.#{$primary-stylename}-text {
