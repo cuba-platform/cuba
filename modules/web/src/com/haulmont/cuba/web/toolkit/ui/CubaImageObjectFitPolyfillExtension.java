@@ -16,12 +16,12 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.vaadin.annotations.JavaScript;
+import com.haulmont.cuba.web.sys.WebJarResource;
 import com.vaadin.server.AbstractExtension;
 import com.vaadin.server.Extension;
 import com.vaadin.ui.UI;
 
-@JavaScript("vaadin://resources/ofi/ofi.min.js")
+@WebJarResource("object-fit-images/3.2.3/dist/ofi.min.js")
 public class CubaImageObjectFitPolyfillExtension extends AbstractExtension {
 
     public void extend(CubaImage image) {

@@ -18,13 +18,13 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.auth.RequestContext;
+import com.haulmont.cuba.web.sys.WebJarResource;
 import com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadState;
-import com.vaadin.annotations.JavaScript;
+import com.vaadin.server.ClassResource;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import com.vaadin.server.Resource;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.LegacyComponent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -37,7 +37,7 @@ import java.util.*;
 /**
  * @deprecated Use {@link CubaFileUpload}
  */
-@JavaScript(value = "vaadin://resources/swfobject/swfobject-2.2.js")
+@WebJarResource("swfobject/2.2/swfobject.js")
 @Deprecated
 public class CubaMultiUpload extends CubaAbstractUploadComponent implements LegacyComponent {
 
@@ -210,9 +210,9 @@ public class CubaMultiUpload extends CubaAbstractUploadComponent implements Lega
         registerRpc(rpc);
 
         setResource(CubaMultiUploadState.SWFUPLOAD_BOOTSTRAP_JS_KEY,
-                new ThemeResource("../../resources/swfupload/swfupload.min.js"));
+                new ClassResource("/META-INF/resources/webjars/swfupload/2.2/swfupload.min.js"));
         setResource(CubaMultiUploadState.SWFUPLOAD_FLASH_KEY,
-                new ThemeResource("../../resources/swfupload/swfupload.swf"));
+                new ClassResource("/META-INF/resources/webjars/swfupload/2.2/swfupload.swf"));
     }
 
     public Resource getButtonImage() {

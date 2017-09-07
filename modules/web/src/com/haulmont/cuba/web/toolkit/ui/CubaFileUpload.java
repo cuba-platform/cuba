@@ -17,10 +17,10 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.web.sys.WebJarResource;
 import com.haulmont.cuba.web.toolkit.ui.client.fileupload.CubaFileUploadClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.fileupload.CubaFileUploadServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.fileupload.CubaFileUploadState;
-import com.vaadin.annotations.JavaScript;
 import com.vaadin.server.*;
 import com.vaadin.server.communication.FileUploadHandler;
 import com.vaadin.ui.Component;
@@ -39,10 +39,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-@JavaScript({
-        "vaadin://resources/jquery/jquery-ui.min.js",
-        "vaadin://resources/jqueryfileupload/jquery.iframe-transport-9.12.1.min.js",
-        "vaadin://resources/jqueryfileupload/jquery.fileupload-9.12.1.min.js"
+@WebJarResource({
+        "jquery-ui/1.12.1/jquery-ui.min.js",
+        "jquery-fileupload/9.12.1/jquery-fileupload.min.js",
+        "jquery-fileupload/9.12.1/jquery-fileupload.min.js"
 })
 public class CubaFileUpload extends CubaAbstractUploadComponent
         implements Component.Focusable, LegacyComponent {

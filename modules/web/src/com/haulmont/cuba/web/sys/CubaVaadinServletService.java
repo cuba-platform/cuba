@@ -25,7 +25,6 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.ScreenProfiler;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
@@ -33,7 +32,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
 import com.vaadin.server.*;
 import com.vaadin.server.communication.*;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.UI;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
@@ -48,7 +46,6 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -163,7 +160,12 @@ public class CubaVaadinServletService extends VaadinServletService {
         for (RequestHandler handler : requestHandlers) {
             if (handler instanceof UidlRequestHandler) {
                 // replace UidlRequestHandler with CubaUidlRequestHandler
-                cubaRequestHandlers.add(new CubaUidlRequestHandler());
+                cubaRequestHandlers.add(new UidlRequestHandler() {
+                    @Override
+                    protected UidlWriter createUidlWriter() {
+                        return new CubaUidlWriter();
+                    }
+                });
             } else if (handler instanceof PublishedFileHandler) {
                 // replace PublishedFileHandler with CubaPublishedFileHandler
                 // for support resources from VAADIN directory
@@ -182,6 +184,8 @@ public class CubaVaadinServletService extends VaadinServletService {
                 cubaRequestHandlers.add(handler);
             }
         }
+
+        cubaRequestHandlers.add(new CubaWebJarsHandler(getServlet().getServletContext()));
 
         return cubaRequestHandlers;
     }
@@ -272,29 +276,6 @@ public class CubaVaadinServletService extends VaadinServletService {
             }
 
             return result;
-        }
-    }
-
-    // Set security context to AppContext for normal UI requests
-    protected static class CubaUidlRequestHandler extends UidlRequestHandler {
-        protected ScreenProfiler profiler = AppBeans.get(ScreenProfiler.NAME);
-
-        @Override
-        protected UidlWriter createUidlWriter() {
-            return new UidlWriter() {
-                @Override
-                protected void writePerformanceData(UI ui, Writer writer) throws IOException {
-                    super.writePerformanceData(ui, writer);
-
-                    String profilerMarker = profiler.getCurrentProfilerMarker(ui);
-                    if (profilerMarker != null) {
-                        profiler.setCurrentProfilerMarker(ui, null);
-                        long lastRequestTimestamp = ui.getSession().getLastRequestTimestamp();
-                        writer.write(String.format(", \"profilerMarker\": \"%s\", \"profilerEventTs\": \"%s\", \"profilerServerTime\": %s",
-                                profilerMarker, lastRequestTimestamp, System.currentTimeMillis() - lastRequestTimestamp));
-                    }
-                }
-            };
         }
     }
 

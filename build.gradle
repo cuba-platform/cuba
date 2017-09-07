@@ -579,6 +579,14 @@ configure(webModule) {
             exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
         }
 
+        /* WebJar dependencies */
+        compile(bom['org.webjars:jquery'])
+        compile(bom['org.webjars:jquery-ui'])
+        compile(bom['org.webjars:jquery-fileupload'])
+        compile(bom['org.webjars:swfobject'])
+        compile(bom['org.webjars:swfupload'])
+        compile(bom['org.webjars.npm:object-fit-images'])
+
         provided(bom['org.apache.tomcat:tomcat-servlet-api'])
 
         themes(bom['com.vaadin:vaadin-themes'])
