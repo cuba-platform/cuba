@@ -242,8 +242,6 @@ public class FileLoaderClientImpl implements FileLoader {
                 if (selectedUrl == null) {
                     throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fd.getName(), ex);
                 }
-            } finally {
-                connectionManager.shutdown();
             }
         }
     }
