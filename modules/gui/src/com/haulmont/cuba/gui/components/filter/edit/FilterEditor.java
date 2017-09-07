@@ -125,8 +125,13 @@ public class FilterEditor extends AbstractWindow {
     @WindowParam(name = "hideCustomConditions")
     protected Boolean hideCustomConditions;
 
+    @WindowParam(name = "showConditionHiddenOption")
+    protected Boolean showConditionHiddenOption = Boolean.FALSE;
+
     protected final List<String> componentsToHideInShortForm = Arrays.asList("hiddenLabel", "hidden",
             "requiredLabel", "required", "widthLabel", "width", "captionLabel", "caption");
+
+    protected final List<String> componentsForHiddenOption = Arrays.asList("hiddenLabel", "hidden");
 
     public interface Companion {
         void showComponentName(WindowManager windowManager, String title, String message);
@@ -236,6 +241,9 @@ public class FilterEditor extends AbstractWindow {
                     for (String componentName : componentsToHideInShortForm) {
                         Component component = activeConditionFrame.getComponent(componentName);
                         if (component != null) {
+                            if (BooleanUtils.isTrue(showConditionHiddenOption) && componentsForHiddenOption.contains(componentName)) {
+                                continue;
+                            }
                             component.setVisible(false);
                         }
                     }
