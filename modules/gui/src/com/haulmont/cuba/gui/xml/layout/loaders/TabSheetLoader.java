@@ -78,8 +78,18 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
 
         loadTabIndex(resultComponent, element);
 
+        loadTabsVisible(resultComponent, element);
+        loadTabCaptionsAsHtml(resultComponent, element);
+
+        loadTabsProperties();
+
+        loadSubComponents();
+    }
+
+    protected void loadTabsProperties() {
         @SuppressWarnings("unchecked")
         List<Element> tabElements = element.elements("tab");
+
         for (Element tabElement : tabElements) {
             TabSheet.Tab tab = pendingLoadTabs.remove(tabElement);
             if (tab != null) {
@@ -117,7 +127,19 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
                 }
             }
         }
+    }
 
-        loadSubComponents();
+    protected void loadTabsVisible(TabSheet resultComponent, Element element) {
+        String tabsVisible = element.attributeValue("tabsVisible");
+        if (StringUtils.isNotEmpty(tabsVisible)) {
+            resultComponent.setTabsVisible(Boolean.parseBoolean(tabsVisible));
+        }
+    }
+
+    protected void loadTabCaptionsAsHtml(TabSheet resultComponent, Element element) {
+        String tabCaptionsAsHtml = element.attributeValue("tabCaptionsAsHtml");
+        if (StringUtils.isNotEmpty(tabCaptionsAsHtml)) {
+            resultComponent.setTabCaptionsAsHtml(Boolean.parseBoolean(tabCaptionsAsHtml));
+        }
     }
 }

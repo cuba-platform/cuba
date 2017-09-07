@@ -72,6 +72,9 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
     // CAUTION do not add ChangeListeners directly to impl
     protected List<ChangeListener> implTabSheetChangeListeners = new ArrayList<>();
 
+    private boolean tabCaptionsAsHtml = false; // just stub
+    private boolean tabsVisible = true; // just stub
+
     public DesktopTabSheet() {
         impl = new JTabbedPaneExt();
         impl.addChangeListener(e -> {
@@ -358,6 +361,26 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
     @Override
     public Collection<Tab> getTabs() {
         return Collections.unmodifiableCollection(tabs);
+    }
+
+    @Override
+    public boolean isTabCaptionsAsHtml() {
+        return tabCaptionsAsHtml;
+    }
+
+    @Override
+    public void setTabCaptionsAsHtml(boolean tabCaptionsAsHtml) {
+        this.tabCaptionsAsHtml = tabCaptionsAsHtml;
+    }
+
+    @Override
+    public boolean isTabsVisible() {
+        return tabsVisible;
+    }
+
+    @Override
+    public void setTabsVisible(boolean tabsVisible) {
+        this.tabsVisible = tabsVisible;
     }
 
     @Override

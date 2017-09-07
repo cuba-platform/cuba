@@ -77,6 +77,9 @@ public class AccordionLoader extends ContainerLoader<Accordion> {
         loadDescription(resultComponent, element);
         loadResponsive(resultComponent, element);
 
+        loadTabsVisible(resultComponent, element);
+        loadTabCaptionsAsHtml(resultComponent, element);
+
         @SuppressWarnings("unchecked")
         List<Element> tabElements = element.elements("tab");
         for (Element tabElement : tabElements) {
@@ -108,5 +111,19 @@ public class AccordionLoader extends ContainerLoader<Accordion> {
         }
 
         loadSubComponents();
+    }
+
+    protected void loadTabsVisible(Accordion resultComponent, Element element) {
+        String tabsVisible = element.attributeValue("tabsVisible");
+        if (StringUtils.isNotEmpty(tabsVisible)) {
+            resultComponent.setTabsVisible(Boolean.parseBoolean(tabsVisible));
+        }
+    }
+
+    protected void loadTabCaptionsAsHtml(Accordion resultComponent, Element element) {
+        String tabCaptionsAsHtml = element.attributeValue("tabCaptionsAsHtml");
+        if (StringUtils.isNotEmpty(tabCaptionsAsHtml)) {
+            resultComponent.setTabCaptionsAsHtml(Boolean.parseBoolean(tabCaptionsAsHtml));
+        }
     }
 }

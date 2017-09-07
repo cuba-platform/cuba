@@ -428,6 +428,26 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
     }
 
     @Override
+    public boolean isTabCaptionsAsHtml() {
+        return component.isTabCaptionsAsHtml();
+    }
+
+    @Override
+    public void setTabCaptionsAsHtml(boolean tabCaptionsAsHtml) {
+        component.setTabCaptionsAsHtml(tabCaptionsAsHtml);
+    }
+
+    @Override
+    public boolean isTabsVisible() {
+        return component.isTabsVisible();
+    }
+
+    @Override
+    public void setTabsVisible(boolean tabsVisible) {
+        component.setTabsVisible(tabsVisible);
+    }
+
+    @Override
     public void addListener(Accordion.TabChangeListener listener) {
         initComponentTabChangeListener();
 

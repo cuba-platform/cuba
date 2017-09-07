@@ -446,10 +446,31 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     }
 
     @Override
+    public boolean isTabCaptionsAsHtml() {
+        return component.isTabCaptionsAsHtml();
+    }
+
+    @Override
+    public void setTabCaptionsAsHtml(boolean tabCaptionsAsHtml) {
+        component.setTabCaptionsAsHtml(tabCaptionsAsHtml);
+    }
+
+    @Override
+    public boolean isTabsVisible() {
+        return component.isTabsVisible();
+    }
+
+    @Override
+    public void setTabsVisible(boolean tabsVisible) {
+        component.setTabsVisible(tabsVisible);
+    }
+
+    @Override
     public void addListener(TabChangeListener listener) {
         initComponentTabChangeListener();
 
-        getEventRouter().addListener(SelectedTabChangeListener.class, new CompatibleTabSheetSelectedTabChangeListener(listener));
+        getEventRouter().addListener(SelectedTabChangeListener.class,
+                new CompatibleTabSheetSelectedTabChangeListener(listener));
     }
 
     private void initComponentTabChangeListener() {

@@ -2373,6 +2373,8 @@
                 </xs:sequence>
 
                 <xs:attribute name="stylename" type="tabsheetStylename"/>
+                <xs:attribute name="tabCaptionsAsHtml" type="xs:boolean"/>
+                <xs:attribute name="tabsVisible" type="xs:boolean"/>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
@@ -2403,6 +2405,8 @@
                 </xs:sequence>
 
                 <xs:attribute name="stylename" type="accordionStylename"/>
+                <xs:attribute name="tabCaptionsAsHtml" type="xs:boolean"/>
+                <xs:attribute name="tabsVisible" type="xs:boolean"/>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
