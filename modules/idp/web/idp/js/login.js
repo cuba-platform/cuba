@@ -16,8 +16,13 @@ $(function () {
 
     var spQueryParameter = getUrlQueryParameter('sp');
     var serviceProviderUrl = "";
-    if (spQueryParameter != null) {
+    if (spQueryParameter !== null) {
         serviceProviderUrl = decodeURIComponent(spQueryParameter);
+    }
+
+    var responseType = getUrlQueryParameter("response_type");
+    if ("client-ticket" !== responseType) {
+        responseType = "server-ticket";
     }
 
     var uri = window.location.toString();
@@ -43,12 +48,13 @@ $(function () {
                 username: $('.form-username').val(),
                 password: $('.form-password').val(),
                 serviceProviderUrl: serviceProviderUrl,
+                responseType: responseType,
                 locale: selectedLocale
             }),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (result) {
-                if (result.errorCode == null) {
+                if (result.errorCode === null) {
                     $(".idp_loggedin").show();
 
                     setTimeout(function () {
@@ -96,7 +102,7 @@ $(function () {
                     var firstLangCode = null;
                     // prepare locales
                     $.each(result.locales, function (key, value) {
-                        if (firstLangCode == null) {
+                        if (firstLangCode === null) {
                             firstLangCode = key;
                         }
 
@@ -106,7 +112,8 @@ $(function () {
                     // show locale selector
                     $(".locale-control").show();
 
-                    if (firstLangCode != null && l10n.getLanguage() != firstLangCode) {
+                    if (firstLangCode !== null
+                        && l10n.getLanguage() !== firstLangCode) {
                         l10n.setLanguage(firstLangCode);
                     }
 

@@ -36,6 +36,7 @@ import org.springframework.security.oauth2.provider.token.AuthorizationServerTok
 import javax.inject.Inject;
 import java.util.*;
 
+import static com.haulmont.restapi.auth.CubaTokenEnhancer.EXTENDED_DETAILS_ATTRIBUTE_PREFIX;
 import static com.haulmont.restapi.auth.CubaUserAuthenticationProvider.SESSION_ID_DETAILS_ATTRIBUTE;
 
 public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements OAuthTokenIssuer {
@@ -49,7 +50,6 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
 
     @Inject
     protected Configuration configuration;
-
     @Inject
     protected LoginService loginService;
 
@@ -62,7 +62,7 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
     }
 
     @Override
-    public OAuth2AccessTokenResult issueToken(String login, Locale locale, Map<String, Object> loginParams) {
+    public OAuth2AccessTokenResult issueToken(String login, Locale locale, OAuth2AccessTokenReqest tokenReqest) {
         RestApiConfig config = configuration.getConfig(RestApiConfig.class);
 
         Map<String, String> parameters = new HashMap<>();
@@ -73,7 +73,8 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
 
         UserSession session;
         try {
-            session = loginService.loginTrusted(login, config.getTrustedClientPassword(), locale, loginParams);
+            session = loginService.loginTrusted(login, config.getTrustedClientPassword(),
+                    locale, tokenReqest.getLoginParams());
             if (!session.isSpecificPermitted("cuba.restApi.enabled")) {
                 try {
                     AppContext.withSecurityContext(new SecurityContext(session), () -> {
@@ -91,6 +92,9 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
         }
 
         parameters.put(SESSION_ID_DETAILS_ATTRIBUTE, session.getId().toString());
+        for (Map.Entry<String, String> tokenParam : tokenReqest.getTokenDetails().entrySet()) {
+            parameters.put(EXTENDED_DETAILS_ATTRIBUTE_PREFIX + tokenParam.getKey(), tokenParam.getValue());
+        }
 
         ClientDetails authenticatedClient = clientDetailsService.loadClientByClientId(config.getRestClientId());
         TokenRequest tokenRequest = getRequestFactory().createTokenRequest(parameters, authenticatedClient);
@@ -98,6 +102,11 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
         OAuth2AccessToken accessToken = grant(GRANT_TYPE, tokenRequest);
 
         return new OAuth2AccessTokenResult(session, accessToken);
+    }
+
+    @Override
+    public OAuth2AccessTokenResult issueToken(String login, Locale locale, Map<String, Object> loginParams) {
+        return issueToken(login, locale, new OAuth2AccessTokenReqest(loginParams));
     }
 
     @Override

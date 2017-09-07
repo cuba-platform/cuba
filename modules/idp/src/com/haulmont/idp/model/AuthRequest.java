@@ -23,6 +23,10 @@ public class AuthRequest implements Serializable {
     private String password;
     private String locale;
     private String serviceProviderUrl;
+    /**
+     * Can be client-ticket or server-ticket
+     */
+    private String responseType;
 
     public String getUsername() {
         return username;
@@ -54,5 +58,13 @@ public class AuthRequest implements Serializable {
 
     public void setServiceProviderUrl(String serviceProviderUrl) {
         this.serviceProviderUrl = serviceProviderUrl;
+    }
+
+    public String getResponseType() {
+        return responseType;
+    }
+
+    public void setResponseType(String responseType) {
+        this.responseType = responseType;
     }
 }

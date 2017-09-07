@@ -20,6 +20,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
@@ -32,11 +33,24 @@ public interface OAuthTokenIssuer {
      *
      * @param login  an existing user login
      * @param locale locale
+     * @param loginParams params that are passed to login mechanism
      * @return result with logged in user session and newly generated OAuth2 access token
      * @throws BadCredentialsException in case of user is now allowed to use REST-API or middleware
      *                                 throws {@link com.haulmont.cuba.security.global.LoginException} during login
      */
     OAuth2AccessTokenResult issueToken(String login, Locale locale, Map<String, Object> loginParams);
+
+    /**
+     * Issue token for principal.
+     *
+     * @param login  an existing user login
+     * @param locale locale
+     * @param tokenReqest additional login and token parameters
+     * @return result with logged in user session and newly generated OAuth2 access token
+     * @throws BadCredentialsException in case of user is now allowed to use REST-API or middleware
+     *                                 throws {@link com.haulmont.cuba.security.global.LoginException} during login
+     */
+    OAuth2AccessTokenResult issueToken(String login, Locale locale, OAuth2AccessTokenReqest tokenReqest);
 
     /**
      * Result of programmatic access token generation.
@@ -56,6 +70,34 @@ public interface OAuthTokenIssuer {
 
         public OAuth2AccessToken getAccessToken() {
             return accessToken;
+        }
+    }
+
+    class OAuth2AccessTokenReqest {
+        private Map<String, Object> loginParams = Collections.emptyMap();
+        private Map<String, String> tokenDetails = Collections.emptyMap();
+
+        public OAuth2AccessTokenReqest() {
+        }
+
+        public OAuth2AccessTokenReqest(Map<String, Object> loginParams) {
+            this.loginParams = loginParams;
+        }
+
+        public Map<String, Object> getLoginParams() {
+            return loginParams;
+        }
+
+        public Map<String, String> getTokenDetails() {
+            return tokenDetails;
+        }
+
+        public void setLoginParams(Map<String, Object> loginParams) {
+            this.loginParams = loginParams;
+        }
+
+        public void setTokenDetails(Map<String, String> tokenDetails) {
+            this.tokenDetails = tokenDetails;
         }
     }
 }

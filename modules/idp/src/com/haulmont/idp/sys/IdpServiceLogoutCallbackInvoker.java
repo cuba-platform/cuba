@@ -25,6 +25,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.entity.ContentType;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
@@ -63,6 +64,7 @@ public class IdpServiceLogoutCallbackInvoker {
             HttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager();
             HttpClient client = HttpClientBuilder.create()
                     .setConnectionManager(connectionManager)
+                    .setRetryHandler(new DefaultHttpRequestRetryHandler(3, true))
                     .build();
 
             try {

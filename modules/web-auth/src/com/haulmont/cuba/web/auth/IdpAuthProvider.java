@@ -22,9 +22,12 @@ import com.google.gson.JsonSyntaxException;
 import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.app.IdpService;
+import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.IdpSession;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
@@ -76,6 +79,12 @@ public class IdpAuthProvider implements CubaAuthProvider {
 
     @Inject
     protected GlobalConfig globalConfig;
+
+    @Inject
+    protected UserSessionSource userSessionSource;
+
+    @Inject
+    protected LoginService loginService;
 
     @Override
     public void authenticate(String login, String password, Locale locale) throws LoginException {
@@ -295,7 +304,7 @@ public class IdpAuthProvider implements CubaAuthProvider {
     }
 
     protected void pingIdpSessionServer(String idpSessionId) {
-        log.debug("Ping IDP session");
+        log.debug("Ping IDP session {}", idpSessionId);
 
         String idpBaseURL = webAuthConfig.getIdpBaseURL();
         if (!idpBaseURL.endsWith("/")) {
@@ -321,6 +330,18 @@ public class IdpAuthProvider implements CubaAuthProvider {
         try {
             HttpResponse httpResponse = client.execute(httpPost);
             int statusCode = httpResponse.getStatusLine().getStatusCode();
+            if (statusCode == 410) {
+                // we have to logout user
+                log.debug("IDP session is expired {}", idpSessionId);
+
+                if (userSessionSource.checkCurrentUserSession()) {
+                    loginService.logout();
+
+                    UserSession userSession = userSessionSource.getUserSession();
+
+                    throw new NoUserSessionException(userSession.getId());
+                }
+            }
             if (statusCode != 200) {
                 log.warn("IDP respond status {} on session ping", statusCode);
             }

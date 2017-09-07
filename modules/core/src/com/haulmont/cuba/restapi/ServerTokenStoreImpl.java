@@ -41,6 +41,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.*;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.DelayQueue;
@@ -124,6 +125,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                 return bos.toByteArray();
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             public void setState(byte[] state) {
                 if (state == null || state.length == 0) {
@@ -383,6 +385,11 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         if (serverConfig.getRestStoreTokensInDb() && clusterManagerAPI.isMaster()) {
             deleteExpiredTokensInDatabase();
         }
+    }
+
+    @Override
+    public List<String> findTokensByAttribute(String attributeName, Object attributeValue) {
+        return null;
     }
 
     protected void deleteExpiredTokensInMemory() {

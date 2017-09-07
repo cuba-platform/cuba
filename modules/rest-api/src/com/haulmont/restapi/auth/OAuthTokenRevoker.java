@@ -16,16 +16,18 @@
 
 package com.haulmont.restapi.auth;
 
+import com.haulmont.restapi.events.OAuthTokenRevokedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 /**
@@ -37,31 +39,51 @@ public class OAuthTokenRevoker {
 
     @Inject
     protected TokenStore tokenStore;
+    @Inject
+    protected ApplicationEventPublisher eventPublisher;
 
-    public boolean revokeToken(String token, Authentication clientAuth) {
+    @Nullable
+    public OAuth2AccessToken revokeToken(String token, Authentication clientAuth) {
         log.debug("revokeToken: token = {}, clientAuth = {}", token, clientAuth);
-        return revokeAccessToken(token, clientAuth);
+        return revokeAccessToken(token, clientAuth, TokenRevocationInitiator.CLIENT);
     }
 
-    protected boolean revokeAccessToken(String token, Authentication clientAuth) {
+    @Nullable
+    public OAuth2AccessToken revokeToken(String token) {
+        log.debug("revokeToken: token = {} without clientAuth", token);
+        return revokeAccessToken(token, null, TokenRevocationInitiator.SERVER);
+    }
+
+    @Nullable
+    protected OAuth2AccessToken revokeAccessToken(String token, @Nullable Authentication clientAuth,
+                                                  TokenRevocationInitiator revocationInitiator) {
         OAuth2AccessToken accessToken = tokenStore.readAccessToken(token);
         if (accessToken != null) {
             OAuth2Authentication authToRevoke = tokenStore.readAuthentication(accessToken);
-            checkIfTokenIsIssuedToClient(clientAuth, authToRevoke);
+
+            if (revocationInitiator == TokenRevocationInitiator.CLIENT) {
+                checkIfTokenIsIssuedToClient(clientAuth, authToRevoke);
+            }
+
             if (accessToken.getRefreshToken() != null) {
                 tokenStore.removeRefreshToken(accessToken.getRefreshToken());
             }
             tokenStore.removeAccessToken(accessToken);
             log.debug("Access token removed: {}", token);
-            return true;
+
+            if (eventPublisher != null) {
+                eventPublisher.publishEvent(new OAuthTokenRevokedEvent(accessToken, revocationInitiator));
+            }
+
+            return accessToken;
         }
 
         log.debug("No access token {} found in the token store.", token);
-        return false;
+        return null;
     }
 
     protected void checkIfTokenIsIssuedToClient(Authentication clientAuth,
-                                              OAuth2Authentication authToRevoke) {
+                                                OAuth2Authentication authToRevoke) {
         String requestingClientId = clientAuth.getName();
         String tokenClientId = authToRevoke.getOAuth2Request().getClientId();
         if (!requestingClientId.equals(tokenClientId)) {

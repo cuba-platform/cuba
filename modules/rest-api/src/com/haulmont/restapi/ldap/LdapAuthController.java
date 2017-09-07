@@ -19,6 +19,7 @@ package com.haulmont.restapi.ldap;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.restapi.auth.OAuthTokenIssuer;
+import com.haulmont.restapi.auth.OAuthTokenIssuer.OAuth2AccessTokenResult;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +70,8 @@ public class LdapAuthController implements InitializingBean {
     @Inject
     protected LoginService loginService;
 
+    protected RestLdapConfig ldapConfig;
+
     protected Set<HttpMethod> allowedRequestMethods = Collections.singleton(HttpMethod.POST);
 
     protected WebResponseExceptionTranslator providerExceptionHandler = new DefaultWebResponseExceptionTranslator();
@@ -91,8 +94,8 @@ public class LdapAuthController implements InitializingBean {
                                                              HttpServletRequest request)
             throws HttpRequestMethodNotSupportedException {
 
-        if (!configuration.getConfig(RestLdapConfig.class).getLdapEnabled()) {
-            log.debug("LDAP authentication is disabled. Property cuba.rest.ldapEnabled is false");
+        if (!ldapConfig.getLdapEnabled()) {
+            log.debug("LDAP authentication is disabled. Property cuba.rest.ldap.enabled is false");
 
             throw new InvalidGrantException("LDAP is not supported");
         }
@@ -114,15 +117,20 @@ public class LdapAuthController implements InitializingBean {
 
         String password = parameters.get("password");
 
+        OAuth2AccessTokenResult tokenResult =
+                authenticate(username, password, request.getLocale(), ipAddress, parameters);
+
+        return ResponseEntity.ok(tokenResult.getAccessToken());
+    }
+
+    protected OAuth2AccessTokenResult authenticate(String username, String password, Locale locale,
+                                                   String ipAddress, Map<String, String> parameters) {
         if (!ldapTemplate.authenticate(LdapUtils.emptyLdapName(), buildPersonFilter(username), password)) {
             log.info("REST API authentication failed: {} {}", username, ipAddress);
             throw new BadCredentialsException("Bad credentials");
         }
 
-        OAuthTokenIssuer.OAuth2AccessTokenResult tokenResult =
-                oAuthTokenIssuer.issueToken(username, request.getLocale(), Collections.emptyMap());
-
-        return ResponseEntity.ok(tokenResult.getAccessToken());
+        return oAuthTokenIssuer.issueToken(username, locale, Collections.emptyMap());
     }
 
     protected void checkBruteForceProtection(String login, String ipAddress) {
@@ -136,7 +144,7 @@ public class LdapAuthController implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        RestLdapConfig ldapConfig = configuration.getConfig(RestLdapConfig.class);
+        this.ldapConfig = configuration.getConfig(RestLdapConfig.class);
 
         if (ldapConfig.getLdapEnabled()) {
             checkRequiredConfigProperties(ldapConfig);
@@ -232,6 +240,10 @@ public class LdapAuthController implements InitializingBean {
         filter.and(new EqualsFilter("objectclass", "person"))
                 .and(new EqualsFilter(ldapUserLoginField, login));
         return filter.encode();
+    }
+
+    public Set<HttpMethod> getAllowedRequestMethods() {
+        return allowedRequestMethods;
     }
 
     public void setAllowedRequestMethods(Set<HttpMethod> allowedRequestMethods) {

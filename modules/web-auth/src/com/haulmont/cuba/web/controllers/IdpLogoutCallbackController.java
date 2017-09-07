@@ -38,6 +38,7 @@ import java.util.Objects;
 
 /**
  * Performs logout of user session when IDP session is logged out.
+ * IDP server requests this controller to logout related sessions in a service.
  */
 @Controller("cuba_IdpLogoutCallbackController")
 @RequestMapping("/idpc")
@@ -80,8 +81,8 @@ public class IdpLogoutCallbackController {
 
         log.trace("Logout user session by IDP session");
 
-        AppContext.withSecurityContext(new SecurityContext(systemSession),
-                (Runnable) () -> idpService.logoutUserSession(idpSessionId)
+        AppContext.withSecurityContext(new SecurityContext(systemSession), () ->
+                idpService.logoutUserSession(idpSessionId)
         );
     }
 }

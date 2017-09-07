@@ -335,12 +335,16 @@ public abstract class App {
     public void onHeartbeat() {
         Connection connection = getConnection();
 
+        boolean sessionIsAlive = false;
         if (connection.isAuthenticated()) {
             // Ping middleware session if connected and show messages
             log.debug("Ping session");
 
             try {
                 String message = userSessionService.getMessages();
+
+                sessionIsAlive = true;
+
                 if (message != null) {
                     message = message.replace("\n", "<br/>");
                     getWindowManager().showNotification(message, Frame.NotificationType.ERROR_HTML);
@@ -352,7 +356,9 @@ public abstract class App {
             }
         }
 
-        pingExternalAuthentication();
+        if (sessionIsAlive) {
+            pingExternalAuthentication();
+        }
     }
 
     public void pingExternalAuthentication() {
@@ -365,6 +371,8 @@ public abstract class App {
                         authProvider.pingUserSession(session);
                     }
                 }
+            } catch (NoUserSessionException ignored) {
+                // ignore no user session exception
             } catch (Exception e) {
                 log.warn("Exception while external authenticated session ping", e);
             }

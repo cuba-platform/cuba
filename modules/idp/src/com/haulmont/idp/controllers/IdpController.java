@@ -26,14 +26,13 @@ import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.security.app.IdpService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.idp.IdpConfig;
-import com.haulmont.idp.model.AuthRequest;
-import com.haulmont.idp.model.AuthResponse;
-import com.haulmont.idp.model.LocalesInfo;
+import com.haulmont.idp.model.*;
 import com.haulmont.idp.sys.IdpServiceLogoutCallbackInvoker;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -74,8 +73,9 @@ public class IdpController {
     @Inject
     protected IdpServiceLogoutCallbackInvoker logoutCallbackInvoker;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @GetMapping(value = "/")
     public String checkIdpSession(@RequestParam(value = "sp", defaultValue = "") String serviceProviderUrl,
+                                  @RequestParam(value = "response_type", defaultValue = "server-ticket") String responseType,
                                   @CookieValue(value = CUBA_IDP_COOKIE_NAME, defaultValue = "") String idpSessionCookie,
                                   HttpServletResponse response) {
         if (!Strings.isNullOrEmpty(serviceProviderUrl)
@@ -99,11 +99,18 @@ public class IdpController {
             if (serviceProviderTicket != null) {
                 String serviceProviderRedirectUrl;
                 try {
-                    serviceProviderRedirectUrl = new URIBuilder(serviceProviderUrl)
-                            .setParameter(CUBA_IDP_TICKET_PARAMETER, serviceProviderTicket)
-                            .build()
-                            .toString();
+                    URIBuilder uriBuilder = new URIBuilder(serviceProviderUrl);
+
+                    if (ResponseType.CLIENT_TICKET.getCode().equals(responseType)) {
+                        uriBuilder.setFragment(CUBA_IDP_TICKET_PARAMETER + "=" + serviceProviderTicket);
+                    } else {
+                        uriBuilder.setParameter(CUBA_IDP_TICKET_PARAMETER, serviceProviderTicket);
+                    }
+
+                    serviceProviderRedirectUrl = uriBuilder.build().toString();
                 } catch (URISyntaxException e) {
+                    log.warn("Unable to compose redirect URL", e);
+
                     response.setStatus(HttpStatus.BAD_REQUEST.value());
                     return null;
                 }
@@ -115,7 +122,7 @@ public class IdpController {
                     log.warn("Unable to send redirect to service provider URL", e.getMessage());
                 }
 
-                log.info("New ticket {} created for logged in user", serviceProviderTicket);
+                log.debug("New ticket {} created for already logged in user", serviceProviderTicket);
 
                 return null;
             } else {
@@ -128,11 +135,18 @@ public class IdpController {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
 
+        if (ResponseType.CLIENT_TICKET.getCode().equals(responseType)) {
+            return "redirect:login.html" +
+                    "?response_type=" + ResponseType.CLIENT_TICKET.getCode()
+                    + "&sp=" + URLEncodeUtils.encodeUtf8(serviceProviderUrl);
+        }
+
         return "redirect:login.html?sp=" + URLEncodeUtils.encodeUtf8(serviceProviderUrl);
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    @GetMapping(value = "/logout")
     public String logout(@RequestParam(value = "sp", defaultValue = "") String serviceProviderUrl,
+                         @RequestParam(value = "response_type", defaultValue = "server-ticket") String responseType,
                          @CookieValue(value = CUBA_IDP_COOKIE_NAME, defaultValue = "") String idpSessionCookie,
                          HttpServletResponse response) {
         if (!Strings.isNullOrEmpty(serviceProviderUrl)
@@ -166,10 +180,28 @@ public class IdpController {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
 
+        if (ResponseType.CLIENT_TICKET.getCode().equals(responseType)) {
+            return "redirect:login.html" +
+                    "?response_type=" + ResponseType.CLIENT_TICKET.getCode()
+                    + "&sp=" + URLEncodeUtils.encodeUtf8(serviceProviderUrl);
+        }
+
         return "redirect:login.html?sp=" + URLEncodeUtils.encodeUtf8(serviceProviderUrl);
     }
 
-    @RequestMapping(value = "/auth", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+    @GetMapping(value = "/status", produces = "application/json; charset=UTF-8")
+    public ResponseEntity status(@CookieValue(value = CUBA_IDP_COOKIE_NAME, defaultValue = "") String idpSessionCookie) {
+        if (!Strings.isNullOrEmpty(idpSessionCookie)) {
+            String serviceProviderTicket = idpService.createServiceProviderTicket(idpSessionCookie);
+            if (serviceProviderTicket != null) {
+                return ResponseEntity.ok(new IdpTicket(serviceProviderTicket));
+            }
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/auth", produces = "application/json; charset=UTF-8")
     @ResponseBody
     public AuthResponse authenticate(@RequestBody AuthRequest auth,
                                      @CookieValue(value = CUBA_IDP_COOKIE_NAME, defaultValue = "") String idpSessionCookie,
@@ -240,10 +272,15 @@ public class IdpController {
 
         String serviceProviderRedirectUrl;
         try {
-            serviceProviderRedirectUrl = new URIBuilder(serviceProviderUrl)
-                    .setParameter(CUBA_IDP_TICKET_PARAMETER, loginResult.getServiceProviderTicket())
-                    .build()
-                    .toString();
+            URIBuilder uriBuilder = new URIBuilder(serviceProviderUrl);
+
+            if ("client-ticket".equals(auth.getResponseType())) {
+                uriBuilder.setFragment(CUBA_IDP_TICKET_PARAMETER + "=" + loginResult.getServiceProviderTicket());
+            } else {
+                uriBuilder.setParameter(CUBA_IDP_TICKET_PARAMETER, loginResult.getServiceProviderTicket());
+            }
+
+            serviceProviderRedirectUrl = uriBuilder.build().toString();
         } catch (URISyntaxException e) {
             return AuthResponse.failed("invalid_params");
         }
@@ -253,7 +290,7 @@ public class IdpController {
         return AuthResponse.authenticated(serviceProviderRedirectUrl);
     }
 
-    @RequestMapping(value = "/locales", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @GetMapping(value = "/locales", produces = "application/json; charset=UTF-8")
     @ResponseBody
     public LocalesInfo getLocales() {
         LocalesInfo localesInfo = new LocalesInfo();

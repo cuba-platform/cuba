@@ -17,10 +17,11 @@
 package com.haulmont.cuba.restapi;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
- * OAuth token store for the REST API
+ * OAuth token store for the REST API.
  */
 public interface ServerTokenStore {
 
@@ -41,4 +42,13 @@ public interface ServerTokenStore {
     void removeAccessToken(String tokenValue);
 
     void deleteExpiredTokens();
+
+    /**
+     * Finds tokens with attribute with name {@code attributeName} and value equal to passed {@code attributeValue}.
+     *
+     * @param attributeName attribute name
+     * @param attributeValue attribute value
+     * @return token ids
+     */
+    List<String> findTokensByAttribute(String attributeName, Object attributeValue);
 }

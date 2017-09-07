@@ -17,10 +17,14 @@
 package com.haulmont.restapi.controllers;
 
 import com.haulmont.restapi.auth.OAuthTokenRevoker;
+import com.haulmont.restapi.events.OAuthTokenRevokedResponseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,19 +41,33 @@ public class OAuthTokenController {
     private final Logger log = LoggerFactory.getLogger(OAuthTokenController.class);
 
     @Inject
-    private OAuthTokenRevoker oAuthTokenRevoker;
+    protected OAuthTokenRevoker oAuthTokenRevoker;
+    @Inject
+    protected ApplicationEventPublisher eventPublisher;
 
     @PostMapping("/v2/oauth/revoke")
-    public void revokeToken(@RequestParam("token") String token,
-                            Principal principal) {
+    public ResponseEntity revokeToken(@RequestParam("token") String token, Principal principal) {
         if (!(principal instanceof Authentication)) {
             throw new InsufficientAuthenticationException(
                     "There is no client authentication. Try adding an appropriate authentication filter.");
         }
         log.info("POST /oauth/revoke; token = {},", token);
         // Invalid token revocations (token does not exist) must respond with 200 code
-        if (!oAuthTokenRevoker.revokeToken(token, (Authentication) principal)) {
+        OAuth2AccessToken revokedToken = oAuthTokenRevoker.revokeToken(token, (Authentication) principal);
+        if (revokedToken == null) {
             log.debug("No token with value {} was revoked.", token);
         }
+
+        if (eventPublisher != null) {
+            OAuthTokenRevokedResponseEvent event = new OAuthTokenRevokedResponseEvent(token, revokedToken);
+
+            eventPublisher.publishEvent(event);
+
+            if (event.getResponseEntity() != null) {
+                return event.getResponseEntity();
+            }
+        }
+
+        return ResponseEntity.ok().build();
     }
 }

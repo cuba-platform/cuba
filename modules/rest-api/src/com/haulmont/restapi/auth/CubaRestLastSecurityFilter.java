@@ -23,8 +23,11 @@ import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.core.sys.UserInvocationContext;
+import com.haulmont.restapi.events.AfterRestInvocationEvent;
+import com.haulmont.restapi.events.BeforeRestInvocationEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
@@ -32,6 +35,7 @@ import org.springframework.security.oauth2.provider.authentication.OAuth2Authent
 import javax.inject.Inject;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
@@ -53,6 +57,8 @@ public class CubaRestLastSecurityFilter implements Filter {
     protected Configuration configuration;
     @Inject
     protected MessageTools messageTools;
+    @Inject
+    protected ApplicationEventPublisher eventPublisher;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -64,7 +70,32 @@ public class CubaRestLastSecurityFilter implements Filter {
             throws IOException, ServletException {
         logRequest(request);
         parseRequestLocale(request);
-        chain.doFilter(request, response);
+
+        try {
+            if (eventPublisher != null) {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+                BeforeRestInvocationEvent beforeInvocationEvent = new BeforeRestInvocationEvent(authentication, request, response);
+                eventPublisher.publishEvent(beforeInvocationEvent);
+
+                boolean invocationPrevented = beforeInvocationEvent.isInvocationPrevented();
+
+                try {
+                    if (!invocationPrevented) {
+                        chain.doFilter(request, response);
+                    } else {
+                        log.debug("REST API invocation prevented by BeforeRestInvocationEvent handler");
+                    }
+                } finally {
+                    eventPublisher.publishEvent(new AfterRestInvocationEvent(authentication, request, response, invocationPrevented));
+                }
+            } else {
+                chain.doFilter(request, response);
+            }
+        } catch (Exception e) {
+            log.error("Error during REST API call", e);
+            ((HttpServletResponse) response).sendError(500);
+        }
     }
 
     /**

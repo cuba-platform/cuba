@@ -19,6 +19,7 @@ package com.haulmont.idp.controllers;
 import com.haulmont.cuba.security.app.IdpService;
 import com.haulmont.cuba.security.global.IdpSession;
 import com.haulmont.idp.IdpConfig;
+import com.haulmont.idp.sys.IdpServiceLogoutCallbackInvoker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -41,14 +42,15 @@ public class IdpServiceController {
 
     @Inject
     protected IdpService idpService;
-
     @Inject
     protected IdpConfig idpConfig;
+    @Inject
+    protected IdpServiceLogoutCallbackInvoker logoutCallbackInvoker;
 
     @RequestMapping(value = "activate", method = RequestMethod.POST)
-    protected IdpSession activateServiceProviderTicket(@RequestParam("serviceProviderTicket") String serviceProviderTicket,
-                                                       @RequestParam("trustedServicePassword") String trustedServicePassword,
-                                                       HttpServletResponse response) {
+    public IdpSession activateServiceProviderTicket(@RequestParam("serviceProviderTicket") String serviceProviderTicket,
+                                                    @RequestParam("trustedServicePassword") String trustedServicePassword,
+                                                    HttpServletResponse response) {
         if (!Objects.equals(idpConfig.getTrustedServicePassword(), trustedServicePassword)) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
@@ -72,9 +74,9 @@ public class IdpServiceController {
     }
 
     @RequestMapping(value = "get", method = RequestMethod.GET)
-    protected IdpSession getSession(@RequestParam("idpSessionId") String idpSessionId,
-                                    @RequestParam("trustedServicePassword") String trustedServicePassword,
-                                    HttpServletResponse response) {
+    public IdpSession getSession(@RequestParam("idpSessionId") String idpSessionId,
+                                 @RequestParam("trustedServicePassword") String trustedServicePassword,
+                                 HttpServletResponse response) {
         if (!Objects.equals(idpConfig.getTrustedServicePassword(), trustedServicePassword)) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
@@ -97,9 +99,9 @@ public class IdpServiceController {
     }
 
     @RequestMapping(value = "ping", method = RequestMethod.POST)
-    protected void pingSession(@RequestParam("idpSessionId") String idpSessionId,
-                               @RequestParam("trustedServicePassword") String trustedServicePassword,
-                               HttpServletResponse response) {
+    public void pingSession(@RequestParam("idpSessionId") String idpSessionId,
+                            @RequestParam("trustedServicePassword") String trustedServicePassword,
+                            HttpServletResponse response) {
         if (!Objects.equals(idpConfig.getTrustedServicePassword(), trustedServicePassword)) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
@@ -116,5 +118,27 @@ public class IdpServiceController {
         }
 
         log.debug("IDP session {} ping successful", idpSession);
+    }
+
+    @RequestMapping(value = "remove", method = RequestMethod.POST)
+    public void removeSession(@RequestParam("idpSessionId") String idpSessionId,
+                              @RequestParam("trustedServicePassword") String trustedServicePassword,
+                              HttpServletResponse response) {
+        if (!Objects.equals(idpConfig.getTrustedServicePassword(), trustedServicePassword)) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+
+            log.warn("Incorrect trusted client password has been passed {}", trustedServicePassword);
+            return;
+        }
+
+        log.debug("Logout IDP session {}", idpSessionId);
+
+        boolean loggedOut = idpService.logout(idpSessionId);
+
+        if (loggedOut) {
+            log.info("Logged out IDP session {}", idpSessionId);
+
+            logoutCallbackInvoker.performLogoutOnServiceProviders(idpSessionId);
+        }
     }
 }

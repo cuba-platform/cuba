@@ -94,9 +94,12 @@
 
     <bean id="userAuthenticationProvider" class="com.haulmont.restapi.auth.CubaUserAuthenticationProvider"/>
 
+    <bean id="tokenEnhancer" class="com.haulmont.restapi.auth.CubaTokenEnhancer"/>
+
     <bean id="tokenServices" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
         <property name="tokenStore" ref="tokenStore"/>
         <property name="clientDetailsService" ref="clientDetailsService"/>
+        <property name="tokenEnhancer" ref="tokenEnhancer"/>
     </bean>
 
     <bean id="tokenStore" class="com.haulmont.restapi.auth.ClientProxyTokenStore">
@@ -130,6 +133,23 @@
         <intercept-url pattern="/**" access="isAuthenticated()"/>
         <http-basic entry-point-ref="clientAuthenticationEntryPoint"/>
         <csrf disabled="true"/>
+        <cors configuration-source-ref="cuba_RestCorsSource"/>
+    </security:http>
+
+    <!-- IDP auth -->
+    <security:http pattern="/rest/v2/idp/**"
+                   create-session="stateless"
+                   authentication-manager-ref="clientAuthenticationManager"
+                   xmlns="http://www.springframework.org/schema/security">
+        <intercept-url pattern="/rest/v2/idp/login" access="isAnonymous()"/>
+        <intercept-url pattern="/rest/v2/idp/status" access="isAnonymous()"/>
+        <intercept-url pattern="/rest/v2/idp/idpc/logout" access="isAnonymous()"/>
+        <intercept-url pattern="/**" access="isAuthenticated()"/>
+
+        <anonymous enabled="true"/>
+        <csrf disabled="true"/>
+
+        <http-basic entry-point-ref="clientAuthenticationEntryPoint"/>
         <cors configuration-source-ref="cuba_RestCorsSource"/>
     </security:http>
 
