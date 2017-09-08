@@ -23,10 +23,11 @@ import com.haulmont.chile.core.model.utils.PrintUtils;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.LockInfo;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.security.entity.*;
-import com.haulmont.cuba.testmodel.TestTransientEntity;
+import com.haulmont.cuba.testmodel.TestNotPersistentEntity;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -61,6 +62,20 @@ public class MetadataTest {
     }
 
     @Test
+    public void testPersistentAndTransientEntities() throws Exception {
+        MetadataTools metadataTools = cont.metadata().getTools();
+
+        assertTrue(metadataTools.isPersistent(User.class));
+        assertFalse(metadataTools.isTransient(User.class));
+
+        assertFalse(metadataTools.isPersistent(LockInfo.class));
+        assertTrue(metadataTools.isTransient(LockInfo.class));
+
+        assertFalse(metadataTools.isPersistent(TestNotPersistentEntity.class));
+        assertTrue(metadataTools.isNotPersistent(TestNotPersistentEntity.class));
+    }
+
+    @Test
     public void testPersistentAndTransientProperties() throws Exception {
         MetadataTools tools = cont.metadata().getTools();
 
@@ -74,16 +89,23 @@ public class MetadataTest {
         metaClass = cont.metadata().getSession().getClassNN(EntityLogItem.class);
         assertTrue(tools.isPersistent(metaClass.getPropertyNN("user")));
         assertFalse(tools.isPersistent(metaClass.getPropertyNN("attributes")));
-        assertTrue(tools.isTransient(metaClass.getPropertyNN("attributes")));
+        assertTrue(tools.isNotPersistent(metaClass.getPropertyNN("attributes")));
 
         // Folder
         metaClass = cont.metadata().getSession().getClassNN(Folder.class);
         assertTrue(tools.isPersistent(metaClass.getPropertyNN("name")));
-        assertTrue(tools.isTransient(new Folder(), "itemStyle"));
+        assertTrue(tools.isNotPersistent(new Folder(), "itemStyle"));
 
         // UserSessionEntity
         metaClass = cont.metadata().getSession().getClassNN(UserSessionEntity.class);
-        assertTrue(tools.isTransient(metaClass.getPropertyNN("login")));
+        assertTrue(tools.isNotPersistent(metaClass.getPropertyNN("login")));
+
+        // TestTransientEntity
+        metaClass = cont.metadata().getSession().getClassNN(TestNotPersistentEntity.class);
+        assertTrue(tools.isNotPersistent(metaClass.getPropertyNN("name")));
+        assertTrue(tools.isNotPersistent(metaClass.getPropertyNN("info")));
+        assertTrue(tools.isNotPersistent(metaClass.getPropertyNN("embeddedRef")));
+        assertFalse(tools.isEmbedded(metaClass.getPropertyNN("embeddedRef")));
     }
 
     @Test
@@ -93,7 +115,7 @@ public class MetadataTest {
         assertTrue(tools.isSystemLevel(metadata.getClassNN(UserRole.class)));
 
         assertTrue(tools.isSystemLevel(metadata.getClassNN(AbstractNotPersistentEntity.class)));
-        assertFalse(tools.isSystemLevel(metadata.getClassNN(TestTransientEntity.class)));
+        assertFalse(tools.isSystemLevel(metadata.getClassNN(TestNotPersistentEntity.class)));
 
         MetaClass metaClass = metadata.getClassNN(User.class);
         assertTrue(tools.isSystemLevel(metaClass.getPropertyNN("password")));

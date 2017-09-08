@@ -20,7 +20,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import ca.odell.glazedlists.BasicEventList;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
@@ -729,7 +729,8 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
     protected class NullOption extends SearchEntityWrapper {
         public NullOption() {
-            super(new AbstractNotPersistentEntity() {
+            //noinspection IncorrectCreateEntity
+            super(new BaseUuidEntity() {
                 @Override
                 public String getInstanceName() {
                     return String.valueOf(DesktopSuggestionField.this.nullOption);

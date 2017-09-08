@@ -38,25 +38,9 @@ import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Component("cuba_MetadataBuildSupport")
 public class MetadataBuildSupport {
-
-    public static class EntityClassInfo {
-        public final String store;
-        public final String name;
-
-        public EntityClassInfo(String store, String name) {
-            this.store = store;
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return name + " - " + store;
-        }
-    }
 
     public static class XmlAnnotation {
         public final Object value;
@@ -167,7 +151,7 @@ public class MetadataBuildSupport {
                     packages.put(rootPackage, classNames);
                 }
                 for (Element classEl : Dom4j.elements(element, "class")) {
-                    classNames.add(new EntityClassInfo(classEl.attributeValue("store"), classEl.getText().trim()));
+                    classNames.add(new EntityClassInfo(classEl.attributeValue("store"), classEl.getText().trim(), false));
                 }
             }
         }
@@ -194,7 +178,7 @@ public class MetadataBuildSupport {
                             classNames = new ArrayList<>();
                             packages.put(rootPackage, classNames);
                         }
-                        classNames.add(new EntityClassInfo(db, className));
+                        classNames.add(new EntityClassInfo(db, className, true));
                         included = true;
                         break;
                     }

@@ -19,13 +19,11 @@ package com.haulmont.cuba.core.entity.diff;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.ViewProperty;
-
-import java.io.Serializable;
 
 /**
  * Diff between properties in entity snapshots
@@ -33,7 +31,7 @@ import java.io.Serializable;
  */
 @MetaClass(name = "sys$EntityPropertyDiff")
 @SystemLevel
-public abstract class EntityPropertyDiff extends AbstractNotPersistentEntity implements Serializable {
+public abstract class EntityPropertyDiff extends BaseUuidEntity {
 
     protected static final int CAPTION_CHAR_COUNT = 30;
 

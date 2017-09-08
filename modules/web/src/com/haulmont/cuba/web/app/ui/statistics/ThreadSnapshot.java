@@ -19,12 +19,12 @@ package com.haulmont.cuba.web.app.ui.statistics;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 @MetaClass(name = "stat$ThreadSnapshot")
 @SystemLevel
-public class ThreadSnapshot extends AbstractNotPersistentEntity {
+public class ThreadSnapshot extends BaseUuidEntity {
 
     private Long threadId;
 

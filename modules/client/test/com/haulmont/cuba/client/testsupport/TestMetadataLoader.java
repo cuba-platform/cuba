@@ -18,11 +18,13 @@ package com.haulmont.cuba.client.testsupport;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Session;
+import com.haulmont.cuba.core.sys.EntityClassInfo;
 import com.haulmont.cuba.core.sys.MetaModelLoader;
 import com.haulmont.cuba.core.sys.MetadataLoader;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TestMetadataLoader extends MetadataLoader {
 
@@ -40,7 +42,10 @@ public class TestMetadataLoader extends MetadataLoader {
     @Override
     public void loadMetadata() {
         for (Map.Entry<String, List<String>> entry : packages.entrySet()) {
-            modelLoader.loadModel(entry.getKey(), entry.getValue());
+            List<EntityClassInfo> classInfos = entry.getValue().stream()
+                    .map(name -> new EntityClassInfo(null, name, false))
+                    .collect(Collectors.toList());
+            modelLoader.loadModel(entry.getKey(), classInfos);
         }
         for (MetaClass metaClass : session.getClasses()) {
             postProcessClass(metaClass);

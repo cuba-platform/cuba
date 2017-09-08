@@ -19,11 +19,11 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerInfoAPI;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.SessionAction;
 import com.haulmont.cuba.security.entity.SessionLogEntry;
+import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.security.global.SessionParams;
 import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.Logger;
@@ -171,7 +171,7 @@ public class UserSessionLogBean implements UserSessionLog {
                 List<SessionLogEntry> sessionLogEntries = dataManager.loadList(lc);
                 CommitContext cc = new CommitContext();
                 Set<UUID> activeSessionsIds = userSessionsAPI.getUserSessionInfo().stream()
-                        .map(AbstractNotPersistentEntity::getId)
+                        .map(UserSessionEntity::getId)
                         .collect(Collectors.toSet());
                 for (SessionLogEntry entry : sessionLogEntries) {
                     if (activeSessionsIds.contains(entry.getSessionId())) {

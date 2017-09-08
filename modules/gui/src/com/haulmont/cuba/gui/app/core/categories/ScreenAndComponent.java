@@ -19,12 +19,15 @@ package com.haulmont.cuba.gui.app.core.categories;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 @MetaClass(name = "sys$ScreenAndComponent")
 @SystemLevel
-public class ScreenAndComponent extends AbstractNotPersistentEntity {
+public class ScreenAndComponent extends BaseUuidEntity {
+
+    private static final long serialVersionUID = -6064270441563369464L;
+
     @MetaProperty
     protected String screen;
 

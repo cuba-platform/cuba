@@ -102,7 +102,7 @@ public class RestControllerUtils {
 
         @Override
         public boolean skip(MetaProperty property) {
-            return metadataTools.isTransient(property);
+            return metadataTools.isNotPersistent(property);
         }
 
         @Override

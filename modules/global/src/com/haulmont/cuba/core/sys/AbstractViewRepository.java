@@ -296,13 +296,13 @@ public class AbstractViewRepository implements ViewRepository {
             view = new View(javaClass, name, false);
             Collection<MetaProperty> metaProperties = metadata.getTools().getNamePatternProperties(metaClass, true);
             for (MetaProperty metaProperty : metaProperties) {
-                if (!metadata.getTools().isTransient(metaProperty)) {
+                if (metadata.getTools().isPersistent(metaProperty)) {
                     addPersistentAttributeToMinimalView(metaClass, visited, info, view, metaProperty);
                 } else {
                     List<String> relatedProperties = metadata.getTools().getRelatedProperties(metaProperty);
                     for (String relatedPropertyName : relatedProperties) {
                         MetaProperty relatedProperty = metaClass.getPropertyNN(relatedPropertyName);
-                        if (!metadata.getTools().isTransient(relatedProperty)) {
+                        if (metadata.getTools().isPersistent(relatedProperty)) {
                             addPersistentAttributeToMinimalView(metaClass, visited, info, view, relatedProperty);
                         } else {
                             log.warn("Transient attribute '" + relatedPropertyName

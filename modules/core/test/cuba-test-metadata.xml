@@ -18,7 +18,7 @@
 <metadata xmlns="http://schemas.haulmont.com/cuba/metadata.xsd">
 
     <metadata-model root-package="com.haulmont.cuba">
-        <class>com.haulmont.cuba.testmodel.TestTransientEntity</class>
+        <class>com.haulmont.cuba.testmodel.TestNotPersistentEntity</class>
     </metadata-model>
 
 </metadata>

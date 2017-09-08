@@ -25,7 +25,7 @@ import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -766,7 +766,8 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
 
     protected class NullOption extends EntityWrapper {
         public NullOption() {
-            super(new AbstractNotPersistentEntity() {
+            //noinspection IncorrectCreateEntity
+            super(new BaseUuidEntity() {
                 @Override
                 public String getInstanceName() {
                     // NullOption class is used for any type of nullOption value

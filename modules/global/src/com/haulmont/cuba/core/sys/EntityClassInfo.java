@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.testmodel;
+package com.haulmont.cuba.core.sys;
 
-import com.haulmont.chile.core.annotations.MetaClass;
-import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+/**
+ * INTERNAL.
+ * Describes entity class for metadata loading.
+ */
+public class EntityClassInfo {
 
-@MetaClass(name = "sys$TestTransientEntity")
-public class TestTransientEntity extends AbstractNotPersistentEntity {
+    public final String store;
+    public final String name;
+    public final boolean persistent;
 
-    @MetaProperty
-    private String name;
-
-    public String getName() {
-        return name;
+    public EntityClassInfo(String store, String name, boolean persistent) {
+        this.store = store;
+        this.name = name;
+        this.persistent = persistent;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public String toString() {
+        return name + " - " + store + " - " + (persistent ? "persistent" : "not persistent");
     }
 }

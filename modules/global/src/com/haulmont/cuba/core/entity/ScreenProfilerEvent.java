@@ -24,7 +24,9 @@ import java.util.Date;
 
 @MetaClass(name = "sys$ScreenProfilerEvent")
 @SystemLevel
-public class ScreenProfilerEvent extends AbstractNotPersistentEntity {
+public class ScreenProfilerEvent extends BaseUuidEntity {
+
+    private static final long serialVersionUID = 8284172621569793944L;
 
     @MetaProperty
     protected Date eventTs;

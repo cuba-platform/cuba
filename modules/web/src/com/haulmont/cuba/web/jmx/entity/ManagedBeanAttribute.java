@@ -19,12 +19,13 @@ package com.haulmont.cuba.web.jmx.entity;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 @MetaClass(name = "jmxcontrol$ManagedBeanAttribute")
 @SystemLevel
-public class ManagedBeanAttribute extends AbstractNotPersistentEntity {
+public class ManagedBeanAttribute extends BaseUuidEntity {
+
     private static final long serialVersionUID = 1513762195305899325L;
 
     @MetaProperty

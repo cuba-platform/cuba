@@ -424,7 +424,7 @@ public class EntityManagerImpl implements EntityManager {
 
             // copy non-persistent attributes to the resulting merged instance
             for (MetaProperty property : metadata.getClassNN(entity.getClass()).getProperties()) {
-                if (metadata.getTools().isTransient(property) && !property.isReadOnly()) {
+                if (metadata.getTools().isNotPersistent(property) && !property.isReadOnly()) {
                     // copy using reflection to avoid executing getter/setter code
                     Field field = FieldUtils.getDeclaredField(entity.getClass(), property.getName(), true);
                     if (field != null) {

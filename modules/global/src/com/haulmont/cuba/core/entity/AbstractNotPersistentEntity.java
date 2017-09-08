@@ -32,7 +32,9 @@ import java.util.UUID;
 /**
  * Base class for not persistent entities.
  *
+ * DEPRECATED! Use subclasses of BaseGenericIdEntity.
  */
+@Deprecated
 @com.haulmont.chile.core.annotations.MetaClass(name = "sys$AbstractNotPersistentEntity")
 @SystemLevel(propagateToSubclasses = false)
 public abstract class AbstractNotPersistentEntity

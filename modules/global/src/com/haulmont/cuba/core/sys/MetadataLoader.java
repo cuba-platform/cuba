@@ -52,7 +52,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * INTERNAL.
@@ -95,12 +94,9 @@ public class MetadataLoader {
 
         initDatatypes(metadataBuildSupport.getDatatypeElements(metadataXmlList));
 
-        Map<String, List<MetadataBuildSupport.EntityClassInfo>> entityPackages = metadataBuildSupport.getEntityPackages(metadataXmlList);
-        for (Map.Entry<String, List<MetadataBuildSupport.EntityClassInfo>> entry : entityPackages.entrySet()) {
-            List<String> classNames = entry.getValue().stream()
-                    .map(entityClassInfo -> entityClassInfo.name)
-                    .collect(Collectors.toList());
-            modelLoader.loadModel(entry.getKey(), classNames);
+        Map<String, List<EntityClassInfo>> entityPackages = metadataBuildSupport.getEntityPackages(metadataXmlList);
+        for (Map.Entry<String, List<EntityClassInfo>> entry : entityPackages.entrySet()) {
+            modelLoader.loadModel(entry.getKey(), entry.getValue());
         }
 
         for (MetaClass metaClass : session.getClasses()) {
@@ -216,13 +212,13 @@ public class MetadataLoader {
         sw.stop();
     }
 
-    protected void initStoreMetaAnnotations(Map<String, List<MetadataBuildSupport.EntityClassInfo>> entityPackages) {
+    protected void initStoreMetaAnnotations(Map<String, List<EntityClassInfo>> entityPackages) {
         if (Stores.getAdditional().isEmpty())
             return;
 
         Map<String, String> nameToStoreMap = new HashMap<>();
-        for (List<MetadataBuildSupport.EntityClassInfo> list : entityPackages.values()) {
-            for (MetadataBuildSupport.EntityClassInfo entityClassInfo : list) {
+        for (List<EntityClassInfo> list : entityPackages.values()) {
+            for (EntityClassInfo entityClassInfo : list) {
                 if (nameToStoreMap.containsKey(entityClassInfo.name)) {
                     throw new IllegalStateException("Entity cannot belong to more than one store: " + entityClassInfo.name);
                 }

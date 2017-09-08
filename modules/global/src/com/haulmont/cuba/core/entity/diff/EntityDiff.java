@@ -19,23 +19,21 @@ package com.haulmont.cuba.core.entity.diff;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.View;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Diff object for Entity
- *
+ * Diff object for Entity Snapshots
  */
 @MetaClass(name = "sys$EntityDiff")
 @SystemLevel
-public class EntityDiff extends AbstractNotPersistentEntity implements Serializable {
+public class EntityDiff extends BaseUuidEntity {
 
     private static final long serialVersionUID = -3884249873393845439L;
 

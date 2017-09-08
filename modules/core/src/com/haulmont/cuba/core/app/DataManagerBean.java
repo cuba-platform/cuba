@@ -179,9 +179,7 @@ public class DataManagerBean implements DataManager {
             Set<Entity> committed = dataStore.commit(entry.getValue());
             if (!committed.isEmpty()) {
                 Entity committedEntity = committed.iterator().next();
-                if (committedEntity instanceof AbstractNotPersistentEntity) {
-                    BaseEntityInternalAccess.setNew((AbstractNotPersistentEntity) committedEntity, false);
-                }
+                adjustState(committedEntity);
                 result.addAll(committed);
             }
         }
@@ -209,6 +207,14 @@ public class DataManagerBean implements DataManager {
         }
 
         return result;
+    }
+
+    protected void adjustState(Entity committedEntity) {
+        if (committedEntity instanceof AbstractNotPersistentEntity) {
+            BaseEntityInternalAccess.setNew((AbstractNotPersistentEntity) committedEntity, false);
+        } else if (committedEntity instanceof BaseGenericIdEntity && metadataTools.isTransient(committedEntity.getClass())) {
+            BaseEntityInternalAccess.setNew((BaseGenericIdEntity) committedEntity, false);
+        }
     }
 
     @Override

@@ -137,7 +137,7 @@ public class EntityDiffManager {
         for (MetaPropertyPath metaPropertyPath : metaProperties) {
             MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
 
-            if (!metadataTools.isTransient(metaProperty) && !metadataTools.isSystem(metaProperty)) {
+            if (!metadataTools.isNotPersistent(metaProperty) && !metadataTools.isSystem(metaProperty)) {
                 ViewProperty viewProperty = diffView.getProperty(metaProperty.getName());
 
                 Object firstValue = firstEntity != null ? getPropertyValue(firstEntity, metaPropertyPath) : null;

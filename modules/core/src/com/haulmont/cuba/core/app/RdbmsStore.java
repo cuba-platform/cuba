@@ -829,7 +829,7 @@ public class RdbmsStore implements DataStore {
                     if (value != null) {
                         if (value.getId().equals(refEntity.getId())) {
                             if (entity instanceof AbstractInstance) {
-                                if (property.isReadOnly() && metadata.getTools().isTransient(property)) {
+                                if (property.isReadOnly() && metadata.getTools().isNotPersistent(property)) {
                                     continue;
                                 }
                                 ((AbstractInstance) entity).setValue(property.getName(), refEntity, false);

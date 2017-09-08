@@ -29,8 +29,10 @@ public class MetaPropertyInfo {
     public Range.Cardinality cardinality;
     public boolean mandatory;
     public boolean readOnly;
-    boolean isTransient;
+    boolean isPersistent;
     public String description;
+    @Deprecated
+    boolean isTransient;
 
     public MetaPropertyInfo(MetaProperty metaProperty) {
         Messages messages = AppBeans.get(Messages.class);
@@ -52,10 +54,16 @@ public class MetaPropertyInfo {
         this.cardinality = metaProperty.getRange().getCardinality();
         this.readOnly = metaProperty.isReadOnly();
         this.mandatory = metaProperty.isMandatory();
-        this.isTransient = metadata.getTools().isTransient(metaProperty);
+        this.isPersistent = metadata.getTools().isPersistent(metaProperty);
+        this.isTransient = metadata.getTools().isNotPersistent(metaProperty);
         this.description = messages.getTools().getPropertyCaption(metaProperty);
     }
 
+    public boolean getPersistent() {
+        return isPersistent;
+    }
+
+    @Deprecated
     public boolean getTransient() {
         return isTransient;
     }

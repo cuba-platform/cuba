@@ -72,23 +72,24 @@ public class MetaModelLoader {
         this.session = session;
     }
 
-    public void loadModel(String rootPackage, List<String> classNames) {
+    public void loadModel(String rootPackage, List<EntityClassInfo> classInfos) {
         checkNotNullArgument(rootPackage, "rootPackage is null");
-        checkNotNullArgument(classNames, "classNames is null");
+        checkNotNullArgument(classInfos, "classInfos is null");
 
-        List<Class<?>> classes = new ArrayList<>();
-        for (String className : classNames) {
+        Map<Class<?>, Boolean> classes = new LinkedHashMap<>();
+        for (EntityClassInfo classInfo : classInfos) {
             try {
-                classes.add(ReflectionHelper.loadClass(className));
+                classes.put(ReflectionHelper.loadClass(classInfo.name), classInfo.persistent);
             } catch (ClassNotFoundException e) {
-                log.warn("Class {} not found for model {}", className, rootPackage);
+                log.warn("Class {} not found for model {}", classInfo.name, rootPackage);
             }
         }
 
         List<RangeInitTask> tasks = new ArrayList<>();
-        for (Class<?> aClass : classes) {
+        for (Map.Entry<Class<?>, Boolean> entry : classes.entrySet()) {
+            Class<?> aClass = entry.getKey();
             if (aClass.getName().startsWith(rootPackage)) {
-                MetadataObjectInfo<MetaClass> info = loadClass(rootPackage, aClass);
+                MetadataObjectInfo<MetaClass> info = loadClass(rootPackage, aClass, entry.getValue());
                 if (info != null) {
                     tasks.addAll(info.getTasks());
                 } else {
@@ -105,10 +106,12 @@ public class MetaModelLoader {
     }
 
     @Nullable
-    protected MetadataObjectInfo<MetaClass> loadClass(String packageName, Class<?> clazz) {
+    protected MetadataObjectInfo<MetaClass> loadClass(String packageName, Class<?> clazz, boolean persistent) {
         MetaClassImpl metaClass = createClass(clazz, packageName);
         if (metaClass == null)
             return null;
+
+        onClassLoaded(metaClass, clazz, persistent);
 
         Collection<RangeInitTask> tasks = new ArrayList<>();
 
@@ -168,6 +171,12 @@ public class MetaModelLoader {
             return metaClass;
         } else {
             return null;
+        }
+    }
+
+    protected void onClassLoaded(MetaClass metaClass, Class<?> javaClass, boolean persistent) {
+        if (persistent) {
+            metaClass.getAnnotations().put(MetadataTools.PERSISTENT_ANN_NAME, true);
         }
     }
 
@@ -381,15 +390,19 @@ public class MetaModelLoader {
     protected void onPropertyLoaded(MetaProperty metaProperty, Field field) {
         loadPropertyAnnotations(metaProperty, field);
 
+        boolean persistentClass = Boolean.TRUE.equals(metaProperty.getDomain().getAnnotations().get(MetadataTools.PERSISTENT_ANN_NAME));
+
         if (isPersistent(field)) {
-            metaProperty.getAnnotations().put(MetadataTools.PERSISTENT_ANN_NAME, true);
+            if (persistentClass) {
+                metaProperty.getAnnotations().put(MetadataTools.PERSISTENT_ANN_NAME, true);
+            }
 
             if (isPrimaryKey(field)) {
                 metaProperty.getAnnotations().put(MetadataTools.PRIMARY_KEY_ANN_NAME, true);
                 metaProperty.getDomain().getAnnotations().put(MetadataTools.PRIMARY_KEY_ANN_NAME, metaProperty.getName());
             }
 
-            if (isEmbedded(field)) {
+            if (isEmbedded(field) && persistentClass) {
                 metaProperty.getAnnotations().put(MetadataTools.EMBEDDED_ANN_NAME, true);
             }
 

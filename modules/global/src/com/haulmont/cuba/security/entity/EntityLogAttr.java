@@ -19,14 +19,12 @@ package com.haulmont.cuba.security.entity;
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import org.apache.commons.lang.StringUtils;
-
-import java.util.UUID;
 
 /**
  * Record containing changed entity attribute.
@@ -34,7 +32,7 @@ import java.util.UUID;
  */
 @MetaClass(name = "sec$EntityLogAttr")
 @SystemLevel
-public class EntityLogAttr extends AbstractNotPersistentEntity {
+public class EntityLogAttr extends BaseUuidEntity {
 
     private static final long serialVersionUID = 4258700403293876630L;
 

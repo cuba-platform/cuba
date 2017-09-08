@@ -21,18 +21,21 @@ import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.filter.Op;
-import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
+import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.data.Datasource;
-import org.apache.commons.lang.*;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.ArrayList;
@@ -46,7 +49,9 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  */
 @MetaClass(name = "sec$AbstractCondition")
 @SystemLevel
-public abstract class AbstractCondition extends AbstractNotPersistentEntity {
+public abstract class AbstractCondition extends BaseUuidEntity {
+
+    private static final long serialVersionUID = -8405022004399309798L;
 
     public interface Listener {
 

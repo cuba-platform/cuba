@@ -219,7 +219,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         List<Table.Column> systemPropertyColumns = new ArrayList<>(10);
         for (MetaProperty metaProperty : meta.getProperties()) {
             //don't show embedded, transient & multiple referred entities
-            if (isEmbedded(metaProperty) || metadata.getTools().isTransient(metaProperty))
+            if (isEmbedded(metaProperty) || metadata.getTools().isNotPersistent(metaProperty))
                 continue;
 
             Range range = metaProperty.getRange();

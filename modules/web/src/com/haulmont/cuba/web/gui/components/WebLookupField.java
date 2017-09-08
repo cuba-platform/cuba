@@ -22,6 +22,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
@@ -228,7 +229,8 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     }
 
     protected void initNullEntity() {
-        nullEntity = new AbstractNotPersistentEntity() {
+        //noinspection IncorrectCreateEntity
+        nullEntity = new BaseUuidEntity() {
             @Override
             public String getInstanceName() {
                 if (nullOption instanceof Instance) {

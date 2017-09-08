@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.components.filter.descriptor;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.QueryParser;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
@@ -33,7 +33,9 @@ import org.dom4j.Element;
  */
 @com.haulmont.chile.core.annotations.MetaClass(name = "sec$AbstractConditionDescriptor")
 @SystemLevel
-public abstract class AbstractConditionDescriptor extends AbstractNotPersistentEntity{
+public abstract class AbstractConditionDescriptor extends BaseUuidEntity {
+
+    private static final long serialVersionUID = 7975507640064754778L;
 
     protected Element element;
     protected String name;

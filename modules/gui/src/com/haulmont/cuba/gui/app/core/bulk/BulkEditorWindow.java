@@ -405,7 +405,7 @@ public class BulkEditorWindow extends AbstractWindow {
 
     protected boolean isManagedAttribute(MetaClass metaClass, MetaProperty metaProperty) {
         if (metadataTools.isSystem(metaProperty)
-                || metadataTools.isTransient(metaProperty)
+                || metadataTools.isNotPersistent(metaProperty)
                 || metadataTools.isSystemLevel(metaProperty)
                 || metaProperty.getRange().getCardinality().isMany()
                 || !isPermitted(metaClass, metaProperty)) {

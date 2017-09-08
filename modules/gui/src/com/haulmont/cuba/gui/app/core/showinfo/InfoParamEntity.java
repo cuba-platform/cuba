@@ -20,10 +20,8 @@ package com.haulmont.cuba.gui.app.core.showinfo;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-
-import java.io.Serializable;
 
 /**
  * Simple key:value entity
@@ -32,7 +30,7 @@ import java.io.Serializable;
 @NamePattern("%s|keyValue")
 @MetaClass(name = "sys$InfoParamEntity")
 @SystemLevel
-public class InfoParamEntity extends AbstractNotPersistentEntity implements Serializable {
+public class InfoParamEntity extends BaseUuidEntity {
 
     @MetaProperty
     private String key;

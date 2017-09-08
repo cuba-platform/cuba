@@ -465,7 +465,7 @@ public class XMLConverter2 implements Converter {
                     continue;
 
                 if (commitRequest != null
-                        && metadataTools.isTransient(property)
+                        && metadataTools.isNotPersistent(property)
                         && !DynamicAttributesUtils.isDynamicAttribute(propertyName))
                     continue;
 
