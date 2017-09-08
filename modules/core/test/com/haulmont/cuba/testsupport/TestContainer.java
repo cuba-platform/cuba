@@ -331,8 +331,15 @@ public class TestContainer extends ExternalResource {
             }
         }
 
+        StrSubstitutor substitutor = new StrSubstitutor(new StrLookup() {
+            @Override
+            public String lookup(String key) {
+                String subst = properties.getProperty(key);
+                return subst != null ? subst : System.getProperty(key);
+            }
+        });
         for (Object key : properties.keySet()) {
-            String value = properties.getProperty((String) key);
+            String value = substitutor.replace(properties.getProperty((String) key));
             appProperties.put((String) key, value);
         }
 
