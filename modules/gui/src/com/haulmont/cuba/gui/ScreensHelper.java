@@ -19,10 +19,7 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.Resources;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -62,6 +59,9 @@ public class ScreensHelper {
 
     @Inject
     protected MetadataTools metadataTools;
+
+    @Inject
+    protected Metadata metadata;
 
     private Map<String, String> captionCache = new ConcurrentHashMap<>();
     private Map<String, Map<String, Object>> availableScreensCache = new ConcurrentHashMap<>();
@@ -185,7 +185,7 @@ public class ScreensHelper {
         do {
             isAvailable = dsClassValue.equals(entity.getName());
             entity = entity.getSuperclass();
-            process = metadataTools.isPersistent(entity);
+            process = metadata.getClass(entity) != null && metadataTools.isPersistent(entity);
         } while (process && !isAvailable);
         return isAvailable;
     }
