@@ -459,23 +459,6 @@ create table SEC_ENTITY_LOG (
 
 ------------------------------------------------------------------------------------------------------------
 
-create table SEC_ENTITY_LOG_ATTR (
-    ID varchar(36) not null,
-    CREATE_TS timestamp,
-    CREATED_BY varchar(50),
-    --
-    ITEM_ID varchar(36),
-    NAME varchar(50),
-    VALUE varchar(1500),
-    VALUE_ID varchar(36),
-    MESSAGES_PACK varchar(200),
-    --
-    primary key (ID),
-    constraint FK_SEC_ENTITY_LOG_ATTR_ITEM foreign key (ITEM_ID) references SEC_ENTITY_LOG(ID)
-)^
-
-------------------------------------------------------------------------------------------------------------
-
 create table SEC_FILTER (
     ID varchar(36) not null,
     CREATE_TS timestamp,

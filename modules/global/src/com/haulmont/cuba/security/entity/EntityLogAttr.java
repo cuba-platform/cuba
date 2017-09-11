@@ -28,7 +28,6 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * Record containing changed entity attribute.
- * Created by <code>EntityLog</code> MBean.
  */
 @MetaClass(name = "sec$EntityLogAttr")
 @SystemLevel

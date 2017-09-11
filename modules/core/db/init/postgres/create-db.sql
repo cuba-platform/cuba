@@ -458,25 +458,6 @@ create index IDX_SEC_ENTITY_LOG_LENTITY_ID on SEC_ENTITY_LOG (LONG_ENTITY_ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
-create table SEC_ENTITY_LOG_ATTR (
-    ID uuid not null,
-    CREATE_TS timestamp,
-    CREATED_BY varchar(50),
-    --
-    ITEM_ID uuid,
-    NAME varchar(50),
-    VALUE varchar(1500),
-    VALUE_ID uuid,    
-    MESSAGES_PACK varchar(200),
-    --
-    primary key (ID),
-    constraint FK_SEC_ENTITY_LOG_ATTR_ITEM foreign key (ITEM_ID) references SEC_ENTITY_LOG(ID)
-)^
-
-create index IDX_SEC_ENTITY_LOG_ATTR_ITEM on SEC_ENTITY_LOG_ATTR (ITEM_ID)^
-
-------------------------------------------------------------------------------------------------------------
-
 create table SEC_FILTER (
     ID uuid not null,
     CREATE_TS timestamp,

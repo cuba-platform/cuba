@@ -430,19 +430,6 @@ create index IDX_SEC_ENTITY_LOG_SENTITY_ID on SEC_ENTITY_LOG (STRING_ENTITY_ID)^
 create index IDX_SEC_ENTITY_LOG_IENTITY_ID on SEC_ENTITY_LOG (INT_ENTITY_ID)^
 create index IDX_SEC_ENTITY_LOG_LENTITY_ID on SEC_ENTITY_LOG (LONG_ENTITY_ID)^
 
-create table SEC_ENTITY_LOG_ATTR (
-    ID varchar2(32) not null,
-    CREATE_TS timestamp,
-    CREATED_BY varchar2(50),
-    ITEM_ID varchar2(32),
-    NAME varchar2(50),
-    VALUE varchar2(1500),
-    VALUE_ID varchar2(32),
-    MESSAGES_PACK varchar2(200),
-    primary key(ID)
-)^
-create index IDX_SEC_ENTITY_LOG_ATTR_ITEM on SEC_ENTITY_LOG_ATTR(ITEM_ID)^
-
 create table SEC_FILTER (
     ID varchar2(32) not null,
     CREATE_TS timestamp,
@@ -757,8 +744,6 @@ alter table SYS_SENDING_ATTACHMENT add constraint FK_SYS_SENDING_ATTACH_FILE for
 alter table SEC_CONSTRAINT add constraint SEC_CONSTRAINT_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)^
 
 alter table SEC_ENTITY_LOG add constraint FK_SEC_ENTITY_LOG_USER foreign key (USER_ID) references SEC_USER(ID)^
-
-alter table SEC_ENTITY_LOG_ATTR add constraint FK_SEC_ENTITY_LOG_ATTR_ITEM foreign key (ITEM_ID) references SEC_ENTITY_LOG(ID)^
 
 alter table SEC_FILTER add constraint FK_SEC_FILTER_USER foreign key (USER_ID) references SEC_USER(ID)^
 

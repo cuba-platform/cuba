@@ -473,28 +473,6 @@ create index IDX_SEC_ENTITY_LOG_LENTITY_ID on SEC_ENTITY_LOG (LONG_ENTITY_ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
-create table SEC_ENTITY_LOG_ATTR (
-    ID uniqueidentifier not null,
-    CREATE_TS datetime,
-    CREATED_BY varchar(50),
-    --
-    ITEM_ID uniqueidentifier,
-    NAME varchar(50),
-    VALUE varchar(1500),
-    VALUE_ID uniqueidentifier,    
-    MESSAGES_PACK varchar(200),
-    --
-    primary key nonclustered (ID),
-    constraint FK_SEC_ENTITY_LOG_ATTR_ITEM foreign key (ITEM_ID) references SEC_ENTITY_LOG(ID)
-)^
-
--- using clustered index by CREATE_TS because performance of inserts is more important here than reads
-create clustered index IDX_SEC_ENTITY_LOG_ATTR_CREATE_TS on SEC_ENTITY_LOG_ATTR (CREATE_TS)^
-
-create index IDX_SEC_ENTITY_LOG_ATTR_ITEM on SEC_ENTITY_LOG_ATTR (ITEM_ID)^
-
-------------------------------------------------------------------------------------------------------------
-
 create table SEC_FILTER (
     ID uniqueidentifier not null,
     CREATE_TS datetime,

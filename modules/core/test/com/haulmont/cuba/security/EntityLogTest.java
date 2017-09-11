@@ -58,9 +58,7 @@ public class EntityLogTest {
         try {
             EntityManager em = cont.persistence().getEntityManager();
 
-            Query q = em.createNativeQuery("delete from SEC_ENTITY_LOG_ATTR");
-            q.executeUpdate();
-
+            Query q;
             q = em.createNativeQuery("delete from SEC_ENTITY_LOG");
             q.executeUpdate();
 

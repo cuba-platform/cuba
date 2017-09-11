@@ -18,7 +18,6 @@
 package com.haulmont.cuba.security.listener;
 
 import com.google.common.collect.Ordering;
-import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
@@ -26,7 +25,6 @@ import com.haulmont.cuba.core.listener.BeforeDetachEntityListener;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.security.entity.EntityLogAttr;
 import com.haulmont.cuba.security.entity.EntityLogItem;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -50,11 +48,7 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
         if (item.getAttributes() != null)
             return;
 
-        if (StringUtils.isBlank(item.getChanges())) {
-            fillAttributesFromTable(item, entityManager);
-        } else {
-            fillAttributesFromChangesField(item);
-        }
+        fillAttributesFromChangesField(item);
     }
 
     protected void fillAttributesFromChangesField(EntityLogItem item) {
@@ -98,32 +92,6 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
         });
 
         item.setAttributes(new LinkedHashSet<>(attributes));
-    }
-
-    protected void fillAttributesFromTable(EntityLogItem item, EntityManager entityManager) {
-        log.trace("fillAttributesFromTable for " + item);
-        DbTypeConverter converter = persistence.getDbTypeConverter();
-        QueryRunner queryRunner = new QueryRunner();
-        try {
-            Set<EntityLogAttr> attributes = queryRunner.query(
-                    entityManager.getConnection(),
-                    "select * from SEC_ENTITY_LOG_ATTR where ITEM_ID = ?",
-                    new Object[] {converter.getSqlObject(item.getId())},
-                    new AttributesResultSetHandler(item, converter)
-            );
-
-            List<EntityLogAttr> attributesList = new ArrayList<>(attributes);
-            Collections.sort(attributesList, new Comparator<EntityLogAttr>() {
-                @Override
-                public int compare(EntityLogAttr o1, EntityLogAttr o2) {
-                    return Ordering.natural().compare(o1.getName(), o2.getName());
-                }
-            });
-
-            item.setAttributes(new LinkedHashSet<>(attributes));
-        } catch (SQLException e) {
-            log.error("Unable to load EntityLog attributes for " + item, e);
-        }
     }
 
     protected static class AttributesResultSetHandler implements ResultSetHandler<Set<EntityLogAttr>> {
