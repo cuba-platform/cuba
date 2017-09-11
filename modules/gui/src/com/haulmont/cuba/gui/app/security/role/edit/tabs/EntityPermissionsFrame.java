@@ -36,7 +36,6 @@ import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
-import javax.persistence.Entity;
 import java.util.Map;
 import java.util.Set;
 
@@ -313,23 +312,13 @@ public class EntityPermissionsFrame extends AbstractFrame {
     private void initOperationControls() {
         operationControls = new EntityOperationControl[]{
                 new EntityOperationControl(EntityOp.CREATE, "createPermissionVariant", "createOpLabel",
-                        "createAllowCheck", "createDenyCheck") {
-                    @Override
-                    public boolean applicableToEntity(Class javaClass) {
-                        return javaClass.isAnnotationPresent(Entity.class) && super.applicableToEntity(javaClass);
-                    }
-                },
+                        "createAllowCheck", "createDenyCheck"),
                 new EntityOperationControl(EntityOp.READ, "readPermissionVariant", "readOpLabel",
                         "readAllowCheck", "readDenyCheck"),
                 new EntityOperationControl(EntityOp.UPDATE, "updatePermissionVariant", "updateOpLabel",
                         "updateAllowCheck", "updateDenyCheck"),
                 new EntityOperationControl(EntityOp.DELETE, "deletePermissionVariant", "deleteOpLabel",
-                        "deleteAllowCheck", "deleteDenyCheck") {
-                    @Override
-                    public boolean applicableToEntity(Class javaClass) {
-                        return javaClass.isAnnotationPresent(Entity.class) && super.applicableToEntity(javaClass);
-                    }
-                }
+                        "deleteAllowCheck", "deleteDenyCheck")
         };
     }
 
