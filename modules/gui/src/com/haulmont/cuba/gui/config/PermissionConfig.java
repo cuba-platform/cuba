@@ -45,12 +45,12 @@ import javax.inject.Inject;
 import javax.persistence.MappedSuperclass;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * GenericUI class holding information about all permission targets.
- *
  */
 @Component("cuba_PermissionConfig")
 public class PermissionConfig {
@@ -83,7 +83,7 @@ public class PermissionConfig {
         }
 
         private String getMessage(String key) {
-            return messages.getMessage(messages.getMainMessagePack(), key, locale);
+            return messages.getMainMessage(key, locale);
         }
 
         private void compileScreens() {
@@ -108,7 +108,9 @@ public class PermissionConfig {
 
         private void walkMenu(MenuItem info, Node<BasicPermissionTarget> node) {
             String id = info.getId();
-            String caption = menuConfig.getItemCaption(id).replaceAll("<.+?>", "").replaceAll("&gt;", "");
+            String caption = menuConfig.getItemCaption(id)
+                    .replaceAll("<.+?>", "")
+                    .replaceAll("&gt;", "");
             caption = StringEscapeUtils.unescapeHtml(caption);
 
             if (info.getChildren() != null && !info.getChildren().isEmpty()) {
@@ -131,19 +133,16 @@ public class PermissionConfig {
                 menuItems.add(node.getData().getId());
             }
 
-            for (WindowInfo info : windowConfig.getWindows()) {
-                String id = info.getId();
-                if (!menuItems.contains("item:" + id)) {
-                    Node<BasicPermissionTarget> n = new Node<>(new BasicPermissionTarget("item:" + id, id, id));
-                    othersRoot.addChild(n);
-                }
-            }
-            Collections.sort(othersRoot.getChildren(), new Comparator<Node<BasicPermissionTarget>>() {
-                @Override
-                public int compare(Node<BasicPermissionTarget> n1, Node<BasicPermissionTarget> n2) {
-                    return n1.getData().getId().compareTo(n2.getData().getId());
-                }
-            });
+            // filter non-unique windows with specified agent
+            windowConfig.getWindows().stream()
+                    .map(WindowInfo::getId)
+                    .filter(id -> !menuItems.contains("item:" + id))
+                    .distinct()
+                    .sorted()
+                    .forEach(id -> {
+                        Node<BasicPermissionTarget> n = new Node<>(new BasicPermissionTarget("item:" + id, id, id));
+                        othersRoot.addChild(n);
+                    });
         }
 
         private void compileEntitiesAndAttributes() {
@@ -183,10 +182,12 @@ public class PermissionConfig {
                                 "entity:" + entityName, caption, entityName);
 
                         List<MetaProperty> propertyList = new ArrayList<>(metaClass.getProperties());
-                        Collection<CategoryAttribute> dynamicAttributes = PermissionConfig.this.dynamicAttributes.getAttributesForMetaClass(metaClass);
+                        Collection<CategoryAttribute> dynamicAttributes =
+                                PermissionConfig.this.dynamicAttributes.getAttributesForMetaClass(metaClass);
+
                         for (CategoryAttribute dynamicAttribute : dynamicAttributes) {
                             MetaPropertyPath metaPropertyPath =
-                                    metadataTools.resolveMetaPropertyPath(metaClass,
+                                    metadataTools.resolveMetaPropertyPathNN(metaClass,
                                             DynamicAttributesUtils.encodeAttributeCode(dynamicAttribute.getCode()));
                             propertyList.add(metaPropertyPath.getMetaProperty());
                         }
@@ -215,15 +216,15 @@ public class PermissionConfig {
                     InputStream stream = null;
                     try {
                         stream = resource.getInputStream();
-                        String xml = IOUtils.toString(stream);
+                        String xml = IOUtils.toString(stream, StandardCharsets.UTF_8);
                         compileSpecific(xml, root);
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        throw new RuntimeException("Unable to read permission config", e);
                     } finally {
                         IOUtils.closeQuietly(stream);
                     }
                 } else {
-                    log.warn("Resource " + location + " not found, ignore it");
+                    log.warn("Resource {} not found, ignore it", location);
                 }
             }
         }
@@ -306,6 +307,10 @@ public class PermissionConfig {
         this.clientType = AppConfig.getClientType();
     }
 
+    public ClientType getClientType() {
+        return clientType;
+    }
+
     private Item getItem(Locale locale) {
         for (Item item : items) {
             if (item.locale.equals(locale))
@@ -360,7 +365,7 @@ public class PermissionConfig {
         items.clear();
     }
 
-    private static class MetadataObjectAlphabetComparator implements Comparator<MetadataObject> {
+    protected static class MetadataObjectAlphabetComparator implements Comparator<MetadataObject> {
         @Override
         public int compare(MetadataObject o1, MetadataObject o2) {
             String n1 = o1 != null ? o1.getName() : null;
