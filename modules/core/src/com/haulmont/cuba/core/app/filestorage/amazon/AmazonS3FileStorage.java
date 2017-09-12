@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -259,7 +260,7 @@ public class AmazonS3FileStorage implements FileStorageAPI {
 
     protected String getInputStreamContent(HttpUtils.HttpResponse httpResponse) {
         try {
-            return IOUtils.toString(httpResponse.getInputStream());
+            return IOUtils.toString(httpResponse.getInputStream(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             return null;
         }

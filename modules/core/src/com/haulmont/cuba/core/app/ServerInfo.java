@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.Types;
 import java.util.Date;
 import java.util.Timer;
@@ -78,7 +79,7 @@ public class ServerInfo implements ServerInfoAPI, AppContext.Listener, Ordered {
         InputStream stream = getClass().getResourceAsStream(CUBA_RELEASE_NUMBER_PATH);
         if (stream != null) {
             try {
-                releaseNumber = IOUtils.toString(stream);
+                releaseNumber = IOUtils.toString(stream, StandardCharsets.UTF_8);
             } catch (IOException e) {
                 log.warn("Unable to read release number", e);
             }
@@ -87,7 +88,7 @@ public class ServerInfo implements ServerInfoAPI, AppContext.Listener, Ordered {
         stream = getClass().getResourceAsStream(CUBA_RELEASE_TIMESTAMP_PATH);
         if (stream != null) {
             try {
-                releaseTimestamp = IOUtils.toString(stream);
+                releaseTimestamp = IOUtils.toString(stream, StandardCharsets.UTF_8);
             } catch (IOException e) {
                 log.warn("Unable to read release timestamp", e);
             }
