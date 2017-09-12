@@ -23,6 +23,10 @@ import org.dom4j.Element;
 import java.util.Collection;
 import java.util.EventObject;
 
+/**
+ * An accordion is a component similar to a {@link TabSheet}, but with a vertical orientation and the selected component
+ * presented between tabs.
+ */
 public interface Accordion extends Component.Container, Component.BelongToFrame, Component.HasCaption,
                                    Component.HasIcon, Component.Focusable {
     String NAME = "accordion";
@@ -52,21 +56,48 @@ public interface Accordion extends Component.Container, Component.BelongToFrame,
     void removeAllTabs();
 
     /**
+     * Get selected tab. May be null if the tabsheet does not contain tabs at all.
+     * @deprecated use {@link #getSelectedTab()}
+     */
+    @Deprecated
+    default Tab getTab() {
+        return getSelectedTab();
+    }
+    /**
+     * Set selected tab.
+     * @param tab tab instance
+     * @deprecated Use {@link #setSelectedTab(Tab)}
+     */
+    @Deprecated
+    default void setTab(Tab tab) {
+        setSelectedTab(tab);
+    }
+    /**
+     * Set selected tab.
+     * @param name tab id
+     * @deprecated Use {@link #setSelectedTab(String)}
+     */
+    @Deprecated
+    default void setTab(String name) {
+        setSelectedTab(name);
+    }
+
+    /**
      * Get selected tab. May be null if the accordion does not contain tabs at all.
      */
-    Tab getTab();
+    Tab getSelectedTab();
 
     /**
      * Set selected tab.
      * @param tab tab instance
      */
-    void setTab(Tab tab);
+    void setSelectedTab(Tab tab);
 
     /**
      * Set selected tab.
      * @param name tab id
      */
-    void setTab(String name);
+    void setSelectedTab(String name);
 
     /**
      * Get tab with the provided id.

@@ -403,7 +403,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     }
 
     @Override
-    public Tab getTab() {
+    public Tab getSelectedTab() {
         final com.vaadin.ui.Component component = this.component.getSelectedTab();
         if (component == null) {
             return null;
@@ -414,12 +414,12 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     }
 
     @Override
-    public void setTab(TabSheet.Tab tab) {
+    public void setSelectedTab(TabSheet.Tab tab) {
         this.component.setSelectedTab(WebComponentsHelper.unwrap(((Tab) tab).getComponent()));
     }
 
     @Override
-    public void setTab(String name) {
+    public void setSelectedTab(String name) {
         Tab tab = tabs.get(name);
         if (tab == null) {
             throw new IllegalStateException(String.format("Can't find tab '%s'", name));

@@ -323,7 +323,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
     }
 
     @Override
-    public Tab getTab() {
+    public Tab getSelectedTab() {
         JComponent component = (JComponent) impl.getSelectedComponent();
         if (component == null) {
             return null; // nothing selected
@@ -336,13 +336,13 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
     }
 
     @Override
-    public void setTab(Tab tab) {
+    public void setSelectedTab(Tab tab) {
         Component component = ((TabImpl) tab).getComponent();
         impl.setSelectedComponent(DesktopComponentsHelper.getComposition(component));
     }
 
     @Override
-    public void setTab(String name) {
+    public void setSelectedTab(String name) {
         TabImpl tab = getTabImpl(name);
         impl.setSelectedComponent(DesktopComponentsHelper.getComposition(tab.getComponent()));
     }

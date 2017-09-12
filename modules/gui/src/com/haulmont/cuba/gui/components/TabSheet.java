@@ -57,19 +57,44 @@ public interface TabSheet extends Component.Container, Component.BelongToFrame, 
     /**
      * Get selected tab. May be null if the tabsheet does not contain tabs at all.
      */
-    Tab getTab();
-
+    Tab getSelectedTab();
     /**
      * Set selected tab.
      * @param tab tab instance
      */
-    void setTab(Tab tab);
-
+    void setSelectedTab(Tab tab);
     /**
      * Set selected tab.
      * @param name tab id
      */
-    void setTab(String name);
+    void setSelectedTab(String name);
+
+    /**
+     * Get selected tab. May be null if the tabsheet does not contain tabs at all.
+     * @deprecated use {@link #getSelectedTab()}
+     */
+    @Deprecated
+    default Tab getTab() {
+        return getSelectedTab();
+    }
+    /**
+     * Set selected tab.
+     * @param tab tab instance
+     * @deprecated Use {@link #setSelectedTab(Tab)}
+     */
+    @Deprecated
+    default void setTab(Tab tab) {
+        setSelectedTab(tab);
+    }
+    /**
+     * Set selected tab.
+     * @param name tab id
+     * @deprecated Use {@link #setSelectedTab(String)}
+     */
+    @Deprecated
+    default void setTab(String name) {
+        setSelectedTab(name);
+    }
 
     /**
      * Get tab with the provided id.
