@@ -16,10 +16,12 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -78,7 +80,9 @@ public class WindowBreadCrumbs extends CssLayout {
         if (!tabbedMode) {
             closeBtn = new CubaButton("", (Button.ClickListener) event -> {
                 Window window = getCurrentWindow();
-                window.close(Window.CLOSE_ACTION_ID);
+                if (!isCloseWithCloseButtonPrevented(window)) {
+                    window.close(Window.CLOSE_ACTION_ID);
+                }
             });
             closeBtn.setIcon(WebComponentsHelper.getIcon("icons/close.png"));
             closeBtn.setStyleName("c-closetab-button");
@@ -105,6 +109,18 @@ public class WindowBreadCrumbs extends CssLayout {
         if (closeBtn != null) {
             addComponent(closeBtn);
         }
+    }
+
+    protected boolean isCloseWithCloseButtonPrevented(Window currentWindow) {
+        WebWindow webWindow = (WebWindow) ComponentsHelper.getWindowImplementation(currentWindow);
+
+        if (webWindow != null) {
+            Window.BeforeCloseWithCloseButtonEvent event = new Window.BeforeCloseWithCloseButtonEvent(webWindow);
+            webWindow.fireBeforeCloseWithCloseButton(event);
+            return event.isClosePrevented();
+        }
+
+        return false;
     }
 
     protected Layout createEnclosingLayout() {

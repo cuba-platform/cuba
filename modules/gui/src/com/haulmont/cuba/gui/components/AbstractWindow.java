@@ -307,4 +307,24 @@ public class AbstractWindow extends AbstractFrame
     public void setIcon(String icon) {
         frame.setIcon(icon);
     }
+
+    @Override
+    public void addBeforeCloseWithShortcutListener(BeforeCloseWithShortcutListener listener) {
+        ((Window) frame).addBeforeCloseWithShortcutListener(listener);
+    }
+
+    @Override
+    public void removeBeforeCloseWithShortcutListener(BeforeCloseWithShortcutListener listener) {
+        ((Window) frame).removeBeforeCloseWithShortcutListener(listener);
+    }
+
+    @Override
+    public void addBeforeCloseWithCloseButtonListener(BeforeCloseWithCloseButtonListener listener) {
+        ((Window) frame).addBeforeCloseWithCloseButtonListener(listener);
+    }
+
+    @Override
+    public void removeBeforeCloseWithCloseButtonListener(BeforeCloseWithCloseButtonListener listener) {
+        ((Window) frame).removeBeforeCloseWithCloseButtonListener(listener);
+    }
 }

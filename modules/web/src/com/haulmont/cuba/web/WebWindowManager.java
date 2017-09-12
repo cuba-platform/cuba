@@ -36,6 +36,8 @@ import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.Component.BelongToFrame;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.Window.BeforeCloseWithCloseButtonEvent;
+import com.haulmont.cuba.gui.components.Window.BeforeCloseWithShortcutEvent;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
@@ -471,7 +473,9 @@ public class WebWindowManager extends WindowManager {
                                 Window currentWindow = breadCrumbs.getCurrentWindow();
 
                                 if (currentWindow != null && window != currentWindow) {
-                                    currentWindow.closeAndRun(Window.CLOSE_ACTION_ID, this);
+                                    if (!isCloseWithCloseButtonPrevented(currentWindow)) {
+                                        currentWindow.closeAndRun(Window.CLOSE_ACTION_ID, this);
+                                    }
                                 }
                             }
                         };
@@ -579,7 +583,9 @@ public class WebWindowManager extends WindowManager {
         public void run() {
             Window windowToClose = breadCrumbs.getCurrentWindow();
             if (windowToClose != null) {
-                windowToClose.closeAndRun(Window.CLOSE_ACTION_ID, new TabCloseTask(breadCrumbs));
+                if (!isCloseWithCloseButtonPrevented(windowToClose)) {
+                    windowToClose.closeAndRun(Window.CLOSE_ACTION_ID, new TabCloseTask(breadCrumbs));
+                }
             }
         }
     }
@@ -692,9 +698,10 @@ public class WebWindowManager extends WindowManager {
 
         vWindow.addPreCloseListener(event -> {
             event.setPreventClose(true);
-
-            // user has clicked on X
-            window.close(Window.CLOSE_ACTION_ID);
+            if (!isCloseWithCloseButtonPrevented(window)) {
+                // user has clicked on X
+                window.close(Window.CLOSE_ACTION_ID);
+            }
         });
 
         String closeShortcut = clientConfig.getCloseShortcut();
@@ -708,6 +715,9 @@ public class WebWindowManager extends WindowManager {
 
         Map<com.vaadin.event.Action, Runnable> actions = Collections.singletonMap(exitAction, () -> {
             if (openType.getOpenMode() != OpenMode.DIALOG || BooleanUtils.isNotFalse(window.getDialogOptions().getCloseable())) {
+                if (isCloseWithShortcutPrevented(window)) {
+                    return;
+                }
                 window.close(Window.CLOSE_ACTION_ID);
             }
         });
@@ -902,7 +912,8 @@ public class WebWindowManager extends WindowManager {
         for (Window window : getOpenWindows()) {
             OpenMode openMode = windowOpenMode.get(window).getOpenMode();
             WindowBreadCrumbs windowBreadCrumbs = tabs.get(windowOpenMode.get(window).getData());
-            if (window.getFrame() == keepOpenedFrame || openMode == OpenMode.DIALOG || keepOpenedCrumbs == windowBreadCrumbs)
+            if (window.getFrame() == keepOpenedFrame || openMode == OpenMode.DIALOG
+                    || keepOpenedCrumbs == windowBreadCrumbs || isCloseWithCloseButtonPrevented(window))
                 continue;
 
             if (window.getDsContext() != null && window.getDsContext().isModified()) {
@@ -1656,6 +1667,10 @@ public class WebWindowManager extends WindowManager {
                             tabSheet.focus();
 
                             WindowBreadCrumbs breadCrumbs = tabs.get(layout);
+                            if (isCloseWithShortcutPrevented(breadCrumbs.getCurrentWindow())) {
+                                return;
+                            }
+
                             if (stacks.get(breadCrumbs).empty()) {
                                 final Component previousTab = tabSheet.getPreviousTab(layout);
                                 if (previousTab != null) {
@@ -1671,15 +1686,41 @@ public class WebWindowManager extends WindowManager {
                         }
                     }
                 } else {
-                    ui.focus();
-
                     Iterator<WindowBreadCrumbs> it = tabs.values().iterator();
                     if (it.hasNext()) {
-                        it.next().getCurrentWindow().close(Window.CLOSE_ACTION_ID);
+                        Window currentWindow = it.next().getCurrentWindow();
+                        if (!isCloseWithShortcutPrevented(currentWindow)) {
+                            ui.focus();
+                            currentWindow.close(Window.CLOSE_ACTION_ID);
+                        }
                     }
                 }
             }
         };
+    }
+
+    protected boolean isCloseWithShortcutPrevented(Window currentWindow) {
+        WebWindow webWindow = (WebWindow) ComponentsHelper.getWindowImplementation(currentWindow);
+
+        if (webWindow != null) {
+            BeforeCloseWithShortcutEvent event = new BeforeCloseWithShortcutEvent(webWindow);
+            webWindow.fireBeforeCloseWithShortcut(event);
+            return event.isClosePrevented();
+        }
+
+        return false;
+    }
+
+    protected boolean isCloseWithCloseButtonPrevented(Window currentWindow) {
+        WebWindow webWindow = (WebWindow) ComponentsHelper.getWindowImplementation(currentWindow);
+
+        if (webWindow != null) {
+            BeforeCloseWithCloseButtonEvent event = new BeforeCloseWithCloseButtonEvent(webWindow);
+            webWindow.fireBeforeCloseWithCloseButton(event);
+            return event.isClosePrevented();
+        }
+
+        return false;
     }
 
     public ShortcutListener createNextWindowTabShortcut(Window.TopLevelWindow topLevelWindow) {

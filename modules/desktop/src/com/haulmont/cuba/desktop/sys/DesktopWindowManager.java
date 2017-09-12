@@ -475,7 +475,9 @@ public class DesktopWindowManager extends WindowManager {
             public void actionPerform(Component component) {
                 if (openType.getOpenMode() != OpenMode.DIALOG
                         || BooleanUtils.isNotFalse(window.getDialogOptions().getCloseable())) {
-                    window.close("close");
+                    if (!isCloseWithShortcutPrevented(window)) {
+                        window.close("close");
+                    }
                 }
             }
         });
@@ -572,8 +574,10 @@ public class DesktopWindowManager extends WindowManager {
             @Override
             public void windowClosingAfterValidation(WindowEvent e) {
                 if (BooleanUtils.isNotFalse(window.getDialogOptions().getCloseable())) {
-                    if (window.close("close")) {
-                        dialog.dispose();
+                    if (!isCloseWithCloseButtonPrevented(window)) {
+                        if (window.close("close")) {
+                            dialog.dispose();
+                        }
                     }
                 }
             }
@@ -729,7 +733,9 @@ public class DesktopWindowManager extends WindowManager {
                             public void run() {
                                 Window currentWindow = breadCrumbs.getCurrentWindow();
                                 if (currentWindow != null && window != currentWindow) {
-                                    currentWindow.closeAndRun("close", this);
+                                    if (!isCloseWithCloseButtonPrevented(currentWindow)) {
+                                        currentWindow.closeAndRun("close", this);
+                                    }
                                 }
                             }
                         };
@@ -1837,7 +1843,9 @@ public class DesktopWindowManager extends WindowManager {
         public void run() {
             Window windowToClose = breadCrumbs.getCurrentWindow();
             if (windowToClose != null) {
-                windowToClose.closeAndRun("close", new TabCloseTask(breadCrumbs));
+                if (!isCloseWithCloseButtonPrevented(windowToClose)) {
+                    windowToClose.closeAndRun("close", new TabCloseTask(breadCrumbs));
+                }
             }
         }
     }
@@ -2009,6 +2017,30 @@ public class DesktopWindowManager extends WindowManager {
                 }
             });
         }
+    }
+
+    protected boolean isCloseWithShortcutPrevented(Window currentWindow) {
+        DesktopWindow desktopWindow = (DesktopWindow) ComponentsHelper.getWindowImplementation(currentWindow);
+
+        if (desktopWindow != null) {
+            Window.BeforeCloseWithShortcutEvent event = new Window.BeforeCloseWithShortcutEvent(desktopWindow);
+            desktopWindow.fireBeforeCloseWithShortcut(event);
+            return event.isClosePrevented();
+        }
+
+        return false;
+    }
+
+    protected boolean isCloseWithCloseButtonPrevented(Window currentWindow) {
+        DesktopWindow desktopWindow = (DesktopWindow) ComponentsHelper.getWindowImplementation(currentWindow);
+
+        if (desktopWindow != null) {
+            Window.BeforeCloseWithCloseButtonEvent event = new Window.BeforeCloseWithCloseButtonEvent(desktopWindow);
+            desktopWindow.fireBeforeCloseWithCloseButton(event);
+            return event.isClosePrevented();
+        }
+
+        return false;
     }
 
     protected class DesktopNotificationAction implements Action {

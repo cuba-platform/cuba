@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
 import com.haulmont.cuba.gui.DialogOptions;
@@ -30,6 +31,7 @@ import com.haulmont.cuba.gui.settings.Settings;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.EventObject;
 import java.util.List;
 
 /**
@@ -459,6 +461,110 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
          */
         void windowClosedWithCommitAction();
     }
+
+    class BeforeCloseEvent extends EventObject {
+        protected boolean closePrevented = false;
+
+        /**
+         * @param source the window to be closed
+         */
+        public BeforeCloseEvent(Window source) {
+            super(source);
+        }
+
+        @Override
+        public Window getSource() {
+            return (Window) super.getSource();
+        }
+
+        public void preventWindowClose() {
+            this.closePrevented = true;
+        }
+
+        public boolean isClosePrevented() {
+            return closePrevented;
+        }
+    }
+
+    /**
+     * Listener to be notified when a screen is closed with {@link ClientConfig#getCloseShortcut()}.
+     */
+    interface BeforeCloseWithShortcutListener {
+        /**
+         * Called when a screen is closed with {@link ClientConfig#getCloseShortcut()}.
+         *
+         * @param event an event providing more information
+         */
+        void beforeCloseWithShortcut(BeforeCloseWithShortcutEvent event);
+    }
+
+
+    /**
+     * An event that is fired before a screen is closed with {@link ClientConfig#getCloseShortcut()}.
+     */
+    class BeforeCloseWithShortcutEvent extends BeforeCloseEvent {
+        /**
+         * @param source the window to be closed
+         */
+        public BeforeCloseWithShortcutEvent(Window source) {
+            super(source);
+        }
+    }
+
+    /**
+     * Register a new before close with shortcut listener.
+     *
+     * @param listener the listener to register
+     */
+    void addBeforeCloseWithShortcutListener(BeforeCloseWithShortcutListener listener);
+
+    /**
+     * Removes a previously registered before close with shortcut listener.
+     *
+     * @param listener the listener to remove
+     */
+    void removeBeforeCloseWithShortcutListener(BeforeCloseWithShortcutListener listener);
+
+    /**
+     * Listener to be notified when a screen is closed with one of the following approaches:
+     * screen's close button, bread crumbs, TabSheet tabs' close actions (Close, Close All, Close Others).
+     */
+    interface BeforeCloseWithCloseButtonListener {
+        /**
+         * Called when a screen is closed with one of the following approaches:
+         * screen's close button, bread crumbs, TabSheet tabs' close actions (Close, Close All, Close Others).
+         *
+         * @param event an event providing more information
+         */
+        void beforeCloseWithCloseButton(BeforeCloseWithCloseButtonEvent event);
+    }
+
+    /**
+     * An event that is fired before a screen is closed with one of the following approaches:
+     * screen's close button, bread crumbs, TabSheet tabs' close actions (Close, Close All, Close Others).
+     */
+    class BeforeCloseWithCloseButtonEvent extends BeforeCloseEvent {
+        /**
+         * @param source the window to be closed
+         */
+        public BeforeCloseWithCloseButtonEvent(Window source) {
+            super(source);
+        }
+    }
+
+    /**
+     * Register a new before close with close button listener.
+     *
+     * @param listener the listener to register
+     */
+    void addBeforeCloseWithCloseButtonListener(BeforeCloseWithCloseButtonListener listener);
+
+    /**
+     * Removes a previously registered before close with close button listener.
+     *
+     * @param listener the listener to remove
+     */
+    void removeBeforeCloseWithCloseButtonListener(BeforeCloseWithCloseButtonListener listener);
 
     /**
      * INTERNAL.
