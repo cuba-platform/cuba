@@ -25,6 +25,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.*;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Ignore
@@ -60,7 +61,7 @@ public class AmazonS3FileStorageTest {
         fileStorageAPI.saveFile(fileDescr, FILE_CONTENT.getBytes());
 
         InputStream inputStream = fileStorageAPI.openStream(fileDescr);
-        Assert.assertEquals(FILE_CONTENT, IOUtils.toString(inputStream));
+        Assert.assertEquals(FILE_CONTENT, IOUtils.toString(inputStream, StandardCharsets.UTF_8));
 
         boolean fileExists = fileStorageAPI.fileExists(fileDescr);
         Assert.assertTrue(fileExists);
@@ -73,7 +74,7 @@ public class AmazonS3FileStorageTest {
         fileStorageAPI.saveFile(fileDescr2, FILE_CONTENT.getBytes());
 
         InputStream inputStream = fileStorageAPI.openStream(fileDescr2);
-        Assert.assertEquals(FILE_CONTENT, IOUtils.toString(inputStream));
+        Assert.assertEquals(FILE_CONTENT, IOUtils.toString(inputStream, StandardCharsets.UTF_8));
 
         boolean fileExists = fileStorageAPI.fileExists(fileDescr2);
         Assert.assertTrue(fileExists);

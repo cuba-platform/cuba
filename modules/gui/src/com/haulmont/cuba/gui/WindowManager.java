@@ -58,6 +58,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -483,7 +484,7 @@ public abstract class WindowManager {
 
         String template;
         try {
-            template = IOUtils.toString(stream);
+            template = IOUtils.toString(stream, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException("Unable to read screen template");
         } finally {

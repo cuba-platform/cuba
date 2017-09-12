@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class ScriptResource {
     protected String dir;
@@ -51,7 +52,7 @@ public class ScriptResource {
     }
 
     public String getContent() throws IOException {
-        return IOUtils.toString(resource.getInputStream());
+        return IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8);
     }
 
     public String getDir() {

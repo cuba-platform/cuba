@@ -169,7 +169,7 @@ public class LayoutLoader {
 
         String template;
         try {
-            template = IOUtils.toString(stream);
+            template = IOUtils.toString(stream, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException("Unable to read screen template", e);
         }
