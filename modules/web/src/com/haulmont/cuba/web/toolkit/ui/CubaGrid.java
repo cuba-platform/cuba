@@ -37,6 +37,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 import static com.haulmont.cuba.web.toolkit.ui.CubaGrid.EditorCloseListener.EDITOR_CLOSE_METHOD;
+import static com.haulmont.cuba.web.toolkit.ui.CubaGrid.BeforeEditorOpenListener.EDITOR_OPEN_METHOD;
 import static com.haulmont.cuba.web.toolkit.ui.CubaGrid.EditorPostCommitListener.EDITOR_POST_COMMIT_METHOD;
 import static com.haulmont.cuba.web.toolkit.ui.CubaGrid.EditorPreCommitListener.EDITOR_PRE_COMMIT_METHOD;
 
@@ -119,12 +120,15 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
     @Override
     protected void doEditItem() {
         clearFields(editorFields);
+
+        Map<Column, Field> columnFieldMap = new HashMap<>();
         for (Column column : getColumns()) {
             Field<?> field = editorFieldFactory.createField(editedItemId, column.getPropertyId());
             column.getState().editorConnector = field;
             if (field != null) {
                 configureField(field);
                 editorFields.add(field);
+                columnFieldMap.put(column, field);
             }
         }
 
@@ -134,6 +138,8 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
         for (Field<?> f : getEditorFields()) {
             f.markAsDirtyRecursive();
         }
+
+        fireEditorOpenEvent(columnFieldMap);
     }
 
     @Override
@@ -254,6 +260,38 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
 
     protected void fireEditorCloseEvent(Object editedItemId) {
         fireEvent(new EditorCloseEvent(this, editedItemId));
+    }
+
+    protected void fireEditorOpenEvent(Map<Column, Field> columnFieldMap) {
+        fireEvent(new BeforeEditorOpenEvent(this, editedItemId, columnFieldMap));
+    }
+
+    public class BeforeEditorOpenEvent extends EditorEvent {
+        Map<Column, Field> columnFieldMap;
+
+        protected BeforeEditorOpenEvent(Grid source, Object itemID, Map<Column, Field> columnFieldMap) {
+            super(source, itemID);
+            this.columnFieldMap = columnFieldMap;
+        }
+
+        public Map<Column, Field> getColumnFieldMap() {
+            return columnFieldMap;
+        }
+    }
+
+    public interface BeforeEditorOpenListener {
+        Method EDITOR_OPEN_METHOD =
+                ReflectTools.findMethod(BeforeEditorOpenListener.class, "beforeEditorOpened", BeforeEditorOpenEvent.class);
+
+        void beforeEditorOpened(BeforeEditorOpenEvent event);
+    }
+
+    public void addEditorOpenListener(BeforeEditorOpenListener listener) {
+        addListener(BeforeEditorOpenEvent.class, listener, EDITOR_OPEN_METHOD);
+    }
+
+    public void removeEditorOpenListener(BeforeEditorOpenListener listener) {
+        removeListener(BeforeEditorOpenEvent.class, listener, EDITOR_OPEN_METHOD);
     }
 
     public interface EditorCloseListener {
