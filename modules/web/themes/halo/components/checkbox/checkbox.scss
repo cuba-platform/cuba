@@ -17,9 +17,9 @@
 
 $cuba-checkbox-extra-height: ceil($v-unit-size / 10);
 
-$cuba-checkbox-line-height: round($v-unit-size / 1.8);
-$cuba-checkbox-line-height--small: round($v-unit-size / 2);
-$cuba-checkbox-line-height--large: round($v-unit-size / 1.6);
+$cuba-checkbox-line-height: ceil($v-unit-size / 1.9);
+$cuba-checkbox-line-height--small: ceil($v-unit-size / 2.1);
+$cuba-checkbox-line-height--large: ceil($v-unit-size / 1.6);
 
 @mixin halo-checkbox($primary-stylename: v-checkbox) {
   .#{$primary-stylename} {
@@ -32,12 +32,12 @@ $cuba-checkbox-line-height--large: round($v-unit-size / 1.6);
   }
 
   .#{$primary-stylename}-small {
-    line-height: round($v-unit-size / 2);
-    height: round($v-unit-size / 2) + $cuba-checkbox-extra-height;
+    line-height: $cuba-checkbox-line-height--small;
+    height: $cuba-checkbox-line-height--small + $cuba-checkbox-extra-height;
   }
 
   .#{$primary-stylename}-large {
-    line-height: round($v-unit-size / 1.6);
-    height: round($v-unit-size / 1.6) + $cuba-checkbox-extra-height;
+    line-height: $cuba-checkbox-line-height--large;
+    height: $cuba-checkbox-line-height--large + $cuba-checkbox-extra-height;
   }
 }
