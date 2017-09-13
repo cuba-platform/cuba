@@ -516,7 +516,7 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
 
     @Override
     public AbstractLookup openLookup(
-            String windowAlias, @Nullable Window.Lookup.Handler handler,
+            String windowAlias, Window.Lookup.Handler handler,
             WindowManager.OpenType openType, Map<String, Object> params) {
         return (AbstractLookup) frame.openLookup(windowAlias, handler, openType, params);
     }
