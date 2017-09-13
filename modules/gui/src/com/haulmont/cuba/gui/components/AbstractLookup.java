@@ -56,4 +56,9 @@ public class AbstractLookup extends AbstractWindow implements Window.Lookup {
             ((Lookup) frame).setLookupValidator(validator);
         }
     }
+
+    @Override
+    public void initLookupLayout() {
+        ((Lookup) frame).initLookupLayout();
+    }
 }

@@ -40,7 +40,8 @@ public class WindowDelegate {
 
     public static final String LOOKUP_ITEM_CLICK_ACTION_ID = "lookupItemClickAction";
     public static final String LOOKUP_ENTER_PRESSED_ACTION_ID = "lookupEnterPressed";
-    public static final String LOOKUP_SELECTED_ACTION_ID = "lookupAction";
+    public static final String LOOKUP_SELECT_ACTION_ID = "lookupSelectAction";
+    public static final String LOOKUP_CANCEL_ACTION_ID = "lookupCancelAction";
 
     protected Window window;
     protected Window wrapper;

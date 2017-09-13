@@ -25,7 +25,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.TopLevelFrame;
@@ -66,8 +65,6 @@ import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 
@@ -1670,24 +1667,26 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     public static class Lookup extends DesktopWindow implements Window.Lookup, LookupComponent.LookupSelectionChangeListener {
 
-        private Component lookupComponent;
-        private Handler handler;
-        private Validator validator;
-        private SelectListener selectListener;
+        protected Component lookupComponent;
+        protected Handler handler;
+        protected Validator validator;
 
-        private JPanel container;
-        private JButton selectBtn;
+        protected JPanel container;
 
         public Lookup() {
-            Configuration configuration = AppBeans.get(Configuration.NAME);
-            ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+            addAction(new SelectAction(this));
 
-            addAction(new AbstractAction(WindowDelegate.LOOKUP_SELECTED_ACTION_ID, clientConfig.getCommitShortcut()) {
+            addAction(new AbstractAction(WindowDelegate.LOOKUP_CANCEL_ACTION_ID) {
                 @Override
-                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                    fireSelectAction();
+                public void actionPerform(Component component) {
+                    close("cancel");
                 }
             });
+        }
+
+        @Nullable
+        protected Action getSelectAction() {
+            return getAction(WindowDelegate.LOOKUP_SELECT_ACTION_ID);
         }
 
         @Override
@@ -1697,24 +1696,30 @@ public class DesktopWindow implements Window, Component.Disposable,
 
         @Override
         public void setLookupComponent(Component lookupComponent) {
+            Action selectAction = getSelectAction();
             if (this.lookupComponent instanceof LookupSelectionChangeNotifier) {
                 LookupSelectionChangeNotifier selectionChangeNotifier = (LookupSelectionChangeNotifier) this.lookupComponent;
                 selectionChangeNotifier.removeLookupValueChangeListener(this);
 
-                selectBtn.setEnabled(true);
+                if (selectAction != null)
+                    selectAction.setEnabled(true);
             }
 
             this.lookupComponent = lookupComponent;
 
             if (lookupComponent instanceof LookupComponent) {
-                ((LookupComponent) lookupComponent).setLookupSelectHandler(this::fireSelectAction);
+                ((LookupComponent) lookupComponent).setLookupSelectHandler(() -> {
+                    if (selectAction != null)
+                        selectAction.actionPerform(null);
+                });
 
                 if (lookupComponent instanceof LookupSelectionChangeNotifier) {
                     LookupSelectionChangeNotifier selectionChangeNotifier =
                             (LookupSelectionChangeNotifier) lookupComponent;
                     selectionChangeNotifier.addLookupValueChangeListener(this);
 
-                    selectBtn.setEnabled(!selectionChangeNotifier.getLookupSelectedItems().isEmpty());
+                    if (selectAction != null)
+                        selectAction.setEnabled(!selectionChangeNotifier.getLookupSelectedItems().isEmpty());
                 }
             }
         }
@@ -1739,9 +1744,26 @@ public class DesktopWindow implements Window, Component.Disposable,
             this.validator = validator;
         }
 
-        protected void fireSelectAction() {
-            if (selectListener != null && selectBtn.isEnabled()) {
-                selectListener.actionPerformed(null);
+        @Override
+        public void initLookupLayout() {
+            Action selectAction = getAction(WindowDelegate.LOOKUP_SELECT_ACTION_ID);
+            if (selectAction == null || selectAction.getOwner() == null) {
+                Frame frame = openFrame(null, "lookupWindowActions");
+                JPanel jPanel = frame.unwrapComposition(JPanel.class);
+                BoxLayoutAdapter layoutAdapter = BoxLayoutAdapter.create(jPanel);
+                layoutAdapter.setMargin(true);
+                panel.add(jPanel);
+
+                if (App.getInstance().isTestMode()) {
+                    Component selectButton = frame.getComponent("selectButton");
+                    if (selectButton instanceof com.haulmont.cuba.gui.components.Button) {
+                        selectButton.unwrap(JButton.class).setName("selectButton");
+                    }
+                    Component cancelButton = frame.getComponent("cancelButton");
+                    if (cancelButton instanceof com.haulmont.cuba.gui.components.Button) {
+                        cancelButton.unwrap(JButton.class).setName("cancelButton");
+                    }
+                }
             }
         }
 
@@ -1761,39 +1783,6 @@ public class DesktopWindow implements Window, Component.Disposable,
             layoutAdapter.setMargin(true);
 
             panel.add(container, "grow, height 100%, width 100%");
-
-            JPanel buttonsPanel = new JPanel();
-            buttonsPanel.setLayout(
-                    new MigLayout("ins 0 n n n" + (LayoutAdapter.isDebug() ? ", debug" : ""))
-            );
-
-            selectListener = new SelectListener();
-
-            selectBtn = new JButton(messages.getMessage(AppConfig.getMessagesPack(), "actions.Select"));
-            selectBtn.setIcon(App.getInstance().getResources().getIcon("icons/ok.png"));
-            selectBtn.addActionListener(selectListener);
-            DesktopComponentsHelper.adjustSize(selectBtn);
-            buttonsPanel.add(selectBtn);
-
-            JButton cancelBtn = new JButton(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
-            cancelBtn.setIcon(App.getInstance().getResources().getIcon("icons/cancel.png"));
-            cancelBtn.addActionListener(
-                    new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            close("cancel");
-                        }
-                    }
-            );
-            DesktopComponentsHelper.adjustSize(cancelBtn);
-            buttonsPanel.add(cancelBtn);
-
-            if (App.getInstance().isTestMode()) {
-                selectBtn.setName("selectButton");
-                cancelBtn.setName("cancelButton");
-            }
-
-            panel.add(buttonsPanel);
         }
 
         @Override
@@ -1836,40 +1825,9 @@ public class DesktopWindow implements Window, Component.Disposable,
 
         @Override
         public void lookupValueChanged(LookupComponent.LookupSelectionChangeEvent event) {
-            selectBtn.setEnabled(!event.getSource().getLookupSelectedItems().isEmpty());
-        }
-
-        private class SelectListener implements ActionListener {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (getLookupValidator() != null && !getLookupValidator().validate()) {
-                    return;
-                }
-
-                Collection selected;
-                if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table) {
-                    selected = ((com.haulmont.cuba.gui.components.Table) lookupComponent).getSelected();
-                } else if (lookupComponent instanceof com.haulmont.cuba.gui.components.Tree) {
-                    selected = ((com.haulmont.cuba.gui.components.Tree) lookupComponent).getSelected();
-                } else if (lookupComponent instanceof LookupField) {
-                    selected = Collections.singleton(((LookupField) lookupComponent).getValue());
-                } else if (lookupComponent instanceof PickerField) {
-                    selected = Collections.singleton(((PickerField) lookupComponent).getValue());
-                } else if (lookupComponent instanceof OptionsGroup) {
-                    final OptionsGroup optionsGroup = (OptionsGroup) lookupComponent;
-                    selected = optionsGroup.getValue();
-                } else {
-                    throw new UnsupportedOperationException();
-                }
-                close(Window.SELECT_ACTION_ID);
-                for (Object obj : selected) {
-                    if (obj instanceof Entity) {
-                        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
-                        metadataTools.traverseAttributes((Entity) obj, (entity, property) -> entity.removeAllListeners());
-                    }
-                }
-                handler.handleLookup(selected);
-            }
+            Action selectAction = getSelectAction();
+            if (selectAction != null)
+                selectAction.setEnabled(!event.getSource().getLookupSelectedItems().isEmpty());
         }
     }
 

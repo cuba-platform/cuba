@@ -387,6 +387,12 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
         void setLookupValidator(Validator validator);
 
         /**
+         * INTERNAL.
+         * Invoked by the framework after creating the window to give it a chance to setup a specific layout.
+         */
+        void initLookupLayout();
+
+        /**
          * Callback interface to receive selected entities.
          * <br> Implementations of this interface must be passed to {@link #openLookup} methods or set directly in
          * the screen instance via {@link #setLookupHandler}.

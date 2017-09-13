@@ -21,6 +21,8 @@
 
     <screen id="extendedEditWindowActions" template="/com/haulmont/cuba/gui/extended-edit-window.actions.xml"/>
 
+    <screen id="lookupWindowActions" template="/com/haulmont/cuba/gui/lookup-window.actions.xml"/>
+
     <screen id="sec$User.browse"
             template="/com/haulmont/cuba/gui/app/security/user/browse/user-browse.xml"/>
     <screen id="sec$User.lookup"

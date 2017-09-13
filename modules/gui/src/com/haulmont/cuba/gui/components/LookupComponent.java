@@ -24,8 +24,7 @@ import java.util.EventObject;
  */
 public interface LookupComponent extends Component {
     /**
-     * @param selectHandler handler that should be triggered if a LookupComponent
-     *                      want to trigger Select action of Window.Lookup
+     * @param selectHandler handler that should be executed when a user select an item in the lookup screen
      */
     void setLookupSelectHandler(Runnable selectHandler);
 

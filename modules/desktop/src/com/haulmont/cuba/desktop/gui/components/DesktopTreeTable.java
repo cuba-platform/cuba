@@ -218,6 +218,12 @@ public class DesktopTreeTable<E extends Entity> extends DesktopAbstractTable<JXT
                                 datasource.setItem(null);
                             datasource.setItem(selectedItems.iterator().next());
                         }
+
+                        LookupSelectionChangeEvent selectionChangeEvent =
+                                new LookupSelectionChangeEvent(DesktopTreeTable.this);
+                        for (LookupSelectionChangeListener listener : lookupSelectionChangeListeners) {
+                            listener.lookupValueChanged(selectionChangeEvent);
+                        }
                     }
                 }
         );

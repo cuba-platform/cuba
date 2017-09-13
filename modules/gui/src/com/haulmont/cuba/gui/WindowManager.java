@@ -900,6 +900,8 @@ public abstract class WindowManager {
         if (template != null) {
             window = createWindow(windowInfo, openType, params, LayoutLoaderConfig.getLookupLoaders(), false);
 
+            ((Window.Lookup) window).initLookupLayout();
+
             Element element = ((Component.HasXmlDescriptor) window).getXmlDescriptor();
             String lookupComponent = element.attributeValue("lookupComponent");
             if (!StringUtils.isEmpty(lookupComponent)) {

@@ -1675,20 +1675,27 @@ public class WebWindow implements Window, Component.Wrapper,
 
         protected Component lookupComponent;
         protected VerticalLayout container;
-        protected Button selectButton;
-        protected Button cancelButton;
-        protected SelectAction selectAction;
+        protected CubaVerticalActionsLayout rootLayout;
 
         public Lookup() {
-            Configuration configuration = AppBeans.get(Configuration.NAME);
-            ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+            addAction(new SelectAction(this));
 
-            addAction(new AbstractAction(WindowDelegate.LOOKUP_SELECTED_ACTION_ID, clientConfig.getCommitShortcut()) {
+            addAction(new AbstractAction(WindowDelegate.LOOKUP_CANCEL_ACTION_ID) {
                 @Override
-                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                    fireSelectAction();
+                public void actionPerform(Component component) {
+                    close("cancel");
                 }
             });
+        }
+
+        @Nullable
+        protected Action getSelectAction() {
+            return getAction(WindowDelegate.LOOKUP_SELECT_ACTION_ID);
+        }
+
+        @Nullable
+        protected Action getCancelAction() {
+            return getAction(WindowDelegate.LOOKUP_CANCEL_ACTION_ID);
         }
 
         @Override
@@ -1698,31 +1705,39 @@ public class WebWindow implements Window, Component.Wrapper,
 
         @Override
         public void setLookupComponent(Component lookupComponent) {
+            Action selectAction = getSelectAction();
             if (this.lookupComponent instanceof LookupSelectionChangeNotifier) {
                 LookupSelectionChangeNotifier lvChangeNotifier = (LookupSelectionChangeNotifier) this.lookupComponent;
                 lvChangeNotifier.removeLookupValueChangeListener(this);
 
-                selectButton.setEnabled(true);
+                if (selectAction != null)
+                    selectAction.setEnabled(true);
             }
 
             this.lookupComponent = lookupComponent;
 
             if (lookupComponent instanceof LookupComponent) {
-                ((LookupComponent) lookupComponent).setLookupSelectHandler(this::fireSelectAction);
+                ((LookupComponent) lookupComponent).setLookupSelectHandler(() -> {
+                    if (selectAction != null)
+                        selectAction.actionPerform(null);
+                });
 
                 if (lookupComponent instanceof LookupSelectionChangeNotifier) {
                     LookupSelectionChangeNotifier lvChangeNotifier =
                             (LookupSelectionChangeNotifier) lookupComponent;
                     lvChangeNotifier.addLookupValueChangeListener(this);
 
-                    selectButton.setEnabled(!lvChangeNotifier.getLookupSelectedItems().isEmpty());
+                    if (selectAction != null)
+                        selectAction.setEnabled(!lvChangeNotifier.getLookupSelectedItems().isEmpty());
                 }
             }
         }
 
         @Override
         public void lookupValueChanged(LookupComponent.LookupSelectionChangeEvent event) {
-            selectButton.setEnabled(!event.getSource().getLookupSelectedItems().isEmpty());
+            Action selectAction = getSelectAction();
+            if (selectAction != null)
+                selectAction.setEnabled(!event.getSource().getLookupSelectedItems().isEmpty());
         }
 
         @Override
@@ -1746,14 +1761,29 @@ public class WebWindow implements Window, Component.Wrapper,
         }
 
         @Override
-        public Validator getLookupValidator() {
-            return validator;
+        public void initLookupLayout() {
+            Action selectAction = getAction(WindowDelegate.LOOKUP_SELECT_ACTION_ID);
+            if (selectAction == null || selectAction.getOwner() == null) {
+                Frame frame = openFrame(null, "lookupWindowActions");
+                com.vaadin.ui.Component vFrame = frame.unwrapComposition(com.vaadin.ui.Component.class);
+                rootLayout.addComponent(vFrame);
+
+                if (AppUI.getCurrent().isTestMode()) {
+                    Component selectButton = frame.getComponent("selectButton");
+                    if (selectButton instanceof com.haulmont.cuba.gui.components.Button) {
+                        selectButton.unwrap(Button.class).setCubaId("selectButton");
+                    }
+                    Component cancelButton = frame.getComponent("cancelButton");
+                    if (cancelButton instanceof com.haulmont.cuba.gui.components.Button) {
+                        cancelButton.unwrap(Button.class).setCubaId("cancelButton");
+                    }
+                }
+            }
         }
 
-        protected void fireSelectAction() {
-            if (selectAction != null && selectButton.isEnabled()) {
-                selectAction.buttonClick(null);
-            }
+        @Override
+        public Validator getLookupValidator() {
+            return validator;
         }
 
         @Override
@@ -1763,52 +1793,19 @@ public class WebWindow implements Window, Component.Wrapper,
 
         @Override
         protected ComponentContainer createLayout() {
-            final CubaVerticalActionsLayout form = new CubaVerticalActionsLayout();
-            form.setStyleName("c-lookup-window-wrapper");
+            rootLayout = new CubaVerticalActionsLayout();
+            rootLayout.setStyleName("c-lookup-window-wrapper");
+            rootLayout.setSizeFull();
+            rootLayout.setSpacing(true);
 
             container = new VerticalLayout();
             container.setStyleName(C_WINDOW_LAYOUT);
-
-            boolean isTestMode = AppUI.getCurrent().isTestMode();
-
-            HorizontalLayout okbar = new HorizontalLayout();
-            okbar.setHeight(-1, Unit.PIXELS);
-            okbar.setStyleName("c-window-actions-pane");
-            okbar.setMargin(new MarginInfo(true, false, false, false));
-            okbar.setSpacing(true);
-
-            selectAction = new SelectAction(this);
-            selectButton = WebComponentsHelper.createButton();
-            selectButton.setCaption(messages.getMainMessage("actions.Select"));
-            selectButton.setIcon(WebComponentsHelper.getIcon("icons/ok.png"));
-            selectButton.addClickListener(selectAction);
-            selectButton.setStyleName("c-window-action-button");
-            if (isTestMode) {
-                selectButton.setCubaId("selectButton");
-            }
-
-            cancelButton = WebComponentsHelper.createButton();
-            cancelButton.setCaption(messages.getMainMessage("actions.Cancel"));
-            cancelButton.addClickListener(event ->
-                    close("cancel")
-            );
-            cancelButton.setStyleName("c-window-action-button");
-            cancelButton.setIcon(WebComponentsHelper.getIcon("icons/cancel.png"));
-            if (isTestMode) {
-                cancelButton.setCubaId("cancelButton");
-            }
-
-            okbar.addComponent(selectButton);
-            okbar.addComponent(cancelButton);
-
-            form.addComponent(container);
-            form.addComponent(okbar);
-
             container.setSizeFull();
-            form.setExpandRatio(container, 1);
-            form.setSizeFull();
 
-            return form;
+            rootLayout.addComponent(container);
+            rootLayout.setExpandRatio(container, 1);
+
+            return rootLayout;
         }
 
         @Override
@@ -1819,8 +1816,20 @@ public class WebWindow implements Window, Component.Wrapper,
                 AppUI ui = AppUI.getCurrent();
                 if (ui.isTestMode()) {
                     TestIdManager testIdManager = ui.getTestIdManager();
-                    selectButton.setId(testIdManager.getTestId(debugId + "_selectButton"));
-                    cancelButton.setId(testIdManager.getTestId(debugId + "_cancelButton"));
+                    Action selectAction = getSelectAction();
+                    if (selectAction != null) {
+                        ActionOwner selectActionOwner = selectAction.getOwner();
+                        if (selectActionOwner instanceof com.haulmont.cuba.gui.components.Button) {
+                            ((com.haulmont.cuba.gui.components.Button) selectActionOwner).setId(testIdManager.getTestId(debugId + "_selectButton"));
+                        }
+                    }
+                    Action cancelAction = getCancelAction();
+                    if (cancelAction != null) {
+                        ActionOwner cancelActionOwner = cancelAction.getOwner();
+                        if (cancelActionOwner instanceof com.haulmont.cuba.gui.components.Button) {
+                            ((com.haulmont.cuba.gui.components.Button) cancelActionOwner).setId(testIdManager.getTestId(debugId + "_cancelButton"));
+                        }
+                    }
                 }
             }
         }
