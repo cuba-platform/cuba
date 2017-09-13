@@ -48,7 +48,9 @@ public class CubaBootstrapListener implements BootstrapListener {
     public void modifyBootstrapPage(BootstrapPageResponse response) {
         Element head = response.getDocument().getElementsByTag("head").get(0);
 
-        includeScript("VAADIN/webjars/jquery/1.12.4/jquery.min.js", response, head);
+        String jqueryUrl = String.format("VAADIN/webjars/%s", webConfig.getWebJarJQueryPath());
+
+        includeScript(jqueryUrl, response, head);
 
         int customDeviceWidthForViewport = webConfig.getCustomDeviceWidthForViewport();
         if (customDeviceWidthForViewport > 0) {

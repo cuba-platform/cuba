@@ -348,4 +348,11 @@ public interface WebConfig extends Config {
     @Property("cuba.web.serverErrorPageTemplate")
     @Default("/com/haulmont/cuba/web/sys/errors/server-error.html")
     String getServerErrorPageTemplate();
+
+    /**
+     * @return Path to jQuery library which is used in a project as WebJar.
+     */
+    @Property("cuba.web.webjars.jqueryPath")
+    @Default("jquery/1.12.4/jquery.min.js")
+    String getWebJarJQueryPath();
 }
