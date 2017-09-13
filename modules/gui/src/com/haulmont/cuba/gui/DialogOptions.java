@@ -94,14 +94,15 @@ public class DialogOptions {
 
     /**
      * Set height of a window if it will be opened as a dialog or change height
-     * at run time if the window is already opened as a dialog.
+     * at run time if the window is already opened as a dialog. Also, changes size
+     * unit to {@link com.haulmont.cuba.gui.components.SizeUnit#PIXELS}
      *
      * @param height height
      * @deprecated Use {@link #setHeight(Float)} instead.
      */
     @Deprecated
     public DialogOptions setHeight(Integer height) {
-        return setHeight(height.floatValue());
+        return setHeight(height.floatValue(), SizeUnit.PIXELS);
     }
 
     /**
@@ -193,14 +194,15 @@ public class DialogOptions {
 
     /**
      * Set width of a window if it will be opened as a dialog or change width
-     * at run time if the window is already opened as a dialog.
+     * at run time if the window is already opened as a dialog. Also, changes
+     * size unit to {@link com.haulmont.cuba.gui.components.SizeUnit#PIXELS}
      *
      * @param width width
      * @deprecated Use {@link #setWidth(Float)} instead.
      */
     @Deprecated
     public DialogOptions setWidth(Integer width) {
-        return setWidth(width.floatValue());
+        return setWidth(width.floatValue(), SizeUnit.PIXELS);
     }
 
     /**
