@@ -281,6 +281,11 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
                 setEditableToComponent(finalEditable);
             };
             ((EditableChangeNotifier) parent).addEditableChangeListener(parentEditableChangeListener);
+
+            Editable parentEditable = (Editable) parent;
+            if (!parentEditable.isEditable()) {
+                setEditableToComponent(false);
+            }
         }
     }
 }
