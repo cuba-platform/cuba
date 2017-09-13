@@ -980,7 +980,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 }
 
                 if (column.isCollapsed() && component.isColumnCollapsingAllowed()) {
-                    component.setColumnCollapsed(column.getId(), true);
+                    if (!(columnId instanceof MetaPropertyPath) ||
+                            security.isEntityAttrReadPermitted(metaClass, columnId.toString())) {
+                        component.setColumnCollapsed(column.getId(), true);
+                    }
                 }
 
                 if (column.getAggregation() != null && isAggregatable()) {
