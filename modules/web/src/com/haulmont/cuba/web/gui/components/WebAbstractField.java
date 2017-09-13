@@ -252,6 +252,11 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField>
                 setEditableToComponent(finalEditable);
             };
             ((EditableChangeNotifier) parent).addEditableChangeListener(parentEditableChangeListener);
+
+            Editable parentEditable = (Editable) parent;
+            if (!parentEditable.isEditable()) {
+                setEditableToComponent(false);
+            }
         }
     }
 
