@@ -276,17 +276,17 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
         if (fieldComponent instanceof Field) {
             Field cubaField = (Field) fieldComponent;
 
-            if (fci.getTargetCaption() != null && cubaField.getCaption() == null) {
+            if (fci.getTargetCaption() != null) {
                 cubaField.setCaption(fci.getTargetCaption());
             }
-            if (fci.getTargetDescription() != null && StringUtils.isEmpty(cubaField.getDescription())) {
+            if (fci.getTargetDescription() != null) {
                 // we check empty for description since Vaadin components have "" description by default
                 cubaField.setDescription(fci.getTargetDescription());
             }
             if (fci.getTargetRequired() != null) {
                 cubaField.setRequired(fci.getTargetRequired());
             }
-            if (fci.getTargetRequiredMessage() != null && cubaField.getRequiredMessage() == null) {
+            if (fci.getTargetRequiredMessage() != null) {
                 cubaField.setRequiredMessage(fci.getTargetRequiredMessage());
             }
             if (fci.getTargetEditable() != null) {
