@@ -64,7 +64,18 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
             resultComponent.setMultiSelect(Boolean.parseBoolean(multiselect));
         }
 
+        loadTreeChildren();
+
+        loadIcon(resultComponent, element);
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
+    }
+
+    protected void loadTreeChildren() {
         Element itemsElem = element.element("treechildren");
+        if (itemsElem == null)
+            return;
+
         String datasource = itemsElem.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
             HierarchicalDatasource ds = (HierarchicalDatasource) context.getDsContext().get(datasource);
@@ -76,10 +87,6 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
                 resultComponent.setCaptionMode(CaptionMode.PROPERTY);
             }
         }
-
-        loadIcon(resultComponent, element);
-        loadCaption(resultComponent, element);
-        loadDescription(resultComponent, element);
     }
 
     protected void createButtonsPanel(Tree resultComponent, Element element) {
