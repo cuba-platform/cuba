@@ -85,15 +85,15 @@
       opacity: 0.3;
     }
 
-    .v-readonly.v-textfield.v-textfield-focus,
-    .v-textfield-readonly.v-textfield-focus,
     .v-textfield-focus {
       border-color: $cuba-field-focused-border-color;
     }
 
     .v-readonly.v-textfield,
-    .v-textfield-readonly {
-      border: 1px solid $cuba-field-border-color;
+    .v-textfield-readonly,
+    .v-readonly.v-textfield.v-textfield-focus,
+    .v-textfield-readonly.v-textfield-focus {
+      border: 1px solid $cuba-field-readonly-border-color;
       overflow: hidden;
     }
 
@@ -102,7 +102,7 @@
     }
   }
 
-  .#{$primary-stylename}-layout.v-readonly {
+  .#{$primary-stylename}.v-readonly {
     background-color: transparent;
 
     .v-button {
