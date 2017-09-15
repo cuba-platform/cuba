@@ -31,7 +31,9 @@ import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
 import com.vaadin.server.*;
 import com.vaadin.server.communication.*;
+import com.vaadin.shared.ApplicationConstants;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
@@ -46,6 +48,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -180,6 +183,8 @@ public class CubaVaadinServletService extends VaadinServletService {
                 // add support for jquery file upload
                 cubaRequestHandlers.add(new FileUploadHandler());
                 cubaRequestHandlers.add(new CubaFileUploadHandler());
+            } else if (handler instanceof ServletUIInitHandler) {
+                cubaRequestHandlers.add(new CubaServletUIInitHandler());
             } else {
                 cubaRequestHandlers.add(handler);
             }
@@ -329,6 +334,40 @@ public class CubaVaadinServletService extends VaadinServletService {
             };
         } else {
             return super.createVaadinSession(request);
+        }
+    }
+
+    /*
+     * Uses CubaUidlWriter instead of default UidlWriter to support reloading screens that contain components
+     * that use web resources from WebJars
+     */
+    protected static class CubaServletUIInitHandler extends ServletUIInitHandler {
+        private final Logger log = LoggerFactory.getLogger(CubaServletUIInitHandler.class);
+
+        @Override
+        protected String getInitialUidl(VaadinRequest request, UI uI) throws IOException {
+            try (StringWriter writer = new StringWriter()) {
+                writer.write("{");
+
+                VaadinSession session = uI.getSession();
+                if (session.getConfiguration().isXsrfProtectionEnabled()) {
+                    writer.write(getSecurityKeyUIDL(session));
+                }
+                new CubaUidlWriter().write(uI, writer, false);
+                writer.write("}");
+
+                String initialUIDL = writer.toString();
+                log.trace("Initial UIDL: {}", initialUIDL);
+                return initialUIDL;
+            }
+        }
+
+        // Copied from Vaadin
+        private static String getSecurityKeyUIDL(VaadinSession session) {
+            String secKey = session.getCsrfToken();
+
+            return "\"" + ApplicationConstants.UIDL_SECURITY_TOKEN_ID + "\":\""
+                    + secKey + "\",";
         }
     }
 }
