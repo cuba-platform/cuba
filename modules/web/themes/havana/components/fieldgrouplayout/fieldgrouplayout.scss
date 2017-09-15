@@ -46,12 +46,18 @@
     padding-bottom: 0;
   }
 
-  // set line-height 25px for all captions exclude captions for CheckBox and Label
-  .#{$primary-stylename}-slot.c-full-height-widget .v-caption {
-    height: 25px;
-  }
+  .#{$primary-stylename}-slot.c-full-height-widget {
+    .v-caption {
+      height: 25px;
 
-  .#{$primary-stylename}-slot.c-full-height-widget .v-caption .v-captiontext {
-    line-height: 25px;
+      .v-captiontext {
+        line-height: 25px;
+      }
+    }
+
+    & > .v-checkbox {
+      height: 25px;
+      line-height: 25px;
+    }
   }
 }
