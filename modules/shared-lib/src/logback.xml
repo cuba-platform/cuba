@@ -21,7 +21,7 @@
     when logback.configurationFile system property is not set
  -->
 
-<configuration debug="true">
+<configuration debug="true" packagingData="true">
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">

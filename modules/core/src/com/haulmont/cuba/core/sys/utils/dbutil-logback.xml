@@ -16,7 +16,7 @@
   ~
   -->
 
-<configuration debug="true">
+<configuration debug="true" packagingData="true">
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <param name="Target" value="System.out"/>

@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.TimeSource;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
+import javax.annotation.Nullable;
 import java.util.Date;
 
 public class LogItem {
@@ -27,16 +28,14 @@ public class LogItem {
     private Date timestamp;
     private LogLevel level;
     private String message;
-    private String stacktrace;
+    private Throwable throwable;
 
     public LogItem(LogLevel level, String message, Throwable throwable) {
         TimeSource timeSource = AppBeans.get(TimeSource.NAME);
         this.timestamp = timeSource.currentTimestamp();
         this.level = level;
         this.message = message;
-        if (throwable != null) {
-            this.stacktrace = ExceptionUtils.getFullStackTrace(throwable);
-        }
+        this.throwable = throwable;
     }
 
     public LogLevel getLevel() {
@@ -48,7 +47,12 @@ public class LogItem {
     }
 
     public String getStacktrace() {
-        return stacktrace;
+        return throwable != null ? ExceptionUtils.getFullStackTrace(throwable) : "";
+    }
+
+    @Nullable
+    public Throwable getThrowable() {
+        return throwable;
     }
 
     public Date getTimestamp() {

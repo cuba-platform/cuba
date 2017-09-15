@@ -46,14 +46,18 @@ public class AppLog {
 
     public void log(LogItem item) {
         String msg = item.getMessage();
-        if (item.getStacktrace() != null) {
-            msg += "\n" + item.getStacktrace();
-        }
 
-        if (item.getLevel().equals(LogLevel.ERROR))
-            log.error(msg);
-        else
-            log.debug("{}: {}",  item.getLevel(), msg);
+        if (item.getLevel().equals(LogLevel.ERROR)) {
+            if (item.getThrowable() != null)
+                log.error(msg, item.getThrowable());
+            else
+                log.error(msg);
+        } else {
+            if (item.getThrowable() != null)
+                log.debug("{}: {}", item.getLevel(), msg, item.getThrowable());
+            else
+                log.debug("{}: {}", item.getLevel(), msg);
+        }
         
         if (items.size() >= CAPACITY) {
             items.removeLast();
