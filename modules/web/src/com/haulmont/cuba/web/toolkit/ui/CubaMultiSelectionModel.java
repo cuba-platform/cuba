@@ -20,6 +20,9 @@ import com.haulmont.cuba.web.toolkit.ui.client.grid.selection.CubaMultiSelection
 import com.vaadin.server.AbstractClientConnector;
 import com.vaadin.ui.Grid;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 public class CubaMultiSelectionModel extends Grid.MultiSelectionModel {
 
     @Override
@@ -31,5 +34,20 @@ public class CubaMultiSelectionModel extends Grid.MultiSelectionModel {
                 select(getParentGrid().getContainerDataSource().getItemIds(start, length), false);
             }
         });
+    }
+
+    @Override
+    protected boolean select(Collection<?> itemIds, boolean refresh) {
+        // We want to prevent exception when selecting an item
+        // right after removing from the container (triggered from
+        // a client side i.e. refresh is false)
+        // See https://github.com/vaadin/framework/issues/9911
+        if (!refresh) {
+            itemIds = itemIds.stream()
+                    .filter(itemId ->
+                            getParentGrid().getContainerDataSource().containsId(itemId))
+                    .collect(Collectors.toList());
+        }
+        return super.select(itemIds, refresh);
     }
 }
