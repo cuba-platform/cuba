@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2017 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,23 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.ui.Grid;
 
-public class CubaSingleSelectionModel extends Grid.SingleSelectionModel {
+import java.util.Collection;
+import java.util.stream.Collectors;
+
+public class CubaMultiCheckSelectionModel extends Grid.MultiSelectionModel {
 
     @Override
-    protected boolean select(Object itemId, boolean refresh) {
+    protected boolean select(Collection<?> itemIds, boolean refresh) {
         // We want to prevent exception when selecting an item
         // right after removing from the container (triggered from
         // a client side i.e. refresh is false)
         // See https://github.com/vaadin/framework/issues/9911
-        if (!refresh && itemId != null) {
-            if (!getParentGrid().getContainerDataSource().containsId(itemId)) {
-                return false;
-            }
+        if (!refresh) {
+            itemIds = itemIds.stream()
+                    .filter(itemId ->
+                            getParentGrid().getContainerDataSource().containsId(itemId))
+                    .collect(Collectors.toList());
         }
-        return super.select(itemId, refresh);
+        return super.select(itemIds, refresh);
     }
 }
