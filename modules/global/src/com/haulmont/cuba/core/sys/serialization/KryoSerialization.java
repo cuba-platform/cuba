@@ -103,6 +103,7 @@ public class KryoSerialization implements Serialization {
         kryo.register(Collections.singletonList("").getClass(), new CollectionsSingletonListSerializer());
         kryo.register(Collections.singleton("").getClass(), new CollectionsSingletonSetSerializer());
         kryo.register(Collections.singletonMap("", "").getClass(), new CollectionsSingletonMapSerializer());
+        kryo.register(BitSet.class, new BitSetSerializer());
         kryo.register(GregorianCalendar.class, new GregorianCalendarSerializer());
         kryo.register(InvocationHandler.class, new JdkProxySerializer());
         UnmodifiableCollectionsSerializer.registerSerializers(kryo);

@@ -30,13 +30,14 @@ import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.*;
 
+import java.util.BitSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class SerilaizationTest {
+public class SerializationTest {
     @ClassRule
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
@@ -240,6 +241,18 @@ public class SerilaizationTest {
         } catch (Exception ignored) {
         }
     }
+
+    @Test
+    public void testKryoBitSet() {
+        BitSet set = new BitSet();
+        set.set(1);
+        set.set(2);
+
+        KryoSerialization kryoSerialization = new KryoSerialization();
+        BitSet restored = (BitSet) kryoSerialization.deserialize(kryoSerialization.serialize(set));
+        assertEquals(set, restored);
+    }
+
 
     protected View getView() {Metadata metadata = AppBeans.get(Metadata.NAME);
         ViewRepository viewRepository = metadata.getViewRepository();
