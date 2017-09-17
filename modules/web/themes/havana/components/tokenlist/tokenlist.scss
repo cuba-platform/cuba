@@ -16,14 +16,6 @@
  */
 
 @mixin havana-cuba-tokenlist($primary-stylename: c-tokenlist) {
-  .#{$primary-stylename} .v-csslayout {
-    clear: both;
-  }
-
-  .#{$primary-stylename} .v-scrollable.v-panel-content > .v-widget {
-    overflow: auto;
-  }
-
   .#{$primary-stylename} .c-tokenlist-label.v-widget {
     clear: both;
     margin: 0 5px 5px 0;
@@ -94,5 +86,23 @@
     .c-tokenlist-label-content .content {
       width: auto;
     }
+  }
+
+  .#{$primary-stylename} {
+    width: 250px;
+
+    &.v-has-width .c-tokenlist-scrollbox {
+      max-width: none;
+    }
+
+    &.v-has-height .c-tokenlist-scrollbox {
+      max-height: none;
+    }
+  }
+
+  .#{$primary-stylename}-scrollbox {
+    max-width: 400px;
+    max-height: 250px;
+    overflow-y: auto;
   }
 }

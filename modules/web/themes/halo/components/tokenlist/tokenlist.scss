@@ -16,10 +16,6 @@
  */
 
 @mixin halo-cuba-tokenlist($primary-stylename: c-tokenlist) {
-  .#{$primary-stylename} .v-csslayout {
-    clear: both;
-  }
-
   .#{$primary-stylename} .c-tokenlist-label.v-widget {
     clear: both;
     margin: 0 round($v-layout-margin-right/2) round($v-layout-margin-bottom/2) 0;
@@ -60,10 +56,6 @@
     overflow: hidden;
   }
 
-  .#{$primary-stylename} .#{$primary-stylename}-scrollbox {
-    @include box-shadow(none);
-  }
-
   .#{$primary-stylename} .c-tokenlist-label-content .content {
     white-space: nowrap;
     cursor: default;
@@ -73,10 +65,6 @@
     font-size: $v-font-size;
     vertical-align: top;
     width: 100%;
-  }
-
-  .#{$primary-stylename} .v-panel {
-    border: none;
   }
 
   .#{$primary-stylename} .c-tokenlist-label.noedit {
@@ -110,5 +98,23 @@
     .c-tokenlist-label-content .content {
       width: auto;
     }
+  }
+
+  .#{$primary-stylename} {
+    width: 250px;
+
+    &.v-has-width .c-tokenlist-scrollbox {
+      max-width: none;
+    }
+
+    &.v-has-height .c-tokenlist-scrollbox {
+      max-height: none;
+    }
+  }
+
+  .#{$primary-stylename}-scrollbox {
+    max-width: 400px;
+    max-height: 250px;
+    overflow-y: auto;
   }
 }

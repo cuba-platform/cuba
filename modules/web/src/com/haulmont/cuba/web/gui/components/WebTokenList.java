@@ -38,11 +38,12 @@ import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.toolkit.ui.CubaScrollBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaTokenListLabel;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
@@ -640,9 +641,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
         protected VerticalLayout composition;
 
-        protected Panel scrollContainer;
-
-        protected CssLayout scrollContainerLayout;
+        protected CubaScrollBoxLayout tokenContainer;
 
         protected Component editor;
 
@@ -650,21 +649,18 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         protected Map<CubaTokenListLabel, Instance> componentItems = new HashMap<>();
 
         public CubaTokenList() {
+            setWidthUndefined();
+
             composition = new VerticalLayout();
             composition.setSpacing(true);
             composition.setSizeFull();
 
-            scrollContainer = new Panel();
-            scrollContainer.setStyleName("c-tokenlist-scrollbox");
-            scrollContainerLayout = new CssLayout();
-            scrollContainerLayout.setStyleName("c-tokenlist-scrollbox-inner");
-            scrollContainerLayout.setSizeUndefined();
+            tokenContainer = new CubaScrollBoxLayout();
+            tokenContainer.setStyleName("c-tokenlist-scrollbox");
+            tokenContainer.setSizeFull();
 
-            scrollContainer.setContent(scrollContainerLayout);
-            scrollContainer.setSizeFull();
-
-            composition.addComponent(scrollContainer);
-            composition.setExpandRatio(scrollContainer, 1);
+            composition.addComponent(tokenContainer);
+            composition.setExpandRatio(tokenContainer, 1);
             setPrimaryStyleName("c-tokenlist");
         }
 
@@ -844,10 +840,10 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         public void refreshComponent() {
             if (inline) {
                 addStyleName("inline");
-                scrollContainerLayout.setSizeUndefined();
+                tokenContainer.setSizeUndefined();
             } else {
                 removeStyleName("inline");
-                scrollContainerLayout.setWidth(100, Unit.PERCENTAGE);
+                tokenContainer.setWidth(100, Unit.PERCENTAGE);
             }
 
             if (editor != null) {
@@ -871,8 +867,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                 }
             }
 
-            Layout layout = (Layout) scrollContainer.getContent();
-            layout.removeAllComponents();
+            tokenContainer.removeAllComponents();
 
             if (datasource != null) {
                 List<Instance> usedItems = new ArrayList<>();
@@ -891,7 +886,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                     f.setWidthUndefined();
 
                     setTokenStyle(f, itemId);
-                    scrollContainerLayout.addComponent(f);
+                    tokenContainer.addComponent(f);
                     usedItems.add(item);
                 }
 
@@ -902,6 +897,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                         itemComponents.remove(componentItem);
                     }
                 }
+
+                tokenContainer.setVisible(CollectionUtils.isNotEmpty(datasource.getItems()));
             }
         }
 
