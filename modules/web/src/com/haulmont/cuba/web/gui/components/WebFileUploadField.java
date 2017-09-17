@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.FileUploadField;
@@ -148,7 +149,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
                 try {
                     fileUploading.putFileIntoStorage(fileId, fileDescriptor);
 
-                    FileDescriptor commitedDescriptor = datasource.getDataSupplier().commit(fileDescriptor);
+                    FileDescriptor commitedDescriptor = commitFileDescriptor(fileDescriptor);
 
                     setValue(commitedDescriptor);
                 } catch (FileStorageException e) {
@@ -156,6 +157,18 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
                 }
                 break;
         }
+    }
+
+    protected FileDescriptor commitFileDescriptor(FileDescriptor fileDescriptor) {
+        if (datasource != null) {
+            return datasource.getDataSupplier().commit(fileDescriptor);
+        }
+
+        if (getFrame().getDsContext().getDataSupplier() != null) {
+            return getFrame().getDsContext().getDataSupplier().commit(fileDescriptor);
+        }
+
+        return AppBeans.get(DataManager.class).commit(fileDescriptor);
     }
 
     protected void initOldUploadButton() {
