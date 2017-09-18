@@ -141,7 +141,7 @@ public class BasicRowProcessor implements RowProcessor {
     /**
      * A Map that converts all keys to lowercase Strings for case insensitive
      * lookups.  This is needed for the toMap() implementation because
-     * databases don't consistenly handle the casing of column names.
+     * databases don't consistently handle the casing of column names.
      */
     private static class CaseInsensitiveHashMap extends HashMap {
 

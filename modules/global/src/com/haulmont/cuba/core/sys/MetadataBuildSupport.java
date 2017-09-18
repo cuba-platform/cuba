@@ -161,8 +161,8 @@ public class MetadataBuildSupport {
         String persistenceConfig = getPersistenceConfig(db);
         if (persistenceConfig == null)
             return;
-        StrTokenizer persistenceFilestokenizer = new StrTokenizer(persistenceConfig);
-        for (String fileName : persistenceFilestokenizer.getTokenArray()) {
+        StrTokenizer persistenceFilesTokenizer = new StrTokenizer(persistenceConfig);
+        for (String fileName : persistenceFilesTokenizer.getTokenArray()) {
             Element root = readXml(fileName);
             Element puEl = root.element("persistence-unit");
             if (puEl == null)

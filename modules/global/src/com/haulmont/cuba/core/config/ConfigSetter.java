@@ -26,7 +26,6 @@ import java.lang.reflect.Method;
 
 /**
  * Implementation of configuration setter methods.
- *
  */
 public class ConfigSetter extends ConfigAccessorMethod {
 
@@ -65,7 +64,7 @@ public class ConfigSetter extends ConfigAccessorMethod {
      * Set a configuration field value.
      *
      * @param persister The configuration source.
-     * @param value         The field value.
+     * @param value     The field value.
      */
     public void setProperty(ConfigPersister persister, Object value) {
         String str;

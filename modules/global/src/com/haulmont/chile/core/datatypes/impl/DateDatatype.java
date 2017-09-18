@@ -35,9 +35,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * <code>DateDatatype</code> works with <code>java.<b>sql</b>.Date</code> but is parameterized with
+ * <code>DateDatatype</code> works with <code>java.<b>sql</b>.Date</code> but is parametrized with
  * <code>java.<b>util</b>.Date</code> to avoid problems with casting.
- *
  */
 public class DateDatatype implements Datatype<Date> {
 

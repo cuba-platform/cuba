@@ -129,11 +129,11 @@ public class JmxLogControl implements JmxLogControlMBean {
         if (!appenders.contains(appenderName))
             throw new AppenderNotFoundException(appenderName);
 
-        Level theshold = logControl.getAppenderThreshold(appenderName);
-        if (theshold == null)
+        Level threshold = logControl.getAppenderThreshold(appenderName);
+        if (threshold == null)
             return null;
 
-        return theshold.toString();
+        return threshold.toString();
     }
 
     @Override

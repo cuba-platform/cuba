@@ -33,9 +33,8 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * <code>TimeDatatype</code> works with <code>java.sql.Time</code> but is parameterized with <code>java.util.Date</code>
+ * <code>TimeDatatype</code> works with <code>java.sql.Time</code> but is parametrized with <code>java.util.Date</code>
  * to avoid problems with casting, e.g. <code>org.apache.openjpa.util.java$util$Date$proxy</code>.
- *
  */
 public class TimeDatatype implements Datatype<Date> {
 

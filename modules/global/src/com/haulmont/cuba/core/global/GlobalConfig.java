@@ -36,7 +36,6 @@ import java.util.UUID;
 
 /**
  * Configuration parameters interface used by all layers: CORE, WEB, DESKTOP.
- *
  */
 @Source(type = SourceType.APP)
 public interface GlobalConfig extends Config {
@@ -149,13 +148,13 @@ public interface GlobalConfig extends Config {
     boolean getUseAstBasedJpqlTransformer();
 
     /**
-     * @return Overriden AppFolderEditWindow class name
+     * @return Overridden AppFolderEditWindow class name
      */
     @Property("cuba.web.appFolderEditWindow")
     String getAppFolderEditWindowClassName();
 
     /**
-     * @return Overriden FolderEditWindow class name
+     * @return Overridden FolderEditWindow class name
      */
     @Property("cuba.web.folderEditWindow")
     String getFolderEditWindowClassName();

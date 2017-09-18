@@ -238,12 +238,13 @@ public class JavaClassLoader extends URLClassLoader {
     /**
      * Add dependencies for each class and ALSO add each class to dependent for each dependency
      */
-    private void linkDependencies(Map<String, TimestampClass> compiledTimestampClasses, Multimap<String, String> dependecies) {
+    private void linkDependencies(Map<String, TimestampClass> compiledTimestampClasses,
+                                  Multimap<String, String> dependencies) {
         for (Map.Entry<String, TimestampClass> entry : compiledTimestampClasses.entrySet()) {
             String className = entry.getKey();
             TimestampClass timestampClass = entry.getValue();
 
-            Collection<String> dependencyClasses = dependecies.get(className);
+            Collection<String> dependencyClasses = dependencies.get(className);
             timestampClass.dependencies.addAll(dependencyClasses);
 
             for (String dependencyClassName : timestampClass.dependencies) {

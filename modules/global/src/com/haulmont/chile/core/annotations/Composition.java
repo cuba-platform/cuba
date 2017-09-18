@@ -23,10 +23,9 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Marks a reference as composition.
- * Composition implyes ownership, that is the referenced object exists only as part of the owning entity.
+ * Composition implies ownership, that is the referenced object exists only as part of the owning entity.
  * <p>An attribute marked with this annotation yields the {@link com.haulmont.chile.core.model.MetaProperty}
  * of type {@link com.haulmont.chile.core.model.MetaProperty.Type#COMPOSITION}</p>
- *
  */
 @Target({java.lang.annotation.ElementType.METHOD, java.lang.annotation.ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)

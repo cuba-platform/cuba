@@ -22,10 +22,6 @@ import org.dom4j.Element;
 
 import java.text.*;
 
-/**
- * <p>$Id: NumberDatatype.java 4904 2011-05-31 09:45:58Z krivopustov $</p>
- *
- */
 public abstract class NumberDatatype {
 
     protected String formatPattern;

@@ -18,9 +18,8 @@
 package com.haulmont.cuba.core.sys.jmx;
 
 /**
- * MBean that is used by JMX contol facility to identify a JMX node.
- * If this MBean is not present in a JVM, the node is considered as unknown
- *
+ * MBean that is used by JMX control facility to identify a JMX node.
+ * If this MBean is not present in a JVM, the node is considered as unknown.
  */
 public interface JmxNodeIdentifierMBean {
 

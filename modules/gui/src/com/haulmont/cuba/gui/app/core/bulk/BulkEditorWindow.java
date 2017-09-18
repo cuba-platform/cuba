@@ -323,7 +323,7 @@ public class BulkEditorWindow extends AbstractWindow {
     }
 
     /**
-     * Creates a view, loading only neccessary properties.
+     * Creates a view, loading only necessary properties.
      * Referenced entities will be loaded with a MINIMAL view.
      *
      * @param meta meta class
@@ -599,13 +599,13 @@ public class BulkEditorWindow extends AbstractWindow {
             }
         }
 
-        Set<Entity> commited = dataSupplier.commit(new CommitContext(items));
+        Set<Entity> committed = dataSupplier.commit(new CommitContext(items));
 
         Logger logger = LoggerFactory.getLogger(BulkEditorWindow.class);
         logger.info("Applied bulk editing for {} entries of {}. Changed properties: {}",
-                commited.size(), metaClass, StringUtils.join(fields, ", "));
+                committed.size(), metaClass, StringUtils.join(fields, ", "));
 
-        showNotification(formatMessage("bulk.successMessage", commited.size()), NotificationType.HUMANIZED);
+        showNotification(formatMessage("bulk.successMessage", committed.size()), NotificationType.HUMANIZED);
         close(COMMIT_ACTION_ID);
     }
 

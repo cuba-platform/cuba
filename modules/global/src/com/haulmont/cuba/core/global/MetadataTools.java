@@ -218,7 +218,7 @@ public class MetadataTools {
 
     /**
      * Determine whether an object denoted by the given property is merged into persistence context together with the
-     * owning object. This is true if the property is ManyToMany, or if it is OneToMany with certain CasacdeType
+     * owning object. This is true if the property is ManyToMany, or if it is OneToMany with certain CascadeType
      * defined.
      */
     public boolean isCascade(MetaProperty metaProperty) {
@@ -712,7 +712,7 @@ public class MetadataTools {
      *
      * @param thisStore     name of a base data store
      * @param metaProperty  property
-     * @return  name of the ID property or null if the given property is not a cross-datastore reference or it does not
+     * @return name of the ID property or null if the given property is not a cross-datastore reference or it does not
      * satisfy the convention of declaring related properties for such references
      */
     @Nullable

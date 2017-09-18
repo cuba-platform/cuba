@@ -31,8 +31,7 @@ import java.util.TimeZone;
 /**
  * Convenience bean for locale-dependent conversion of some widely used data types to and from strings.
  * <p>
- * For locale-indepenedent conversion use {@link com.haulmont.chile.core.datatypes.Datatype} methods directly.
- *
+ * For locale-independent conversion use {@link com.haulmont.chile.core.datatypes.Datatype} methods directly.
  */
 @Component(DatatypeFormatter.NAME)
 public class DatatypeFormatter {

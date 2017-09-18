@@ -28,7 +28,6 @@ import javax.annotation.Nullable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Provides entity snapshots functionality.

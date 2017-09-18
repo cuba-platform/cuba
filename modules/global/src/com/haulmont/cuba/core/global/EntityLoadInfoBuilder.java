@@ -32,7 +32,6 @@ import java.util.UUID;
 
 /**
  * Builds {@link EntityLoadInfo} objects and provides additional methods for working with them.
- *
  */
 @Component(EntityLoadInfoBuilder.NAME)
 public class EntityLoadInfoBuilder {
@@ -44,9 +43,10 @@ public class EntityLoadInfoBuilder {
 
     /**
      * Create a new info instance.
-     * @param entity    entity instance
-     * @param viewName  view name, can be null
-     * @return          info instance
+     *
+     * @param entity   entity instance
+     * @param viewName view name, can be null
+     * @return info instance
      */
     public EntityLoadInfo create(Entity entity, @Nullable String viewName) {
         Objects.requireNonNull(entity, "entity is null");
@@ -61,8 +61,9 @@ public class EntityLoadInfoBuilder {
 
     /**
      * Create a new info instance with empty view name.
-     * @param entity    entity instance
-     * @return          info instance
+     *
+     * @param entity entity instance
+     * @return info instance
      */
     public EntityLoadInfo create(Entity entity) {
         return create(entity, null);
@@ -70,8 +71,9 @@ public class EntityLoadInfoBuilder {
 
     /**
      * Parse an info from the string.
-     * @param str   string representation of the info. See {@link EntityLoadInfo} for formats.
-     * @return      info instance or null if the string can not be parsed. Any exception is silently swallowed.
+     *
+     * @param str string representation of the info. See {@link EntityLoadInfo} for formats.
+     * @return info instance or null if the string can not be parsed. Any exception is silently swallowed.
      */
     @Nullable
     public EntityLoadInfo parse(String str) {
@@ -174,9 +176,10 @@ public class EntityLoadInfoBuilder {
 
     /**
      * Check whether an info about the given entity instance is contained in the collection.
-     * @param collection    collection of EntityLoadInfo objects
-     * @param entity        entity instance
-     * @return  true if the collection conatins an info about the given entity instance. View part of the info is ignored.
+     *
+     * @param collection collection of EntityLoadInfo objects
+     * @param entity     entity instance
+     * @return true if the collection contains an info about the given entity instance. View part of the info is ignored.
      */
     public boolean contains(Collection<EntityLoadInfo> collection, Entity entity) {
         Preconditions.checkNotNullArgument(collection, "collection is null");

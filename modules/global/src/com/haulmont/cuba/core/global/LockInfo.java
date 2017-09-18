@@ -63,7 +63,7 @@ public class LockInfo extends BaseUuidEntity {
     }
 
     /**
-     * @return when the lock occured
+     * @return when the lock occurred
      */
     @MetaProperty
     public Date getSince() {
