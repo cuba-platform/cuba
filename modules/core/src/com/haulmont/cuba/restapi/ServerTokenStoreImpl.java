@@ -360,8 +360,11 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                 UserSession session = loginService.getSession(sessionId);
                 if (session != null) {
                     AppContext.setSecurityContext(new SecurityContext(session));
-                    loginService.logout();
-                    AppContext.setSecurityContext(null);
+                    try {
+                        loginService.logout();
+                    } finally {
+                        AppContext.setSecurityContext(null);
+                    }
                 }
             } catch (NoUserSessionException ignored) {
             }
