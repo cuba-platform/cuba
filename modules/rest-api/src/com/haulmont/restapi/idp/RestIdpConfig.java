@@ -22,10 +22,11 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 
-import javax.annotation.Nullable;
-
 @Source(type = SourceType.APP)
 public interface RestIdpConfig extends Config {
+    /**
+     * @return whether IDP authentication for REST is enabled or not
+     */
     @Property("cuba.rest.idp.enabled")
     @DefaultBoolean(false)
     boolean getIdpEnabled();
@@ -43,12 +44,15 @@ public interface RestIdpConfig extends Config {
     String getIdpTrustedServicePassword();
 
     /**
-     * @return default url that should be used after user is logged in to IDP
+     * @return default url that should be used after user is logged in to IDP.
+     * URL of the service provider. IDP will redirect users there after successful login.
      */
     @Property("cuba.rest.idp.defaultRedirectUrl")
-    @Nullable
     String getIdpDefaultRedirectUrl();
 
+    /**
+     * @return true if REST API must ping IDP session on each request
+     */
     @Property("cuba.rest.idp.pingSessionOnRequest")
     @DefaultBoolean(true)
     boolean getIdpPingSessionOnRequest();
