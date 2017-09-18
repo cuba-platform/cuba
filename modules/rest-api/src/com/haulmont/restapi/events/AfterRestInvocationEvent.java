@@ -22,6 +22,9 @@ import org.springframework.security.core.Authentication;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+/**
+ * Event fired after REST controller call.
+ */
 public class AfterRestInvocationEvent extends ApplicationEvent {
 
     private ServletRequest request;

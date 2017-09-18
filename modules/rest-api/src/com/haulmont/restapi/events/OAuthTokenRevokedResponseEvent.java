@@ -23,7 +23,7 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import javax.annotation.Nullable;
 
 /**
- * Event fired when token has been revoked by client.
+ * Event fired when token has been revoked by client before HTTP response is sent.
  */
 public class OAuthTokenRevokedResponseEvent extends ApplicationEvent {
     protected String requestedRevocationToken;

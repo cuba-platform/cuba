@@ -20,6 +20,9 @@ import com.haulmont.restapi.auth.TokenRevocationInitiator;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 
+/**
+ * Event fired after OAuth token revocation.
+ */
 public class OAuthTokenRevokedEvent extends ApplicationEvent {
     protected TokenRevocationInitiator revocationInitiator;
 
@@ -30,6 +33,10 @@ public class OAuthTokenRevokedEvent extends ApplicationEvent {
 
     @Override
     public OAuth2AccessToken getSource() {
+        return (OAuth2AccessToken) super.getSource();
+    }
+
+    public OAuth2AccessToken getAccessToken() {
         return (OAuth2AccessToken) super.getSource();
     }
 

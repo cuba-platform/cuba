@@ -67,22 +67,28 @@ public interface IdpService {
     boolean logoutUserSession(String idpSessionId);
 
     /**
+     * Activate service provider ticket and get IDP session.
+     *
      * @param serviceProviderTicket service provider ticket
-     * @return IDP session object
+     * @return IDP session object or null if service provider ticket not found.
      */
     @Nullable
     IdpSession activateServiceProviderTicket(String serviceProviderTicket);
 
     /**
+     * Create service provider ticket.
+     *
      * @param sessionId IDP session id
-     * @return new service provider ticket
+     * @return new service provider ticket or null if session not found.
      */
     @Nullable
     String createServiceProviderTicket(String sessionId);
 
     /**
+     * Get session object.
+     *
      * @param sessionId IDP session id
-     * @return IDP session object
+     * @return IDP session object or null if session not found.
      */
     @Nullable
     IdpSession getSession(String sessionId);

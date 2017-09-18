@@ -22,6 +22,10 @@ import org.springframework.security.core.Authentication;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+/**
+ * Event fired before a call of a REST controller.
+ * Event listeners can prevent a controller invocation using {@link #preventInvocation()} method.
+ */
 public class BeforeRestInvocationEvent extends ApplicationEvent {
 
     private ServletRequest request;

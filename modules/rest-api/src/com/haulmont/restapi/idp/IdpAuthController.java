@@ -132,6 +132,12 @@ public class IdpAuthController implements InitializingBean {
 
     @GetMapping(value = "/v2/idp/login")
     public ResponseEntity login(@RequestParam(value = "redirectUrl", required = false) String redirectUrl) {
+        if (!idpConfig.getIdpEnabled()) {
+            log.debug("IDP authentication is disabled. Property cuba.rest.idp.enabled is false");
+
+            throw new InvalidGrantException("IDP is not supported");
+        }
+
         if (redirectUrl == null) {
             redirectUrl = idpDefaultRedirectUrl;
         }
@@ -152,6 +158,12 @@ public class IdpAuthController implements InitializingBean {
 
     @GetMapping(value = "/v2/idp/status")
     public ResponseEntity status() {
+        if (!idpConfig.getIdpEnabled()) {
+            log.debug("IDP authentication is disabled. Property cuba.rest.idp.enabled is false");
+
+            throw new InvalidGrantException("IDP is not supported");
+        }
+
         return ResponseEntity
                 .status(HttpStatus.FOUND)
                 .location(URI.create(getIdpStatusUrl()))

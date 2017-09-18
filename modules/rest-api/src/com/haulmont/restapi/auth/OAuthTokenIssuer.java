@@ -31,8 +31,8 @@ public interface OAuthTokenIssuer {
     /**
      * Issue token for principal.
      *
-     * @param login  an existing user login
-     * @param locale locale
+     * @param login       an existing user login
+     * @param locale      locale
      * @param loginParams params that are passed to login mechanism
      * @return result with logged in user session and newly generated OAuth2 access token
      * @throws BadCredentialsException in case of user is now allowed to use REST-API or middleware
@@ -43,14 +43,14 @@ public interface OAuthTokenIssuer {
     /**
      * Issue token for principal.
      *
-     * @param login  an existing user login
-     * @param locale locale
-     * @param tokenReqest additional login and token parameters
+     * @param login        an existing user login
+     * @param locale       locale
+     * @param tokenRequest additional login and token parameters
      * @return result with logged in user session and newly generated OAuth2 access token
      * @throws BadCredentialsException in case of user is now allowed to use REST-API or middleware
      *                                 throws {@link com.haulmont.cuba.security.global.LoginException} during login
      */
-    OAuth2AccessTokenResult issueToken(String login, Locale locale, OAuth2AccessTokenReqest tokenReqest);
+    OAuth2AccessTokenResult issueToken(String login, Locale locale, OAuth2AccessTokenReqest tokenRequest);
 
     /**
      * Result of programmatic access token generation.

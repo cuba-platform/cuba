@@ -95,7 +95,7 @@ public class IdpAuthLifecycleManager implements InitializingBean {
 
                     String idpLoginUrl = getIdpLoginUrl(idpConfig.getIdpDefaultRedirectUrl());
                     Gson gson = new Gson();
-                    String body = gson.toJson(new IdpLogoutResponse(idpLoginUrl));
+                    String body = gson.toJson(new IdpSessionExpiredResponse("idp_session_expired", idpLoginUrl));
 
                     HttpServletResponse response = (HttpServletResponse) event.getResponse();
                     try {
