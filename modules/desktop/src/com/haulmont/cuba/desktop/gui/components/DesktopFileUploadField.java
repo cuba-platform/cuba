@@ -24,10 +24,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.backgroundwork.BackgroundWorkProgressWindow;
@@ -223,7 +220,7 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
 
                             @Override
                             public void done(FileDescriptor result) {
-                                FileDescriptor descriptor = datasource.getDataSupplier().commit(result);
+                                FileDescriptor descriptor = commitFileDescriptor(result);
                                 setValue(descriptor);
                             }
                         };
@@ -233,6 +230,18 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
                         null, fileSize, true, true);
                 break;
         }
+    }
+
+    protected FileDescriptor commitFileDescriptor(FileDescriptor fileDescriptor) {
+        if (datasource != null) {
+            return datasource.getDataSupplier().commit(fileDescriptor);
+        }
+
+        if (getFrame().getDsContext().getDataSupplier() != null) {
+            return getFrame().getDsContext().getDataSupplier().commit(fileDescriptor);
+        }
+
+        return AppBeans.get(DataManager.class).commit(fileDescriptor);
     }
 
     @Override
