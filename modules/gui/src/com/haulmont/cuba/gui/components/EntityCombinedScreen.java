@@ -41,8 +41,8 @@ public class EntityCombinedScreen extends AbstractLookup {
     /**
      * Returns the browse table. Override if the table id differs from "table".
      */
-    protected Table getTable() {
-        return (Table) getComponentNN("table");
+    protected ListComponent getTable() {
+        return (ListComponent) getComponentNN("table");
     }
 
     /**
@@ -107,7 +107,7 @@ public class EntityCombinedScreen extends AbstractLookup {
      * and enables controls for record editing.
      */
     private void initBrowseCreateAction() {
-        Table table = getTable();
+        ListComponent table = getTable();
         table.addAction(new CreateAction(table) {
             @SuppressWarnings("unchecked")
             @Override
@@ -124,7 +124,7 @@ public class EntityCombinedScreen extends AbstractLookup {
      * Adds an EditAction that enables controls for editing.
      */
     protected void initBrowseEditAction() {
-        Table table = getTable();
+        ListComponent table = getTable();
         table.addAction(new EditAction(table) {
             @Override
             public void actionPerform(Component component) {
@@ -215,7 +215,7 @@ public class EntityCombinedScreen extends AbstractLookup {
      */
     @SuppressWarnings("unchecked")
     protected void initBrowseRemoveAction() {
-        Table table = getTable();
+        ListComponent table = getTable();
         Datasource editDs = getFieldGroup().getDatasource();
         RemoveAction removeAction = (RemoveAction) table.getAction(RemoveAction.ACTION_ID);
         if (removeAction != null)
@@ -298,7 +298,7 @@ public class EntityCombinedScreen extends AbstractLookup {
         }
         getDsContext().commit();
 
-        Table table = getTable();
+        ListComponent table = getTable();
         CollectionDatasource browseDs = table.getDatasource();
         Entity editedItem = fieldGroup.getDatasource().getItem();
         if (creating) {
