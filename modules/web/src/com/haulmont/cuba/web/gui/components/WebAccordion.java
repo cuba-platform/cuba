@@ -52,9 +52,8 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
     protected Map<String, Tab> tabs = new HashMap<>();
 
     protected Map<com.vaadin.ui.Component, ComponentDescriptor> tabMapping = new LinkedHashMap<>();
-    protected Map<String, Component> componentByIds = new HashMap<>();
 
-    protected Set<com.vaadin.ui.Component> lazyTabs = new HashSet<>();
+    protected Set<com.vaadin.ui.Component> lazyTabs;
 
     protected Set<Accordion.SelectedTabChangeListener> listeners = new HashSet<>();
 
@@ -64,6 +63,13 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
 
     protected CubaAccordion createComponent() {
         return new CubaAccordion();
+    }
+
+    protected Set<com.vaadin.ui.Component> getLazyTabs() {
+        if (lazyTabs == null) {
+            lazyTabs = new LinkedHashSet<>();
+        }
+        return lazyTabs;
     }
 
     @Override
@@ -83,7 +89,13 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
 
     @Override
     public Component getOwnComponent(String id) {
-        return componentByIds.get(id);
+        Preconditions.checkNotNullArgument(id);
+
+        return tabMapping.values().stream()
+                .filter(cd -> Objects.equals(id, cd.component.getId()))
+                .map(cd -> cd.component)
+                .findFirst()
+                .orElse(null);
     }
 
     @Nullable
@@ -244,9 +256,6 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
         com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(childComponent);
         this.component.removeComponent(vComponent);
 
-        if (childComponent.getId() != null) {
-            componentByIds.remove(childComponent.getId());
-        }
         tabMapping.remove(vComponent);
 
         childComponent.setParent(null);
@@ -255,7 +264,6 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
     @Override
     public void removeAllTabs() {
         tabMapping.clear();
-        componentByIds.clear();
         component.removeAllComponents();
 
         List<Tab> currentTabs = new ArrayList<>(tabs.values());
@@ -290,10 +298,6 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
         }
         if (AppUI.getCurrent().isTestMode()) {
             this.component.setCubaId(tabControl, name);
-        }
-
-        if (childComponent.getId() != null) {
-            componentByIds.put(childComponent.getId(), childComponent);
         }
 
         if (frame != null) {
@@ -346,7 +350,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
 
         tabMapping.put(tabComponent, new ComponentDescriptor(name, tabContent));
         com.vaadin.ui.Accordion.Tab tabControl = this.component.addTab(tabComponent);
-        lazyTabs.add(tabComponent);
+        getLazyTabs().add(tabComponent);
 
         this.component.addSelectedTabChangeListener(new LazyTabChangeListener(tabContent, descriptor, loader));
         context = loader.getContext();
@@ -513,7 +517,7 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
         public void selectedTabChange(com.vaadin.ui.Accordion.SelectedTabChangeEvent event) {
             com.vaadin.ui.Component selectedTab = WebAccordion.this.component.getSelectedTab();
             com.vaadin.ui.Component tabComponent = tabContent.getComponent();
-            if (selectedTab == tabComponent && lazyTabs.remove(tabComponent)) {
+            if (selectedTab == tabComponent && getLazyTabs().remove(tabComponent)) {
                 loader.createComponent();
 
                 Component lazyContent = loader.getResultComponent();

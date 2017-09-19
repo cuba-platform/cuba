@@ -50,9 +50,8 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     protected Map<String, Tab> tabs = new LinkedHashMap<>();
 
     protected Map<com.vaadin.ui.Component, ComponentDescriptor> tabMapping = new LinkedHashMap<>();
-    protected Map<String, Component> componentByIds = new HashMap<>();
 
-    protected Set<com.vaadin.ui.Component> lazyTabs = new HashSet<>();
+    protected Set<com.vaadin.ui.Component> lazyTabs; // lazily initialized set
 
     public WebTabSheet() {
         component = createComponent();
@@ -61,6 +60,13 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
 
     protected CubaTabSheet createComponent() {
         return new CubaTabSheet();
+    }
+
+    protected Set<com.vaadin.ui.Component> getLazyTabs() {
+        if (lazyTabs == null) {
+            lazyTabs = new LinkedHashSet<>();
+        }
+        return lazyTabs;
     }
 
     @Override
@@ -80,7 +86,13 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
 
     @Override
     public Component getOwnComponent(String id) {
-        return componentByIds.get(id);
+        Preconditions.checkNotNullArgument(id);
+
+        return tabMapping.values().stream()
+                .filter(cd -> Objects.equals(id, cd.component.getId()))
+                .map(cd -> cd.component)
+                .findFirst()
+                .orElse(null);
     }
 
     @Nullable
@@ -271,10 +283,6 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
             this.component.setCubaId(tabControl, name);
         }
 
-        if (childComponent.getId() != null) {
-            componentByIds.put(childComponent.getId(), childComponent);
-        }
-
         if (frame != null) {
             if (childComponent instanceof BelongToFrame
                     && ((BelongToFrame) childComponent).getFrame() == null) {
@@ -326,7 +334,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
 
         tabMapping.put(tabComponent, new ComponentDescriptor(name, tabContent));
         com.vaadin.ui.TabSheet.Tab tabControl = this.component.addTab(tabComponent);
-        lazyTabs.add(tabComponent);
+        getLazyTabs().add(tabComponent);
 
         this.component.addSelectedTabChangeListener(new LazyTabChangeListener(tabContent, descriptor, loader));
         context = loader.getContext();
@@ -363,9 +371,6 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(childComponent);
         this.component.removeComponent(vComponent);
 
-        if (childComponent.getId() != null) {
-            componentByIds.remove(childComponent.getId());
-        }
         tabMapping.remove(vComponent);
 
         childComponent.setParent(null);
@@ -374,7 +379,6 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     @Override
     public void removeAllTabs() {
         tabMapping.clear();
-        componentByIds.clear();
         component.removeAllComponents();
 
         List<Tab> currentTabs = new ArrayList<>(tabs.values());
@@ -538,7 +542,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         public void selectedTabChange(com.vaadin.ui.TabSheet.SelectedTabChangeEvent event) {
             com.vaadin.ui.Component selectedTab = WebTabSheet.this.component.getSelectedTab();
             com.vaadin.ui.Component tabComponent = tabContent.unwrap(com.vaadin.ui.Component.class);
-            if (selectedTab == tabComponent && lazyTabs.remove(tabComponent)) {
+            if (selectedTab == tabComponent && getLazyTabs().remove(tabComponent)) {
                 loader.createComponent();
 
                 Component lazyContent = loader.getResultComponent();
