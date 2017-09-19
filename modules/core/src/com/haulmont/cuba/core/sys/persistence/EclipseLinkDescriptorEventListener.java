@@ -112,8 +112,10 @@ public class EclipseLinkDescriptorEventListener implements DescriptorEventListen
 
     @Override
     public void postInsert(DescriptorEvent event) {
+        Entity entity = (Entity) event.getSource();
         String storeName = support.getStorageName(event.getSession());
-        manager.fireListener((Entity) event.getSource(), EntityListenerType.AFTER_INSERT, storeName);
+        manager.fireListener(entity, EntityListenerType.AFTER_INSERT, storeName);
+        support.getSavedInstances(storeName).add(entity);
     }
 
     @Override

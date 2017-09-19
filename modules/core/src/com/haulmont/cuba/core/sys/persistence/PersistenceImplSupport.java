@@ -136,6 +136,13 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         return getInstanceContainerResourceHolder(getStorageName(unitOfWork)).getInstances(unitOfWork);
     }
 
+    public Collection<Entity> getSavedInstances(String storeName) {
+        if (!TransactionSynchronizationManager.isActualTransactionActive())
+            throw new RuntimeException("No transaction");
+
+        return getInstanceContainerResourceHolder(storeName).getSavedInstances();
+    }
+
     public String getStorageName(Session session) {
         String storeName = (String) session.getProperty(PROP_NAME);
         return Strings.isNullOrEmpty(storeName) ? Stores.MAIN : storeName;
@@ -229,6 +236,8 @@ public class PersistenceImplSupport implements ApplicationContextAware {
 
         protected Map<UnitOfWork, Set<Entity>> unitOfWorkMap = new HashMap<>();
 
+        protected Set<Entity> savedInstances = createEntitySet();
+
         protected String storeName;
 
         public ContainerResourceHolder(String storeName) {
@@ -257,7 +266,11 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         }
 
         protected Collection<Entity> getInstances(UnitOfWork unitOfWork) {
-            return new HashSet<>(unitOfWorkMap.get(unitOfWork));
+            HashSet<Entity> set = new HashSet<>();
+            Set<Entity> entities = unitOfWorkMap.get(unitOfWork);
+            if (entities != null)
+                set.addAll(entities);
+            return set;
         }
 
         protected Collection<Entity> getAllInstances() {
@@ -266,6 +279,10 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                 set.addAll(instances);
             }
             return set;
+        }
+
+        protected Collection<Entity> getSavedInstances() {
+            return savedInstances;
         }
     }
 
@@ -282,6 +299,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         @Override
         protected void cleanupResource(ContainerResourceHolder resourceHolder, String resourceKey, boolean committed) {
             resourceHolder.unitOfWorkMap.clear();
+            resourceHolder.savedInstances.clear();
         }
 
         @Override
@@ -334,24 +352,26 @@ public class PersistenceImplSupport implements ApplicationContextAware {
 
         @Override
         public void afterCompletion(int status) {
-            Collection<Entity> instances = container.getAllInstances();
-            if (log.isTraceEnabled())
-                log.trace("ContainerResourceSynchronization.afterCompletion: instances = " + instances);
-            for (Object instance : instances) {
-                if (instance instanceof BaseGenericIdEntity) {
-                    BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) instance;
+            try {
+                Collection<Entity> instances = container.getAllInstances();
+                if (log.isTraceEnabled())
+                    log.trace("ContainerResourceSynchronization.afterCompletion: instances = " + instances);
+                for (Object instance : instances) {
+                    if (instance instanceof BaseGenericIdEntity) {
+                        BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) instance;
 
-                    BaseEntityInternalAccess.setNew(baseGenericIdEntity, false);
-                    BaseEntityInternalAccess.setManaged(baseGenericIdEntity, false);
-                    BaseEntityInternalAccess.setDetached(baseGenericIdEntity, true);
+                        BaseEntityInternalAccess.setNew(baseGenericIdEntity, false);
+                        BaseEntityInternalAccess.setManaged(baseGenericIdEntity, false);
+                        BaseEntityInternalAccess.setDetached(baseGenericIdEntity, true);
+                    }
                 }
-            }
 
-            for (AfterCompleteTransactionListener listener : afterCompleteTxListeners) {
-                listener.afterComplete(status == TransactionSynchronization.STATUS_COMMITTED, instances);
+                for (AfterCompleteTransactionListener listener : afterCompleteTxListeners) {
+                    listener.afterComplete(status == TransactionSynchronization.STATUS_COMMITTED, instances);
+                }
+            } finally {
+                super.afterCompletion(status);
             }
-
-            super.afterCompletion(status);
         }
 
         @Override
@@ -370,7 +390,8 @@ public class PersistenceImplSupport implements ApplicationContextAware {
 
         @Override
         public boolean visit(BaseGenericIdEntity entity) {
-            if (BaseEntityInternalAccess.isNew(entity)) {
+            if (BaseEntityInternalAccess.isNew(entity)
+                    && !getSavedInstances(storeName).contains(entity)) {
                 entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_INSERT, storeName);
                 entityLog.registerCreate(entity, true);
                 enqueueForFts(entity, FtsChangeType.INSERT);
@@ -401,8 +422,14 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                 // add changes after listener
                 changes.addChanges(changeListener.getObjectChangeSet());
 
-                entityLog.registerModify(entity, true, changes);
-                enqueueForFts(entity, FtsChangeType.UPDATE);
+                if (BaseEntityInternalAccess.isNew(entity)) {
+                    // it can happen if flush was performed, so the entity is still New but was saved
+                    entityLog.registerCreate(entity, true);
+                    enqueueForFts(entity, FtsChangeType.INSERT);
+                } else {
+                    entityLog.registerModify(entity, true, changes);
+                    enqueueForFts(entity, FtsChangeType.UPDATE);
+                }
                 ormCacheSupport.evictMasterEntity(entity, changes);
                 return true;
             }
@@ -445,7 +472,8 @@ public class PersistenceImplSupport implements ApplicationContextAware {
 
         @Override
         public boolean visit(BaseGenericIdEntity entity) {
-            if (BaseEntityInternalAccess.isNew(entity)) {
+            if (BaseEntityInternalAccess.isNew(entity)
+                    && !getSavedInstances(storeName).contains(entity)) {
                 entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_INSERT, storeName);
                 return true;
             }

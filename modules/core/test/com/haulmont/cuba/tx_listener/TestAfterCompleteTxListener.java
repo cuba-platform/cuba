@@ -42,8 +42,12 @@ public class TestAfterCompleteTxListener implements AfterCompleteTransactionList
     public void afterComplete(boolean committed, Collection<Entity> detachedEntities) {
         if (test != null) {
             switch (test) {
-                case "testCommit": testCommit(committed, detachedEntities);
-                case "testRollback": testRollback(committed, detachedEntities);
+                case "testCommit":
+                    testCommit(committed, detachedEntities);
+                    break;
+                case "testRollback":
+                    testRollback(committed, detachedEntities);
+                    break;
             }
         }
     }
