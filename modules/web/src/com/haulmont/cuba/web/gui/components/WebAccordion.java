@@ -438,16 +438,6 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
     }
 
     @Override
-    public boolean isTabsVisible() {
-        return component.isTabsVisible();
-    }
-
-    @Override
-    public void setTabsVisible(boolean tabsVisible) {
-        component.setTabsVisible(tabsVisible);
-    }
-
-    @Override
     public void addListener(Accordion.TabChangeListener listener) {
         initComponentTabChangeListener();
 

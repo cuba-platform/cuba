@@ -130,17 +130,6 @@ public interface Accordion extends Component.Container, Component.BelongToFrame,
     void setTabCaptionsAsHtml(boolean tabCaptionsAsHtml);
 
     /**
-     * @return true if the tabs are shown in the UI, false otherwise
-     */
-    boolean isTabsVisible();
-    /**
-     * Sets whether the tab selection part should be shown in the UI.
-     *
-     * @param tabsVisible true if the tabs should be shown in the UI, false otherwise
-     */
-    void setTabsVisible(boolean tabsVisible);
-
-    /**
      * Add a listener that will be notified when a selected tab is changed.
      *
      * @deprecated Use {@link Accordion#addSelectedTabChangeListener(Accordion.SelectedTabChangeListener)} instead
