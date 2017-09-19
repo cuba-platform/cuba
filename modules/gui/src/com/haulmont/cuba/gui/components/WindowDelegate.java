@@ -291,11 +291,13 @@ public class WindowDelegate {
 
     public Frame openFrame(Component parent, String windowAlias) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return window.getWindowManager().openFrame(wrapper, parent, windowInfo);
+        Frame wrappedFrame = ((Frame.Wrapper) wrapper).getWrappedFrame();
+        return window.getWindowManager().openFrame(wrappedFrame, parent, windowInfo);
     }
 
     public Frame openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return window.getWindowManager().openFrame(wrapper, parent, windowInfo, params);
+        Frame wrappedFrame = ((Frame.Wrapper) wrapper).getWrappedFrame();
+        return window.getWindowManager().openFrame(wrappedFrame, parent, windowInfo, params);
     }
 }

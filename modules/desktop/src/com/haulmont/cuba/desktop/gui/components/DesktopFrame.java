@@ -302,13 +302,15 @@ public class DesktopFrame
     @Override
     public Frame openFrame(Component parent, String windowAlias) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return getWindowManager().openFrame(wrapper, parent, windowInfo);
+        Frame wrappedFrame = ((Frame.Wrapper) wrapper).getWrappedFrame();
+        return getWindowManager().openFrame(wrappedFrame, parent, windowInfo);
     }
 
     @Override
     public Frame openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return getWindowManager().openFrame(wrapper, parent, windowInfo, params);
+        Frame wrappedFrame = ((Frame.Wrapper) wrapper).getWrappedFrame();
+        return getWindowManager().openFrame(wrappedFrame, parent, windowInfo, params);
     }
 
     @Override
