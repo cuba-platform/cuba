@@ -31,8 +31,8 @@ public class CommitContext implements Serializable {
 
     private static final long serialVersionUID = 2510011302544968537L;
 
-    protected Collection<Entity> commitInstances = new HashSet<>();
-    protected Collection<Entity> removeInstances = new HashSet<>();
+    protected Collection<Entity> commitInstances = new LinkedHashSet<>();
+    protected Collection<Entity> removeInstances = new LinkedHashSet<>();
 
     protected Map<Object, View> views = new HashMap<>();
 

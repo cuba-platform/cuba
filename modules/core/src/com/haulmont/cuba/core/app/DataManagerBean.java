@@ -173,7 +173,7 @@ public class DataManagerBean implements DataManager {
                 cc.getViews().put(entity, view);
         }
 
-        Set<Entity> result = new HashSet<>();
+        Set<Entity> result = new LinkedHashSet<>();
         for (Map.Entry<String, CommitContext> entry : storeToContextMap.entrySet()) {
             DataStore dataStore = storeFactory.get(entry.getKey());
             Set<Entity> committed = dataStore.commit(entry.getValue());
