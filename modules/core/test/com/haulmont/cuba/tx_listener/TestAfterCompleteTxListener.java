@@ -48,6 +48,15 @@ public class TestAfterCompleteTxListener implements AfterCompleteTransactionList
                 case "testRollback":
                     testRollback(committed, detachedEntities);
                     break;
+                case "accessName":
+                    testAccessName(committed, detachedEntities);
+                    break;
+                case "accessGroup":
+                    testAccessGroup(committed, detachedEntities);
+                    break;
+                case "accessUserRoles":
+                    testAccessUserRoles(committed, detachedEntities);
+                    break;
             }
         }
     }
@@ -89,6 +98,42 @@ public class TestAfterCompleteTxListener implements AfterCompleteTransactionList
                 runner.update("update SEC_USER set NAME = 'updated by TestAfterCompleteTxListener' where ID = ?", user.getId().toString());
             } catch (SQLException e) {
                 throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void testAccessName(boolean committed, Collection<Entity> detachedEntities) {
+        for (Entity entity : detachedEntities) {
+            if (entity instanceof User) {
+                try {
+                    System.out.println("User name: " + ((User) entity).getName());
+                } catch (IllegalStateException e) {
+                    System.out.println("An exception has been thrown: " + e);
+                }
+            }
+        }
+    }
+
+    private void testAccessGroup(boolean committed, Collection<Entity> detachedEntities) {
+        for (Entity entity : detachedEntities) {
+            if (entity instanceof User) {
+                try {
+                    System.out.println("User group: " + ((User) entity).getGroup());
+                } catch (IllegalStateException e) {
+                    System.out.println("An exception has been thrown: " + e);
+                }
+            }
+        }
+    }
+
+    private void testAccessUserRoles(boolean committed, Collection<Entity> detachedEntities) {
+        for (Entity entity : detachedEntities) {
+            if (entity instanceof User) {
+                try {
+                    System.out.println("User roles size: " + ((User) entity).getUserRoles().size());
+                } catch (IllegalStateException e) {
+                    System.out.println("An exception has been thrown: " + e);
+                }
             }
         }
     }

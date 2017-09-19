@@ -151,13 +151,13 @@ public class PersistenceImplSupport implements ApplicationContextAware {
     protected ContainerResourceHolder getInstanceContainerResourceHolder(String storeName) {
         ContainerResourceHolder holder =
                 (ContainerResourceHolder) TransactionSynchronizationManager.getResource(RESOURCE_HOLDER_KEY);
-        if (holder != null)
-            return holder;
+        if (holder == null) {
+            holder = new ContainerResourceHolder(storeName);
+            TransactionSynchronizationManager.bindResource(RESOURCE_HOLDER_KEY, holder);
+        }
 
-        holder = new ContainerResourceHolder(storeName);
-        TransactionSynchronizationManager.bindResource(RESOURCE_HOLDER_KEY, holder);
-        holder.setSynchronizedWithTransaction(true);
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+        if (TransactionSynchronizationManager.isSynchronizationActive() && !holder.isSynchronizedWithTransaction()) {
+            holder.setSynchronizedWithTransaction(true);
             TransactionSynchronizationManager.registerSynchronization(
                     new ContainerResourceSynchronization(holder, RESOURCE_HOLDER_KEY));
         }
@@ -363,6 +363,9 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                         BaseEntityInternalAccess.setNew(baseGenericIdEntity, false);
                         BaseEntityInternalAccess.setManaged(baseGenericIdEntity, false);
                         BaseEntityInternalAccess.setDetached(baseGenericIdEntity, true);
+                    }
+                    if (instance instanceof FetchGroupTracker) {
+                        ((FetchGroupTracker) instance)._persistence_setSession(null);
                     }
                 }
 
