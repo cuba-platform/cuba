@@ -27,10 +27,10 @@ import java.util.Set;
 
 public class IpMatcher {
 
-    private static Set<String> whiteListedIPs = ImmutableSet.of("127.0.0.1", "0:0:0:0:0:0:0:1");
+    private static final Set<String> whiteListedIPs = ImmutableSet.of("127.0.0.1", "0:0:0:0:0:0:0:1");
     private List<String[]> masks = new ArrayList<>();
 
-    private Logger log = LoggerFactory.getLogger(IpMatcher.class);
+    private final Logger log = LoggerFactory.getLogger(IpMatcher.class);
 
     public IpMatcher(String source) {
         String[] parts = source.split("[,;]");
@@ -40,7 +40,7 @@ public class IpMatcher {
             if (mask == null) {
                 mask = ipv6(m);
                 if (mask == null) {
-                    log.warn("Invalid IP mask: '" + m + "'");
+                    log.warn("Invalid IP mask: '{}'", m);
                     continue;
                 }
             }
@@ -60,7 +60,7 @@ public class IpMatcher {
         if (ipv == null) {
             ipv = ipv6(ip);
             if (ipv == null) {
-                log.warn("IP format not supported: '" + ip + "'");
+                log.warn("IP format not supported: '{}'", ip);
                 return true;
             }
         }
