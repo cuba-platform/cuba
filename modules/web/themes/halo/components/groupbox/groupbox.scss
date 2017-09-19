@@ -227,4 +227,22 @@
   .v-panel.c-panel-groupbox > .v-panel-content {
     padding: $v-layout-margin-top $v-layout-margin-right $v-layout-margin-bottom $v-layout-margin-left;
   }
+
+  .#{$primary-stylename} {
+    &.c-outer-margin-top {
+      padding-top: $v-layout-margin-top;
+    }
+
+    &.c-outer-margin-right {
+      padding-right: $v-layout-margin-right;
+    }
+
+    &.c-outer-margin-bottom {
+      padding-bottom: $v-layout-margin-bottom;
+    }
+
+    &.c-outer-margin-left {
+      padding-left: $v-layout-margin-left;
+    }
+  }
 }

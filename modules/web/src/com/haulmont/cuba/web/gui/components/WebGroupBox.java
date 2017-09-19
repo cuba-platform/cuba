@@ -28,6 +28,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractOrderedLayout;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -412,5 +413,19 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
                 shortcuts = null;
             }
         }
+    }
+
+    @Override
+    public void setOuterMargin(com.haulmont.cuba.gui.components.MarginInfo marginInfo) {
+        MarginInfo vMargin = new MarginInfo(marginInfo.hasTop(), marginInfo.hasRight(), marginInfo.hasBottom(),
+                marginInfo.hasLeft());
+        component.setOuterMargin(vMargin);
+    }
+
+    @Override
+    public com.haulmont.cuba.gui.components.MarginInfo getOuterMargin() {
+        MarginInfo vMargin = component.getOuterMargin();
+        return new com.haulmont.cuba.gui.components.MarginInfo(vMargin.hasTop(), vMargin.hasRight(), vMargin.hasBottom(),
+                vMargin.hasLeft());
     }
 }

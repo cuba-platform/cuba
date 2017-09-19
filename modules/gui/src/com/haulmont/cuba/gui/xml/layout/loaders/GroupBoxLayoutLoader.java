@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.GroupBoxLayout;
+import com.haulmont.cuba.gui.components.MarginInfo;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -56,9 +57,18 @@ public class GroupBoxLayoutLoader extends ContainerLoader<GroupBoxLayout> {
         loadWidth(resultComponent, element);
 
         loadSpacing(resultComponent, element);
+        loadOuterMargin(resultComponent, element);
 
         loadSubComponentsAndExpand(resultComponent, element);
         loadShowAsPanel(resultComponent, element);
+    }
+
+    protected void loadOuterMargin(GroupBoxLayout resultComponent, Element element) {
+        final String margin = element.attributeValue("outerMargin");
+        if (!StringUtils.isEmpty(margin)) {
+            MarginInfo marginInfo = parseMarginInfo(margin);
+            resultComponent.setOuterMargin(marginInfo);
+        }
     }
 
     protected void loadOrientation(GroupBoxLayout component, Element element) {

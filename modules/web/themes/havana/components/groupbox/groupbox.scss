@@ -188,4 +188,22 @@
   .#{$primary-stylename}-caption-start-deco > div {
     @include box-defaults;
   }
+
+  .#{$primary-stylename} {
+    &.c-outer-margin-top {
+      padding-top: 5px;
+    }
+
+    &.c-outer-margin-right {
+      padding-right: 5px;
+    }
+
+    &.c-outer-margin-bottom {
+      padding-bottom: 5px;
+    }
+
+    &.c-outer-margin-left {
+      padding-left: 5px;
+    }
+  }
 }

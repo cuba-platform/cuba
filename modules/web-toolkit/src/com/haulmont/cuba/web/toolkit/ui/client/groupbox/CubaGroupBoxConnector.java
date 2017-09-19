@@ -26,6 +26,7 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.VPanel;
 import com.vaadin.client.ui.panel.PanelConnector;
 import com.vaadin.shared.ui.Connect;
+import com.vaadin.shared.ui.MarginInfo;
 
 @Connect(CubaGroupBox.class)
 public class CubaGroupBoxConnector extends PanelConnector {
@@ -111,12 +112,27 @@ public class CubaGroupBoxConnector extends PanelConnector {
         int bottom = layoutManager.getInnerHeight(panel.bottomDecoration);
         Profiler.leave("PanelConnector.layout getHeights");
 
-        Profiler.enter("PanelConnector.layout modify style");
         Style style = panel.getElement().getStyle();
+        int paddingTop = 0;
+        int paddingBottom = 0;
+        if (panel.hasAnyOuterMargin()) {
+            Profiler.enter("PanelConnector.layout get values from styles");
+            // Clear previously set values
+
+            style.clearPaddingTop();
+            style.clearPaddingBottom();
+            // Calculate padding from styles
+            ComputedStyle computedStyle = new ComputedStyle(panel.getElement());
+            paddingTop = computedStyle.getIntProperty("padding-top");
+            paddingBottom = computedStyle.getIntProperty("padding-bottom");
+            Profiler.leave("PanelConnector.layout get values from styles");
+        }
+
+        Profiler.enter("PanelConnector.layout modify style");
         panel.captionWrap.getStyle().setMarginTop(-top, Style.Unit.PX);
         panel.bottomDecoration.getStyle().setMarginBottom(-bottom, Style.Unit.PX);
-        style.setPaddingTop(top, Style.Unit.PX);
-        style.setPaddingBottom(bottom, Style.Unit.PX);
+        style.setPaddingTop(top + paddingTop, Style.Unit.PX);
+        style.setPaddingBottom(bottom + paddingBottom, Style.Unit.PX);
         Profiler.leave("PanelConnector.layout modify style");
 
         // Update scroll positions
@@ -153,6 +169,7 @@ public class CubaGroupBoxConnector extends PanelConnector {
         widget.setCollapsable(getState().collapsable);
         widget.setExpanded(getState().expanded);
         widget.setShowAsPanel(getState().showAsPanel);
+        widget.setOuterMargin(new MarginInfo(getState().outerMarginsBitmask));
 
         if (stateChangeEvent.hasPropertyChanged("caption")) {
             widget.captionNode.getStyle().clearWidth();

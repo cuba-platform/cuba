@@ -364,22 +364,27 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     protected void loadMargin(Component.Margin layout, Element element) {
         final String margin = element.attributeValue("margin");
         if (!StringUtils.isEmpty(margin)) {
-            if (margin.contains(";") || margin.contains(",")) {
-                final String[] margins = margin.split("[;,]");
-                if (margins.length != 4) {
-                    throw new GuiDevelopmentException(
-                        "Margin attribute must contain 1 or 4 boolean values separated by ',' or ';", context.getFullFrameId());
-                }
+            MarginInfo marginInfo = parseMarginInfo(margin);
+            layout.setMargin(marginInfo);
+        }
+    }
 
-                layout.setMargin(
-                        Boolean.parseBoolean(StringUtils.trimToEmpty(margins[0])),
-                        Boolean.parseBoolean(StringUtils.trimToEmpty(margins[1])),
-                        Boolean.parseBoolean(StringUtils.trimToEmpty(margins[2])),
-                        Boolean.parseBoolean(StringUtils.trimToEmpty(margins[3]))
-                );
-            } else {
-                layout.setMargin(Boolean.parseBoolean(margin));
+    protected MarginInfo parseMarginInfo(String margin) {
+        if (margin.contains(";") || margin.contains(",")) {
+            final String[] margins = margin.split("[;,]");
+            if (margins.length != 4) {
+                throw new GuiDevelopmentException(
+                        "Margin attribute must contain 1 or 4 boolean values separated by ',' or ';", context.getFullFrameId());
             }
+
+            return new MarginInfo(
+                    Boolean.parseBoolean(StringUtils.trimToEmpty(margins[0])),
+                    Boolean.parseBoolean(StringUtils.trimToEmpty(margins[1])),
+                    Boolean.parseBoolean(StringUtils.trimToEmpty(margins[2])),
+                    Boolean.parseBoolean(StringUtils.trimToEmpty(margins[3]))
+            );
+        } else {
+            return new MarginInfo(Boolean.parseBoolean(margin));
         }
     }
 

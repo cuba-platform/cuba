@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ui.VPanel;
+import com.vaadin.shared.ui.MarginInfo;
 
 public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
 
@@ -37,6 +38,7 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
     protected boolean enabled = true;
 
     protected ExpandHandler expandHandler;
+    protected MarginInfo marginInfo;
 
     public Element captionWrap;
     public Element expander = DOM.createSpan();
@@ -186,6 +188,25 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
         icon = client.getIcon(iconUri);
         if (icon != null) {
             DOM.insertChild(captionNode, icon.getElement(), 1);
+        }
+    }
+
+    public boolean hasAnyOuterMargin() {
+        return marginInfo != null
+                && marginInfo.hashCode() != 0;
+    }
+
+    public MarginInfo getMarginInfo() {
+        return marginInfo;
+    }
+
+    public void setOuterMargin(MarginInfo marginInfo) {
+        this.marginInfo = marginInfo;
+        if (marginInfo != null) {
+            setStyleName("c-outer-margin-top", marginInfo.hasTop());
+            setStyleName("c-outer-margin-right", marginInfo.hasRight());
+            setStyleName("c-outer-margin-bottom", marginInfo.hasBottom());
+            setStyleName("c-outer-margin-left", marginInfo.hasLeft());
         }
     }
 }

@@ -840,6 +840,10 @@
         <xs:attribute name="spacing" type="xs:boolean"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="hasOuterMargin">
+        <xs:attribute name="outerMargin" type="xs:string"/>
+    </xs:attributeGroup>
+
     <xs:attributeGroup name="hasExpand">
         <xs:attribute name="expand" type="xs:string"/>
     </xs:attributeGroup>
@@ -2461,6 +2465,7 @@
                 <xs:group ref="layoutOrComponent" minOccurs="0"/>
 
                 <xs:attributeGroup ref="hasSpacing"/>
+                <xs:attributeGroup ref="hasOuterMargin"/>
                 <xs:attributeGroup ref="hasSettings"/>
                 <xs:attributeGroup ref="hasExpand"/>
 

@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxState;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Layout;
@@ -208,5 +209,13 @@ public class CubaGroupBox extends Panel implements ComponentContainer {
 
     public boolean isShowAsPanel() {
         return getState(false).showAsPanel;
+    }
+
+    public MarginInfo getOuterMargin() {
+        return new MarginInfo(getState(false).outerMarginsBitmask);
+    }
+
+    public void setOuterMargin(MarginInfo marginInfo) {
+        getState().outerMarginsBitmask = marginInfo.getBitMask();
     }
 }

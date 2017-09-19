@@ -921,6 +921,46 @@ public interface Component {
         MarginInfo getMargin();
     }
 
+    /**
+     * A class that implements this interface can have indentation outside the border.
+     */
+    interface OuterMargin {
+        /**
+         * Enables or disables margins on all sides simultaneously.
+         *
+         * @param enable if true, enables margins on all sides. If false, disables margins on all sides.
+         */
+        default void setOuterMargin(boolean enable) {
+            setOuterMargin(new MarginInfo(enable, enable, enable, enable));
+        }
+
+        /**
+         * Sets margins on all sides individually.
+         *
+         * @param top    enable or disable top margin
+         * @param right  enable or disable right margin
+         * @param bottom enable or disable bottom margin
+         * @param left   enable or disable left margin
+         */
+        default void setOuterMargin(boolean top, boolean right, boolean bottom, boolean left) {
+            setOuterMargin(new MarginInfo(top, right, bottom, left));
+        }
+
+        /**
+         * Sets margins on all sides according to the passed {@link MarginInfo} object.
+         *
+         * @param marginInfo the {@link MarginInfo} object that describes the
+         *                   margin settings for each side of a Component.
+         */
+        void setOuterMargin(MarginInfo marginInfo);
+
+        /**
+         * @return the {@link MarginInfo} object that describes the
+         * margin settings for each side of a Component.
+         */
+        MarginInfo getOuterMargin();
+    }
+
     interface HasInputPrompt {
         /**
          * @return current input prompt.
