@@ -16,7 +16,7 @@
 
 package com.haulmont.idp.controllers;
 
-import com.haulmont.cuba.security.app.IdpService;
+import com.haulmont.cuba.security.idp.IdpService;
 import com.haulmont.cuba.security.global.IdpSession;
 import com.haulmont.idp.IdpConfig;
 import com.haulmont.idp.sys.IdpServiceLogoutCallbackInvoker;

@@ -18,7 +18,7 @@ package com.haulmont.cuba.portal.sys.cache;
 
 import com.haulmont.cuba.client.sys.cache.CacheUserSessionProvider;
 import com.haulmont.cuba.portal.config.PortalConfig;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.app.TrustedClientService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.springframework.stereotype.Component;
@@ -29,7 +29,7 @@ import javax.inject.Inject;
 public class PortalCacheUserSessionProvider implements CacheUserSessionProvider {
 
     @Inject
-    protected LoginService loginService;
+    protected TrustedClientService trustedClientService;
 
     @Inject
     protected PortalConfig config;
@@ -41,7 +41,12 @@ public class PortalCacheUserSessionProvider implements CacheUserSessionProvider 
         if (systemSession == null) {
             initSystemSession();
         } else {
-            UserSession session = loginService.getSession(systemSession.getId());
+            UserSession session = null;
+            try {
+                session = trustedClientService.findSession(config.getTrustedClientPassword(), systemSession.getId());
+            } catch (LoginException e) {
+                throw new IllegalStateException("Unable to login with trusted client password", e);
+            }
             if (session == null) {
                 systemSession = null;
                 initSystemSession();
@@ -54,7 +59,7 @@ public class PortalCacheUserSessionProvider implements CacheUserSessionProvider 
         if (systemSession != null)
             return;
         try {
-            systemSession = loginService.getSystemSession(config.getTrustedClientPassword());
+            systemSession = trustedClientService.getSystemSession(config.getTrustedClientPassword());
         } catch (LoginException e) {
             throw new IllegalStateException("Unable to login with trusted client password", e);
         }

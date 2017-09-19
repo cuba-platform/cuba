@@ -17,7 +17,6 @@
 package com.haulmont.restapi.ldap;
 
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.restapi.auth.OAuthTokenIssuer;
 import com.haulmont.restapi.auth.OAuthTokenIssuer.OAuth2AccessTokenResult;
 import org.apache.commons.lang.StringUtils;
@@ -34,7 +33,6 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapUtils;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.ClientAuthenticationException;
@@ -67,8 +65,6 @@ public class LdapAuthController implements InitializingBean {
     protected Configuration configuration;
     @Inject
     protected OAuthTokenIssuer oAuthTokenIssuer;
-    @Inject
-    protected LoginService loginService;
 
     protected RestLdapConfig ldapConfig;
 
@@ -113,8 +109,6 @@ public class LdapAuthController implements InitializingBean {
         String username = parameters.get("username");
         String ipAddress = request.getRemoteAddr();
 
-        checkBruteForceProtection(username, ipAddress);
-
         String password = parameters.get("password");
 
         OAuth2AccessTokenResult tokenResult =
@@ -131,15 +125,6 @@ public class LdapAuthController implements InitializingBean {
         }
 
         return oAuthTokenIssuer.issueToken(username, locale, Collections.emptyMap());
-    }
-
-    protected void checkBruteForceProtection(String login, String ipAddress) {
-        if (loginService.isBruteForceProtectionEnabled()) {
-            if (loginService.loginAttemptsLeft(login, ipAddress) <= 0) {
-                log.info("Blocked user login attempt: login={}, ip={}", login, ipAddress);
-                throw new LockedException("User temporarily blocked");
-            }
-        }
     }
 
     @Override

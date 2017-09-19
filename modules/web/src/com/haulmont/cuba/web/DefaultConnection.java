@@ -19,8 +19,11 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.security.auth.AbstractClientCredentials;
+import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
+import com.haulmont.cuba.security.auth.RememberMeCredentials;
+import com.haulmont.cuba.security.auth.TrustedClientCredentials;
 import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.security.global.LoginFailedException;
 import com.haulmont.cuba.security.global.SessionParams;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.auth.CubaAuthProvider;
@@ -33,7 +36,6 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Default {@link Connection} implementation for web-client.
@@ -44,7 +46,6 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
 
     @Inject
     protected WebAuthConfig webAuthConfig;
-
     @Inject
     protected CubaAuthProvider authProvider;
 
@@ -59,11 +60,9 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
 
     @Override
     public void loginAnonymous(Locale locale) throws LoginException {
-        UUID anonymousSessionId = globalConfig.getAnonymousSessionId();
-
-        UserSession session = doLoginAnonymous(anonymousSessionId, locale);
+        UserSession session = doLoginAnonymous(locale);
         if (session == null) {
-            throw new LoginFailedException("Unable to obtain anonymous session with id " + anonymousSessionId);
+            throw new LoginException("Unable to obtain anonymous session");
         }
         session.setLocale(locale);
 
@@ -83,7 +82,9 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
      */
     protected UserSession doLogin(String login, String password, Locale locale, Map<String, Object> loginParams)
             throws LoginException {
-        return loginService.login(login, password, locale, loginParams);
+        AbstractClientCredentials credentials = new LoginPasswordCredentials(login, password, locale);
+        setCredentialsParams(credentials, loginParams);
+        return authenticationService.login(credentials).getSession();
     }
 
     /**
@@ -94,8 +95,8 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
      * @return obtained user session
      * @throws LoginException in case of unsuccessful login
      */
-    protected UserSession doLoginAnonymous(UUID anonymousSessionId, Locale locale) throws LoginException {
-        return loginService.getSession(anonymousSessionId);
+    protected UserSession doLoginAnonymous(Locale locale) throws LoginException {
+        return trustedClientService.getAnonymousSession(webAuthConfig.getTrustedClientPassword());
     }
 
     @Override
@@ -111,16 +112,18 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
      * Forward login logic to {@link com.haulmont.cuba.security.app.LoginService}.
      * Can be overridden to change login logic.
      *
-     * @param login       login name
-     * @param password    encrypted password
-     * @param locale      client locale
-     * @param loginParams login params
+     * @param login           login name
+     * @param rememberMeToken rememberMe token
+     * @param locale          client locale
+     * @param loginParams     login params
      * @return created user session
      * @throws LoginException in case of unsuccessful login
      */
-    protected UserSession doLoginByRememberMe(String login, String password, Locale locale, Map<String, Object> loginParams)
+    protected UserSession doLoginByRememberMe(String login, String rememberMeToken, Locale locale, Map<String, Object> loginParams)
             throws LoginException {
-        return loginService.loginByRememberMe(login, password, locale, loginParams);
+        AbstractClientCredentials credentials = new RememberMeCredentials(login, rememberMeToken, locale);
+        setCredentialsParams(credentials, loginParams);
+        return authenticationService.login(credentials).getSession();
     }
 
     @Override
@@ -156,7 +159,19 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
      */
     protected UserSession doLoginTrusted(String login, String password, Locale locale, Map<String, Object> loginParams)
             throws LoginException {
-        return loginService.loginTrusted(login, password, locale, loginParams);
+        AbstractClientCredentials credentials = new TrustedClientCredentials(login, password, locale);
+        setCredentialsParams(credentials, loginParams);
+        return authenticationService.login(credentials).getSession();
+    }
+
+    protected void setCredentialsParams(AbstractClientCredentials credentials, Map<String, Object> loginParams) {
+        credentials.setClientInfo(makeClientInfo());
+        credentials.setClientType(ClientType.WEB);
+        credentials.setIpAddress(App.getInstance().getClientAddress());
+        credentials.setParams(loginParams);
+        if (!globalConfig.getLocaleSelectVisible()) {
+            credentials.setOverrideLocale(false);
+        }
     }
 
     protected Map<String, Object> getLoginParams() {
@@ -165,10 +180,5 @@ public class DefaultConnection extends AbstractConnection implements ExternallyA
                 SessionParams.IP_ADDERSS.getId(), App.getInstance().getClientAddress(),
                 SessionParams.CLIENT_INFO.getId(), makeClientInfo()
         );
-    }
-
-    @Override
-    public boolean checkRememberMe(String login, String rememberMeToken) {
-        return loginService.checkRememberMe(login, rememberMeToken);
     }
 }

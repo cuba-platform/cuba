@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.portal.Connection;
 import com.haulmont.cuba.portal.sys.security.RoleGrantedAuthority;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.global.AccountLockedException;
 import com.haulmont.cuba.security.global.LoginException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,6 @@ public class PortalAuthenticationProvider implements AuthenticationProvider, Ser
         if (authentication instanceof UsernamePasswordAuthenticationToken) {
             UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
 
-            LoginService loginService = AppBeans.get(LoginService.class);
             PortalSession session;
 
             String login = null;
@@ -61,13 +60,6 @@ public class PortalAuthenticationProvider implements AuthenticationProvider, Ser
 
                 login = (String) token.getPrincipal();
                 ipAddress = request.getRemoteAddr();
-
-                if (loginService.isBruteForceProtectionEnabled()) {
-                    if (loginService.loginAttemptsLeft(login, ipAddress) <= 0) {
-                        log.info("Blocked user login attempt: login={}, ip={}", login, ipAddress);
-                        throw new LockedException("User temporarily blocked");
-                    }
-                }
 
                 HttpSession httpSession = request.getSession();
                 Connection connection = (Connection) httpSession.getAttribute(Connection.NAME);
@@ -84,10 +76,11 @@ public class PortalAuthenticationProvider implements AuthenticationProvider, Ser
                 httpSession.setAttribute(Connection.NAME, connection);
 
                 session = connection.getSession();
+            } catch (AccountLockedException le) {
+                log.info("Blocked user login attempt: login={}, ip={}", login, ipAddress);
+                throw new LockedException("User temporarily blocked");
             } catch (LoginException e) {
-                if (loginService.isBruteForceProtectionEnabled()) {
-                    loginService.registerUnsuccessfulLogin(login, ipAddress);
-                }
+                log.info("Portal authentication failed: {} {}", login, ipAddress);
                 throw new BadCredentialsException("error.login.User");
             }
 
@@ -102,7 +95,7 @@ public class PortalAuthenticationProvider implements AuthenticationProvider, Ser
         return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
     }
 
-    private List<GrantedAuthority> getRoleUserAuthorities(PortalSession portalSession) {
+    protected List<GrantedAuthority> getRoleUserAuthorities(PortalSession portalSession) {
         final List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         if (!portalSession.isAuthenticated()) {
             return grantedAuthorities;

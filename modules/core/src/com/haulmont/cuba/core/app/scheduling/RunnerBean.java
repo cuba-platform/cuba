@@ -30,7 +30,8 @@ import com.haulmont.cuba.core.entity.SchedulingType;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.security.app.LoginWorker;
+import com.haulmont.cuba.security.auth.AuthenticationManager;
+import com.haulmont.cuba.security.auth.SystemUserCredentials;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
@@ -71,7 +72,7 @@ public class RunnerBean implements Runner {
     protected TimeSource timeSource;
 
     @Inject
-    protected LoginWorker loginWorker;
+    protected AuthenticationManager authenticationManager;
 
     @Inject
     protected UserSessionManager userSessionManager;
@@ -143,7 +144,7 @@ public class RunnerBean implements Runner {
             UUID sessionId = userSessionIds.get(task.getUserName());
             userSession = sessionId == null ? null : userSessionManager.findSession(sessionId);
             if (userSession == null) {
-                userSession = loginWorker.loginSystem(task.getUserName());
+                userSession = authenticationManager.login(new SystemUserCredentials(task.getUserName())).getSession();
                 userSessionIds.put(task.getUserName(), userSession.getId());
             }
         }

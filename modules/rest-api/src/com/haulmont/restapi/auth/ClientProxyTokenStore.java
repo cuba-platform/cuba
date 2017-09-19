@@ -21,7 +21,9 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.restapi.ServerTokenStore;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.app.TrustedClientService;
+import com.haulmont.cuba.security.auth.AuthenticationService;
+import com.haulmont.cuba.security.auth.TrustedClientCredentials;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.restapi.config.RestApiConfig;
@@ -58,7 +60,10 @@ public class ClientProxyTokenStore implements TokenStore {
     protected RestApiConfig restApiConfig;
 
     @Inject
-    protected LoginService loginService;
+    protected AuthenticationService authenticationService;
+
+    @Inject
+    protected TrustedClientService trustedClientService;
 
     protected AuthenticationKeyGenerator authenticationKeyGenerator;
 
@@ -131,7 +136,11 @@ public class ClientProxyTokenStore implements TokenStore {
 
         UserSession session = null;
         if (sessionId != null) {
-            session = loginService.getSession(sessionId);
+            try {
+                session = trustedClientService.findSession(restApiConfig.getTrustedClientPassword(), sessionId);
+            } catch (LoginException e) {
+                throw new RuntimeException("Unable to login with trusted client password");
+            }
         }
 
         if (session == null) {
@@ -139,8 +148,10 @@ public class ClientProxyTokenStore implements TokenStore {
             Map<String, String> userAuthenticationDetails = (Map<String, String>) authentication.getUserAuthentication().getDetails();
             String username = userAuthenticationDetails.get("username");
             try {
-                session = loginService.loginTrusted(username, restApiConfig.getTrustedClientPassword(),
-                        getDefaultLocale());
+                TrustedClientCredentials credentials = new TrustedClientCredentials(username,
+                        restApiConfig.getTrustedClientPassword(), getDefaultLocale());
+
+                session = authenticationService.login(credentials).getSession();
             } catch (LoginException e) {
                 throw new OAuth2Exception("Cannot login to the middleware");
             }

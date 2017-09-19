@@ -20,6 +20,8 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.auth.AuthenticationManager;
+import com.haulmont.cuba.security.auth.SystemUserCredentials;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
@@ -61,7 +63,7 @@ public class Authentication {
     private final Logger log = LoggerFactory.getLogger(Authentication.class);
 
     @Inject
-    protected LoginWorker loginWorker;
+    protected AuthenticationManager authenticationManager;
 
     @Inject
     protected UserSessionManager userSessionManager;
@@ -124,7 +126,7 @@ public class Authentication {
                 }
                 if (session == null) {
                     try {
-                        session = loginWorker.loginSystem(login);
+                        session = authenticationManager.login(new SystemUserCredentials(login)).getSession();
                         session.setClientInfo("System authentication");
                     } catch (LoginException e) {
                         throw new RuntimeException("Unable to perform system login", e);

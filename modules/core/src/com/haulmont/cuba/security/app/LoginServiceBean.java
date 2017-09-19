@@ -16,10 +16,13 @@
  */
 package com.haulmont.cuba.security.app;
 
-import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.security.entity.SessionAction;
+import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.sys.remoting.RemoteClientInfo;
+import com.haulmont.cuba.security.auth.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.SessionParams;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -35,155 +38,94 @@ import java.util.UUID;
 /**
  * Service to provide methods for user login/logout to the middleware.
  */
+@Deprecated
 @Component(LoginService.NAME)
 public class LoginServiceBean implements LoginService {
 
     private final Logger log = LoggerFactory.getLogger(LoginServiceBean.class);
 
     @Inject
-    protected LoginWorker loginWorker;
+    protected AuthenticationService authenticationService;
 
     @Inject
-    protected UserSessionSource userSessionSource;
+    protected TrustedClientService trustedClientService;
+
+    @Inject
+    protected LoginWorker loginWorker;
 
     @Inject
     protected BruteForceProtectionAPI bruteForceProtectionAPI;
 
     @Inject
-    protected UserSessionLog userSessionLog;
+    protected GlobalConfig globalConfig;
 
     @Override
     public UserSession login(String login, String password, Locale locale) throws LoginException {
-        try {
-            UserSession session = loginWorker.login(login, password, locale);
-            userSessionLog.createSessionLogRecord(session, SessionAction.LOGIN, Collections.emptyMap());
-            return session;
-        } catch (LoginException e) {
-            log.info("Login failed: {}", e.toString());
-            throw e;
-        } catch (Throwable e) {
-            log.error("Login error", e);
-            throw wrapInLoginException(e);
-        }
+        return login(login, password, locale, Collections.emptyMap());
     }
 
     @Override
     public UserSession login(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
-        try {
-            UserSession session = loginWorker.login(login, password, locale, params);
-            userSessionLog.createSessionLogRecord(session, SessionAction.LOGIN, params);
-            return session;
-        } catch (LoginException e) {
-            log.info("Login failed: {}", e.toString());
-            throw e;
-        } catch (Throwable e) {
-            log.error("Login error", e);
-            throw wrapInLoginException(e);
-        }
+        LoginPasswordCredentials credentials = new LoginPasswordCredentials(login, password, locale, params);
+        copyParamsToCredentials(params, credentials);
+        return authenticationService.login(credentials).getSession();
     }
 
     @Override
     public UserSession loginTrusted(String login, String password, Locale locale) throws LoginException {
-        try {
-            UserSession session = loginWorker.loginTrusted(login, password, locale);
-            userSessionLog.createSessionLogRecord(session, SessionAction.LOGIN, Collections.emptyMap());
-            return session;
-        } catch (LoginException e) {
-            log.info("Login failed: {}", e.toString());
-            throw e;
-        } catch (Throwable e) {
-            log.error("Login error", e);
-            throw wrapInLoginException(e);
-        }
+        return loginTrusted(login, password, locale, Collections.emptyMap());
     }
 
     @Override
     public UserSession loginTrusted(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
-        try {
-            UserSession session = loginWorker.loginTrusted(login, password, locale, params);
-            userSessionLog.createSessionLogRecord(session, SessionAction.LOGIN, params);
-            return session;
-        } catch (LoginException e) {
-            log.info("Login failed: {}", e.toString());
-            throw e;
-        } catch (Throwable e) {
-            log.error("Login error", e);
-            throw wrapInLoginException(e);
+        TrustedClientCredentials credentials = new TrustedClientCredentials(login, password, locale, params);
+        RemoteClientInfo remoteClientInfo = RemoteClientInfo.get();
+        if (remoteClientInfo != null) {
+            credentials.setClientIpAddress(remoteClientInfo.getAddress());
         }
+        copyParamsToCredentials(params, credentials);
+        return authenticationService.login(credentials).getSession();
     }
 
     @Override
     public UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException {
-        try {
-            UserSession session = loginWorker.loginByRememberMe(login, rememberMeToken, locale);
-            userSessionLog.createSessionLogRecord(session, SessionAction.LOGIN, Collections.emptyMap());
-            return session;
-        } catch (LoginException e) {
-            log.info("Login failed: {}", e.toString());
-            throw e;
-        } catch (Throwable e) {
-            log.error("Login error", e);
-            throw wrapInLoginException(e);
-        }
+        return loginByRememberMe(login, rememberMeToken, locale, Collections.emptyMap());
     }
 
     @Override
     public UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale, Map<String, Object> params)
             throws LoginException {
-        try {
-            UserSession session = loginWorker.loginByRememberMe(login, rememberMeToken, locale, params);
-            userSessionLog.createSessionLogRecord(session, SessionAction.LOGIN, params);
-            return session;
-        } catch (LoginException e) {
-            log.info("Login failed: {}", e.toString());
-            throw e;
-        } catch (Throwable e) {
-            log.error("Login error", e);
-            throw wrapInLoginException(e);
-        }
+        RememberMeCredentials credentials = new RememberMeCredentials(login, rememberMeToken, locale, params);
+        copyParamsToCredentials(params, credentials);
+        return authenticationService.login(credentials).getSession();
     }
 
     @Override
     public UserSession getSystemSession(String trustedClientPassword) throws LoginException {
         try {
-            return loginWorker.getSystemSession(trustedClientPassword);
+            return trustedClientService.getSystemSession(trustedClientPassword);
         } catch (LoginException e) {
             log.info("Login failed: {}", e.toString());
             throw e;
         } catch (Throwable e) {
             log.error("Login error", e);
-            throw wrapInLoginException(e);
+            //noinspection ThrowableResultOfMethodCallIgnored
+            Throwable rootCause = ExceptionUtils.getRootCause(e);
+            if (rootCause == null)
+                rootCause = e;
+            // send text only to avoid ClassNotFoundException when the client has no dependency to some library
+            throw new LoginException(rootCause.toString());
         }
     }
 
     @Override
     public void logout() {
-        try {
-            UserSession session = userSessionSource.getUserSession();
-
-            if (session != null && session.isSystem()) {
-                throw new RuntimeException("Logout of system session from client is not permitted");
-            }
-
-            userSessionLog.updateSessionLogRecord(session, SessionAction.LOGOUT);
-
-            loginWorker.logout();
-            userSessionLog.updateSessionLogRecord(session, SessionAction.LOGOUT);
-        } catch (Throwable e) {
-            log.error("Logout error", e);
-            throw new RuntimeException(e.toString());
-        }
+        authenticationService.logout();
     }
 
     @Override
     public UserSession substituteUser(User substitutedUser) {
-        UserSession currentSession = userSessionSource.getUserSession();
-        userSessionLog.updateSessionLogRecord(currentSession, SessionAction.SUBSTITUTION);
-
-        UserSession substitutionSession = loginWorker.substituteUser(substitutedUser);
-
-        userSessionLog.createSessionLogRecord(substitutionSession, SessionAction.LOGIN, currentSession, Collections.emptyMap());
-        return substitutionSession;
+        return authenticationService.substituteUser(substitutedUser);
     }
 
     @Override
@@ -193,22 +135,14 @@ public class LoginServiceBean implements LoginService {
 
     @Override
     public boolean checkRememberMe(String login, String rememberMeToken) {
-        return loginWorker.checkRememberMe(login, rememberMeToken);
+        log.warn("LoginService checkRememberMe is not supported any more. Always returns false");
+        return false;
     }
-
-    protected LoginException wrapInLoginException(Throwable throwable) {
-        //noinspection ThrowableResultOfMethodCallIgnored
-        Throwable rootCause = ExceptionUtils.getRootCause(throwable);
-        if (rootCause == null)
-            rootCause = throwable;
-        // send text only to avoid ClassNotFoundException when the client has no dependency to some library
-        return new LoginException(rootCause.toString());
-    }
-
 
     @Override
     public boolean isBruteForceProtectionEnabled() {
-        return bruteForceProtectionAPI.isBruteForceProtectionEnabled();
+        // bruteForceProtectionEnabled is not accessible for clients any more
+        return false;
     }
 
     @Override
@@ -224,5 +158,29 @@ public class LoginServiceBean implements LoginService {
     @Override
     public int registerUnsuccessfulLogin(String login, String ipAddress) {
         return bruteForceProtectionAPI.registerUnsuccessfulLogin(login, ipAddress);
+    }
+
+    @Deprecated
+    protected void copyParamsToCredentials(Map<String, Object> params, AbstractClientCredentials credentials) {
+        // for compatibility only
+        Object clientType = params.get(ClientType.class.getName());
+        if (clientType != null) {
+            credentials.setClientType(ClientType.valueOf((String) clientType));
+        }
+        Object clientInfo = params.get(SessionParams.CLIENT_INFO.getId());
+        if (clientInfo != null) {
+            credentials.setClientInfo((String) clientInfo);
+        }
+        Object ipAddress = params.get(SessionParams.IP_ADDERSS.getId());
+        if (ipAddress != null) {
+            credentials.setIpAddress((String) ipAddress);
+        }
+        Object hostName = params.get(SessionParams.HOST_NAME.getId());
+        if (hostName != null) {
+            credentials.setHostName((String) hostName);
+        }
+        if (!globalConfig.getLocaleSelectVisible()) {
+            credentials.setOverrideLocale(false);
+        }
     }
 }

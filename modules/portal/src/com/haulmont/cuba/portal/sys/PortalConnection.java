@@ -21,17 +21,16 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.portal.App;
 import com.haulmont.cuba.portal.Connection;
 import com.haulmont.cuba.portal.ConnectionListener;
 import com.haulmont.cuba.portal.security.PortalSession;
 import com.haulmont.cuba.portal.sys.security.PortalSecurityContext;
 import com.haulmont.cuba.portal.sys.security.PortalSessionFactory;
-import com.haulmont.cuba.security.app.LoginService;
-import com.haulmont.cuba.security.global.IpMatcher;
+import com.haulmont.cuba.security.auth.AbstractClientCredentials;
+import com.haulmont.cuba.security.auth.AuthenticationService;
+import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.SessionParams;
 import com.haulmont.cuba.security.global.UserSession;
@@ -58,23 +57,16 @@ public class PortalConnection implements Connection {
 
     @Inject
     protected Configuration configuration;
-
     @Inject
-    protected LoginService loginService;
-
+    protected AuthenticationService authenticationService;
     @Inject
     protected PortalSessionFactory portalSessionFactory;
-
-    @Inject
-    protected Messages messages;
 
     @Override
     public synchronized void login(String login, String password, Locale locale,
                                    @Nullable String ipAddress, @Nullable String clientInfo) throws LoginException {
 
-        UserSession userSession = doLogin(login, password, locale, getSessionParams(ipAddress, clientInfo));
-
-        checkIpMask(userSession, ipAddress);
+        UserSession userSession = doLogin(login, password, locale, ipAddress, clientInfo, getSessionParams(ipAddress, clientInfo));
 
         session = portalSessionFactory.createPortalSession(userSession, locale);
         session.setAuthenticated(true);
@@ -91,17 +83,26 @@ public class PortalConnection implements Connection {
     }
 
     /**
-     * Forward login logic to {@link com.haulmont.cuba.security.app.LoginService}.
+     * Forward login logic to {@link com.haulmont.cuba.security.auth.AuthenticationService}.
      * Can be overridden to change login logic.
      *
-     * @param login     login name
-     * @param password  encrypted password
-     * @param locale    client locale
+     * @param login      login name
+     * @param password   encrypted password
+     * @param locale     client locale
+     * @param ipAddress  user IP address
+     * @param clientInfo client info
      * @return created user session
      * @throws LoginException in case of unsuccessful login
      */
-    protected UserSession doLogin(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
-        return loginService.login(login, password, locale, params);
+    protected UserSession doLogin(String login, String password, Locale locale, String ipAddress, String clientInfo,
+                                  Map<String, Object> params) throws LoginException {
+        AbstractClientCredentials credentials = new LoginPasswordCredentials(login, password, locale);
+        credentials.setParams(params);
+        credentials.setClientType(ClientType.PORTAL);
+        credentials.setIpAddress(ipAddress);
+        credentials.setClientInfo(clientInfo);
+
+        return authenticationService.login(credentials).getSession();
     }
 
     protected Map<String, Object> getSessionParams(String ipAddress, String clientInfo) {
@@ -140,7 +141,7 @@ public class PortalConnection implements Connection {
     @Override
     public synchronized void logout() {
         try {
-            loginService.logout();
+            authenticationService.logout();
             AppContext.setSecurityContext(null);
         } catch (Exception e) {
             log.warn("Error on logout", e);
@@ -153,20 +154,6 @@ public class PortalConnection implements Connection {
             log.warn("Error on logout", e);
         }
         session = null;
-    }
-
-    protected void checkIpMask(UserSession userSession, String ipAddress) throws LoginException {
-        if (!StringUtils.isBlank(userSession.getUser().getIpMask())) {
-            IpMatcher ipMatcher = new IpMatcher(userSession.getUser().getIpMask());
-            if (!ipMatcher.match(ipAddress)) {
-                log.info(String.format("IP address %s is not permitted for user %s", ipAddress,
-                        userSession.getUser().toString()));
-
-                AppContext.withSecurityContext(new SecurityContext(userSession), loginService::logout);
-
-                throw new LoginException(messages.getMainMessage("login.invalidIP"));
-            }
-        }
     }
 
     @Override
@@ -212,7 +199,7 @@ public class PortalConnection implements Connection {
 
     protected void internalLogout() {
         if (session != null && session.isAuthenticated()) {
-            loginService.logout();
+            authenticationService.logout();
         }
 
         AppContext.setSecurityContext(null);

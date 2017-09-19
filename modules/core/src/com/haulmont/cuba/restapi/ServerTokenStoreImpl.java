@@ -29,9 +29,10 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.auth.AuthenticationManager;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -53,7 +54,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class ServerTokenStoreImpl implements ServerTokenStore {
 
     @Inject
-    protected LoginService loginService;
+    protected AuthenticationManager authenticationManager;
+
+    @Inject
+    protected UserSessionManager userSessionManager;
 
     @Inject
     protected ClusterManagerAPI clusterManagerAPI;
@@ -357,11 +361,11 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         }
         if (sessionId != null) {
             try {
-                UserSession session = loginService.getSession(sessionId);
+                UserSession session = userSessionManager.findSession(sessionId);
                 if (session != null) {
                     AppContext.setSecurityContext(new SecurityContext(session));
                     try {
-                        loginService.logout();
+                        authenticationManager.logout();
                     } finally {
                         AppContext.setSecurityContext(null);
                     }

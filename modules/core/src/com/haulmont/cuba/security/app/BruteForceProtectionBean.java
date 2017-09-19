@@ -22,6 +22,7 @@ import com.google.common.cache.LoadingCache;
 import com.haulmont.cuba.core.app.ServerConfig;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Map;
@@ -64,7 +65,7 @@ public class BruteForceProtectionBean implements BruteForceProtectionAPI {
                 .expireAfterWrite(serverConfig.getBruteForceBlockIntervalSec(), TimeUnit.SECONDS)
                 .build(new CacheLoader<String, Integer>() {
                     @Override
-                    public Integer load(String key) throws Exception {
+                    public Integer load(@Nonnull String key) throws Exception {
                         return 0;
                     }
                 });
@@ -115,7 +116,9 @@ public class BruteForceProtectionBean implements BruteForceProtectionAPI {
             int maxLoginAttemptsNumber = serverConfig.getMaxLoginAttemptsNumber();
             Set<String> result = new HashSet<>();
             for (Map.Entry<String, Integer> entry : loginAttemptsCache.asMap().entrySet()) {
-                if (entry.getValue() >= maxLoginAttemptsNumber) result.add(entry.getKey());
+                if (entry.getValue() >= maxLoginAttemptsNumber) {
+                    result.add(entry.getKey());
+                }
             }
             return result;
         } finally {

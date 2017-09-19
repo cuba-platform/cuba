@@ -18,7 +18,7 @@ package com.haulmont.idp.sys;
 
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.app.TrustedClientService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.idp.IdpConfig;
@@ -43,7 +43,7 @@ public class IdpSecurityContextInterceptor extends HandlerInterceptorAdapter {
     protected IdpConfig idpConfig;
 
     @Inject
-    protected LoginService loginService;
+    protected TrustedClientService trustedClientService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
@@ -55,7 +55,7 @@ public class IdpSecurityContextInterceptor extends HandlerInterceptorAdapter {
 
         UserSession systemSession;
         try {
-            systemSession = loginService.getSystemSession(idpConfig.getTrustedClientPassword());
+            systemSession = trustedClientService.getSystemSession(idpConfig.getTrustedClientPassword());
             AppContext.setSecurityContext(new SecurityContext(systemSession));
         } catch (LoginException e) {
             log.error("Unable to obtain system session", e);

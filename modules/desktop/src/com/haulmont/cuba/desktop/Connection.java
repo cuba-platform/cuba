@@ -21,9 +21,13 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientUserSession;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.auth.AbstractClientCredentials;
+import com.haulmont.cuba.security.auth.AuthenticationService;
+import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.SessionParams;
 import com.haulmont.cuba.security.global.UserSession;
@@ -60,24 +64,52 @@ public class Connection {
     }
 
     /**
-     * Forward login logic to {@link com.haulmont.cuba.security.app.LoginService}.
+     * Forward login logic to {@link com.haulmont.cuba.security.auth.AuthenticationService}.
      * Can be overridden to change login logic.
      *
-     * @param login     login name
-     * @param password  encrypted password
-     * @param locale    client locale
-     * @param loginParams   login parameters
+     * @param login       login name
+     * @param password    encrypted password
+     * @param locale      client locale
+     * @param loginParams login parameters
      * @return created user session
      * @throws LoginException in case of unsuccessful login
      */
     protected UserSession doLogin(String login, String password, Locale locale, Map<String, Object> loginParams)
             throws LoginException {
-        LoginService loginService = AppBeans.get(LoginService.NAME);
-        return loginService.login(login, password, locale, loginParams);
+        AbstractClientCredentials credentials = new LoginPasswordCredentials(login, password, locale);
+        setCredentialsParams(credentials, loginParams);
+
+        AuthenticationService authenticationService = AppBeans.get(AuthenticationService.NAME);
+        return authenticationService.login(credentials).getSession();
+    }
+
+    protected void setCredentialsParams(AbstractClientCredentials credentials, Map<String, Object> loginParams) {
+        credentials.setClientInfo(makeClientInfo());
+        credentials.setClientType(ClientType.DESKTOP);
+
+        Optional<InetAddress> address = Optional.empty();
+        try {
+            address = Optional.ofNullable(InetAddress.getLocalHost());
+        } catch (UnknownHostException e) {
+            log.warn("Unable to obtain local IP address", e);
+        }
+
+        if (address.isPresent()) {
+            credentials.setIpAddress(address.get().getHostAddress());
+            credentials.setHostName(address.get().getHostName());
+        }
+
+        credentials.setParams(loginParams);
+
+        Configuration configuration = AppBeans.get(Configuration.class);
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
+        if (!globalConfig.getLocaleSelectVisible()) {
+            credentials.setOverrideLocale(false);
+        }
     }
 
     protected Map<String, Object> getLoginParams() {
-        Optional<InetAddress> address = null;
+        Optional<InetAddress> address = Optional.empty();
         try {
             address = Optional.ofNullable(InetAddress.getLocalHost());
         } catch (UnknownHostException e) {
@@ -86,14 +118,16 @@ public class Connection {
 
         return ParamsMap.of(
                 ClientType.class.getName(), ClientType.DESKTOP.name(),
-                SessionParams.IP_ADDERSS.getId(), address.map(a -> a.getHostName() + " (" + a.getHostAddress() + ")")
-                                                         .orElse(""),
-                SessionParams.CLIENT_INFO.getId(), makeClientInfo());
+                SessionParams.HOST_NAME.getId(), address.map(InetAddress::getHostName).orElse(null),
+                SessionParams.IP_ADDERSS.getId(), address.map(InetAddress::getHostAddress).orElse(null),
+                SessionParams.CLIENT_INFO.getId(), makeClientInfo()
+        );
     }
 
     protected void updateSessionClientInfo() {
-        if (Boolean.TRUE.equals(session.getUser().getTimeZoneAuto()))
+        if (Boolean.TRUE.equals(session.getUser().getTimeZoneAuto())) {
             session.setTimeZone(TimeZone.getDefault());
+        }
     }
 
     protected String makeClientInfo() {
@@ -113,8 +147,8 @@ public class Connection {
 
     public void logout() {
         try {
-            LoginService loginService = AppBeans.get(LoginService.NAME);
-            loginService.logout();
+            AuthenticationService authenticationService = AppBeans.get(AuthenticationService.NAME);
+            authenticationService.logout();
             AppContext.setSecurityContext(null);
             log.info("Logged out: " + session);
         } catch (Exception e) {

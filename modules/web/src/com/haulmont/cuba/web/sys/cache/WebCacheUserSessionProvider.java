@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.sys.cache;
 
 import com.haulmont.cuba.client.sys.cache.CacheUserSessionProvider;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.app.TrustedClientService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
@@ -29,7 +29,7 @@ import javax.inject.Inject;
 public class WebCacheUserSessionProvider implements CacheUserSessionProvider {
 
     @Inject
-    protected LoginService loginService;
+    protected TrustedClientService trustedClientService;
 
     @Inject
     protected WebAuthConfig config;
@@ -41,7 +41,12 @@ public class WebCacheUserSessionProvider implements CacheUserSessionProvider {
         if (systemSession == null) {
             initSystemSession();
         } else {
-            UserSession session = loginService.getSession(systemSession.getId());
+            UserSession session;
+            try {
+                session = trustedClientService.findSession(config.getTrustedClientPassword(), systemSession.getId());
+            } catch (LoginException e) {
+                throw new RuntimeException("Incorrect trusted client password");
+            }
             if (session == null) {
                 systemSession = null;
                 initSystemSession();
@@ -51,10 +56,12 @@ public class WebCacheUserSessionProvider implements CacheUserSessionProvider {
     }
 
     protected synchronized void initSystemSession() {
-        if (systemSession != null)
+        if (systemSession != null) {
             return;
+        }
+
         try {
-            systemSession = loginService.getSystemSession(config.getTrustedClientPassword());
+            systemSession = trustedClientService.getSystemSession(config.getTrustedClientPassword());
         } catch (LoginException e) {
             throw new IllegalStateException("Unable to login with trusted client password", e);
         }

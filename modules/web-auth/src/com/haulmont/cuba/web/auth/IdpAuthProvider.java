@@ -22,12 +22,12 @@ import com.google.gson.JsonSyntaxException;
 import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.security.app.IdpService;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.auth.AuthenticationService;
 import com.haulmont.cuba.security.global.IdpSession;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.idp.IdpService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -80,7 +80,7 @@ public class IdpAuthProvider implements CubaAuthProvider {
     protected UserSessionSource userSessionSource;
 
     @Inject
-    protected LoginService loginService;
+    protected AuthenticationService authenticationService;
 
     @Override
     public void authenticate(String login, String password, Locale locale) throws LoginException {
@@ -331,7 +331,7 @@ public class IdpAuthProvider implements CubaAuthProvider {
                 log.debug("IDP session is expired {}", idpSessionId);
 
                 if (userSessionSource.checkCurrentUserSession()) {
-                    loginService.logout();
+                    authenticationService.logout();
 
                     UserSession userSession = userSessionSource.getUserSession();
 

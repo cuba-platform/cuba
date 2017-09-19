@@ -62,5 +62,4 @@ public interface BruteForceProtectionAPI {
      * @param ipAddress user IP-address
      */
     void unlockUser(String login, String ipAddress);
-
 }

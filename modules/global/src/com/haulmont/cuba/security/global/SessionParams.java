@@ -22,7 +22,8 @@ package com.haulmont.cuba.security.global;
 public enum SessionParams {
     IP_ADDERSS("ipAddress"),
     CLIENT_INFO("clientInfo"),
-    CLIENT_TYPE("clientType");
+    CLIENT_TYPE("clientType"),
+    HOST_NAME("hostName");
 
     private String id;
 

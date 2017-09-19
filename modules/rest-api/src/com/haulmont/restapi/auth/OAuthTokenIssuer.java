@@ -43,14 +43,12 @@ public interface OAuthTokenIssuer {
     /**
      * Issue token for principal.
      *
-     * @param login        an existing user login
-     * @param locale       locale
-     * @param tokenRequest additional login and token parameters
+     * @param tokenRequest login and token parameters
      * @return result with logged in user session and newly generated OAuth2 access token
      * @throws BadCredentialsException in case of user is now allowed to use REST-API or middleware
      *                                 throws {@link com.haulmont.cuba.security.global.LoginException} during login
      */
-    OAuth2AccessTokenResult issueToken(String login, Locale locale, OAuth2AccessTokenReqest tokenRequest);
+    OAuth2AccessTokenResult issueToken(OAuth2AccessTokenRequest tokenRequest);
 
     /**
      * Result of programmatic access token generation.
@@ -73,14 +71,16 @@ public interface OAuthTokenIssuer {
         }
     }
 
-    class OAuth2AccessTokenReqest {
+    class OAuth2AccessTokenRequest {
+        private String login;
+        private Locale locale;
         private Map<String, Object> loginParams = Collections.emptyMap();
         private Map<String, String> tokenDetails = Collections.emptyMap();
 
-        public OAuth2AccessTokenReqest() {
+        public OAuth2AccessTokenRequest() {
         }
 
-        public OAuth2AccessTokenReqest(Map<String, Object> loginParams) {
+        public OAuth2AccessTokenRequest(Map<String, Object> loginParams) {
             this.loginParams = loginParams;
         }
 
@@ -98,6 +98,22 @@ public interface OAuthTokenIssuer {
 
         public void setTokenDetails(Map<String, String> tokenDetails) {
             this.tokenDetails = tokenDetails;
+        }
+
+        public String getLogin() {
+            return login;
+        }
+
+        public void setLogin(String login) {
+            this.login = login;
+        }
+
+        public Locale getLocale() {
+            return locale;
+        }
+
+        public void setLocale(Locale locale) {
+            this.locale = locale;
         }
     }
 }

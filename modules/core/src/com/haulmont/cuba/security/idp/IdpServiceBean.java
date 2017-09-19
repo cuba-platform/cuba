@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2017 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.security.app;
+package com.haulmont.cuba.security.idp;
 
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.UuidSource;
+import com.haulmont.cuba.security.app.UserSessions;
+import com.haulmont.cuba.security.auth.AuthenticationManager;
+import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
+import com.haulmont.cuba.security.auth.AuthenticationDetails;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.IdpSession;
 import com.haulmont.cuba.security.global.LoginException;
@@ -45,7 +49,7 @@ public class IdpServiceBean implements IdpService {
     protected IdpSessionStore sessionStore;
 
     @Inject
-    protected LoginWorker loginWorker;
+    protected AuthenticationManager authenticationManager;
 
     @Inject
     protected UuidSource uuidSource;
@@ -59,7 +63,9 @@ public class IdpServiceBean implements IdpService {
                                 @Nullable Map<String, Object> parameters) throws LoginException {
         log.debug("Authenticating CUBA user for IDP");
 
-        User user = loginWorker.authenticate(login, password, locale, parameters);
+        LoginPasswordCredentials credentials = new LoginPasswordCredentials(login, password, locale, parameters);
+        AuthenticationDetails sessionDetails = authenticationManager.authenticate(credentials);
+        User user = sessionDetails.getSession().getUser();
 
         IdpSession session = new IdpSession(createIdpSessionId());
         session.setLogin(user.getLogin());

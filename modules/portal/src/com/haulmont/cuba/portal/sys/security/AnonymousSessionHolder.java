@@ -25,8 +25,9 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.portal.config.PortalConfig;
 import com.haulmont.cuba.portal.sys.exceptions.NoMiddlewareConnectionException;
-import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.security.auth.AuthenticationService;
+import com.haulmont.cuba.security.auth.TrustedClientCredentials;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.SessionParams;
@@ -51,7 +52,7 @@ public class AnonymousSessionHolder {
     protected PortalConfig portalConfig;
 
     @Inject
-    protected LoginService loginService;
+    protected AuthenticationService authenticationService;
 
     @Inject
     protected UserSessionService userSessionService;
@@ -89,17 +90,16 @@ public class AnonymousSessionHolder {
                 portalClientInfo += " (" + portalLocationString + ")";
             }
 
-            userSession = loginService.loginTrusted(login, password, messagesTools.getDefaultLocale(),
-                    ParamsMap.of(
-                            ClientType.class.getName(), AppContext.getProperty("cuba.clientType"),
-                            SessionParams.CLIENT_INFO.getId(), portalClientInfo
-                    ));
+            TrustedClientCredentials credentials = new TrustedClientCredentials(login, password,
+                    messagesTools.getDefaultLocale());
+            credentials.setClientType(ClientType.PORTAL);
+            credentials.setClientInfo(portalClientInfo);
+            credentials.setParams(ParamsMap.of(
+                    ClientType.class.getName(), AppContext.getProperty("cuba.clientType"),
+                    SessionParams.CLIENT_INFO.getId(), portalClientInfo
+            ));
 
-            String finalPortalClientInfo = portalClientInfo;
-            AppContext.withSecurityContext(new SecurityContext(userSession), () ->
-                    // Set client info on middleware
-                    userSessionService.setSessionClientInfo(userSession.getId(), finalPortalClientInfo)
-            );
+            userSession = authenticationService.login(credentials).getSession();
         } catch (LoginException e) {
             throw new NoMiddlewareConnectionException("Unable to login as anonymous portal user", e);
         } catch (Exception e) {

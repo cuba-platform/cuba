@@ -19,10 +19,11 @@ package com.haulmont.cuba.web.controllers;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.app.TrustedClientService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,8 +105,12 @@ public final class ControllerUtils {
         if (s != null) {
             try {
                 UUID id = UUID.fromString(s);
-                LoginService service = AppBeans.get(LoginService.NAME);
-                UserSession session = service.getSession(id);
+
+                WebAuthConfig webAuthConfig = AppBeans.get(Configuration.class).getConfig(WebAuthConfig.class);
+
+                TrustedClientService trustedClientService = AppBeans.get(TrustedClientService.NAME);
+                UserSession session = trustedClientService.findSession(webAuthConfig.getTrustedClientPassword(), id);
+
                 if (session != null) {
                     req.getSession().setAttribute(App.USER_SESSION_ATTR, session);
                     return session;

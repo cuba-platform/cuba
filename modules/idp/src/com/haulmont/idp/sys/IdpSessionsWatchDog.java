@@ -18,10 +18,10 @@ package com.haulmont.idp.sys;
 
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.security.app.IdpService;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.app.TrustedClientService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.idp.IdpService;
 import com.haulmont.idp.IdpConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ public class IdpSessionsWatchDog {
     private final Logger log = LoggerFactory.getLogger(IdpSessionsWatchDog.class);
 
     @Inject
-    protected LoginService loginService;
+    protected TrustedClientService trustedClientService;
 
     @Inject
     protected IdpService idpService;
@@ -64,7 +64,7 @@ public class IdpSessionsWatchDog {
 
         UserSession systemSession;
         try {
-            systemSession = loginService.getSystemSession(idpConfig.getTrustedClientPassword());
+            systemSession = trustedClientService.getSystemSession(idpConfig.getTrustedClientPassword());
         } catch (LoginException e) {
             log.error("Unable to obtain system session", e);
             return;

@@ -25,7 +25,7 @@ import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.core.sys.UserInvocationContext;
 import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
 import com.haulmont.cuba.core.sys.remoting.discovery.StaticServerSelector;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.app.TrustedClientService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.StringUtils;
@@ -46,11 +46,11 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
 
     private final Logger log = LoggerFactory.getLogger(CubaRemoteInvocationExecutor.class);
 
-    private volatile ServerSelector serverSelector;
+    protected volatile ServerSelector serverSelector;
 
-    private UserSessionManager userSessionManager;
-    private Configuration configuration;
-    private GlobalConfig globalConfig;
+    protected UserSessionManager userSessionManager;
+    protected Configuration configuration;
+    protected GlobalConfig globalConfig;
 
     public CubaRemoteInvocationExecutor() {
         userSessionManager = AppBeans.get(UserSessionManager.NAME);
@@ -68,17 +68,18 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
             if (sessionId != null) {
                 UserSession session = userSessionManager.findSession(sessionId);
                 if (session == null) {
-                    String sessionProviderUrl = configuration.getConfig(ServerConfig.class).getUserSessionProviderUrl();
+                    ServerConfig serverConfig = configuration.getConfig(ServerConfig.class);
+                    String sessionProviderUrl = serverConfig.getUserSessionProviderUrl();
                     if (StringUtils.isNotBlank(sessionProviderUrl)) {
                         log.debug("User session {} not found, trying to get it from {}", sessionId, sessionProviderUrl);
                         try {
                             HttpServiceProxy proxyFactory = new HttpServiceProxy(getServerSelector(sessionProviderUrl));
-                            proxyFactory.setServiceUrl("cuba_LoginService");
-                            proxyFactory.setServiceInterface(LoginService.class);
+                            proxyFactory.setServiceUrl("cuba_TrustedClientService");
+                            proxyFactory.setServiceInterface(TrustedClientService.class);
                             proxyFactory.afterPropertiesSet();
-                            LoginService loginService = (LoginService) proxyFactory.getObject();
-                            if (loginService != null) {
-                                UserSession userSession = loginService.getSession(sessionId);
+                            TrustedClientService trustedClientService = (TrustedClientService) proxyFactory.getObject();
+                            if (trustedClientService != null) {
+                                UserSession userSession = trustedClientService.findSession(serverConfig.getTrustedClientPassword(), sessionId);
                                 if (userSession != null) {
                                     userSessionManager.storeSession(userSession);
                                 } else {
@@ -115,7 +116,7 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
         return result;
     }
 
-    private ServerSelector getServerSelector(String sessionProviderUrl) {
+    protected ServerSelector getServerSelector(String sessionProviderUrl) {
         if (serverSelector == null) {
             synchronized (this) {
                 if (serverSelector == null) {

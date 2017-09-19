@@ -17,11 +17,10 @@
 
 package com.haulmont.cuba.desktop;
 
-import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.LoginProperties;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.gui.components.Frame.NotificationType;
 import com.haulmont.cuba.security.global.LoginException;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.LocaleUtils;
@@ -32,12 +31,8 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Locale;
 import java.util.Map;
 
@@ -57,7 +52,6 @@ public class LoginDialog extends JDialog {
     protected JComboBox<String> localeCombo;
     protected JButton loginBtn;
     protected LoginProperties loginProperties;
-    protected LoginService loginService = AppBeans.get(LoginService.class);
 
     public LoginDialog(JFrame owner, Connection connection) {
         super(owner);
@@ -95,14 +89,13 @@ public class LoginDialog extends JDialog {
         String lastLogin = loginProperties.loadLastLogin();
         if (!StringUtils.isBlank(lastLogin)) {
             nameField.setText(lastLogin);
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    passwordField.requestFocus();
-                }
-            });
-        } else if (!StringUtils.isBlank(defaultName))
+            SwingUtilities.invokeLater(() ->
+                    passwordField.requestFocus()
+            );
+        } else if (!StringUtils.isBlank(defaultName)) {
             nameField.setText(defaultName);
+        }
+
         panel.add(nameField, "width 150!, wrap");
 
         panel.add(new JLabel(messages.getMainMessage("loginWindow.passwordField", resolvedLocale)));
@@ -122,13 +115,8 @@ public class LoginDialog extends JDialog {
 
         loginBtn = new JButton(messages.getMainMessage("loginWindow.okButton", resolvedLocale));
         loginBtn.setIcon(App.getInstance().getResources().getIcon("icons/ok.png"));
-        loginBtn.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        doLogin();
-                    }
-                }
+        loginBtn.addActionListener(e ->
+                doLogin()
         );
         DesktopComponentsHelper.adjustSize(loginBtn);
         panel.add(loginBtn, "span, align center");
@@ -154,16 +142,6 @@ public class LoginDialog extends JDialog {
         String name = nameField.getText();
         String password = passwordField.getText();
 
-        String ipAddress = null;
-        try {
-            InetAddress address = InetAddress.getLocalHost();
-            ipAddress = address.getHostAddress();
-            if (!bruteForceProtectionCheck(name, ipAddress))
-                return;
-        } catch (UnknownHostException e) {
-            log.error("Unable to obtain local IP address",e );
-        }
-
         String selectedItem = (String) localeCombo.getSelectedItem();
         Locale locale = locales.get(selectedItem);
         try {
@@ -174,55 +152,21 @@ public class LoginDialog extends JDialog {
         } catch (LoginException ex) {
             log.info("Login failed: " + ex.toString());
             String caption = messages.getMainMessage("loginWindow.loginFailed", locale);
-            String bruteForceCaption = registerUnsuccessfulLoginAttempt(name, ipAddress);
-            if (!Strings.isNullOrEmpty(bruteForceCaption))
-                caption = bruteForceCaption;
-            App.getInstance().getMainFrame().showNotification(
-                    caption,
-                    ex.getMessage(),
-                    com.haulmont.cuba.gui.components.Frame.NotificationType.ERROR
-            );
+
+            TopLevelFrame mainFrame = App.getInstance().getMainFrame();
+            mainFrame.showNotification(caption, ex.getMessage(), NotificationType.ERROR);
         }
     }
 
+    @Deprecated
     protected boolean bruteForceProtectionCheck(String login, String ipAddress) {
-        if (loginService.isBruteForceProtectionEnabled()) {
-            if (loginService.loginAttemptsLeft(login, ipAddress) <= 0) {
-                String title = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
-                String message = messages.formatMessage(messages.getMainMessagePack(),
-                        "loginWindow.loginAttemptsNumberExceeded",
-                        resolvedLocale,
-                        loginService.getBruteForceBlockIntervalSec());
-
-                App.getInstance().getMainFrame().showNotification(
-                        title,
-                        message,
-                        com.haulmont.cuba.gui.components.Frame.NotificationType.ERROR);
-                log.info("Blocked user login attempt: login={}, ip={}", login, ipAddress);
-                return false;
-            }
-        }
         return true;
     }
 
+    @Deprecated
     @Nullable
     protected String registerUnsuccessfulLoginAttempt(String login, String ipAddress) {
-        String message = null;
-        if (loginService.isBruteForceProtectionEnabled()) {
-            int loginAttemptsLeft = loginService.registerUnsuccessfulLogin(login, ipAddress);
-            if (loginAttemptsLeft > 0) {
-                message = messages.formatMessage(messages.getMainMessagePack(),
-                        "loginWindow.loginFailedAttemptsLeft",
-                        resolvedLocale,
-                        loginAttemptsLeft);
-            } else {
-                message = messages.formatMessage(messages.getMainMessagePack(),
-                        "loginWindow.loginAttemptsNumberExceeded",
-                        resolvedLocale,
-                        loginService.getBruteForceBlockIntervalSec());
-            }
-        }
-        return message;
+        return null;
     }
 
     protected void initLocales(JComboBox<String> localeCombo) {

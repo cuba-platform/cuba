@@ -23,8 +23,10 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.security.auth.AbstractClientCredentials;
+import com.haulmont.cuba.security.auth.AuthenticationService;
+import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.LocaleUtils;
@@ -138,23 +140,16 @@ public class LoginServiceController {
                            HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException {
         Locale locale = localeFromString(localeStr);
 
-        LoginService loginService = AppBeans.get(LoginService.NAME);
+        AuthenticationService authenticationService = AppBeans.get(AuthenticationService.NAME);
         try {
-            if (loginService.isBruteForceProtectionEnabled()) {
-                if (loginService.loginAttemptsLeft(username, request.getRemoteAddr()) <= 0) {
-                    log.info("Blocked user login attempt: login={}, ip={}", username, request.getRemoteAddr());
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                    return;
-                }
-            }
-
-            UserSession userSession = loginService.login(username, passwordEncryption.getPlainHash(password), locale);
+            AbstractClientCredentials credentials = new LoginPasswordCredentials(username, passwordEncryption.getPlainHash(password), locale);
+            UserSession userSession = authenticationService.login(credentials).getSession();
 
             if (!userSession.isSpecificPermitted(Authentication.PERMISSION_NAME)) {
                 log.info(String.format("User %s is not allowed to use REST-API", username));
                 AppContext.setSecurityContext(new SecurityContext(userSession));
                 try {
-                    loginService.logout();
+                    authenticationService.logout();
                 } finally {
                     AppContext.setSecurityContext(null);
                 }
@@ -176,9 +171,6 @@ public class LoginServiceController {
 
             log.debug(String.format("User %s logged in with REST-API, session id: %s", username, userSession.getId()));
         } catch (LoginException e) {
-            if (loginService.isBruteForceProtectionEnabled()) {
-                loginService.registerUnsuccessfulLogin(username, request.getRemoteAddr());
-            }
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
@@ -229,8 +221,8 @@ public class LoginServiceController {
     protected void doLogout(String sessionUUID, HttpServletResponse response) throws IOException, JSONException {
         try {
             if (authentication.begin(sessionUUID)) {
-                LoginService loginService = AppBeans.get(LoginService.NAME);
-                loginService.logout();
+                AuthenticationService authenticationService = AppBeans.get(AuthenticationService.NAME);
+                authenticationService.logout();
             }
         } catch (Throwable e) {
             log.error("Error processing logout request", e);

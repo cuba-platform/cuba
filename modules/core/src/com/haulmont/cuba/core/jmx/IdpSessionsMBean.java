@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core.jmx;
 
+import com.haulmont.cuba.security.idp.IdpSessionStore;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedOperationParameter;
 import org.springframework.jmx.export.annotation.ManagedOperationParameters;
@@ -24,7 +25,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import java.util.List;
 
 /**
- * JMX interface for {@link com.haulmont.cuba.security.app.IdpSessionStore}
+ * JMX interface for {@link IdpSessionStore}
  */
 @ManagedResource(description = "Manages identity provider sessions")
 public interface IdpSessionsMBean {

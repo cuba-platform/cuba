@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.app.ServerConfig;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.util.regex.Pattern;
 
@@ -44,8 +45,8 @@ public class TrustedLoginHandler {
     }
 
     /**
-     * @param address   ip-address
-     * @return          true if address in trusted list
+     * @param address ip-address
+     * @return true if address in trusted list
      */
     public boolean checkAddress(String address) {
         return permittedIpMaskPattern.matcher(address).matches();
@@ -61,8 +62,8 @@ public class TrustedLoginHandler {
     }
 
     /**
-     * @param password  password to check
-     * @return          true if password is trusted
+     * @param password password to check
+     * @return true if password is trusted
      */
     public boolean checkPassword(String password) {
         String trustedClientPassword = serverConfig.getTrustedClientPassword();

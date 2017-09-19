@@ -78,6 +78,8 @@
         <property name="remoteServices">
             <map>
                 <entry key="cuba_LoginService" value="com.haulmont.cuba.security.app.LoginService"/>
+                <entry key="cuba_AuthenticationService" value="com.haulmont.cuba.security.auth.AuthenticationService"/>
+                <entry key="cuba_TrustedClientService" value="com.haulmont.cuba.security.app.TrustedClientService"/>
                 <entry key="cuba_ServerInfoService" value="com.haulmont.cuba.core.app.ServerInfoService"/>
                 <entry key="cuba_UserSettingService" value="com.haulmont.cuba.security.app.UserSettingService"/>
                 <entry key="cuba_UserManagementService" value="com.haulmont.cuba.security.app.UserManagementService"/>
@@ -108,7 +110,7 @@
                 <entry key="cuba_EntityImportExportService" value="com.haulmont.cuba.core.app.importexport.EntityImportExportService"/>
                 <entry key="cuba_ScreenProfilerService" value="com.haulmont.cuba.core.app.ScreenProfilerService"/>
                 <entry key="cuba_ServerTokenStore" value="com.haulmont.cuba.restapi.ServerTokenStore"/>
-                <entry key="cuba_IdpService" value="com.haulmont.cuba.security.app.IdpService"/>
+                <entry key="cuba_IdpService" value="com.haulmont.cuba.security.idp.IdpService"/>
                 <entry key="cuba_ConstraintLocalizationService" value="com.haulmont.cuba.core.app.ConstraintLocalizationService"/>
             </map>
         </property>

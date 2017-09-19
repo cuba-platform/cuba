@@ -22,7 +22,8 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.auth.AuthenticationService;
+import com.haulmont.cuba.security.auth.TrustedClientCredentials;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
@@ -44,9 +45,8 @@ public class ConfigStorageCommon {
 
     @Inject
     protected Configuration configuration;
-
     @Inject
-    protected LoginService loginService;
+    protected AuthenticationService authenticationService;
 
     public String printAppProperties(String prefix) {
         List<String> list = new ArrayList<>();
@@ -73,7 +73,7 @@ public class ConfigStorageCommon {
             return "Enter a property value";
 
         AppContext.setProperty(name, value);
-        return "Property " + name + " set to " + value;
+        return String.format("Property %s set to %s", name, value);
     }
 
     /**
@@ -90,8 +90,8 @@ public class ConfigStorageCommon {
         try {
             aClass = Class.forName(classFQN);
         } catch (ClassNotFoundException e) {
-            return "Class " + classFQN + " not found.\nPlease ensure that you entered a fully qualified class name and " +
-                    "that you class is in a proper application module (core, web or portal).";
+            return String.format("Class %s not found.\nPlease ensure that you entered a fully qualified class name and " +
+                    "that you class is in a proper application module (core, web or portal).", classFQN);
         }
 
         if (Config.class.isAssignableFrom(aClass)) {
@@ -120,7 +120,10 @@ public class ConfigStorageCommon {
                             try {
                                 Map<String, Locale> availableLocales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
                                 Locale defaultLocale = availableLocales.values().iterator().next();
-                                UserSession session = loginService.loginTrusted(userLogin, userPassword, defaultLocale);
+
+                                TrustedClientCredentials credentials = new TrustedClientCredentials(userLogin, userPassword, defaultLocale);
+
+                                UserSession session = authenticationService.login(credentials).getSession();
                                 AppContext.setSecurityContext(new SecurityContext(session));
                                 logoutRequired = true;
                             } catch (LoginException e) {
@@ -134,17 +137,20 @@ public class ConfigStorageCommon {
                 Object result = method.invoke(config);
                 return result == null ? null : result.toString();
             } catch (NoSuchMethodException e) {
-                return "Method " + methodName + "() not found in class " + classFQN;
+                return String.format("Method %s() not found in class %s", methodName, classFQN);
             } catch (InvocationTargetException | IllegalAccessException e) {
                 return ExceptionUtils.getStackTrace(e);
             } finally {
                 if (logoutRequired) {
-                    loginService.logout();
-                    AppContext.setSecurityContext(null);
+                    try {
+                        authenticationService.logout();
+                    } finally {
+                        AppContext.setSecurityContext(null);
+                    }
                 }
             }
         } else {
-            return "Class " + classFQN + " is not an implementation of Config interface";
+            return String.format("Class %s is not an implementation of Config interface", classFQN);
         }
     }
 }

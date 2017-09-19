@@ -19,7 +19,8 @@ package com.haulmont.cuba.core.global;
 public enum ClientType {
     WEB("W", "web"),
     PORTAL("P", "portal"),
-    DESKTOP("D", "desktop");
+    DESKTOP("D", "desktop"),
+    REST_API("R", "rest");
 
     private String id;
     private String configPath;

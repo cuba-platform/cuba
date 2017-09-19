@@ -17,8 +17,8 @@
 package com.haulmont.cuba.core.jmx;
 
 import com.google.gson.Gson;
-import com.haulmont.cuba.security.app.IdpSessionStore;
-import com.haulmont.cuba.security.app.IdpSessionStore.IdpSessionInfo;
+import com.haulmont.cuba.security.idp.IdpSessionStore;
+import com.haulmont.cuba.security.idp.IdpSessionStore.IdpSessionInfo;
 import com.haulmont.cuba.security.global.IdpSession;
 import org.springframework.stereotype.Component;
 

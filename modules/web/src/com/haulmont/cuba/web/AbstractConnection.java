@@ -21,14 +21,17 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.app.TrustedClientService;
 import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.security.auth.AuthenticationService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.IpMatcher;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.vaadin.server.*;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.server.WebBrowser;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +56,9 @@ public abstract class AbstractConnection implements Connection {
     protected boolean connected;
 
     @Inject
-    protected LoginService loginService;
+    protected AuthenticationService authenticationService;
+    @Inject
+    protected TrustedClientService trustedClientService;
     @Inject
     protected UserSessionService userSessionService;
     @Inject
@@ -171,7 +176,6 @@ public abstract class AbstractConnection implements Connection {
             }
         }
 
-        session.setAddress(app.getClientAddress());
         String clientInfo = makeClientInfo();
         session.setClientInfo(clientInfo);
 
@@ -221,7 +225,7 @@ public abstract class AbstractConnection implements Connection {
 
     @Override
     public void substituteUser(User substitutedUser) {
-        ClientUserSession clientUserSession = new ClientUserSession(loginService.substituteUser(substitutedUser));
+        ClientUserSession clientUserSession = new ClientUserSession(authenticationService.substituteUser(substitutedUser));
         clientUserSession.setAuthenticated(true);
 
         setSession(clientUserSession);
@@ -246,7 +250,7 @@ public abstract class AbstractConnection implements Connection {
     protected void internalLogout(boolean disconnect) {
         if (getSession() instanceof ClientUserSession
                 && ((ClientUserSession) getSession()).isAuthenticated()) {
-            loginService.logout();
+            authenticationService.logout();
         }
         AppContext.setSecurityContext(null);
         connected = false;

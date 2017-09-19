@@ -19,10 +19,10 @@ package com.haulmont.cuba.web.controllers;
 import com.google.common.base.Strings;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.security.app.IdpService;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.app.TrustedClientService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.idp.IdpService;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,7 @@ public class IdpLogoutCallbackController {
     protected WebAuthConfig webAuthConfig;
 
     @Inject
-    protected LoginService loginService;
+    protected TrustedClientService trustedClientService;
 
     @Inject
     protected IdpService idpService;
@@ -59,6 +59,7 @@ public class IdpLogoutCallbackController {
     public void logout(@RequestParam(name = "idpSessionId") String idpSessionId,
                        @RequestParam(name = "trustedServicePassword") String trustedServicePassword,
                        HttpServletResponse response) {
+
         if (!webAuthConfig.getExternalAuthentication() || Strings.isNullOrEmpty(webAuthConfig.getIdpBaseURL())) {
             log.warn("IDP options is not set, but logout callback url is requested");
             response.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -73,7 +74,7 @@ public class IdpLogoutCallbackController {
 
         UserSession systemSession;
         try {
-            systemSession = loginService.getSystemSession(webAuthConfig.getTrustedClientPassword());
+            systemSession = trustedClientService.getSystemSession(webAuthConfig.getTrustedClientPassword());
         } catch (LoginException e) {
             log.error("Unable to obtain system session", e);
             return;

@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.PasswordEncryption;
-import com.haulmont.cuba.security.app.IdpService;
+import com.haulmont.cuba.security.idp.IdpService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.idp.IdpConfig;
 import com.haulmont.idp.model.*;

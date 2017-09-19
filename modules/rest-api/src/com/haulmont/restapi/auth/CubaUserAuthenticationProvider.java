@@ -16,13 +16,17 @@
 
 package com.haulmont.restapi.auth;
 
+import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.restapi.RestConfig;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.auth.AuthenticationService;
+import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
+import com.haulmont.cuba.security.global.AccountLockedException;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.RestApiAccessDeniedException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +55,7 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider, S
     private final Logger log = LoggerFactory.getLogger(CubaUserAuthenticationProvider.class);
 
     @Inject
-    protected LoginService loginService;
+    protected AuthenticationService authenticationService;
 
     @Inject
     protected PasswordEncryption passwordEncryption;
@@ -78,23 +82,21 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider, S
 
             String login = (String) token.getPrincipal();
 
-            checkBruteForceProtection(login, ipAddress);
-
             UserSession session;
             try {
                 String passwordHash = passwordEncryption.getPlainHash((String) token.getCredentials());
-                session = loginService.login(login, passwordHash, request.getLocale());
-                if (!session.isSpecificPermitted("cuba.restApi.enabled")) {
-                    try {
-                        AppContext.withSecurityContext(new SecurityContext(session), () -> {
-                            loginService.logout();
-                        });
-                    } catch (Exception e) {
-                        log.error("Unable to logout", e);
-                    }
 
-                    throw new BadCredentialsException("User is not allowed to use the REST API");
-                }
+                LoginPasswordCredentials credentials = new LoginPasswordCredentials(login, passwordHash, request.getLocale());
+                credentials.setClientType(ClientType.REST_API);
+                credentials.setClientInfo("REST API");
+
+                session = authenticationService.login(credentials).getSession();
+            } catch (AccountLockedException le) {
+                log.info("Blocked user login attempt: login={}, ip={}", login, ipAddress);
+                throw new LockedException("User temporarily blocked");
+            } catch (RestApiAccessDeniedException ex) {
+                log.info("User is not allowed to use the REST API {}", login);
+                throw new BadCredentialsException("User is not allowed to use the REST API");
             } catch (LoginException e) {
                 log.info("REST API authentication failed: {} {}", login, ipAddress);
                 throw new BadCredentialsException("Bad credentials");
@@ -112,15 +114,6 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider, S
         }
 
         return null;
-    }
-
-    protected void checkBruteForceProtection(String login, String ipAddress) {
-        if (loginService.isBruteForceProtectionEnabled()) {
-            if (loginService.loginAttemptsLeft(login, ipAddress) <= 0) {
-                log.info("Blocked user login attempt: login={}, ip={}", login, ipAddress);
-                throw new LockedException("User temporarily blocked");
-            }
-        }
     }
 
     @Override

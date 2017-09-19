@@ -16,13 +16,11 @@
 
 package com.haulmont.cuba.web.app.loginwindow;
 
-import com.google.common.base.Strings;
 import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
@@ -86,9 +84,6 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
     @Inject
     protected WebAuthConfig webAuthConfig;
-
-    @Inject
-    protected LoginService loginService;
 
     @Inject
     protected UserSessionSource userSessionSource;
@@ -210,7 +205,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
             String login = URLEncodeUtils.decodeUtf8(encodedLogin);
 
             String rememberMeToken = app.getCookieValue(COOKIE_PASSWORD) != null ? app.getCookieValue(COOKIE_PASSWORD) : "";
-            if (app.getConnection().checkRememberMe(login, rememberMeToken)) {
+            if (StringUtils.isNotEmpty(rememberMeToken)) {
                 rememberMeCheckBox.setValue(true);
                 loginField.setValue(login);
 
@@ -292,7 +287,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
         showNotification(title, message, NotificationType.ERROR);
     }
 
-    protected void showLoginException(String message){
+    protected void showLoginException(String message) {
         String title = messages.getMainMessage("loginWindow.loginFailed", userSessionSource.getLocale());
 
         showNotification(title, message, NotificationType.ERROR);
@@ -353,9 +348,6 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
         }
 
         App app = App.getInstance();
-        if (!bruteForceProtectionCheck(login, app.getClientAddress())) {
-            return;
-        }
 
         try {
             Connection connection = app.getConnection();
@@ -388,10 +380,6 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
             log.info("Login failed: {}", e.toString());
 
             String message = StringUtils.abbreviate(e.getMessage(), 1000);
-            String bruteForceMsg = registerUnsuccessfulLoginAttempt(login, app.getClientAddress());
-            if (!Strings.isNullOrEmpty(bruteForceMsg))  {
-                message = bruteForceMsg;
-            }
             showLoginException(message);
         } catch (Exception e) {
             log.warn("Unable to login", e);
@@ -416,46 +404,19 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
         authProvider.authenticate(login, passwordValue, locale);
     }
 
+    @Deprecated
     protected boolean isBruteForceProtectionEnabled() {
-        if (bruteForceProtectionEnabled == null) {
-            bruteForceProtectionEnabled = loginService.isBruteForceProtectionEnabled();
-        }
-        return bruteForceProtectionEnabled;
+        return false;
     }
 
+    @Deprecated
     protected boolean bruteForceProtectionCheck(String login, String ipAddress) {
-        if (isBruteForceProtectionEnabled()) {
-            if (loginService.loginAttemptsLeft(login, ipAddress) <= 0) {
-                String title = messages.getMainMessage("loginWindow.loginFailed");
-                String message = messages.formatMainMessage(
-                        "loginWindow.loginAttemptsNumberExceeded",
-                        loginService.getBruteForceBlockIntervalSec());
-
-                showNotification(title, message, NotificationType.ERROR_HTML);
-
-                log.info("Blocked user login attempt: login={}, ip={}", login, ipAddress);
-
-                return false;
-            }
-        }
         return true;
     }
 
+    @Deprecated
     @Nullable
     protected String registerUnsuccessfulLoginAttempt(String login, String ipAddress) {
-        String message = null;
-        if (isBruteForceProtectionEnabled()) {
-            int loginAttemptsLeft = loginService.registerUnsuccessfulLogin(login, ipAddress);
-            if (loginAttemptsLeft > 0) {
-                message = messages.formatMainMessage(
-                        "loginWindow.loginFailedAttemptsLeft",
-                        loginAttemptsLeft);
-            } else {
-                message = messages.formatMainMessage(
-                        "loginWindow.loginAttemptsNumberExceeded",
-                        loginService.getBruteForceBlockIntervalSec());
-            }
-        }
-        return message;
+        return null;
     }
 }

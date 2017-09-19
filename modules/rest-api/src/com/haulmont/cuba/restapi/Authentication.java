@@ -20,8 +20,10 @@ package com.haulmont.cuba.restapi;
 import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.app.TrustedClientService;
+import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.restapi.config.RestApiConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -52,15 +54,18 @@ public class Authentication {
 
     public static final String PERMISSION_NAME = "cuba.restApi.enabled";
 
-    private Logger log = LoggerFactory.getLogger(Authentication.class);
+    private final Logger log = LoggerFactory.getLogger(Authentication.class);
 
     @Inject
-    protected LoginService loginService;
+    protected TrustedClientService trustedClientService;
+    @Inject
+    protected RestApiConfig restApiConfig;
 
     /**
      * Begin authenticated block of code.
+     *
      * @param sessionId {@link UserSession} id
-     * @return  true if the given session id is valid and authentication is successful
+     * @return true if the given session id is valid and authentication is successful
      */
     public boolean begin(String sessionId) {
         UUID uuid;
@@ -71,7 +76,13 @@ public class Authentication {
             return false;
         }
 
-        UserSession session = loginService.getSession(uuid);
+        UserSession session;
+        try {
+            session = trustedClientService.findSession(restApiConfig.getTrustedClientPassword(), uuid);
+        } catch (LoginException e) {
+            throw new RuntimeException("Unable to login with trusted client password");
+        }
+
         if (session == null) {
             log.warn("User session " + uuid + " does not exist");
             return false;

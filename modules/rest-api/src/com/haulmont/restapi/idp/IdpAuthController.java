@@ -21,7 +21,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.IdpSession;
 import com.haulmont.restapi.auth.OAuthTokenIssuer;
 import com.haulmont.restapi.auth.OAuthTokenIssuer.OAuth2AccessTokenResult;
@@ -76,8 +75,6 @@ public class IdpAuthController implements InitializingBean {
     protected Configuration configuration;
     @Inject
     protected OAuthTokenIssuer oAuthTokenIssuer;
-    @Inject
-    protected LoginService loginService;
 
     protected RestIdpConfig idpConfig;
 
@@ -196,10 +193,12 @@ public class IdpAuthController implements InitializingBean {
             throw new BadCredentialsException("Bad credentials");
         }
 
-        OAuthTokenIssuer.OAuth2AccessTokenReqest tokenReqest = new OAuthTokenIssuer.OAuth2AccessTokenReqest();
-        tokenReqest.setTokenDetails(ImmutableMap.of(IDP_SESSION_ID_TOKEN_ATTRIBUTE, idpSession.getId()));
+        OAuthTokenIssuer.OAuth2AccessTokenRequest tokenRequest = new OAuthTokenIssuer.OAuth2AccessTokenRequest();
+        tokenRequest.setLogin(idpSession.getLogin());
+        tokenRequest.setLocale(locale);
+        tokenRequest.setTokenDetails(ImmutableMap.of(IDP_SESSION_ID_TOKEN_ATTRIBUTE, idpSession.getId()));
 
-        return oAuthTokenIssuer.issueToken(idpSession.getLogin(), locale, tokenReqest);
+        return oAuthTokenIssuer.issueToken(tokenRequest);
     }
 
     @Nullable

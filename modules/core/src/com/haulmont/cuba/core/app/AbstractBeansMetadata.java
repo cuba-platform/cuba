@@ -41,7 +41,8 @@ public abstract class AbstractBeansMetadata {
 
     protected List<String> beansToIgnore = Arrays.asList("cubaDataSource", "entityManagerFactory", "hibernateSessionFactory",
             "mailSendTaskExecutor", "scheduler", "sqlSession", "sqlSessionFactory", "transactionManager",
-            "cuba_ServerInfoService", "cuba_LoginService", "cuba_LocalizedMessageService");
+            "cuba_ServerInfoService", "cuba_LoginService", "cuba_AuthenticationService", "cuba_TrustedClientService",
+            "cuba_LocalizedMessageService");
 
     /**
      * Returns a map, the key is bean name, the value is a list of objects that hold a bean methods information
@@ -75,6 +76,7 @@ public abstract class AbstractBeansMetadata {
 
             Object bean = AppBeans.get(beanName);
 
+            @SuppressWarnings("unchecked")
             List<Class> classes = ClassUtils.getAllInterfaces(bean.getClass());
             for (Class aClass : classes) {
                 if (aClass.getName().startsWith("org.springframework."))
@@ -115,7 +117,6 @@ public abstract class AbstractBeansMetadata {
         methods.add(methodInfo);
     }
 
-
     protected abstract boolean isMethodAvailable(Method method);
 
     protected List<MethodParameterInfo> getMethodParameters(Method method) {
@@ -139,5 +140,4 @@ public abstract class AbstractBeansMetadata {
     protected List<String> getBeansToIgnore() {
         return beansToIgnore;
     }
-
 }

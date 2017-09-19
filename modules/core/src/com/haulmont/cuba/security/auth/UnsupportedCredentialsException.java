@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2017 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.security.global;
+package com.haulmont.cuba.security.auth;
 
-import com.haulmont.cuba.core.global.Logging;
-import com.haulmont.cuba.core.global.SupportedByClient;
-
-@SupportedByClient
-@Logging(Logging.Type.BRIEF)
-public class LoginFailedException extends LoginException {
-    public LoginFailedException(String message) {
+/**
+ * Exception that is thrown if there is no {@link AuthenticationProvider} that can process credentials instance.
+ */
+public class UnsupportedCredentialsException extends RuntimeException {
+    public UnsupportedCredentialsException(String message) {
         super(message);
-    }
-
-    public LoginFailedException(String template, Object... params) {
-        super(template, params);
     }
 }

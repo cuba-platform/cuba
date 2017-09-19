@@ -19,6 +19,7 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.EventObject;
@@ -102,7 +103,12 @@ public interface Connection {
      * @param rememberMeToken remember me token
      * @return true if remember me token exists in db
      */
-    boolean checkRememberMe(String login, String rememberMeToken);
+    @Deprecated
+    default boolean checkRememberMe(String login, String rememberMeToken) {
+        LoggerFactory.getLogger(Connection.class)
+                .warn("LoginService checkRememberMe is not supported any more. Always returns false");
+        return false;
+    }
 
     /**
      * Get current user session.

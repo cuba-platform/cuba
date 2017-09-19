@@ -48,6 +48,8 @@ import java.util.UUID;
 @Component(UserSessionManager.NAME)
 public class UserSessionManager implements UserSessionFinder {
 
+    private final Logger log = LoggerFactory.getLogger(UserSessionManager.class);
+
     public static final String NAME = "cuba_UserSessionManager";
 
     @Inject
@@ -67,8 +69,6 @@ public class UserSessionManager implements UserSessionFinder {
 
     @Inject
     protected DefaultPermissionValuesConfig defaultPermissionValuesConfig;
-
-    private static Logger log = LoggerFactory.getLogger(UserSessionManager.class);
 
     /**
      * Create a new session and fill it with security data. Must be called inside a transaction.
@@ -200,7 +200,7 @@ public class UserSessionManager implements UserSessionFinder {
             Datatype datatype = Datatypes.get(attribute.getDatatype());
             try {
                 if (session.getAttributeNames().contains(attribute.getName())) {
-                    log.warn("Duplicate definition of '" + attribute.getName() + "' session attribute in the group hierarchy");
+                    log.warn("Duplicate definition of '{}' session attribute in the group hierarchy", attribute.getName());
                 }
                 Serializable value = (Serializable) datatype.parse(attribute.getStringValue());
                 if (value != null)

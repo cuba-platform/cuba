@@ -34,7 +34,7 @@ public class AuthenticationInterceptor {
 
     private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {
         if (log.isTraceEnabled())
-            log.trace("Authenticating: " + ctx.getSignature());
+            log.trace("Authenticating: ", ctx.getSignature());
 
         try {
             authentication.begin();
