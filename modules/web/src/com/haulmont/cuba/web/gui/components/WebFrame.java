@@ -367,7 +367,8 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         WebWindowManager wm = App.getInstance().getWindowManager();
-        return wm.openFrame(wrapper, parent, windowInfo);
+        Frame wrappedFrame = ((Frame.Wrapper) wrapper).getWrappedFrame();
+        return wm.openFrame(wrappedFrame, parent, windowInfo);
     }
 
     @Override
@@ -375,7 +376,8 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         WebWindowManager wm = App.getInstance().getWindowManager();
-        return wm.openFrame(wrapper, parent, windowInfo, params);
+        Frame wrappedFrame = ((Frame.Wrapper) wrapper).getWrappedFrame();
+        return wm.openFrame(wrappedFrame, parent, windowInfo, params);
     }
 
     @Override
