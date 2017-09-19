@@ -28,7 +28,7 @@ import java.util.*;
 
 public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> implements HtmlBoxLayout {
 
-    protected Collection<Component> ownComponents = new LinkedHashSet<>();
+    protected List<Component> ownComponents = new ArrayList<>();
 
     public WebHtmlBoxLayout() {
         component = new CustomLayout("");
@@ -88,7 +88,7 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
     public void removeAll() {
         component.removeAllComponents();
 
-        List<Component> components = new ArrayList<>(ownComponents);
+        Component[] components = ownComponents.toArray(new Component[ownComponents.size()]);
         ownComponents.clear();
 
         for (Component childComponent : components) {
