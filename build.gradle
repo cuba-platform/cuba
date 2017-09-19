@@ -91,6 +91,7 @@ def clientTestsModule = project(':cuba-client-tests')
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
            webModule, desktopModule, portalModule, webAuthModule, restApiModule, idpModule, uberJarModule, frontModule]) {
     apply(plugin: 'java')
+    apply(plugin: 'groovy')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
     apply(plugin: 'findbugs')
@@ -100,6 +101,17 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     dependencies {
         testCompile(bom['org.jmockit:jmockit'])
         testCompile(bom['junit:junit'])
+        testCompile(bom['org.spockframework:spock-core']) {
+            exclude(group: 'org.codehaus.groovy', module: 'groovy-all')
+        }
+    }
+
+    sourceSets {
+        test {
+            groovy {
+                srcDir 'test'
+            }
+        }
     }
 
     task sourceJar(type: Jar) {
