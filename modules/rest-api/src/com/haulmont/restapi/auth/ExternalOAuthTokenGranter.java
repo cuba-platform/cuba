@@ -18,7 +18,6 @@ package com.haulmont.restapi.auth;
 
 import com.google.common.base.Preconditions;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
@@ -36,6 +35,7 @@ import org.springframework.security.oauth2.provider.token.AuthorizationServerTok
 import javax.inject.Inject;
 import java.util.*;
 
+import static com.haulmont.cuba.core.sys.AppContext.withSecurityContext;
 import static com.haulmont.restapi.auth.CubaTokenEnhancer.EXTENDED_DETAILS_ATTRIBUTE_PREFIX;
 import static com.haulmont.restapi.auth.CubaUserAuthenticationProvider.SESSION_ID_DETAILS_ATTRIBUTE;
 
@@ -77,9 +77,9 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
                     locale, tokenReqest.getLoginParams());
             if (!session.isSpecificPermitted("cuba.restApi.enabled")) {
                 try {
-                    AppContext.withSecurityContext(new SecurityContext(session), () -> {
-                        loginService.logout();
-                    });
+                    withSecurityContext(new SecurityContext(session), () ->
+                            loginService.logout()
+                    );
                 } catch (Exception e) {
                     log.error("Unable to logout", e);
                 }
@@ -96,10 +96,13 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
             parameters.put(EXTENDED_DETAILS_ATTRIBUTE_PREFIX + tokenParam.getKey(), tokenParam.getValue());
         }
 
-        ClientDetails authenticatedClient = clientDetailsService.loadClientByClientId(config.getRestClientId());
-        TokenRequest tokenRequest = getRequestFactory().createTokenRequest(parameters, authenticatedClient);
+        // issue token using obtained Session, it is required for DB operations inside of persistent token store
+        OAuth2AccessToken accessToken = withSecurityContext(new SecurityContext(session), () -> {
+            ClientDetails authenticatedClient = clientDetailsService.loadClientByClientId(config.getRestClientId());
+            TokenRequest tokenRequest = getRequestFactory().createTokenRequest(parameters, authenticatedClient);
 
-        OAuth2AccessToken accessToken = grant(GRANT_TYPE, tokenRequest);
+            return grant(GRANT_TYPE, tokenRequest);
+        });
 
         return new OAuth2AccessTokenResult(session, accessToken);
     }
