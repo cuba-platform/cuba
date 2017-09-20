@@ -29,13 +29,15 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.*;
+import com.haulmont.cuba.gui.components.actions.CreateAction;
+import com.haulmont.cuba.gui.components.actions.EditAction;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
-import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.app.UserManagementService;
@@ -56,7 +58,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static com.haulmont.cuba.gui.components.DialogAction.*;
+import static com.haulmont.cuba.gui.components.DialogAction.Type;
 
 public class GroupBrowser extends AbstractWindow {
 
@@ -94,9 +96,6 @@ public class GroupBrowser extends AbstractWindow {
 
     @Inject
     protected ComponentsFactory componentsFactory;
-
-    @Inject
-    protected ThemeConstants themeConstants;
 
     @Inject
     protected FileUploadField importUpload;

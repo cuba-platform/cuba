@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -51,7 +50,6 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
 
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
     protected DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.NAME);
-    protected DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.NAME);
 
     protected ComponentLoader buttonsPanelLoader;
     protected Element panelElement;

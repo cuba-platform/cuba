@@ -51,7 +51,6 @@ import java.util.stream.Collectors;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class BulkEditorWindow extends AbstractWindow {
-
     @Inject
     protected ViewRepository viewRepository;
 
@@ -69,9 +68,6 @@ public class BulkEditorWindow extends AbstractWindow {
 
     @Inject
     protected ComponentsFactory componentsFactory;
-
-    @Inject
-    protected Configuration configuration;
 
     @Inject
     protected Security security;

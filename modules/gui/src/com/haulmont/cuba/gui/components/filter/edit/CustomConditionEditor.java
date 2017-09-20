@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.gui.components.filter.edit;
 
-import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Component;
@@ -27,15 +26,11 @@ import javax.inject.Inject;
 import java.util.Map;
 
 public class CustomConditionEditor extends AbstractWindow {
-
     @Inject
     private CustomConditionFrame customConditionFrame;
 
     @Inject
     protected ThemeConstants theme;
-
-    @Inject
-    protected ClientConfig clientConfig;
 
     @Override
     public void init(Map<String, Object> params) {

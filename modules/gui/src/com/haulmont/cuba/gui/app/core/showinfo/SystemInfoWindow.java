@@ -25,7 +25,6 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.Role;
 
@@ -43,9 +42,6 @@ public class SystemInfoWindow extends AbstractWindow {
 
     @Inject
     protected Table infoTable;
-
-    @Inject
-    protected ThemeConstants themeConstants;
 
     @Inject
     protected TextArea scriptArea;

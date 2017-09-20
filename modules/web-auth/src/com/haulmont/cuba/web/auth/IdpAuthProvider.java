@@ -21,7 +21,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.app.IdpService;
 import com.haulmont.cuba.security.app.LoginService;
@@ -70,9 +69,6 @@ public class IdpAuthProvider implements CubaAuthProvider {
     private final Logger log = LoggerFactory.getLogger(IdpAuthProvider.class);
 
     protected Lock sessionCheckLock = new ReentrantLock();
-
-    @Inject
-    protected Messages messages;
 
     @Inject
     protected WebAuthConfig webAuthConfig;

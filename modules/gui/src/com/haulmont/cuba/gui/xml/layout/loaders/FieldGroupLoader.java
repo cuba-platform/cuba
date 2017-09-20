@@ -22,7 +22,6 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -54,7 +53,6 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
-    protected DynamicAttributes dynamicAttributes = AppBeans.get(DynamicAttributes.class);
     protected DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
 

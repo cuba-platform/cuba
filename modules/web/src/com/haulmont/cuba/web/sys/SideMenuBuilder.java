@@ -25,13 +25,10 @@ import com.haulmont.cuba.gui.components.mainwindow.SideMenu;
 import com.haulmont.cuba.gui.config.MenuCommand;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
-import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.security.global.UserSession;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -51,16 +48,11 @@ import static com.haulmont.cuba.gui.components.KeyCombination.getShortcutModifie
 public class SideMenuBuilder {
     public static final String NAME = "cuba_SideMenuBuilder";
 
-    private final Logger log = LoggerFactory.getLogger(SideMenuBuilder.class);
-
     @Inject
     protected UserSession session;
 
     @Inject
     protected MenuConfig menuConfig;
-
-    @Inject
-    protected WindowConfig windowConfig;
 
     @Inject
     private MessageTools messageTools;

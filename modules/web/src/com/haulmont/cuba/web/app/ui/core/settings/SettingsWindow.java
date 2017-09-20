@@ -21,7 +21,6 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.TimeZones;
-import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
@@ -88,9 +87,6 @@ public class SettingsWindow extends AbstractWindow {
 
     @Inject
     protected CheckBox timeZoneAutoField;
-
-    @Inject
-    protected UserSessionSource userSessionSource;
 
     @Override
     public void init(Map<String, Object> params) {

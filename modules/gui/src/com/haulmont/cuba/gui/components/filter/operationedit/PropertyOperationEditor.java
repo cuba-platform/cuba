@@ -17,23 +17,20 @@
 package com.haulmont.cuba.gui.components.filter.operationedit;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.filter.Op;
+import com.haulmont.cuba.core.global.filter.OpManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PopupButton;
-import com.haulmont.cuba.core.global.filter.Op;
-import com.haulmont.cuba.core.global.filter.OpManager;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 /**
  * Operation editor for PropertyCondition. Displays popupButton component for selecting an operation.
- *
  */
 public class PropertyOperationEditor extends AbstractOperationEditor {
 
     protected ComponentsFactory componentsFactory;
-    protected Messages messages;
     protected PopupButton popupButton;
 
     public PropertyOperationEditor(AbstractCondition condition) {
@@ -43,7 +40,6 @@ public class PropertyOperationEditor extends AbstractOperationEditor {
     @Override
     protected Component createComponent() {
         componentsFactory = AppBeans.get(ComponentsFactory.class);
-        messages = AppBeans.get(Messages.NAME);
         popupButton = componentsFactory.createComponent(PopupButton.class);
 
         OpManager opManager = AppBeans.get(OpManager.class);

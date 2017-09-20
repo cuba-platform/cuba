@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
-import com.haulmont.cuba.gui.theme.ThemeConstants;
 import org.apache.commons.lang.BooleanUtils;
 
 import javax.annotation.Nullable;
@@ -60,9 +59,6 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
     protected BackgroundWorker backgroundWorker;
     @Inject
     protected ProgressBar taskProgressBar;
-
-    @Inject
-    protected ThemeConstants themeConstants;
 
     protected BackgroundTaskHandler<V> taskHandler;
     protected boolean cancelAllowed = false;

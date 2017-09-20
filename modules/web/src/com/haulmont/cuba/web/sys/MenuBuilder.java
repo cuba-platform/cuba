@@ -24,7 +24,6 @@ import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.config.MenuCommand;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
-import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.vaadin.event.ShortcutListener;
@@ -53,9 +52,6 @@ public class MenuBuilder {
 
     @Inject
     protected MenuConfig menuConfig;
-
-    @Inject
-    protected WindowConfig windowConfig;
 
     @Inject
     protected MessageTools messageTools;

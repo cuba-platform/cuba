@@ -16,7 +16,9 @@
 package com.haulmont.cuba.gui.commonlookup;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -33,10 +35,6 @@ public class CommonLookupController extends AbstractLookup {
     protected MessageTools messageTools;
     @Inject
     protected ComponentsFactory componentsFactory;
-    @Inject
-    protected Metadata metadata;
-    @Inject
-    protected MetadataTools metadataTools;
     @Inject
     protected ViewRepository viewRepository;
     @Inject

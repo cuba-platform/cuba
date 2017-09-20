@@ -56,9 +56,6 @@ public class DynamicAttributesGuiTools {
     protected DynamicAttributes dynamicAttributes;
 
     @Inject
-    protected MetadataTools metadataTools;
-
-    @Inject
     protected WindowConfig windowConfig;
 
     @Inject

@@ -34,7 +34,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.*;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
@@ -48,9 +47,6 @@ public class UserBrowser extends AbstractLookup {
 
     @Inject
     protected CollectionDatasource<User, UUID> usersDs;
-
-    @Named("usersTable.remove")
-    protected RemoveAction removeAction;
 
     @Named("usersTable.copySettings")
     protected Action copySettingsAction;
@@ -69,9 +65,6 @@ public class UserBrowser extends AbstractLookup {
 
     @Inject
     protected PopupButton additionalActionsBtn;
-
-    @Inject
-    protected UserSession userSession;
 
     @Inject
     protected Security security;

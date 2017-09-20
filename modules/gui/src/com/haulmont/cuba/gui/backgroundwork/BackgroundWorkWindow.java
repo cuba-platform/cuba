@@ -25,7 +25,6 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
-import com.haulmont.cuba.gui.theme.ThemeConstants;
 import org.apache.commons.lang.BooleanUtils;
 
 import javax.annotation.Nullable;
@@ -57,9 +56,6 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
 
     @Inject
     protected BackgroundWorker backgroundWorker;
-
-    @Inject
-    protected ThemeConstants themeConstants;
 
     protected BackgroundTaskHandler<V> taskHandler;
     protected boolean cancelAllowed = false;

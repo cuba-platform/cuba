@@ -37,7 +37,6 @@ import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.actions.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
@@ -91,9 +90,6 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
     @Inject
     protected ComponentsFactory componentsFactory;
-
-    @Inject
-    protected DsContext dsContext;
 
     @Inject
     protected Configuration configuration;

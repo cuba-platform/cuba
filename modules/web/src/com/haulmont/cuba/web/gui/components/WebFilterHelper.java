@@ -21,8 +21,6 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
@@ -55,13 +53,6 @@ import java.util.*;
 
 @org.springframework.stereotype.Component(FilterHelper.NAME)
 public class WebFilterHelper implements FilterHelper {
-
-    @Inject
-    protected Metadata metadata;
-
-    @Inject
-    protected Messages messages;
-
     @Inject
     protected Configuration configuration;
 

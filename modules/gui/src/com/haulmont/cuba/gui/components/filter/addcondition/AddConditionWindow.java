@@ -29,7 +29,6 @@ import com.haulmont.cuba.gui.components.filter.descriptor.HeaderConditionDescrip
 import com.haulmont.cuba.gui.components.filter.descriptor.PropertyConditionDescriptor;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
 import java.util.Collection;
@@ -39,12 +38,8 @@ import java.util.UUID;
 
 /**
  * Window for adding new filter condition
- *
  */
 public class AddConditionWindow extends AbstractWindow {
-
-    @Inject
-    protected ComponentsFactory componentsFactory;
 
     @Inject
     protected ConditionDescriptorsDs conditionDescriptorsDs;

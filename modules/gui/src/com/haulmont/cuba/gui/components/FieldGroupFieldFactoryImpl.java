@@ -30,9 +30,7 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -51,16 +49,7 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
     protected Messages messages;
 
     @Inject
-    protected MetadataTools metadataTools;
-
-    @Inject
-    protected MessageTools messageTools;
-
-    @Inject
     protected ComponentsFactory componentsFactory;
-
-    @Inject
-    protected DynamicAttributesGuiTools dynamicAttributesGuiTools;
 
     @Override
     public GeneratedField createField(FieldGroup.FieldConfig fc) {

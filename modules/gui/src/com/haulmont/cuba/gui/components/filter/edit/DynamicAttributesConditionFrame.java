@@ -20,25 +20,22 @@ package com.haulmont.cuba.gui.components.filter.edit;
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.ReferenceToEntitySupport;
 import com.haulmont.cuba.core.global.filter.Op;
+import com.haulmont.cuba.core.global.filter.OpManager;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
-import com.haulmont.cuba.core.global.filter.OpManager;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
-import com.haulmont.cuba.gui.theme.ThemeConstants;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.RandomStringUtils;
@@ -47,13 +44,6 @@ import javax.inject.Inject;
 import java.util.*;
 
 public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttributesCondition> {
-
-    @Inject
-    protected ThemeConstants themeConstants;
-
-    @Inject
-    protected DataService dataService;
-
     @Inject
     protected Metadata metadata;
 
@@ -68,9 +58,6 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
 
     @Inject
     protected Label categoryLabel;
-
-    @Inject
-    protected MessageTools messageTools;
 
     @Inject
     protected ReferenceToEntitySupport referenceToEntitySupport;

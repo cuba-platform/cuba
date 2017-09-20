@@ -20,7 +20,6 @@ package com.haulmont.cuba.gui.components.filter.edit;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.theme.ThemeConstants;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -29,9 +28,6 @@ public class DynamicAttributesConditionEditor extends AbstractWindow {
 
     @Inject
     protected DynamicAttributesConditionFrame dynamicAttributesConditionFrame;
-
-    @Inject
-    protected ThemeConstants theme;
 
     @Override
     public void init(Map<String, Object> params) {

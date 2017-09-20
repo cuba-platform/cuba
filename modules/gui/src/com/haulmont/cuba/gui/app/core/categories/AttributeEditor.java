@@ -45,7 +45,6 @@ import com.haulmont.cuba.gui.components.filter.FakeFilterSupport;
 import com.haulmont.cuba.gui.components.filter.FilterParser;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.edit.FilterEditor;
-import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.AbstractDatasource;
@@ -118,9 +117,6 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     @Inject
     protected ComponentsFactory factory;
-
-    @Inject
-    protected WindowConfig windowConfig;
 
     @Inject
     protected Metadata metadata;

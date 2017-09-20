@@ -20,10 +20,8 @@ package com.haulmont.cuba.client.sys.cache;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCache;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCacheService;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.Logger;
@@ -48,10 +46,6 @@ public class DynamicAttributesCacheStrategy implements CachingStrategy {
 
     @Inject
     protected ClientCacheManager clientCacheManager;
-    @Inject
-    protected LoginService loginService;
-    @Inject
-    protected Configuration configuration;
     @Inject
     protected CacheUserSessionProvider cacheUserSessionProvider;
 

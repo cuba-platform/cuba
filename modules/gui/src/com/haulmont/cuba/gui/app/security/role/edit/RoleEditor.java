@@ -24,15 +24,10 @@ import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.security.entity.Role;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 public class RoleEditor extends AbstractEditor<Role> {
-
     @Inject
     protected ScreenPermissionsFrame screensTabFrame;
-
-    @Named("name")
-    protected TextField nameField;
 
     @Inject
     protected TextField locName;

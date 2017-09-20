@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.components.filter.edit;
 
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
@@ -86,15 +85,6 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
     @Inject
     protected Label nameLab;
-
-    @Inject
-    protected Metadata metadata;
-
-    @Inject
-    protected MessageTools messageTools;
-
-    @Inject
-    protected ExtendedEntities extendedEntities;
 
     protected boolean initializing;
 

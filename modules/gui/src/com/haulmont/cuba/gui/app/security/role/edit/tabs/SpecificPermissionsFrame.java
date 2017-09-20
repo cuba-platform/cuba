@@ -31,7 +31,6 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
@@ -57,9 +56,6 @@ public class SpecificPermissionsFrame extends AbstractFrame {
 
     @Inject
     protected SpecificPermissionTreeDatasource specificPermissionsTreeDs;
-
-    @Inject
-    protected UserSession userSession;
 
     @Inject
     protected Metadata metadata;
