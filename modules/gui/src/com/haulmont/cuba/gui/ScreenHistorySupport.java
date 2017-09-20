@@ -36,7 +36,6 @@ import java.util.*;
 /**
  * Class that encapsulates screen opening history functionality. It is used by WindowManager and should not be invoked
  * from application code.
- *
  */
 public class ScreenHistorySupport {
 
@@ -44,13 +43,11 @@ public class ScreenHistorySupport {
 
     protected Metadata metadata;
     protected Messages messages;
-    protected UserSessionSource uss;
     protected Configuration configuration;
 
     public ScreenHistorySupport() {
         metadata = AppBeans.get(Metadata.NAME);
         messages = AppBeans.get(Messages.NAME);
-        uss = AppBeans.get(UserSessionSource.NAME);
         configuration = AppBeans.get(Configuration.NAME);
 
         String property = configuration.getConfig(ClientConfig.class).getScreenIdsToSaveHistory();
@@ -60,7 +57,8 @@ public class ScreenHistorySupport {
 
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
-            Map<String, Object> attributes = metadata.getTools().getMetaAnnotationAttributes(metaClass.getAnnotations(), TrackEditScreenHistory.class);
+            Map<String, Object> attributes = metadata.getTools().getMetaAnnotationAttributes(metaClass.getAnnotations(),
+                    TrackEditScreenHistory.class);
             if (Boolean.TRUE.equals(attributes.get("value"))) {
                 screenIds.add(windowConfig.getEditorScreenId(metaClass));
             }
@@ -142,5 +140,4 @@ public class ScreenHistorySupport {
     protected Map<String, Object> getWindowParams(Window window) {
         return window.getContext().getParams();
     }
-
 }

@@ -31,7 +31,6 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -52,8 +51,6 @@ import static com.haulmont.cuba.gui.components.EntityLinkField.EntityLinkClickHa
 public abstract class AbstractFieldFactory implements FieldFactory {
 
     protected ComponentsFactory componentsFactory = AppConfig.getFactory();
-
-    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
     @Override
     public Component createField(Datasource datasource, String property, Element xmlDescriptor) {

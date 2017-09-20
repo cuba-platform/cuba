@@ -58,8 +58,6 @@ public class RelatedAction extends BaseAction implements Action.HasBeforeActionP
     @Inject
     protected RelatedEntitiesAPI relatedEntitiesApi;
 
-    protected MessageTools messageTools;
-
     protected BeforeActionPerformedHandler beforeActionPerformedHandler;
 
     /**
@@ -80,8 +78,6 @@ public class RelatedAction extends BaseAction implements Action.HasBeforeActionP
 
     @Inject
     protected void setMessageTools(MessageTools messageTools) {
-        this.messageTools = messageTools;
-
         if (messageTools != null) {
             setCaption(StringUtils.capitalize(messageTools.getPropertyCaption(metaClass, metaProperty.getName())));
         }
