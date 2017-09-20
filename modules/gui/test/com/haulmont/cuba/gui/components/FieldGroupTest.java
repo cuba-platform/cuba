@@ -22,7 +22,6 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
-import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
@@ -48,6 +47,7 @@ public class FieldGroupTest extends CubaClientTestCase {
 
     protected TestFieldGroupFieldFactoryImpl fieldFactory;
 
+    @SuppressWarnings("ReassignmentInjectVariable")
     @Before
     public void setUp() throws Exception {
         addEntityPackage("com.haulmont.cuba");
@@ -56,10 +56,7 @@ public class FieldGroupTest extends CubaClientTestCase {
         fieldFactory = new TestFieldGroupFieldFactoryImpl() {
             {
                 this.messages = FieldGroupTest.this.messages;
-                this.messageTools = FieldGroupTest.this.messages.getTools();
-                this.metadataTools = FieldGroupTest.this.metadata.getTools();
                 this.componentsFactory = FieldGroupTest.this.componentsFactory;
-                this.dynamicAttributesGuiTools = new DynamicAttributesGuiTools();
             }
         };
 
