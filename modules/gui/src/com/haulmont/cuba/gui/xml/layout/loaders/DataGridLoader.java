@@ -331,7 +331,7 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
 
                 if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
                     CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-                    columnCaption = categoryAttribute != null ? categoryAttribute.getName() : propertyName;
+                    columnCaption = categoryAttribute != null ? categoryAttribute.getLocaleName() : propertyName;
                 } else {
                     MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(column.getPropertyPath());
                     columnCaption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
@@ -421,7 +421,7 @@ public class DataGridLoader extends ActionsHolderLoader<DataGrid> {
 
                     final Column column =
                             component.addColumn(metaPropertyPath.getMetaProperty().getName(), metaPropertyPath);
-                    column.setCaption(attribute.getName());
+                    column.setCaption(attribute.getLocaleName());
                 }
             }
 

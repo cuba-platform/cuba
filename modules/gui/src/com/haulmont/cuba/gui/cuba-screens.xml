@@ -216,4 +216,10 @@
     <screen id="date-interval-editor"
             template="/com/haulmont/cuba/gui/components/filter/dateinterval/date-interval-editor.xml"/>
 
+    <screen id="localizedNameFrame"
+            template="/com/haulmont/cuba/gui/app/core/categories/localized-name-frame.xml"/>
+
+    <screen id="localizedEnumerationWindow"
+            template="/com/haulmont/cuba/gui/app/core/categories/localized-enumeration-window.xml"/>
+
 </screen-config>

@@ -225,12 +225,12 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                     FieldGroup.FieldConfig field = resultComponent.createField(
                             DynamicAttributesUtils.encodeAttributeCode(attribute.getCode()));
                     field.setProperty(DynamicAttributesUtils.encodeAttributeCode(attribute.getCode()));
-                    field.setCaption(attribute.getName());
+                    field.setCaption(attribute.getLocaleName());
                     field.setDatasource(ds);
                     field.setRequired(attribute.getRequired());
                     field.setRequiredMessage(messages.formatMainMessage(
                             "validation.required.defaultMsg",
-                            attribute.getName()));
+                            attribute.getLocaleName()));
                     loadWidth(field, attribute.getWidth());
 
                     // Currently, ListEditor does not support datasource binding so we create custom field
@@ -425,7 +425,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         String propertyName = metaPropertyPath != null ? metaPropertyPath.getMetaProperty().getName() : null;
         if (metaPropertyPath != null && DynamicAttributesUtils.isDynamicAttribute(metaPropertyPath.getMetaProperty())) {
             CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaPropertyPath.getMetaProperty());
-            field.setCaption(categoryAttribute != null ? categoryAttribute.getName() : propertyName);
+            field.setCaption(categoryAttribute != null ? categoryAttribute.getLocaleName() : propertyName);
         } else {
             loadCaption(field, element);
 

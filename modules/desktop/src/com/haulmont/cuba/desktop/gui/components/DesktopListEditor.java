@@ -27,6 +27,7 @@ import org.apache.commons.lang.ObjectUtils;
 import javax.swing.*;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class DesktopListEditor extends DesktopAbstractField<JPanel> implements ListEditor {
 
@@ -200,5 +201,31 @@ public class DesktopListEditor extends DesktopAbstractField<JPanel> implements L
     @Override
     protected void setEditableToComponent(boolean editable) {
         delegate.setEditable(editable);
+    }
+
+    @Override
+    public void setEditorWindowId(String windowId) {
+    }
+
+    @Override
+    public String getEditorWindowId() {
+        return null;
+    }
+
+    @Override
+    public void addEditorCloseListener(EditorCloseListener listener) {
+    }
+
+    @Override
+    public void removeEditorCloseListener(EditorCloseListener listener) {
+    }
+
+    @Override
+    public void setEditorParamsSupplier(Supplier<Map<String, Object>> paramsSupplier) {
+    }
+
+    @Override
+    public Supplier<Map<String, Object>> getEditorParamsSupplier() {
+        return null;
     }
 }

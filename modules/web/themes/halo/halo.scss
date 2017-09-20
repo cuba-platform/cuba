@@ -99,6 +99,7 @@
 @import "app/diff-viewer";
 @import "app/report-parameters";
 @import "app/report-templates";
+@import "app/localized-frame";
 
 @mixin halo {
   @include valo;
@@ -185,4 +186,5 @@
   @include cuba-diff-viewer;
   @include cuba-report-parameters;
   @include cuba-report-templates;
+  @include cuba-localized-frame;
 }

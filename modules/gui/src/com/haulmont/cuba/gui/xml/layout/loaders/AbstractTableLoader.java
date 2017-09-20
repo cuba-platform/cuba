@@ -21,7 +21,9 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.entity.LocaleHelper;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -194,8 +196,17 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                     }
 
                     final Table.Column column = new Table.Column(metaPropertyPath);
-                    column.setCaption(attribute.getName());
-                    column.setMaxTextLength(clientConfig.getDynamicAttributesTableColumnMaxTextLength());
+                    column.setCaption(attribute.getLocaleName());
+
+                    if (attribute.getDataType().equals(PropertyType.STRING)) {
+                        column.setMaxTextLength(clientConfig.getDynamicAttributesTableColumnMaxTextLength());
+                    }
+
+                    if (attribute.getDataType().equals(PropertyType.ENUMERATION)) {
+                        column.setFormatter(value ->
+                                LocaleHelper.getEnumLocalizedValue((String) value, attribute.getEnumerationLocales())
+                        );
+                    }
                     component.addColumn(column);
                 }
             }

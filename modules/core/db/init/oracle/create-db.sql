@@ -54,6 +54,7 @@ create table SYS_CATEGORY (
     ENTITY_TYPE varchar2(100) not null,
     IS_DEFAULT char(1),
     DISCRIMINATOR integer,
+    LOCALE_NAMES varchar2(1000),
     primary key(ID)
 )^
 
@@ -96,6 +97,8 @@ create table SYS_CATEGORY_ATTR (
     JOIN_CLAUSE varchar2(4000),
     WHERE_CLAUSE varchar2(4000),
     FILTER_XML clob,
+    LOCALE_NAMES varchar2(1000),
+    ENUMERATION_LOCALES clob,
 
     primary key(ID)
 )^

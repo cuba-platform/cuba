@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.entity;
 
 import com.google.common.base.Preconditions;
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
@@ -36,7 +37,7 @@ import java.util.*;
 
 @Entity(name = "sys$CategoryAttribute")
 @Table(name = "SYS_CATEGORY_ATTR")
-@NamePattern("%s|name")
+@NamePattern("%s|localeName")
 @SystemLevel
 @Listeners("report_CategoryAttributeListener")
 public class CategoryAttribute extends StandardEntity {
@@ -128,6 +129,20 @@ public class CategoryAttribute extends StandardEntity {
 
     @Column(name = "FILTER_XML")
     protected String filterXml;
+
+    @Column(name = "LOCALE_NAMES")
+    protected String localeNames;
+
+    @Column(name = "ENUMERATION_LOCALES")
+    protected String enumerationLocales;
+
+    @Transient
+    @MetaProperty(related = {"localeNames", "name"})
+    protected String localeName;
+
+    @Transient
+    @MetaProperty(related = "enumerationLocales")
+    protected String enumerationLocale;
 
     @PostConstruct
     public void init() {
@@ -367,7 +382,6 @@ public class CategoryAttribute extends StandardEntity {
 
     public List<String> getEnumerationOptions() {
         Preconditions.checkState(getDataType() == PropertyType.ENUMERATION, "Only enumeration attributes have options");
-        String enumeration = getEnumeration();
         String[] values = StringUtils.split(enumeration, ',');
         return values != null ? Arrays.asList(values) : Collections.<String>emptyList();
     }
@@ -387,5 +401,47 @@ public class CategoryAttribute extends StandardEntity {
         } else {
             return null;
         }
+    }
+
+    public String getLocaleNames() {
+        return localeNames;
+    }
+
+    public void setLocaleNames(String localeNames) {
+        this.localeNames = localeNames;
+    }
+
+    public String getLocaleName() {
+        localeName = LocaleHelper.getLocalizedName(localeNames);
+        if (localeName == null) {
+            localeName = name;
+        }
+        return localeName;
+    }
+
+    public void setEnumerationLocales(String enumerationLocales) {
+        this.enumerationLocales = enumerationLocales;
+    }
+
+    public String getEnumerationLocales() {
+        return enumerationLocales;
+    }
+
+    public String getEnumerationLocale() {
+        enumerationLocale = LocaleHelper.getLocalizedEnumeration(enumerationLocales);
+        if (enumerationLocale == null) {
+            enumerationLocale = enumeration;
+        }
+        return enumerationLocale;
+    }
+
+    public Map<String, Object> getLocalizedEnumerationMap() {
+        String enumeration = getEnumeration();
+        String[] values = StringUtils.split(enumeration, ',');
+        Map<String, Object> map = new HashMap<>();
+        for (String s : values) {
+            map.put(LocaleHelper.getEnumLocalizedValue(s, enumerationLocales), s);
+        }
+        return map;
     }
 }

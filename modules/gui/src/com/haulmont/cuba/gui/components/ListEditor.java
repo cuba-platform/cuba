@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * The component is used for displaying and editing a collection of values.
@@ -76,6 +77,38 @@ public interface ListEditor extends Field, Component.Focusable {
 
     boolean isClearButtonVisible();
 
+    /**
+     * Sets the window id of editor screen
+     *
+     * @param windowId alias of screen in the app-screens.xml
+     */
+    void setEditorWindowId(String windowId);
+
+    /**
+     * @return window id of editor screen
+     */
+    String getEditorWindowId();
+
+    /**
+     * Adds {@link com.haulmont.cuba.gui.components.ListEditor.EditorCloseListener} that invoked after editor window
+     * closing.
+     *
+     * @param listener listener instance
+     */
+    void addEditorCloseListener(EditorCloseListener listener);
+
+    /**
+     * @param listener listener to be removed
+     */
+    void removeEditorCloseListener(EditorCloseListener listener);
+
+    /**
+     * @param paramsSupplier additional params map for editor screen.
+     */
+    void setEditorParamsSupplier(Supplier<Map<String, Object>> paramsSupplier);
+
+    Supplier<Map<String, Object>> getEditorParamsSupplier();
+
     enum ItemType {
         STRING,
         DATE,
@@ -96,4 +129,36 @@ public interface ListEditor extends Field, Component.Focusable {
     void setItemType(ItemType itemType);
 
     ItemType getItemType();
+
+    /**
+     * Listener that will be notified when editor window is closed.
+     */
+    interface EditorCloseListener {
+
+        /**
+         * Called when a editor screen is closed.
+         *
+         * @param closeEvent event instance
+         */
+        void editorClosed(EditorCloseEvent closeEvent);
+    }
+
+    class EditorCloseEvent {
+
+        protected String actionId;
+        protected Window window;
+
+        public EditorCloseEvent(String actionId, Window window) {
+            this.actionId = actionId;
+            this.window = window;
+        }
+
+        public String getActionId() {
+            return actionId;
+        }
+
+        public Window getWindow() {
+            return window;
+        }
+    }
 }

@@ -28,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor> implements ListEditor {
 
@@ -211,5 +212,35 @@ public class WebListEditor extends WebAbstractField<WebListEditor.CubaListEditor
     @Override
     public boolean isEditable() {
         return delegate.isEditable();
+    }
+
+    @Override
+    public void setEditorWindowId(String windowId) {
+        delegate.setEditorWindowId(windowId);
+    }
+
+    @Override
+    public String getEditorWindowId() {
+        return delegate.getEditorWindowId();
+    }
+
+    @Override
+    public void addEditorCloseListener(EditorCloseListener listener) {
+        delegate.addEditorCloseListener(listener);
+    }
+
+    @Override
+    public void removeEditorCloseListener(EditorCloseListener listener) {
+        delegate.removeEditorCloseListener(listener);
+    }
+
+    @Override
+    public void setEditorParamsSupplier(Supplier<Map<String, Object>> paramsSupplier) {
+        delegate.setEditorParamsSupplier(paramsSupplier);
+    }
+
+    @Override
+    public Supplier<Map<String, Object>> getEditorParamsSupplier() {
+        return delegate.getEditorParamsSupplier();
     }
 }

@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.Composition;
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
@@ -30,7 +31,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "DISCRIMINATOR", discriminatorType = DiscriminatorType.INTEGER)
 @DiscriminatorValue("0")
-@NamePattern("%s|name")
+@NamePattern("%s|localeName")
 @SystemLevel
 public class Category extends StandardEntity {
 
@@ -50,6 +51,13 @@ public class Category extends StandardEntity {
     @OrderBy("orderNo")
     @Composition
     protected List<CategoryAttribute> categoryAttrs;
+
+    @Column(name = "LOCALE_NAMES")
+    protected String localeNames;
+
+    @Transient
+    @MetaProperty(related = "localeNames")
+    protected String localeName;
 
     @Column(name = "SPECIAL")
     protected String special;
@@ -92,5 +100,21 @@ public class Category extends StandardEntity {
 
     public void setSpecial(String special) {
         this.special = special;
+    }
+
+    public String getLocaleNames() {
+        return localeNames;
+    }
+
+    public void setLocaleNames(String localeNames) {
+        this.localeNames = localeNames;
+    }
+
+    public String getLocaleName() {
+        localeName = LocaleHelper.getLocalizedName(localeNames);
+        if (localeName == null) {
+            localeName = name;
+        }
+        return localeName;
     }
 }

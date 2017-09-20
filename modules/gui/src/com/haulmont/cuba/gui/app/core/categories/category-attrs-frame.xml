@@ -29,7 +29,7 @@
                 <button id="moveDown" icon="icons/down.png"/>
             </buttonsPanel>
             <columns>
-                <column id="name"/>
+                <column id="localeName" caption="msg://com.haulmont.cuba.core.entity/CategoryAttribute.name"/>
                 <column id="code"/>
                 <column id="dataType"/>
                 <column id="required"/>

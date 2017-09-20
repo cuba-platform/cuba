@@ -37,10 +37,7 @@ import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,7 +45,7 @@ import java.util.stream.Stream;
 /**
  * A dialog that is used for editing values of the {@link ListEditor} component.
  */
-public class ListEditorPopupWindow extends AbstractWindow {
+public class ListEditorPopupWindow extends AbstractWindow implements ListEditorWindowController {
 
     @Inject
     protected HBoxLayout addItemLayout;
@@ -330,6 +327,13 @@ public class ListEditorPopupWindow extends AbstractWindow {
         itemLayout.setSpacing(true);
 
         Label itemLab = componentsFactory.createComponent(Label.class);
+        if (optionsMap != null) {
+            str = optionsMap.entrySet()
+                    .stream()
+                    .filter(entry -> Objects.equals(entry.getValue(), value))
+                    .findFirst()
+                    .get().getKey();
+        }
         itemLab.setValue(str);
         itemLayout.add(itemLab);
         itemLab.setAlignment(Alignment.MIDDLE_LEFT);

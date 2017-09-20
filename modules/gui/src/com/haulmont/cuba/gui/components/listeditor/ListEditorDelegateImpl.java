@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components.listeditor;
 
 import com.google.common.base.Joiner;
+import com.haulmont.bali.events.EventRouter;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
@@ -29,9 +30,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Component(ListEditorDelegate.NAME)
@@ -52,6 +52,9 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
     protected List value;
     protected List prevValue;
 
+    protected Supplier<Map<String, Object>> editorParamsSupplier;
+    protected String editorWindowId = "list-editor-popup";
+
     protected ListEditor.ItemType itemType;
     protected String entityName;
     protected String lookupScreen;
@@ -69,6 +72,8 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
     protected boolean displayDescription = true;
 
     protected boolean editable = true;
+
+    private EventRouter eventRouter;
 
     @PostConstruct
     public void init() {
@@ -101,12 +106,27 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
                 params.put("entityWhereClause", entityWhereClause);
                 params.put("values", getValue());
                 params.put("editable", editable);
-                ListEditorPopupWindow listEditorPopup = (ListEditorPopupWindow) windowManager
-                        .openWindow(windowConfig.getWindowInfo("list-editor-popup"), WindowManager.OpenType.DIALOG, params);
+
+                if (editorParamsSupplier != null) {
+                    Map<String, Object> additionalParams = getEditorParamsSupplier().get();
+                    if (additionalParams != null) {
+                        params.putAll(additionalParams);
+                    }
+                }
+
+                ListEditorWindowController listEditorPopup = (ListEditorWindowController) windowManager
+                        .openWindow(windowConfig.getWindowInfo(editorWindowId), WindowManager.OpenType.DIALOG, params);
                 listEditorPopup.addCloseListener(actionId -> {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         actualField.setValue(listEditorPopup.getValue());
                     }
+
+                    ListEditor.EditorCloseEvent editorCloseEvent =
+                            new ListEditor.EditorCloseEvent(actionId, listEditorPopup);
+                    getEventRouter().fireEvent(
+                            ListEditor.EditorCloseListener.class,
+                            ListEditor.EditorCloseListener::editorClosed,
+                            editorCloseEvent);
                 });
             }
         });
@@ -114,6 +134,13 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
         layout.add(displayValuesField);
         layout.add(openEditorBtn);
         layout.expand(displayValuesField);
+    }
+
+    protected EventRouter getEventRouter() {
+        if (eventRouter == null) {
+            eventRouter = new EventRouter();
+        }
+        return eventRouter;
     }
 
     @Override
@@ -136,9 +163,19 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
         this.value = newValue;
         String strValue = null;
         if (newValue != null) {
-            List<String> captions = ((List<Object>) newValue).stream()
-                    .map(o -> ListEditorHelper.getValueCaption(o, itemType))
-                    .collect(Collectors.toList());
+            List<String> captions;
+            if (optionsMap != null) {
+                captions = new ArrayList<>();
+                for (Map.Entry<String, Object> entry : optionsMap.entrySet()) {
+                    if (newValue.indexOf(entry.getValue()) != -1) {
+                        captions.add(entry.getKey());
+                    }
+                }
+            } else {
+                captions = ((List<Object>) newValue).stream()
+                        .map(o -> ListEditorHelper.getValueCaption(o, itemType))
+                        .collect(Collectors.toList());
+            }
             strValue = Joiner.on(", ").join(captions);
         }
         displayValuesField.setValue(strValue);
@@ -291,5 +328,35 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
                         ));
 
         layout.add(clearBtn);
+    }
+
+    @Override
+    public void setEditorWindowId(String windowId) {
+        editorWindowId = windowId;
+    }
+
+    @Override
+    public String getEditorWindowId() {
+        return editorWindowId;
+    }
+
+    @Override
+    public void addEditorCloseListener(ListEditor.EditorCloseListener listener) {
+        getEventRouter().addListener(ListEditor.EditorCloseListener.class, listener);
+    }
+
+    @Override
+    public void removeEditorCloseListener(ListEditor.EditorCloseListener listener) {
+        getEventRouter().removeListener(ListEditor.EditorCloseListener.class, listener);
+    }
+
+    @Override
+    public void setEditorParamsSupplier(Supplier<Map<String, Object>> paramsSupplier) {
+        editorParamsSupplier = paramsSupplier;
+    }
+
+    @Override
+    public Supplier<Map<String, Object>> getEditorParamsSupplier() {
+        return editorParamsSupplier;
     }
 }

@@ -49,7 +49,7 @@
                 <button action="categoryTable.applyChanges" icon="icons/ok.png" caption="msg://categoryTable.applyChanges"/>
             </buttonsPanel>
             <columns>
-                <column id="name"/>
+                <column id="localeName" caption="msg://com.haulmont.cuba.core.entity/Category"/>
                 <column id="entityType"/>
             </columns>
             <rows datasource="categoriesDs"/>

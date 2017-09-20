@@ -32,7 +32,7 @@
 
     <layout expand="categoryAttrsFrame" spacing="true">
         <hbox id="categoryProperties" spacing="true">
-            <label value="msg://name" align="MIDDLE_LEFT"/>
+            <label value="msg://com.haulmont.cuba.core.entity/Category.name" align="MIDDLE_LEFT"/>
             <textField width="${fieldWidth}" id="name" datasource="categoryDs" property="name" required="true"
                        requiredMessage="msg://nameRequired"/>
             <label value="msg://entityType" align="MIDDLE_LEFT"/>
@@ -40,6 +40,9 @@
                          requiredMessage="msg://entityTypeRequired"/>
             <checkBox id="isDefault" caption="msg://isDefault" align="MIDDLE_LEFT"/>
         </hbox>
+        <groupBox width="450px" collapsable="true" collapsed="true" caption="msg://localeGroupBox.caption">
+            <frame id="localizedFrame" screen="localizedNameFrame" height="AUTO" width="100%"/>
+        </groupBox>
         <label value="msg://attributes" stylename="h2"/>
 
         <frame id="categoryAttrsFrame" src="/com/haulmont/cuba/gui/app/core/categories/category-attrs-frame.xml"/>

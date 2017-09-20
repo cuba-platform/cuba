@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.components.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * The implementation of this class contains a logic for creation the {@link ListEditor} component, that is used by
@@ -72,4 +73,13 @@ public interface ListEditorDelegate {
 
     void setClearButtonVisible(boolean visible);
     boolean isClearButtonVisible();
+
+    void setEditorWindowId(String windowId);
+    String getEditorWindowId();
+
+    void addEditorCloseListener(ListEditor.EditorCloseListener listener);
+    void removeEditorCloseListener(ListEditor.EditorCloseListener listener);
+
+    void setEditorParamsSupplier(Supplier<Map<String, Object>> paramsSupplier);
+    Supplier<Map<String, Object>> getEditorParamsSupplier();
 }

@@ -310,7 +310,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                                     public Component generateField(Datasource datasource, String propertyId) {
                                         LookupField field = componentsFactory.createComponent(LookupField.class);
                                         field.setFrame(RuntimePropertiesFrame.this);
-                                        field.setOptionsList(attribute.getEnumerationOptions());
+                                        field.setOptionsMap(attribute.getLocalizedEnumerationMap());
                                         field.setDatasource(rds, propertyId);
                                         field.setWidth(fieldWidth);
                                         return field;

@@ -38,6 +38,8 @@ public class CategoryEditor extends AbstractEditor<Category> {
     protected Metadata metadata;
     @Inject
     protected MessageTools messageTools;
+    @Inject
+    protected LocalizedNameFrame localizedFrame;
 
     @Inject
     protected LookupField entityType;
@@ -51,6 +53,7 @@ public class CategoryEditor extends AbstractEditor<Category> {
         category = getItem();
         initEntityTypeField();
         initIsDefaultCheckbox();
+        localizedFrame.setValue(category.getLocaleNames());
     }
 
     protected void initEntityTypeField() {
@@ -100,5 +103,11 @@ public class CategoryEditor extends AbstractEditor<Category> {
                 category.setIsDefault(false);
             }
         });
+    }
+
+    @Override
+    protected boolean preCommit() {
+        category.setLocaleNames(localizedFrame.getValue());
+        return super.preCommit();
     }
 }
