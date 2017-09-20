@@ -40,7 +40,6 @@ import org.apache.commons.lang.BooleanUtils;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class UserBrowser extends AbstractLookup {
 
@@ -136,32 +135,7 @@ public class UserBrowser extends AbstractLookup {
             }
         });
 
-        RemoveAction removeAction = new RemoveAction(usersTable);
-        removeAction.addEnabledRule(() -> {
-            Set selected = usersTable.getSelected();
-            if (!selected.isEmpty()) {
-                return !(selected.contains(userSession.getUser())
-                        || userSession.getCurrentOrSubstitutedUser().equals(usersTable.getSingleSelected()));
-            }
-            return false;
-        });
-        removeAction.addEnabledRule(() -> {
-            Set<User> selected = usersTable.getSelected();
-            if (selected.isEmpty())
-                return false;
-
-            List<String> logins = selected.stream()
-                    .map(User::getLogin)
-                    .collect(Collectors.toList());
-
-            return userManagementService.isUsersRemovingAllowed(logins);
-        });
-        removeAction.setAfterRemoveHandler(removedItems -> {
-            UserBrowser.Companion companion = getCompanion();
-            if (companion != null) {
-                companion.refreshUserSubstitutions();
-            }
-        });
+        RemoveAction removeAction = new UserRemoveAction(usersTable, userManagementService, getCompanion());
         usersTable.addAction(removeAction);
 
         additionalActionsBtn.addAction(copySettingsAction);

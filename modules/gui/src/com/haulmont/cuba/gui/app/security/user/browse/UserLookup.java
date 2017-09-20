@@ -20,8 +20,11 @@ package com.haulmont.cuba.gui.app.security.user.browse;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.security.app.UserManagementService;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.Map;
 
 public class UserLookup extends AbstractLookup {
@@ -29,10 +32,19 @@ public class UserLookup extends AbstractLookup {
     @Inject
     protected Table usersTable;
 
+    @Named("usersTable.remove")
+    protected RemoveAction removeAction;
+
+    @Inject
+    protected UserManagementService userManagementService;
+
     @Override
     public void init(Map<String, Object> params) {
         if (WindowParams.MULTI_SELECT.getBool(getContext())) {
             usersTable.setMultiSelect(true);
         }
+
+        RemoveAction removeAction = new UserRemoveAction(usersTable, userManagementService, getCompanion());
+        usersTable.addAction(removeAction);
     }
 }

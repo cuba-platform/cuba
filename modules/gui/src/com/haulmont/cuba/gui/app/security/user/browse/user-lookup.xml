@@ -54,6 +54,16 @@
         </filter>
         <table id="usersTable" editable="false" width="100%">
             <rowsCount/>
+            <actions>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="remove"/>
+            </actions>
+            <buttonsPanel alwaysVisible="true">
+                <button id="userTableCreateBtn" action="usersTable.create"/>
+                <button id="userTableEditBtn" action="usersTable.edit"/>
+                <button id="userTableRemoveBtn" action="usersTable.remove"/>
+            </buttonsPanel>
             <columns>
                 <column id="login"/>
                 <column id="name"/>

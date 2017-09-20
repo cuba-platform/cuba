@@ -43,7 +43,7 @@
                 <action id="excel"/>
                 <action id="refresh"/>
             </actions>
-            <buttonsPanel>
+            <buttonsPanel alwaysVisible="true">
                 <button action="rolesTable.create"/>
                 <button action="rolesTable.edit"/>
                 <button action="rolesTable.remove"/>
