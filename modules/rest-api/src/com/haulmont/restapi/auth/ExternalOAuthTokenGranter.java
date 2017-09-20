@@ -18,6 +18,7 @@ package com.haulmont.restapi.auth;
 
 import com.google.common.base.Preconditions;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -34,6 +35,7 @@ import org.springframework.security.oauth2.provider.token.AuthorizationServerTok
 import javax.inject.Inject;
 import java.util.*;
 
+import static com.haulmont.cuba.core.sys.AppContext.withSecurityContext;
 import static com.haulmont.restapi.auth.CubaUserAuthenticationProvider.SESSION_ID_DETAILS_ATTRIBUTE;
 
 public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements OAuthTokenIssuer {
@@ -82,10 +84,13 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
 
         parameters.put(SESSION_ID_DETAILS_ATTRIBUTE, session.getId().toString());
 
-        ClientDetails authenticatedClient = clientDetailsService.loadClientByClientId(config.getRestClientId());
-        TokenRequest tokenRequest = getRequestFactory().createTokenRequest(parameters, authenticatedClient);
+        // issue token using obtained Session, it is required for DB operations inside of persistent token store
+        OAuth2AccessToken accessToken = withSecurityContext(new SecurityContext(session), () -> {
+            ClientDetails authenticatedClient = clientDetailsService.loadClientByClientId(config.getRestClientId());
+            TokenRequest tokenRequest = getRequestFactory().createTokenRequest(parameters, authenticatedClient);
 
-        OAuth2AccessToken accessToken = grant(GRANT_TYPE, tokenRequest);
+            return grant(GRANT_TYPE, tokenRequest);
+        });
 
         return new OAuth2AccessTokenResult(session, accessToken);
     }
