@@ -22,10 +22,6 @@
         messagesPack="com.haulmont.cuba.gui.app.security.user.browse"
         focusComponent="usersTable">
 
-    <companions>
-        <web class="com.haulmont.cuba.web.app.ui.security.user.UserBrowserCompanion"/>
-    </companions>
-
     <dsContext>
         <groupDatasource
                 id="usersDs"

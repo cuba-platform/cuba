@@ -45,6 +45,8 @@
 
     <bean id="cuba_TimeSource" class="com.haulmont.cuba.desktop.sys.DesktopTimeSource"/>
 
+    <bean id="cuba_Events" class="com.haulmont.cuba.desktop.sys.DesktopEvents"/>
+
     <!-- Remote stubs -->
 
     <bean id="cuba_ServerSorter" class="com.haulmont.cuba.core.sys.remoting.discovery.RandomServerSorter"/>

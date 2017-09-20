@@ -21,6 +21,7 @@ import com.haulmont.cuba.client.ClientConfiguration;
 import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Action;
@@ -29,6 +30,7 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.events.sys.UiEventListenerMethodAdapter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -36,17 +38,24 @@ import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.EventListener;
+import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class ControllerDependencyInjector {
 
-    private Frame frame;
-    private Map<String,Object> params;
+    protected static final transient Map<Class, List<Method>> eventListenerMethodsCache = new ConcurrentHashMap<>();
+
+    protected Frame frame;
+    protected Map<String,Object> params;
 
     public ControllerDependencyInjector(Frame frame, Map<String,Object> params) {
         this.frame = frame;
@@ -56,6 +65,7 @@ public class ControllerDependencyInjector {
     public void inject() {
         Map<AnnotatedElement, Class> toInject = new HashMap<>();
 
+        @SuppressWarnings("unchecked")
         List<Class> classes = ClassUtils.getAllSuperclasses(frame.getClass());
         classes.add(0, frame.getClass());
         Collections.reverse(classes);
@@ -76,9 +86,40 @@ public class ControllerDependencyInjector {
         for (Map.Entry<AnnotatedElement, Class> entry : toInject.entrySet()) {
             doInjection(entry.getKey(), entry.getValue());
         }
+
+        injectEventListeners(frame);
     }
 
-    private List<Field> getAllFields(List<Class> classes) {
+    protected void injectEventListeners(Frame frame) {
+        Class<? extends Frame> clazz = frame.getClass();
+
+        List<Method> eventListenerMethods = eventListenerMethodsCache.get(clazz);
+        if (eventListenerMethods == null) {
+            Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(clazz);
+
+            eventListenerMethods = Arrays.stream(methods)
+                    .filter(m -> m.getAnnotation(EventListener.class) != null)
+                    .collect(Collectors.toList());
+
+            if (eventListenerMethods.isEmpty()) {
+                eventListenerMethods = Collections.emptyList();
+            }
+
+            eventListenerMethodsCache.put(clazz, eventListenerMethods);
+        }
+
+        if (!eventListenerMethods.isEmpty()) {
+            Events events = AppBeans.get(Events.NAME);
+
+            List<ApplicationListener> listeners = eventListenerMethods.stream()
+                    .map(m -> new UiEventListenerMethodAdapter(frame, clazz, m, events))
+                    .collect(Collectors.toList());
+
+            ((AbstractFrame) frame).setUiEventListeners(listeners);
+        }
+    }
+
+    protected List<Field> getAllFields(List<Class> classes) {
         List<Field> list = new ArrayList<>();
 
         for (Class c : classes) {
@@ -89,7 +130,7 @@ public class ControllerDependencyInjector {
         return list;
     }
 
-    private Class injectionAnnotation(AnnotatedElement element) {
+    protected Class injectionAnnotation(AnnotatedElement element) {
         if (element.isAnnotationPresent(Named.class))
             return Named.class;
         else if (element.isAnnotationPresent(Resource.class))
@@ -102,7 +143,7 @@ public class ControllerDependencyInjector {
             return null;
     }
 
-    private void doInjection(AnnotatedElement element, Class annotationClass) {
+    protected void doInjection(AnnotatedElement element, Class annotationClass) {
         Class<?> type;
         String name = null;
         if (annotationClass == Named.class)
@@ -159,7 +200,7 @@ public class ControllerDependencyInjector {
         }
     }
 
-    private Object getInjectedInstance(Class<?> type, String name, Class annotationClass, AnnotatedElement element) {
+    protected Object getInjectedInstance(Class<?> type, String name, Class annotationClass, AnnotatedElement element) {
         if (annotationClass == WindowParam.class) {
             //Injecting a parameter
             return params.get(name);
@@ -198,8 +239,8 @@ public class ControllerDependencyInjector {
             return themeManager.getConstants();
 
         } else if (Config.class.isAssignableFrom(type)) {
-            //noinspection unchecked
             ClientConfiguration configuration = AppBeans.get(Configuration.NAME);
+            //noinspection unchecked
             return configuration.getConfigCached((Class<? extends Config>) type);
 
         } else if (Logger.class == type && element instanceof Field) {
@@ -225,10 +266,10 @@ public class ControllerDependencyInjector {
                 }
             }
         }
-        return  null;
+        return null;
     }
 
-    private void assignValue(AnnotatedElement element, Object value) {
+    protected void assignValue(AnnotatedElement element, Object value) {
         if (element instanceof Field) {
             ((Field) element).setAccessible(true);
             try {
@@ -243,7 +284,8 @@ public class ControllerDependencyInjector {
             try {
                 ((Method) element).invoke(frame, params);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException("CDI - Unable to assign value through setter " + ((Field) element).getName(),e);
+                throw new RuntimeException("CDI - Unable to assign value through setter "
+                        + ((Method) element).getName(), e);
             }
         }
     }

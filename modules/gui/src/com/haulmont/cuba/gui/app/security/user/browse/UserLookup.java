@@ -40,7 +40,7 @@ public class UserLookup extends AbstractLookup {
             usersTable.setMultiSelect(true);
         }
 
-        RemoveAction removeAction = new UserRemoveAction(usersTable, userManagementService, getCompanion());
+        RemoveAction removeAction = new UserRemoveAction(usersTable, userManagementService);
         usersTable.addAction(removeAction);
     }
 }

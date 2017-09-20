@@ -27,10 +27,13 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebWindowManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
@@ -70,6 +73,39 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
                 }
             }
         });
+
+        setupEventListeners();
+    }
+
+    protected void setupEventListeners() {
+        component.addAttachListener(event -> enableEventListeners());
+        component.addDetachListener(event -> disableEventListeners());
+    }
+
+    protected void disableEventListeners() {
+        Frame wrapper = getWrapper();
+        if (wrapper != null) {
+            List<ApplicationListener> uiEventListeners = ((AbstractFrame) wrapper).getUiEventListeners();
+            if (uiEventListeners != null) {
+                for (ApplicationListener listener : uiEventListeners) {
+                    UiEventsMulticaster multicaster = AppUI.getCurrent().getUiEventsMulticaster();
+                    multicaster.removeApplicationListener(listener);
+                }
+            }
+        }
+    }
+
+    protected void enableEventListeners() {
+        Frame wrapper = getWrapper();
+        if (wrapper != null) {
+            List<ApplicationListener> uiEventListeners = ((AbstractFrame) wrapper).getUiEventListeners();
+            if (uiEventListeners != null) {
+                for (ApplicationListener listener : uiEventListeners) {
+                    UiEventsMulticaster multicaster = AppUI.getCurrent().getUiEventsMulticaster();
+                    multicaster.addApplicationListener(listener);
+                }
+            }
+        }
     }
 
     @Override

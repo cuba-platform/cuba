@@ -35,6 +35,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.AppUI;
@@ -59,6 +60,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -134,6 +136,39 @@ public class WebWindow implements Window, Component.Wrapper,
                     }
                 }
             });
+        }
+
+        setupEventListeners();
+    }
+
+    protected void setupEventListeners() {
+        component.addAttachListener(event -> enableEventListeners());
+        component.addDetachListener(event -> disableEventListeners());
+    }
+
+    protected void disableEventListeners() {
+        Frame wrapper = delegate.getWrapper();
+        if (wrapper != null) {
+            List<ApplicationListener> uiEventListeners = ((AbstractFrame) wrapper).getUiEventListeners();
+            if (uiEventListeners != null) {
+                for (ApplicationListener listener : uiEventListeners) {
+                    UiEventsMulticaster multicaster = AppUI.getCurrent().getUiEventsMulticaster();
+                    multicaster.removeApplicationListener(listener);
+                }
+            }
+        }
+    }
+
+    protected void enableEventListeners() {
+        Frame wrapper = delegate.getWrapper();
+        if (wrapper != null) {
+            List<ApplicationListener> uiEventListeners = ((AbstractFrame) wrapper).getUiEventListeners();
+            if (uiEventListeners != null) {
+                for (ApplicationListener listener : uiEventListeners) {
+                    UiEventsMulticaster multicaster = AppUI.getCurrent().getUiEventsMulticaster();
+                    multicaster.addApplicationListener(listener);
+                }
+            }
         }
     }
 

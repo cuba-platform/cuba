@@ -35,6 +35,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.AbstractDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.events.UserSubstitutionsChangedEvent;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.*;
@@ -105,12 +106,14 @@ public class UserEditor extends AbstractEditor<User> {
     @Inject
     protected TimeZones timeZones;
 
+    @Inject
+    protected Events events;
+
     @WindowParam(name = "initCopy")
     protected Boolean initCopy;
 
     public interface Companion {
         void initPasswordField(PasswordField passwordField);
-        void refreshUserSubstitutions();
     }
 
     @Override
@@ -172,11 +175,11 @@ public class UserEditor extends AbstractEditor<User> {
                 }
             }
 
-            Companion companion = getCompanion();
-            if (companion != null && userSession.getUser().equals(getItem())) {
+            if (userSession.getUser().equals(getItem())) {
                 for (Entity entity : result) {
                     if (entity instanceof UserSubstitution) {
-                        companion.refreshUserSubstitutions();
+                        events.publish(new UserSubstitutionsChangedEvent(userSession.getUser()));
+
                         break;
                     }
                 }

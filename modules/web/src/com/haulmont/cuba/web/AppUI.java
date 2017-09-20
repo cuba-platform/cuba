@@ -21,6 +21,7 @@ import com.haulmont.cuba.client.ClientUserSession;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Window.TopLevelWindow;
+import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource;
 import com.haulmont.cuba.security.app.UserSessionService;
@@ -92,6 +93,9 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
 
     @Inject
     protected UserSessionService userSessionService;
+
+    @Inject
+    protected UiEventsMulticaster uiEventsMulticaster;
 
     protected TestIdManager testIdManager = new TestIdManager();
 
@@ -237,7 +241,7 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
 
         Button retryButton = new Button(messages.getMainMessage("app.initRetry"));
         retryButton.setStyleName("c-init-error-retry");
-        retryButton.addClickListener((Button.ClickListener) event -> {
+        retryButton.addClickListener(event -> {
             // always restart UI
             String url = ControllerUtils.getLocationWithoutParams() + "?restartApp";
             getPage().open(url, "_self");
@@ -510,5 +514,9 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
 
     public CubaFileDownloader getFileDownloader() {
         return fileDownloader;
+    }
+
+    public UiEventsMulticaster getUiEventsMulticaster() {
+        return uiEventsMulticaster;
     }
 }

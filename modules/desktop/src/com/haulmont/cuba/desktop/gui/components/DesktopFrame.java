@@ -20,6 +20,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DetachedFrame;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -32,11 +33,15 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.WindowAdapter;
@@ -70,8 +75,66 @@ public class DesktopFrame
 
     private DesktopFrameActionsHolder actionsHolder;
 
+    protected boolean isAttachedToRoot = false;
+
     public DesktopFrame() {
         actionsHolder = new DesktopFrameActionsHolder(this, impl);
+
+        impl.addAncestorListener(new AncestorListener() {
+            @Override
+            public void ancestorAdded(AncestorEvent event) {
+                SwingUtilities.invokeLater(() -> {
+                    if (!isAttachedToRoot) {
+                        if (SwingUtilities.getRoot(event.getComponent()) != null) {
+                            enableEventListeners();
+                            isAttachedToRoot = true;
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void ancestorRemoved(AncestorEvent event) {
+                SwingUtilities.invokeLater(() -> {
+                    if (isAttachedToRoot) {
+                        if (SwingUtilities.getRoot(event.getComponent()) == null) {
+                            disableEventListeners();
+                            isAttachedToRoot = false;
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void ancestorMoved(AncestorEvent event) {
+            }
+        });
+    }
+
+    protected void disableEventListeners() {
+        Frame wrapper = getWrapper();
+        if (wrapper != null) {
+            List<ApplicationListener> uiEventListeners = ((AbstractFrame) wrapper).getUiEventListeners();
+            if (uiEventListeners != null) {
+                for (ApplicationListener listener : uiEventListeners) {
+                    UiEventsMulticaster multicaster = App.getInstance().getUiEventsMulticaster();
+                    multicaster.removeApplicationListener(listener);
+                }
+            }
+        }
+    }
+
+    protected void enableEventListeners() {
+        Frame wrapper = getWrapper();
+        if (wrapper != null) {
+            List<ApplicationListener> uiEventListeners = ((AbstractFrame) wrapper).getUiEventListeners();
+            if (uiEventListeners != null) {
+                for (ApplicationListener listener : uiEventListeners) {
+                    UiEventsMulticaster multicaster = App.getInstance().getUiEventsMulticaster();
+                    multicaster.addApplicationListener(listener);
+                }
+            }
+        }
     }
 
     @Override

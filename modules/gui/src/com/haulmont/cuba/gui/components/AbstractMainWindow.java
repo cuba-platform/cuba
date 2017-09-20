@@ -18,18 +18,23 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.FtsConfigHelper;
 import com.haulmont.cuba.gui.components.dev.LayoutAnalyzerContextMenuProvider;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.components.mainwindow.FtsField;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
+import com.haulmont.cuba.gui.events.UserRemovedEvent;
+import com.haulmont.cuba.gui.events.UserSubstitutionsChangedEvent;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 
 import javax.annotation.Nullable;
 
 /**
- * Base class for controller of application Main window
+ * Base class for controller of application Main window.
  */
 public class AbstractMainWindow extends AbstractTopLevelWindow implements Window.MainWindow {
 
@@ -83,5 +88,23 @@ public class AbstractMainWindow extends AbstractTopLevelWindow implements Window
     protected void initLayoutAnalyzerContextMenu(Component contextMenuTarget) {
         LayoutAnalyzerContextMenuProvider laContextMenuProvider = AppBeans.get(LayoutAnalyzerContextMenuProvider.NAME);
         laContextMenuProvider.initContextMenu(this, contextMenuTarget);
+    }
+
+    @Order(Events.LOWEST_PLATFORM_PRECEDENCE - 100)
+    @EventListener
+    protected void onUserSubstitutionsChange(UserSubstitutionsChangedEvent event) {
+        UserIndicator userIndicator = getUserIndicator();
+        if (userIndicator != null) {
+            userIndicator.refreshUserSubstitutions();
+        }
+    }
+
+    @Order(Events.LOWEST_PLATFORM_PRECEDENCE - 100)
+    @EventListener
+    protected void onUserRemove(UserRemovedEvent event) {
+        UserIndicator userIndicator = getUserIndicator();
+        if (userIndicator != null) {
+            userIndicator.refreshUserSubstitutions();
+        }
     }
 }

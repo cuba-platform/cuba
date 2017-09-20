@@ -37,6 +37,7 @@ import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
@@ -54,7 +55,6 @@ import javax.swing.*;
 import javax.swing.plaf.InputMapUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -78,7 +78,7 @@ public class App implements ConnectionListener {
 
     protected Connection connection;
 
-    private JTabbedPane tabsPane;
+    protected JTabbedPane tabsPane;
 
     protected DesktopTheme theme;
 
@@ -90,9 +90,11 @@ public class App implements ConnectionListener {
 
     protected Configuration configuration;
 
+    protected UiEventsMulticaster uiEventsMulticaster;
+
     protected boolean exiting;
 
-    private boolean testMode;
+    protected boolean testMode;
     protected TestIdManager testIdManager = new TestIdManager();
 
     protected ApplicationSession applicationSession;
@@ -102,14 +104,11 @@ public class App implements ConnectionListener {
     }
 
     public static void main(final String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                app = new App();
-                app.init(args);
-                app.show();
-                app.showLoginDialog();
-            }
+        SwingUtilities.invokeLater(() -> {
+            app = new App();
+            app.init(args);
+            app.show();
+            app.showLoginDialog();
         });
     }
 
@@ -143,6 +142,7 @@ public class App implements ConnectionListener {
 
             messages = AppBeans.get(Messages.NAME);
             configuration = AppBeans.get(Configuration.NAME);
+            uiEventsMulticaster = AppBeans.get(UiEventsMulticaster.class);
 
             initTheme();
             initLookAndFeelDefaults();
@@ -321,13 +321,10 @@ public class App implements ConnectionListener {
         try {
             userActionsLog.trace("Closing application...");
             if (connection.isConnected()) {
-                recursiveClosingFrames(topLevelFrames.iterator(), new Runnable() {
-                    @Override
-                    public void run() {
-                        exiting = true;
-                        connection.logout();
-                        forceExit();
-                    }
+                recursiveClosingFrames(topLevelFrames.iterator(), () -> {
+                    exiting = true;
+                    connection.logout();
+                    forceExit();
                 });
             } else {
                 forceExit();
@@ -364,23 +361,16 @@ public class App implements ConnectionListener {
 
         Locale loc = Locale.getDefault();
 
-        JMenu menu = new JMenu(messages.getMessage(AppConfig.getMessagesPack(), "mainMenu.file", loc));
+        JMenu menu = new JMenu(messages.getMainMessage("mainMenu.file", loc));
         menuBar.add(menu);
 
         JMenuItem item;
 
-        item = new JMenuItem(messages.getMessage(AppConfig.getMessagesPack(), "mainMenu.connect", loc));
-        item.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        showLoginDialog();
-                    }
-                }
-        );
+        item = new JMenuItem(messages.getMainMessage("mainMenu.connect", loc));
+        item.addActionListener(e -> showLoginDialog());
         menu.add(item);
 
-        item = new JMenuItem(messages.getMessage(AppConfig.getMessagesPack(), "mainMenu.exit", loc));
+        item = new JMenuItem(messages.getMainMessage("mainMenu.exit", loc));
         item.addActionListener(new ValidationAwareActionListener() {
             @Override
             public void actionPerformedAfterValidation(ActionEvent e) {
@@ -456,32 +446,26 @@ public class App implements ConnectionListener {
         return menuBar;
     }
 
-    private void logout() {
+    protected void logout() {
         final Iterator<TopLevelFrame> it = topLevelFrames.iterator();
-        recursiveClosingFrames(it, new Runnable() {
-            @Override
-            public void run() {
-                connection.logout();
-            }
-        });
+        recursiveClosingFrames(it, () ->
+                connection.logout()
+        );
     }
 
-    private void recursiveClosingFrames(final Iterator<TopLevelFrame> it, final Runnable onSuccess) {
+    protected void recursiveClosingFrames(final Iterator<TopLevelFrame> it, final Runnable onSuccess) {
         final TopLevelFrame frame = it.next();
-        frame.getWindowManager().checkModificationsAndCloseAll(new Runnable() {
-                                                                   @Override
-                                                                   public void run() {
-                                                                       if (!it.hasNext()) {
-                                                                           onSuccess.run();
-                                                                       } else {
-                                                                           frame.getWindowManager().dispose();
-                                                                           frame.dispose();
-                                                                           it.remove();
-                                                                           recursiveClosingFrames(it, onSuccess);
-                                                                       }
-                                                                   }
-                                                               }, null
-        );
+        frame.getWindowManager()
+                .checkModificationsAndCloseAll(() -> {
+                    if (!it.hasNext()) {
+                        onSuccess.run();
+                    } else {
+                        frame.getWindowManager().dispose();
+                        frame.dispose();
+                        it.remove();
+                        recursiveClosingFrames(it, onSuccess);
+                    }
+                }, null);
     }
 
     protected JComponent createBottomPane() {
@@ -495,7 +479,7 @@ public class App implements ConnectionListener {
             url = "?";
 
         final JLabel connectionStateLab = new JLabel(
-                messages.formatMessage(AppConfig.getMessagesPack(), "statusBar.connected", getUserFriendlyConnectionUrl(url)));
+                messages.formatMainMessage("statusBar.connected", getUserFriendlyConnectionUrl(url)));
 
         panel.add(connectionStateLab, BorderLayout.WEST);
 
@@ -507,7 +491,7 @@ public class App implements ConnectionListener {
         UserSession session = connection.getSession();
 
         JLabel userInfoLabel = new JLabel();
-        String userInfo = messages.formatMessage(AppConfig.getMessagesPack(), "statusBar.user",
+        String userInfo = messages.formatMainMessage("statusBar.user",
                 session.getUser().getName(), session.getUser().getLogin());
         userInfoLabel.setText(userInfo);
 
@@ -516,7 +500,7 @@ public class App implements ConnectionListener {
         JLabel timeZoneLabel = null;
         if (session.getTimeZone() != null) {
             timeZoneLabel = new JLabel();
-            String timeZone = messages.formatMessage(AppConfig.getMessagesPack(), "statusBar.timeZone",
+            String timeZone = messages.formatMainMessage("statusBar.timeZone",
                     AppBeans.get(TimeZones.class).getDisplayNameShort(session.getTimeZone()));
             timeZoneLabel.setText(timeZone);
 
@@ -564,12 +548,7 @@ public class App implements ConnectionListener {
     }
 
     protected void initExceptionHandling() {
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread thread, Throwable throwable) {
-                handleException(thread, throwable);
-            }
-        });
+        Thread.setDefaultUncaughtExceptionHandler(this::handleException);
 
         System.setProperty("sun.awt.exception.handler", "com.haulmont.cuba.desktop.exception.AWTExceptionHandler");
     }
@@ -628,12 +607,7 @@ public class App implements ConnectionListener {
 
             messagesNotifier.activate();
 
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    afterLoggedIn();
-                }
-            });
+            SwingUtilities.invokeLater(this::afterLoggedIn);
         } else {
             messagesNotifier.deactivate();
 
@@ -731,5 +705,9 @@ public class App implements ConnectionListener {
 
     public TestIdManager getTestIdManager() {
         return testIdManager;
+    }
+
+    public UiEventsMulticaster getUiEventsMulticaster() {
+        return uiEventsMulticaster;
     }
 }

@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.ApplicationListener;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -46,6 +47,7 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     private Object _companion;
 
     private Component parent;
+    private List<ApplicationListener> uiEventListeners;
 
     @Inject
     protected Messages messages;
@@ -457,6 +459,17 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     /** INTERNAL. Don't call from application code. */
     public void setCompanion(Object companion) {
         this._companion = companion;
+    }
+
+    /** INTERNAL. Don't call from application code. */
+    @Nullable
+    public List<ApplicationListener> getUiEventListeners() {
+        return uiEventListeners;
+    }
+
+    /** INTERNAL. Don't call from application code. */
+    public void setUiEventListeners(List<ApplicationListener> uiEventListeners) {
+        this.uiEventListeners = uiEventListeners;
     }
 
     @Override

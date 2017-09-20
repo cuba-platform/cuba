@@ -50,6 +50,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.settings.Settings;
 import net.miginfocom.layout.CC;
@@ -60,9 +61,12 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.util.*;
@@ -127,12 +131,71 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     private EventRouter eventRouter;
 
+    protected boolean isAttachedToRoot = false;
+
     public DesktopWindow() {
         initLayout();
         delegate = createDelegate();
         actionsHolder = new DesktopFrameActionsHolder(this, panel);
 
         setWidth("100%");
+
+        panel.addAncestorListener(new AncestorListener() {
+            @Override
+            public void ancestorAdded(AncestorEvent event) {
+                SwingUtilities.invokeLater(() -> {
+                    if (!isAttachedToRoot) {
+                        if (SwingUtilities.getRoot(event.getComponent()) != null) {
+                            enableEventListeners();
+                            isAttachedToRoot = true;
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void ancestorRemoved(AncestorEvent event) {
+                SwingUtilities.invokeLater(() -> {
+                    if (isAttachedToRoot) {
+                        if (SwingUtilities.getRoot(event.getComponent()) == null) {
+                            disableEventListeners();
+                            isAttachedToRoot = false;
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void ancestorMoved(AncestorEvent event) {
+                // do nothing
+            }
+        });
+    }
+
+    protected void disableEventListeners() {
+        Frame wrapper = delegate.getWrapper();
+        if (wrapper != null) {
+            List<ApplicationListener> uiEventListeners = ((AbstractFrame) wrapper).getUiEventListeners();
+            if (uiEventListeners != null) {
+                for (ApplicationListener listener : uiEventListeners) {
+                    UiEventsMulticaster multicaster = App.getInstance().getUiEventsMulticaster();
+                    multicaster.removeApplicationListener(listener);
+                }
+            }
+        }
+    }
+
+    protected void enableEventListeners() {
+        Frame wrapper = delegate.getWrapper();
+        if (wrapper != null) {
+            List<ApplicationListener> uiEventListeners = ((AbstractFrame) wrapper).getUiEventListeners();
+            if (uiEventListeners != null) {
+                for (ApplicationListener listener : uiEventListeners) {
+                    UiEventsMulticaster multicaster = App.getInstance().getUiEventsMulticaster();
+                    multicaster.addApplicationListener(listener);
+                }
+            }
+        }
     }
 
     protected void initLayout() {

@@ -18,7 +18,7 @@
 package com.haulmont.cuba.gui.app.security.user.browse;
 
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.app.security.user.resetpasswords.ResetPasswordsDial
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
@@ -39,9 +40,9 @@ import org.apache.commons.lang.BooleanUtils;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class UserBrowser extends AbstractLookup {
-
     @Inject
     protected Table<User> usersTable;
 
@@ -81,24 +82,18 @@ public class UserBrowser extends AbstractLookup {
     @Inject
     protected ComponentsFactory componentsFactory;
 
-    public interface Companion {
-        void refreshUserSubstitutions();
-    }
-
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        MetaClass userMetaClass = metadata.getClassNN(User.class);
-
         final boolean hasPermissionsToCreateUsers =
-                security.isEntityOpPermitted(userMetaClass, EntityOp.CREATE);
+                security.isEntityOpPermitted(User.class, EntityOp.CREATE);
 
         final boolean hasPermissionsToUpdateUsers =
-                security.isEntityOpPermitted(userMetaClass, EntityOp.CREATE);
+                security.isEntityOpPermitted(User.class, EntityOp.CREATE);
 
         final boolean hasPermissionsToCreateSettings =
-                security.isEntityOpPermitted(metadata.getClassNN(UserSetting.class), EntityOp.CREATE);
+                security.isEntityOpPermitted(UserSetting.class, EntityOp.CREATE);
 
         changePasswAction.setEnabled(hasPermissionsToUpdateUsers);
         changePasswAtLogonAction.setEnabled(hasPermissionsToUpdateUsers);
@@ -128,7 +123,7 @@ public class UserBrowser extends AbstractLookup {
             }
         });
 
-        RemoveAction removeAction = new UserRemoveAction(usersTable, userManagementService, getCompanion());
+        RemoveAction removeAction = new UserRemoveAction(usersTable, userManagementService);
         usersTable.addAction(removeAction);
 
         additionalActionsBtn.addAction(copySettingsAction);
@@ -144,17 +139,14 @@ public class UserBrowser extends AbstractLookup {
     }
 
     protected void initTimeZoneColumn() {
-        usersTable.addGeneratedColumn("timeZone", new Table.ColumnGenerator<User>() {
-            @Override
-            public Component generateCell(User entity) {
-                Label label = componentsFactory.createComponent(Label.class);
-                if (Boolean.TRUE.equals(entity.getTimeZoneAuto())) {
-                    label.setValue(messages.getMainMessage("timeZone.auto"));
-                } else if (entity.getTimeZone() != null) {
-                    label.setValue(entity.getTimeZone());
-                }
-                return label;
+        usersTable.addGeneratedColumn("timeZone", entity -> {
+            Label label = componentsFactory.createComponent(Label.class);
+            if (Boolean.TRUE.equals(entity.getTimeZoneAuto())) {
+                label.setValue(messages.getMainMessage("timeZone.auto"));
+            } else if (entity.getTimeZone() != null) {
+                label.setValue(entity.getTimeZone());
             }
+            return label;
         });
     }
 
@@ -255,13 +247,15 @@ public class UserBrowser extends AbstractLookup {
                 for (Map.Entry<UUID, String> entry : changedPasswords.entrySet()) {
                     userPasswords.put(usersDs.getItem(entry.getKey()), entry.getValue());
                 }
-                Map<String, Object> params = Collections.singletonMap("passwords", userPasswords);
-                Window newPasswordsWindow = openWindow("sec$User.newPasswords", OpenType.DIALOG, params);
-                newPasswordsWindow.addCloseListener(actionId -> {
-                    usersTable.requestFocus();
-                });
+
+                Window newPasswordsWindow = openWindow("sec$User.newPasswords", OpenType.DIALOG,
+                        ParamsMap.of("passwords", userPasswords));
+                newPasswordsWindow.addCloseListener(actionId ->
+                        usersTable.requestFocus()
+                );
             } else {
-                showNotification(String.format(getMessage("changePasswordAtLogonCompleted"), changedPasswords.size()),
+                showNotification(
+                        formatMessage("changePasswordAtLogonCompleted", changedPasswords.size()),
                         NotificationType.HUMANIZED);
             }
             usersDs.refresh();
@@ -270,32 +264,32 @@ public class UserBrowser extends AbstractLookup {
 
     public void resetRememberMe() {
         if (usersTable.getSelected().isEmpty()) {
-            showOptionDialog(getMessage("resetRememberMeTitle"), getMessage("resetRememberMeQuestion"), MessageType.CONFIRMATION,
+            showOptionDialog(
+                    getMessage("resetRememberMeTitle"),
+                    getMessage("resetRememberMeQuestion"),
+                    MessageType.CONFIRMATION,
                     new Action[]{
-                            new AbstractAction("actions.ResetAll") {
-                                @Override
-                                public void actionPerform(Component component) {
-                                    resetRememberMeAll();
-                                }
-                            },
+                            new BaseAction("actions.ResetAll")
+                                .withCaption(getMessage("actions.ResetAll"))
+                                .withHandler(event -> resetRememberMeAll()),
+
                             new DialogAction(Type.CANCEL, Status.PRIMARY)
                     }
             );
         } else {
-            showOptionDialog(getMessage("resetRememberMeTitle"), getMessage("resetRememberMeQuestion"), MessageType.CONFIRMATION,
+            showOptionDialog(
+                    getMessage("resetRememberMeTitle"),
+                    getMessage("resetRememberMeQuestion"),
+                    MessageType.CONFIRMATION,
                     new Action[]{
-                            new AbstractAction("actions.ResetOptionSelected") {
-                                @Override
-                                public void actionPerform(Component component) {
-                                    resetRememberMe(usersTable.<User>getSelected());
-                                }
-                            },
-                            new AbstractAction("actions.ResetOptionAll") {
-                                @Override
-                                public void actionPerform(Component component) {
-                                    resetRememberMeAll();
-                                }
-                            },
+                            new BaseAction("actions.ResetOptionSelected")
+                                .withCaption(getMessage("actions.ResetOptionSelected"))
+                                .withHandler(event -> resetRememberMe(usersTable.getSelected())),
+
+                            new BaseAction("actions.ResetOptionAll")
+                                .withCaption(getMessage("actions.ResetOptionAll"))
+                                .withHandler(event -> resetRememberMeAll()),
+
                             new DialogAction(Type.CANCEL, Status.PRIMARY)
                     }
             );
@@ -303,10 +297,9 @@ public class UserBrowser extends AbstractLookup {
     }
 
     public void resetRememberMe(Set<User> users) {
-        List<UUID> usersForModify = new ArrayList<>();
-        for (User user : users) {
-            usersForModify.add(user.getId());
-        }
+        List<UUID> usersForModify = users.stream()
+                .map(BaseUuidEntity::getId)
+                .collect(Collectors.toList());
 
         userManagementService.resetRememberMeTokens(usersForModify);
 
