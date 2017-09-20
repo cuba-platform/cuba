@@ -19,6 +19,7 @@ package com.haulmont.restapi.idp;
 import com.google.gson.Gson;
 import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.restapi.auth.OAuthTokenRevoker;
 import com.haulmont.restapi.events.BeforeRestInvocationEvent;
 import com.haulmont.restapi.events.OAuthTokenRevokedResponseEvent;
@@ -36,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -76,6 +78,7 @@ public class IdpAuthLifecycleManager implements InitializingBean {
         this.idpConfig = configuration.getConfig(RestIdpConfig.class);
     }
 
+    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 100)
     @EventListener
     public void handleBeforeRestInvocationEvent(BeforeRestInvocationEvent event) {
         if (idpConfig.getIdpEnabled()) {
@@ -110,6 +113,20 @@ public class IdpAuthLifecycleManager implements InitializingBean {
         }
     }
 
+    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 100)
+    @EventListener
+    public void handleOAuthTokenRevocationResponse(OAuthTokenRevokedResponseEvent event) {
+        if (idpConfig.getIdpEnabled()) {
+            if (event.getAccessToken() != null) {
+                log.debug("OAuth2AccessToken {} revoked by client, redirect to IDP", event.getAccessToken());
+
+                String idpLoginUrl = getIdpLogoutUrl(idpConfig.getIdpDefaultRedirectUrl());
+
+                event.setResponseEntity(ResponseEntity.ok(new IdpLogoutResponse(idpLoginUrl)));
+            }
+        }
+    }
+
     protected String getIdpLoginUrl(String redirectUrl) {
         String idpBaseURL = idpConfig.getIdpBaseURL();
         if (!idpBaseURL.endsWith("/")) {
@@ -124,19 +141,6 @@ public class IdpAuthLifecycleManager implements InitializingBean {
         return idpBaseURL +
                 "?response_type=client-ticket" +
                 "&sp=" + URLEncodeUtils.encodeUtf8(redirectUrl);
-    }
-
-    @EventListener
-    public void handleOAuthTokenRevocationResponse(OAuthTokenRevokedResponseEvent event) {
-        if (idpConfig.getIdpEnabled()) {
-            if (event.getAccessToken() != null) {
-                log.debug("OAuth2AccessToken {} revoked by client, redirect to IDP", event.getAccessToken());
-
-                String idpLoginUrl = getIdpLogoutUrl(idpConfig.getIdpDefaultRedirectUrl());
-
-                event.setResponseEntity(ResponseEntity.ok(new IdpLogoutResponse(idpLoginUrl)));
-            }
-        }
     }
 
     protected String getIdpLogoutUrl(String redirectUrl) {

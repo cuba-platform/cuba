@@ -16,10 +16,10 @@
 
 package com.haulmont.restapi.auth;
 
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.restapi.events.OAuthTokenRevokedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
@@ -40,7 +40,7 @@ public class OAuthTokenRevoker {
     @Inject
     protected TokenStore tokenStore;
     @Inject
-    protected ApplicationEventPublisher eventPublisher;
+    protected Events events;
 
     @Nullable
     public OAuth2AccessToken revokeToken(String token, Authentication clientAuth) {
@@ -71,14 +71,14 @@ public class OAuthTokenRevoker {
             tokenStore.removeAccessToken(accessToken);
             log.debug("Access token removed: {}", token);
 
-            if (eventPublisher != null) {
-                eventPublisher.publishEvent(new OAuthTokenRevokedEvent(accessToken, revocationInitiator));
+            if (events != null) {
+                events.publish(new OAuthTokenRevokedEvent(accessToken, revocationInitiator));
             }
 
             return accessToken;
         }
 
-        log.debug("No access token {} found in the token store.", token);
+        log.debug("No access token {} found in the token store", token);
         return null;
     }
 
@@ -87,8 +87,8 @@ public class OAuthTokenRevoker {
         String requestingClientId = clientAuth.getName();
         String tokenClientId = authToRevoke.getOAuth2Request().getClientId();
         if (!requestingClientId.equals(tokenClientId)) {
-            log.debug("Revoke FAILED: requesting client = {}, token's client = {}.", requestingClientId, tokenClientId);
-            throw new InvalidGrantException("Cannot revoke tokens issued to other clients.");
+            log.debug("Revoke FAILED: requesting client = {}, token's client = {}", requestingClientId, tokenClientId);
+            throw new InvalidGrantException("Cannot revoke tokens issued to other clients");
         }
     }
 }

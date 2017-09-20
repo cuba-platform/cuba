@@ -18,6 +18,7 @@ package com.haulmont.restapi.auth;
 
 import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -27,7 +28,7 @@ import com.haulmont.restapi.events.AfterRestInvocationEvent;
 import com.haulmont.restapi.events.BeforeRestInvocationEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
@@ -58,7 +59,7 @@ public class CubaRestLastSecurityFilter implements Filter {
     @Inject
     protected MessageTools messageTools;
     @Inject
-    protected ApplicationEventPublisher eventPublisher;
+    protected Events events;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -72,11 +73,11 @@ public class CubaRestLastSecurityFilter implements Filter {
         parseRequestLocale(request);
 
         try {
-            if (eventPublisher != null) {
+            if (events != null) {
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
                 BeforeRestInvocationEvent beforeInvocationEvent = new BeforeRestInvocationEvent(authentication, request, response);
-                eventPublisher.publishEvent(beforeInvocationEvent);
+                events.publish(beforeInvocationEvent);
 
                 boolean invocationPrevented = beforeInvocationEvent.isInvocationPrevented();
 
@@ -87,7 +88,7 @@ public class CubaRestLastSecurityFilter implements Filter {
                         log.debug("REST API invocation prevented by BeforeRestInvocationEvent handler");
                     }
                 } finally {
-                    eventPublisher.publishEvent(new AfterRestInvocationEvent(authentication, request, response, invocationPrevented));
+                    events.publish(new AfterRestInvocationEvent(authentication, request, response, invocationPrevented));
                 }
             } else {
                 chain.doFilter(request, response);
@@ -127,9 +128,12 @@ public class CubaRestLastSecurityFilter implements Filter {
     protected void parseRequestLocale(ServletRequest request) {
         //Take the locale value either from the 'Accept-Language' http header or take the default one
         Locale locale = null;
-        if (!Strings.isNullOrEmpty(((HttpServletRequest) request).getHeader("Accept-Language"))) {
+        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+        if (!Strings.isNullOrEmpty(httpServletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE))) {
             Locale requestLocale = request.getLocale();
-            Map<String, Locale> availableLocales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
+
+            GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
+            Map<String, Locale> availableLocales = globalConfig.getAvailableLocales();
             if (availableLocales.values().contains(requestLocale)) {
                 locale = requestLocale;
             }

@@ -16,11 +16,11 @@
 
 package com.haulmont.restapi.controllers;
 
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.restapi.auth.OAuthTokenRevoker;
 import com.haulmont.restapi.events.OAuthTokenRevokedResponseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
@@ -43,7 +43,7 @@ public class OAuthTokenController {
     @Inject
     protected OAuthTokenRevoker oAuthTokenRevoker;
     @Inject
-    protected ApplicationEventPublisher eventPublisher;
+    protected Events events;
 
     @PostMapping("/v2/oauth/revoke")
     public ResponseEntity revokeToken(@RequestParam("token") String token, Principal principal) {
@@ -58,10 +58,10 @@ public class OAuthTokenController {
             log.debug("No token with value {} was revoked.", token);
         }
 
-        if (eventPublisher != null) {
+        if (events != null) {
             OAuthTokenRevokedResponseEvent event = new OAuthTokenRevokedResponseEvent(token, revokedToken);
 
-            eventPublisher.publishEvent(event);
+            events.publish(event);
 
             if (event.getResponseEntity() != null) {
                 return event.getResponseEntity();
