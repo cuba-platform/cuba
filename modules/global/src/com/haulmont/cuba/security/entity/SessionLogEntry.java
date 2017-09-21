@@ -17,9 +17,7 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
-import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -35,12 +33,10 @@ public class SessionLogEntry extends StandardEntity {
     @Column(name = "SESSION_ID", nullable = false)
     protected UUID sessionId;
 
-    @OnDeleteInverse(DeletePolicy.UNLINK)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "SUBSTITUTED_USER_ID")
     protected User substitutedUser;
 
-    @OnDeleteInverse(DeletePolicy.UNLINK)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "USER_ID")
     protected User user;
