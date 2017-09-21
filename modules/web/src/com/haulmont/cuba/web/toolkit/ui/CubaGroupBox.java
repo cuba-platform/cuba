@@ -24,6 +24,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
+import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 
@@ -189,6 +190,16 @@ public class CubaGroupBox extends Panel implements ComponentContainer {
     @Override
     public void removeListener(ComponentDetachListener listener) {
         getContent().removeComponentDetachListener(listener);
+    }
+
+    @Override
+    public void beforeClientResponse(boolean initial) {
+        super.beforeClientResponse(initial);
+
+        if (getState(false).showAsPanel && getState(false).outerMarginsBitmask != 0) {
+            LoggerFactory.getLogger(CubaGroupBox.class)
+                    .warn("GroupBox's 'showAsPanel' and 'outerMargin' properties are set simultaneously");
+        }
     }
 
     public interface ExpandChangeHandler {
