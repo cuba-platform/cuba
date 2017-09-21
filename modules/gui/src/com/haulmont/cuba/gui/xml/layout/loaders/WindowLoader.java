@@ -90,19 +90,15 @@ public class WindowLoader extends FrameLoader<Window> {
             DialogOptions dialogOptions = resultComponent.getDialogOptions();
 
             String xmlWidthValue = dialogModeElement.attributeValue("width");
-            if (StringUtils.isNotEmpty(xmlWidthValue)) {
-                if (StringUtils.isNotBlank(xmlWidthValue)) {
-                    String themeWidthValue = loadThemeString(xmlWidthValue);
-                    dialogOptions.setWidth(themeWidthValue);
-                }
+            if (StringUtils.isNotBlank(xmlWidthValue)) {
+                String themeWidthValue = loadThemeString(xmlWidthValue);
+                dialogOptions.setWidth(themeWidthValue);
             }
 
             String xmlHeightValue = dialogModeElement.attributeValue("height");
-            if (StringUtils.isNotEmpty(xmlHeightValue)) {
-                if (StringUtils.isNotBlank(xmlHeightValue)) {
-                    String themeHeightValue = loadThemeString(xmlHeightValue);
-                    dialogOptions.setHeight(themeHeightValue);
-                }
+            if (StringUtils.isNotBlank(xmlHeightValue)) {
+                String themeHeightValue = loadThemeString(xmlHeightValue);
+                dialogOptions.setHeight(themeHeightValue);
             }
 
             String closeable = dialogModeElement.attributeValue("closeable");
