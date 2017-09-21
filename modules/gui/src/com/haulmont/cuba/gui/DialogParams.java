@@ -26,7 +26,7 @@ import com.haulmont.cuba.gui.components.Window;
  * <br> E.g. to open an edit screen as modal dialog and set its width, use the following code in calling screen
  * controller:
  * <pre>
- * getDialogParams().setWidth(500);
+ * getDialogParams().setWidth("500px");
  * openEditor("sales$Customer.edit", customer, WindowManager.OpenType.DIALOG, params);
  * </pre>
  * Parameters are reset to default values by the framework after opening of each window.

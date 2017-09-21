@@ -27,7 +27,7 @@ import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
  * Dialog options of a window. Can be changed at run time from the window controller:
  * <pre>
  * getDialogOptions()
- *     .setWidth("640px')
+ *     .setWidth("640px")
  *     .setHeight("480px");
  * </pre>
  * <p>
@@ -95,22 +95,23 @@ public class DialogOptions {
 
     /**
      * Set height of a window if it will be opened as a dialog or change height
-     * at run time if the window is already opened as a dialog. Also, changes size
-     * unit to {@link com.haulmont.cuba.gui.components.SizeUnit#PIXELS}
+     * at run time if the window is already opened as a dialog. If the {@link #heightUnit}
+     * is set then its value will be used, {@link com.haulmont.cuba.gui.components.SizeUnit#PIXELS} otherwise.
      *
-     * @param height height
+     * @param height the height value in the unit used for the height
      * @deprecated Use {@link #setHeight(Float)} instead.
      */
     @Deprecated
     public DialogOptions setHeight(Integer height) {
-        return setHeight(height.floatValue(), SizeUnit.PIXELS);
+        return setHeight(height.floatValue());
     }
 
     /**
      * Set height of a window if it will be opened as a dialog or change height
-     * at run time if the window is already opened as a dialog.
+     * at run time if the window is already opened as a dialog. If the {@link #heightUnit}
+     * is set then its value will be used, {@link com.haulmont.cuba.gui.components.SizeUnit#PIXELS} otherwise.
      *
-     * @param height height
+     * @param height the height value in the unit used for the height
      */
     public DialogOptions setHeight(Float height) {
         return setHeight(height, this.heightUnit);
@@ -195,22 +196,23 @@ public class DialogOptions {
 
     /**
      * Set width of a window if it will be opened as a dialog or change width
-     * at run time if the window is already opened as a dialog. Also, changes
-     * size unit to {@link com.haulmont.cuba.gui.components.SizeUnit#PIXELS}
+     * at run time if the window is already opened as a dialog. If the {@link #widthUnit}
+     * is set then its value will be used, {@link com.haulmont.cuba.gui.components.SizeUnit#PIXELS} otherwise.
      *
-     * @param width width
+     * @param width the width value in the unit used for the height
      * @deprecated Use {@link #setWidth(Float)} instead.
      */
     @Deprecated
     public DialogOptions setWidth(Integer width) {
-        return setWidth(width.floatValue(), SizeUnit.PIXELS);
+        return setWidth(width.floatValue());
     }
 
     /**
      * Set width of a window if it will be opened as a dialog or change width
-     * at run time if the window is already opened as a dialog.
+     * at run time if the window is already opened as a dialog. If the {@link #widthUnit}
+     * is set then its value will be used, {@link com.haulmont.cuba.gui.components.SizeUnit#PIXELS} otherwise.
      *
-     * @param width width
+     * @param width the width value in the unit used for the height
      */
     public DialogOptions setWidth(Float width) {
         return setWidth(width, this.widthUnit);

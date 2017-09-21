@@ -1446,7 +1446,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     protected class DesktopDialogOptions extends DialogOptions {
         @Override
         protected DialogOptions setWidth(Float width, SizeUnit unit) {
-            if (unit != SizeUnit.PIXELS) {
+            if (unit != null && unit != SizeUnit.PIXELS) {
                 throw new UnsupportedOperationException("Dialog size can be set only in pixels");
             }
 
@@ -1497,7 +1497,7 @@ public class DesktopWindow implements Window, Component.Disposable,
 
         @Override
         protected DialogOptions setHeight(Float height, SizeUnit unit) {
-            if (unit != SizeUnit.PIXELS) {
+            if (unit != null && unit != SizeUnit.PIXELS) {
                 throw new UnsupportedOperationException("In the desktop module only pixels are allowed");
             }
 

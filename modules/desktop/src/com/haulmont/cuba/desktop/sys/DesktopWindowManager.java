@@ -606,7 +606,7 @@ public class DesktopWindowManager extends WindowManager {
             } else if (openType.getWidth() == DialogParams.AUTO_SIZE_PX) {
                 window.setWidth(AUTO_SIZE);
             } else {
-                if (openType.getWidthUnit() != SizeUnit.PIXELS) {
+                if (openType.getWidthUnit() != null && openType.getWidthUnit() != SizeUnit.PIXELS) {
                     throw new UnsupportedOperationException("Dialog size can be set only in pixels");
                 }
                 dim.width = openType.getWidth().intValue();
@@ -616,7 +616,7 @@ public class DesktopWindowManager extends WindowManager {
             }
 
             if (openType.getHeight() != null && openType.getHeight() != DialogParams.AUTO_SIZE_PX) {
-                if (openType.getHeightUnit() != SizeUnit.PIXELS) {
+                if (openType.getHeightUnit() != null && openType.getHeightUnit() != SizeUnit.PIXELS) {
                     throw new UnsupportedOperationException("Dialog size can be set only in pixels");
                 }
                 dim.height = openType.getHeight().intValue();
