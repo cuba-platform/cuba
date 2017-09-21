@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2017 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.core.app.importexport;
+package com.haulmont.cuba.core.global.validation;
 
-import com.haulmont.cuba.core.global.Logging;
 import com.haulmont.cuba.core.global.SupportedByClient;
 
-/**
- */
-@SupportedByClient
-@Logging(Logging.Type.BRIEF)
-public class EntityImportException extends RuntimeException {
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import java.util.Set;
 
-    public EntityImportException(String message) {
-        super(message);
+@SupportedByClient
+public class EntityValidationException extends ConstraintViolationException {
+    public EntityValidationException(String message, Set<? extends ConstraintViolation<?>> constraintViolations) {
+        super(message, constraintViolations);
     }
 
-    public EntityImportException(String message, Throwable cause) {
-        super(message, cause);
+    public EntityValidationException(Set<? extends ConstraintViolation<?>> constraintViolations) {
+        super(constraintViolations);
     }
 }

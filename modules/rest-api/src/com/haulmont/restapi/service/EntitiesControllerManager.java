@@ -186,18 +186,11 @@ public class EntitiesControllerManager {
             throw new RestAPIException("Cannot deserialize an entity from JSON", "", HttpStatus.BAD_REQUEST, e);
         }
 
-        Validator validator = beanValidation.getValidator();
-        Set<ConstraintViolation<Entity>> violations = validator.validate(entity, Default.class, RestApiChecks.class);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(
-                    "Validation failed on entity creation through REST-API for " + transformedEntityName, violations);
-        }
-
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
 
         Collection<Entity> importedEntities;
         try {
-            importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
+            importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView, true);
         } catch (EntityImportException e) {
             throw new RestAPIException("Entity creation failed", e.getMessage(), HttpStatus.BAD_REQUEST, e);
         }
@@ -234,17 +227,10 @@ public class EntitiesControllerManager {
             ((BaseGenericIdEntity) entity).setId(id);
         }
 
-        Validator validator = beanValidation.getValidator();
-        Set<ConstraintViolation<Entity>> violations = validator.validate(entity, Default.class, RestApiChecks.class);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(
-                    "Validation failed on entity creation through REST-API for " + transformedEntityName, violations);
-        }
-
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
         Collection<Entity> importedEntities;
         try {
-            importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView);
+            importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView, false);
         } catch (EntityImportException e) {
             throw new RestAPIException("Entity update failed", e.getMessage(), HttpStatus.BAD_REQUEST, e);
         }

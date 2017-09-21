@@ -425,7 +425,7 @@ public class EntitySerialization implements EntitySerializationAPI {
                     } else if (!"id".equals(primaryKeyProperty.getName())){
                         //pk may be in another field, not "id"
                         JsonElement pkElement = jsonObject.get(primaryKeyProperty.getName());
-                        if (pkElement.isJsonPrimitive()) {
+                        if (pkElement != null && pkElement.isJsonPrimitive()) {
                             try {
                                 Datatype pkDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
                                 pkValue = pkDatatype.parse(pkElement.getAsJsonPrimitive().getAsString());
