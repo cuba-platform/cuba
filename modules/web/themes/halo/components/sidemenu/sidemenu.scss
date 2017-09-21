@@ -204,6 +204,12 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
     overflow-y: auto;
   }
 
+  .#{$primary-stylename}.v-has-width {
+    .#{$primary-stylename}-item-caption{
+      max-width: initial;
+    }
+  }
+
   .#{$primary-stylename}-item {
     @include valo-menu-item-style($bg);
 
@@ -438,6 +444,13 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
     .#{$primary-stylename} {
       background: transparent;
       background-image: none;
+    }
+
+    .#{$primary-stylename}.v-has-width {
+      .#{$primary-stylename}-item-caption{
+        max-width: initial;
+        width: 100%;
+      }
     }
 
     .c-ftsfield-button,
