@@ -65,9 +65,8 @@ public interface EntityImportExportService {
 
     /**
      * <p>Serializes a collection of entities to JSON using {@link com.haulmont.cuba.core.app.serialization.EntitySerializationAPI
-     * EntitySerializationAPI}. Before the serialization entities will be
-     * reloaded with the view passed as method parameter.</p> <p>Serialization is described in the {@link
-     * com.haulmont.cuba.core.app.serialization.EntitySerializationAPI#toJson(Collection)
+     * EntitySerializationAPI}. Before the serialization entities will be reloaded with the view passed as method
+     * parameter.</p> <p>Serialization is described in the {@link com.haulmont.cuba.core.app.serialization.EntitySerializationAPI#toJson(Collection)
      * EntitySerializationAPI#toJson(Collection)} method documentation</p>
      *
      * @param entities a collection of entities to export
@@ -77,10 +76,9 @@ public interface EntityImportExportService {
     String exportEntitiesToJSON(Collection<? extends Entity> entities, View view);
 
     /**
-     * Deserializes the JSON and persists deserialized entities according
-     * to the rules, described by the {@code entityImportView} parameter. If the entity is not present in the database,
-     * it will be saved. Otherwise the fields of the existing entity that are in the {@code entityImportView} will be
-     * updated.
+     * Deserializes the JSON and persists deserialized entities according to the rules, described by the {@code
+     * entityImportView} parameter. If the entity is not present in the database, it will be saved. Otherwise the fields
+     * of the existing entity that are in the {@code entityImportView} will be updated.
      *
      * @param json             JSON file containing entities
      * @param entityImportView {@code EntityImportView} with the rules that describes how entities should be persisted.
@@ -103,6 +101,12 @@ public interface EntityImportExportService {
     Collection<Entity> importEntitiesFromZIP(byte[] zipBytes, EntityImportView entityImportView);
 
     /**
+     * See {@link #importEntities(Collection, EntityImportView, boolean)}. The current method doesn't perform bean
+     * validation
+     */
+    Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView entityImportView);
+
+    /**
      * Persists entities according to the rules, described by the {@code entityImportView} parameter. If the entity is
      * not present in the database, it will be saved. Otherwise the fields of the existing entity that are in the {@code
      * entityImportView} will be updated.
@@ -110,8 +114,10 @@ public interface EntityImportExportService {
      * If the view contains a property for composition attribute then all composition collection members that are absent
      * in the passed entity will be removed.
      *
-     * @param entityImportView {@code EntityImportView} with the rules that describes how entities should be persisted.
+     * @param importView {@code EntityImportView} with the rules that describes how entities should be persisted.
+     * @param validate   whether the passed entities should be validated by the {@link com.haulmont.cuba.core.global.BeanValidation}
+     *                   mechanism before entities are persisted
      * @return a collection of entities that have been imported
      */
-    Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView entityImportView);
+    Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView importView, boolean validate);
 }

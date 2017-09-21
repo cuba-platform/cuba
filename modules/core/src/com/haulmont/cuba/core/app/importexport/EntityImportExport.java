@@ -36,6 +36,8 @@ import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.validation.EntityValidationException;
+import com.haulmont.cuba.core.global.validation.groups.RestApiChecks;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -45,6 +47,10 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
+import javax.validation.groups.Default;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -79,6 +85,9 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     @Inject
     protected ViewRepository viewRepository;
+
+    @Inject
+    protected BeanValidation beanValidation;
 
     @Override
     public byte[] exportEntitiesToZIP(Collection<? extends Entity> entities, View view) {
@@ -183,6 +192,11 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     @Override
     public Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView importView) {
+        return importEntities(entities, importView, false);
+    }
+
+    @Override
+    public Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView importView, boolean validate) {
         List<ReferenceInfo> referenceInfoList = new ArrayList<>();
         CommitContext commitContext = new CommitContext();
 
@@ -220,6 +234,16 @@ public class EntityImportExport implements EntityImportExportAPI {
             }
             if (entityHasDynamicAttributes(commitInstance)) {
                 dynamicAttributesManagerAPI.storeDynamicAttributes((BaseGenericIdEntity) commitInstance);
+            }
+        }
+
+        if (validate) {
+            Validator validator = beanValidation.getValidator();
+            for (Entity entity : commitContext.getCommitInstances()) {
+                Set<ConstraintViolation<Entity>> violations = validator.validate(entity, Default.class, RestApiChecks.class);
+                if (!violations.isEmpty()) {
+                    throw new EntityValidationException("Entity validation failed", violations);
+                }
             }
         }
 
