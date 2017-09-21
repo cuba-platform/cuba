@@ -29,4 +29,14 @@ public interface HtmlBoxLayout extends Component.Container, Component.BelongToFr
      * Set filename of the related HTML template inside theme/layouts directory.
      */
     void setTemplateName(String templateName);
+
+    /**
+     * @return the contents of the template
+     */
+    String getTemplateContents();
+
+    /**
+     * Set the contents of the template used to draw the custom layout.
+     */
+    void setTemplateContents(String templateContents);
 }

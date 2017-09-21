@@ -16,18 +16,24 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.HtmlBoxLayout;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 public class HtmlBoxLayoutLoader extends ContainerLoader<HtmlBoxLayout> {
 
+    protected static final String TEMPLATE_CONTENTS_ELEMENT_NAME = "templateContents";
+
     @Override
     public void createComponent() {
         resultComponent = (HtmlBoxLayout) factory.createComponent(HtmlBoxLayout.NAME);
         loadId(resultComponent, element);
         createSubComponents(resultComponent, element);
+    }
+
+    @Override
+    protected boolean isChildElementIgnored(Element subElement) {
+        return subElement.getName().equals(TEMPLATE_CONTENTS_ELEMENT_NAME);
     }
 
     @Override
@@ -43,6 +49,7 @@ public class HtmlBoxLayoutLoader extends ContainerLoader<HtmlBoxLayout> {
         loadAlign(resultComponent, element);
 
         loadTemplate(resultComponent, element);
+        loadTemplateContents(resultComponent, element);
 
         loadHeight(resultComponent, element);
         loadWidth(resultComponent, element);
@@ -58,8 +65,16 @@ public class HtmlBoxLayoutLoader extends ContainerLoader<HtmlBoxLayout> {
         String template = element.attributeValue("template");
         if (!StringUtils.isEmpty(template)) {
             htmlBox.setTemplateName(template);
-            return;
         }
-        throw new GuiDevelopmentException("'template' attribute is required", context.getFullFrameId());
+    }
+
+    protected void loadTemplateContents(HtmlBoxLayout htmlBox, Element element) {
+        Element templateContentsElement = element.element(TEMPLATE_CONTENTS_ELEMENT_NAME);
+        if (templateContentsElement != null) {
+            String templateContents = templateContentsElement.getText();
+            if (StringUtils.isNotBlank(templateContents)) {
+                htmlBox.setTemplateContents(templateContents);
+            }
+        }
     }
 }

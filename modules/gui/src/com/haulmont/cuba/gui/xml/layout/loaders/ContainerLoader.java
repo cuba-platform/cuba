@@ -65,11 +65,24 @@ public abstract class ContainerLoader<T extends Component> extends AbstractCompo
 
         //noinspection unchecked
         for (Element subElement : (Collection<Element>) containerElement.elements()) {
-            ComponentLoader componentLoader = loader.createComponent(subElement);
-            pendingLoadComponents.add(componentLoader);
+            if (!isChildElementIgnored(subElement)) {
+                ComponentLoader componentLoader = loader.createComponent(subElement);
+                pendingLoadComponents.add(componentLoader);
 
-            container.add(componentLoader.getResultComponent());
+                container.add(componentLoader.getResultComponent());
+            }
         }
+    }
+
+    /**
+     * Checks if child element should have a separate loader or not.
+     * For instance, if a child element doesn't represent a UI component.
+     *
+     * @param subElement the element to be checked
+     * @return {@code true} if child element should have no separate loader, {@code false} otherwise
+     */
+    protected boolean isChildElementIgnored(Element subElement) {
+        return false;
     }
 
     protected void loadSubComponentsAndExpand(ExpandingLayout layout, Element element) {

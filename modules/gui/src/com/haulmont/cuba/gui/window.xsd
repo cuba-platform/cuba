@@ -2268,10 +2268,16 @@
     <xs:complexType name="htmlBoxLayout">
         <xs:complexContent>
             <xs:extension base="baseComponent">
-                <xs:group ref="layoutOrComponent"/>
+                <xs:sequence>
+                    <xs:element name="templateContents" minOccurs="0" maxOccurs="1">
+                        <xs:complexType mixed="true"/>
+                    </xs:element>
+
+                    <xs:group ref="layoutOrComponent"/>
+                </xs:sequence>
 
                 <xs:attribute name="stylename" type="layoutStylename"/>
-                <xs:attribute name="template" type="xs:string" use="required"/>
+                <xs:attribute name="template" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

@@ -45,6 +45,16 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
     }
 
     @Override
+    public String getTemplateContents() {
+        return component.getTemplateContents();
+    }
+
+    @Override
+    public void setTemplateContents(String templateContents) {
+        component.setTemplateContents(templateContents);
+    }
+
+    @Override
     public void add(Component childComponent) {
         if (childComponent.getParent() != null && childComponent.getParent() != this) {
             throw new IllegalStateException("Component already has parent");
