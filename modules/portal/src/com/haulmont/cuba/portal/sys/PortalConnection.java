@@ -21,7 +21,9 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.portal.App;
 import com.haulmont.cuba.portal.Connection;
 import com.haulmont.cuba.portal.ConnectionListener;
@@ -29,6 +31,7 @@ import com.haulmont.cuba.portal.security.PortalSession;
 import com.haulmont.cuba.portal.sys.security.PortalSecurityContext;
 import com.haulmont.cuba.portal.sys.security.PortalSessionFactory;
 import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.global.IpMatcher;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.SessionParams;
 import com.haulmont.cuba.security.global.UserSession;
@@ -62,11 +65,17 @@ public class PortalConnection implements Connection {
     @Inject
     protected PortalSessionFactory portalSessionFactory;
 
+    @Inject
+    protected Messages messages;
+
     @Override
     public synchronized void login(String login, String password, Locale locale,
                                    @Nullable String ipAddress, @Nullable String clientInfo) throws LoginException {
 
         UserSession userSession = doLogin(login, password, locale, getSessionParams(ipAddress, clientInfo));
+
+        checkIpMask(userSession, ipAddress);
+
         session = portalSessionFactory.createPortalSession(userSession, locale);
         session.setAuthenticated(true);
 
@@ -144,6 +153,20 @@ public class PortalConnection implements Connection {
             log.warn("Error on logout", e);
         }
         session = null;
+    }
+
+    protected void checkIpMask(UserSession userSession, String ipAddress) throws LoginException {
+        if (!StringUtils.isBlank(userSession.getUser().getIpMask())) {
+            IpMatcher ipMatcher = new IpMatcher(userSession.getUser().getIpMask());
+            if (!ipMatcher.match(ipAddress)) {
+                log.info(String.format("IP address %s is not permitted for user %s", ipAddress,
+                        userSession.getUser().toString()));
+
+                AppContext.withSecurityContext(new SecurityContext(userSession), loginService::logout);
+
+                throw new LoginException(messages.getMainMessage("login.invalidIP"));
+            }
+        }
     }
 
     @Override
