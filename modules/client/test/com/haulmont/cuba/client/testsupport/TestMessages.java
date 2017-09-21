@@ -17,15 +17,20 @@
 
 package com.haulmont.cuba.client.testsupport;
 
+import com.haulmont.chile.core.datatypes.FormatStringsRegistry;
 import com.haulmont.cuba.client.sys.MessagesClientImpl;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.ExtendedEntities;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.UserSessionSource;
 
 public class TestMessages extends MessagesClientImpl {
 
     public TestMessages(UserSessionSource userSessionSource, Configuration configuration,
-                        Metadata metadata, ExtendedEntities extendedEntities) {
+                        Metadata metadata, ExtendedEntities extendedEntities, FormatStringsRegistry formatStringsRegistry) {
         this.userSessionSource = userSessionSource;
         this.messageTools = new TestMessageTools(configuration, this, metadata, extendedEntities);
+        this.formatStringsRegistry = formatStringsRegistry;
     }
 
     @Override

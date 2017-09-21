@@ -19,8 +19,8 @@ package com.haulmont.cuba.core.sys;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
+import com.haulmont.chile.core.datatypes.FormatStringsRegistry;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -62,6 +62,9 @@ public abstract class AbstractMessages implements Messages {
 
     @Inject
     protected MessageTools messageTools;
+
+    @Inject
+    protected FormatStringsRegistry formatStringsRegistry;
 
     protected Pattern enumSubclassPattern = Pattern.compile("\\$[1-9]");
 
@@ -122,7 +125,7 @@ public abstract class AbstractMessages implements Messages {
                 log.warn("Localized format strings are not defined. " +
                         "Check cuba.mainMessagePack application property, it must point to a valid set of main message packs.");
 
-            Datatypes.setFormatStrings(
+            formatStringsRegistry.setFormatStrings(
                     messageTools.trimLocale(locale),
                     new FormatStrings(
                             numberDecimalSeparator.charAt(0),

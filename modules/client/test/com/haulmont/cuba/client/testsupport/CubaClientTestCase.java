@@ -17,10 +17,13 @@
 
 package com.haulmont.cuba.client.testsupport;
 
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
+import com.haulmont.chile.core.datatypes.FormatStringsRegistry;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.FormatStringsRegistryImpl;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import org.apache.commons.lang.StringUtils;
@@ -80,6 +83,8 @@ public class CubaClientTestCase {
     protected TestSecurity security;
 
     protected TestExtendedEntities extendedEntities;
+
+    protected FormatStringsRegistry formatStringsRegistry;
 
     protected TestMessages messages;
 
@@ -163,6 +168,7 @@ public class CubaClientTestCase {
 
         extendedEntities = new TestExtendedEntities(metadata);
         security = new TestSecurity(userSessionSource, metadata, extendedEntities);
+        formatStringsRegistry = new FormatStringsRegistryImpl();
 
         new NonStrictExpectations() {
             {
@@ -173,7 +179,7 @@ public class CubaClientTestCase {
             }
         };
 
-        messages = new TestMessages(userSessionSource, configuration, metadata, extendedEntities);
+        messages = new TestMessages(userSessionSource, configuration, metadata, extendedEntities, formatStringsRegistry);
         messageTools = (TestMessageTools) messages.getTools();
 
         beanValidation = new TestBeanValidation();
@@ -196,6 +202,14 @@ public class CubaClientTestCase {
                 AppBeans.get(MetadataTools.NAME); result = metadata.getTools();
                 AppBeans.get(MetadataTools.class); result = metadata.getTools();
                 AppBeans.get(MetadataTools.NAME, MetadataTools.class); result = metadata.getTools();
+
+                AppBeans.get(DatatypeRegistry.NAME); result = metadata.getDatatypes();
+                AppBeans.get(DatatypeRegistry.class); result = metadata.getDatatypes();
+                AppBeans.get(DatatypeRegistry.NAME, DatatypeRegistry.class); result = metadata.getDatatypes();
+
+                AppBeans.get(FormatStringsRegistry.NAME); result = formatStringsRegistry;
+                AppBeans.get(FormatStringsRegistry.class); result = formatStringsRegistry;
+                AppBeans.get(FormatStringsRegistry.NAME, FormatStringsRegistry.class); result = formatStringsRegistry;
 
                 AppBeans.get(Configuration.NAME); result = configuration;
                 AppBeans.get(Configuration.class); result = configuration;
@@ -234,5 +248,7 @@ public class CubaClientTestCase {
                 AppBeans.get(BeanValidation.NAME, BeanValidation.class); result = beanValidation;
             }
         };
+
+        metadata.initMetadata();
     }
 }

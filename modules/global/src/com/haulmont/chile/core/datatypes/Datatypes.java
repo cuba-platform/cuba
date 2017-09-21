@@ -17,103 +17,18 @@
 
 package com.haulmont.chile.core.datatypes;
 
-import com.haulmont.bali.util.Dom4j;
-import com.haulmont.bali.util.ReflectionHelper;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
+import com.haulmont.cuba.core.global.AppBeans;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.lang.reflect.Constructor;
-import java.net.URL;
-import java.util.*;
+import java.util.Locale;
+import java.util.Set;
 
 /**
- * Contains instances of all Datatype's registered for the application.
- * <p>
- * Automatically loads datatype definitions from the file <code>datatypes.xml</code> in the root of classpath. If no
- * such file found, configures datatypes from <code>/com/haulmont/chile/core/datatypes/datatypes.xml</code>
- *
+ * Utility class for accessing datatypes and format strings.
+ * Consider using {@link DatatypeRegistry} and {@link FormatStringsRegistry} beans directly.
  */
-public final class Datatypes {
-
-    private static Logger log = LoggerFactory.getLogger(Datatypes.class);
-
-    private static Datatypes instance = new Datatypes();
-
-    private Map<Class<?>, Datatype> datatypeByClass = new HashMap<>();
-    private Map<String, Datatype> datatypeByName = new HashMap<>();
-
-    private Map<Locale, FormatStrings> formatStringsMap = new HashMap<>();
-
-    private boolean useLocaleLanguageOnly = true;
-
-    private final List<String> systemDatatypeNames = Arrays.asList(
-            "boolean", "byteArray", "date", "dateTime", "decimal", "double", "int", "long", "string", "time", "uuid");
-
-    private Datatypes() {
-        SAXReader reader = new SAXReader();
-        URL resource = Datatypes.class.getResource("/datatypes.xml");
-        if (resource == null) {
-            log.info("Can't find /datatypes.xml, using default datatypes settings");
-            resource = Datatypes.class.getResource("/com/haulmont/chile/core/datatypes/datatypes.xml");
-        }
-
-        try {
-            Document document = reader.read(resource);
-            Element element = document.getRootElement();
-
-            List<Element> datatypeElements = Dom4j.elements(element, "datatype");
-            for (Element datatypeElement : datatypeElements) {
-                String datatypeClassName = datatypeElement.attributeValue("class");
-                try {
-                    Datatype datatype;
-                    Class<Datatype> datatypeClass = ReflectionHelper.getClass(datatypeClassName);
-                    try {
-                        final Constructor<Datatype> constructor = datatypeClass.getConstructor(Element.class);
-                        datatype = constructor.newInstance(datatypeElement);
-                    } catch (Throwable e) {
-                        datatype = datatypeClass.newInstance();
-                    }
-
-                    __register(datatype);
-                } catch (Throwable e) {
-                    log.error(String.format("Fail to load datatype '%s'", datatypeClassName), e);
-                }
-            }
-        } catch (DocumentException e) {
-            log.error("Fail to load datatype settings", e);
-        }
-    }
-
-    private void __register(Datatype datatype) {
-        if (systemDatatypeNames.contains(datatype.getName())) {
-            if (datatypeByClass.containsKey(datatype.getJavaClass())) {
-                log.error("Cannot register multiple system datatypes with the same target class: '{}' and '{}'",
-                        datatypeByClass.get(datatype.getJavaClass()), datatype);
-            } else {
-                datatypeByClass.put(datatype.getJavaClass(), datatype);
-            }
-        }
-        datatypeByName.put(datatype.getName(), datatype);
-    }
-
-    private FormatStrings getFormat(Locale locale) {
-        if (useLocaleLanguageOnly)
-            locale = Locale.forLanguageTag(locale.getLanguage());
-        return formatStringsMap.get(locale);
-    }
-
-    private void putFormat(Locale locale, FormatStrings formatStrings) {
-        formatStringsMap.put(locale, formatStrings);
-        if (!StringUtils.isEmpty(locale.getCountry()) || !StringUtils.isEmpty(locale.getVariant()))
-            useLocaleLanguageOnly = false;
-    }
+public class Datatypes {
 
     /**
      * Returns localized format strings.
@@ -122,7 +37,7 @@ public final class Datatypes {
      */
     @Nullable
     public static FormatStrings getFormatStrings(Locale locale) {
-        return instance.getFormat(locale);
+        return getFormatStringsRegistry().getFormatStrings(locale);
     }
 
     /**
@@ -132,20 +47,7 @@ public final class Datatypes {
      */
     @Nonnull
     public static FormatStrings getFormatStringsNN(Locale locale) {
-        FormatStrings format = instance.getFormat(locale);
-        if (format == null) {
-            throw new IllegalArgumentException("Not found format strings for locale " + locale.toLanguageTag());
-        }
-        return format;
-    }
-
-    /** INTERNAL. Don't call from application code. */
-    public static void setFormatStrings(Locale locale, FormatStrings formatStrings) {
-        instance.putFormat(locale, formatStrings);
-    }
-
-    public static void register(Datatype datatype) {
-        instance.__register(datatype);
+        return getFormatStringsRegistry().getFormatStringsNN(locale);
     }
 
     /**
@@ -155,10 +57,7 @@ public final class Datatypes {
      */
     @Nonnull
     public static Datatype get(String name) {
-        Datatype datatype = instance.datatypeByName.get(name);
-        if (datatype == null)
-            throw new IllegalArgumentException("Datatype " + name + " is not found");
-        return datatype;
+        return getDatatypeRegistry().get(name);
     }
 
     /**
@@ -167,18 +66,7 @@ public final class Datatypes {
      */
     @Nullable
     public static <T> Datatype<T> get(Class<T> clazz) {
-        Datatype datatype = instance.datatypeByClass.get(clazz);
-        if (datatype == null) {
-            // if no exact type found, try to find matching super-type
-            for (Map.Entry<Class<?>, Datatype> entry : instance.datatypeByClass.entrySet()) {
-                if (entry.getKey().isAssignableFrom(clazz)) {
-                    datatype = entry.getValue();
-                    break;
-                }
-            }
-        }
-        //noinspection unchecked
-        return datatype;
+        return getDatatypeRegistry().get(clazz);
     }
 
     /**
@@ -188,16 +76,21 @@ public final class Datatypes {
      */
     @Nonnull
     public static <T> Datatype<T> getNN(Class<T> clazz) {
-        Datatype<T> datatype = get(clazz);
-        if (datatype == null)
-            throw new IllegalArgumentException("A datatype for " + clazz + " is not found");
-        return datatype;
+        return getDatatypeRegistry().getNN(clazz);
     }
 
     /**
      * @return all registered Datatype names.
      */
     public static Set<String> getNames() {
-        return Collections.unmodifiableSet(instance.datatypeByName.keySet());
+        return getDatatypeRegistry().getNames();
+    }
+
+    private static DatatypeRegistry getDatatypeRegistry() {
+        return AppBeans.get(DatatypeRegistry.class);
+    }
+
+    private static FormatStringsRegistry getFormatStringsRegistry() {
+        return AppBeans.get(FormatStringsRegistry.class);
     }
 }

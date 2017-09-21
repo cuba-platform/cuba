@@ -18,6 +18,48 @@
 
 <metadata xmlns="http://schemas.haulmont.com/cuba/metadata.xsd">
 
+    <datatypes>
+        <datatype class="com.haulmont.chile.core.datatypes.impl.BooleanDatatype"
+                  default="true"/>
+
+        <datatype class="com.haulmont.chile.core.datatypes.impl.IntegerDatatype"
+                  default="true"
+                  format="0" groupingSeparator=""/>
+
+        <datatype class="com.haulmont.chile.core.datatypes.impl.LongDatatype"
+                  default="true"
+                  format="0" groupingSeparator=""/>
+
+        <datatype class="com.haulmont.chile.core.datatypes.impl.DoubleDatatype"
+                  default="true"
+                  format="0.###" decimalSeparator="." groupingSeparator=""/>
+
+        <datatype class="com.haulmont.chile.core.datatypes.impl.BigDecimalDatatype"
+                  default="true"
+                  format="0.####" decimalSeparator="." groupingSeparator=""/>
+
+        <datatype class="com.haulmont.chile.core.datatypes.impl.StringDatatype"
+                  default="true"/>
+
+        <datatype class="com.haulmont.chile.core.datatypes.impl.DateTimeDatatype"
+                  default="true"
+                  format="yyyy-MM-dd HH:mm:ss.SSS"/>
+
+        <datatype class="com.haulmont.chile.core.datatypes.impl.DateDatatype"
+                  default="true"
+                  format="yyyy-MM-dd"/>
+
+        <datatype class="com.haulmont.chile.core.datatypes.impl.TimeDatatype"
+                  default="true"
+                  format="HH:mm:ss"/>
+
+        <datatype class="com.haulmont.chile.core.datatypes.impl.UUIDDatatype"
+                  default="true"/>
+
+        <datatype class="com.haulmont.chile.core.datatypes.impl.ByteArrayDatatype"
+                  default="true"/>
+    </datatypes>
+
     <metadata-model root-package="com.haulmont.cuba">
         <class>com.haulmont.cuba.core.entity.AbstractNotPersistentEntity</class>
         <class>com.haulmont.cuba.core.entity.KeyValueEntity</class>

@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -27,6 +28,10 @@ import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.global.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.ContextStartedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -43,7 +48,10 @@ public class MetadataImpl implements Metadata {
 
     private final Logger log = LoggerFactory.getLogger(MetadataImpl.class);
 
-    protected volatile Session session;
+    protected Session session;
+
+    @Inject
+    protected DatatypeRegistry datatypeRegistry;
 
     @Inject
     protected ViewRepository viewRepository;
@@ -60,17 +68,27 @@ public class MetadataImpl implements Metadata {
     @Inject
     protected NumberIdSource numberIdSource;
 
+    @Inject
+    protected ApplicationContext applicationContext;
+
     protected List<String> rootPackages = new ArrayList<>();
+
+    @EventListener({ContextStartedEvent.class, ContextRefreshedEvent.class})
+    protected void initMetadata() {
+        log.info("Initializing metadata");
+        long startTime = System.currentTimeMillis();
+
+        MetadataLoader metadataLoader = (MetadataLoader) applicationContext.getBean(MetadataLoader.NAME);
+        metadataLoader.loadMetadata();
+        rootPackages = metadataLoader.getRootPackages();
+        session = new CachingMetadataSession(metadataLoader.getSession());
+        SessionImpl.setSerializationSupportSession(session);
+
+        log.info("Metadata initialized in " + (System.currentTimeMillis() - startTime) + "ms");
+    }
 
     @Override
     public Session getSession() {
-        if (session == null) {
-            synchronized (this) {
-                if (session == null) {
-                    initMetadata();
-                }
-            }
-        }
         return session;
     }
 
@@ -87,6 +105,11 @@ public class MetadataImpl implements Metadata {
     @Override
     public MetadataTools getTools() {
         return tools;
+    }
+
+    @Override
+    public DatatypeRegistry getDatatypes() {
+        return datatypeRegistry;
     }
 
     protected <T> T __create(Class<T> entityClass) {
@@ -208,19 +231,6 @@ public class MetadataImpl implements Metadata {
     @Override
     public List<String> getRootPackages() {
         return Collections.unmodifiableList(rootPackages);
-    }
-
-    protected void initMetadata() {
-        log.info("Initializing metadata");
-        long startTime = System.currentTimeMillis();
-
-        MetadataLoader metadataLoader = AppBeans.getPrototype(MetadataLoader.NAME);
-        metadataLoader.loadMetadata();
-        rootPackages = metadataLoader.getRootPackages();
-        session = new CachingMetadataSession(metadataLoader.getSession());
-        SessionImpl.setSerializationSupportSession(session);
-
-        log.info("Metadata initialized in " + (System.currentTimeMillis() - startTime) + "ms");
     }
 
     @Override

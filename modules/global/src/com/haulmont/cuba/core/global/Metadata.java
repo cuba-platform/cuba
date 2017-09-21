@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.core.entity.Entity;
@@ -54,6 +55,11 @@ public interface Metadata extends Session {
      * @return  MetadataTools instance
      */
     MetadataTools getTools();
+
+    /**
+     * Convenient access to {@link DatatypeRegistry} bean.
+     */
+    DatatypeRegistry getDatatypes();
 
     /**
      * Instantiate an entity, taking into account extended entities.

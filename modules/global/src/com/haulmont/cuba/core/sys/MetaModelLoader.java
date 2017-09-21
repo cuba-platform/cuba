@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.impl.EnumerationImpl;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.impl.*;
@@ -39,6 +39,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.lang.annotation.Annotation;
@@ -64,12 +65,19 @@ public class MetaModelLoader {
     protected static final String VALIDATION_NOTNULL_MESSAGE = "_notnull_message";
     protected static final String VALIDATION_NOTNULL_UI_COMPONENT = "_notnull_ui_component";
 
+    protected DatatypeRegistry datatypes;
+
     protected Session session;
 
     private Logger log = LoggerFactory.getLogger(MetaModelLoader.class);
 
     public MetaModelLoader(Session session) {
         this.session = session;
+    }
+
+    @Inject
+    public void setDatatypeRegistry(DatatypeRegistry datatypeRegistry) {
+        this.datatypes = datatypeRegistry;
     }
 
     public void loadModel(String rootPackage, List<EntityClassInfo> classInfos) {
@@ -686,7 +694,7 @@ public class MetaModelLoader {
     protected Datatype getDatatype(AnnotatedElement annotatedElement) {
         com.haulmont.chile.core.annotations.MetaProperty annotation =
                 annotatedElement.getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class);
-        return annotation != null && !annotation.datatype().equals("") ? Datatypes.get(annotation.datatype()) : null;
+        return annotation != null && !annotation.datatype().equals("") ? datatypes.get(annotation.datatype()) : null;
     }
 
     protected boolean setterExists(Field field) {
@@ -735,7 +743,7 @@ public class MetaModelLoader {
             return new MetadataObjectInfo<>(new DatatypeRange(datatype));
         }
 
-        datatype = Datatypes.get(type);
+        datatype = datatypes.get(type);
         if (datatype != null) {
             MetaClass metaClass = metaProperty.getDomain();
             Class javaClass = metaClass.getJavaClass();

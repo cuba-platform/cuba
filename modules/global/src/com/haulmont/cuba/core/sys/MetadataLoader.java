@@ -21,6 +21,7 @@ import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
@@ -29,7 +30,6 @@ import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.impl.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.*;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.Stores;
@@ -38,11 +38,15 @@ import com.haulmont.cuba.core.sys.MetadataBuildSupport.XmlAnnotations;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
@@ -51,6 +55,7 @@ import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -71,17 +76,21 @@ public class MetadataLoader {
     @Inject
     protected ExtendedEntities extendedEntities;
 
+    @Inject
+    protected DatatypeRegistry datatypeRegistry;
+
+    @Inject
+    protected ApplicationContext applicationContext;
+
     protected Session session;
-    protected MetaModelLoader modelLoader;
     protected List<String> rootPackages = new ArrayList<>();
 
     public MetadataLoader() {
         this.session = new SessionImpl();
-        this.modelLoader = createModelLoader(session);
     }
 
     protected MetaModelLoader createModelLoader(Session session) {
-        return AppBeans.getPrototype(MetaModelLoader.NAME, session);
+        return (MetaModelLoader) applicationContext.getBean(MetaModelLoader.NAME, session);
     }
 
     /**
@@ -93,6 +102,8 @@ public class MetadataLoader {
         initRootPackages(metadataXmlList);
 
         initDatatypes(metadataBuildSupport.getDatatypeElements(metadataXmlList));
+
+        MetaModelLoader modelLoader = createModelLoader(session);
 
         Map<String, List<EntityClassInfo>> entityPackages = metadataBuildSupport.getEntityPackages(metadataXmlList);
         for (Map.Entry<String, List<EntityClassInfo>> entry : entityPackages.entrySet()) {
@@ -141,6 +152,8 @@ public class MetadataLoader {
     }
 
     protected void initDatatypes(List<Element> datatypeElements) {
+        loadDatatypesFromClasspathResource();
+
         for (Element datatypeEl : datatypeElements) {
             String datatypeClassName = datatypeEl.attributeValue("class");
             try {
@@ -152,11 +165,48 @@ public class MetadataLoader {
                 } catch (Throwable e) {
                     datatype = datatypeClass.newInstance();
                 }
-                Datatypes.register(datatype);
+                datatypeRegistry.register(datatype, Boolean.valueOf(datatypeEl.attributeValue("default")));
             } catch (Throwable e) {
                 log.error("Fail to load datatype '{}'", datatypeClassName, e);
             }
         }
+    }
+
+    protected void loadDatatypesFromClasspathResource() {
+        SAXReader reader = new SAXReader();
+        URL resource = Datatypes.class.getResource(getGetDatatypesResourcePath());
+        if (resource != null) {
+            log.info("Loading datatypes from " + resource);
+            try {
+                Document document = reader.read(resource);
+                Element element = document.getRootElement();
+
+                List<Element> datatypeElements = Dom4j.elements(element, "datatype");
+                for (Element datatypeElement : datatypeElements) {
+                    String datatypeClassName = datatypeElement.attributeValue("class");
+                    try {
+                        Datatype datatype;
+                        Class<Datatype> datatypeClass = ReflectionHelper.getClass(datatypeClassName);
+                        try {
+                            final Constructor<Datatype> constructor = datatypeClass.getConstructor(Element.class);
+                            datatype = constructor.newInstance(datatypeElement);
+                        } catch (Throwable e) {
+                            datatype = datatypeClass.newInstance();
+                        }
+
+                        datatypeRegistry.register(datatype, true);
+                    } catch (Throwable e) {
+                        log.error(String.format("Fail to load datatype '%s'", datatypeClassName), e);
+                    }
+                }
+            } catch (DocumentException e) {
+                log.error("Fail to load datatype settings", e);
+            }
+        }
+    }
+
+    protected String getGetDatatypesResourcePath() {
+        return "/datatypes.xml";
     }
 
     protected void replaceExtendedMetaClasses() {

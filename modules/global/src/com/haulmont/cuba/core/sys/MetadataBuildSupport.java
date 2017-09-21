@@ -19,7 +19,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.Stores;
 import org.apache.commons.io.IOUtils;
@@ -78,6 +78,9 @@ public class MetadataBuildSupport {
 
     @Inject
     protected Resources resources;
+
+    @Inject
+    protected DatatypeRegistry datatypes;
 
     private static final Pattern JAVA_CLASS_PATTERN = Pattern.compile("([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*");
 
@@ -276,7 +279,7 @@ public class MetadataBuildSupport {
             }
         } else {
             try {
-                return Datatypes.get(datatypeName).parse(value);
+                return datatypes.get(datatypeName).parse(value);
             } catch (ParseException e) {
                 throw new RuntimeException("Unable to parse XML meta-annotation value", e);
             }

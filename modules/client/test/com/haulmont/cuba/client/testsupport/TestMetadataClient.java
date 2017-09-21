@@ -18,6 +18,7 @@
 package com.haulmont.cuba.client.testsupport;
 
 import com.haulmont.cuba.core.global.ExtendedEntities;
+import com.haulmont.cuba.core.sys.DatatypeRegistryImpl;
 import com.haulmont.cuba.core.sys.MetadataImpl;
 import com.haulmont.cuba.core.sys.MetadataLoader;
 
@@ -36,11 +37,13 @@ public class TestMetadataClient extends MetadataImpl {
 
         extendedEntities = new ExtendedEntities(this);
         tools = new TestMetadataTools(this);
+        datatypeRegistry = new DatatypeRegistryImpl();
     }
 
     @Override
     protected void initMetadata() {
         MetadataLoader metadataLoader = new TestMetadataLoader(packages);
+        ((TestMetadataLoader) metadataLoader).setDatatypeRegistry(datatypeRegistry);
         metadataLoader.loadMetadata();
         rootPackages = metadataLoader.getRootPackages();
         this.session = metadataLoader.getSession();
