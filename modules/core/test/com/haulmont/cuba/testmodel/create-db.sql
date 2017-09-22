@@ -174,11 +174,10 @@ create table TEST_CASCADE_ENTITY (
     --
     NAME varchar(255),
     FATHER_ID varchar(36),
+    FIRST_CHILD_ID varchar(36),
     --
     primary key (ID)
 )^
-
-alter table TEST_CASCADE_ENTITY add constraint FK_TEST_CASCADE_ENTITY_FATHER foreign key (FATHER_ID) references TEST_CASCADE_ENTITY(ID)^
 
 ----------------------------------------------------------------------------------------------------------------
 
