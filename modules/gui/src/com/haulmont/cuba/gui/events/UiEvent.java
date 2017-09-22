@@ -18,6 +18,13 @@ package com.haulmont.cuba.gui.events;
 
 /**
  * Marker interface for events that are sent to UIs screens.
+ * UiEvent events are passed only to {@link org.springframework.context.event.EventListener} methods declared in UI
+ * controllers of windows and frames and they can be fired only from UI thread using
+ * {@link com.haulmont.cuba.core.global.Events} bean.
+ *
+ * @see com.haulmont.cuba.core.global.Events
+ * @see org.springframework.context.event.EventListener
+ * @see org.springframework.core.annotation.Order
  */
 public interface UiEvent {
 }

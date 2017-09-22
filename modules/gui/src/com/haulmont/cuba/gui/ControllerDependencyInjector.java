@@ -52,6 +52,9 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Wires {@link Inject}, {@link Named}, {@link WindowParam} fields/setters and {@link EventListener} methods.
+ */
 public class ControllerDependencyInjector {
 
     protected static final LoadingCache<Class<?>, List<Method>> eventListenerMethodsCache =
@@ -60,14 +63,14 @@ public class ControllerDependencyInjector {
                     .build(new CacheLoader<Class<?>, List<Method>>() {
                         @Override
                         public List<Method> load(@Nonnull Class<?> concreteClass) {
-                            return getAnnotatedMethodsNotCached(concreteClass);
+                            return getAnnotatedListenerMethodsNotCached(concreteClass);
                         }
                     });
 
     protected Frame frame;
-    protected Map<String,Object> params;
+    protected Map<String, Object> params;
 
-    public ControllerDependencyInjector(Frame frame, Map<String,Object> params) {
+    public ControllerDependencyInjector(Frame frame, Map<String, Object> params) {
         this.frame = frame;
         this.params = params;
     }
@@ -103,7 +106,7 @@ public class ControllerDependencyInjector {
     protected void injectEventListeners(Frame frame) {
         Class<? extends Frame> clazz = frame.getClass();
 
-        List<Method> eventListenerMethods = getAnnotatedMethods(clazz);
+        List<Method> eventListenerMethods = getAnnotatedListenerMethods(clazz);
 
         if (!eventListenerMethods.isEmpty()) {
             Events events = AppBeans.get(Events.NAME);
@@ -116,7 +119,7 @@ public class ControllerDependencyInjector {
         }
     }
 
-    protected static List<Method> getAnnotatedMethods(Class<?> clazz) {
+    protected static List<Method> getAnnotatedListenerMethods(Class<?> clazz) {
         if (clazz == AbstractWindow.class
                 || clazz == AbstractEditor.class
                 || clazz == AbstractLookup.class
@@ -127,7 +130,7 @@ public class ControllerDependencyInjector {
         return eventListenerMethodsCache.getUnchecked(clazz);
     }
 
-    protected static List<Method> getAnnotatedMethodsNotCached(Class<?> clazz) {
+    protected static List<Method> getAnnotatedListenerMethodsNotCached(Class<?> clazz) {
         Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(clazz);
 
         List<Method> eventListenerMethods = Arrays.stream(methods)
