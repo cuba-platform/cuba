@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.testmodel.cascadedelete.CascadeEntity;
 import com.haulmont.cuba.testmodel.sales.Customer;
 import com.haulmont.cuba.testmodel.sales.Order;
 import com.haulmont.cuba.testsupport.TestContainer;
@@ -33,6 +34,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
 
 import static org.junit.Assert.*;
 
@@ -48,6 +50,8 @@ public class NonDetachedTest {
     private Customer customer;
     private Order order;
     private View orderView;
+    private CascadeEntity cascadeEntity1;
+    private CascadeEntity cascadeEntity2;
 
     @Before
     public void setUp() throws Exception {
@@ -75,6 +79,17 @@ public class NonDetachedTest {
             order.setUser(user);
             em.persist(order);
 
+            cascadeEntity1 = metadata.create(CascadeEntity.class);
+            cascadeEntity1.setName("cascadeEntity1");
+            em.persist(cascadeEntity1);
+
+            cascadeEntity2 = metadata.create(CascadeEntity.class);
+            cascadeEntity2.setName("cascadeEntity2");
+            cascadeEntity2.setFather(cascadeEntity1);
+            em.persist(cascadeEntity2);
+
+            cascadeEntity1.setFirstChild(cascadeEntity2);
+
             tx.commit();
         }
 
@@ -87,7 +102,7 @@ public class NonDetachedTest {
 
     @After
     public void tearDown() throws Exception {
-        cont.deleteRecord(order, customer, user);
+        cont.deleteRecord(order, customer, user, cascadeEntity2, cascadeEntity1);
     }
 
     @Test
@@ -229,5 +244,27 @@ public class NonDetachedTest {
         assertNotNull(order.getAmount());
         assertNotNull(order.getCustomer());
         assertNotNull(order.getUser());
+    }
+
+    @Test
+    public void testRecursiveObjects() throws Exception {
+        CascadeEntity e1 = metadata.create(CascadeEntity.class);
+        e1.setName("cascadeEntity1");
+
+        CascadeEntity e2 = metadata.create(CascadeEntity.class);
+        e2.setName("cascadeEntity2");
+        e2.setFather(cascadeEntity1);
+
+        e1.setChildren(new HashSet<>());
+        e1.getChildren().add(e2);
+        e1.setFirstChild(e2);
+
+        AppBeans.get(EntityStates.class).makePatch(e1);
+
+        CascadeEntity mergedEntity = persistence.callInTransaction(em -> {
+            return em.merge(e1);
+        });
+
+        assertEquals(cascadeEntity1.getName(), mergedEntity.getName());
     }
 }

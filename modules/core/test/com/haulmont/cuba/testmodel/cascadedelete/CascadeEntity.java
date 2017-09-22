@@ -38,6 +38,10 @@ public class CascadeEntity extends StandardEntity {
     @JoinColumn(name = "FATHER_ID")
     protected CascadeEntity father;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FIRST_CHILD_ID")
+    protected CascadeEntity firstChild;
+
     @OneToMany(mappedBy = "father")
     @OnDelete(DeletePolicy.CASCADE)
     protected Set<CascadeEntity> children;
@@ -56,6 +60,14 @@ public class CascadeEntity extends StandardEntity {
 
     public void setFather(CascadeEntity father) {
         this.father = father;
+    }
+
+    public CascadeEntity getFirstChild() {
+        return firstChild;
+    }
+
+    public void setFirstChild(CascadeEntity firstChild) {
+        this.firstChild = firstChild;
     }
 
     public Set<CascadeEntity> getChildren() {

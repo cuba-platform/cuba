@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.google.common.collect.Sets;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -39,10 +40,7 @@ import javax.annotation.Nullable;
 import javax.persistence.EntityNotFoundException;
 import java.lang.reflect.Field;
 import java.sql.Connection;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class EntityManagerImpl implements EntityManager {
 
@@ -101,7 +99,7 @@ public class EntityManagerImpl implements EntityManager {
         if ((PersistenceHelper.isNew(entity) || !PersistenceHelper.isDetached(entity)) && entity.getId() != null) {
             // if a new instance is passed to merge(), we suppose it is persistent but "not detached"
             Entity destEntity = findOrCreate(entity.getClass(), entity.getId());
-            deepCopyIgnoringNulls(entity, destEntity);
+            deepCopyIgnoringNulls(entity, destEntity, Sets.newIdentityHashSet());
             //noinspection unchecked
             return (T) destEntity;
         }
@@ -311,7 +309,11 @@ public class EntityManagerImpl implements EntityManager {
     /**
      * Copies all property values from source to dest excluding null values.
      */
-    protected void deepCopyIgnoringNulls(Entity source, Entity dest) {
+    protected void deepCopyIgnoringNulls(Entity source, Entity dest, Set<Entity> visited) {
+        if (visited.contains(source))
+            return;
+        visited.add(source);
+
         MetadataTools metadataTools = metadata.getTools();
         for (MetaProperty srcProperty : source.getMetaClass().getProperties()) {
             String name = srcProperty.getName();
@@ -358,29 +360,29 @@ public class EntityManagerImpl implements EntityManager {
                         for (Entity srcRef : srcCollection) {
                             Entity reloadedRef = findOrCreate(refClass, srcRef.getId());
                             dstCollection.add(reloadedRef);
-                            deepCopyIgnoringNulls(srcRef, reloadedRef);
+                            deepCopyIgnoringNulls(srcRef, reloadedRef, visited);
                         }
                     }
                 } else {
                     Entity srcRef = (Entity) value;
                     Entity destRef = dest.getValue(name);
                     if (srcRef.equals(destRef)) {
-                        deepCopyIgnoringNulls(srcRef, destRef);
+                        deepCopyIgnoringNulls(srcRef, destRef, visited);
                     } else {
                         Entity reloadedRef = findOrCreate(refClass, srcRef.getId());
                         dest.setValue(name, reloadedRef);
-                        deepCopyIgnoringNulls(srcRef, reloadedRef);
+                        deepCopyIgnoringNulls(srcRef, reloadedRef, visited);
                     }
                 }
             } else if (metadataTools.isEmbedded(srcProperty)) {
                 Entity srcRef = (Entity) value;
                 Entity destRef = dest.getValue(name);
                 if (destRef != null) {
-                    deepCopyIgnoringNulls(srcRef, destRef);
+                    deepCopyIgnoringNulls(srcRef, destRef, visited);
                 } else {
                     Entity newRef = (Entity) metadata.create(srcProperty.getRange().asClass().getJavaClass());
                     dest.setValue(name, newRef);
-                    deepCopyIgnoringNulls(srcRef, newRef);
+                    deepCopyIgnoringNulls(srcRef, newRef, visited);
                 }
             } else {
                 dest.setValue(name, value);
