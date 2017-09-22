@@ -17,16 +17,17 @@
 
 package com.haulmont.cuba.gui;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableList;
 import com.haulmont.cuba.client.ClientConfiguration;
 import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.components.AbstractFrame;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -42,17 +43,26 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.EventListener;
 import org.springframework.util.ReflectionUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.lang.reflect.*;
+import java.lang.reflect.Field;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class ControllerDependencyInjector {
 
-    protected static final transient Map<Class, List<Method>> eventListenerMethodsCache = new ConcurrentHashMap<>();
+    protected static final LoadingCache<Class<?>, List<Method>> eventListenerMethodsCache =
+            CacheBuilder.newBuilder()
+                    .weakKeys()
+                    .build(new CacheLoader<Class<?>, List<Method>>() {
+                        @Override
+                        public List<Method> load(@Nonnull Class<?> concreteClass) {
+                            return getAnnotatedMethodsNotCached(concreteClass);
+                        }
+                    });
 
     protected Frame frame;
     protected Map<String,Object> params;
@@ -93,20 +103,7 @@ public class ControllerDependencyInjector {
     protected void injectEventListeners(Frame frame) {
         Class<? extends Frame> clazz = frame.getClass();
 
-        List<Method> eventListenerMethods = eventListenerMethodsCache.get(clazz);
-        if (eventListenerMethods == null) {
-            Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(clazz);
-
-            eventListenerMethods = Arrays.stream(methods)
-                    .filter(m -> m.getAnnotation(EventListener.class) != null)
-                    .collect(Collectors.toList());
-
-            if (eventListenerMethods.isEmpty()) {
-                eventListenerMethods = Collections.emptyList();
-            }
-
-            eventListenerMethodsCache.put(clazz, eventListenerMethods);
-        }
+        List<Method> eventListenerMethods = getAnnotatedMethods(clazz);
 
         if (!eventListenerMethods.isEmpty()) {
             Events events = AppBeans.get(Events.NAME);
@@ -117,6 +114,31 @@ public class ControllerDependencyInjector {
 
             ((AbstractFrame) frame).setUiEventListeners(listeners);
         }
+    }
+
+    protected static List<Method> getAnnotatedMethods(Class<?> clazz) {
+        if (clazz == AbstractWindow.class
+                || clazz == AbstractEditor.class
+                || clazz == AbstractLookup.class
+                || clazz == AbstractFrame.class) {
+            return Collections.emptyList();
+        }
+
+        return eventListenerMethodsCache.getUnchecked(clazz);
+    }
+
+    protected static List<Method> getAnnotatedMethodsNotCached(Class<?> clazz) {
+        Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(clazz);
+
+        List<Method> eventListenerMethods = Arrays.stream(methods)
+                .filter(m -> m.getAnnotation(EventListener.class) != null)
+                .collect(Collectors.toList());
+
+        if (eventListenerMethods.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return ImmutableList.copyOf(eventListenerMethods);
     }
 
     protected List<Field> getAllFields(List<Class> classes) {
