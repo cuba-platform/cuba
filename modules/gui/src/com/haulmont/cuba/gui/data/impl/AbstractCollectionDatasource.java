@@ -18,10 +18,7 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.google.common.base.Joiner;
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -644,28 +641,28 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     @Nullable
     protected String[] getSortPropertiesForPersistentAttribute(MetaPropertyPath propertyPath) {
-        String[] sortProperties = null;
+        ArrayList<String> props = new ArrayList<>();
         if (!propertyPath.getMetaProperty().getRange().isClass()) {
             // a scalar persistent attribute
-            sortProperties = new String[1];
-            sortProperties[0] = propertyPath.toString();
+            props.add(propertyPath.toString());
         } else {
             // a reference attribute
             MetaClass metaClass = propertyPath.getMetaProperty().getRange().asClass();
             if (!propertyPath.getMetaProperty().getRange().getCardinality().isMany()) {
-                InstanceUtils.NamePatternRec rec = InstanceUtils.parseNamePattern(metaClass);
-                if (rec != null) {
-                    sortProperties = new String[rec.fields.length];
-                    for (int i = 0; i < rec.fields.length; i++) {
-                        sortProperties[i] = propertyPath.toString() + "." + rec.fields[i];
-                    }
+                Collection<MetaProperty> properties = metadata.getTools().getNamePatternProperties(metaClass);
+                if (!properties.isEmpty()) {
+                    properties.stream()
+                            .filter(metaProperty -> metadata.getTools().isPersistent(metaProperty))
+                            .map(MetadataObject::getName)
+                            .map(propName -> propertyPath.toString().concat(propName))
+                            .forEach(props::add);
                 } else {
-                    sortProperties = new String[1];
-                    sortProperties[0] = propertyPath.toString();
+                    props.add(propertyPath.toString());
                 }
             }
         }
-        return sortProperties;
+        props.trimToSize();
+        return props.isEmpty() ? null : props.toArray(new String[props.size()]);
     }
 
     @Override
