@@ -18,11 +18,13 @@ package com.haulmont.cuba.gui.components.listeditor;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ListEditor;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 import static com.haulmont.cuba.gui.components.ListEditor.ItemType.*;
 
@@ -42,48 +44,48 @@ public class ListEditorHelper {
             case STRING:
                 return (String) v;
             case DATE:
-                return Datatypes.get(DateDatatype.NAME).format(v);
+                return Datatypes.getNN(java.sql.Date.class).format(v);
             case DATETIME:
-                return Datatypes.get(DateTimeDatatype.NAME).format(v);
+                return Datatypes.getNN(Date.class).format(v);
             case INTEGER:
-                return Datatypes.get(IntegerDatatype.NAME).format(v);
+                return Datatypes.getNN(Integer.class).format(v);
             case LONG:
-                return Datatypes.get(LongDatatype.NAME).format(v);
+                return Datatypes.getNN(Long.class).format(v);
             case BIGDECIMAL:
-                return Datatypes.get(BigDecimalDatatype.NAME).format(v);
+                return Datatypes.getNN(BigDecimal.class).format(v);
             case DOUBLE:
-                return Datatypes.get(DoubleDatatype.NAME).format(v);
+                return Datatypes.getNN(Double.class).format(v);
             case ENUM:
                 return AppBeans.get(Messages.class).getMessage((Enum) v);
             case UUID:
-                return Datatypes.get(UUIDDatatype.NAME).format(v);
+                return Datatypes.getNN(java.util.UUID.class).format(v);
             default:
                 throw new IllegalStateException("Unknown item type");
         }
     }
 
     public static ListEditor.ItemType itemTypeFromDatatype(Datatype datatype) {
-        switch (datatype.getName()) {
-            case StringDatatype.NAME:
-                return STRING;
-            case IntegerDatatype.NAME:
-                return INTEGER;
-            case BigDecimalDatatype.NAME:
-                return BIGDECIMAL;
-            case DoubleDatatype.NAME:
-                return DOUBLE;
-            case LongDatatype.NAME:
-                return LONG;
-            case DateDatatype.NAME:
-                return DATE;
-            case DateTimeDatatype.NAME:
-                return DATETIME;
-            case BooleanDatatype.NAME:
-                return BOOLEAN;
-            case UUIDDatatype.NAME:
-                return UUID;
-            default:
-                throw new IllegalArgumentException("Datatype " + datatype.getName() + " is not supported");
+        Class type = datatype.getJavaClass();
+        if (type.equals(String.class)) {
+            return STRING;
+        } else if (type.equals(Integer.class)) {
+            return INTEGER;
+        } else if (type.equals(BigDecimal.class)) {
+            return BIGDECIMAL;
+        } else if (type.equals(Double.class)) {
+            return DOUBLE;
+        } else if (type.equals(Long.class)) {
+            return LONG;
+        } else if (type.equals(java.sql.Date.class)) {
+            return DATE;
+        } else if (type.equals(Date.class)) {
+            return DATETIME;
+        } else if (type.equals(Boolean.class)) {
+            return BOOLEAN;
+        } else if (type.equals(java.util.UUID.class)) {
+            return UUID;
+        } else {
+            throw new IllegalArgumentException("Datatype " + datatype + " is not supported");
         }
     }
 

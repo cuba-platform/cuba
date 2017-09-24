@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.components.validators;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.LongDatatype;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -55,7 +54,7 @@ public class LongValidator implements Field.Validator {
         boolean result;
         if (value instanceof String) {
             try {
-                Datatype<Long> datatype = Datatypes.get(LongDatatype.NAME);
+                Datatype<Long> datatype = Datatypes.getNN(Long.class);
                 UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
                 Long num = datatype.parse((String) value, sessionSource.getLocale());
                 result = checkPositive(num);

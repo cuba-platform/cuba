@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package spec.datatypes
+package spec.cuba.core.datatypes
 
 import com.haulmont.chile.core.datatypes.DatatypeRegistry
 import com.haulmont.chile.core.datatypes.impl.*
@@ -29,24 +29,23 @@ class DatatypeTest extends Specification {
     @Shared @ClassRule
     public TestContainer cont = TestContainer.Common.INSTANCE;
 
-    @SuppressWarnings("UnnecessaryQualifiedReference")
     def "standard datatypes"() {
 
         def datatypes = AppBeans.get(DatatypeRegistry.class)
 
         expect:
 
-        datatypes.get(String.class).name == StringDatatype.NAME
-        datatypes.get(Boolean.class).name == BooleanDatatype.NAME
-        datatypes.get(Integer.class).name == IntegerDatatype.NAME
-        datatypes.get(Long.class).name == LongDatatype.NAME
-        datatypes.get(Double.class).name == DoubleDatatype.NAME
-        datatypes.get(BigDecimal.class).name == BigDecimalDatatype.NAME
-        datatypes.get(java.util.Date.class).name == DateTimeDatatype.NAME
-        datatypes.get(java.sql.Date.class).name == DateDatatype.NAME
-        datatypes.get(java.sql.Time.class).name == TimeDatatype.NAME
-        datatypes.get(UUID.class).name == UUIDDatatype.NAME
-        datatypes.get(byte[].class).name == ByteArrayDatatype.NAME
+        datatypes.get(String.class).class == StringDatatype
+        datatypes.get(Boolean.class).class == BooleanDatatype
+        datatypes.get(Integer.class).class == IntegerDatatype
+        datatypes.get(Long.class).class == LongDatatype
+        datatypes.get(Double.class).class == DoubleDatatype
+        datatypes.get(BigDecimal.class).class == BigDecimalDatatype
+        datatypes.get(java.util.Date.class).class == DateTimeDatatype
+        datatypes.get(java.sql.Date.class).class == DateDatatype
+        datatypes.get(java.sql.Time.class).class == TimeDatatype
+        datatypes.get(UUID.class).class == UUIDDatatype
+        datatypes.get(byte[].class).class == ByteArrayDatatype
     }
 
     def "not supported types"() {

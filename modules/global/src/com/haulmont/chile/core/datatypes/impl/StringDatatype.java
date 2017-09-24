@@ -17,46 +17,24 @@
 
 package com.haulmont.chile.core.datatypes.impl;
 
+import com.haulmont.chile.core.annotations.JavaClass;
 import com.haulmont.chile.core.datatypes.Datatype;
 
-import javax.annotation.Nonnull;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
 import java.text.ParseException;
 import java.util.Locale;
 
+@JavaClass(String.class)
 public class StringDatatype implements Datatype<String> {
 
-	public final static String NAME = "string";
-
-    @Nonnull
     @Override
 	public String format(Object value) {
 		return value == null ? "" : (String) value;
 	}
 
-    @Nonnull
     @Override
     public String format(Object value, Locale locale) {
         return format(value);
     }
-
-    @Override
-	public Class getJavaClass() {
-		return String.class;
-	}
-
-    @Override
-	public String getName() {
-		return NAME;
-	}
-
-    @Override
-	public int getSqlType() {
-		return Types.VARCHAR;
-	}
 
     @Override
 	public String parse(String value) {
@@ -69,21 +47,10 @@ public class StringDatatype implements Datatype<String> {
     }
 
     @Override
-	public String read(ResultSet resultSet, int index) throws SQLException {
-        return resultSet.getString(index);
-	}
-
-    @Override
-	public void write(PreparedStatement statement, int index, Object value) throws SQLException {
-		if (value == null) {
-			statement.setString(index, null);
-		} else {
-			statement.setString(index, (String) value);
-		}
-	}
-
-    @Override
     public String toString() {
-        return NAME;
+        return getClass().getSimpleName();
     }
+
+    @Deprecated
+    public final static String NAME = "string";
 }

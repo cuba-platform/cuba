@@ -17,36 +17,32 @@
 
 package com.haulmont.chile.core.datatypes.impl;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.text.*;
-import java.util.Locale;
-
+import com.haulmont.chile.core.annotations.JavaClass;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
-import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import javax.annotation.Nonnull;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
 
+@JavaClass(Double.class)
 public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
-
-    public final static String NAME = "double";
 
     public DoubleDatatype(Element element) {
         super(element);
     }
 
-    @Nonnull
     @Override
     public String format(Object value) {
         return value == null ? "" : createFormat().format(value);
     }
 
-    @Nonnull
     @Override
     public String format(Object value, Locale locale) {
         if (value == null) {
@@ -61,21 +57,6 @@ public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
         DecimalFormatSymbols formatSymbols = formatStrings.getFormatSymbols();
         NumberFormat format = new DecimalFormat(formatStrings.getDoubleFormat(), formatSymbols);
         return format.format(value);
-    }
-
-    @Override
-    public Class getJavaClass() {
-        return Double.class;
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public int getSqlType() {
-        return Types.NUMERIC;
     }
 
     @Override
@@ -104,22 +85,10 @@ public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
     }
 
     @Override
-    public Double read(ResultSet resultSet, int index) throws SQLException {
-        Double value = resultSet.getDouble(index);
-        return resultSet.wasNull() ? null : value;
-    }
-
-    @Override
-    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
-        if (value == null) {
-            statement.setString(index, null);
-        } else {
-            statement.setDouble(index, (Double) value);
-        }
-    }
-
-    @Override
     public String toString() {
-        return NAME;
+        return getClass().getSimpleName();
     }
+
+    @Deprecated
+    public final static String NAME = "double";
 }

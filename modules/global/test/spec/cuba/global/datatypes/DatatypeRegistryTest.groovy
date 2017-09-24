@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package spec.datatypes
+package spec.cuba.global.datatypes
 
 import com.haulmont.chile.core.datatypes.impl.StringDatatype
 import com.haulmont.cuba.core.sys.DatatypeRegistryImpl
@@ -30,24 +30,20 @@ class DatatypeRegistryTest extends Specification {
 
         def myStringDatatype = new StringDatatype() {
             @Override
-            String getName() {
-                return 'my_string'
-            }
-            @Override
             String toString() {
-                return getName()
+                return "my_string"
             }
         }
 
         when:
 
-        registry.register(stringDatatype, true)
-        registry.register(myStringDatatype, false)
+        registry.register(stringDatatype, "string", true)
+        registry.register(myStringDatatype, "my_string", false)
 
         then:
 
         registry.get(String.class).is(stringDatatype)
-        registry.get(StringDatatype.NAME).is(stringDatatype)
+        registry.get("string").is(stringDatatype)
         registry.get('my_string').is(myStringDatatype)
     }
 
@@ -66,12 +62,12 @@ class DatatypeRegistryTest extends Specification {
 
         when:
 
-        registry.register(stringDatatype, true)
-        registry.register(myStringDatatype, true)
+        registry.register(stringDatatype, "string", true)
+        registry.register(myStringDatatype, "string", true)
 
         then:
 
         registry.get(String.class).is(myStringDatatype)
-        registry.get(StringDatatype.NAME).is(myStringDatatype)
+        registry.get("string").is(myStringDatatype)
     }
 }

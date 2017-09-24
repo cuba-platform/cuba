@@ -17,8 +17,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.DateDatatype;
-import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -477,7 +475,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             resolveMetaPropertyPath(metaClass, property);
 
             if (metaProperty.getRange().isDatatype()
-                    && metaProperty.getRange().asDatatype().getName().equals(DateTimeDatatype.NAME)
+                    && metaProperty.getRange().asDatatype().getJavaClass().equals(Date.class)
                     && timeZone == null) {
                 Object ignoreUserTimeZone = metaProperty.getAnnotations().get(IgnoreUserTimeZone.class.getName());
                 if (!Boolean.TRUE.equals(ignoreUserTimeZone)) {
@@ -533,7 +531,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
     protected void initDateFormat(MetaProperty metaProperty) {
         TemporalType tt = null;
-        if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
+        if (metaProperty.getRange().asDatatype().getJavaClass().equals(java.sql.Date.class)) {
             tt = TemporalType.DATE;
         } else if (metaProperty.getAnnotations() != null) {
             tt = (TemporalType) metaProperty.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
@@ -571,7 +569,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
             calendar.set(Calendar.MILLISECOND, 0);
-            if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
+            if (metaProperty.getRange().asDatatype().getJavaClass().equals(java.sql.Date.class)) {
                 calendar.add(Calendar.DATE, 1);
             }
 

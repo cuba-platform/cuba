@@ -21,7 +21,6 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.StringDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -550,7 +549,7 @@ public class DsContextLoader {
                     datasource.addProperty(name, ReflectionHelper.getClass(className));
                 } else {
                     String typeName = propEl.attributeValue("datatype");
-                    Datatype datatype = typeName == null ? Datatypes.get(StringDatatype.NAME) : Datatypes.get(typeName);
+                    Datatype datatype = typeName == null ? Datatypes.getNN(String.class) : Datatypes.get(typeName);
                     datasource.addProperty(name, datatype);
                 }
             }

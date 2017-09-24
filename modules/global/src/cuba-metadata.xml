@@ -19,44 +19,44 @@
 <metadata xmlns="http://schemas.haulmont.com/cuba/metadata.xsd">
 
     <datatypes>
-        <datatype class="com.haulmont.chile.core.datatypes.impl.BooleanDatatype"
+        <datatype id="boolean" class="com.haulmont.chile.core.datatypes.impl.BooleanDatatype"
                   default="true"/>
 
-        <datatype class="com.haulmont.chile.core.datatypes.impl.IntegerDatatype"
+        <datatype id="int" class="com.haulmont.chile.core.datatypes.impl.IntegerDatatype"
                   default="true"
                   format="0" groupingSeparator=""/>
 
-        <datatype class="com.haulmont.chile.core.datatypes.impl.LongDatatype"
+        <datatype id="long" class="com.haulmont.chile.core.datatypes.impl.LongDatatype"
                   default="true"
                   format="0" groupingSeparator=""/>
 
-        <datatype class="com.haulmont.chile.core.datatypes.impl.DoubleDatatype"
+        <datatype id="double" class="com.haulmont.chile.core.datatypes.impl.DoubleDatatype"
                   default="true"
                   format="0.###" decimalSeparator="." groupingSeparator=""/>
 
-        <datatype class="com.haulmont.chile.core.datatypes.impl.BigDecimalDatatype"
+        <datatype id="decimal" class="com.haulmont.chile.core.datatypes.impl.BigDecimalDatatype"
                   default="true"
                   format="0.####" decimalSeparator="." groupingSeparator=""/>
 
-        <datatype class="com.haulmont.chile.core.datatypes.impl.StringDatatype"
+        <datatype id="string" class="com.haulmont.chile.core.datatypes.impl.StringDatatype"
                   default="true"/>
 
-        <datatype class="com.haulmont.chile.core.datatypes.impl.DateTimeDatatype"
+        <datatype id="dateTime" class="com.haulmont.chile.core.datatypes.impl.DateTimeDatatype"
                   default="true"
                   format="yyyy-MM-dd HH:mm:ss.SSS"/>
 
-        <datatype class="com.haulmont.chile.core.datatypes.impl.DateDatatype"
+        <datatype id="date" class="com.haulmont.chile.core.datatypes.impl.DateDatatype"
                   default="true"
                   format="yyyy-MM-dd"/>
 
-        <datatype class="com.haulmont.chile.core.datatypes.impl.TimeDatatype"
+        <datatype id="time" class="com.haulmont.chile.core.datatypes.impl.TimeDatatype"
                   default="true"
                   format="HH:mm:ss"/>
 
-        <datatype class="com.haulmont.chile.core.datatypes.impl.UUIDDatatype"
+        <datatype id="uuid" class="com.haulmont.chile.core.datatypes.impl.UUIDDatatype"
                   default="true"/>
 
-        <datatype class="com.haulmont.chile.core.datatypes.impl.ByteArrayDatatype"
+        <datatype id="byteArray" class="com.haulmont.chile.core.datatypes.impl.ByteArrayDatatype"
                   default="true"/>
     </datatypes>
 

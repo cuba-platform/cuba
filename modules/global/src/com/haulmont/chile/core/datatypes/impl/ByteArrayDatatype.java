@@ -17,33 +17,17 @@
 
 package com.haulmont.chile.core.datatypes.impl;
 
+import com.haulmont.chile.core.annotations.JavaClass;
 import com.haulmont.chile.core.datatypes.Datatype;
 import org.apache.commons.codec.binary.Base64;
 
-import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.PreparedStatement;
-import java.sql.Types;
 import java.util.Locale;
 
+@JavaClass(byte[].class)
 public class ByteArrayDatatype implements Datatype<byte[]> {
 
-    public static final String NAME = "byteArray";
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public Class getJavaClass() {
-        return byte[].class;
-    }
-
-    @Nonnull
     @Override
     public String format(Object value) {
         if (value == null)
@@ -52,7 +36,6 @@ public class ByteArrayDatatype implements Datatype<byte[]> {
         return new String(Base64.encodeBase64((byte[]) value), StandardCharsets.UTF_8);
     }
 
-    @Nonnull
     @Override
     public String format(Object value, Locale locale) {
         if (value == null)
@@ -75,27 +58,10 @@ public class ByteArrayDatatype implements Datatype<byte[]> {
     }
 
     @Override
-    public byte[] read(ResultSet resultSet, int index) throws SQLException {
-        byte[] value = resultSet.getBytes(index);
-        return resultSet.wasNull() ? null : value;
-    }
-
-    @Override
-    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
-        if (value == null) {
-            statement.setNull(index, getSqlType());
-        } else {
-            statement.setBytes(index, (byte[]) value);
-        }
-    }
-
-    @Override
-    public int getSqlType() {
-        return Types.VARBINARY;
-    }
-
-    @Override
     public String toString() {
-        return NAME;
+        return getClass().getSimpleName();
     }
+
+    @Deprecated
+    public static final String NAME = "byteArray";
 }

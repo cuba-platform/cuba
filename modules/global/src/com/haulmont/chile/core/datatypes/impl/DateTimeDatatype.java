@@ -17,24 +17,24 @@
 
 package com.haulmont.chile.core.datatypes.impl;
 
+import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.chile.core.annotations.JavaClass;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
+import com.haulmont.chile.core.datatypes.ParameterizedDatatype;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.sql.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
-public class DateTimeDatatype implements Datatype<Date> {
-
-    public final static String NAME = "dateTime";
+@JavaClass(Date.class)
+public class DateTimeDatatype implements Datatype<Date>, ParameterizedDatatype {
 
     private String formatPattern;
 
@@ -42,7 +42,6 @@ public class DateTimeDatatype implements Datatype<Date> {
         formatPattern = element.attributeValue("format");
     }
 
-    @Nonnull
     @Override
     public String format(Object value) {
         if (value == null) {
@@ -58,7 +57,6 @@ public class DateTimeDatatype implements Datatype<Date> {
         }
     }
 
-    @Nonnull
     @Override
     public String format(Object value, Locale locale) {
         if (value == null) {
@@ -72,21 +70,6 @@ public class DateTimeDatatype implements Datatype<Date> {
 
         DateFormat format = new SimpleDateFormat(formatStrings.getDateTimeFormat());
         return format.format(value);
-    }
-
-    @Override
-    public Class getJavaClass() {
-        return Date.class;
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public int getSqlType() {
-        return Types.TIMESTAMP;
     }
 
     @Override
@@ -119,28 +102,17 @@ public class DateTimeDatatype implements Datatype<Date> {
         return format.parse(value.trim());
     }
 
-    @Override
-    public Date read(ResultSet resultSet, int index) throws SQLException {
-        Date value = resultSet.getTimestamp(index);
-        return resultSet.wasNull() ? null : value;
-    }
 
     @Override
-    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
-        if (value == null) {
-            statement.setString(index, null);
-        } else {
-            statement.setTimestamp(index, new Timestamp(((Date) value).getTime()));
-        }
-    }
-
-    @Nullable
-    public String getFormatPattern() {
-        return formatPattern;
+    public Map<String, Object> getParameters() {
+        return ParamsMap.of("formatPattern", formatPattern);
     }
 
     @Override
     public String toString() {
-        return NAME;
+        return getClass().getSimpleName();
     }
+
+    @Deprecated
+    public final static String NAME = "dateTime";
 }

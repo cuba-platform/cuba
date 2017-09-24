@@ -19,8 +19,6 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.DateDatatype;
-import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -363,7 +361,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
         resolveMetaPropertyPath(datasource.getMetaClass(), property);
         if (metaProperty.getRange().isDatatype()
-                && metaProperty.getRange().asDatatype().getName().equals(DateTimeDatatype.NAME)
+                && metaProperty.getRange().asDatatype().getJavaClass().equals(Date.class)
                 && timeZone == null) {
             Object ignoreUserTimeZone = metaProperty.getAnnotations().get(IgnoreUserTimeZone.class.getName());
             if (!Boolean.TRUE.equals(ignoreUserTimeZone)) {
@@ -415,7 +413,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
     protected void initDateFormat(MetaProperty metaProperty) {
         TemporalType tt = null;
-        if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
+        if (metaProperty.getRange().asDatatype().getJavaClass().equals(java.sql.Date.class)) {
             tt = TemporalType.DATE;
         } else if (metaProperty.getAnnotations() != null) {
             tt = (TemporalType) metaProperty.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
@@ -453,7 +451,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
             calendar.set(Calendar.MILLISECOND, 0);
-            if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
+            if (metaProperty.getRange().asDatatype().getJavaClass().equals(java.sql.Date.class)) {
                 calendar.add(Calendar.DATE, 1);
             }
 

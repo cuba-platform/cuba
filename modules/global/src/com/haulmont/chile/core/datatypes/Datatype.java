@@ -17,8 +17,11 @@
 
 package com.haulmont.chile.core.datatypes;
 
-import javax.annotation.Nonnull;
+import com.haulmont.chile.core.annotations.JavaClass;
+
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,27 +30,13 @@ import java.util.Locale;
 
 /**
  * Represents a data type of an entity property.
- *
- * <p>In order to be supported by Studio, an implementation class must have {@code public static final String NAME = "..."}
- * field defining the datatype name. This name should also be returned by {@link #getName()} method.
  */
 public interface Datatype<T> {
 
-    /**
-     * Unique Datatype name.
-     * <p>Define a {@code public static final String NAME = "..."} field and return its value in this method.
-     */
-    String getName();
-
-    /** Java class representing this Datatype */
-    Class getJavaClass();
-
     /** Converts value to String. Returns an empty string for null value.  */
-    @Nonnull
     String format(@Nullable Object value);
 
     /** Converts value to String taking into account local formats. Returns an empty string for null value. */
-    @Nonnull
     String format(@Nullable Object value, Locale locale);
 
     /** Parses value from String */
@@ -57,6 +46,32 @@ public interface Datatype<T> {
     /** Parses value from String taking into account local formats */
     @Nullable
     T parse(@Nullable String value, Locale locale) throws ParseException;
+
+    /** Java class representing this Datatype */
+    default Class getJavaClass() {
+        JavaClass annotation = getClass().getAnnotation(JavaClass.class);
+        if (annotation == null)
+            throw new IllegalStateException("Datatype " + this + " does not declare a Java class it works with. " +
+                    "Either add @JavaClass annotation or implement getJavaClass() method.");
+        return annotation.value();
+    }
+
+    /**
+     * DEPRECATED.
+     * Use {@link DatatypeRegistry#getId(Datatype)} or {@link DatatypeRegistry#getIdByJavaClass(Class)} methods.
+     */
+    @Deprecated
+    default String getName() {
+        try {
+            Field nameField = getClass().getField("NAME");
+            if (Modifier.isStatic(nameField.getModifiers()) && nameField.isAccessible()) {
+                return (String) nameField.get(null);
+            }
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            // ignore
+        }
+        throw new IllegalStateException("Cannot get datatype name. Do not use this method as it is deprecated.");
+    }
 
     @Deprecated
     @Nullable

@@ -21,7 +21,6 @@ import com.google.common.collect.ImmutableList;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
@@ -117,7 +116,7 @@ public class MetadataTools {
 
         if (range.isDatatype()) {
             Datatype datatype = range.asDatatype();
-            if (value instanceof Date && datatype.getName().equals(DateTimeDatatype.NAME)) {
+            if (value instanceof Date && datatype.getJavaClass().equals(Date.class)) {
                 Object ignoreUserTimeZone = property.getAnnotations().get(IgnoreUserTimeZone.class.getName());
                 if (!Boolean.TRUE.equals(ignoreUserTimeZone)) {
                     return datatypeFormatter.formatDateTime((Date) value);

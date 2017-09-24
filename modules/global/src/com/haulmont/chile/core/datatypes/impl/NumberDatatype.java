@@ -17,12 +17,15 @@
 
 package com.haulmont.chile.core.datatypes.impl;
 
+import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.chile.core.datatypes.ParameterizedDatatype;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.text.*;
+import java.util.Map;
 
-public abstract class NumberDatatype {
+public abstract class NumberDatatype implements ParameterizedDatatype {
 
     protected String formatPattern;
     protected String decimalSeparator;
@@ -32,6 +35,14 @@ public abstract class NumberDatatype {
         formatPattern = element.attributeValue("format");
         decimalSeparator = element.attributeValue("decimalSeparator");
         groupingSeparator = element.attributeValue("groupingSeparator");
+    }
+
+    @Override
+    public Map<String, Object> getParameters() {
+        return ParamsMap.of(
+                "formatPattern", formatPattern,
+                "decimalSeparator", decimalSeparator,
+                "groupingSeparator", groupingSeparator);
     }
 
     protected NumberFormat createFormat() {

@@ -17,13 +17,7 @@
 
 package com.haulmont.chile.core.datatypes.impl;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.text.ParseException;
-import java.util.Locale;
-
+import com.haulmont.chile.core.annotations.JavaClass;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
@@ -31,18 +25,17 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.text.ParseException;
+import java.util.Locale;
 
+@JavaClass(Boolean.class)
 public class BooleanDatatype implements Datatype<Boolean> {
 
-    public final static String NAME = "boolean";
-
-    @Nonnull
     @Override
     public String format(Object value) {
         return value == null ? "" : Boolean.toString((Boolean) value);
     }
 
-    @Nonnull
     @Override
     public String format(Object value, Locale locale) {
         if (value == null) {
@@ -55,21 +48,6 @@ public class BooleanDatatype implements Datatype<Boolean> {
         }
 
         return (boolean) value ? formatStrings.getTrueString() : formatStrings.getFalseString();
-    }
-
-    @Override
-    public Class getJavaClass() {
-        return Boolean.class;
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public int getSqlType() {
-        return Types.BOOLEAN;
     }
 
     protected Boolean parse(@Nullable String value, String trueString, String falseString) throws ParseException {
@@ -106,22 +84,10 @@ public class BooleanDatatype implements Datatype<Boolean> {
     }
 
     @Override
-    public Boolean read(ResultSet resultSet, int index) throws SQLException {
-        Boolean value = resultSet.getBoolean(index);
-        return resultSet.wasNull() ? null : value;
-    }
-
-    @Override
-    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
-        if (value == null) {
-            statement.setString(index, null);
-        } else {
-            statement.setBoolean(index, (Boolean) value);
-        }
-    }
-
-    @Override
     public String toString() {
-        return NAME;
+        return getClass().getSimpleName();
     }
+
+    @Deprecated
+    public final static String NAME = "boolean";
 }

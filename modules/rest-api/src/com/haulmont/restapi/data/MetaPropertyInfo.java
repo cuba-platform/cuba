@@ -41,7 +41,7 @@ public class MetaPropertyInfo {
         this.attributeType = metaProperty.getType();
         switch (attributeType) {
             case DATATYPE:
-                this.type = metaProperty.getRange().asDatatype().getName();
+                this.type = metadata.getDatatypes().getId(metaProperty.getRange().asDatatype());
                 break;
             case ASSOCIATION:
             case COMPOSITION:

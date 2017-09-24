@@ -52,10 +52,9 @@ public class SessionAttributeEditor extends AbstractEditor {
                         lookup.setPageLength(15);
 
                         Map<String, Object> options = new TreeMap<>();
-                        Set<String> names = Datatypes.getNames();
                         String mainMessagePack = AppConfig.getMessagesPack();
-                        for (String name : names) {
-                            options.put(messages.getMessage(mainMessagePack, "Datatype." + name), name);
+                        for (String datatypeId : Datatypes.getIds()) {
+                            options.put(messages.getMessage(mainMessagePack, "Datatype." + datatypeId), datatypeId);
                         }
                         lookup.setOptionsMap(options);
 

@@ -17,9 +17,6 @@
 
 package com.haulmont.cuba.gui.app.core.bulk;
 
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
@@ -29,6 +26,8 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.annotation.Nullable;
+import java.sql.Time;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,17 +41,16 @@ public class BulkEditorFieldFactory {
     @Nullable
     public Field createField(Datasource datasource, MetaProperty property) {
         if (property.getRange().isDatatype()) {
-            Datatype datatype = property.getRange().asDatatype();
-            String typeName = datatype.getName();
-            if (typeName.equals(StringDatatype.NAME)) {
+            Class type = property.getRange().asDatatype().getJavaClass();
+            if (type.equals(String.class)) {
                 return createStringField(datasource, property);
-            } else if (typeName.equals(BooleanDatatype.NAME)) {
+            } else if (type.equals(Boolean.class)) {
                 return createBooleanField(datasource, property);
-            } else if (typeName.equals(DateDatatype.NAME) || typeName.equals(DateTimeDatatype.NAME)) {
+            } else if (type.equals(java.sql.Date.class) || type.equals(Date.class)) {
                 return createDateField(datasource, property);
-            } else if (typeName.equals(TimeDatatype.NAME)) {
+            } else if (type.equals(Time.class)) {
                 return createTimeField(datasource, property);
-            } else if (datatype instanceof NumberDatatype) {
+            } else if (Number.class.isAssignableFrom(type)) {
                 return createNumberField(datasource, property);
             }
         } else if (property.getRange().isClass()) {
@@ -99,19 +97,19 @@ public class BulkEditorFieldFactory {
     }
 
     protected Field createDateField(Datasource datasource, MetaProperty property) {
-        Datatype<?> datatype = property.getRange().asDatatype();
+        Class type = property.getRange().asDatatype().getJavaClass();
 
         DateField dateField = componentsFactory.createComponent(DateField.class);
         dateField.setDatasource(datasource, property.getName());
 
-        if (datatype.equals(Datatypes.get(DateTimeDatatype.NAME))) {
+        if (type.equals(Date.class)) {
             dateField.setResolution(DateField.Resolution.DAY);
             dateField.setDateFormat(messages.getMainMessage("dateTimeFormat"));
-        } else if (datatype.equals(Datatypes.get(DateDatatype.NAME))) {
+        } else if (type.equals(java.sql.Date.class)) {
             dateField.setResolution(DateField.Resolution.SEC);
             dateField.setDateFormat(messages.getMainMessage("dateFormat"));
         } else {
-            throw new RuntimeException("Unknown datatype for " + property);
+            throw new RuntimeException("Unknown type for " + property);
         }
 
         return dateField;

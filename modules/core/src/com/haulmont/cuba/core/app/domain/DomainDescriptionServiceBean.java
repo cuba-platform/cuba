@@ -114,7 +114,7 @@ public class DomainDescriptionServiceBean implements DomainDescriptionService {
     }
 
     public String[] getAvailableBasicTypes() {
-        Set<String> allAvailableTypes = Datatypes.getNames();
+        Set<String> allAvailableTypes = Datatypes.getIds();
         TreeSet<String> availableTypes = new TreeSet<>();
 
         //byteArray is not supported as a GET parameter

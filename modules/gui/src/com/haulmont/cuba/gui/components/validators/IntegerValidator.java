@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.components.validators;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.IntegerDatatype;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -59,7 +58,7 @@ public class IntegerValidator implements Field.Validator {
         boolean result;
         if (value instanceof String) {
             try {
-                Datatype<Integer> datatype = Datatypes.get(IntegerDatatype.NAME);
+                Datatype<Integer> datatype = Datatypes.getNN(Integer.class);
                 UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
                 Integer num = datatype.parse((String) value, sessionSource.getLocale());
                 result = checkIntegerOnPositive(num);

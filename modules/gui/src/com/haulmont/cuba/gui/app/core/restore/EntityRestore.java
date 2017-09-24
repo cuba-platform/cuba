@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.app.core.restore;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
@@ -144,7 +143,7 @@ public class EntityRestore extends AbstractWindow {
                         systemPropertyColumns.add(column);
                     }
 
-                    if (range.isDatatype() && DateTimeDatatype.NAME.equals(range.asDatatype().getName())) {
+                    if (range.isDatatype() && range.asDatatype().getJavaClass().equals(Date.class)) {
                         column.setFormatter(dateTimeFormatter);
                     }
                 }

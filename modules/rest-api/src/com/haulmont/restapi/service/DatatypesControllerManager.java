@@ -18,80 +18,50 @@ package com.haulmont.restapi.service;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.haulmont.bali.util.Dom4j;
-import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.restapi.controllers.DatatypesController;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
+import com.haulmont.chile.core.datatypes.ParameterizedDatatype;
 import com.haulmont.restapi.exception.RestAPIException;
-import org.dom4j.Attribute;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Constructor;
-import java.net.URL;
-import java.util.List;
+import javax.inject.Inject;
+import java.util.Map;
 
 @Component("cuba_DatatypesControllerManager")
 public class DatatypesControllerManager {
 
     protected Logger log = LoggerFactory.getLogger(DatatypesControllerManager.class);
 
-    //todo MG cache JSON
-    public String getDatatypesJson() {
-        SAXReader reader = new SAXReader();
-        URL resource = Datatypes.class.getResource("/datatypes.xml");
-        if (resource == null) {
-            log.info("Can't find /datatypes.xml, using default datatypes settings");
-            resource = Datatypes.class.getResource("/com/haulmont/chile/core/datatypes/datatypes.xml");
-        }
+    @Inject
+    protected DatatypeRegistry datatypes;
 
+    public String getDatatypesJson() {
         JsonArray jsonArray = new JsonArray();
 
         try {
-            Document document = reader.read(resource);
-            Element element = document.getRootElement();
+            for (String id : datatypes.getIds()) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("id", id);
+                jsonObject.addProperty("name", id); // for backward compatibility
 
-            List<Element> datatypeElements = element.elements("datatype");
-            for (Element datatypeElement : datatypeElements) {
-                String datatypeClassName = datatypeElement.attributeValue("class");
-                try {
-                    Datatype datatype;
-                    Class<Datatype> datatypeClass = ReflectionHelper.getClass(datatypeClassName);
-                    try {
-                        final Constructor<Datatype> constructor = datatypeClass.getConstructor(Element.class);
-                        datatype = constructor.newInstance(datatypeElement);
-                    } catch (Throwable e) {
-                        datatype = datatypeClass.newInstance();
+                Datatype datatype = datatypes.get(id);
+                if (datatype instanceof ParameterizedDatatype) {
+                    Map<String, Object> parameters = ((ParameterizedDatatype) datatype).getParameters();
+                    for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+                        jsonObject.addProperty(entry.getKey(), entry.getValue().toString());
                     }
-
-                    JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("name", datatype.getName());
-
-                    for (Attribute attribute : Dom4j.attributes(datatypeElement)) {
-                        String attrName = attribute.getName();
-                        if ("class".equals(attrName)) continue;
-                        Object attrValue = attribute.getData();
-                        jsonObject.addProperty(attrName, attrValue.toString());
-                    }
-
-                    jsonArray.add(jsonObject);
-                } catch (Throwable e) {
-                    log.error(String.format("Fail to parse datatype '%s'", datatypeClassName), e);
                 }
+
+                jsonArray.add(jsonObject);
             }
-        } catch (DocumentException e) {
-            log.error("Fail to parse datatype settings", e);
-            throw new RestAPIException("Fail to parse datatype settings", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            log.error("Fail to get datatype settings", e);
+            throw new RestAPIException("Fail to get datatype settings", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return jsonArray.toString();
     }
-
 }

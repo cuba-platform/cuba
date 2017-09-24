@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.gui.app.core.bulk;
 
-import com.haulmont.chile.core.datatypes.impl.ByteArrayDatatype;
-import com.haulmont.chile.core.datatypes.impl.UUIDDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -262,11 +260,11 @@ public class BulkEditorWindow extends AbstractWindow {
     }
 
     protected boolean isByteArray(MetaProperty metaProperty) {
-        return ByteArrayDatatype.NAME.equals(metaProperty.getRange().asDatatype().getName());
+        return metaProperty.getRange().asDatatype().getJavaClass().equals(byte[].class);
     }
 
     protected boolean isUuid(MetaProperty metaProperty) {
-        return UUIDDatatype.NAME.equals(metaProperty.getRange().asDatatype().getName());
+        return metaProperty.getRange().asDatatype().getJavaClass().equals(UUID.class);
     }
 
     /**

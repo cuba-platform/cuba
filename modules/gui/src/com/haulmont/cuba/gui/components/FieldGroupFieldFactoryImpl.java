@@ -18,7 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.impl.*;
+import com.haulmont.chile.core.datatypes.impl.NumberDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -43,6 +43,9 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.sql.Time;
+import java.util.Date;
+import java.util.UUID;
 
 @org.springframework.stereotype.Component(FieldGroupFieldFactory.NAME)
 public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
@@ -67,7 +70,6 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
             Range mppRange = mpp.getRange();
             if (mppRange.isDatatype()) {
                 Datatype datatype = mppRange.asDatatype();
-                String typeName = datatype.getName();
 
                 MetaProperty metaProperty = mpp.getMetaProperty();
                 if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
@@ -80,20 +82,20 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
                 if (fc.getXmlDescriptor() != null
                         && "true".equalsIgnoreCase(fc.getXmlDescriptor().attributeValue("link"))) {
                     return createDatatypeLinkField(fc);
-                } else if (datatype instanceof StringDatatype) {
+                } else if (datatype.getJavaClass().equals(String.class)) {
                     if (fc.getXmlDescriptor() != null
                             && fc.getXmlDescriptor().attribute("mask") != null) {
                         return createMaskedField(fc);
                     } else {
                         return createStringField(fc);
                     }
-                } else if (datatype instanceof UUIDDatatype) {
+                } else if (datatype.getJavaClass().equals(UUID.class)) {
                     return createUuidField(fc);
-                } else if (datatype instanceof BooleanDatatype) {
+                } else if (datatype.getJavaClass().equals(Boolean.class)) {
                     return createBooleanField(fc);
-                } else if ((datatype instanceof DateDatatype) || (datatype instanceof DateTimeDatatype)) {
+                } else if ((datatype.getJavaClass().equals(java.sql.Date.class)) || (datatype.getJavaClass().equals(Date.class))) {
                     return createDateField(fc);
-                } else if (datatype instanceof TimeDatatype) {
+                } else if (datatype.getJavaClass().equals(Time.class)) {
                     return createTimeField(fc);
                 } else if (datatype instanceof NumberDatatype) {
                     if (fc.getXmlDescriptor() != null
@@ -129,7 +131,7 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
         String exceptionMessage;
         if (mpp != null) {
             exceptionMessage = String.format("Can't create field \"%s\" with data type: %s", fc.getProperty(),
-                    mpp.getRange().asDatatype().getName());
+                    mpp.getRange().asDatatype());
         } else {
             exceptionMessage = String.format("Can't create field \"%s\" with given data type", fc.getProperty());
         }

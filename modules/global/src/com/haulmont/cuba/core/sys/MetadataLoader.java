@@ -17,12 +17,14 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -55,6 +57,8 @@ import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.*;
 
@@ -165,7 +169,7 @@ public class MetadataLoader {
                 } catch (Throwable e) {
                     datatype = datatypeClass.newInstance();
                 }
-                datatypeRegistry.register(datatype, Boolean.valueOf(datatypeEl.attributeValue("default")));
+                datatypeRegistry.register(datatype, datatypeEl.attributeValue("id"), Boolean.valueOf(datatypeEl.attributeValue("default")));
             } catch (Throwable e) {
                 log.error("Fail to load datatype '{}'", datatypeClassName, e);
             }
@@ -194,7 +198,10 @@ public class MetadataLoader {
                             datatype = datatypeClass.newInstance();
                         }
 
-                        datatypeRegistry.register(datatype, true);
+                        String id = datatypeElement.attributeValue("id");
+                        if (Strings.isNullOrEmpty(id))
+                            id = guessDatatypeId(datatype);
+                        datatypeRegistry.register(datatype, id, true);
                     } catch (Throwable e) {
                         log.error(String.format("Fail to load datatype '%s'", datatypeClassName), e);
                     }
@@ -203,6 +210,44 @@ public class MetadataLoader {
                 log.error("Fail to load datatype settings", e);
             }
         }
+    }
+
+    /**
+     * Guesses id for a datatype registered in legacy datatypes.xml file.
+     * For backward compatibility only.
+     */
+    protected String guessDatatypeId(Datatype datatype) {
+        if (datatype instanceof BigDecimalDatatype)
+            return "decimal";
+        if (datatype instanceof BooleanDatatype)
+            return "boolean";
+        if (datatype instanceof ByteArrayDatatype)
+            return "byteArray";
+        if (datatype instanceof DateDatatype)
+            return "date";
+        if (datatype instanceof DateTimeDatatype)
+            return "dateTime";
+        if (datatype instanceof DoubleDatatype)
+            return "double";
+        if (datatype instanceof IntegerDatatype)
+            return "int";
+        if (datatype instanceof LongDatatype)
+            return "long";
+        if (datatype instanceof StringDatatype)
+            return "string";
+        if (datatype instanceof TimeDatatype)
+            return "time";
+        if (datatype instanceof UUIDDatatype)
+            return "uuid";
+        try {
+            Field nameField = datatype.getClass().getField("NAME");
+            if (Modifier.isStatic(nameField.getModifiers()) && nameField.isAccessible()) {
+                return (String) nameField.get(null);
+            }
+        } catch (Exception e) {
+            log.trace("Cannot get NAME static field value: " + e);
+        }
+        throw new IllegalStateException("Cannot guess id for datatype " + datatype);
     }
 
     protected String getGetDatatypesResourcePath() {

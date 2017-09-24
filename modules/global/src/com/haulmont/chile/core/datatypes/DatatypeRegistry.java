@@ -27,35 +27,48 @@ public interface DatatypeRegistry {
     String NAME = "cuba_DatatypeRegistry";
 
     /**
-     * Get Datatype instance by its unique name
+     * Get Datatype instance by its unique id
      * @return Datatype instance
      * @throws IllegalArgumentException if no datatype with the given name found
      */
-    Datatype get(String name);
+    Datatype get(String id);
 
     /**
      * Get Datatype instance by the corresponding Java class. This method tries to find matching supertype too.
      * @return Datatype instance or null if not found
      */
     @Nullable
-    <T> Datatype<T> get(Class<T> clazz);
+    <T> Datatype<T> get(Class<T> javaClass);
 
     /**
      * Get Datatype instance by the corresponding Java class. This method tries to find matching supertype too.
      * @return Datatype instance
      * @throws IllegalArgumentException if no datatype suitable for the given type found
      */
-    <T> Datatype<T> getNN(Class<T> clazz);
+    <T> Datatype<T> getNN(Class<T> javaClass);
 
     /**
-     * @return all registered Datatype names.
+     * Returns an ID of the given datatype in the registry.
+     * @throws IllegalArgumentException if the datatype is not registered
      */
-    Set<String> getNames();
+    String getId(Datatype datatype);
+
+    /**
+     * Returns an ID of a first datatype handling the given Java class.
+     * @throws IllegalArgumentException if no datatypes handle the given Java class
+     */
+    String getIdByJavaClass(Class<?> javaClass);
+
+    /**
+     * @return all registered datatype identifiers.
+     */
+    Set<String> getIds();
 
     /**
      * Register a datatype instance
      * @param datatype              datatype instance
+     * @param id                    unique registration id
      * @param defaultForJavaClass   true if the datatype should be default for a Java class handled by this datatype
      */
-    void register(Datatype datatype, boolean defaultForJavaClass);
+    void register(Datatype datatype, String id, boolean defaultForJavaClass);
 }

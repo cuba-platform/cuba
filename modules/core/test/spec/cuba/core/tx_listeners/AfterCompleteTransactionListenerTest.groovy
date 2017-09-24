@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package spec.tx_listeners
+package spec.cuba.core.tx_listeners
 
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.EntityStates

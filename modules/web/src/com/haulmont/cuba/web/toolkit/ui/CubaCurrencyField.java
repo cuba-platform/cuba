@@ -246,7 +246,7 @@ public class CubaCurrencyField extends CustomField {
             textField.setConvertedValue(parsedValue);
         } catch (ParseException e) {
             String message = String.format("Value %s cannot be parsed as %s datatype",
-                    textField.getValue(), datatype.getName());
+                    textField.getValue(), datatype);
             throw new RuntimeException(message, e);
         }
     }

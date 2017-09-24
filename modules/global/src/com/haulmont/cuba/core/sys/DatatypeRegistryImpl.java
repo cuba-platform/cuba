@@ -35,24 +35,24 @@ public class DatatypeRegistryImpl implements DatatypeRegistry {
     private Logger log = LoggerFactory.getLogger(DatatypeRegistryImpl.class);
 
     protected Map<Class<?>, Datatype> datatypeByClass = new HashMap<>();
-    protected Map<String, Datatype> datatypeByName = new HashMap<>();
+    protected Map<String, Datatype> datatypeById = new HashMap<>();
 
     @Override
-    public Datatype get(String name) {
-        Datatype datatype = datatypeByName.get(name);
+    public Datatype get(String id) {
+        Datatype datatype = datatypeById.get(id);
         if (datatype == null)
-            throw new IllegalArgumentException("Datatype " + name + " is not found");
+            throw new IllegalArgumentException("Datatype " + id + " is not found");
         return datatype;
     }
 
     @Nullable
     @Override
-    public <T> Datatype<T> get(Class<T> clazz) {
-        Datatype datatype = datatypeByClass.get(clazz);
+    public <T> Datatype<T> get(Class<T> javaClass) {
+        Datatype datatype = datatypeByClass.get(javaClass);
         if (datatype == null) {
             // if no exact type found, try to find matching super-type
             for (Map.Entry<Class<?>, Datatype> entry : datatypeByClass.entrySet()) {
-                if (entry.getKey().isAssignableFrom(clazz)) {
+                if (entry.getKey().isAssignableFrom(javaClass)) {
                     datatype = entry.getValue();
                     break;
                 }
@@ -68,26 +68,45 @@ public class DatatypeRegistryImpl implements DatatypeRegistry {
      * @throws IllegalArgumentException if no datatype suitable for the given type found
      */
     @Override
-    public <T> Datatype<T> getNN(Class<T> clazz) {
-        Datatype<T> datatype = get(clazz);
+    public <T> Datatype<T> getNN(Class<T> javaClass) {
+        Datatype<T> datatype = get(javaClass);
         if (datatype == null)
-            throw new IllegalArgumentException("A datatype for " + clazz + " is not found");
+            throw new IllegalArgumentException("A datatype for " + javaClass + " is not found");
         return datatype;
     }
 
     @Override
-    public Set<String> getNames() {
-        return Collections.unmodifiableSet(datatypeByName.keySet());
+    public String getId(Datatype datatype) {
+        for (Map.Entry<String, Datatype> entry : datatypeById.entrySet()) {
+            if (entry.getValue().equals(datatype))
+                return entry.getKey();
+        }
+        throw new IllegalArgumentException("Datatype not registered: " + datatype);
     }
 
     @Override
-    public void register(Datatype datatype, boolean defaultForJavaClass) {
+    public String getIdByJavaClass(Class<?> javaClass) {
+        for (Map.Entry<String, Datatype> entry : datatypeById.entrySet()) {
+            if (entry.getValue().getJavaClass().equals(javaClass))
+                return entry.getKey();
+        }
+        throw new IllegalArgumentException("No datatype registered for " + javaClass);
+    }
+
+    @Override
+    public Set<String> getIds() {
+        return Collections.unmodifiableSet(datatypeById.keySet());
+    }
+
+    @Override
+    public void register(Datatype datatype, String id, boolean defaultForJavaClass) {
         Preconditions.checkNotNullArgument(datatype, "datatype is null");
-        log.trace("Register datatype: {}, defaultForJavaClass: {}", datatype.getClass(), defaultForJavaClass);
+        Preconditions.checkNotNullArgument(datatype, "id is null");
+        log.trace("Register datatype: {}, id: {}, defaultForJavaClass: {}", datatype.getClass(), id, defaultForJavaClass);
 
         if (defaultForJavaClass) {
             datatypeByClass.put(datatype.getJavaClass(), datatype);
         }
-        datatypeByName.put(datatype.getName(), datatype);
+        datatypeById.put(id, datatype);
     }
 }

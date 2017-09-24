@@ -22,7 +22,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.entity.Entity;
@@ -35,6 +34,7 @@ import javax.inject.Inject;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.sql.Time;
 import java.text.ParseException;
 import java.util.*;
 
@@ -76,23 +76,23 @@ public class RestParseUtils {
         if (String.class == clazz) return value;
         if (Integer.class == clazz || Integer.TYPE == clazz
                 || Byte.class == clazz || Byte.TYPE == clazz
-                || Short.class == clazz || Short.TYPE == clazz) return Datatypes.get(IntegerDatatype.NAME).parse(value);
+                || Short.class == clazz || Short.TYPE == clazz) return Datatypes.getNN(Integer.class).parse(value);
         if (Date.class == clazz) {
             try {
-                return Datatypes.get(DateTimeDatatype.NAME).parse(value);
+                return Datatypes.getNN(Date.class).parse(value);
             } catch (ParseException e) {
                 try {
-                    return Datatypes.get(DateDatatype.NAME).parse(value);
+                    return Datatypes.getNN(java.sql.Date.class).parse(value);
                 } catch (ParseException e1) {
-                    return Datatypes.get(TimeDatatype.NAME).parse(value);
+                    return Datatypes.getNN(Time.class).parse(value);
                 }
             }
         }
-        if (BigDecimal.class == clazz) return Datatypes.get(BigDecimalDatatype.NAME).parse(value);
-        if (Boolean.class == clazz || Boolean.TYPE == clazz) return Datatypes.get(BooleanDatatype.NAME).parse(value);
-        if (Long.class == clazz || Long.TYPE == clazz) return Datatypes.get(LongDatatype.NAME).parse(value);
+        if (BigDecimal.class == clazz) return Datatypes.getNN(BigDecimal.class).parse(value);
+        if (Boolean.class == clazz || Boolean.TYPE == clazz) return Datatypes.getNN(Boolean.class).parse(value);
+        if (Long.class == clazz || Long.TYPE == clazz) return Datatypes.getNN(Long.class).parse(value);
         if (Double.class == clazz || Double.TYPE == clazz
-                || Float.class == clazz || Float.TYPE == clazz) return Datatypes.get(DoubleDatatype.NAME).parse(value);
+                || Float.class == clazz || Float.TYPE == clazz) return Datatypes.getNN(Double.class).parse(value);
         if (UUID.class == clazz) return UUID.fromString(value);
         if (Entity.class.isAssignableFrom(clazz)) {
             return entitySerializationAPI.entityFromJson(value, metadata.getClassNN(clazz));

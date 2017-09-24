@@ -18,10 +18,10 @@ package com.haulmont.cuba.restapi;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.cuba.core.entity.Entity;
 
 import java.math.BigDecimal;
+import java.sql.Time;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
@@ -41,41 +41,41 @@ public final class ParseUtils {
      */
     public static Object tryParse(String value) {
         try {
-            return parseByDatatypeName(value, UUIDDatatype.NAME);
+            if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+                return parseByDatatype(value, Boolean.class);
+            }
+        } catch (ParseException ignored) {
+        }
+        try {
+            return parseByDatatype(value, UUID.class);
         } catch (Exception ignored) {
         }
         try {
-            return parseByDatatypeName(value, DateTimeDatatype.NAME);
+            return parseByDatatype(value, Date.class);
         } catch (ParseException ignored) {
         }
         try {
-            return parseByDatatypeName(value, TimeDatatype.NAME);
+            return parseByDatatype(value, Time.class);
         } catch (ParseException ignored) {
         }
         try {
-            return parseByDatatypeName(value, DateDatatype.NAME);
+            return parseByDatatype(value, java.sql.Date.class);
         } catch (ParseException ignored) {
         }
         try {
-            return parseByDatatypeName(value, BigDecimalDatatype.NAME);
+            return parseByDatatype(value, BigDecimal.class);
         } catch (ParseException ignored) {
         }
         try {
-            return parseByDatatypeName(value, DoubleDatatype.NAME);
-        } catch (ParseException ignored) {
-        }
-        try {
-            if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
-                return parseByDatatypeName(value, BooleanDatatype.NAME);
-            }
+            return parseByDatatype(value, Double.class);
         } catch (ParseException ignored) {
         }
         //return string value if couldn't parse into specific type
         return value;
     }
 
-    private static Object parseByDatatypeName(String value, String name) throws ParseException {
-        Datatype datatype = Datatypes.get(name);
+    private static Object parseByDatatype(String value, Class<?> type) throws ParseException {
+        Datatype datatype = Datatypes.getNN(type);
         return datatype.parse(value);
     }
 
@@ -110,31 +110,31 @@ public final class ParseUtils {
         if (Integer.class == clazz || Integer.TYPE == clazz
                 || Byte.class == clazz || Byte.TYPE == clazz
                 || Short.class == clazz || Short.TYPE == clazz) {
-            return Datatypes.get(IntegerDatatype.NAME).parse(value);
+            return Datatypes.getNN(Integer.class).parse(value);
         }
         if (Date.class == clazz) {
             try {
-                return Datatypes.get(DateTimeDatatype.NAME).parse(value);
+                return Datatypes.getNN(Date.class).parse(value);
             } catch (ParseException e) {
                 try {
-                    return Datatypes.get(DateDatatype.NAME).parse(value);
+                    return Datatypes.getNN(java.sql.Date.class).parse(value);
                 } catch (ParseException e1) {
-                    return Datatypes.get(TimeDatatype.NAME).parse(value);
+                    return Datatypes.getNN(Time.class).parse(value);
                 }
             }
         }
         if (BigDecimal.class == clazz) {
-            return Datatypes.get(BigDecimalDatatype.NAME).parse(value);
+            return Datatypes.getNN(BigDecimal.class).parse(value);
         }
         if (Boolean.class == clazz || Boolean.TYPE == clazz) {
-            return Datatypes.get(BooleanDatatype.NAME).parse(value);
+            return Datatypes.getNN(Boolean.class).parse(value);
         }
         if (Long.class == clazz || Long.TYPE == clazz) {
-            return Datatypes.get(LongDatatype.NAME).parse(value);
+            return Datatypes.getNN(Long.class).parse(value);
         }
         if (Double.class == clazz || Double.TYPE == clazz
                 || Float.class == clazz || Float.TYPE == clazz) {
-            return Datatypes.get(DoubleDatatype.NAME).parse(value);
+            return Datatypes.getNN(Double.class).parse(value);
         }
         if (UUID.class == clazz) {
             return UUID.fromString(value);

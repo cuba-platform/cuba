@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.components.validators;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -56,7 +55,7 @@ public class DateValidator implements Field.Validator {
         boolean result;
         if (value instanceof String) {
             try {
-                Datatype datatype = Datatypes.get(DateDatatype.NAME);
+                Datatype datatype = Datatypes.getNN(java.sql.Date.class);
                 UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
                 datatype.parse((String) value, sessionSource.getLocale());
                 result = true;

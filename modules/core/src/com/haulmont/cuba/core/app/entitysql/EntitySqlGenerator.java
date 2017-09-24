@@ -19,9 +19,7 @@ package com.haulmont.cuba.core.app.entitysql;
 
 import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import com.haulmont.chile.core.datatypes.impl.TimeDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -41,6 +39,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.*;
 import java.lang.reflect.Field;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -171,9 +170,9 @@ public class EntitySqlGenerator {
                     MetaProperty property = propertyPath.getMetaProperty();
                     Datatype datatype = property.getRange().asDatatype();
 
-                    if (datatype instanceof DateDatatype) {
+                    if (datatype.getJavaClass().equals(java.sql.Date.class)) {
                         valueStr = dateFormat.format((Date) value);
-                    } else if (datatype instanceof TimeDatatype) {
+                    } else if (datatype.getJavaClass().equals(Time.class)) {
                         valueStr = timeFormat.format((Date) value);
                     } else {
                         valueStr = dateTimeFormat.format((Date) value);

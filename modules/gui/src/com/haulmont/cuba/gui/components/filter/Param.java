@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -325,7 +324,7 @@ public class Param {
             case UNARY:
                 Datatype datatype = Datatypes.getNN(javaClass);
                 //hardcode for compatibility with old datatypes
-                if (datatype instanceof DateTimeDatatype) {
+                if (datatype.getJavaClass().equals(Date.class)) {
                     try {
                         value = datatype.parse(text);
                     } catch (ParseException e) {

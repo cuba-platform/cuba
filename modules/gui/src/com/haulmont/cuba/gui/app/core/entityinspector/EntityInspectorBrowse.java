@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.app.core.entityinspector;
 
 import com.google.common.io.Files;
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
@@ -224,7 +223,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
             Table.Column column = new Table.Column(meta.getPropertyPath(metaProperty.getName()));
 
-            if (range.isDatatype() && DateTimeDatatype.NAME.equals(range.asDatatype().getName())) {
+            if (range.isDatatype() && range.asDatatype().getJavaClass().equals(Date.class)) {
                 column.setFormatter(dateTimeFormatter);
             }
 

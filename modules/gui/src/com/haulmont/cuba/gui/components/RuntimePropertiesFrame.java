@@ -17,9 +17,6 @@
 
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
@@ -45,6 +42,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -327,18 +325,18 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     protected Field.Validator getValidator(MetaProperty property) {
         Field.Validator validator = null;
         if (property.getRange().isDatatype()) {
-            Datatype<Object> dt = property.getRange().asDatatype();
+            Class type = property.getRange().asDatatype().getJavaClass();
 
-            if (dt.equals(Datatypes.get(IntegerDatatype.NAME))) {
+            if (type.equals(Integer.class)) {
                 validator = new IntegerValidator(messages.getMainMessage("validation.invalidNumber"));
 
-            } else if (dt.equals(Datatypes.get(LongDatatype.NAME))) {
+            } else if (type.equals(Long.class)) {
                 validator = new LongValidator(messages.getMainMessage("validation.invalidNumber"));
 
-            } else if (dt.equals(Datatypes.get(DoubleDatatype.NAME)) || dt.equals(Datatypes.get(BigDecimalDatatype.NAME))) {
+            } else if (type.equals(Double.class) || type.equals(BigDecimal.class)) {
                 validator = new DoubleValidator(messages.getMainMessage("validation.invalidNumber"));
 
-            } else if (dt.equals(Datatypes.get(DateDatatype.NAME))) {
+            } else if (type.equals(java.sql.Date.class)) {
                 validator = new DateValidator(messages.getMainMessage("validation.invalidDate"));
             }
         }

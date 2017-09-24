@@ -20,7 +20,6 @@ package com.haulmont.cuba.core.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -135,7 +134,7 @@ public class EntitySnapshot extends BaseUuidEntity implements Creatable {
            name += this.author.getCaption() + " ";
         }
 
-        Datatype datatype = Datatypes.get(DateTimeDatatype.NAME);
+        Datatype datatype = Datatypes.getNN(Date.class);
 
         UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
         if (userSessionSource != null && userSessionSource.checkCurrentUserSession()) {

@@ -17,21 +17,13 @@
 package com.haulmont.chile.core.datatypes.impl;
 
 import com.haulmont.chile.core.datatypes.Enumeration;
-
-import java.text.ParseException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.PreparedStatement;
-import java.sql.Types;
-import java.util.*;
-
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nonnull;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
-/**
- * @param <T>
- */
 public class EnumerationImpl<T extends Enum> implements Enumeration<T> {
 
     private Class<T> javaClass;
@@ -41,16 +33,10 @@ public class EnumerationImpl<T extends Enum> implements Enumeration<T> {
     }
 
     @Override
-    public String getName() {
-        return null;
-    }
-
-    @Override
     public Class<T> getJavaClass() {
         return javaClass;
     }
 
-    @Nonnull
     @Override
     public String format(Object value) {
         if (value == null) return "";
@@ -59,7 +45,6 @@ public class EnumerationImpl<T extends Enum> implements Enumeration<T> {
         return String.valueOf(v);
     }
 
-    @Nonnull
     @Override
     public String format(Object value, Locale locale) {
         return format(value);
@@ -81,21 +66,6 @@ public class EnumerationImpl<T extends Enum> implements Enumeration<T> {
     @Override
     public T parse(String value, Locale locale) throws ParseException {
         return parse(value);
-    }
-
-    @Override
-    public T read(ResultSet resultSet, int index) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int getSqlType() {
-        return Types.INTEGER;
     }
 
     @Override

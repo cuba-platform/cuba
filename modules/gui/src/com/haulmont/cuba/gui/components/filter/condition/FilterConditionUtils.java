@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.components.filter.condition;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -62,12 +61,13 @@ public class FilterConditionUtils {
     }
 
     public static String formatParamValue(Param param, Object value) {
+        //noinspection unchecked
         Datatype datatype = Datatypes.get(param.getJavaClass());
         MetaProperty property = param.getProperty();
         if (property != null) {
             TemporalType tt = (TemporalType) property.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
             if (tt == TemporalType.DATE) {
-                datatype = Datatypes.get(DateDatatype.NAME);
+                datatype = Datatypes.getNN(java.sql.Date.class);
             }
         }
         if (datatype != null) {

@@ -17,30 +17,29 @@
 
 package com.haulmont.chile.core.datatypes.impl;
 
-import java.sql.*;
+import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.chile.core.annotations.JavaClass;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.FormatStrings;
+import com.haulmont.chile.core.datatypes.ParameterizedDatatype;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.FormatStrings;
-import org.dom4j.Element;
-import org.apache.commons.lang.StringUtils;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.Map;
 
 /**
  * <code>DateDatatype</code> works with <code>java.<b>sql</b>.Date</code> but is parametrized with
  * <code>java.<b>util</b>.Date</code> to avoid problems with casting.
  */
-public class DateDatatype implements Datatype<Date> {
-
-    public final static String NAME = "date";
+@JavaClass(java.sql.Date.class)
+public class DateDatatype implements Datatype<Date>, ParameterizedDatatype {
 
     private String formatPattern;
 
@@ -48,7 +47,6 @@ public class DateDatatype implements Datatype<Date> {
         formatPattern = element.attributeValue("format");
     }
 
-    @Nonnull
     @Override
     public String format(Object value) {
         if (value == null) {
@@ -64,7 +62,6 @@ public class DateDatatype implements Datatype<Date> {
         return format.format((value));
     }
 
-    @Nonnull
     @Override
     public String format(Object value, Locale locale) {
         if (value == null) {
@@ -78,21 +75,6 @@ public class DateDatatype implements Datatype<Date> {
 
         DateFormat format = new SimpleDateFormat(formatStrings.getDateFormat());
         return format.format(value);
-    }
-
-    @Override
-    public Class getJavaClass() {
-        return java.sql.Date.class;
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public int getSqlType() {
-        return Types.DATE;
     }
 
     private java.sql.Date normalize(java.util.Date dateTime) {
@@ -139,27 +121,15 @@ public class DateDatatype implements Datatype<Date> {
     }
 
     @Override
-    public Date read(ResultSet resultSet, int index) throws SQLException {
-        java.sql.Date value = resultSet.getDate(index);
-        return resultSet.wasNull() ? null : value;
-    }
-
-    @Override
-    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
-        if (value == null) {
-            statement.setString(index, null);
-        } else {
-            statement.setDate(index, new java.sql.Date(((Date) value).getTime()));
-        }
-    }
-
-    @Nullable
-    public String getFormatPattern() {
-        return formatPattern;
+    public Map<String, Object> getParameters() {
+        return ParamsMap.of("formatPattern", formatPattern);
     }
 
     @Override
     public String toString() {
-        return NAME;
+        return getClass().getSimpleName();
     }
+
+    @Deprecated
+    public final static String NAME = "date";
 }

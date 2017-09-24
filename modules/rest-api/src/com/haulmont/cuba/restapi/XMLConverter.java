@@ -19,7 +19,6 @@
 
 package com.haulmont.cuba.restapi;
 
-import com.haulmont.chile.core.datatypes.impl.StringDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
@@ -277,8 +276,8 @@ public class XMLConverter implements Converter {
                         continue;
                     }
 
-                    String typeName = property.getRange().asDatatype().getName();
-                    if (!StringDatatype.NAME.equals(typeName) && "null".equals(xmlValue)) {
+                    Class type = property.getRange().asDatatype().getJavaClass();
+                    if (!type.equals(String.class) && "null".equals(xmlValue)) {
                         value = null;
                     } else {
                         value = property.getRange().asDatatype().parse(xmlValue);

@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.config;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.config.defaults.*;
@@ -68,6 +69,9 @@ public class AppPropertiesLocator {
 
     @Inject
     protected Configuration configuration;
+
+    @Inject
+    protected DatatypeRegistry datatypes;
 
     public List<AppPropertyEntity> getAppProperties() {
         log.trace("Locating app properties");
@@ -285,48 +289,17 @@ public class AppPropertiesLocator {
         return null;
     }
 
-    private String getDataType(Method method) {
-        Class<?> returnType = method.getReturnType();
-        if (returnType.isPrimitive()) {
-            if (returnType == boolean.class)
-                return Datatypes.getNN(Boolean.class).getName();
-            if (returnType == int.class)
-                return Datatypes.getNN(Integer.class).getName();
-            if (returnType == long.class)
-                return Datatypes.getNN(Long.class).getName();
-            if (returnType == double.class || returnType == float.class)
-                return Datatypes.getNN(Double.class).getName();
-        } else if (returnType.isEnum()) {
-            EnumStore enumStoreAnn = method.getAnnotation(EnumStore.class);
-            if (enumStoreAnn != null && enumStoreAnn.value() == EnumStoreMode.ID) {
-                Class<EnumClass> enumeration = (Class<EnumClass>) returnType;
-                return Arrays.asList(enumeration.getEnumConstants()).stream()
-                        .map(ec -> String.valueOf(ec.getId()))
-                        .collect(Collectors.joining(","));
-            } else {
-                return Arrays.asList(returnType.getEnumConstants()).stream()
-                        .map(Object::toString)
-                        .collect(Collectors.joining(","));
-            }
-        } else {
-            Datatype<?> datatype = Datatypes.get(returnType);
-            if (datatype != null)
-                return datatype.getName();
-        }
-        return Datatypes.getNN(String.class).getName();
-    }
-
     private void setDataType(Method method, AppPropertyEntity entity) {
         Class<?> returnType = method.getReturnType();
         if (returnType.isPrimitive()) {
             if (returnType == boolean.class)
-                entity.setDataTypeName(Datatypes.getNN(Boolean.class).getName());
+                entity.setDataTypeName(datatypes.getIdByJavaClass(Boolean.class));
             if (returnType == int.class)
-                entity.setDataTypeName(Datatypes.getNN(Integer.class).getName());
+                entity.setDataTypeName(datatypes.getIdByJavaClass(Integer.class));
             if (returnType == long.class)
-                entity.setDataTypeName(Datatypes.getNN(Long.class).getName());
+                entity.setDataTypeName(datatypes.getIdByJavaClass(Long.class));
             if (returnType == double.class || returnType == float.class)
-                entity.setDataTypeName(Datatypes.getNN(Double.class).getName());
+                entity.setDataTypeName(datatypes.getIdByJavaClass(Double.class));
         } else if (returnType.isEnum()) {
             entity.setDataTypeName("enum");
             EnumStore enumStoreAnn = method.getAnnotation(EnumStore.class);
@@ -342,11 +315,11 @@ public class AppPropertiesLocator {
                         .collect(Collectors.joining(",")));
             }
         } else {
-            Datatype<?> datatype = Datatypes.get(returnType);
+            Datatype<?> datatype = datatypes.get(returnType);
             if (datatype != null)
-                entity.setDataTypeName(datatype.getName());
+                entity.setDataTypeName(datatypes.getId(datatype));
             else
-                entity.setDataTypeName(Datatypes.getNN(String.class).getName());
+                entity.setDataTypeName(datatypes.getIdByJavaClass(String.class));
         }
 
         String dataTypeName = entity.getDataTypeName();
@@ -360,7 +333,7 @@ public class AppPropertiesLocator {
                 datatype.parse(v);
             } catch (ParseException e) {
                 log.debug("Cannot parse '{}' with {} datatype, using StringDatatype for property {}", v, datatype, entity.getName());
-                entity.setDataTypeName(Datatypes.getNN(String.class).getName());
+                entity.setDataTypeName(datatypes.getIdByJavaClass(String.class));
             }
         }
     }

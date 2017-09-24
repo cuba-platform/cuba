@@ -80,10 +80,10 @@ public class Datatypes {
     }
 
     /**
-     * @return all registered Datatype names.
+     * @return all registered Datatype ids.
      */
-    public static Set<String> getNames() {
-        return getDatatypeRegistry().getNames();
+    public static Set<String> getIds() {
+        return getDatatypeRegistry().getIds();
     }
 
     private static DatatypeRegistry getDatatypeRegistry() {

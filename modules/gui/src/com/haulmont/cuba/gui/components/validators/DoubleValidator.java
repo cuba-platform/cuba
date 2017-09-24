@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.components.validators;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.DoubleDatatype;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -64,7 +63,7 @@ public class DoubleValidator implements Field.Validator {
         boolean result;
         if (value instanceof String) {
             try {
-                Datatype<Double> datatype = Datatypes.get(DoubleDatatype.NAME);
+                Datatype<Double> datatype = Datatypes.getNN(Double.class);
                 UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
                 Double num = datatype.parse((String) value, sessionSource.getLocale());
                 result = checkDoubleOnPositive(num);

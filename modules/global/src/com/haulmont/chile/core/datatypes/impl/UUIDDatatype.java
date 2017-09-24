@@ -16,40 +16,24 @@
  */
 package com.haulmont.chile.core.datatypes.impl;
 
+import com.haulmont.chile.core.annotations.JavaClass;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.core.global.UuidProvider;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nonnull;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.UUID;
 
+@JavaClass(UUID.class)
 public class UUIDDatatype implements Datatype<UUID> {
 
-    public final static String NAME = "uuid";
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public Class getJavaClass() {
-        return UUID.class;
-    }
-
-    @Nonnull
     @Override
     public String format(Object value) {
         return value == null ? "" : value.toString();
     }
 
     @Override
-    @Nonnull
     public String format(Object value, Locale locale) {
         return format(value);
     }
@@ -73,22 +57,10 @@ public class UUIDDatatype implements Datatype<UUID> {
     }
 
     @Override
-    public UUID read(ResultSet resultSet, int index) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int getSqlType() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public String toString() {
-        return NAME;
+        return getClass().getSimpleName();
     }
+
+    @Deprecated
+    public final static String NAME = "uuid";
 }

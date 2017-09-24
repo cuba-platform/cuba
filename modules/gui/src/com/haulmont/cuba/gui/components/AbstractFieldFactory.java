@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -43,7 +41,10 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
+import java.sql.Time;
 import java.util.Collection;
+import java.util.Date;
+import java.util.UUID;
 
 import static com.haulmont.cuba.gui.WindowManager.OpenType;
 import static com.haulmont.cuba.gui.components.EntityLinkField.EntityLinkClickHandler;
@@ -64,8 +65,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         if (mpp != null) {
             Range mppRange = mpp.getRange();
             if (mppRange.isDatatype()) {
-                Datatype datatype = mppRange.asDatatype();
-                String typeName = datatype.getName();
+                Class type = mppRange.asDatatype().getJavaClass();
 
                 MetaProperty metaProperty = mpp.getMetaProperty();
                 if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
@@ -78,22 +78,22 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                 if (xmlDescriptor != null
                         && "true".equalsIgnoreCase(xmlDescriptor.attributeValue("link"))) {
                     return createDatatypeLinkField(datasource, property, xmlDescriptor);
-                } else if (typeName.equals(StringDatatype.NAME)) {
+                } else if (type.equals(String.class)) {
                     if (xmlDescriptor != null
                             && xmlDescriptor.attribute("mask") != null) {
                         return createMaskedField(datasource, property, xmlDescriptor);
                     } else {
                         return createStringField(datasource, property, xmlDescriptor);
                     }
-                } else if (typeName.equals(UUIDDatatype.NAME)) {
+                } else if (type.equals(UUID.class)) {
                     return createUuidField(datasource, property);
-                } else if (typeName.equals(BooleanDatatype.NAME)) {
+                } else if (type.equals(Boolean.class)) {
                     return createBooleanField(datasource, property);
-                } else if (typeName.equals(DateDatatype.NAME) || typeName.equals(DateTimeDatatype.NAME)) {
+                } else if (type.equals(java.sql.Date.class) || type.equals(Date.class)) {
                     return createDateField(datasource, property, mpp, xmlDescriptor);
-                } else if (typeName.equals(TimeDatatype.NAME)) {
+                } else if (type.equals(Time.class)) {
                     return createTimeField(datasource, property, xmlDescriptor);
-                } else if (datatype instanceof NumberDatatype) {
+                } else if (Number.class.isAssignableFrom(type)) {
                     if (xmlDescriptor != null
                             && xmlDescriptor.attribute("mask") != null) {
                         MaskedField maskedField = (MaskedField) createMaskedField(datasource, property, xmlDescriptor);
@@ -120,7 +120,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         String exceptionMessage;
         if (mpp != null) {
             String name = mpp.getRange().isDatatype()
-                    ? mpp.getRange().asDatatype().getName()
+                    ? mpp.getRange().asDatatype().toString()
                     : mpp.getRange().asClass().getName();
             exceptionMessage = String.format("Can't create field \"%s\" with data type: %s", property, name);
         } else {

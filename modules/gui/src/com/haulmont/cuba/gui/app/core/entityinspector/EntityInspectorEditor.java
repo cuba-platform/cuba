@@ -17,9 +17,6 @@
 
 package com.haulmont.cuba.gui.app.core.entityinspector;
 
-import com.haulmont.chile.core.datatypes.impl.ByteArrayDatatype;
-import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
-import com.haulmont.chile.core.datatypes.impl.UUIDDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
@@ -429,7 +426,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             boolean isReadonly = metaProperty.isReadOnly();
             switch (metaProperty.getType()) {
                 case DATATYPE:
-                    if (DateTimeDatatype.NAME.equals(metaProperty.getRange().asDatatype().getName())) {
+                    if (metaProperty.getRange().asDatatype().getJavaClass().equals(Date.class)) {
                         dateTimeFields.add(metaProperty.getName());
                     }
                 case ENUM:
@@ -472,11 +469,11 @@ public class EntityInspectorEditor extends AbstractWindow {
     }
 
     protected boolean isByteArray(MetaProperty metaProperty) {
-        return ByteArrayDatatype.NAME.equals(metaProperty.getRange().asDatatype().getName());
+        return metaProperty.getRange().asDatatype().getJavaClass().equals(byte[].class);
     }
 
     protected boolean isUuid(MetaProperty metaProperty) {
-        return UUIDDatatype.NAME.equals(metaProperty.getRange().asDatatype().getName());
+        return metaProperty.getRange().asDatatype().getJavaClass().equals(UUID.class);
     }
 
     protected boolean isRequired(MetaProperty metaProperty) {

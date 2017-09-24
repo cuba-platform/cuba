@@ -17,38 +17,31 @@
 
 package com.haulmont.chile.core.datatypes.impl;
 
+import com.haulmont.chile.core.annotations.JavaClass;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import javax.annotation.Nonnull;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 
+@JavaClass(Integer.class)
 public class IntegerDatatype extends NumberDatatype implements Datatype<Integer> {
-
-    public final static String NAME = "int";
 
     public IntegerDatatype(Element element) {
         super(element);
     }
 
-    @Nonnull
     @Override
     public String format(Object value) {
         return value == null ? "" : createFormat().format(value);
     }
 
-    @Nonnull
     @Override
     public String format(Object value, Locale locale) {
         if (value == null)
@@ -61,21 +54,6 @@ public class IntegerDatatype extends NumberDatatype implements Datatype<Integer>
         DecimalFormatSymbols formatSymbols = formatStrings.getFormatSymbols();
         NumberFormat format = new DecimalFormat(formatStrings.getIntegerFormat(), formatSymbols);
         return format.format(value);
-    }
-
-    @Override
-    public Class getJavaClass() {
-        return Integer.class;
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public int getSqlType() {
-        return Types.INTEGER;
     }
 
     @Override
@@ -128,22 +106,10 @@ public class IntegerDatatype extends NumberDatatype implements Datatype<Integer>
     }
 
     @Override
-    public Integer read(ResultSet resultSet, int index) throws SQLException {
-        Integer value = resultSet.getInt(index);
-        return resultSet.wasNull() ? null : value;
-    }
-
-    @Override
-    public void write(PreparedStatement statement, int index, Object value) throws SQLException {
-        if (value == null) {
-            statement.setString(index, null);
-        } else {
-            statement.setInt(index, (Integer) value);
-        }
-    }
-
-    @Override
     public String toString() {
-        return NAME;
+        return getClass().getSimpleName();
     }
+
+    @Deprecated
+    public final static String NAME = "int";
 }

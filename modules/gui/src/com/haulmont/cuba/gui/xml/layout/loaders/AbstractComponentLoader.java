@@ -20,9 +20,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -51,6 +48,7 @@ import org.dom4j.Element;
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
@@ -462,17 +460,17 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     protected Field.Validator getDefaultValidator(MetaProperty property) {
         Field.Validator validator = null;
         if (property.getRange().isDatatype()) {
-            Datatype<Object> dt = property.getRange().asDatatype();
-            if (dt.equals(Datatypes.get(IntegerDatatype.NAME))) {
+            Class type = property.getRange().asDatatype().getJavaClass();
+            if (type.equals(Integer.class)) {
                 validator = new IntegerValidator(messages.getMainMessage("validation.invalidNumber"));
 
-            } else if (dt.equals(Datatypes.get(LongDatatype.NAME))) {
+            } else if (type.equals(Long.class)) {
                 validator = new LongValidator(messages.getMainMessage("validation.invalidNumber"));
 
-            } else if (dt.equals(Datatypes.get(DoubleDatatype.NAME)) || dt.equals(Datatypes.get(BigDecimalDatatype.NAME))) {
+            } else if (type.equals(Double.class) || type.equals(BigDecimal.class)) {
                 validator = new DoubleValidator(messages.getMainMessage("validation.invalidNumber"));
 
-            } else if (dt.equals(Datatypes.get(DateDatatype.NAME))) {
+            } else if (type.equals(java.sql.Date.class)) {
                 validator = new DateValidator(messages.getMainMessage("validation.invalidDate"));
             }
         }
