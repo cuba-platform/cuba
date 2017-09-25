@@ -654,7 +654,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                     properties.stream()
                             .filter(metaProperty -> metadata.getTools().isPersistent(metaProperty))
                             .map(MetadataObject::getName)
-                            .map(propName -> propertyPath.toString().concat(propName))
+                            .map(propName -> propertyPath.toString().concat(".").concat(propName))
                             .forEach(props::add);
                 } else {
                     props.add(propertyPath.toString());
