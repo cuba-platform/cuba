@@ -41,6 +41,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 @org.springframework.stereotype.Component(FieldGroupFieldFactory.NAME)
@@ -135,7 +136,11 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
         throw new UnsupportedOperationException(exceptionMessage);
     }
 
+    @Nullable
     protected GeneratedField createCurrencyField(FieldGroup.FieldConfig fc) {
+        if (DynamicAttributesUtils.isDynamicAttribute(fc.getProperty()))
+            return null;
+
         MetaProperty metaProperty = fc.getTargetDatasource().getMetaClass().getPropertyNN(fc.getProperty());
 
         Object obj = metaProperty.getAnnotations().get(CurrencyValue.class.getName());

@@ -38,6 +38,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collection;
 
@@ -154,7 +155,11 @@ public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactor
         return numberField;
     }
 
+    @Nullable
     protected Field createCurrencyField(Datasource datasource, String property) {
+        if (DynamicAttributesUtils.isDynamicAttribute(property))
+            return null;
+
         MetaProperty metaProperty = datasource.getMetaClass().getPropertyNN(property);
 
         Object obj = metaProperty.getAnnotations().get(CurrencyValue.class.getName());

@@ -20,6 +20,7 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.CurrencyField;
@@ -84,7 +85,7 @@ public class WebCurrencyField extends WebAbstractField<CubaCurrencyField> implem
     public void setDatasource(Datasource datasource, String property) {
         textField.setDatasource(datasource, property);
 
-        if (datasource != null) {
+        if (datasource != null && !DynamicAttributesUtils.isDynamicAttribute(property)) {
             MetaProperty metaProperty = datasource.getMetaClass().getPropertyNN(property);
 
             Object obj = metaProperty.getAnnotations().get(CurrencyValue.class.getName());

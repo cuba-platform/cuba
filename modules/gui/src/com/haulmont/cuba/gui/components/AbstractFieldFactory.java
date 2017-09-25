@@ -196,7 +196,11 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         return textField;
     }
 
+    @Nullable
     protected Component createCurrencyField(Datasource datasource, String property) {
+        if (DynamicAttributesUtils.isDynamicAttribute(property))
+            return null;
+
         MetaProperty metaProperty = datasource.getMetaClass().getPropertyNN(property);
 
         Object obj = metaProperty.getAnnotations().get(CurrencyValue.class.getName());

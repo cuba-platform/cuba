@@ -18,6 +18,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
 import com.haulmont.cuba.gui.components.CurrencyField;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -69,7 +70,7 @@ public class DesktopCurrencyField extends DesktopTextField implements CurrencyFi
     public void setDatasource(Datasource datasource, String property) {
         super.setDatasource(datasource, property);
 
-        if (datasource != null) {
+        if (datasource != null && !DynamicAttributesUtils.isDynamicAttribute(property)) {
             MetaProperty metaProperty = datasource.getMetaClass().getPropertyNN(property);
 
             Object annotation = metaProperty.getAnnotations().get(CurrencyValue.class.getName());
