@@ -28,6 +28,7 @@ import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
+import com.haulmont.cuba.gui.app.security.user.browse.UserRemoveAction;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
@@ -166,6 +167,9 @@ public class GroupBrowser extends AbstractWindow {
             }
         });
         usersTable.addAction(userCreateAction);
+
+        RemoveAction removeAction = new UserRemoveAction(usersTable, userManagementService);
+        usersTable.addAction(removeAction);
 
         Action moveToGroupAction = new ItemTrackingAction("moveToGroup")
                 .withIcon("icons/move.png")

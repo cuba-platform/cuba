@@ -101,6 +101,7 @@
                             <buttonsPanel>
                                 <button action="usersTable.create"/>
                                 <button action="usersTable.edit"/>
+                                <button action="usersTable.remove"/>
                                 <button action="usersTable.moveToGroup"/>
                             </buttonsPanel>
                             <rowsCount/>
@@ -108,6 +109,7 @@
                                 <action id="create"/>
                                 <action id="edit"/>
                                 <action id="moveToGroup"/>
+                                <action id="remove"/>
                                 <action id="refresh"/>
                             </actions>
                             <columns>
