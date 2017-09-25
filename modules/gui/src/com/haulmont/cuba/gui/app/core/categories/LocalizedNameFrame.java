@@ -71,8 +71,6 @@ public class LocalizedNameFrame extends AbstractFrame {
             return;
         }
 
-        localeBundle = localeBundle.replaceAll("\\\\r\\\\n", "\r\n");
-
         Map<String, String> localizedNamesMap = LocaleHelper.getLocalizedValuesMap(localeBundle);
         for (Map.Entry<Locale, TextField> textFieldEntry : textFieldMap.entrySet()) {
             String keyLocale = textFieldEntry.getKey().toString();

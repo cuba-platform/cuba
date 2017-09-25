@@ -428,7 +428,7 @@ public class CategoryAttribute extends StandardEntity {
     }
 
     public String getEnumerationLocale() {
-        enumerationLocale = LocaleHelper.getLocalizedEnumeration(enumerationLocales);
+        enumerationLocale = LocaleHelper.getLocalizedEnumeration(enumeration, enumerationLocales);
         if (enumerationLocale == null) {
             enumerationLocale = enumeration;
         }
