@@ -162,7 +162,9 @@ public class LogControlImpl implements LogControl {
         for (Logger logger : context.getLoggerList()) {
             for (Iterator<Appender<ILoggingEvent>> index = logger.iteratorForAppenders(); index.hasNext();) {
                 Appender<ILoggingEvent> appender = index.next();
-                map.put(appender.getName(), appender);
+                if (appender.getName() != null) {
+                    map.put(appender.getName(), appender);
+                }
             }
         }
         return map;
