@@ -65,7 +65,7 @@ public class DeprecatedPropertyTest {
     }
 
     @Test
-    public void testСonnectionUrlProperty() throws Exception {
+    public void testConnectionUrlProperty() throws Exception {
         propertyTest("cuba.connectionUrl", "cuba.connectionUrlList");
     }
 
