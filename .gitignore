@@ -11,3 +11,4 @@ out
 
 modules/*/test-home/
 modules/*/build/
+modules/core/test-ormcache-run/

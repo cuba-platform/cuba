@@ -51,7 +51,8 @@ public class BruteForceUserCredentialsChecker implements UserCredentialsChecker,
             if (credentials instanceof AbstractClientCredentials) {
                 AbstractClientCredentials clientCredentials = (AbstractClientCredentials) credentials;
 
-                if (clientCredentials.getIpAddress() != null
+                if (clientCredentials.isCheckClientPermissions()
+                        && clientCredentials.getIpAddress() != null
                         && bruteForceProtectionAPI.loginAttemptsLeft(clientCredentials.getUserIdentifier(),
                         clientCredentials.getIpAddress()) <= 0) {
                     String message = messages.formatMessage(MSG_PACK,
@@ -72,20 +73,22 @@ public class BruteForceUserCredentialsChecker implements UserCredentialsChecker,
             if (credentials instanceof AbstractClientCredentials) {
                 AbstractClientCredentials clientCredentials = (AbstractClientCredentials) credentials;
 
-                int loginAttemptsLeft = bruteForceProtectionAPI.registerUnsuccessfulLogin(
-                        clientCredentials.getUserIdentifier(), clientCredentials.getIpAddress());
-                String message;
-                if (loginAttemptsLeft > 0) {
-                    message = messages.formatMessage(MSG_PACK,
-                            "LoginException.loginFailedAttemptsLeft",
-                            loginAttemptsLeft);
-                } else {
-                    message = messages.formatMessage(MSG_PACK,
-                            "LoginException.loginAttemptsNumberExceeded",
-                            bruteForceProtectionAPI.getBruteForceBlockIntervalSec());
-                }
+                if (clientCredentials.isCheckClientPermissions()) {
+                    int loginAttemptsLeft = bruteForceProtectionAPI.registerUnsuccessfulLogin(
+                            clientCredentials.getUserIdentifier(), clientCredentials.getIpAddress());
+                    String message;
+                    if (loginAttemptsLeft > 0) {
+                        message = messages.formatMessage(MSG_PACK,
+                                "LoginException.loginFailedAttemptsLeft",
+                                loginAttemptsLeft);
+                    } else {
+                        message = messages.formatMessage(MSG_PACK,
+                                "LoginException.loginAttemptsNumberExceeded",
+                                bruteForceProtectionAPI.getBruteForceBlockIntervalSec());
+                    }
 
-                throw new LoginException(message);
+                    throw new LoginException(message);
+                }
             }
         }
     }

@@ -19,8 +19,8 @@ package com.haulmont.cuba.security.auth.checks;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.auth.AbstractClientCredentials;
-import com.haulmont.cuba.security.auth.Credentials;
 import com.haulmont.cuba.security.auth.AuthenticationDetails;
+import com.haulmont.cuba.security.auth.Credentials;
 import com.haulmont.cuba.security.global.LoginException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +37,6 @@ import java.util.Locale;
 public class ClientTypeUserAccessChecker extends AbstractUserAccessChecker implements Ordered {
 
     private final Logger log = LoggerFactory.getLogger(ClientTypeUserAccessChecker.class);
-
-    @Inject
-    protected Messages messages;
 
     @Inject
     public ClientTypeUserAccessChecker(Messages messages) {
