@@ -18,7 +18,10 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.vaadin.event.Action;
@@ -36,6 +39,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+import static com.haulmont.cuba.web.toolkit.ui.ContentSwitchMode.HIDE;
+import static com.haulmont.cuba.web.toolkit.ui.ContentSwitchMode.UNLOAD;
+
 public class CubaManagedTabSheet extends CssLayout
         implements Component.Focusable, FieldEvents.FocusNotifier, FieldEvents.BlurNotifier, HasTabSheetBehaviour {
 
@@ -46,6 +52,8 @@ public class CubaManagedTabSheet extends CssLayout
     protected static final String VISIBLE_TAB = "visible-tab";
 
     protected static final Method SELECTED_TAB_CHANGE_METHOD;
+
+    protected ManagedMainTabSheetMode tabSheetMode = ManagedMainTabSheetMode.HIDE_TABS;
 
     static {
         try {
@@ -77,6 +85,10 @@ public class CubaManagedTabSheet extends CssLayout
         setPrimaryStyleName(MANAGED_TABSHEET_STYLENAME);
         setSizeFull();
         setImmediate(true);
+
+        tabSheetMode = AppBeans.get(Configuration.class)
+                .getConfig(WebConfig.class)
+                .getManagedMainTabSheetMode();
 
         closeHandler = (tabSheet1, tabContent) ->
                 _closeTab(tabContent);
@@ -118,6 +130,8 @@ public class CubaManagedTabSheet extends CssLayout
         tabComponents.remove(c);
 
         ((TabImpl) tab).setCloseHandler(null);
+
+        super.removeComponent(((TabImpl) tab));
     }
 
     protected TabImpl getContentTab(Component tabContent) {
@@ -147,7 +161,6 @@ public class CubaManagedTabSheet extends CssLayout
             return null;
 
         TabImpl tab = new TabImpl(tabComponent);
-        tab.setSizeFull();
 
         Label tabbarTabComponent = new Label();
         tabToContentMap.put(tabbarTabComponent, tab);
@@ -160,44 +173,84 @@ public class CubaManagedTabSheet extends CssLayout
 
         tabbedHeader.setVisible(true);
 
-        if (tabComponents.isEmpty()) {
+        if (tabComponents.isEmpty())
             setSelected(tab);
-        } else {
-            tab.addStyleName(HIDDEN_TAB);
-        }
+
         tabComponents.add(position, tabComponent);
 
         return tab;
     }
 
-    public Tab getTab(Component c) {
-        return tabs.get(c);
-    }
-
-    public Tab getTab(int position) {
-        if (position >= 0 && position < getComponentCount()) {
-            return getTab(tabComponents.get(position));
-        } else {
-            return null;
-        }
-    }
-
     protected void setSelected(Component component) {
-        if (component == null)
+        if (component == null || component == selected)
             return;
 
-        if (selected != null) {
-            selected.removeStyleName(VISIBLE_TAB);
-            selected.addStyleName(HIDDEN_TAB);
-        }
+        if (selected != null)
+            unselectTab(selected);
 
         selected = component;
 
-        selected.removeStyleName(HIDDEN_TAB);
-        selected.addStyleName(VISIBLE_TAB);
+        selectTab(component);
 
-        Component tabComponent = getTabComponent(component);
-        tabbedHeader.setSelectedTab(tabComponent);
+        tabbedHeader.setSelectedTab(getTabComponent(component));
+    }
+
+    protected void unselectTab(Component component) {
+        ContentSwitchMode switchMode = ((TabImpl) component).getContentSwitchMode();
+
+        if (switchMode == ContentSwitchMode.HIDE) {
+            hideTabContent(component);
+            return;
+        } else if (switchMode == ContentSwitchMode.UNLOAD) {
+            unloadTabContent(component);
+            return;
+        }
+
+        if (tabSheetMode == ManagedMainTabSheetMode.HIDE_TABS) {
+            hideTabContent(component);
+        } else {
+            unloadTabContent(component);
+        }
+    }
+
+    protected void unloadTabContent(Component component) {
+        super.removeComponent(component);
+    }
+
+    protected void hideTabContent(Component component) {
+        component.removeStyleName(VISIBLE_TAB);
+        component.addStyleName(HIDDEN_TAB);
+    }
+
+    protected void selectTab(Component component) {
+        ContentSwitchMode contentSwitchMode = ((TabImpl) component).getContentSwitchMode();
+
+        if (contentSwitchMode == HIDE) {
+            showTabContent(component);
+            return;
+        } else if (contentSwitchMode == UNLOAD) {
+            loadTabContent(component);
+            return;
+        }
+
+        if (tabSheetMode == ManagedMainTabSheetMode.HIDE_TABS) {
+            showTabContent(component);
+        } else {
+            loadTabContent(component);
+        }
+    }
+
+    protected void loadTabContent(Component component) {
+        // in case of new tab it will be added later
+        if (!components.contains(component) &&
+                tabComponents.contains(((TabImpl) component).getComponent())) {
+            addComponent(component);
+        }
+    }
+
+    protected void showTabContent(Component component) {
+        component.removeStyleName(HIDDEN_TAB);
+        component.addStyleName(VISIBLE_TAB);
     }
 
     public void setSelectedTab(Tab tab) {
@@ -403,10 +456,12 @@ public class CubaManagedTabSheet extends CssLayout
 
         protected Component component;
         protected TabSheet.Tab tabbarTab;
+        protected ContentSwitchMode contentSwitchMode = ContentSwitchMode.DEFAULT;
 
         protected TabImpl(Component component) {
             this.component = component;
             addComponent(component);
+            setSizeFull();
 
             setPrimaryStyleName(MANAGED_TAB_STYLENAME);
         }
@@ -507,6 +562,14 @@ public class CubaManagedTabSheet extends CssLayout
 
             addComponent(component);
         }
+
+        protected void setContentSwitchMode(ContentSwitchMode contentSwitchMode) {
+            this.contentSwitchMode = contentSwitchMode;
+        }
+
+        protected ContentSwitchMode getContentSwitchMode() {
+            return contentSwitchMode;
+        }
     }
 
     protected static class TabSheetBehaviourImpl implements TabSheetBehaviour {
@@ -519,32 +582,41 @@ public class CubaManagedTabSheet extends CssLayout
 
         @Override
         public void setTabCaption(String tabId, String caption) {
-            tabSheet.tabIds.get(tabId).setCaption(caption);
+            getTabById(tabId).setCaption(caption);
+        }
+
+        protected Tab getTabById(String tabId) {
+            return tabSheet.tabIds.get(tabId);
         }
 
         @Override
         public void setTabDescription(String tabId, String description) {
-            tabSheet.tabIds.get(tabId).setDescription(description);
+            getTabById(tabId).setDescription(description);
         }
 
         @Override
         public Component getTabComponent(String tabId) {
-            return tabSheet.tabIds.get(tabId).getComponent();
+            return getTabById(tabId).getComponent();
         }
 
         @Override
         public void setTabIcon(String tabId, Resource icon) {
-            tabSheet.tabIds.get(tabId).setIcon(icon);
+            getTabById(tabId).setIcon(icon);
         }
 
         @Override
         public void setTabClosable(String tabId, boolean closable) {
-            tabSheet.tabIds.get(tabId).setClosable(closable);
+            getTabById(tabId).setClosable(closable);
+        }
+
+        @Override
+        public void setContentSwitchMode(String tabId, ContentSwitchMode contentSwitchMode) {
+            ((TabImpl) getTabById(tabId)).setContentSwitchMode(contentSwitchMode);
         }
 
         @Override
         public void setSelectedTab(String tabId) {
-            tabSheet.setSelectedTab(tabSheet.tabIds.get(tabId));
+            tabSheet.setSelectedTab(getTabById(tabId));
         }
 
         @Override
@@ -609,13 +681,13 @@ public class CubaManagedTabSheet extends CssLayout
 
         @Override
         public void setTabTestId(String tabId, String testId) {
-            TabImpl tabImpl = (TabImpl) tabSheet.tabIds.get(tabId);
+            TabImpl tabImpl = (TabImpl) getTabById(tabId);
             tabSheet.tabbedHeader.setTestId(tabImpl.getTabbarTab(), testId);
         }
 
         @Override
         public void setTabCubaId(String tabId, String id) {
-            Tab tab = tabSheet.tabIds.get(tabId);
+            Tab tab = getTabById(tabId);
             tabSheet.tabbedHeader.setCubaId(((TabImpl) tab).getTabbarTab(), id);
         }
 
@@ -630,7 +702,7 @@ public class CubaManagedTabSheet extends CssLayout
 
         @Override
         public int getTabPosition(String tabId) {
-            Tab tab = tabSheet.tabIds.get(tabId);
+            Tab tab = getTabById(tabId);
             return tabSheet.tabbedHeader.getTabPosition(((TabImpl) tab).getTabbarTab());
         }
 

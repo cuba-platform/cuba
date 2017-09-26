@@ -221,6 +221,38 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     DialogOptions getDialogOptions();
 
     /**
+     * Returns how the managed main TabSheet switches a tab with this window: hides or unloads its content.
+     *
+     * @return one of the {@link ContentSwitchMode} enum values
+     */
+    ContentSwitchMode getContentSwitchMode();
+
+    /**
+     * Sets how the managed main TabSheet switches a tab with this window: hides or unloads its content.
+     *
+     * @param mode one of the {@link ContentSwitchMode} enum values
+     */
+    void setContentSwitchMode(ContentSwitchMode mode);
+
+    /**
+     * Defines how the managed main TabSheet switches a tab with the given window: hides or unloads its content.
+     */
+    enum ContentSwitchMode {
+        /**
+         * Tab switching is determined by the managed main TabSheet mode (hide or unload content of a tab).
+         */
+        DEFAULT,
+        /**
+         * Tab content should be hidden not considering the TabSheet mode.
+         */
+        HIDE,
+        /**
+         * Tab content should be unloaded not considering the TabSheet mode.
+         */
+        UNLOAD
+    }
+
+    /**
      * Represents a window that can be committed on close.
      * <br>
      * Implement this interface in controller if you want to support saving uncommitted changes on window close.

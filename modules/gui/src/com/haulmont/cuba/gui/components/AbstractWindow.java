@@ -309,6 +309,16 @@ public class AbstractWindow extends AbstractFrame
     }
 
     @Override
+    public ContentSwitchMode getContentSwitchMode() {
+        return ((Window) frame).getContentSwitchMode();
+    }
+
+    @Override
+    public void setContentSwitchMode(ContentSwitchMode mode) {
+        ((Window) frame).setContentSwitchMode(mode);
+    }
+
+    @Override
     public void addBeforeCloseWithShortcutListener(BeforeCloseWithShortcutListener listener) {
         ((Window) frame).addBeforeCloseWithShortcutListener(listener);
     }

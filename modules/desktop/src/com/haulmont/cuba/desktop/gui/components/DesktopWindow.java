@@ -20,6 +20,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.google.common.collect.Iterables;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.events.EventRouter;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -38,9 +39,9 @@ import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.desktop.sys.vcl.JTabbedPaneExt;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Action.Status;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Frame;
@@ -130,6 +131,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     protected List<String> styles;
 
     private EventRouter eventRouter;
+    protected ContentSwitchMode contentSwitchMode = ContentSwitchMode.DEFAULT;
 
     protected boolean isAttachedToRoot = false;
 
@@ -1504,6 +1506,19 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    @Override
+    public ContentSwitchMode getContentSwitchMode() {
+        return contentSwitchMode;
+    }
+
+    @Override
+    public void setContentSwitchMode(ContentSwitchMode mode) {
+        Preconditions.checkNotNullArgument(mode, "Content switch mode can't be null. " +
+                "Use ContentSwitchMode.DEFAULT option instead");
+
+        this.contentSwitchMode = mode;
     }
 
     protected class DesktopDialogOptions extends DialogOptions {
