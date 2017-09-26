@@ -31,6 +31,12 @@ public abstract class NumberDatatype implements ParameterizedDatatype {
     protected String decimalSeparator;
     protected String groupingSeparator;
 
+    protected NumberDatatype(String formatPattern, String decimalSeparator, String groupingSeparator) {
+        this.formatPattern = formatPattern;
+        this.decimalSeparator = decimalSeparator;
+        this.groupingSeparator = groupingSeparator;
+    }
+
     protected NumberDatatype(Element element) {
         formatPattern = element.attributeValue("format");
         decimalSeparator = element.attributeValue("decimalSeparator");
@@ -40,11 +46,14 @@ public abstract class NumberDatatype implements ParameterizedDatatype {
     @Override
     public Map<String, Object> getParameters() {
         return ParamsMap.of(
-                "formatPattern", formatPattern,
+                "format", formatPattern,
                 "decimalSeparator", decimalSeparator,
                 "groupingSeparator", groupingSeparator);
     }
 
+    /**
+     * Creates non-localized format.
+     */
     protected NumberFormat createFormat() {
         if (formatPattern != null) {
             DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();

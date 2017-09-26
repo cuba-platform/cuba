@@ -19,8 +19,9 @@ package com.haulmont.chile.core.datatypes.impl;
 
 import com.haulmont.chile.core.annotations.JavaClass;
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
+import com.haulmont.chile.core.datatypes.FormatStringsRegistry;
+import com.haulmont.cuba.core.global.AppBeans;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -48,7 +49,7 @@ public class LongDatatype extends NumberDatatype implements Datatype<Long> {
             return "";
         }
 
-        FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
+        FormatStrings formatStrings = AppBeans.get(FormatStringsRegistry.class).getFormatStrings(locale);
         if (formatStrings == null) {
             return format(value);
         }
@@ -73,7 +74,7 @@ public class LongDatatype extends NumberDatatype implements Datatype<Long> {
             return null;
         }
 
-        FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
+        FormatStrings formatStrings = AppBeans.get(FormatStringsRegistry.class).getFormatStrings(locale);
         if (formatStrings == null) {
             return parse(value);
         }

@@ -20,9 +20,10 @@ package com.haulmont.chile.core.datatypes.impl;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.annotations.JavaClass;
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
+import com.haulmont.chile.core.datatypes.FormatStringsRegistry;
 import com.haulmont.chile.core.datatypes.ParameterizedDatatype;
+import com.haulmont.cuba.core.global.AppBeans;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -63,7 +64,7 @@ public class DateTimeDatatype implements Datatype<Date>, ParameterizedDatatype {
             return "";
         }
 
-        FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
+        FormatStrings formatStrings = AppBeans.get(FormatStringsRegistry.class).getFormatStrings(locale);
         if (formatStrings == null) {
             return format(value);
         }
@@ -93,7 +94,7 @@ public class DateTimeDatatype implements Datatype<Date>, ParameterizedDatatype {
             return null;
         }
 
-        FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
+        FormatStrings formatStrings = AppBeans.get(FormatStringsRegistry.class).getFormatStrings(locale);
         if (formatStrings == null) {
             return parse(value);
         }
@@ -105,7 +106,7 @@ public class DateTimeDatatype implements Datatype<Date>, ParameterizedDatatype {
 
     @Override
     public Map<String, Object> getParameters() {
-        return ParamsMap.of("formatPattern", formatPattern);
+        return ParamsMap.of("format", formatPattern);
     }
 
     @Override

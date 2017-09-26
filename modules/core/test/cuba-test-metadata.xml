@@ -19,6 +19,7 @@
 
     <metadata-model root-package="com.haulmont.cuba">
         <class>com.haulmont.cuba.testmodel.TestNotPersistentEntity</class>
+        <class>com.haulmont.cuba.testmodel.numberformat.TestNumberValuesEntity</class>
     </metadata-model>
 
 </metadata>

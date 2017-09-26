@@ -20,8 +20,10 @@ package com.haulmont.cuba.core.sys;
 import com.google.common.base.Joiner;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.Composition;
+import com.haulmont.chile.core.annotations.NumberFormat;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
+import com.haulmont.chile.core.datatypes.impl.AdaptiveNumberDatatype;
 import com.haulmont.chile.core.datatypes.impl.EnumerationImpl;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.impl.*;
@@ -283,7 +285,7 @@ public class MetaModelLoader {
         map.put("cardinality", cardinality);
         boolean mandatory = isMandatory(field);
         map.put("mandatory", mandatory);
-        Datatype datatype = getDatatype(field);
+        Datatype datatype = getAdaptiveDatatype(field);
         map.put("datatype", datatype);
         String inverseField = getInverseField(field);
         if (inverseField != null)
@@ -296,6 +298,11 @@ public class MetaModelLoader {
         else
             type = field.getType();
 
+        property.setMandatory(mandatory);
+        property.setReadOnly(!setterExists(field));
+        property.setAnnotatedElement(field);
+        property.setDeclaringClass(field.getDeclaringClass());
+
         MetadataObjectInfo<Range> info = loadRange(property, type, map);
         Range range = info.getObject();
         if (range != null) {
@@ -304,10 +311,6 @@ public class MetaModelLoader {
             assignPropertyType(field, property, range);
             assignInverse(property, range, inverseField);
         }
-        property.setMandatory(mandatory);
-        property.setReadOnly(!setterExists(field));
-        property.setAnnotatedElement(field);
-        property.setDeclaringClass(field.getDeclaringClass());
 
         if (info.getObject() != null && info.getObject().isEnum()) {
             property.setJavaType(info.getObject().asEnumeration().getJavaClass());
@@ -329,7 +332,7 @@ public class MetaModelLoader {
         Map<String, Object> map = new HashMap<>();
         map.put("cardinality", Range.Cardinality.NONE);
         map.put("mandatory", false);
-        Datatype datatype = getDatatype(method);
+        Datatype datatype = getAdaptiveDatatype(method);
         map.put("datatype", datatype);
 
         Class<?> type;
@@ -339,6 +342,12 @@ public class MetaModelLoader {
         else
             type = method.getReturnType();
 
+        property.setMandatory(false);
+        property.setReadOnly(!setterExists(method));
+        property.setAnnotatedElement(method);
+        property.setDeclaringClass(method.getDeclaringClass());
+        property.setJavaType(method.getReturnType());
+
         MetadataObjectInfo<Range> info = loadRange(property, type, map);
         Range range = info.getObject();
         if (range != null) {
@@ -346,11 +355,6 @@ public class MetaModelLoader {
             property.setRange(range);
             assignPropertyType(method, property, range);
         }
-        property.setMandatory(false);
-        property.setReadOnly(!setterExists(method));
-        property.setAnnotatedElement(method);
-        property.setDeclaringClass(method.getDeclaringClass());
-        property.setJavaType(method.getReturnType());
 
         tasks.addAll(info.getTasks());
 
@@ -376,6 +380,10 @@ public class MetaModelLoader {
         if (inverseField != null)
             map.put("inverseField", inverseField);
 
+        property.setAnnotatedElement(field);
+        property.setDeclaringClass(field.getDeclaringClass());
+        property.setJavaType(field.getType());
+
         MetadataObjectInfo<Range> info = loadRange(property, type, map);
         Range range = info.getObject();
         if (range != null) {
@@ -388,9 +396,6 @@ public class MetaModelLoader {
         property.setMandatory(mandatory);
 
         tasks.addAll(info.getTasks());
-        property.setAnnotatedElement(field);
-        property.setDeclaringClass(field.getDeclaringClass());
-        property.setJavaType(field.getType());
 
         return new MetadataObjectInfo<>(property, tasks);
     }
@@ -691,7 +696,7 @@ public class MetaModelLoader {
     }
 
     @Nullable
-    protected Datatype getDatatype(AnnotatedElement annotatedElement) {
+    protected Datatype getAdaptiveDatatype(AnnotatedElement annotatedElement) {
         com.haulmont.chile.core.annotations.MetaProperty annotation =
                 annotatedElement.getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class);
         return annotation != null && !annotation.datatype().equals("") ? datatypes.get(annotation.datatype()) : null;
@@ -740,10 +745,14 @@ public class MetaModelLoader {
     protected MetadataObjectInfo<Range> loadRange(MetaProperty metaProperty, Class<?> type, Map<String, Object> map) {
         Datatype datatype = (Datatype) map.get("datatype");
         if (datatype != null) {
+            // A datatype is assigned explicitly
             return new MetadataObjectInfo<>(new DatatypeRange(datatype));
         }
 
-        datatype = datatypes.get(type);
+        datatype = getAdaptiveDatatype(metaProperty, type);
+        if (datatype == null) {
+            datatype = datatypes.get(type);
+        }
         if (datatype != null) {
             MetaClass metaClass = metaProperty.getDomain();
             Class javaClass = metaClass.getJavaClass();
@@ -772,6 +781,19 @@ public class MetaModelLoader {
                 return new MetadataObjectInfo<>(null, Collections.singletonList(new RangeInitTask(metaProperty, type, map)));
             }
         }
+    }
+
+    @Nullable
+    protected Datatype getAdaptiveDatatype(MetaProperty metaProperty, Class<?> type) {
+        NumberFormat numberFormat = metaProperty.getAnnotatedElement().getAnnotation(NumberFormat.class);
+        if (numberFormat != null) {
+            if (Number.class.isAssignableFrom(type)) {
+                return new AdaptiveNumberDatatype(type, numberFormat);
+            } else {
+                log.warn("NumberFormat annotation is ignored because " + metaProperty + " is not a Number");
+            }
+        }
+        return null;
     }
 
     protected Class getFieldType(Field field) {

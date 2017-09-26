@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.components;
 
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.impl.NumberDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -97,7 +96,7 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
                     return createDateField(fc);
                 } else if (datatype.getJavaClass().equals(Time.class)) {
                     return createTimeField(fc);
-                } else if (datatype instanceof NumberDatatype) {
+                } else if (Number.class.isAssignableFrom(datatype.getJavaClass())) {
                     if (fc.getXmlDescriptor() != null
                             && fc.getXmlDescriptor().attribute("mask") != null) {
                         GeneratedField generatedField = createMaskedField(fc);
