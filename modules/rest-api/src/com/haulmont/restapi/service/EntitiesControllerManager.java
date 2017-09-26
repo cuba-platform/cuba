@@ -17,6 +17,8 @@
 package com.haulmont.restapi.service;
 
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.importexport.EntityImportException;
@@ -27,7 +29,6 @@ import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.global.validation.groups.RestApiChecks;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.restapi.common.RestControllerUtils;
 import com.haulmont.restapi.data.CreatedEntityInfo;
@@ -43,12 +44,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
-import javax.validation.groups.Default;
 import java.lang.reflect.Method;
-import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -125,14 +121,14 @@ public class EntitiesControllerManager {
     }
 
     public EntitiesSearchResult loadEntitiesList(String entityName,
-                                   @Nullable String viewName,
-                                   @Nullable Integer limit,
-                                   @Nullable Integer offset,
-                                   @Nullable String sort,
-                                   @Nullable Boolean returnNulls,
-                                   @Nullable Boolean returnCount,
-                                   @Nullable Boolean dynamicAttributes,
-                                   @Nullable String modelVersion) {
+                                                 @Nullable String viewName,
+                                                 @Nullable Integer limit,
+                                                 @Nullable Integer offset,
+                                                 @Nullable String sort,
+                                                 @Nullable Boolean returnNulls,
+                                                 @Nullable Boolean returnCount,
+                                                 @Nullable Boolean dynamicAttributes,
+                                                 @Nullable String modelVersion) {
         entityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
         MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanReadEntity(metaClass);
@@ -163,6 +159,10 @@ public class EntitiesControllerManager {
                                                @Nullable Boolean returnCount,
                                                @Nullable Boolean dynamicAttributes,
                                                @Nullable String modelVersion) {
+        if (filterJson == null) {
+            throw new RestAPIException("Cannot parse entities filter", "Entities filter cannot be null", HttpStatus.BAD_REQUEST);
+        }
+
         entityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
         MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanReadEntity(metaClass);
@@ -188,6 +188,27 @@ public class EntitiesControllerManager {
         }
 
         return new EntitiesSearchResult(json, count);
+    }
+
+    public EntitiesSearchResult searchEntities(String entityName, String searchRequestBody) {
+        SearchEntitiesRequestDTO searchEntitiesRequest = new Gson()
+                .fromJson(searchRequestBody, SearchEntitiesRequestDTO.class);
+
+        if (searchEntitiesRequest.getFilter() == null) {
+            throw new RestAPIException("Cannot parse entities filter", "Entities filter cannot be null", HttpStatus.BAD_REQUEST);
+        }
+
+        return searchEntities(entityName,
+                searchEntitiesRequest.getFilter().toString(),
+                searchEntitiesRequest.getViewName(),
+                searchEntitiesRequest.getLimit(),
+                searchEntitiesRequest.getOffset(),
+                searchEntitiesRequest.getSort(),
+                searchEntitiesRequest.getReturnNulls(),
+                searchEntitiesRequest.getReturnCount(),
+                searchEntitiesRequest.getDynamicAttributes(),
+                searchEntitiesRequest.getModelVersion()
+        );
     }
 
     protected String _loadEntitiesList(String queryString,
@@ -355,7 +376,7 @@ public class EntitiesControllerManager {
                 throw new UnsupportedOperationException("Unsupported ID type in entity " + metaClass.getName());
             } else {
                 //noinspection unchecked
-                Method getIdMethod =  metaClass.getJavaClass().getMethod("getId");
+                Method getIdMethod = metaClass.getJavaClass().getMethod("getId");
                 Class<?> idClass = getIdMethod.getReturnType();
                 if (UUID.class.isAssignableFrom(idClass)) {
                     return UUID.fromString(entityId);
@@ -434,5 +455,92 @@ public class EntitiesControllerManager {
             return new CreatedEntityInfo(mainEntity.getId(), json);
         }
         return null;
+    }
+
+    protected class SearchEntitiesRequestDTO {
+        protected JsonObject filter;
+        protected String viewName;
+        protected Integer limit;
+        protected Integer offset;
+        protected String sort;
+        protected Boolean returnNulls;
+        protected Boolean returnCount;
+        protected Boolean dynamicAttributes;
+        protected String modelVersion;
+
+        public SearchEntitiesRequestDTO() {
+        }
+
+        public JsonObject getFilter() {
+            return filter;
+        }
+
+        public String getViewName() {
+            return viewName;
+        }
+
+        public Integer getLimit() {
+            return limit;
+        }
+
+        public Integer getOffset() {
+            return offset;
+        }
+
+        public String getSort() {
+            return sort;
+        }
+
+        public Boolean getReturnNulls() {
+            return returnNulls;
+        }
+
+        public Boolean getReturnCount() {
+            return returnCount;
+        }
+
+        public Boolean getDynamicAttributes() {
+            return dynamicAttributes;
+        }
+
+        public String getModelVersion() {
+            return modelVersion;
+        }
+
+        public void setFilter(JsonObject filter) {
+            this.filter = filter;
+        }
+
+        public void setViewName(String viewName) {
+            this.viewName = viewName;
+        }
+
+        public void setLimit(Integer limit) {
+            this.limit = limit;
+        }
+
+        public void setOffset(Integer offset) {
+            this.offset = offset;
+        }
+
+        public void setSort(String sort) {
+            this.sort = sort;
+        }
+
+        public void setReturnNulls(Boolean returnNulls) {
+            this.returnNulls = returnNulls;
+        }
+
+        public void setReturnCount(Boolean returnCount) {
+            this.returnCount = returnCount;
+        }
+
+        public void setDynamicAttributes(Boolean dynamicAttributes) {
+            this.dynamicAttributes = dynamicAttributes;
+        }
+
+        public void setModelVersion(String modelVersion) {
+            this.modelVersion = modelVersion;
+        }
     }
 }

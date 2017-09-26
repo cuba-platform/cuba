@@ -709,15 +709,15 @@ paths:
 
 
   /entities/{entityName}/search:
-    post:
+    get:
       tags:
         - Entities
       summary: Find entities by filter conditions
       description: |
 
-        Finds entities by filter conditions. The filter is defined by JSON object that is passed in the request body.
+        Finds entities by filter conditions. The filter is defined by JSON object that is passed as in URL parameter.
 
-        Request body example:
+        Filter JSON example:
 
         ```json
         {
@@ -787,10 +787,14 @@ paths:
 
       parameters:
         - $ref: '#/parameters/entityNameParam'
-        - name: entityJson
+        - name: entityName
           description: |
             A JSON object with filter conditions
-          in: body
+          in: path
+        - name: filter
+          in: query
+          description: JSON with filter definition
+          type: string
         - $ref: '#/parameters/entityViewParam'
         - name: limit
           in: query
@@ -813,6 +817,67 @@ paths:
         - $ref: '#/parameters/returnNullsParam'
         - $ref: '#/parameters/returnCountParam'
         - $ref: '#/parameters/dynamicAttributesParam'
+      responses:
+        200:
+          description: Success. Entities that conforms filter conditions are returned in the response body.
+          schema:
+            type: array
+            items:
+              "$ref": "#/definitions/entityFull"
+        400:
+          description: Bad request. For example, the condition value cannot be parsed.
+          schema:
+            $ref: '#/definitions/error'
+        403:
+          description: Forbidden. The user doesn't have permissions to read the entity
+          schema:
+            $ref: '#/definitions/error'
+        404:
+          $ref: '#/responses/metaClassNotFoundResponse'
+
+    post:
+      tags:
+        - Entities
+      summary: Find entities by filter conditions
+      description: |
+
+        Finds entities by filter conditions. Works like the corresponding GET method, but filter definition and all request parameters are
+        passed in the request body as JSON object. All possible parameters ("view", "sort", "returnNulls", etc.) are the same as in the
+        GET version of the `/search` operation.
+
+        Request body example:
+
+        ```json
+        {
+            "filter": {
+              "conditions": [
+                  {
+                      "group": "OR",
+                      "conditions": [
+                          {
+                              "property": "stringField",
+                              "operator": "startsWith",
+                              "value": "ABC"
+                          },
+                          {
+                              "property": "relatedEntity.intField",
+                              "operator": ">",
+                              "value": 100
+                          }
+                      ]
+                  },
+                  {
+                      "property": "booleanField",
+                      "operator": "=",
+                      "value": true
+                  }
+              ]
+            },
+            "view": "someViewName",
+            "returnCount": true
+        }
+        ```
+
       responses:
         200:
           description: Success. Entities that conforms filter conditions are returned in the response body.
@@ -888,7 +953,7 @@ paths:
         Executes a predefined query. Query parameters values must be defined in the request parameters with the same name.
       responses:
         200:
-          description: Success. A list of entitie is returned in the response body.
+          description: Success. A list of entities is returned in the response body.
           schema:
             type: array
             items:

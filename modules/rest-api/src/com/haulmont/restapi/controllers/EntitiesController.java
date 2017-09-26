@@ -16,6 +16,9 @@
 
 package com.haulmont.restapi.controllers;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.haulmont.restapi.data.CreatedEntityInfo;
 import com.haulmont.restapi.data.EntitiesSearchResult;
 import com.haulmont.restapi.service.EntitiesControllerManager;
@@ -70,21 +73,34 @@ public class EntitiesController {
         return responseBuilder.body(entitiesSearchResult.getJson());
     }
 
-    @PostMapping("/{entityName}/search")
-    public ResponseEntity<String> searchEntitiesList(@PathVariable String entityName,
-                                                     @RequestBody String filterJson,
-                                                     @RequestParam(required = false) String view,
-                                                     @RequestParam(required = false) Integer limit,
-                                                     @RequestParam(required = false) Integer offset,
-                                                     @RequestParam(required = false) String sort,
-                                                     @RequestParam(required = false) Boolean returnNulls,
-                                                     @RequestParam(required = false) Boolean returnCount,
-                                                     @RequestParam(required = false) Boolean dynamicAttributes,
-                                                     @RequestParam(required = false) String modelVersion) {
-        EntitiesSearchResult entitiesSearchResult = entitiesControllerManager.searchEntities(entityName, filterJson,
+    @GetMapping("/{entityName}/search")
+    public ResponseEntity<String> searchEntitiesListGet(@PathVariable String entityName,
+                                                        @RequestParam String filter,
+                                                        @RequestParam(required = false) String view,
+                                                        @RequestParam(required = false) Integer limit,
+                                                        @RequestParam(required = false) Integer offset,
+                                                        @RequestParam(required = false) String sort,
+                                                        @RequestParam(required = false) Boolean returnNulls,
+                                                        @RequestParam(required = false) Boolean returnCount,
+                                                        @RequestParam(required = false) Boolean dynamicAttributes,
+                                                        @RequestParam(required = false) String modelVersion) {
+        EntitiesSearchResult entitiesSearchResult = entitiesControllerManager.searchEntities(entityName, filter,
                 view, limit, offset, sort, returnNulls, returnCount, dynamicAttributes, modelVersion);
         ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(HttpStatus.OK);
         if (BooleanUtils.isTrue(returnCount)) {
+            responseBuilder.header("X-Total-Count", entitiesSearchResult.getCount().toString());
+        }
+        return responseBuilder.body(entitiesSearchResult.getJson());
+    }
+
+    @PostMapping("/{entityName}/search")
+    public ResponseEntity<String> searchEntitiesListPost(@PathVariable String entityName,
+                                                         @RequestBody String requestBodyJson) {
+        EntitiesSearchResult entitiesSearchResult = entitiesControllerManager.searchEntities(entityName, requestBodyJson);
+        ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(HttpStatus.OK);
+        JsonObject requestJsonObject = new JsonParser().parse(requestBodyJson).getAsJsonObject();
+        JsonPrimitive returnCount = requestJsonObject.getAsJsonPrimitive("returnCount");
+        if (returnCount != null && returnCount.getAsBoolean()) {
             responseBuilder.header("X-Total-Count", entitiesSearchResult.getCount().toString());
         }
         return responseBuilder.body(entitiesSearchResult.getJson());
