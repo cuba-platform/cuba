@@ -66,6 +66,7 @@ public abstract class TasksWatchDog implements WatchDog {
 
                 switch (status) {
                     case TIMEOUT_EXCEEDED:
+                        task.closeByTimeout();
                         task.timeoutExceeded();
                         forRemove.add(task);
                         break;
