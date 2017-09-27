@@ -641,28 +641,30 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     @Nullable
     protected String[] getSortPropertiesForPersistentAttribute(MetaPropertyPath propertyPath) {
-        ArrayList<String> props = new ArrayList<>();
+        String[] sortProperties = null;
         if (!propertyPath.getMetaProperty().getRange().isClass()) {
             // a scalar persistent attribute
-            props.add(propertyPath.toString());
+            sortProperties = new String[1];
+            sortProperties[0] = propertyPath.toString();
         } else {
+
             // a reference attribute
             MetaClass metaClass = propertyPath.getMetaProperty().getRange().asClass();
             if (!propertyPath.getMetaProperty().getRange().getCardinality().isMany()) {
                 Collection<MetaProperty> properties = metadata.getTools().getNamePatternProperties(metaClass);
                 if (!properties.isEmpty()) {
-                    properties.stream()
+                    sortProperties = properties.stream()
                             .filter(metaProperty -> metadata.getTools().isPersistent(metaProperty))
                             .map(MetadataObject::getName)
                             .map(propName -> propertyPath.toString().concat(".").concat(propName))
-                            .forEach(props::add);
+                            .toArray(String[]::new);
                 } else {
-                    props.add(propertyPath.toString());
+                    sortProperties = new String[1];
+                    sortProperties[0] = propertyPath.toString();
                 }
             }
         }
-        props.trimToSize();
-        return props.isEmpty() ? null : props.toArray(new String[props.size()]);
+        return sortProperties;
     }
 
     @Override
