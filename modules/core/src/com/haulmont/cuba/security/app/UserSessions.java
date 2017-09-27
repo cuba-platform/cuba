@@ -281,7 +281,7 @@ public class UserSessions implements UserSessionsAPI {
     protected UserSessionEntity createUserSessionEntity(UserSession session, long since, long lastUsedTs) {
         UserSessionEntity use = metadata.create(UserSessionEntity.class);
         use.setId(session.getId());
-        use.setLogin(session.getUser().getLogin());
+        use.setLogin(session.getUser().getLoginLowerCase());
         use.setUserName(session.getUser().getName());
         use.setAddress(session.getAddress());
         use.setClientInfo(session.getClientInfo());
