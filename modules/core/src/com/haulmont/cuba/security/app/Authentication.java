@@ -180,8 +180,25 @@ public class Authentication {
     public <T> T withUser(@Nullable String login, AuthenticatedOperation<T> operation) {
         SecurityContext previousSecurityContext = getSecurityContext();
         setSecurityContext(null);
-        begin(login);
         try {
+            begin(login);
+            return operation.call();
+        } finally {
+            setSecurityContext(previousSecurityContext);
+        }
+    }
+
+    /**
+     * Execute code on behalf of the user with login set in {@code cuba.jmxUserLogin} app property.
+     *
+     * @param operation code to execute
+     * @return result of the execution
+     */
+    public <T> T withSystemUser(AuthenticatedOperation<T> operation) {
+        SecurityContext previousSecurityContext = getSecurityContext();
+        setSecurityContext(null);
+        try {
+            begin(null);
             return operation.call();
         } finally {
             setSecurityContext(previousSecurityContext);

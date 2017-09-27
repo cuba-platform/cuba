@@ -39,6 +39,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.haulmont.cuba.core.global.LoadContext.createQuery;
+
 @Component(UserSessionLog.NAME)
 public class UserSessionLogBean implements UserSessionLog {
 
@@ -78,7 +80,7 @@ public class UserSessionLogBean implements UserSessionLog {
             return null;
         }
 
-        return authentication.withUser(null, () -> {
+        return authentication.withSystemUser(() -> {
             SessionLogEntry sessionLogEntry = metadata.create(SessionLogEntry.class);
             sessionLogEntry.setSessionId(userSession.getId());
             if (substitutedSession != null) {
@@ -115,7 +117,7 @@ public class UserSessionLogBean implements UserSessionLog {
             return;
         }
 
-        authentication.withUser(null, () -> {
+        authentication.withSystemUser(() -> {
             SessionLogEntry sessionLogEntry = getLastSessionLogRecord(userSession.getId());
             if (sessionLogEntry != null) {
                 if (userSession.getClientInfo() != null) {
@@ -139,20 +141,27 @@ public class UserSessionLogBean implements UserSessionLog {
 
     @Override
     public SessionLogEntry getLastSessionLogRecord(UUID userSessionId) {
-        return authentication.withUser(null, () -> {
-            LoadContext<SessionLogEntry> loadContext = LoadContext.create(SessionLogEntry.class).setView(SessionLogEntry.DEFAULT_VIEW)
-                    .setQuery(LoadContext.createQuery("select e from sec$SessionLogEntry e where e.sessionId = :sid order by e.startedTs desc")
-                            .setParameter("sid", userSessionId).setMaxResults(1));
+        return authentication.withSystemUser(() -> {
+            LoadContext<SessionLogEntry> loadContext = LoadContext.create(SessionLogEntry.class)
+                    .setView(SessionLogEntry.DEFAULT_VIEW)
+                    .setQuery(
+                            createQuery("select e from sec$SessionLogEntry e where e.sessionId = :sid order by e.startedTs desc")
+                                    .setParameter("sid", userSessionId)
+                                    .setMaxResults(1)
+                    );
             return dataManager.load(loadContext);
         });
     }
 
     @Override
     public List<SessionLogEntry> getAllSessionLogRecords(UUID userSessionId) {
-        return authentication.withUser(null, () -> {
-            LoadContext<SessionLogEntry> loadContext = LoadContext.create(SessionLogEntry.class).setView(SessionLogEntry.DEFAULT_VIEW)
-                    .setQuery(LoadContext.createQuery("select e from sec$SessionLogEntry e where e.sessionId = :sid order by e.startedTs asc")
-                            .setParameter("sid", userSessionId));
+        return authentication.withSystemUser(() -> {
+            LoadContext<SessionLogEntry> loadContext = LoadContext.create(SessionLogEntry.class)
+                    .setView(SessionLogEntry.DEFAULT_VIEW)
+                    .setQuery(
+                            createQuery("select e from sec$SessionLogEntry e where e.sessionId = :sid order by e.startedTs asc")
+                                    .setParameter("sid", userSessionId)
+                    );
             return dataManager.loadList(loadContext);
         });
     }
@@ -165,9 +174,9 @@ public class UserSessionLogBean implements UserSessionLog {
             return;
         }
         if (clusterManager.isMaster()) {
-            authentication.withUser(null, () -> {
+            authentication.withSystemUser(() -> {
                 LoadContext<SessionLogEntry> lc = LoadContext.create(SessionLogEntry.class).setView(SessionLogEntry.DEFAULT_VIEW)
-                        .setQuery(LoadContext.createQuery("select e from sec$SessionLogEntry e where e.finishedTs is null"));
+                        .setQuery(createQuery("select e from sec$SessionLogEntry e where e.finishedTs is null"));
                 List<SessionLogEntry> sessionLogEntries = dataManager.loadList(lc);
                 CommitContext cc = new CommitContext();
                 Set<UUID> activeSessionsIds = userSessionsAPI.getUserSessionInfo().stream()
