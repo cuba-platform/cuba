@@ -37,6 +37,8 @@ import org.perf4j.log4j.Log4JStopWatch;
 
 import java.util.*;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 /**
  * Most commonly used {@link CollectionDatasource} implementation.
  * Contains collection of standalone (not property) entities, and can request data from database and commit changes.
@@ -339,6 +341,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void addItem(T item) {
+        checkNotNullArgument(item, "item is null");
         internalAddItem(item, () -> {
             data.put(item.getId(), item);
         });
@@ -346,6 +349,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void addItemFirst(T item) {
+        checkNotNullArgument(item, "item is null");
         internalAddItem(item, () -> {
             LinkedMap tmpMap = (LinkedMap) data.clone();
             data.clear();
@@ -355,6 +359,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected void internalAddItem(T item, Runnable addToData) {
+        checkNotNullArgument(item, "item is null");
         backgroundWorker.checkUIAccess();
 
         checkStateBeforeAdd();
@@ -369,6 +374,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void removeItem(T item) {
+        checkNotNullArgument(item, "item is null");
         backgroundWorker.checkUIAccess();
 
         checkState();
@@ -387,6 +393,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void includeItem(T item) {
+        checkNotNullArgument(item, "item is null");
         internalIncludeItem(item, () -> {
             data.put(item.getId(), item);
         });
@@ -394,6 +401,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void includeItemFirst(T item) {
+        checkNotNullArgument(item, "item is null");
         internalIncludeItem(item, () -> {
             LinkedMap tmpMap = (LinkedMap) data.clone();
             data.clear();
@@ -415,6 +423,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void excludeItem(T item) {
+        checkNotNullArgument(item, "item is null");
         backgroundWorker.checkUIAccess();
 
         checkState();
@@ -470,6 +479,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void modifyItem(T item) {
+        checkNotNullArgument(item, "item is null");
         if (data.containsKey(item.getId())) {
             if (PersistenceHelper.isNew(item)) {
                 Object existingItem = data.get(item.getId());
@@ -484,6 +494,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void updateItem(T item) {
+        checkNotNullArgument(item, "item is null");
         backgroundWorker.checkUIAccess();
 
         checkState();

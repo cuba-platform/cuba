@@ -40,6 +40,8 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.ManyToMany;
 import java.util.*;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         extends
             PropertyDatasourceImpl<T>
@@ -289,6 +291,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void addItem(T item) {
+        checkNotNullArgument(item, "item is null");
         internalAddItem(item, () -> {
             getCollection().add(item);
         });
@@ -297,6 +300,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     @SuppressWarnings("unchecked")
     @Override
     public void addItemFirst(T item) {
+        checkNotNullArgument(item, "item is null");
         internalAddItem(item, () -> {
             addToCollectionFirst(item);
         });
@@ -412,6 +416,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void removeItem(T item) {
+        checkNotNullArgument(item, "item is null");
         checkState();
         checkPermission();
 
@@ -439,6 +444,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void excludeItem(T item) {
+        checkNotNullArgument(item, "item is null");
         backgroundWorker.checkUIAccess();
 
         checkState();
@@ -470,6 +476,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void includeItem(T item) {
+        checkNotNullArgument(item, "item is null");
         internalIncludeItem(item, () -> {
             getCollection().add(item);
         });
@@ -477,6 +484,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void includeItemFirst(T item) {
+        checkNotNullArgument(item, "item is null");
         internalIncludeItem(item, () -> {
             addToCollectionFirst(item);
         });
@@ -554,6 +562,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void modifyItem(T item) {
+        checkNotNullArgument(item, "item is null");
         Collection<T> collection = getCollection();
         if (collection != null) {
             for (T t : collection) {
@@ -576,6 +585,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void updateItem(T item) {
+        checkNotNullArgument(item, "item is null");
         backgroundWorker.checkUIAccess();
 
         Collection<T> collection = getCollection();
@@ -594,6 +604,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void modified(T item) {
+        checkNotNullArgument(item, "item is null");
         if (doNotModify)
             return;
         // Never modify not new objects linked as ManyToMany. CollectionPropertyDatasource should only handle adding
@@ -605,6 +616,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @SuppressWarnings("unchecked")
     public void replaceItem(T item) {
+        checkNotNullArgument(item, "item is null");
         Collection<T> collection = getCollection();
         if (collection != null) {
             for (T t : collection) {
