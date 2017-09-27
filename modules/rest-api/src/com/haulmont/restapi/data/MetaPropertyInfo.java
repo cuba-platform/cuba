@@ -16,6 +16,7 @@
 
 package com.haulmont.restapi.data;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -41,7 +42,12 @@ public class MetaPropertyInfo {
         this.attributeType = metaProperty.getType();
         switch (attributeType) {
             case DATATYPE:
-                this.type = metadata.getDatatypes().getId(metaProperty.getRange().asDatatype());
+                Datatype<Object> datatype = metaProperty.getRange().asDatatype();
+                try {
+                    this.type = metadata.getDatatypes().getId(datatype);
+                } catch (Exception e) {
+                    this.type = datatype.toString();
+                }
                 break;
             case ASSOCIATION:
             case COMPOSITION:
