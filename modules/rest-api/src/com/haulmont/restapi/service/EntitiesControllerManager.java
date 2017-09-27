@@ -324,7 +324,7 @@ public class EntitiesControllerManager {
         EntityImportView entityImportView = entityImportViewBuilderAPI.buildFromJson(entityJson, metaClass);
         Collection<Entity> importedEntities;
         try {
-            importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView, false);
+            importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView, true);
         } catch (EntityImportException e) {
             throw new RestAPIException("Entity update failed", e.getMessage(), HttpStatus.BAD_REQUEST, e);
         }
