@@ -88,7 +88,7 @@ public class CurrencyFieldLoader extends AbstractFieldLoader<CurrencyField> {
 
         //noinspection unchecked
         Map<String, Object> currencyValue = (Map<String, Object>) obj;
-        String currencyName = (String) currencyValue.get("name");
+        String currencyName = (String) currencyValue.get("currency");
         if (StringUtils.isNotEmpty(currencyName)) {
             ((CurrencyField) component).setCurrency(currencyName);
         }

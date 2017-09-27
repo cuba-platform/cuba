@@ -78,7 +78,7 @@ public class DesktopCurrencyField extends DesktopTextField implements CurrencyFi
                 return;
 
             //noinspection unchecked
-            currency = (String) ((Map<String, Object>) annotation).get("name");
+            currency = (String) ((Map<String, Object>) annotation).get("currency");
         }
     }
 }

@@ -33,5 +33,5 @@ public @interface CurrencyValue {
     /**
      * Currency name: USD, GBP, EUR, $, € or another currency sign.
      */
-    String name() default StringUtils.EMPTY;
+    String currency() default StringUtils.EMPTY;
 }
