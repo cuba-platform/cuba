@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
+import com.haulmont.cuba.gui.xml.layout.ScreenXmlParser;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -47,6 +48,8 @@ public class XmlInheritanceProcessor {
     private List<ElementTargetLocator> targetLocators = new ArrayList<>();
 
     private Resources resources = AppBeans.get(Resources.NAME);
+
+    private ScreenXmlParser screenXmlParser = AppBeans.get(ScreenXmlParser.NAME);
 
     public XmlInheritanceProcessor(Document document, Map<String, Object> params) {
         this.document = document;
@@ -75,7 +78,7 @@ public class XmlInheritanceProcessor {
             }
             Document ancestorDocument;
             try {
-                ancestorDocument = LayoutLoader.parseDescriptor(ancestorStream);
+                ancestorDocument = screenXmlParser.parseDescriptor(ancestorStream);
             } finally {
                 IOUtils.closeQuietly(ancestorStream);
             }

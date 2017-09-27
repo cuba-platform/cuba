@@ -35,30 +35,24 @@ import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
-import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import com.haulmont.cuba.gui.xml.layout.ScreenXmlDocumentCache;
+import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.security.entity.PermissionType;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.dom4j.Document;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -466,7 +460,7 @@ public abstract class WindowManager {
 
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
-    protected ScreenXmlDocumentCache screenXmlCache = AppBeans.get(ScreenXmlDocumentCache.class);
+    protected ScreenXmlLoader screenXmlLoader = AppBeans.get(ScreenXmlLoader.NAME);
 
     private DialogParams dialogParams;
 
@@ -504,41 +498,7 @@ public abstract class WindowManager {
                 LifeCycle.LOAD,
                 Logger.getLogger(UIPerformanceLogger.class));
 
-        String templatePath = windowInfo.getTemplate();
-
-        InputStream stream = resources.getResourceAsStream(templatePath);
-        if (stream == null) {
-            throw new DevelopmentException("Template is not found", "Path", templatePath);
-        }
-
-        String template;
-        try {
-            template = IOUtils.toString(stream, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to read screen template");
-        } finally {
-            IOUtils.closeQuietly(stream);
-        }
-
-        StopWatch xmlLoadWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
-                LifeCycle.XML,
-                Logger.getLogger(UIPerformanceLogger.class));
-
-        Document document = screenXmlCache.get(template);
-        if (document == null) {
-            Document originalDocument = LayoutLoader.parseDescriptor(template);
-
-            XmlInheritanceProcessor processor = new XmlInheritanceProcessor(originalDocument, params);
-            Element resultRoot = processor.getResultRoot();
-
-            document = resultRoot.getDocument();
-
-            screenXmlCache.put(template, document);
-        }
-
-        Element element = document.getRootElement();
-
-        xmlLoadWatch.stop();
+        Element element = screenXmlLoader.load(windowInfo.getTemplate(), windowInfo.getId(), params);
 
         preloadMainScreenClass(element);//try to load main screen class to resolve dynamic compilation dependencies issues
 
@@ -965,31 +925,23 @@ public abstract class WindowManager {
         loader.setLocale(getLocale());
         loader.setMessagesPack(parentFrame.getMessagesPack());
 
-        InputStream stream = resources.getResourceAsStream(src);
-        if (stream == null) {
-            throw new GuiDevelopmentException("Template is not found", context.getFullFrameId(), "Path", src);
-        }
-
         StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
                 LifeCycle.LOAD,
                 Logger.getLogger(UIPerformanceLogger.class));
 
         Frame component;
         String frameId = id != null ? id : windowInfo.getId();
-        try {
-            Pair<ComponentLoader, Element> loaderElementPair = loader.createFrameComponent(stream, frameId, context.getParams());
-            component = (Frame) loaderElementPair.getFirst().getResultComponent();
 
-            if (parent != null) {
-                showFrame(parent, component);
-            } else {
-                component.setFrame(parentFrame);
-            }
+        Pair<ComponentLoader, Element> loaderElementPair = loader.createFrameComponent(src, frameId, context.getParams());
+        component = (Frame) loaderElementPair.getFirst().getResultComponent();
 
-            loaderElementPair.getFirst().loadComponent();
-        } finally {
-            IOUtils.closeQuietly(stream);
+        if (parent != null) {
+            showFrame(parent, component);
+        } else {
+            component.setFrame(parentFrame);
         }
+
+        loaderElementPair.getFirst().loadComponent();
 
         if (component.getMessagesPack() == null) {
             component.setMessagesPack(parentFrame.getMessagesPack());

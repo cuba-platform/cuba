@@ -25,14 +25,11 @@ import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
-
-import java.io.InputStream;
 
 public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
 
@@ -59,23 +56,14 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
         layoutLoader.setLocale(getLocale());
         layoutLoader.setMessagesPack(getMessagesPack());
 
-        InputStream stream = resources.getResourceAsStream(src);
-        if (stream == null) {
-            stream = getClass().getResourceAsStream(src);
-            if (stream == null) {
-                throw new GuiDevelopmentException("Template is not found", context.getFullFrameId(), "src", src);
-            }
-        }
-
         String currentFrameId = context.getCurrentFrameId();
         context.setCurrentFrameId(frameId);
         try {
-            Pair<ComponentLoader, Element> loaderElementPair = layoutLoader.createFrameComponent(stream, frameId, context.getParams());
+            Pair<ComponentLoader, Element> loaderElementPair = layoutLoader.createFrameComponent(src, frameId, context.getParams());
             frameLoader = loaderElementPair.getFirst();
             resultComponent = (Frame) frameLoader.getResultComponent();
         } finally {
             context.setCurrentFrameId(currentFrameId);
-            IOUtils.closeQuietly(stream);
         }
     }
 

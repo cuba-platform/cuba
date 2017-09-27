@@ -65,23 +65,14 @@ public class FrameComponentLoader extends ContainerLoader<Frame> {
         layoutLoader.setLocale(getLocale());
         layoutLoader.setMessagesPack(getMessagesPack());
 
-        InputStream stream = resources.getResourceAsStream(src);
-        if (stream == null) {
-            stream = getClass().getResourceAsStream(src);
-            if (stream == null) {
-                throw new GuiDevelopmentException("Template is not found", context.getFullFrameId(), "src", src);
-            }
-        }
-
         String currentFrameId = context.getCurrentFrameId();
         context.setCurrentFrameId(frameId);
         try {
-            Pair<ComponentLoader, Element> loaderElementPair = layoutLoader.createFrameComponent(stream, frameId, context.getParams());
+            Pair<ComponentLoader, Element> loaderElementPair = layoutLoader.createFrameComponent(src, frameId, context.getParams());
             frameLoader = loaderElementPair.getFirst();
             resultComponent = (Frame) frameLoader.getResultComponent();
         } finally {
             context.setCurrentFrameId(currentFrameId);
-            IOUtils.closeQuietly(stream);
         }
     }
 
