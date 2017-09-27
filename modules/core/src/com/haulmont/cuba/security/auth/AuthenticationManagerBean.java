@@ -39,6 +39,8 @@ import javax.persistence.NoResultException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 @Component(AuthenticationManager.NAME)
 public class AuthenticationManagerBean implements AuthenticationManager {
 
@@ -61,6 +63,8 @@ public class AuthenticationManagerBean implements AuthenticationManager {
     @Override
     @Nonnull
     public AuthenticationDetails login(Credentials credentials) throws LoginException {
+        checkNotNullArgument(credentials, "credentials should not be null");
+
         AuthenticationDetails authenticationDetails = null;
 
         try (Transaction tx = persistence.getTransaction()) {
@@ -100,6 +104,8 @@ public class AuthenticationManagerBean implements AuthenticationManager {
     @Override
     @Nonnull
     public AuthenticationDetails authenticate(Credentials credentials) throws LoginException {
+        checkNotNullArgument(credentials, "credentials should not be null");
+
         try (Transaction tx = persistence.getTransaction()) {
             AuthenticationDetails authenticationDetails = authenticateInternal(credentials);
 
