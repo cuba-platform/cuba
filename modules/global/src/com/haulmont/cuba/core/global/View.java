@@ -84,6 +84,12 @@ public class View implements Serializable {
      */
     public static final String MINIMAL = "_minimal";
 
+    /**
+     * Includes all local non-system properties and properties defined by {@link com.haulmont.chile.core.annotations.NamePattern}
+     * (effectively {@link #MINIMAL} + {@link #LOCAL}).
+     */
+    public static final String BASE = "_base";
+
     private static final long serialVersionUID = 4313784222934349594L;
 
     private Class<? extends Entity> entityClass;

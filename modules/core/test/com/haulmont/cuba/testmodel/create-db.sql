@@ -293,6 +293,7 @@ create table TEST_ORDER (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
+    NUM varchar(50),
     DATE_ timestamp,
     AMOUNT numeric(19,2),
     CUSTOMER_ID varchar(36),

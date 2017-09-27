@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.testmodel.sales;
 
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.security.entity.User;
 
@@ -25,7 +26,11 @@ import java.util.Date;
 
 @Entity(name = "test$Order")
 @Table(name = "TEST_ORDER")
+@NamePattern("No %s for %s|number,customer")
 public class Order extends StandardEntity {
+
+    @Column(name = "NUM")
+    private String number;
 
     @Column(name = "DATE_")
     private Date date;
@@ -40,6 +45,14 @@ public class Order extends StandardEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     private User user;
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
 
     public Date getDate() {
         return date;

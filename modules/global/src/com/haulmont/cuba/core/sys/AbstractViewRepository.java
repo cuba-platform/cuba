@@ -285,32 +285,14 @@ public class AbstractViewRepository implements ViewRepository {
         View view;
         if (View.LOCAL.equals(name)) {
             view = new View(javaClass, name, false);
-            for (MetaProperty property : metaClass.getProperties()) {
-                if (!property.getRange().isClass()
-                        && !metadata.getTools().isSystem(property)
-                        && metadata.getTools().isPersistent(property)) {
-                    view.addProperty(property.getName());
-                }
-            }
+            addAttributesToLocalView(metaClass, view);
         } else if (View.MINIMAL.equals(name)) {
             view = new View(javaClass, name, false);
-            Collection<MetaProperty> metaProperties = metadata.getTools().getNamePatternProperties(metaClass, true);
-            for (MetaProperty metaProperty : metaProperties) {
-                if (metadata.getTools().isPersistent(metaProperty)) {
-                    addPersistentAttributeToMinimalView(metaClass, visited, info, view, metaProperty);
-                } else {
-                    List<String> relatedProperties = metadata.getTools().getRelatedProperties(metaProperty);
-                    for (String relatedPropertyName : relatedProperties) {
-                        MetaProperty relatedProperty = metaClass.getPropertyNN(relatedPropertyName);
-                        if (metadata.getTools().isPersistent(relatedProperty)) {
-                            addPersistentAttributeToMinimalView(metaClass, visited, info, view, relatedProperty);
-                        } else {
-                            log.warn("Transient attribute '" + relatedPropertyName
-                                    + "' is listed in 'related' properties of another transient attribute '" + metaProperty.getName() + "'");
-                        }
-                    }
-                }
-            }
+            addAttributesToMinimalView(metaClass, view, info, visited);
+        } else if (View.BASE.equals(name)) {
+            view = new View(javaClass, name, false);
+            addAttributesToMinimalView(metaClass, view, info, visited);
+            addAttributesToLocalView(metaClass, view);
         } else {
             throw new UnsupportedOperationException("Unsupported default view: " + name);
         }
@@ -318,6 +300,36 @@ public class AbstractViewRepository implements ViewRepository {
         storeView(metaClass, view);
 
         return view;
+    }
+
+    protected void addAttributesToLocalView(MetaClass metaClass, View view) {
+        for (MetaProperty property : metaClass.getProperties()) {
+            if (!property.getRange().isClass()
+                    && !metadata.getTools().isSystem(property)
+                    && metadata.getTools().isPersistent(property)) {
+                view.addProperty(property.getName());
+            }
+        }
+    }
+
+    protected void addAttributesToMinimalView(MetaClass metaClass, View view, ViewInfo info, Set<ViewInfo> visited) {
+        Collection<MetaProperty> metaProperties = metadata.getTools().getNamePatternProperties(metaClass, true);
+        for (MetaProperty metaProperty : metaProperties) {
+            if (metadata.getTools().isPersistent(metaProperty)) {
+                addPersistentAttributeToMinimalView(metaClass, visited, info, view, metaProperty);
+            } else {
+                List<String> relatedProperties = metadata.getTools().getRelatedProperties(metaProperty);
+                for (String relatedPropertyName : relatedProperties) {
+                    MetaProperty relatedProperty = metaClass.getPropertyNN(relatedPropertyName);
+                    if (metadata.getTools().isPersistent(relatedProperty)) {
+                        addPersistentAttributeToMinimalView(metaClass, visited, info, view, relatedProperty);
+                    } else {
+                        log.warn("Transient attribute '" + relatedPropertyName
+                                + "' is listed in 'related' properties of another transient attribute '" + metaProperty.getName() + "'");
+                    }
+                }
+            }
+        }
     }
 
     protected void addPersistentAttributeToMinimalView(MetaClass metaClass, Set<ViewInfo> visited, ViewInfo info, View view, MetaProperty metaProperty) {
@@ -398,7 +410,7 @@ public class AbstractViewRepository implements ViewRepository {
     protected View retrieveView(MetaClass metaClass, String name, Set<ViewInfo> visited) {
         Map<String, View> views = storage.get(metaClass);
         View view = (views == null ? null : views.get(name));
-        if (view == null && (name.equals(View.LOCAL) || name.equals(View.MINIMAL))) {
+        if (view == null && (name.equals(View.LOCAL) || name.equals(View.MINIMAL) || name.equals(View.BASE))) {
             view = deployDefaultView(metaClass, name, visited);
         }
         return view;

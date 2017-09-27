@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.testmodel.sales;
 
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 
 import javax.persistence.Column;
@@ -24,6 +25,7 @@ import javax.persistence.Table;
 
 @Entity(name = "test$Customer")
 @Table(name = "TEST_CUSTOMER")
+@NamePattern("%s|name")
 public class Customer extends StandardEntity {
 
     @Column(name = "NAME")
