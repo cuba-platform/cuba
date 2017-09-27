@@ -22,6 +22,7 @@ import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.ResourcesImpl;
+import com.haulmont.cuba.gui.xml.layout.ScreenXmlParser;
 import mockit.NonStrictExpectations;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -35,6 +36,7 @@ import java.util.List;
 public class XmlInheritanceTest extends CubaClientTestCase {
 
     private Resources resources;
+    private ScreenXmlParser screenXmlParser;
 
     @Before
     public void setUp() throws Exception {
@@ -42,12 +44,17 @@ public class XmlInheritanceTest extends CubaClientTestCase {
         setupInfrastructure();
 
         resources = new ResourcesImpl(getClass().getClassLoader());
+        screenXmlParser = new ScreenXmlParser();
 
         new NonStrictExpectations() {
             {
                 AppBeans.get(Resources.NAME); result = resources;
                 AppBeans.get(Resources.class); result = resources;
                 AppBeans.get(Resources.NAME, Resources.class); result = resources;
+
+                AppBeans.get(ScreenXmlParser.NAME); result = screenXmlParser;
+                AppBeans.get(ScreenXmlParser.class); result = screenXmlParser;
+                AppBeans.get(ScreenXmlParser.NAME, ScreenXmlParser.class); result = screenXmlParser;
             }
         };
     }
