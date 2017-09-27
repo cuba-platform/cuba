@@ -161,6 +161,6 @@ public class ClientCacheManager implements AppContext.Listener, Ordered {
 
     @Override
     public int getOrder() {
-        return HIGHEST_PLATFORM_PRECEDENCE - 100;
+        return LOWEST_PLATFORM_PRECEDENCE - 120;
     }
 }
