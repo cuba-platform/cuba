@@ -16,7 +16,6 @@ To contribute, first refer to [Contributing Code](https://github.com/cuba-platfo
 
 In order to build the platform from source, you need to install the following:
 * Java 8 Development Kit (JDK)
-* [Gradle](https://gradle.org) (tested on 3.1, but newer versions may also work)
 * [CUBA Gradle Plugin](https://github.com/cuba-platform/cuba-gradle-plugin)
 
 Let's assume that you have cloned CUBA Gradle Plugin and CUBA into the following directories:
