@@ -345,7 +345,7 @@ public interface WebConfig extends Config {
     MainTabSheetMode getMainTabSheetMode();
 
     /**
-     * Sets how the managed main TabSheet should conceal content of tabs.
+     * Sets how the managed main TabSheet switches its tabs: hides or unloads them.
      *
      * @return one of {@link ManagedMainTabSheetMode} values
      */
