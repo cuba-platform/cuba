@@ -23,6 +23,7 @@ import com.haulmont.cuba.portal.Connection;
 import com.haulmont.cuba.portal.sys.security.RoleGrantedAuthority;
 import com.haulmont.cuba.security.global.AccountLockedException;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.UserIpRestrictedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -76,12 +77,15 @@ public class PortalAuthenticationProvider implements AuthenticationProvider, Ser
                 httpSession.setAttribute(Connection.NAME, connection);
 
                 session = connection.getSession();
-            } catch (AccountLockedException le) {
+            } catch (AccountLockedException e) {
                 log.info("Blocked user login attempt: login={}, ip={}", login, ipAddress);
-                throw new LockedException("User temporarily blocked");
+                throw new LockedException(e.getMessage());
+            } catch (UserIpRestrictedException e) {
+                log.info("Incorrect user IP: {} {} - {}", login, ipAddress);
+                throw new BadCredentialsException(e.getMessage());
             } catch (LoginException e) {
-                log.info("Portal authentication failed: {} {}", login, ipAddress);
-                throw new BadCredentialsException("error.login.User");
+                log.info("Authentication failed: {} {} - {}", login, ipAddress, e.getMessage());
+                throw new BadCredentialsException(e.getMessage());
             }
 
             return new UsernamePasswordAuthenticationToken(session, session.getId(), getRoleUserAuthorities(session));
