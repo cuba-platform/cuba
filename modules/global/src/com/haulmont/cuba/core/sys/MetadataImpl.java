@@ -75,6 +75,9 @@ public class MetadataImpl implements Metadata {
 
     @EventListener({ContextStartedEvent.class, ContextRefreshedEvent.class})
     protected void initMetadata() {
+        if (session != null)
+            return;
+
         log.info("Initializing metadata");
         long startTime = System.currentTimeMillis();
 
