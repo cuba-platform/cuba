@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-
-
-
 package spec.cuba.core.entity_listeners
 
 import com.haulmont.cuba.core.global.AppBeans
+import com.haulmont.cuba.core.global.DataManager
+import com.haulmont.cuba.core.global.LoadContext
+import com.haulmont.cuba.core.global.View
 import com.haulmont.cuba.core.listener.TestUserEntityListener
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager
 import com.haulmont.cuba.security.entity.Group
@@ -67,6 +65,43 @@ class EntityListenerTest extends Specification {
 
         events.clear()
         entityListenerManager.removeListener(User, TestUserEntityListener)
+        cont.deleteRecord(user)
+    }
+
+    def "accessing properties that are not loaded"() {
+
+        def user = cont.metadata().create(User)
+        user.setLogin("User-$user.id")
+        user.setName('test user')
+        user.setGroup(cont.persistence().callInTransaction { em -> em.find(Group, TestSupport.COMPANY_GROUP_ID) })
+        cont.persistence().runInTransaction() { em ->
+            em.persist(user)
+        }
+
+        def dataManager = AppBeans.get(DataManager.class)
+
+        def view = new View(User).addProperty('name')
+        def loadContext = LoadContext.create(User).setId(user.id).setView(view)
+
+        when:
+
+        def loadedUser = dataManager.load(loadContext)
+        loadedUser.setName('changed name')
+        dataManager.commit(loadedUser)
+
+        loadedUser = cont.persistence().callInTransaction() { em ->
+            em.find(User, user.id)
+        }
+
+        then:
+
+        noExceptionThrown()
+        loadedUser.name == 'changed name'
+        loadedUser.login == user.login
+        loadedUser.loginLowerCase == user.login.toLowerCase()
+
+        cleanup:
+
         cont.deleteRecord(user)
     }
 }

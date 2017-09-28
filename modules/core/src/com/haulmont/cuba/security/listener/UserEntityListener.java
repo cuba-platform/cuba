@@ -17,32 +17,25 @@
 package com.haulmont.cuba.security.listener;
 
 import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.PersistenceTools;
-import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.cuba.security.entity.User;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
 @Component("cuba_UserEntityListener")
 public class UserEntityListener implements BeforeInsertEntityListener<User>, BeforeUpdateEntityListener<User> {
 
-    @Inject
-    protected PersistenceTools persistenceTools;
-
     @Override
     public void onBeforeInsert(User entity, EntityManager entityManager) {
-        if (PersistenceHelper.isLoaded(entity, "login")) {
-            entity.setLoginLowerCase(entity.getLogin() != null ? entity.getLogin().toLowerCase() : null);
-        }
+        updateLoginLowerCase(entity);
     }
 
     @Override
     public void onBeforeUpdate(User entity, EntityManager entityManager) {
-        if (PersistenceHelper.isLoaded(entity, "login") && PersistenceHelper.isLoaded(entity, "loginLowerCase")) {
-            entity.setLoginLowerCase(entity.getLogin() != null ? entity.getLogin().toLowerCase() : null);
-        }
+        updateLoginLowerCase(entity);
+    }
+
+    protected void updateLoginLowerCase(User user) {
+        user.setLoginLowerCase(user.getLogin() != null ? user.getLogin().toLowerCase() : null);
     }
 }
