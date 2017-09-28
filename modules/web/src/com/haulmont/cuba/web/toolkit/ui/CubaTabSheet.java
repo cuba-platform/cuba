@@ -366,6 +366,11 @@ public class CubaTabSheet extends DDTabSheet implements Action.Container, HasTab
             tabSheet.tabIds.get(tabId).setClosable(closable);
         }
 
+        // just stub
+        @Override
+        public void setContentSwitchMode(String tabId, ContentSwitchMode contentSwitchMode) {
+        }
+
         @Override
         public void setSelectedTab(String tabId) {
             tabSheet.setSelectedTab(tabSheet.tabIds.get(tabId));

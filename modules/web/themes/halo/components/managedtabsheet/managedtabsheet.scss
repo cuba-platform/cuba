@@ -39,23 +39,22 @@ $c-managed-tabsheet-tabbar-height: $v-unit-size + round($v-unit-size/6) + 2*firs
   .#{$primary-stylename}.v-has-width.v-has-height {
     position: relative !important;
 
-    .hidden-tab,
-    .visible-tab {
+    .c-managed-tab {
       top: $c-managed-tabsheet-tabbar-height;
       left: 0;
       right: 0;
       bottom: 0;
       position: absolute;
-    }
 
-    .hidden-tab {
-      display: block;
-      visibility: hidden;
-    }
+      &.hidden-tab {
+        display: block;
+        visibility: hidden;
+      }
 
-    .visible-tab {
-      display: block;
-      visibility: visible;
+      &.visible-tab {
+        display: block;
+        visibility: visible;
+      }
     }
   }
 }

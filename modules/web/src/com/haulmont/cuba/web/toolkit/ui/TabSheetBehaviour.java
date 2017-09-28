@@ -59,6 +59,8 @@ public interface TabSheetBehaviour {
 
     void setTabClosable(String tabId, boolean closable);
 
+    void setContentSwitchMode(String tabId, ContentSwitchMode contentSwitchMode);
+
     void setSelectedTab(String tabId);
 
     void setSelectedTab(Component component);

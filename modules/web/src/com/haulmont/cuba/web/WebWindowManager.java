@@ -50,10 +50,7 @@ import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
-import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
-import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
-import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
-import com.haulmont.cuba.web.toolkit.ui.TabSheetBehaviour;
+import com.haulmont.cuba.web.toolkit.ui.*;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
@@ -529,6 +526,10 @@ public class WebWindowManager extends WindowManager {
                     tabSheet.setTabCubaId(tabId, id);
                 }
             }
+            String windowContentSwitchMode = window.getContentSwitchMode().name();
+            ContentSwitchMode contentSwitchMode = ContentSwitchMode.valueOf(windowContentSwitchMode);
+            tabSheet.setContentSwitchMode(tabId, contentSwitchMode);
+
             String formattedCaption = formatTabCaption(window.getCaption(), window.getDescription());
             tabSheet.setTabCaption(tabId, formattedCaption);
             String formattedDescription = formatTabDescription(window.getCaption(), window.getDescription());

@@ -18,6 +18,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.bali.datastruct.Pair;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -125,6 +126,8 @@ public class DesktopWindow implements Window, Component.Disposable,
     protected DialogOptions dialogOptions = new DesktopDialogOptions();
     protected String icon;
     protected List<String> styles;
+
+    protected ContentSwitchMode contentSwitchMode = ContentSwitchMode.DEFAULT;
 
     public DesktopWindow() {
         initLayout();
@@ -1441,6 +1444,19 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    @Override
+    public ContentSwitchMode getContentSwitchMode() {
+        return contentSwitchMode;
+    }
+
+    @Override
+    public void setContentSwitchMode(ContentSwitchMode mode) {
+        Preconditions.checkNotNullArgument(mode, "Content switch mode can't be null. " +
+                "Use ContentSwitchMode.DEFAULT option instead");
+
+        this.contentSwitchMode = mode;
     }
 
     protected class DesktopDialogOptions extends DialogOptions {

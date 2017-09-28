@@ -307,4 +307,14 @@ public class AbstractWindow extends AbstractFrame
     public void setIcon(String icon) {
         frame.setIcon(icon);
     }
+
+    @Override
+    public ContentSwitchMode getContentSwitchMode() {
+        return ((Window) frame).getContentSwitchMode();
+    }
+
+    @Override
+    public void setContentSwitchMode(ContentSwitchMode mode) {
+        ((Window) frame).setContentSwitchMode(mode);
+    }
 }

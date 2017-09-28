@@ -26,6 +26,8 @@ import com.haulmont.cuba.core.config.type.StringListTypeFactory;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.toolkit.ui.MainTabSheetMode;
 import com.haulmont.cuba.web.toolkit.ui.MainTabSheetModeFactory;
+import com.haulmont.cuba.web.toolkit.ui.ManagedMainTabSheetMode;
+import com.haulmont.cuba.web.toolkit.ui.ManagedMainTabSheetModeFactory;
 
 import java.util.List;
 
@@ -320,4 +322,14 @@ public interface WebConfig extends Config {
     @Default("DEFAULT")
     @Factory(factory = MainTabSheetModeFactory.class)
     MainTabSheetMode getMainTabSheetMode();
+
+    /**
+     * Sets how the managed main TabSheet switches its tabs: hides or unloads them.
+     *
+     * @return one of {@link ManagedMainTabSheetMode} values
+     */
+    @Property("cuba.web.managedMainTabSheetMode")
+    @Default("HIDE_TABS")
+    @Factory(factory = ManagedMainTabSheetModeFactory.class)
+    ManagedMainTabSheetMode getManagedMainTabSheetMode();
 }

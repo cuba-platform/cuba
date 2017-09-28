@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.gui;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
@@ -110,6 +111,8 @@ public class WebWindow implements Window, Component.Wrapper,
 
     protected boolean disposed = false;
     protected DialogOptions dialogOptions = new WebDialogOptions();
+
+    protected ContentSwitchMode contentSwitchMode = ContentSwitchMode.DEFAULT;
 
     public WebWindow() {
         component = createLayout();
@@ -1346,6 +1349,19 @@ public class WebWindow implements Window, Component.Wrapper,
                 tabWindow.setIcon(WebComponentsHelper.getIcon(icon));
             }
         }
+    }
+
+    @Override
+    public ContentSwitchMode getContentSwitchMode() {
+        return contentSwitchMode;
+    }
+
+    @Override
+    public void setContentSwitchMode(ContentSwitchMode mode) {
+        Preconditions.checkNotNullArgument(mode, "Content switch mode can't be null. " +
+                "Use ContentSwitchMode.DEFAULT option instead");
+
+        this.contentSwitchMode = mode;
     }
 
     protected class WebDialogOptions extends DialogOptions {
