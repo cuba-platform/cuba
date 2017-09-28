@@ -60,8 +60,15 @@ public class DbPropertiesTest {
 
     @Test
     public void testWithParamsMssql() {
-        DbProperties dbProperties = new DbProperties("jdbc:sqlserver://localhost;databaseName=refapp_6;currentSchema=Person");
+        DbProperties dbProperties = new DbProperties("jdbc:jtds:sqlserver://localhost/refapp_6;currentSchema=Person");
         Map<String, String> properties = dbProperties.getProperties();
+        Assert.assertNotNull(properties);
+        Assert.assertTrue(properties.size() == 1);
+        Assert.assertTrue("Person".equals(properties.get("currentSchema")));
+        Assert.assertTrue("Person".equals(dbProperties.getCurrentSchemaProperty()));
+
+        dbProperties = new DbProperties("jdbc:sqlserver://localhost;databaseName=refapp_6;currentSchema=Person");
+        properties = dbProperties.getProperties();
         Assert.assertNotNull(properties);
         Assert.assertTrue(properties.size() == 2);
         Assert.assertTrue("Person".equals(properties.get("currentSchema")));
@@ -76,6 +83,4 @@ public class DbPropertiesTest {
         Assert.assertTrue("true".equals(properties.get("integratedSecurity")));
         Assert.assertTrue("Person".equals(dbProperties.getCurrentSchemaProperty()));
     }
-
-
 }

@@ -46,6 +46,8 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
 
     private boolean executeGroovy = true;
 
+    protected static final String MS_SQL_2005 = "2005";
+
     public static void main(String[] args) {
         String property = System.getProperty("logback.configurationFile");
         if (StringUtils.isBlank(property)) {
@@ -167,7 +169,11 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
                         dbDriver = "org.postgresql.Driver";
                         break;
                     case "mssql":
-                        dbDriver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+                        if (MS_SQL_2005.equals(dbmsVersion)) {
+                            dbDriver = "net.sourceforge.jtds.jdbc.Driver";
+                        } else {
+                            dbDriver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+                        }
                         break;
                     case "oracle":
                         dbDriver = "oracle.jdbc.OracleDriver";

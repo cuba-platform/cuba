@@ -357,7 +357,8 @@
         under the terms of the GNU Lesser General Public License version 2.1
         as published by the Free Software Foundation.]]></license>
         </item>
-        <item name="Merlin Hughes Config Framework" web="http://www.ibm.com/developerworks/java/library/j-configint/index.html" license="apache-2.0" />
+        <item name="Merlin Hughes Config Framework" web="http://www.ibm.com/developerworks/java/library/j-configint/index.html" license="apache-2.0"/>
+        <item name="jTDS" web="http://jtds.sourceforge.net/" license="lgpl-3"/>
         <item name="Microsoft JDBC Driver for SQL Server" web="https://github.com/Microsoft/mssql-jdbc">
             <license><![CDATA[
                 ﻿Copyright(c) 2017 Microsoft Corporation
