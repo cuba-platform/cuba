@@ -23,5 +23,6 @@ public enum ConditionType {
     GROUP,
     PROPERTY,
     CUSTOM,
-    RUNTIME_PROPERTY
+    RUNTIME_PROPERTY,
+    FTS
 }

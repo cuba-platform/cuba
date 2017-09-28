@@ -20,7 +20,6 @@ package com.haulmont.cuba.gui.components.filter;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Interface provides full text search functionality necessary to generic filter component.
@@ -28,7 +27,12 @@ import java.util.UUID;
  *
  */
 public interface FtsFilterHelper {
+
     String NAME = "cuba_FtsFilterHelper";
+
+    String QUERY_KEY_PARAM_NAME = "__queryKey";
+
+    String SESSION_ID_PARAM_NAME = "__sessionId";
 
     /**
      * Checks whether an entity is indexed by full text search engine
@@ -48,7 +52,9 @@ public interface FtsFilterHelper {
     /**
      * Creates a filter condition that joins a set of entities stored with given @{code queryKey}
      */
-    CustomCondition createFtsCondition(String entityName, int queryKey);
+    CustomCondition createFtsCondition(String entityName);
+
+    String createFtsWhereClause(String entityName);
 
     /**
      * Class for holding search result.

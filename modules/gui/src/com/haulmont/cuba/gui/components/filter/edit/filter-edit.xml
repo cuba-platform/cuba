@@ -89,6 +89,7 @@
                     <frame id="dynamicAttributesConditionFrame" screen="dynamicAttributesConditionFrame" visible="false"/>
                     <frame id="propertyConditionFrame" screen="propertyConditionFrame" visible="false"/>
                     <frame id="groupConditionFrame" screen="groupConditionFrame" visible="false"/>
+                    <frame id="ftsConditionFrame" screen="ftsConditionFrame" visible="false"/>
                 </scrollBox>
             </groupBox>
         </hbox>

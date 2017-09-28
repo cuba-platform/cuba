@@ -394,6 +394,8 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
         void setSuspended(boolean suspended);
 
         void refreshIfNotSuspended();
+
+        void refreshIfNotSuspended(Map<String, Object> parameters);
     }
 
     /**

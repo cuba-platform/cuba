@@ -28,6 +28,8 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
+import com.haulmont.cuba.gui.components.filter.ConditionsTree;
+import com.haulmont.cuba.gui.components.filter.condition.FtsCondition;
 import com.haulmont.cuba.gui.components.filter.descriptor.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -64,26 +66,23 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
     protected final String storeName;
     protected final boolean hideDynamicAttributes;
     protected final boolean hideCustomConditions;
-
-    /**
-     * @param filter filter
-     * @param hierarchyDepth max level of properties hierarchy
-     */
-    public ConditionDescriptorsTreeBuilder(Filter filter, int hierarchyDepth) {
-        this(filter, hierarchyDepth, false, false);
-    }
+    protected ConditionsTree conditionsTree;
 
     /**
      * @param filter filter
      * @param hierarchyDepth max level of properties hierarchy
      * @param hideDynamicAttributes hide dynamic attributes conditions from wizard
      */
-    public ConditionDescriptorsTreeBuilder(Filter filter, int hierarchyDepth, boolean hideDynamicAttributes,
-                                           boolean hideCustomConditions) {
+    public ConditionDescriptorsTreeBuilder(Filter filter,
+                                           int hierarchyDepth,
+                                           boolean hideDynamicAttributes,
+                                           boolean hideCustomConditions,
+                                           ConditionsTree conditionsTree) {
         this.filter = filter;
         this.hierarchyDepth = hierarchyDepth;
         this.hideDynamicAttributes = hideDynamicAttributes;
         this.hideCustomConditions = hideCustomConditions;
+        this.conditionsTree = conditionsTree;
         security = AppBeans.get(Security.class);
         metadataTools = AppBeans.get(MetadataTools.NAME);
         dynamicAttributes = AppBeans.get(DynamicAttributes.class);
@@ -178,6 +177,14 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
 
         if (!hideDynamicAttributes && !dynamicAttributes.getAttributesForMetaClass(datasource.getMetaClass()).isEmpty()) {
             rootNodes.add(new Node<>(new DynamicAttributesConditionCreator(filterComponentName, datasource, "")));
+        }
+
+        if (FtsConfigHelper.getEnabled()) {
+            boolean ftsConditionAlreadyAdded = conditionsTree.getRoots().stream()
+                    .anyMatch(condition -> condition instanceof FtsCondition);
+            if (!ftsConditionAlreadyAdded) {
+                rootNodes.add(new Node<>(new FtsConditionDescriptor(filterComponentName, datasource)));
+            }
         }
 
         tree.setRootNodes(rootNodes);

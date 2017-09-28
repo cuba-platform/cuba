@@ -40,11 +40,9 @@ import java.util.Map;
 
 /**
  * Helper class that does a sequence of steps for adding new condition:
- * <ol>
- *     <li>opens add condition dialog</li>
- *     <li>if necessary opens new condition editor</li>
- *     <li>invokes a handler passing new condition to it</li>
- * </ol>
+ * <p>
+ * <ol> <li>opens add condition dialog</li> <li>if necessary opens new condition editor</li> <li>invokes a handler
+ * passing new condition to it</li> </ol>
  */
 public class AddConditionHelper {
 
@@ -54,7 +52,6 @@ public class AddConditionHelper {
     protected WindowConfig windowConfig;
     protected Filter filter;
     protected Handler handler;
-    protected Tree<AbstractConditionDescriptor> descriptorsTree;
     protected boolean hideDynamicAttributes;
     protected boolean hideCustomConditions;
 
@@ -77,18 +74,20 @@ public class AddConditionHelper {
     }
 
     /**
-     * Opens AddCondition window. When condition is selected/created a {@code Handler#handle} method
-     * will be called
-     * @param conditionsTree conditions tree is necessary for custom condition editing. It is used
-     *                       for suggestion of other component names in 'param where' field.
+     * Opens AddCondition window. When condition is selected/created a {@code Handler#handle} method will be called
+     *
+     * @param conditionsTree conditions tree is necessary for custom condition editing. It is used for suggestion of
+     *                       other component names in 'param where' field.
      */
     public void addCondition(final ConditionsTree conditionsTree) {
         Map<String, Object> params = new HashMap<>();
-        if (descriptorsTree == null) {
-            ConditionDescriptorsTreeBuilderAPI descriptorsTreeBuilder = AppBeans.getPrototype(ConditionDescriptorsTreeBuilderAPI.NAME,
-                    filter, PROPERTIES_HIERARCHY_DEPTH, hideDynamicAttributes, hideCustomConditions);
-            descriptorsTree = descriptorsTreeBuilder.build();
-        }
+        ConditionDescriptorsTreeBuilderAPI descriptorsTreeBuilder = AppBeans.getPrototype(ConditionDescriptorsTreeBuilderAPI.NAME,
+                filter,
+                PROPERTIES_HIERARCHY_DEPTH,
+                hideDynamicAttributes,
+                hideCustomConditions,
+                conditionsTree);
+        Tree<AbstractConditionDescriptor> descriptorsTree = descriptorsTreeBuilder.build();
         params.put("descriptorsTree", descriptorsTree);
         WindowInfo windowInfo = windowConfig.getWindowInfo("addCondition");
         AddConditionWindow window = (AddConditionWindow) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);

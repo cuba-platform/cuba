@@ -96,6 +96,8 @@ public class FilterParserImpl implements FilterParser {
                 return new CustomCondition(element, messagesPack, filterComponentName, datasource);
             case RUNTIME_PROPERTY:
                 return new DynamicAttributesCondition(element, messagesPack, filterComponentName, datasource);
+            case FTS:
+                return new FtsCondition(element, messagesPack, filterComponentName, datasource);
             default:
                 throw new IllegalStateException("Unknown condition type: " + type + " in " + xml);
         }

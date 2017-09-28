@@ -48,6 +48,7 @@ import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
+import com.haulmont.cuba.gui.components.filter.condition.FtsCondition;
 import com.haulmont.cuba.gui.components.filter.edit.FilterEditor;
 import com.haulmont.cuba.gui.components.filter.filterselect.FilterSelectWindow;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -848,6 +849,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 grid.add(groupCellContent, nextColumnStart * 2, row, nextColumnEnd * 2 + 1, row);
             }
             if (labelAndOperationCellContent != null) {
+                labelAndOperationCellContent.setHeight("100%");
                 grid.add(labelAndOperationCellContent, nextColumnStart * 2, row, nextColumnStart * 2, row);
                 if (nextColumnStart != 0)
                     labelAndOperationCellContent.setMargin(false, false, false, true);
@@ -1429,7 +1431,9 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         applyDatasourceFilter();
         initDatasourceMaxResults();
-        refreshDatasource();
+
+        Map<String, Object> parameters = prepareDatasourceCustomParams();
+        refreshDatasource(parameters);
 
         if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
             filterHelper.removeTableFtsTooltips((Table) applyTo);
@@ -1439,6 +1443,28 @@ public class FilterDelegateImpl implements FilterDelegate {
             afterFilterAppliedHandler.afterFilterApplied();
         }
         return true;
+    }
+
+    protected Map<String, Object> prepareDatasourceCustomParams() {
+        Map<String, Object> lastRefreshParameters = new HashMap<>(datasource.getLastRefreshParameters());
+        lastRefreshParameters.remove(FtsFilterHelper.SESSION_ID_PARAM_NAME);
+        lastRefreshParameters.remove(FtsFilterHelper.QUERY_KEY_PARAM_NAME);
+
+        AbstractCondition ftsCondition = conditions.toConditionsList().stream()
+                .filter(abstractCondition -> abstractCondition instanceof FtsCondition)
+                .findAny()
+                .orElse(null);
+
+        if (ftsCondition != null) {
+            String searchTerm = (String) ftsCondition.getParam().getValue();
+            if (!Strings.isNullOrEmpty(searchTerm)) {
+                FtsFilterHelper.FtsSearchResult ftsSearchResult = ftsFilterHelper.search(searchTerm, datasource.getMetaClass().getName());
+                int queryKey = ftsSearchResult.getQueryKey();
+                lastRefreshParameters.put(FtsFilterHelper.SESSION_ID_PARAM_NAME, userSessionSource.getUserSession().getId());
+                lastRefreshParameters.put(FtsFilterHelper.QUERY_KEY_PARAM_NAME, queryKey);
+            }
+        }
+        return lastRefreshParameters;
     }
 
     protected void applyFts() {
@@ -1463,7 +1489,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             params.put("sessionId", userSessionSource.getUserSession().getId());
             params.put("queryKey", queryKey);
 
-            CustomCondition ftsCondition = ftsFilterHelper.createFtsCondition(datasource.getMetaClass().getName(), queryKey);
+            CustomCondition ftsCondition = ftsFilterHelper.createFtsCondition(datasource.getMetaClass().getName());
             conditions = new ConditionsTree();
             conditions.getRootNodes().add(new Node<>(ftsCondition));
 
@@ -1557,11 +1583,11 @@ public class FilterDelegateImpl implements FilterDelegate {
      * extenders should be able to modify the datasource
      * before it will be refreshed
      */
-    protected void refreshDatasource() {
+    protected void refreshDatasource(Map<String, Object> parameters) {
         if (datasource instanceof CollectionDatasource.Suspendable)
-            ((CollectionDatasource.Suspendable) datasource).refreshIfNotSuspended();
+            ((CollectionDatasource.Suspendable) datasource).refreshIfNotSuspended(parameters);
         else
-            datasource.refresh();
+            datasource.refresh(parameters);
     }
 
     @Override

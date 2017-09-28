@@ -97,6 +97,9 @@ public class FilterEditor extends AbstractWindow {
     protected GroupConditionFrame groupConditionFrame;
 
     @Inject
+    protected FtsConditionFrame ftsConditionFrame;
+
+    @Inject
     protected Tree conditionsTree;
 
     @Inject
@@ -223,6 +226,8 @@ public class FilterEditor extends AbstractWindow {
                     activeConditionFrame = customConditionFrame;
                 } else if (e.getItem() instanceof GroupCondition) {
                     activeConditionFrame = groupConditionFrame;
+                } else if (e.getItem() instanceof FtsCondition) {
+                    activeConditionFrame = ftsConditionFrame;
                 } else {
                     log.warn("Conditions frame for condition with type " + e.getItem().getClass().getSimpleName() + " not found");
                 }
@@ -232,6 +237,7 @@ public class FilterEditor extends AbstractWindow {
             customConditionFrame.setVisible(false);
             dynamicAttributesConditionFrame.setVisible(false);
             groupConditionFrame.setVisible(false);
+            ftsConditionFrame.setVisible(false);
 
             if (activeConditionFrame != null) {
                 activeConditionFrame.setVisible(true);

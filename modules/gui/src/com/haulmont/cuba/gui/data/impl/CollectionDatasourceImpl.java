@@ -101,6 +101,19 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
+    public void refreshIfNotSuspended(Map<String, Object> parameters) {
+        if (suspended) {
+            if (!state.equals(State.VALID)) {
+                state = State.VALID;
+            }
+            savedParameters = parameters;
+            refreshOnResumeRequired = true;
+        } else {
+            refresh(parameters);
+        }
+    }
+
+    @Override
     public void refresh() {
         if (savedParameters == null)
             refresh(Collections.emptyMap());
