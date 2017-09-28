@@ -53,6 +53,7 @@
         <property name="order" value="2" />
         <property name="suffix" value=".html"/>
         <property name="templateMode" value="HTML"/>
+        <property name="characterEncoding" value="UTF-8"/>
     </bean>
 
     <bean id="thymeleafTemplateEngine"
@@ -67,5 +68,6 @@
 
     <bean id="thymeleafViewResolver" class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
         <property name="templateEngine" ref="thymeleafTemplateEngine" />
+        <property name="characterEncoding" value="UTF-8"/>
     </bean>
 </beans>
