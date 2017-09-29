@@ -29,4 +29,8 @@ public class UserLoggedInEvent extends ApplicationEvent {
     public UserSession getSource() {
         return (UserSession) super.getSource();
     }
+
+    public UserSession getUserSession() {
+        return (UserSession) super.getSource();
+    }
 }

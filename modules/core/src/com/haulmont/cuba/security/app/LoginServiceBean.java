@@ -82,6 +82,8 @@ public class LoginServiceBean implements LoginService {
         RemoteClientInfo remoteClientInfo = RemoteClientInfo.get();
         if (remoteClientInfo != null) {
             credentials.setClientIpAddress(remoteClientInfo.getAddress());
+        } else {
+            log.warn("Unable to determine remote client IP");
         }
         copyParamsToCredentials(params, credentials);
         return authenticationService.login(credentials).getSession();

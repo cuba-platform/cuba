@@ -28,4 +28,8 @@ public class BeforeLoginEvent extends ApplicationEvent {
     public Credentials getSource() {
         return (Credentials) super.getSource();
     }
+
+    public Credentials getCredentials() {
+        return (Credentials) super.getSource();
+    }
 }

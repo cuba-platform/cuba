@@ -17,6 +17,7 @@
 package com.haulmont.cuba.security.auth;
 
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.sys.remoting.RemoteClientInfo;
 import com.haulmont.cuba.security.app.UserSessionLog;
 import com.haulmont.cuba.security.entity.SessionAction;
 import com.haulmont.cuba.security.entity.User;
@@ -45,6 +46,8 @@ public class AuthenticationServiceBean implements AuthenticationService {
     @Override
     public AuthenticationDetails login(Credentials credentials) throws LoginException {
         try {
+            preprocessCredentials(credentials);
+
             //noinspection UnnecessaryLocalVariable
             AuthenticationDetails authenticationDetails = authenticationManager.login(credentials);
 
@@ -63,6 +66,8 @@ public class AuthenticationServiceBean implements AuthenticationService {
     @Override
     public AuthenticationDetails authenticate(Credentials credentials) throws LoginException {
         try {
+            preprocessCredentials(credentials);
+
             //noinspection UnnecessaryLocalVariable
             AuthenticationDetails authenticationDetails = authenticationManager.authenticate(credentials);
             return authenticationDetails;
@@ -118,5 +123,16 @@ public class AuthenticationServiceBean implements AuthenticationService {
             rootCause = throwable;
         // send text only to avoid ClassNotFoundException when the client has no dependency to some library
         return new LoginException(rootCause.toString());
+    }
+
+    protected void preprocessCredentials(Credentials credentials) {
+        if (credentials instanceof TrustedClientCredentials) {
+            RemoteClientInfo remoteClientInfo = RemoteClientInfo.get();
+            if (remoteClientInfo != null) {
+                ((TrustedClientCredentials) credentials).setClientIpAddress(remoteClientInfo.getAddress());
+            } else {
+                log.warn("Unable to determine remote client IP");
+            }
+        }
     }
 }

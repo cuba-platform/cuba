@@ -20,11 +20,13 @@ import com.haulmont.cuba.security.auth.Credentials;
 import com.haulmont.cuba.security.global.UserSession;
 import org.springframework.context.ApplicationEvent;
 
+import javax.annotation.Nullable;
+
 public class AfterLoginEvent extends ApplicationEvent {
 
     private final UserSession userSession;
 
-    public AfterLoginEvent(Credentials source, UserSession userSession) {
+    public AfterLoginEvent(Credentials source, @Nullable UserSession userSession) {
         super(source);
         this.userSession = userSession;
     }
@@ -34,6 +36,11 @@ public class AfterLoginEvent extends ApplicationEvent {
         return (Credentials) super.getSource();
     }
 
+    public Credentials getCredentials() {
+        return (Credentials) super.getSource();
+    }
+
+    @Nullable
     public UserSession getUserSession() {
         return userSession;
     }
