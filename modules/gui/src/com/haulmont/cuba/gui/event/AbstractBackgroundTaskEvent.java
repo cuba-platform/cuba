@@ -19,10 +19,6 @@ package com.haulmont.cuba.gui.event;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import org.springframework.context.ApplicationEvent;
 
-/**
- * @author stepanov
- * @version $Id$
- */
 public abstract class AbstractBackgroundTaskEvent extends ApplicationEvent {
     private BackgroundTask task;
     private boolean stopPropagation;

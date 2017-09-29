@@ -18,10 +18,6 @@ package com.haulmont.cuba.gui.event;
 
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 
-/**
- * @author stepanov
- * @version $Id$
- */
 public class BackgroundTaskUnhandledExceptionEvent extends AbstractBackgroundTaskEvent {
 
     private Exception exception;

@@ -18,6 +18,7 @@
 package com.haulmont.cuba.gui.executors.impl;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -39,6 +40,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
     private UIAccessor uiAccessor;
     private final TaskExecutor<T, V> taskExecutor;
     private final WatchDog watchDog;
+    private Events events;
 
     private volatile boolean started = false;
     private volatile boolean timeoutHappens = false;
@@ -51,6 +53,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
         this.uiAccessor = uiAccessor;
         this.taskExecutor = taskExecutor;
         this.watchDog = watchDog;
+        this.events = AppBeans.get(Events.NAME);
 
         UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
         this.userSession = sessionSource.getUserSession();
@@ -227,7 +230,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
                 boolean handled = task.handleTimeoutException();
                 if (!handled) {
                     log.error("Unhandled timeout exception in background task. Task: " + task.toString());
-                    AppContext.getApplicationContext().publishEvent(new BackgroundTaskTimeoutEvent(this, task));
+                    events.publish(new BackgroundTaskTimeoutEvent(this, task));
                 }
             }
 

@@ -18,10 +18,6 @@ package com.haulmont.cuba.gui.event;
 
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 
-/**
- * @author stepanov
- * @version $Id$
- */
 public class BackgroundTaskTimeoutEvent extends AbstractBackgroundTaskEvent {
 
     public BackgroundTaskTimeoutEvent(Object source, BackgroundTask task) {

@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.executors.impl;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
@@ -56,6 +57,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
     @Inject
     protected UserSessionSource userSessionSource;
+
+    @Inject
+    protected Events events;
 
     protected Configuration configuration;
 
@@ -278,7 +282,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
                     if (!handled) {
                         log.error("Unhandled exception in background task", e);
-                        AppContext.getApplicationContext().publishEvent(new BackgroundTaskUnhandledExceptionEvent(this, runnableTask, e));
+                        events.publish(new BackgroundTaskUnhandledExceptionEvent(this, runnableTask, e));
                     }
                 }
             } finally {

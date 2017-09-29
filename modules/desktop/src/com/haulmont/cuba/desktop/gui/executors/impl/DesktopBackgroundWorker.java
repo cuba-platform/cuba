@@ -18,6 +18,7 @@
 package com.haulmont.cuba.desktop.gui.executors.impl;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.event.BackgroundTaskUnhandledExceptionEvent;
@@ -50,6 +51,9 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
     private Logger log = LoggerFactory.getLogger(DesktopBackgroundWorker.class);
 
     private WatchDog watchDog;
+
+    @Inject
+    private Events events;
 
     @Inject
     public DesktopBackgroundWorker(WatchDog watchDog) {
@@ -198,7 +202,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                     boolean handled = runnableTask.handleException(taskException);
                     if (!handled) {
                         log.error("Unhandled exception in background task. Task: {}", runnableTask, taskException);
-                        AppContext.getApplicationContext().publishEvent(new BackgroundTaskUnhandledExceptionEvent(this, runnableTask, taskException));
+                        events.publish(new BackgroundTaskUnhandledExceptionEvent(this, runnableTask, taskException));
                     }
                 }
 
