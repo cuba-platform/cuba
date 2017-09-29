@@ -63,8 +63,7 @@ public class FreeMarkerView extends org.springframework.web.servlet.view.freemar
     @Override
     protected void processTemplate(Template template, SimpleHash model, HttpServletResponse response)
             throws IOException, TemplateException {
-        CharArrayWriter printWriter;
-        printWriter = new CharArrayWriter();
+        CharArrayWriter printWriter = new CharArrayWriter();
         try {
             template.process(model, printWriter);
             response.getWriter().write(printWriter.toCharArray());
@@ -75,14 +74,13 @@ public class FreeMarkerView extends org.springframework.web.servlet.view.freemar
         }
     }
 
-    public class MessageMethod implements TemplateMethodModel {
-
+    public class MessageMethod implements TemplateMethodModelEx {
         @Override
         public Object exec(List args) throws TemplateModelException {
             if (args.size() == 2)
-                return AppBeans.get(Messages.class).getMessage((String) args.get(0), (String) args.get(1));
+                return messages.getMessage((String) args.get(0), (String) args.get(1));
             else if (args.size() == 1) {
-                return AppBeans.get(Messages.class).getMessage((Enum) args.get(0));
+                return messages.getMessage((Enum) args.get(0));
             } else
                 throw new TemplateModelException("Wrong arguments");
         }
