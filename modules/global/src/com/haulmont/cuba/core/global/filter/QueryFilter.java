@@ -16,9 +16,7 @@
  */
 package com.haulmont.cuba.core.global.filter;
 
-import com.haulmont.cuba.core.global.QueryTransformer;
-import com.haulmont.cuba.core.global.QueryTransformerFactory;
-import com.haulmont.cuba.core.global.TemplateHelper;
+import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.dom4j.Element;
@@ -26,6 +24,9 @@ import org.dom4j.Element;
 import java.util.*;
 
 public class QueryFilter extends FilterParser {
+
+    protected boolean enableSessionParams = AppBeans.get(Configuration.class)
+            .getConfig(GlobalConfig.class).getEnableSessionParamsInQueryFilter();
 
     public QueryFilter(Condition condition) {
         super(condition);
@@ -101,18 +102,22 @@ public class QueryFilter extends FilterParser {
 
         if (declaredParams.isEmpty())
             return true;
-
-        // Return true only if declared params have values and there is at least one non-session parameter among them.
-        // This is necessary to exclude generic filter conditions that contain only session parameters. Otherwise
-        // there is no way to handle exclusion. Unfortunately this imposes the restriction on custom filters design:
-        // condition with session-only parameters must be avoided, they must be coded as part of main query body or as
-        // part of another condition.
-        boolean found = false;
-        for (ParameterInfo paramInfo : declaredParams) {
-            if (params.contains(paramInfo.getName())) {
-                found = found || !paramInfo.getType().equals(ParameterInfo.Type.SESSION);
+        if (enableSessionParams) {
+            return declaredParams.stream()
+                    .allMatch(paramInfo -> params.contains(paramInfo.getName()));
+        } else {
+            // Return true only if declared params have values and there is at least one non-session parameter among them.
+            // This is necessary to exclude generic filter conditions that contain only session parameters. Otherwise
+            // there is no way to handle exclusion. Unfortunately this imposes the restriction on custom filters design:
+            // condition with session-only parameters must be avoided, they must be coded as part of main query body or as
+            // part of another condition.
+            boolean found = false;
+            for (ParameterInfo paramInfo : declaredParams) {
+                if (params.contains(paramInfo.getName())) {
+                    found = found || !paramInfo.getType().equals(ParameterInfo.Type.SESSION);
+                }
             }
+            return found;
         }
-        return found;
     }
 }

@@ -211,4 +211,11 @@ public interface GlobalConfig extends Config {
     @DefaultBoolean(false)
     boolean getUserSessionLogEnabled();
     void setUserSessionLogEnabled(boolean enabled);
+
+    /**
+     * @return whether the new (since 6.7) behavior regarding session parameters in query filter is enabled
+     */
+    @Property("cuba.enableSessionParamsInQueryFilter")
+    @DefaultBoolean(true)
+    boolean getEnableSessionParamsInQueryFilter();
 }
