@@ -22,6 +22,7 @@ import org.apache.commons.lang.text.StrBuilder;
 import org.dom4j.Element;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class QueryFilter extends FilterParser {
 
@@ -103,8 +104,14 @@ public class QueryFilter extends FilterParser {
         if (declaredParams.isEmpty())
             return true;
         if (enableSessionParams) {
-            return declaredParams.stream()
-                    .allMatch(paramInfo -> params.contains(paramInfo.getName()));
+            Predicate<ParameterInfo> paramHasValue = paramInfo -> params.contains(paramInfo.getName());
+            if (condition.getConditions().isEmpty()) {
+                // for leaf condition all parameters must have values
+                return declaredParams.stream().allMatch(paramHasValue);
+            } else {
+                // for branch conditions at least some parameters must have values
+                return declaredParams.stream().anyMatch(paramHasValue);
+            }
         } else {
             // Return true only if declared params have values and there is at least one non-session parameter among them.
             // This is necessary to exclude generic filter conditions that contain only session parameters. Otherwise

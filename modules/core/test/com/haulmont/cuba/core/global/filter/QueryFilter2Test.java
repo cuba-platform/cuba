@@ -18,10 +18,16 @@
 package com.haulmont.cuba.core.global.filter;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.testsupport.TestContainer;
 import org.dom4j.Element;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 public class QueryFilter2Test {
+
+    @ClassRule
+    public static TestContainer cont = TestContainer.Common.INSTANCE;
+
     String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<filter>\n" +
             "    <and>\n" +
