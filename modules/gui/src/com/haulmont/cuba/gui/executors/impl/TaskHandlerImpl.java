@@ -20,9 +20,11 @@ package com.haulmont.cuba.gui.executors.impl;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.event.BackgroundTaskTimeoutEvent;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.Logger;
@@ -39,6 +41,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
     private final WatchDog watchDog;
 
     private volatile boolean started = false;
+    private volatile boolean timeoutHappens = false;
 
     private long startTimeStamp;
     private UserSession userSession;
@@ -170,6 +173,14 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
     }
 
     /**
+     * Cancel without events for tasks. Need to execute #timeoutExceeded after this method
+     */
+    public final void closeByTimeout() {
+        timeoutHappens = true;
+        kill();
+    }
+
+    /**
      * Cancel without events for tasks
      */
     public final void kill() {
@@ -209,11 +220,15 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
             checkState(started, "Task is not running");
 
             boolean canceled = taskExecutor.cancelExecution();
-            if (canceled) {
+            if (canceled || timeoutHappens) {
                 detachCloseListener();
 
                 BackgroundTask<T, V> task = taskExecutor.getTask();
-                task.handleTimeoutException();
+                boolean handled = task.handleTimeoutException();
+                if (!handled) {
+                    log.error("Unhandled timeout exception in background task. Task: " + task.toString());
+                    AppContext.getApplicationContext().publishEvent(new BackgroundTaskTimeoutEvent(this, task));
+                }
             }
 
             if (log.isTraceEnabled()) {

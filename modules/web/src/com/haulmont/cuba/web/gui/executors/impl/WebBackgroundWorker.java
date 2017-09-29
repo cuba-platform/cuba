@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.gui.event.BackgroundTaskUnhandledExceptionEvent;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.executors.impl.TaskExecutor;
 import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
@@ -277,6 +278,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
                     if (!handled) {
                         log.error("Unhandled exception in background task", e);
+                        AppContext.getApplicationContext().publishEvent(new BackgroundTaskUnhandledExceptionEvent(this, runnableTask, e));
                     }
                 }
             } finally {

@@ -19,6 +19,8 @@ package com.haulmont.cuba.desktop.gui.executors.impl;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.event.BackgroundTaskUnhandledExceptionEvent;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.executors.impl.TaskExecutor;
 import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
@@ -196,6 +198,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                     boolean handled = runnableTask.handleException(taskException);
                     if (!handled) {
                         log.error("Unhandled exception in background task. Task: {}", runnableTask, taskException);
+                        AppContext.getApplicationContext().publishEvent(new BackgroundTaskUnhandledExceptionEvent(this, runnableTask, taskException));
                     }
                 }
 
