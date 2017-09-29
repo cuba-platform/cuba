@@ -352,7 +352,8 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
     @Override
     protected void setSelectedItem(Object item) {
         for (Map.Entry<ValueWrapper, JToggleButton> entry : items.entrySet()) {
-            if (entry.getKey().equals(item))
+            Object wrapperValue = entry.getKey().getValue();
+            if (item != null && wrapperValue.equals(((ValueWrapper) item).getValue()))
                 entry.getValue().setSelected(true);
             else
                 entry.getValue().setSelected(false);
