@@ -19,7 +19,6 @@ package com.haulmont.cuba.security.sys;
 
 import com.haulmont.cuba.core.app.ServerConfig;
 import org.apache.commons.lang.StringUtils;
-
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -32,23 +31,17 @@ public class TrustedLoginHandler {
     @Inject
     protected ServerConfig serverConfig;
 
-    protected Pattern permittedIpMaskPattern;
-
-    @Inject
-    public void setServerConfig(ServerConfig serverConfig) {
-        String permittedIpList = serverConfig.getTrustedClientPermittedIpList();
-        permittedIpList = convertToRegex(permittedIpList);
-        if (StringUtils.isEmpty(permittedIpList)) {
-            permittedIpList = "127\\.0\\.0\\.1";
-        }
-        permittedIpMaskPattern = Pattern.compile(permittedIpList);
-    }
-
     /**
      * @param address ip-address
      * @return true if address in trusted list
      */
     public boolean checkAddress(String address) {
+        String permittedIpList = serverConfig.getTrustedClientPermittedIpList();
+        permittedIpList = convertToRegex(permittedIpList);
+        if (StringUtils.isEmpty(permittedIpList)) {
+            permittedIpList = "127\\.0\\.0\\.1";
+        }
+        Pattern permittedIpMaskPattern = Pattern.compile(permittedIpList);
         return permittedIpMaskPattern.matcher(address).matches();
     }
 

@@ -48,6 +48,7 @@ public interface ServerConfig extends Config {
     String getTrustedClientPassword();
 
     @Property("cuba.trustedClientPermittedIpList")
+    @Source(type = SourceType.DATABASE)
     String getTrustedClientPermittedIpList();
 
     @Property("cuba.security.resetPasswordTemplateBody")
