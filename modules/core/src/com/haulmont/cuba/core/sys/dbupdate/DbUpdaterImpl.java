@@ -90,8 +90,8 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
 
         try {
             scripting.evaluateGroovy(file.getContent(), bind);
-        } catch (IOException e) {
-            throw new RuntimeException("An error occurred while executing Groovy script", e);
+        } catch (Exception e) {
+            throw new RuntimeException(ERROR + "Error executing Groovy script " + file.name + "\n" + e.getMessage(), e);
         }
         return !postUpdateScripts.containsValue(file);
     }
@@ -104,7 +104,7 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
             super.doUpdate();
         } catch (RuntimeException e) {
             postUpdateScripts.clear();
-            throw new RuntimeException(e);
+            throw e;
         }
 
         if (!postUpdate.getUpdates().isEmpty()) {

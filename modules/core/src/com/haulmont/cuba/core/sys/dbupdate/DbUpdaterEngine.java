@@ -49,6 +49,11 @@ public class DbUpdaterEngine implements DbUpdater {
     private static final String GROOVY_EXTENSION = "groovy";
     protected static final String UPGRADE_GROOVY_EXTENSION = "upgrade.groovy";
 
+    protected static final String ERROR = "\n" +
+                        "=================================================\n" +
+                        "ERROR: Database update failed. See details below.\n" +
+                        "=================================================\n";
+
     private static final Logger log = LoggerFactory.getLogger(DbUpdaterEngine.class);
 
     protected DataSource dataSource;
@@ -131,7 +136,7 @@ public class DbUpdaterEngine implements DbUpdater {
                     "CREATE_TS " + timeStampType + " default current_timestamp, " +
                     "IS_INIT integer default 0)");
         } catch (SQLException e) {
-            throw new RuntimeException("An error occurred while creating changelog table", e);
+            throw new RuntimeException(ERROR + "Error creating changelog table", e);
         }
     }
 
@@ -303,7 +308,7 @@ public class DbUpdaterEngine implements DbUpdater {
             log.trace("Found executed scripts: {}", scripts);
             return scripts;
         } catch (SQLException e) {
-            throw new RuntimeException("An error occurred while loading executed scripts", e);
+            throw new RuntimeException(ERROR + "Error loading executed scripts", e);
         }
     }
 
@@ -315,7 +320,7 @@ public class DbUpdaterEngine implements DbUpdater {
                     new Object[]{name, init ? 1 : 0}
             );
         } catch (SQLException e) {
-            throw new RuntimeException("An error occurred while updating SYS_DB_CHANGELOG", e);
+            throw new RuntimeException(ERROR + "Error updating SYS_DB_CHANGELOG", e);
         }
     }
 
@@ -335,8 +340,7 @@ public class DbUpdaterEngine implements DbUpdater {
         try {
             script = file.getContent();
         } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new RuntimeException("An error occurred while executing SQL script", e);
+            throw new RuntimeException(ERROR + "Error resolving SQL script " + file.name, e);
         }
         ScriptSplitter splitter = new ScriptSplitter(SQL_DELIMITER);
         for (String sql : splitter.split(script)) {
@@ -345,8 +349,7 @@ public class DbUpdaterEngine implements DbUpdater {
                 try {
                     executeSql(sql);
                 } catch (SQLException e) {
-                    log.error(e.getMessage());
-                    throw new RuntimeException("An error occurred while executing SQL script", e);
+                    throw new RuntimeException(ERROR + "Error executing SQL script " + file.name + "\n" + e.getMessage(), e);
                 }
             }
         }
@@ -390,9 +393,8 @@ public class DbUpdaterEngine implements DbUpdater {
             //noinspection UnnecessaryLocalVariable
             Script script = shell.parse(file.getContent());
             script.run();
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new RuntimeException("An error occurred while executing Groovy script", e);
+        } catch (Exception e) {
+            throw new RuntimeException(ERROR + "Error executing Groovy script " + file.name + "\n" + e.getMessage(), e);
         }
         return true;
     }
