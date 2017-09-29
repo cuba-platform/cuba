@@ -462,6 +462,8 @@ public abstract class WindowManager {
 
     protected ScreenXmlLoader screenXmlLoader = AppBeans.get(ScreenXmlLoader.NAME);
 
+    protected ScreenViewsLoader screenViewsLoader = AppBeans.get(ScreenViewsLoader.NAME);
+
     private DialogParams dialogParams;
 
     protected List<WindowCloseListener> listeners = new ArrayList<>();
@@ -510,7 +512,7 @@ public abstract class WindowManager {
         Window clientSpecificWindow = (Window) windowLoader.getResultComponent();
         Window windowWrapper = wrapByCustomClass(clientSpecificWindow, element);
 
-        WindowCreationHelper.deployViews(element);
+        screenViewsLoader.deployViews(element);
 
         DsContext dsContext = loadDsContext(element);
         initDatasources(clientSpecificWindow, dsContext, params);

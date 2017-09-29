@@ -17,12 +17,8 @@
 
 package com.haulmont.cuba.gui;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.core.global.ViewRepository;
-import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.ActionsPermissions;
@@ -32,14 +28,11 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -194,36 +187,6 @@ public final class WindowCreationHelper {
             }
         } else {
             log.warn(String.format("Incorrect permission definition for component %s in window %s", componentId, screenId));
-        }
-    }
-
-    /**
-     * Deploy views defined in <code>metadataContext</code> of a frame.
-     *
-     * @param rootElement root element of a frame XML
-     */
-    public static void deployViews(Element rootElement) {
-        Element metadataContextEl = rootElement.element("metadataContext");
-        if (metadataContextEl != null) {
-            AbstractViewRepository viewRepository = AppBeans.get(ViewRepository.NAME);
-            for (Element fileEl : Dom4j.elements(metadataContextEl, "deployViews")) {
-                String resource = fileEl.attributeValue("name");
-                Resources resources = AppBeans.get(Resources.NAME);
-                InputStream resourceInputStream = resources.getResourceAsStream(resource);
-                if (resourceInputStream == null) {
-                    throw new RuntimeException("View resource not found: " + resource);
-                }
-
-                try {
-                    viewRepository.deployViews(resourceInputStream);
-                } finally {
-                    IOUtils.closeQuietly(resourceInputStream);
-                }
-            }
-
-            for (Element viewEl : Dom4j.elements(metadataContextEl, "view")) {
-                viewRepository.deployView(metadataContextEl, viewEl);
-            }
         }
     }
 }

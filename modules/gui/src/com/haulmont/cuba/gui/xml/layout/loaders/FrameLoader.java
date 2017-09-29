@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.AbstractWindow;
@@ -42,6 +43,8 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
     protected ComponentLoaderContext innerContext;
 
     protected String frameId;
+
+    private ScreenViewsLoader screenViewsLoader = AppBeans.get(ScreenViewsLoader.NAME);
 
     protected Frame wrapByCustomClass(Frame frame) {
         String screenClass = element.attributeValue("class");
@@ -143,7 +146,7 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
 
     @Override
     public void loadComponent() {
-        WindowCreationHelper.deployViews(element);
+        screenViewsLoader.deployViews(element);
 
         Element dsContextElement = element.element("dsContext");
         DsContextLoader contextLoader = new DsContextLoader(context.getDsContext().getDataSupplier());
