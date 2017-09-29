@@ -110,13 +110,15 @@ public class ServiceInterceptor {
                     ValidateServiceMethodContext validatedContext = getValidateServiceMethodContext(ctx);
                     validateMethodParameters(ctx, validatedContext);
 
+                    boolean checkTransactionOnExit = Stores.getAdditional().isEmpty() && !persistence.isInTransaction();
+
                     log.trace("Invoking: {}, session={}", ctx.getSignature(), userSession);
 
                     Object res = ctx.proceed();
 
                     validateMethodResult(ctx, validatedContext, res);
 
-                    if (Stores.getAdditional().isEmpty() && persistence.isInTransaction()) {
+                    if (checkTransactionOnExit && persistence.isInTransaction()) {
                         log.warn("Open transaction left in {}", ctx.getSignature().toShortString());
                     }
 
