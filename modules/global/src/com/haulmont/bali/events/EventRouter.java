@@ -26,9 +26,9 @@ import java.util.function.BiConsumer;
  * Generic Event router with lazily initialized events map.
  */
 @NotThreadSafe
-public final class EventRouter {
-    protected static final int EVENTS_MAP_EXPECTED_MAX_SIZE = 4;
-    protected static final int EVENTS_LIST_INITIAL_CAPACITY = 2;
+public class EventRouter {
+    private static final int EVENTS_MAP_EXPECTED_MAX_SIZE = 4;
+    private static final int EVENTS_LIST_INITIAL_CAPACITY = 2;
 
     // Map with listener classes and listener lists
     // Lists are created on demand

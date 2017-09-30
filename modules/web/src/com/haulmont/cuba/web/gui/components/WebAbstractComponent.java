@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractComponent>
+        extends EventRouter
         implements Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon,
                    Component.HasCaption {
 
@@ -56,19 +57,13 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
     protected Alignment alignment = Alignment.TOP_LEFT;
     protected String icon;
 
-    private EventRouter eventRouter;
-
     /**
      * Use EventRouter for listeners instead of fields with listeners List.
      *
-     * @return lazily initialized {@link EventRouter} instance.
      * @see EventRouter
      */
     protected EventRouter getEventRouter() {
-        if (eventRouter == null) {
-            eventRouter = new EventRouter();
-        }
-        return eventRouter;
+        return this;
     }
 
     @Override
