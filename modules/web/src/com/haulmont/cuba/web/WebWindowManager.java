@@ -913,8 +913,11 @@ public class WebWindowManager extends WindowManager {
         for (Window window : getOpenWindows()) {
             OpenMode openMode = windowOpenMode.get(window).getOpenMode();
             WindowBreadCrumbs windowBreadCrumbs = tabs.get(windowOpenMode.get(window).getData());
+            Window currentWindow = (windowBreadCrumbs != null && window != windowBreadCrumbs.getCurrentWindow())
+                    ? windowBreadCrumbs.getCurrentWindow()
+                    : window;
             if (window.getFrame() == keepOpenedFrame || openMode == OpenMode.DIALOG
-                    || keepOpenedCrumbs == windowBreadCrumbs || isCloseWithCloseButtonPrevented(window))
+                    || keepOpenedCrumbs == windowBreadCrumbs || isCloseWithCloseButtonPrevented(currentWindow))
                 continue;
 
             if (window.getDsContext() != null && window.getDsContext().isModified()) {
