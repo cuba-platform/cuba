@@ -311,6 +311,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
                 fci.assignComponent(fieldComponent);
                 fci.setAttachMode(generatedField.getAttachMode());
 
+                setupFieldComponent(fci);
+
                 DesktopAbstractComponent fieldImpl = (DesktopAbstractComponent) fieldComponent;
                 fci.setComposition(fieldImpl);
 
@@ -342,6 +344,14 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
             for (Integer reattachColumnIndex : reattachColumns) {
                 reattachColumnFields(reattachColumnIndex);
             }
+        }
+    }
+
+    protected void setupFieldComponent(FieldConfig fieldConfig) {
+        Component fieldComponent = fieldConfig.getComponent();
+
+        if (fieldComponent instanceof DesktopCheckBox) {
+            fieldComponent.setAlignment(Alignment.MIDDLE_LEFT);
         }
     }
 
