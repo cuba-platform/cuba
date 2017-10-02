@@ -36,7 +36,7 @@ public class DesktopBulkEditor extends DesktopButton implements BulkEditor {
     protected ListComponent listComponent;
     protected Map<String, Field.Validator> fieldValidators;
     protected List<Field.Validator> modelValidators;
-    protected ConstraintOperationType constraintOperationType = ConstraintOperationType.UPDATE;
+    protected ConstraintOperationType constraintOperationType;
 
     public DesktopBulkEditor() {
         setCaption(null);
