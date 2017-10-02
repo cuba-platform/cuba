@@ -103,7 +103,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 }
             }
 
-            if (item != null) {
+            if (item != null && (coll == null || !coll.contains(item))) {
                 T prevItem = item;
                 item = null;
                 fireItemChanged(prevItem);
