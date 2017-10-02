@@ -36,11 +36,7 @@ public class TrustedLoginHandler {
      * @return true if address in trusted list
      */
     public boolean checkAddress(String address) {
-        String permittedIpList = serverConfig.getTrustedClientPermittedIpList();
-        permittedIpList = convertToRegex(permittedIpList);
-        if (StringUtils.isEmpty(permittedIpList)) {
-            permittedIpList = "127\\.0\\.0\\.1";
-        }
+        String permittedIpList = convertToRegex(serverConfig.getTrustedClientPermittedIpList());
         Pattern permittedIpMaskPattern = Pattern.compile(permittedIpList);
         return permittedIpMaskPattern.matcher(address).matches();
     }

@@ -48,6 +48,7 @@ public interface ServerConfig extends Config {
     String getTrustedClientPassword();
 
     @Property("cuba.trustedClientPermittedIpList")
+    @DefaultString("127.0.0.1,0:0:0:0:0:0:0:1")
     @Source(type = SourceType.DATABASE)
     String getTrustedClientPermittedIpList();
 
