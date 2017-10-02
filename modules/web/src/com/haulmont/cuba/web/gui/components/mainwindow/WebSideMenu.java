@@ -527,5 +527,20 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
         public boolean hasChildren() {
             return delegateItem.hasChildren();
         }
+
+        @Nullable
+        @Override
+        public MenuItem getParent() {
+            CubaSideMenu.MenuItem parent = delegateItem.getParent();
+            return parent != null ? ((MenuItemWrapper) parent).getMenuItem() : null;
+        }
+
+        @Override
+        public MenuItem getParentNN() {
+            if (delegateItem.getParent() == null) {
+                throw new IllegalArgumentException("Unable to find parent for menu item with id: " + id);
+            }
+            return ((MenuItemWrapper) delegateItem.getParent()).getMenuItem();
+        }
     }
 }

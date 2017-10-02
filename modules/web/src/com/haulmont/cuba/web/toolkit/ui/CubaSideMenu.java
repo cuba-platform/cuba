@@ -413,6 +413,8 @@ public class CubaSideMenu extends AbstractComponent implements Component.Focusab
 
         protected List<MenuItem> children = new ArrayList<>(4);
 
+        protected MenuItem parent;
+
         protected PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
         public MenuItem() {
@@ -586,6 +588,7 @@ public class CubaSideMenu extends AbstractComponent implements Component.Focusab
             List<MenuItem> childrenOld = new ArrayList<>(children);
 
             children.add(menuItem);
+            menuItem.setParent(this);
 
             propertyChangeSupport.firePropertyChange(MENU_ITEM_CHILDREN, childrenOld,
                     Collections.unmodifiableList(children));
@@ -604,6 +607,7 @@ public class CubaSideMenu extends AbstractComponent implements Component.Focusab
             List<MenuItem> childrenOld = new ArrayList<>(children);
 
             children.add(index, menuItem);
+            menuItem.setParent(this);
 
             propertyChangeSupport.firePropertyChange(MENU_ITEM_CHILDREN, childrenOld,
                     Collections.unmodifiableList(children));
@@ -613,6 +617,7 @@ public class CubaSideMenu extends AbstractComponent implements Component.Focusab
             List<MenuItem> childrenOld = new ArrayList<>(children);
 
             children.remove(menuItem);
+            menuItem.setParent(null);
 
             propertyChangeSupport.firePropertyChange(MENU_ITEM_CHILDREN, childrenOld,
                     Collections.unmodifiableList(children));
@@ -621,7 +626,8 @@ public class CubaSideMenu extends AbstractComponent implements Component.Focusab
         public void removeChildItem(int index) {
             List<MenuItem> childrenOld = new ArrayList<>(children);
 
-            children.remove(index);
+            MenuItem removed = children.remove(index);
+            removed.setParent(null);
 
             propertyChangeSupport.firePropertyChange(MENU_ITEM_CHILDREN, childrenOld,
                     Collections.unmodifiableList(children));
@@ -633,6 +639,14 @@ public class CubaSideMenu extends AbstractComponent implements Component.Focusab
 
         public boolean hasChildren() {
             return !children.isEmpty();
+        }
+
+        public MenuItem getParent() {
+            return parent;
+        }
+
+        public void setParent(MenuItem parent) {
+            this.parent = parent;
         }
 
         public void addPropertyChangeListener(PropertyChangeListener listener) {

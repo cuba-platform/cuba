@@ -352,5 +352,17 @@ public interface SideMenu extends Component.BelongToFrame, Component.Focusable {
          * @return true if the menu item has child items
          */
         boolean hasChildren();
+
+        /**
+         * @return parent menu item if it's nested item, null otherwise
+         */
+        @Nullable
+        MenuItem getParent();
+
+        /**
+         * @return parent menu item if it's nested item, null otherwise
+         * @throws IllegalArgumentException if not found
+         */
+        MenuItem getParentNN();
     }
 }
