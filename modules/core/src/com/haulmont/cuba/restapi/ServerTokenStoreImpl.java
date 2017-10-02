@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.restapi;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
@@ -41,14 +43,14 @@ import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.*;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 @Component(ServerTokenStore.NAME)
 public class ServerTokenStoreImpl implements ServerTokenStore {
@@ -83,6 +85,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     private ConcurrentHashMap<String, byte[]> authenticationToAccessTokenStore = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, UUID> tokenValueToSessionIdStore = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, String> tokenValueToAuthenticationKeyStore = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, String> tokenValueToUserLoginStore = new ConcurrentHashMap<>();
 
     private final DelayQueue<TokenExpiry> expiryQueue = new DelayQueue<>();
 
@@ -99,13 +102,15 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                         message.getAccessTokenBytes(),
                         message.getAuthenticationKey(),
                         message.getAuthenticationBytes(),
-                        message.getTokenExpiry());
+                        message.getTokenExpiry(),
+                        message.getUserLogin());
             }
 
             @Override
             public byte[] getState() {
                 if (tokenValueToAccessTokenStore.isEmpty() && tokenValueToAuthenticationStore.isEmpty() && authenticationToAccessTokenStore.isEmpty()
-                        && tokenValueToSessionIdStore.isEmpty() && tokenValueToAuthenticationKeyStore.isEmpty()) {
+                        && tokenValueToSessionIdStore.isEmpty() && tokenValueToAuthenticationKeyStore.isEmpty()
+                        && tokenValueToUserLoginStore.isEmpty()) {
                     return new byte[0];
                 }
 
@@ -119,6 +124,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                     oos.writeObject(authenticationToAccessTokenStore);
                     oos.writeObject(tokenValueToSessionIdStore);
                     oos.writeObject(tokenValueToAuthenticationKeyStore);
+                    oos.writeObject(tokenValueToUserLoginStore);
                 } catch (IOException e) {
                     throw new RuntimeException("Unable to serialize ServerTokenStore fields for cluster state", e);
                 } finally {
@@ -144,6 +150,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                     authenticationToAccessTokenStore = (ConcurrentHashMap<String, byte[]>) ois.readObject();
                     tokenValueToSessionIdStore = (ConcurrentHashMap<String, UUID>) ois.readObject();
                     tokenValueToAuthenticationKeyStore = (ConcurrentHashMap<String, String>) ois.readObject();
+                    tokenValueToUserLoginStore = (ConcurrentHashMap<String, String>) ois.readObject();
                 } catch (IOException | ClassNotFoundException e) {
                     log.error("Error receiving state", e);
                 } finally {
@@ -186,30 +193,60 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     }
 
     @Override
+    public Set<String> getTokenValuesByUserLogin(String userLogin) {
+        Set<String> tokenValues = getTokenValuesByUserLoginFromMemory(userLogin);
+        if (serverConfig.getRestStoreTokensInDb()) {
+            tokenValues.addAll(getTokenValuesByUserLoginFromDatabase(userLogin));
+        }
+        return tokenValues;
+    }
+
+    protected Set<String> getTokenValuesByUserLoginFromMemory(String userLogin) {
+        return tokenValueToUserLoginStore.entrySet().stream()
+                .filter(entry -> userLogin.equals(entry.getValue()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+    }
+
+    protected Set<String> getTokenValuesByUserLoginFromDatabase(String userLogin) {
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            List<String> result = em.createQuery("select e.accessTokenValue from sys$RestApiToken e where e.userLogin = :userLogin", String.class)
+                    .setParameter("userLogin", userLogin)
+                    .getResultList();
+            tx.commit();
+            return new HashSet<>(result);
+        }
+    }
+
+    @Override
     public void storeAccessToken(String tokenValue,
                                  byte[] accessTokenBytes,
                                  String authenticationKey,
                                  byte[] authenticationBytes,
-                                 Date tokenExpiry) {
-        storeAccessTokenToMemory(tokenValue, accessTokenBytes, authenticationKey, authenticationBytes, tokenExpiry);
+                                 Date tokenExpiry,
+                                 String userLogin) {
+        storeAccessTokenToMemory(tokenValue, accessTokenBytes, authenticationKey, authenticationBytes, tokenExpiry, userLogin);
         if (serverConfig.getRestStoreTokensInDb()) {
             removeAccessTokenFromDatabase(tokenValue);
-            storeAccessTokenToDatabase(tokenValue, accessTokenBytes, authenticationKey, authenticationBytes, tokenExpiry);
+            storeAccessTokenToDatabase(tokenValue, accessTokenBytes, authenticationKey, authenticationBytes, tokenExpiry, userLogin);
         }
-        clusterManagerAPI.send(new TokenStoreAddTokenMsg(tokenValue, accessTokenBytes, authenticationKey, authenticationBytes, tokenExpiry));
+        clusterManagerAPI.send(new TokenStoreAddTokenMsg(tokenValue, accessTokenBytes, authenticationKey, authenticationBytes, tokenExpiry, userLogin));
     }
 
     protected void storeAccessTokenToMemory(String tokenValue,
                                             byte[] accessTokenBytes,
                                             String authenticationKey,
                                             byte[] authenticationBytes,
-                                            Date tokenExpiry) {
+                                            Date tokenExpiry,
+                                            String userLogin) {
         lock.writeLock().lock();
         try {
             tokenValueToAccessTokenStore.put(tokenValue, accessTokenBytes);
             authenticationToAccessTokenStore.put(authenticationKey, accessTokenBytes);
             tokenValueToAuthenticationStore.put(tokenValue, authenticationBytes);
             tokenValueToAuthenticationKeyStore.put(tokenValue, authenticationKey);
+            tokenValueToUserLoginStore.put(tokenValue, userLogin);
         } finally {
             lock.writeLock().unlock();
         }
@@ -224,7 +261,8 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                                               byte[] accessTokenBytes,
                                               String authenticationKey,
                                               byte[] authenticationBytes,
-                                              Date tokenExpiry) {
+                                              Date tokenExpiry,
+                                              String userLogin) {
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
             RestApiToken restApiToken = metadata.create(RestApiToken.class);
@@ -233,6 +271,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
             restApiToken.setAuthenticationKey(authenticationKey);
             restApiToken.setAuthenticationBytes(authenticationBytes);
             restApiToken.setExpiry(tokenExpiry);
+            restApiToken.setUserLogin(userLogin);
             em.persist(restApiToken);
             tx.commit();
         }
@@ -353,6 +392,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         try {
             tokenValueToAccessTokenStore.remove(tokenValue);
             tokenValueToAuthenticationStore.remove(tokenValue);
+            tokenValueToUserLoginStore.remove(tokenValue);
             String authenticationKey = tokenValueToAuthenticationKeyStore.remove(tokenValue);
             authenticationToAccessTokenStore.remove(authenticationKey);
             sessionId = tokenValueToSessionIdStore.remove(tokenValue);

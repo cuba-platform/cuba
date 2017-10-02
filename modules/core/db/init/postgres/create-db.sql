@@ -873,6 +873,7 @@ create table SYS_REST_API_TOKEN (
     AUTHENTICATION_KEY varchar(255),
     AUTHENTICATION_BYTES bytea,
     EXPIRY timestamp,
+    USER_LOGIN varchar(50),
     --
     primary key (ID)
 )^

@@ -17,6 +17,7 @@
 package com.haulmont.cuba.restapi;
 
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -28,7 +29,9 @@ public interface ServerTokenStore {
 
     byte[] getAccessTokenByAuthentication(String authenticationKey);
 
-    void storeAccessToken(String tokenValue, byte[] accessTokenBytes, String authenticationKey, byte[] authenticationBytes, Date tokenExpiry);
+    Set<String> getTokenValuesByUserLogin(String userLogin);
+
+    void storeAccessToken(String tokenValue, byte[] accessTokenBytes, String authenticationKey, byte[] authenticationBytes, Date tokenExpiry, String userLogin);
 
     byte[] getAccessTokenByTokenValue(String tokenValue);
 

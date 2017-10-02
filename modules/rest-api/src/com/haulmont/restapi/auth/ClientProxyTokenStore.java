@@ -89,11 +89,13 @@ public class ClientProxyTokenStore implements TokenStore {
     @Override
     public void storeAccessToken(OAuth2AccessToken token, OAuth2Authentication authentication) {
         String authenticationKey = authenticationKeyGenerator.extractKey(authentication);
+        String userLogin = authentication.getName();
         serverTokenStore.storeAccessToken(token.getValue(),
                 serializeAccessToken(token),
                 authenticationKey,
                 serializeAuthentication(authentication),
-                token.getExpiration());
+                token.getExpiration(),
+                userLogin);
         processSession(authentication, token.getValue());
         log.info("REST API access token stored: [{}] {}", authentication.getPrincipal(), token.getValue()) ;
     }

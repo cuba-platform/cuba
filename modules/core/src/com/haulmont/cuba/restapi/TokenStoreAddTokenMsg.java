@@ -28,17 +28,20 @@ public class TokenStoreAddTokenMsg implements Serializable {
     protected String authenticationKey;
     protected byte[] authenticationBytes;
     protected Date tokenExpiry;
+    protected String userLogin;
 
     public TokenStoreAddTokenMsg(String tokenValue,
                                  byte[] accessTokenBytes,
                                  String authenticationKey,
                                  byte[] authenticationBytes,
-                                 Date tokenExpiry) {
+                                 Date tokenExpiry,
+                                 String userLogin) {
         this.tokenValue = tokenValue;
         this.accessTokenBytes = accessTokenBytes;
         this.authenticationKey = authenticationKey;
         this.authenticationBytes = authenticationBytes;
         this.tokenExpiry = tokenExpiry;
+        this.userLogin = userLogin;
     }
 
     public String getTokenValue() {
@@ -59,5 +62,9 @@ public class TokenStoreAddTokenMsg implements Serializable {
 
     public Date getTokenExpiry() {
         return tokenExpiry;
+    }
+
+    public String getUserLogin() {
+        return userLogin;
     }
 }

@@ -51,6 +51,9 @@ public class RestApiToken extends BaseUuidEntity implements Creatable{
     @Column(name = "EXPIRY")
     protected Date expiry;
 
+    @Column(name = "USER_LOGIN")
+    protected String userLogin;
+
     public String getAccessTokenValue() {
         return accessTokenValue;
     }
@@ -89,6 +92,14 @@ public class RestApiToken extends BaseUuidEntity implements Creatable{
 
     public void setExpiry(Date expiry) {
         this.expiry = expiry;
+    }
+
+    public String getUserLogin() {
+        return userLogin;
+    }
+
+    public void setUserLogin(String userLogin) {
+        this.userLogin = userLogin;
     }
 
     @Override
