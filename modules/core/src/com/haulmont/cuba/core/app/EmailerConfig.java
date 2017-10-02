@@ -46,12 +46,15 @@ public interface EmailerConfig extends Config {
     @Default("test.host")
     String getSmtpHost();
 
+    void setSmtpHost(String smtpHost);
     /**
      * SMTP server port.
      */
     @Property("cuba.email.smtpPort")
     @Default("25")
     int getSmtpPort();
+
+    void setSmtpPort(int smtpPort);
 
     /**
      * Whether to authenticate on SMTP server.
@@ -60,6 +63,8 @@ public interface EmailerConfig extends Config {
     @DefaultBoolean(false)
     boolean getSmtpAuthRequired();
 
+    void setSmtpAuthRequired(boolean smtpAuthRequired);
+
     /**
      * Whether to use STARTTLS command during the SMTP server authentication.
      */
@@ -67,11 +72,15 @@ public interface EmailerConfig extends Config {
     @DefaultBoolean(false)
     boolean getSmtpStarttlsEnable();
 
+    void setSmtpStarttlsEnable(boolean smtpStarttlsEnable);
+
     /**
      * User name for the SMTP server authentication.
      */
     @Property("cuba.email.smtpUser")
     String getSmtpUser();
+
+    void setSmtpUser(String smtpUser);
 
     /**
      * User password for the SMTP server authentication.
@@ -86,6 +95,8 @@ public interface EmailerConfig extends Config {
     @DefaultInt(20)
     int getSmtpConnectionTimeoutSec();
 
+    void setSmtpConnectionTimeoutSec(int smtpConnectionTimeoutSec);
+
     /**
      * If set to true, use SSL to connect
      *
@@ -94,12 +105,16 @@ public interface EmailerConfig extends Config {
     @DefaultBoolean(false)
     boolean getSmtpSslEnabled();
 
+    void setSmtpSslEnabled(boolean smtpSslEnabled);
+
      /**
      * SMTP I/O timeout value in seconds.
      */
     @Property("cuba.email.smtpTimeoutSec")
     @DefaultInt(60)
     int getSmtpTimeoutSec();
+
+    void setSmtpTimeoutSec(int smtpTimeoutSec);
 
     /**
      * How many scheduler ticks to skip after server startup.

@@ -74,9 +74,23 @@ public class Emailer implements EmailerMBean {
         return config.getSmtpHost();
     }
 
+    @Authenticated
+    @Override
+    public void setSmtpHost(String host) {
+        if (host != null) {
+            config.setSmtpHost(host);
+        }
+    }
+
     @Override
     public int getSmtpPort() {
         return config.getSmtpPort();
+    }
+
+    @Authenticated
+    @Override
+    public void setSmtpPort(int port) {
+        config.setSmtpPort(port);
     }
 
     @Override
@@ -84,9 +98,23 @@ public class Emailer implements EmailerMBean {
         return config.getSmtpUser();
     }
 
+    @Authenticated
+    @Override
+    public void setSmtpUser(String user) {
+        if (user != null) {
+            config.setSmtpUser(user);
+        }
+    }
+
     @Override
     public boolean getSmtpAuthRequired() {
         return config.getSmtpAuthRequired();
+    }
+
+    @Authenticated
+    @Override
+    public void setSmtpAuthRequired(boolean authRequired) {
+        config.setSmtpAuthRequired(authRequired);
     }
 
     @Override
@@ -94,9 +122,21 @@ public class Emailer implements EmailerMBean {
         return config.getSmtpStarttlsEnable();
     }
 
+    @Authenticated
+    @Override
+    public void setStarttlsEnable(boolean enable) {
+        config.setSmtpStarttlsEnable(enable);
+    }
+
     @Override
     public boolean getSmtpSslEnabled() {
         return config.getSmtpSslEnabled();
+    }
+
+    @Authenticated
+    @Override
+    public void setSmtpSslEnabled(boolean enable) {
+        config.setSmtpSslEnabled(enable);
     }
 
     @Override
@@ -104,9 +144,21 @@ public class Emailer implements EmailerMBean {
         return config.getSmtpTimeoutSec();
     }
 
+    @Authenticated
+    @Override
+    public void setSmtpTimeoutSec(int timeoutSec) {
+        config.setSmtpTimeoutSec(timeoutSec);
+    }
+
     @Override
     public int getSmtpConnectionTimeoutSec() {
         return config.getSmtpConnectionTimeoutSec();
+    }
+
+    @Authenticated
+    @Override
+    public void setSmtpConnectionTimeoutSec(int timeoutSec) {
+        config.setSmtpConnectionTimeoutSec(timeoutSec);
     }
 
     @Authenticated

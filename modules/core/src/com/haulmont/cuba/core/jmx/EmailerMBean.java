@@ -28,24 +28,31 @@ import org.springframework.jmx.export.annotation.ManagedOperationParameters;
 public interface EmailerMBean {
 
     String getFromAddress();
-
     void setFromAddress(String address);
 
     String getSmtpHost();
+    void setSmtpHost(String host);
 
     int getSmtpPort();
+    void setSmtpPort(int port);
 
     String getSmtpUser();
+    void setSmtpUser(String user);
 
     boolean getSmtpAuthRequired();
+    void setSmtpAuthRequired(boolean authRequired);
 
     boolean getStarttlsEnable();
+    void setStarttlsEnable(boolean enable);
 
     boolean getSmtpSslEnabled();
+    void setSmtpSslEnabled(boolean enabled);
 
     int getSmtpTimeoutSec();
+    void setSmtpTimeoutSec(int timeoutSec);
 
     int getSmtpConnectionTimeoutSec();
+    void setSmtpConnectionTimeoutSec(int timeoutSec);
 
     @ManagedOperationParameters({@ManagedOperationParameter(name = "addresses", description = "")})
     String sendTestEmail(String addresses);
