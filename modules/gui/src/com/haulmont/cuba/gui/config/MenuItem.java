@@ -104,7 +104,7 @@ public class MenuItem {
     }
 
     public boolean isPermitted(UserSession session) {
-        if (StringUtils.isEmpty(id)) {
+        if (StringUtils.isEmpty(id) || isSeparator()) {
              return true;
         } else {
             boolean screenPermitted = session.isScreenPermitted(id);
