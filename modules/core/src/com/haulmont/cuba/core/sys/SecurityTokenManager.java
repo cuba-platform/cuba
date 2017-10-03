@@ -18,9 +18,12 @@ package com.haulmont.cuba.core.sys;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.ServerConfig;
-import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.*;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.UuidProvider;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
@@ -43,6 +46,9 @@ public class SecurityTokenManager {
 
     @Inject
     protected ServerConfig config;
+    @Inject
+    protected Metadata metadata;
+
 
     /**
      * Encrypt filtered data and write the result to the security token
@@ -55,6 +61,9 @@ public class SecurityTokenManager {
             String[] filteredAttributes = new String[entries.size()];
             int i = 0;
             for (Map.Entry<String, Collection<Object>> entry : entries) {
+                //validate id property using ReferenceToEntity class
+                ReferenceToEntity referenceToEntity = new ReferenceToEntity();
+                referenceToEntity.setObjectEntityId(entry.getValue());
                 jsonObject.put(entry.getKey(), entry.getValue());
                 filteredAttributes[i++] = entry.getKey();
             }
@@ -89,9 +98,10 @@ public class SecurityTokenManager {
             for (Object key : jsonObject.keySet()) {
                 String elementName = String.valueOf(key);
                 JSONArray jsonArray = jsonObject.getJSONArray(elementName);
+                MetaProperty metaProperty = resultEntity.getMetaClass().getPropertyNN(elementName);
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    String id = jsonArray.getString(i);
-                    addFiltered(resultEntity, elementName, UUID.fromString(id));
+                    Object id = jsonArray.get(i);
+                    addFiltered(resultEntity, elementName, convertId(id, metaProperty));
                 }
             }
         } catch (Exception e) {
@@ -110,6 +120,33 @@ public class SecurityTokenManager {
             return cipher;
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while initiating encryption/decryption", e);
+        }
+    }
+
+    protected Object convertId(Object value, MetaProperty metaProperty) {
+        MetaClass metaClass = metaProperty.getRange().asClass();
+        if (HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
+            return UuidProvider.fromString((String) value);
+        }
+        MetaProperty primaryKey = metadata.getTools().getPrimaryKeyProperty(metaClass);
+
+        if (primaryKey != null) {
+            Class type = primaryKey.getJavaType();
+            if (UUID.class.equals(type)) {
+                return UuidProvider.fromString((String) value);
+            } else if (Long.class.equals(type) || IdProxy.class.equals(type)) {
+                return ((Integer) value).longValue();
+            } else if (Integer.class.equals(type)) {
+                return value;
+            } else if (String.class.equals(type)) {
+                return value;
+            } else {
+                throw new IllegalStateException(
+                        String.format("Unsupported primary key type: %s for %s", type.getSimpleName(), metaClass.getName()));
+            }
+        } else {
+            throw new IllegalStateException(
+                    String.format("Primary key not found for %s", metaClass.getName()));
         }
     }
 
