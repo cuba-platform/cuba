@@ -394,7 +394,9 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
             tokenValueToAuthenticationStore.remove(tokenValue);
             tokenValueToUserLoginStore.remove(tokenValue);
             String authenticationKey = tokenValueToAuthenticationKeyStore.remove(tokenValue);
-            authenticationToAccessTokenStore.remove(authenticationKey);
+            if (authenticationKey != null) {
+                authenticationToAccessTokenStore.remove(authenticationKey);
+            }
             sessionId = tokenValueToSessionIdStore.remove(tokenValue);
         } finally {
             lock.writeLock().unlock();
