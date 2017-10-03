@@ -101,7 +101,7 @@ public class DatatypeRegistryImpl implements DatatypeRegistry {
     @Override
     public void register(Datatype datatype, String id, boolean defaultForJavaClass) {
         Preconditions.checkNotNullArgument(datatype, "datatype is null");
-        Preconditions.checkNotNullArgument(datatype, "id is null");
+        Preconditions.checkNotNullArgument(id, "id is null");
         log.trace("Register datatype: {}, id: {}, defaultForJavaClass: {}", datatype.getClass(), id, defaultForJavaClass);
 
         if (defaultForJavaClass) {

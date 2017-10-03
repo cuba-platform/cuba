@@ -159,19 +159,27 @@ public class MetadataLoader {
         loadDatatypesFromClasspathResource();
 
         for (Element datatypeEl : datatypeElements) {
-            String datatypeClassName = datatypeEl.attributeValue("class");
+            String id = datatypeEl.attributeValue("id");
+            String className = datatypeEl.attributeValue("class");
+
+            if (Strings.isNullOrEmpty(className))
+                throw new IllegalStateException("Missing required 'class' attribute for datatype " + id + ". Check your metadata.xml file.");
+
+            if (Strings.isNullOrEmpty(id))
+                throw new IllegalStateException("Missing required 'id' attribute for datatype " + className + ". Check your metadata.xml file.");
+
             try {
                 Datatype datatype;
-                Class<Datatype> datatypeClass = ReflectionHelper.getClass(datatypeClassName);
+                Class<Datatype> datatypeClass = ReflectionHelper.getClass(className);
                 try {
-                    final Constructor<Datatype> constructor = datatypeClass.getConstructor(Element.class);
+                    Constructor<Datatype> constructor = datatypeClass.getConstructor(Element.class);
                     datatype = constructor.newInstance(datatypeEl);
                 } catch (Throwable e) {
                     datatype = datatypeClass.newInstance();
                 }
-                datatypeRegistry.register(datatype, datatypeEl.attributeValue("id"), Boolean.valueOf(datatypeEl.attributeValue("default")));
+                datatypeRegistry.register(datatype, id, Boolean.valueOf(datatypeEl.attributeValue("default")));
             } catch (Throwable e) {
-                log.error("Fail to load datatype '{}'", datatypeClassName, e);
+                log.error("Fail to load datatype '{}'", className, e);
             }
         }
     }
