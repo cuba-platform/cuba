@@ -1,4 +1,5 @@
-create table SYS_REST_API_TOKEN (
+if not exists (select * from sysobjects where name='SYS_REST_API_TOKEN')
+    create table SYS_REST_API_TOKEN (
     ID uniqueidentifier not null,
     CREATE_TS datetime,
     CREATED_BY varchar(50),
@@ -10,4 +11,5 @@ create table SYS_REST_API_TOKEN (
     EXPIRY datetime,
     --
     primary key (ID)
-)^
+)
+go^

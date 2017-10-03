@@ -1,4 +1,4 @@
-create table SYS_REST_API_TOKEN (
+create table if not exists SYS_REST_API_TOKEN (
     ID varchar(32) not null,
     CREATE_TS datetime(3),
     CREATED_BY varchar(50),

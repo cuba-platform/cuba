@@ -1,4 +1,5 @@
-create table SYS_REST_API_TOKEN (
+BEGIN
+   EXECUTE IMMEDIATE 'create table SYS_REST_API_TOKEN (
     ID varchar2(32) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar2(50),
@@ -10,4 +11,9 @@ create table SYS_REST_API_TOKEN (
     EXPIRY timestamp,
     --
     primary key (ID)
-)^
+)';
+    
+EXCEPTION
+   WHEN OTHERS THEN
+    NULL;
+END^
