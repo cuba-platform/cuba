@@ -61,9 +61,6 @@ public class SecurityTokenManager {
             String[] filteredAttributes = new String[entries.size()];
             int i = 0;
             for (Map.Entry<String, Collection<Object>> entry : entries) {
-                //validate id property using ReferenceToEntity class
-                ReferenceToEntity referenceToEntity = new ReferenceToEntity();
-                referenceToEntity.setObjectEntityId(entry.getValue());
                 jsonObject.put(entry.getKey(), entry.getValue());
                 filteredAttributes[i++] = entry.getKey();
             }
