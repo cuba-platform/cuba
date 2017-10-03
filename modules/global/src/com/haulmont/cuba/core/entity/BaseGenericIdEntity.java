@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Base class for persistent entities.
@@ -69,7 +68,7 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     protected String[] __inaccessibleAttributes;
 
     @Transient
-    protected transient Multimap<String, UUID> __filteredData = null;
+    protected transient Multimap<String, Object> __filteredData = null;
 
     @Transient
     protected String[] __filteredAttributes;

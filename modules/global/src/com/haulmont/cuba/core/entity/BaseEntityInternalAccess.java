@@ -80,11 +80,11 @@ public final class BaseEntityInternalAccess {
         entity.__inaccessibleAttributes = __inaccessibleAttributes;
     }
 
-    public static Multimap<String, UUID> getFilteredData(BaseGenericIdEntity entity) {
+    public static Multimap<String, Object> getFilteredData(BaseGenericIdEntity entity) {
         return entity.__filteredData;
     }
 
-    public static void setFilteredData(BaseGenericIdEntity entity, Multimap<String, UUID> filteredData) {
+    public static void setFilteredData(BaseGenericIdEntity entity, Multimap<String, Object> filteredData) {
         entity.__filteredData = filteredData;
     }
 

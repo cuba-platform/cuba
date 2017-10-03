@@ -48,13 +48,13 @@ public class SecurityTokenManager {
      * Encrypt filtered data and write the result to the security token
      */
     public void writeSecurityToken(BaseGenericIdEntity<?> resultEntity) {
-        Multimap<String, UUID> filtered = BaseEntityInternalAccess.getFilteredData(resultEntity);
+        Multimap<String, Object> filtered = BaseEntityInternalAccess.getFilteredData(resultEntity);
         JSONObject jsonObject = new JSONObject();
         if (filtered != null) {
-            Set<Map.Entry<String, Collection<UUID>>> entries = filtered.asMap().entrySet();
+            Set<Map.Entry<String, Collection<Object>>> entries = filtered.asMap().entrySet();
             String[] filteredAttributes = new String[entries.size()];
             int i = 0;
-            for (Map.Entry<String, Collection<UUID>> entry : entries) {
+            for (Map.Entry<String, Collection<Object>> entry : entries) {
                 jsonObject.put(entry.getKey(), entry.getValue());
                 filteredAttributes[i++] = entry.getKey();
             }
@@ -116,18 +116,18 @@ public class SecurityTokenManager {
     /**
      * INTERNAL.
      */
-    public void addFiltered(BaseGenericIdEntity<?> entity, String property, UUID uuid) {
+    public void addFiltered(BaseGenericIdEntity<?> entity, String property, Object id) {
         initFiltered(entity);
 
-        BaseEntityInternalAccess.getFilteredData(entity).put(property, uuid);
+        BaseEntityInternalAccess.getFilteredData(entity).put(property, id);
     }
 
     /**
      * INTERNAL.
      */
-    public void addFiltered(BaseGenericIdEntity<?> entity, String property, Collection<UUID> uuids) {
+    public void addFiltered(BaseGenericIdEntity<?> entity, String property, Collection ids) {
         initFiltered(entity);
-        BaseEntityInternalAccess.getFilteredData(entity).putAll(property, uuids);
+        BaseEntityInternalAccess.getFilteredData(entity).putAll(property, ids);
     }
 
     /**

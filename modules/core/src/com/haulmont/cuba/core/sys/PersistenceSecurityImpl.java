@@ -57,6 +57,9 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
     @Inject
     protected Persistence persistence;
 
+    @Inject
+    protected ReferenceToEntitySupport referenceToEntitySupport;
+
     @Override
     public boolean applyConstraints(Query query) {
         QueryParser parser = QueryTransformerFactory.createParser(query.getQueryString());
@@ -120,7 +123,7 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
         boolean filtered = false;
         for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext(); ) {
             Entity entity = iterator.next();
-            if (entity instanceof HasUuid && !isPermittedInMemory(entity)) {
+            if (!isPermittedInMemory(entity)) {
                 //we ignore situations when the collection is immutable
                 iterator.remove();
                 filtered = true;
@@ -131,22 +134,29 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
 
     @Override
     public boolean filterByConstraints(Entity entity) {
-        return entity instanceof HasUuid && !isPermittedInMemory(entity);
+        return !isPermittedInMemory(entity);
     }
 
     @Override
     public void applyConstraints(Collection<Entity> entities) {
-        Set<UUID> handled = new LinkedHashSet<>();
-        entities.stream().filter(entity -> entity instanceof HasUuid).forEach(entity -> {
-            internalApplyConstraints(entity, handled, false);
-        });
+        Set<EntityId> handled = new LinkedHashSet<>();
+        entities.forEach(entity -> applyConstraints(entity, handled));
     }
 
     @Override
     public void applyConstraints(Entity entity) {
-        if (entity instanceof HasUuid) {
-            internalApplyConstraints(entity, new HashSet<>(), false);
-        }
+        applyConstraints(entity, new HashSet<>());
+    }
+
+    @Override
+    public void calculateFilteredData(Entity entity) {
+        calculateFilteredData(entity, new HashSet<>(), false);
+    }
+
+    @Override
+    public void calculateFilteredData(Collection<Entity> entities) {
+        Set<EntityId> handled = new LinkedHashSet<>();
+        entities.forEach(entity -> calculateFilteredData(entity, handled, false));
     }
 
     @Override
@@ -169,14 +179,14 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
             }
         }
 
-        Multimap<String, UUID> filtered = BaseEntityInternalAccess.getFilteredData(resultEntity);
+        Multimap<String, Object> filtered = BaseEntityInternalAccess.getFilteredData(resultEntity);
         if (filtered == null) {
             return;
         }
 
-        for (Map.Entry<String, Collection<UUID>> entry : filtered.asMap().entrySet()) {
+        for (Map.Entry<String, Collection<Object>> entry : filtered.asMap().entrySet()) {
             MetaProperty property = metaClass.getPropertyNN(entry.getKey());
-            Collection<UUID> filteredIds = entry.getValue();
+            Collection filteredIds = entry.getValue();
 
             if (property.getRange().isClass() && CollectionUtils.isNotEmpty(filteredIds)) {
                 Class entityClass = property.getRange().asClass().getJavaClass();
@@ -189,14 +199,14 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
                                         property.getName(), metaClass.getName()), metaClass.getName());
                     }
 
-                    for (UUID entityId : filteredIds) {
-                        Entity<UUID> reference = entityManager.getReference((Class<Entity>)entityClass, entityId);
+                    for (Object entityId : filteredIds) {
+                        Entity reference = entityManager.getReference((Class<Entity>) entityClass, entityId);
                         //we ignore situations when the currentValue is immutable
                         currentCollection.add(reference);
                     }
                 } else if (Entity.class.isAssignableFrom(propertyClass)) {
-                    UUID entityId = filteredIds.iterator().next();
-                    Entity<UUID> reference = entityManager.getReference((Class<Entity>)entityClass, entityId);
+                    Object entityId = filteredIds.iterator().next();
+                    Entity reference = entityManager.getReference((Class<Entity>) entityClass, entityId);
                     //we ignore the situation when the field is read-only
                     resultEntity.setValue(property.getName(), reference);
                 }
@@ -230,59 +240,81 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
         }
     }
 
-    protected Set<UUID> internalApplyConstraints(Collection<Entity> entities, Set<UUID> handled) {
-        Set<UUID> filtered = new LinkedHashSet<>();
-        for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext(); ) {
-            Entity next = iterator.next();
-            if (internalApplyConstraints(next, handled, true)) {
-                filtered.add(((HasUuid) next).getUuid());
-                //we ignore situations when the collection is immutable
-                iterator.remove();
-            }
-        }
-
-        return filtered;
-    }
-
     @SuppressWarnings("unchecked")
-    protected boolean internalApplyConstraints(Entity entity, Set<UUID> handled, boolean checkPermitted) {
+    protected void applyConstraints(Entity entity, Set<EntityId> handled) {
         MetaClass metaClass = entity.getMetaClass();
-
-        if (!isPermittedInMemory(entity) && checkPermitted) {
-            return true;
+        EntityId entityId = new EntityId(referenceToEntitySupport.getReferenceId(entity), metaClass.getName());
+        if (handled.contains(entityId)) {
+            return;
         }
-
-        if (handled.contains(((HasUuid) entity).getUuid())) {
-            return false;
-        }
-
-        handled.add(((HasUuid) entity).getUuid());
-
-        for (MetaProperty property : metaClass.getProperties()) {
-            if (metadataTools.isPersistent(property) && PersistenceHelper.isLoaded(entity, property.getName())) {
-                Object value = entity.getValue(property.getName());
-                if (value instanceof Collection) {
-                    Set<UUID> filtered = internalApplyConstraints((Collection<Entity>) value, handled);
-                    if (entity instanceof BaseGenericIdEntity) {
-                        securityTokenManager.addFiltered((BaseGenericIdEntity) entity, property.getName(), filtered);
-                    }
-                } else if (value instanceof Entity && value instanceof HasUuid) {
-                    Entity valueEntity = (Entity) value;
-                    if (internalApplyConstraints(valueEntity, handled, true)) {
-                        //we ignore the situation when the field is read-only
-                        entity.setValue(property.getName(), null);
-                        if (entity instanceof BaseGenericIdEntity) {
-                            securityTokenManager.addFiltered((BaseGenericIdEntity) entity, property.getName(), ((HasUuid) valueEntity).getUuid());
+        handled.add(entityId);
+        if (entity instanceof BaseGenericIdEntity) {
+            BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
+            Multimap<String, Object> filteredData = BaseEntityInternalAccess.getFilteredData(baseGenericIdEntity);
+            for (MetaProperty property : metaClass.getProperties()) {
+                if (metadataTools.isPersistent(property) && PersistenceHelper.isLoaded(entity, property.getName())) {
+                    Object value = entity.getValue(property.getName());
+                    if (value instanceof Collection) {
+                        Collection entities = (Collection) value;
+                        for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext(); ) {
+                            Entity item = iterator.next();
+                            if (filteredData != null && filteredData.containsEntry(property.getName(),
+                                    referenceToEntitySupport.getReferenceId(item))) {
+                                iterator.remove();
+                            } else {
+                                applyConstraints(item, handled);
+                            }
+                        }
+                    } else if (value instanceof Entity) {
+                        if (filteredData != null && filteredData.containsEntry(property.getName(),
+                                referenceToEntitySupport.getReferenceId((Entity) value))) {
+                            baseGenericIdEntity.setValue(property.getName(), null);
+                        } else {
+                            applyConstraints((Entity) value, handled);
                         }
                     }
                 }
             }
         }
+    }
 
-        if (entity instanceof BaseGenericIdEntity) {
-            securityTokenManager.writeSecurityToken((BaseGenericIdEntity<?>) entity);
+    @SuppressWarnings("unchecked")
+    protected boolean calculateFilteredData(Entity entity, Set<EntityId> handled, boolean checkPermitted) {
+        MetaClass metaClass = entity.getMetaClass();
+        if (!isPermittedInMemory(entity) && checkPermitted) {
+            return true;
         }
-
+        EntityId entityId = new EntityId(referenceToEntitySupport.getReferenceId(entity), metaClass.getName());
+        if (handled.contains(entityId)) {
+            return false;
+        }
+        handled.add(entityId);
+        if (entity instanceof BaseGenericIdEntity) {
+            BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
+            for (MetaProperty property : metaClass.getProperties()) {
+                if (metadataTools.isPersistent(property) && PersistenceHelper.isLoaded(entity, property.getName())) {
+                    Object value = entity.getValue(property.getName());
+                    if (value instanceof Collection) {
+                        Set filtered = new LinkedHashSet();
+                        for (Entity item : (Collection<Entity>) value) {
+                            if (calculateFilteredData(item, handled, true)) {
+                                filtered.add(referenceToEntitySupport.getReferenceId(item));
+                            }
+                        }
+                        if (!filtered.isEmpty()) {
+                            securityTokenManager.addFiltered(baseGenericIdEntity, property.getName(), filtered);
+                        }
+                    } else if (value instanceof Entity) {
+                        Entity valueEntity = (Entity) value;
+                        if (calculateFilteredData(valueEntity, handled, true)) {
+                            securityTokenManager.addFiltered(baseGenericIdEntity, property.getName(),
+                                    referenceToEntitySupport.getReferenceId(valueEntity));
+                        }
+                    }
+                }
+            }
+            securityTokenManager.writeSecurityToken(baseGenericIdEntity);
+        }
         return false;
     }
 
@@ -291,5 +323,33 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
                 constraint.getCheckType().memory()
                         && (constraint.getOperationType() == ConstraintOperationType.READ
                         || constraint.getOperationType() == ConstraintOperationType.ALL));
+    }
+
+    protected static class EntityId {
+        Object id;
+        String metaClassName;
+
+        public EntityId(Object id, String metaClassName) {
+            this.id = id;
+            this.metaClassName = metaClassName;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            EntityId entityId = (EntityId) o;
+
+            if (!id.equals(entityId.id)) return false;
+            return metaClassName.equals(entityId.metaClassName);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = id.hashCode();
+            result = 31 * result + metaClassName.hashCode();
+            return result;
+        }
     }
 }

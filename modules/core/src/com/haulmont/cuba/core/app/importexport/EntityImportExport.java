@@ -31,10 +31,7 @@ import com.haulmont.cuba.core.app.StoreFactory;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
-import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.validation.EntityValidationException;
 import com.haulmont.cuba.core.global.validation.groups.RestApiChecks;
@@ -88,6 +85,9 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     @Inject
     protected BeanValidation beanValidation;
+
+    @Inject
+    protected ReferenceToEntitySupport referenceToEntitySupport;
 
     @Override
     public byte[] exportEntitiesToZIP(Collection<? extends Entity> entities, View view) {
@@ -342,7 +342,7 @@ public class EntityImportExport implements EntityImportExportAPI {
         MetaProperty inverseMetaProperty = metaProperty.getInverse();
 
         //filteredItems collection will contain entities filtered by the row-level security
-        Multimap<String, UUID> filteredItems = ArrayListMultimap.create();
+        Multimap<String, Object> filteredItems = ArrayListMultimap.create();
         if (srcEntity instanceof BaseGenericIdEntity) {
             String storeName = metadata.getTools().getStoreName(srcEntity.getMetaClass());
             DataStore dataStore = storeFactory.get(storeName);
@@ -395,10 +395,10 @@ public class EntityImportExport implements EntityImportExportAPI {
         if (importViewProperty.getCollectionImportPolicy() == CollectionImportPolicy.REMOVE_ABSENT_ITEMS) {
             Collection<? extends Entity> dstValue = dstEntity.getValue(propertyName);
             if (dstValue != null) {
-                Multimap<String, UUID> finalFilteredItems = filteredItems;
+                Multimap<String, Object> finalFilteredItems = filteredItems;
                 List<? extends Entity> collectionItemsToRemove = dstValue.stream()
                         .filter(entity -> !collection.contains(entity) &&
-                                (finalFilteredItems == null || !finalFilteredItems.containsValue(entity.getId())))
+                                (finalFilteredItems == null || !finalFilteredItems.containsValue(referenceToEntitySupport.getReferenceId(entity))))
                         .collect(Collectors.toList());
                 for (Entity _entity : collectionItemsToRemove) {
                     commitContext.addInstanceToRemove(_entity);

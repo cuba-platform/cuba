@@ -53,13 +53,13 @@ public interface PersistenceSecurity extends Security {
     void setQueryParam(Query query, String paramName);
 
     /**
-     * Applies in-memory constraints to the entity
+     * Applies in-memory constraints to the entity by filtered data
      * @param entity -
      */
     void applyConstraints(Entity entity);
 
     /**
-     * Applies in-memory constraints to the entity fields
+     * Applies in-memory constraints to the entity fields by filtered data
      * @param entities - collection of entities
      */
     void applyConstraints(Collection<Entity> entities);
@@ -82,4 +82,16 @@ public interface PersistenceSecurity extends Security {
      * @param resultEntity -
      */
     void restoreFilteredData(BaseGenericIdEntity<?> resultEntity);
+
+    /**
+     * Calculate filtered data
+     * @param entity for which will calculate filtered data
+     */
+    void calculateFilteredData(Entity entity);
+
+    /**
+     * Calculate filtered data
+     * @param entities - collection of entities for which will calculate filtered data
+     */
+    void calculateFilteredData(Collection<Entity> entities);
 }

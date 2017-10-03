@@ -116,6 +116,7 @@ public class RdbmsStore implements DataStore {
         }
 
         E result = null;
+        boolean needToApplyConstraints = needToApplyConstraints(context);
         try (Transaction tx = createLoadTransaction()) {
             final EntityManager em = persistence.getEntityManager(storeName);
 
@@ -145,11 +146,15 @@ public class RdbmsStore implements DataStore {
                         collectEntityClassesWithDynamicAttributes(context.getView()));
             }
 
+            if (result != null && needToApplyConstraints) {
+                security.calculateFilteredData(result);
+            }
+
             tx.commit();
         }
 
         if (result != null) {
-            if (needToApplyConstraints(context)) {
+            if (needToApplyConstraints) {
                 security.applyConstraints(result);
             }
             attributeSecurity.afterLoad(result);
@@ -178,6 +183,7 @@ public class RdbmsStore implements DataStore {
         queryResultsManager.savePreviousQueryResults(context);
 
         List<E> resultList;
+        boolean needToApplyConstraints = needToApplyConstraints(context);
         try (Transaction tx = createLoadTransaction()) {
             EntityManager em = persistence.getEntityManager(storeName);
             em.setSoftDeletion(context.isSoftDeletion());
@@ -203,10 +209,14 @@ public class RdbmsStore implements DataStore {
                         collectEntityClassesWithDynamicAttributes(context.getView()));
             }
 
+            if (needToApplyConstraints) {
+                security.calculateFilteredData((Collection<Entity>)resultList);
+            }
+
             tx.commit();
         }
 
-        if (needToApplyConstraints(context)) {
+        if (needToApplyConstraints) {
             security.applyConstraints((Collection<Entity>) resultList);
         }
 

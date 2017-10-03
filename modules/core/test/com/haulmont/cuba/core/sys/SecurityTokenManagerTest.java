@@ -49,7 +49,7 @@ public class SecurityTokenManagerTest {
         securityTokenManager.writeSecurityToken(user);
         securityTokenManager.readSecurityToken(user);
 
-        List<UUID> userRoles = (List<UUID>) BaseEntityInternalAccess.getFilteredData(user).get("userRoles");
+        List<Object> userRoles = (List<Object>) BaseEntityInternalAccess.getFilteredData(user).get("userRoles");
         Assert.assertEquals(4, userRoles.size());
         Assert.assertEquals(id1, userRoles.get(0));
         Assert.assertEquals(id2, userRoles.get(1));
