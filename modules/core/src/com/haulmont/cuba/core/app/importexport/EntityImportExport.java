@@ -453,10 +453,8 @@ public class EntityImportExport implements EntityImportExportAPI {
         } else {
             //create ReferenceInfo objects - they will be parsed later
             Collection<Entity> existingCollectionValue = dstEntity.getValue(importViewProperty.getName());
-            if (existingCollectionValue != null) {
-                ReferenceInfo referenceInfo = new ReferenceInfo(dstEntity, importViewProperty, srcPropertyValue, existingCollectionValue);
-                referenceInfoList.add(referenceInfo);
-            }
+            ReferenceInfo referenceInfo = new ReferenceInfo(dstEntity, importViewProperty, srcPropertyValue, existingCollectionValue);
+            referenceInfoList.add(referenceInfo);
         }
     }
 
