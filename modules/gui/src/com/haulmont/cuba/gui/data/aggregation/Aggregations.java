@@ -46,22 +46,14 @@ public class Aggregations {
         return instance;
     }
 
-    private Map<String, Aggregation> aggregationByName;
     private Map<Class, Aggregation> aggregationByDatatype;
 
     private Aggregations() {
-        aggregationByName = new HashMap<>();
         aggregationByDatatype = new HashMap<>();
     }
 
     protected <T> void register(Datatype datatype, Aggregation<T> aggregation) {
         aggregationByDatatype.put(datatype.getJavaClass(), aggregation);
-        aggregationByName.put(datatype.getName(), aggregation);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> Aggregation<T> get(String name) {
-        return getInstance().aggregationByName.get(name);
     }
 
     @SuppressWarnings("unchecked")
