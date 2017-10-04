@@ -73,17 +73,22 @@ public class HintProvider {
 
         int leftBracketsIdx = result.lastIndexOf('(');
         if (leftBracketsIdx >= 0 && leftBracketsIdx < result.length()) {
-            return result.substring(leftBracketsIdx + 1);
+            result = result.substring(leftBracketsIdx + 1);
         }
 
-        if (!result.contains("'")) {
-            int operationIdx = StringUtils.lastIndexOfAny(result, ARITHMETIC_OPERATIONS);
-            if (operationIdx >= 0 && operationIdx < result.length()) {
-                return result.substring(operationIdx + 1);
-            }
-        }
+        result = getLastWordWithArithmeticOperation(result);
 
         return result;
+    }
+
+    private static String getLastWordWithArithmeticOperation(String word) {
+        if (!word.contains("'")) {
+            int operationIdx = StringUtils.lastIndexOfAny(word, ARITHMETIC_OPERATIONS);
+            if (operationIdx >= 0 && operationIdx < word.length()) {
+                return word.substring(operationIdx + 1);
+            }
+        }
+        return word;
     }
 
     public HintResponse requestHint(String queryStringWithCaret) throws RecognitionException {
