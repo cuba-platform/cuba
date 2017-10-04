@@ -500,7 +500,7 @@ public class MetadataTools {
         if (pattern == null && useOriginal) {
             MetaClass original = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
             if (original != null) {
-                pattern = (String) original.getAnnotations().get(NamePattern.class.getName());
+                pattern = (String) getMetaAnnotationAttributes(original.getAnnotations(), NamePattern.class).get("value");
             }
         }
         if (!StringUtils.isBlank(pattern)) {
