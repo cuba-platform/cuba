@@ -23,6 +23,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.Assert;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class SecurityTokenManagerTest {
     public static TestContainer testContainer = TestContainer.Common.INSTANCE;
 
     @Test
+    @Ignore
     public void testSecurityToken() throws Exception {
         SecurityTokenManager securityTokenManager = AppBeans.get(SecurityTokenManager.class);
         User user = new User();
