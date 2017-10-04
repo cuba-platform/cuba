@@ -125,6 +125,7 @@
                             <columns>
                                 <column id="name" caption="msg://attribute"/>
                                 <column id="value" caption="msg://newValue"/>
+                                <column id="oldValue" caption="msg://oldValue"/>
                             </columns>
                             <rows datasource="entityLogAttrDs"/>
                         </table>

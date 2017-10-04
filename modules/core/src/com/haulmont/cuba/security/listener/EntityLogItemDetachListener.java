@@ -18,22 +18,21 @@
 package com.haulmont.cuba.security.listener;
 
 import com.google.common.collect.Ordering;
-import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.listener.BeforeDetachEntityListener;
-import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.security.entity.EntityLogAttr;
 import com.haulmont.cuba.security.entity.EntityLogItem;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.io.StringReader;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
+
+import static com.haulmont.cuba.security.entity.EntityLogAttr.*;
 
 @Component("cuba_EntityLogItemDetachListener")
 public class EntityLogItemDetachListener implements BeforeDetachEntityListener<EntityLogItem> {
@@ -42,6 +41,9 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
 
     @Inject
     protected Persistence persistence;
+
+    protected final String[] skipNames = new String[]{VALUE_ID_SUFFIX,
+            MP_SUFFIX, OLD_VALUE_SUFFIX, OLD_VALUE_ID_SUFFIX};
 
     @Override
     public void onBeforeDetach(EntityLogItem item, EntityManager entityManager) {
@@ -62,21 +64,17 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
             Enumeration<?> names = properties.propertyNames();
             while (names.hasMoreElements()) {
                 String name = (String) names.nextElement();
-                if (name.endsWith(EntityLogAttr.VALUE_ID_SUFFIX) || name.endsWith(EntityLogAttr.MP_SUFFIX))
+                if (StringUtils.endsWithAny(name, skipNames))
                     continue;
 
                 EntityLogAttr attr = new EntityLogAttr();
                 attr.setLogItem(item);
                 attr.setName(name);
                 attr.setValue(properties.getProperty(name));
-
-                String id = properties.getProperty(name + EntityLogAttr.VALUE_ID_SUFFIX);
-                if (id != null)
-                    attr.setValueId(id);
-
-                String mp = properties.getProperty(name + EntityLogAttr.MP_SUFFIX);
-                if (mp != null)
-                    attr.setMessagesPack(mp);
+                attr.setValueId(properties.getProperty(name + VALUE_ID_SUFFIX));
+                attr.setOldValue(properties.getProperty(name + OLD_VALUE_SUFFIX));
+                attr.setOldValueId(properties.getProperty(name + OLD_VALUE_ID_SUFFIX));
+                attr.setMessagesPack(properties.getProperty(name + MP_SUFFIX));
 
                 attributes.add(attr);
             }
@@ -84,45 +82,8 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
             log.error("Unable to fill EntityLog attributes for " + item, e);
         }
 
-        Collections.sort(attributes, new Comparator<EntityLogAttr>() {
-            @Override
-            public int compare(EntityLogAttr o1, EntityLogAttr o2) {
-                return Ordering.natural().compare(o1.getName(), o2.getName());
-            }
-        });
+        Collections.sort(attributes, (o1, o2) -> Ordering.natural().compare(o1.getName(), o2.getName()));
 
         item.setAttributes(new LinkedHashSet<>(attributes));
-    }
-
-    protected static class AttributesResultSetHandler implements ResultSetHandler<Set<EntityLogAttr>> {
-
-        protected EntityLogItem item;
-
-        protected DbTypeConverter converter;
-
-        public AttributesResultSetHandler(EntityLogItem item, DbTypeConverter converter) {
-            this.item = item;
-            this.converter = converter;
-        }
-
-        @Override
-        public Set<EntityLogAttr> handle(ResultSet rs) throws SQLException {
-            HashSet<EntityLogAttr> attributes = new HashSet<>();
-            while (rs.next()) {
-                EntityLogAttr attr = new EntityLogAttr();
-                attr.setId((UUID) converter.getJavaObject(rs, rs.findColumn("ID")));
-                attr.setLogItem(item);
-                attr.setName(rs.getString("NAME"));
-                attr.setValue(rs.getString("VALUE"));
-                UUID valueId = (UUID) converter.getJavaObject(rs, rs.findColumn("VALUE_ID"));
-                if (valueId != null) {
-                    attr.setValueId(valueId.toString());
-                }
-                attr.setMessagesPack(rs.getString("MESSAGES_PACK"));
-
-                attributes.add(attr);
-            }
-            return attributes;
-        }
     }
 }

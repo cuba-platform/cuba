@@ -37,6 +37,8 @@ public class EntityLogAttr extends BaseUuidEntity {
 
     public static final String VALUE_ID_SUFFIX = "-id";
     public static final String MP_SUFFIX = "-mp";
+    public static final String OLD_VALUE_SUFFIX = "-oldVl";
+    public static final String OLD_VALUE_ID_SUFFIX = "-oldVlId";
 
     @MetaProperty
     private EntityLogItem logItem;
@@ -48,7 +50,13 @@ public class EntityLogAttr extends BaseUuidEntity {
     private String value;
 
     @MetaProperty
+    private String oldValue;
+
+    @MetaProperty
     private String valueId;
+
+    @MetaProperty
+    private String oldValueId;
 
     @MetaProperty
     private String messagesPack;
@@ -77,10 +85,27 @@ public class EntityLogAttr extends BaseUuidEntity {
         this.value = value;
     }
 
+    public String getOldValue() {
+        return oldValue;
+    }
+
+    public void setOldValue(String oldValue) {
+        this.oldValue = oldValue;
+    }
+
     @MetaProperty
     public String getDisplayValue() {
-        if (StringUtils.isEmpty(getValue())) {
-            return getValue();
+        return getDisplayValue(getValue());
+    }
+
+    @MetaProperty
+    public String getDisplayOldValue() {
+        return getDisplayValue(getOldValue());
+    }
+
+    protected String getDisplayValue(String value) {
+        if (StringUtils.isEmpty(value)) {
+            return value;
         }
         final String entityName = getLogItem().getEntity();
         com.haulmont.chile.core.model.MetaClass metaClass = getClassFromEntityName(entityName);
@@ -88,20 +113,20 @@ public class EntityLogAttr extends BaseUuidEntity {
             com.haulmont.chile.core.model.MetaProperty property = metaClass.getProperty(getName());
             if (property != null) {
                 if (property.getRange().isDatatype()) {
-                    return getValue();
+                    return value;
                 } else if (property.getRange().isEnum()) {
-                    String nameKey = property.getRange().asEnumeration().getJavaClass().getSimpleName() + "." + getValue();
+                    String nameKey = property.getRange().asEnumeration().getJavaClass().getSimpleName() + "." + value;
                     String packageName = property.getRange().asEnumeration().getJavaClass().getPackage().getName();
                     Messages messages = AppBeans.get(Messages.NAME);
                     return messages.getMessage(packageName, nameKey);
                 } else {
-                    return getValue();
+                    return value;
                 }
             } else {
-                return getValue();
+                return value;
             }
         } else {
-            return getValue();
+            return value;
         }
     }
 
@@ -111,6 +136,14 @@ public class EntityLogAttr extends BaseUuidEntity {
 
     public void setValueId(String valueId) {
         this.valueId = valueId;
+    }
+
+    public String getOldValueId() {
+        return oldValueId;
+    }
+
+    public void setOldValueId(String oldValueId) {
+        this.oldValueId = oldValueId;
     }
 
     public String getMessagesPack() {
@@ -143,6 +176,15 @@ public class EntityLogAttr extends BaseUuidEntity {
 
     @MetaProperty
     public String getLocValue() {
+        return getLocValue(value);
+    }
+
+    @MetaProperty
+    public String getLocOldValue() {
+        return getLocValue(oldValue);
+    }
+
+    public String getLocValue(String value) {
         if (Strings.isNullOrEmpty(value)) return value;
 
         String entityName = getLogItem().getEntity();

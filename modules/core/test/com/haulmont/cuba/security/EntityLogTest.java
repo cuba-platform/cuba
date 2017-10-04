@@ -310,6 +310,7 @@ public class EntityLogTest {
             }
         });
         assertEquals("changed-3@test.com", attr.getValue());
+        assertEquals("changed-2@test.com", attr.getOldValue());
     }
 
     private List<EntityLogItem> getEntityLogItems() {

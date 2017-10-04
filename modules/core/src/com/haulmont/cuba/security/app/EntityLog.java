@@ -261,7 +261,7 @@ public class EntityLog implements EntityLogAPI {
 
         Properties properties = new Properties();
         for (String attr : attributes) {
-            writeAttribute(properties, entity, attr);
+            writeAttribute(properties, entity, null, attr);
         }
         item.setChanges(getChanges(properties));
 
@@ -343,17 +343,17 @@ public class EntityLog implements EntityLogAPI {
         if (entity instanceof SoftDelete && dirty.contains("deleteTs") && !((SoftDelete) entity).isDeleted()) {
             type = EntityLogItem.Type.RESTORE;
             for (String attr : attributes) {
-                writeAttribute(properties, entity, attr);
+                writeAttribute(properties, entity, changes, attr);
             }
         } else {
             type = EntityLogItem.Type.MODIFY;
             for (String attr : attributes) {
                 if (dirty.contains(attr)) {
-                    writeAttribute(properties, entity, attr);
+                    writeAttribute(properties, entity, changes, attr);
                 } else if (!Stores.getAdditional().isEmpty()) {
                     String idAttr = metadataTools.getCrossDataStoreReferenceIdProperty(storeName, metaClass.getPropertyNN(attr));
                     if (idAttr != null && dirty.contains(idAttr)) {
-                        writeAttribute(properties, entity, attr);
+                        writeAttribute(properties, entity, changes, attr);
                     }
                 }
             }
@@ -380,7 +380,7 @@ public class EntityLog implements EntityLogAPI {
         return changes;
     }
 
-    protected void writeAttribute(Properties properties, Entity entity, String attr) {
+    protected void writeAttribute(Properties properties, Entity entity, @Nullable EntityAttributeChanges changes, String attr) {
         if (!PersistenceHelper.isLoaded(entity, attr))
             return;
 
@@ -390,6 +390,15 @@ public class EntityLog implements EntityLogAPI {
         Object valueId = getValueId(value);
         if (valueId != null)
             properties.setProperty(attr + EntityLogAttr.VALUE_ID_SUFFIX, valueId.toString());
+
+        if (changes != null) {
+            Object oldValue = changes.getOldValue(attr);
+            properties.setProperty(attr + EntityLogAttr.OLD_VALUE_SUFFIX, stringify(oldValue));
+            Object oldValueId = getValueId(oldValue);
+            if (oldValueId != null) {
+                properties.setProperty(attr + EntityLogAttr.OLD_VALUE_ID_SUFFIX, oldValueId.toString());
+            }
+        }
 
         MessageTools messageTools = AppBeans.get(MessageTools.NAME);
         String mp = messageTools.inferMessagePack(attr, entity);
@@ -448,7 +457,7 @@ public class EntityLog implements EntityLogAPI {
 
         Properties properties = new Properties();
         for (String attr : attributes) {
-            writeAttribute(properties, entity, attr);
+            writeAttribute(properties, entity, null, attr);
         }
         item.setChanges(getChanges(properties));
 
