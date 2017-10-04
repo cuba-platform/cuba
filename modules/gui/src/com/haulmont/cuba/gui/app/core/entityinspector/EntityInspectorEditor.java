@@ -735,7 +735,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         LinkedList<Table.Column> nonSystemPropertyColumns = new LinkedList<>();
         LinkedList<Table.Column> systemPropertyColumns = new LinkedList<>();
         for (MetaProperty metaProperty : meta.getProperties()) {
-            if (metaProperty.getRange().isClass())
+            if (metaProperty.getRange().isClass() || metadata.getTools().isRelatedToNonLocalProperty(metaProperty))
                 continue; // because we use local views
             Table.Column column = new Table.Column(meta.getPropertyPath(metaProperty.getName()));
             if (!metadata.getTools().isSystem(metaProperty)) {
@@ -917,10 +917,6 @@ public class EntityInspectorEditor extends AbstractWindow {
     protected View createView(MetaClass meta) {
         View view = new View(meta.getJavaClass(), false);
         for (MetaProperty metaProperty : meta.getProperties()) {
-            if (metaProperty.isReadOnly()) {
-                continue;
-            }
-
             switch (metaProperty.getType()) {
                 case DATATYPE:
                 case ENUM:

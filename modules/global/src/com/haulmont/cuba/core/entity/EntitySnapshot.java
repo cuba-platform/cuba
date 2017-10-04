@@ -127,7 +127,7 @@ public class EntitySnapshot extends BaseUuidEntity implements Creatable {
         return author;
     }
 
-    @MetaProperty
+    @MetaProperty(related = {"snapshotDate,author"})
     public String getLabel() {
         String name = "";
         if (author != null && StringUtils.isNotEmpty(this.author.getCaption())) {
