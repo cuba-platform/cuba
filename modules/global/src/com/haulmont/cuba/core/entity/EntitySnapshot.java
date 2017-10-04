@@ -144,7 +144,7 @@ public class EntitySnapshot extends BaseUuidEntity implements Creatable {
         return StringUtils.trim(name);
     }
 
-    @MetaProperty
+    @MetaProperty(related = "snapshotDate")
     public Date getChangeDate() {
         return this.snapshotDate;
     }
