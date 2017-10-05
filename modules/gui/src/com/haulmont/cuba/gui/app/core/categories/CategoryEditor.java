@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.components.GroupBoxLayout;
 import com.haulmont.cuba.gui.components.LookupField;
 import org.apache.commons.lang.BooleanUtils;
 
@@ -38,8 +39,14 @@ public class CategoryEditor extends AbstractEditor<Category> {
     protected Metadata metadata;
     @Inject
     protected MessageTools messageTools;
+
     @Inject
+    protected GroupBoxLayout localizedGroupBox;
+
     protected LocalizedNameFrame localizedFrame;
+
+    @Inject
+    protected GlobalConfig globalConfig;
 
     @Inject
     protected LookupField entityType;
@@ -53,7 +60,17 @@ public class CategoryEditor extends AbstractEditor<Category> {
         category = getItem();
         initEntityTypeField();
         initIsDefaultCheckbox();
-        localizedFrame.setValue(category.getLocaleNames());
+        initLocalizedFrame();
+    }
+
+    protected void initLocalizedFrame() {
+        if (globalConfig.getAvailableLocales().size() > 1) {
+            localizedGroupBox.setVisible(true);
+            localizedFrame = (LocalizedNameFrame) openFrame(localizedGroupBox, "localizedNameFrame");
+            localizedFrame.setWidth("100%");
+            localizedFrame.setHeight(AUTO_SIZE);
+            localizedFrame.setValue(category.getLocaleNames());
+        }
     }
 
     protected void initEntityTypeField() {
@@ -107,7 +124,9 @@ public class CategoryEditor extends AbstractEditor<Category> {
 
     @Override
     protected boolean preCommit() {
-        category.setLocaleNames(localizedFrame.getValue());
+        if (localizedFrame != null) {
+            category.setLocaleNames(localizedFrame.getValue());
+        }
         return super.preCommit();
     }
 }

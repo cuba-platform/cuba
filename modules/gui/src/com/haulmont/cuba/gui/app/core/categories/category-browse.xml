@@ -50,7 +50,6 @@
             </buttonsPanel>
             <columns>
                 <column id="name" caption="msg://com.haulmont.cuba.core.entity/Category"/>
-                <column id="localeName" caption="msg://com.haulmont.cuba.core.entity/Category.localeName"/>
                 <column id="entityType"/>
             </columns>
             <rows datasource="categoriesDs"/>

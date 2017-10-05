@@ -30,7 +30,6 @@
             </buttonsPanel>
             <columns>
                 <column id="name" caption="msg://com.haulmont.cuba.core.entity/CategoryAttribute.name"/>
-                <column id="localeName" caption="msg://com.haulmont.cuba.core.entity/CategoryAttribute.localeName"/>
                 <column id="code"/>
                 <column id="dataType"/>
                 <column id="required"/>

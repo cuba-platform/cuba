@@ -152,10 +152,15 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected Table targetScreensTable;
 
     @Inject
-    protected LocalizedNameFrame localizedFrame;
+    protected TabSheet tabsheet;
 
     @Inject
     protected CollectionDatasource<ScreenAndComponent, UUID> screensDs;
+
+    @Inject
+    protected GlobalConfig globalConfig;
+
+    protected LocalizedNameFrame localizedFrame;
 
     private ListEditor enumerationListEditor;
     private SourceCodeEditor joinField;
@@ -167,6 +172,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
         fieldWidth = themeConstants.get("cuba.gui.AttributeEditor.field.width");
 
+        initLocalizedFrame();
         initFieldGroup();
 
         targetScreensTable.addAction(new AbstractAction("create") {
@@ -176,6 +182,16 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             }
         });
         targetScreensTable.addAction(new RemoveAction(targetScreensTable));
+    }
+
+    protected void initLocalizedFrame() {
+        if (globalConfig.getAvailableLocales().size() > 1) {
+            tabsheet.getTab("localization").setVisible(true);
+            localizedFrame = (LocalizedNameFrame) openFrame(
+                    tabsheet.getTabComponent("localization"), "localizedNameFrame");
+            localizedFrame.setWidth("100%");
+            localizedFrame.setHeight("250px");
+        }
     }
 
     protected void initFieldGroup() {
@@ -290,15 +306,17 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 List<String> value = (List<String>) e.getValue();
                 attribute.setEnumeration(Joiner.on(",").join(value));
             });
-            enumerationListEditor.setEditorWindowId("localizedEnumerationWindow");
-            enumerationListEditor.setEditorParamsSupplier(() ->
-                    ParamsMap.of("enumerationLocales", attribute.getEnumerationLocales()));
-            enumerationListEditor.addEditorCloseListener(closeEvent -> {
-                if (closeEvent.getActionId().equals(COMMIT_ACTION_ID)) {
-                    LocalizedEnumerationWindow enumerationWindow = (LocalizedEnumerationWindow) closeEvent.getWindow();
-                    attribute.setEnumerationLocales(enumerationWindow.getLocalizedValues());
-                }
-            });
+            if (localizedFrame != null) {
+                enumerationListEditor.setEditorWindowId("localizedEnumerationWindow");
+                enumerationListEditor.setEditorParamsSupplier(() ->
+                        ParamsMap.of("enumerationLocales", attribute.getEnumerationLocales()));
+                enumerationListEditor.addEditorCloseListener(closeEvent -> {
+                    if (closeEvent.getActionId().equals(COMMIT_ACTION_ID)) {
+                        LocalizedEnumerationWindow enumerationWindow = (LocalizedEnumerationWindow) closeEvent.getWindow();
+                        attribute.setEnumerationLocales(enumerationWindow.getLocalizedValues());
+                    }
+                });
+            }
             return enumerationListEditor;
         });
 
@@ -508,7 +526,9 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         }
         attribute.setTargetScreens(stringBuilder.toString());
 
-        attribute.setLocaleNames(localizedFrame.getValue());
+        if (localizedFrame != null) {
+            attribute.setLocaleNames(localizedFrame.getValue());
+        }
 
         return true;
     }
@@ -578,7 +598,9 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             enumerationListEditor.setValue(Lists.newArrayList(items));
         }
 
-        localizedFrame.setValue(attribute.getLocaleNames());
+        if (localizedFrame != null) {
+            localizedFrame.setValue(attribute.getLocaleNames());
+        }
 
         setupVisibility();
     }
