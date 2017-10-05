@@ -155,9 +155,10 @@ public final class BaseEntityInternalAccess {
     public static void addRequiredAttributes(SecurityState state, String[] requiredAttributes) {
         if (state.requiredAttributes == null) {
             state.requiredAttributes = requiredAttributes;
+        } else {
+            state.requiredAttributes =
+                    ObjectArrays.concat(state.requiredAttributes, requiredAttributes, String.class);
         }
-        state.requiredAttributes =
-                ObjectArrays.concat(state.requiredAttributes, requiredAttributes, String.class);
     }
 
     public static String[] getHiddenAttributes(SecurityState state) {
@@ -171,9 +172,10 @@ public final class BaseEntityInternalAccess {
     public static void addHiddenAttributes(SecurityState state, String[] hiddenAttributes) {
         if (state.hiddenAttributes == null) {
             state.hiddenAttributes = hiddenAttributes;
+        } else {
+            state.hiddenAttributes =
+                    ObjectArrays.concat(state.hiddenAttributes, hiddenAttributes, String.class);
         }
-        state.hiddenAttributes =
-                ObjectArrays.concat(state.hiddenAttributes, hiddenAttributes, String.class);
     }
 
     public static SecurityState getSecurityState(Entity entity) {
