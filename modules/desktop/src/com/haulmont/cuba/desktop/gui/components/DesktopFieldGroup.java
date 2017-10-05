@@ -42,6 +42,7 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
@@ -156,6 +157,55 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         }
 
         return fieldConfig;
+    }
+
+    @Override
+    public void add(Component childComponent) {
+        throw new UnsupportedOperationException("Add component is not supported by FieldGroup component");
+    }
+
+    @Override
+    public void remove(Component childComponent) {
+        throw new UnsupportedOperationException("Remove component is not supported by FieldGroup component");
+    }
+
+    @Override
+    public void removeAll() {
+        throw new UnsupportedOperationException("Remove all components are not supported by FieldGroup component");
+    }
+
+    @Nullable
+    @Override
+    public Component getOwnComponent(String id) {
+        FieldConfig fieldConfig = getField(id);
+        if (fieldConfig != null && fieldConfig.isBound()) {
+            return fieldConfig.getComponent();
+        }
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Component getComponent(String id) {
+        return getOwnComponent(id);
+    }
+
+    @Nonnull
+    @Override
+    public Component getComponentNN(String id) {
+        FieldConfig fieldConfig = getField(id);
+        if (fieldConfig != null && fieldConfig.isBound()) {
+            Component component = fieldConfig.getComponent();
+            if (component != null) {
+                return component;
+            }
+        }
+        throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
+    }
+
+    @Override
+    public Collection<Component> getComponents() {
+        return getOwnComponents();
     }
 
     @Override

@@ -28,6 +28,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.SecurityState;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -252,7 +253,8 @@ public class JSONConverter implements Converter {
 
             if (entity instanceof BaseGenericIdEntity && "__securityToken".equals(propertyName)) {
                 byte[] securityToken = Base64.getDecoder().decode(json.getString("__securityToken"));
-                BaseEntityInternalAccess.setSecurityToken((BaseGenericIdEntity) entity, securityToken);
+                SecurityState securityState = BaseEntityInternalAccess.getOrCreateSecurityState((BaseGenericIdEntity) entity);
+                BaseEntityInternalAccess.setSecurityToken(securityState, securityToken);
                 continue;
             }
 

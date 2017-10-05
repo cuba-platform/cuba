@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 
 /**
  * Base class for persistent embeddable entities.
@@ -32,6 +33,9 @@ import javax.persistence.MappedSuperclass;
 public abstract class EmbeddableEntity extends AbstractInstance implements Entity<Object> {
 
     private static final long serialVersionUID = 266201862280559076L;
+
+    @Transient
+    protected SecurityState __securityState;
 
     @Override
     public Object getId() {

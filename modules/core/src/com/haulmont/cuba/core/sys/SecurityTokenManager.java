@@ -18,6 +18,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.ServerConfig;
@@ -32,11 +33,9 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
+import static com.haulmont.cuba.core.entity.BaseEntityInternalAccess.*;
 import static org.apache.commons.lang.StringUtils.rightPad;
 import static org.apache.commons.lang.StringUtils.substring;
 
@@ -49,60 +48,91 @@ public class SecurityTokenManager {
     @Inject
     protected Metadata metadata;
 
-
+    protected static final String READ_ONLY_ATTRIBUTES_KEY = "__readonlyAttributes";
+    protected static final String REQUIRED_ATTRIBUTES_KEY = "__requiredAttributes";
+    protected static final String HIDDEN_ATTRIBUTES_KEY = "__hiddenAttributes";
+    protected static final Set SYSTEM_ATTRIBUTE_KEYS = Sets.newHashSet(READ_ONLY_ATTRIBUTES_KEY,
+            REQUIRED_ATTRIBUTES_KEY, HIDDEN_ATTRIBUTES_KEY);
     /**
      * Encrypt filtered data and write the result to the security token
      */
-    public void writeSecurityToken(BaseGenericIdEntity<?> resultEntity) {
-        Multimap<String, Object> filtered = BaseEntityInternalAccess.getFilteredData(resultEntity);
-        JSONObject jsonObject = new JSONObject();
-        if (filtered != null) {
-            Set<Map.Entry<String, Collection<Object>>> entries = filtered.asMap().entrySet();
-            String[] filteredAttributes = new String[entries.size()];
-            int i = 0;
-            for (Map.Entry<String, Collection<Object>> entry : entries) {
-                MetaProperty metaProperty = resultEntity.getMetaClass().getPropertyNN(entry.getKey());
-                if (metadata.getTools().isOwningSide(metaProperty)) {
-                    jsonObject.put(entry.getKey(), entry.getValue());
+    public void writeSecurityToken(Entity entity) {
+        SecurityState securityState = getOrCreateSecurityState(entity);
+        if (securityState != null) {
+            JSONObject jsonObject = new JSONObject();
+            Multimap<String, Object> filtered = getFilteredData(securityState);
+            if (filtered != null) {
+                Set<Map.Entry<String, Collection<Object>>> entries = filtered.asMap().entrySet();
+                String[] filteredAttributes = new String[entries.size()];
+                int i = 0;
+                for (Map.Entry<String, Collection<Object>> entry : entries) {
+                    MetaProperty metaProperty = entity.getMetaClass().getPropertyNN(entry.getKey());
+                    if (metadata.getTools().isOwningSide(metaProperty)) {
+                        jsonObject.put(entry.getKey(), entry.getValue());
+                    }
+                    filteredAttributes[i++] = entry.getKey();
                 }
-                filteredAttributes[i++] = entry.getKey();
+                setFilteredAttributes(securityState, filteredAttributes);
             }
-            BaseEntityInternalAccess.setFilteredAttributes(resultEntity, filteredAttributes);
-        }
+            if (!securityState.getReadonlyAttributes().isEmpty()) {
+                jsonObject.put(READ_ONLY_ATTRIBUTES_KEY, securityState.getReadonlyAttributes());
+            }
+            if (!securityState.getHiddenAttributes().isEmpty()) {
+                jsonObject.put(HIDDEN_ATTRIBUTES_KEY, securityState.getHiddenAttributes());
+            }
+            if (!securityState.getRequiredAttributes().isEmpty()) {
+                jsonObject.put(REQUIRED_ATTRIBUTES_KEY, securityState.getRequiredAttributes());
+            }
 
-        String json = jsonObject.toString();
-        byte[] encrypted;
-        Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
-        try {
-            encrypted = cipher.doFinal(json.getBytes(StandardCharsets.UTF_8));
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while generating security token", e);
+            String json = jsonObject.toString();
+            byte[] encrypted;
+            Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
+            try {
+                encrypted = cipher.doFinal(json.getBytes(StandardCharsets.UTF_8));
+            } catch (Exception e) {
+                throw new RuntimeException("An error occurred while generating security token", e);
+            }
+            setSecurityToken(securityState, encrypted);
         }
-        BaseEntityInternalAccess.setSecurityToken(resultEntity, encrypted);
     }
 
     /**
      * Decrypt security token and read filtered data
      */
-    public void readSecurityToken(BaseGenericIdEntity<?> resultEntity) {
-        if (BaseEntityInternalAccess.getSecurityToken(resultEntity) == null) {
+    public void readSecurityToken(Entity entity) {
+        SecurityState securityState = getSecurityState(entity);
+        if (getSecurityToken(entity) == null) {
             return;
         }
-
-        BaseEntityInternalAccess.setFilteredData(resultEntity, null);
+        Multimap<String, Object> filteredData = ArrayListMultimap.create();
+        BaseEntityInternalAccess.setFilteredData(securityState, filteredData);
         Cipher cipher = getCipher(Cipher.DECRYPT_MODE);
         try {
-            byte[] decrypted = cipher.doFinal(BaseEntityInternalAccess.getSecurityToken(resultEntity));
+            byte[] decrypted = cipher.doFinal(getSecurityToken(securityState));
             String json = new String(decrypted, StandardCharsets.UTF_8);
             JSONObject jsonObject = new JSONObject(json);
             for (Object key : jsonObject.keySet()) {
-                String elementName = String.valueOf(key);
-                JSONArray jsonArray = jsonObject.getJSONArray(elementName);
-                MetaProperty metaProperty = resultEntity.getMetaClass().getPropertyNN(elementName);
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    Object id = jsonArray.get(i);
-                    addFiltered(resultEntity, elementName, convertId(id, metaProperty));
+                if (!SYSTEM_ATTRIBUTE_KEYS.contains(key)) {
+                    String elementName = String.valueOf(key);
+                    JSONArray jsonArray = jsonObject.getJSONArray(elementName);
+                    MetaProperty metaProperty = entity.getMetaClass().getPropertyNN(elementName);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        Object id = jsonArray.get(i);
+                        filteredData.put(elementName, convertId(id, metaProperty));
+                    }
                 }
+            }
+            if (jsonObject.has(READ_ONLY_ATTRIBUTES_KEY)) {
+                BaseEntityInternalAccess.setReadonlyAttributes(securityState, parseJsonArrayAsStrings(
+                        jsonObject.getJSONArray(READ_ONLY_ATTRIBUTES_KEY)));
+            }
+            if (jsonObject.has(HIDDEN_ATTRIBUTES_KEY)) {
+                BaseEntityInternalAccess.setHiddenAttributes(securityState, parseJsonArrayAsStrings(
+                        jsonObject.getJSONArray(HIDDEN_ATTRIBUTES_KEY)));
+            }
+            if (jsonObject.has(REQUIRED_ATTRIBUTES_KEY)) {
+                BaseEntityInternalAccess.setRequiredAttributes(securityState, parseJsonArrayAsStrings(
+                        jsonObject.getJSONArray(REQUIRED_ATTRIBUTES_KEY)));
             }
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while reading security token", e);
@@ -121,6 +151,14 @@ public class SecurityTokenManager {
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while initiating encryption/decryption", e);
         }
+    }
+
+    protected String[] parseJsonArrayAsStrings(JSONArray array) {
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < array.length(); i++) {
+            result.add(array.getString(i));
+        }
+        return result.toArray(new String[result.size()]);
     }
 
     protected Object convertId(Object value, MetaProperty metaProperty) {
@@ -154,25 +192,21 @@ public class SecurityTokenManager {
      * INTERNAL.
      */
     public void addFiltered(BaseGenericIdEntity<?> entity, String property, Object id) {
-        initFiltered(entity);
-
-        BaseEntityInternalAccess.getFilteredData(entity).put(property, id);
+        SecurityState securityState = getOrCreateSecurityState(entity);
+        if (getFilteredData(securityState) == null) {
+            setFilteredData(securityState, ArrayListMultimap.create());
+        }
+        getFilteredData(securityState).put(property, id);
     }
 
     /**
      * INTERNAL.
      */
     public void addFiltered(BaseGenericIdEntity<?> entity, String property, Collection ids) {
-        initFiltered(entity);
-        BaseEntityInternalAccess.getFilteredData(entity).putAll(property, ids);
-    }
-
-    /**
-     * INTERNAL.
-     */
-    protected void initFiltered(BaseGenericIdEntity<?> entity) {
-        if (BaseEntityInternalAccess.getFilteredData(entity) == null) {
-            BaseEntityInternalAccess.setFilteredData(entity, ArrayListMultimap.create());
+        SecurityState securityState = getOrCreateSecurityState(entity);
+        if (getFilteredData(securityState) == null) {
+            setFilteredData(securityState, ArrayListMultimap.create());
         }
+        getFilteredData(securityState).putAll(property, ids);
     }
 }

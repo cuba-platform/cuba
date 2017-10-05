@@ -128,8 +128,9 @@ public class RdbmsStore implements DataStore {
             boolean singleResult = !(context.getQuery() != null && context.getQuery().getMaxResults() == 1
                     && context.getQuery().getQueryString() != null);
 
+            View view = createRestrictedView(context);
             com.haulmont.cuba.core.Query query = createQuery(em, context, singleResult);
-            query.setView(createRestrictedView(context));
+            query.setView(view);
 
             //noinspection unchecked
             List<E> resultList = executeQuery(query, singleResult);
@@ -148,6 +149,10 @@ public class RdbmsStore implements DataStore {
 
             if (result != null && needToApplyConstraints) {
                 security.calculateFilteredData(result);
+            }
+
+            if (result != null) {
+                attributeSecurity.onLoad(result, view);
             }
 
             tx.commit();
@@ -198,8 +203,9 @@ public class RdbmsStore implements DataStore {
                     context.getQuery().setQueryString(transformer.getResult());
                 }
             }
+            View view = createRestrictedView(context);
             Query query = createQuery(em, context, false);
-            query.setView(createRestrictedView(context));
+            query.setView(view);
 
             resultList = getResultList(context, query, ensureDistinct);
 
@@ -212,6 +218,8 @@ public class RdbmsStore implements DataStore {
             if (needToApplyConstraints) {
                 security.calculateFilteredData((Collection<Entity>)resultList);
             }
+
+            attributeSecurity.onLoad(resultList, view);
 
             tx.commit();
         }
@@ -338,7 +346,7 @@ public class RdbmsStore implements DataStore {
             // merge the rest - instances can be detached or not
             for (Entity entity : context.getCommitInstances()) {
                 if (!PersistenceHelper.isNew(entity)) {
-                    security.restoreFilteredData((BaseGenericIdEntity) entity);
+                    security.restoreSecurityData((BaseGenericIdEntity) entity);
                     attributeSecurity.beforeMerge(entity);
 
                     Entity merged = em.merge(entity);
@@ -363,7 +371,7 @@ public class RdbmsStore implements DataStore {
 
             // remove
             for (Entity entity : context.getRemoveInstances()) {
-                security.restoreFilteredData((BaseGenericIdEntity) entity);
+                security.restoreSecurityData((BaseGenericIdEntity) entity);
 
                 Entity e;
                 if (entity instanceof SoftDelete) {

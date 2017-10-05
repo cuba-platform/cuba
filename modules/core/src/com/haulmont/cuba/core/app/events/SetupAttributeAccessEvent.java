@@ -1,0 +1,87 @@
+/*
+ * Copyright (c) 2008-2017 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.haulmont.cuba.core.app.events;
+
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.ExtendedEntities;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.ResolvableTypeProvider;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class SetupAttributeAccessEvent<T extends Entity> extends ApplicationEvent
+        implements ResolvableTypeProvider {
+
+    private static final long serialVersionUID = -8775623806210166422L;
+
+    protected Set<String> readonlyAttributes;
+    protected Set<String> hiddenAttributes;
+    protected Set<String> requiredAttributes;
+
+    public SetupAttributeAccessEvent(T entity) {
+        super(entity);
+    }
+
+    @SuppressWarnings("unchecked")
+    public T getEntity() {
+        return (T) getSource();
+    }
+
+    public Set<String> getReadonlyAttributes() {
+        return readonlyAttributes;
+    }
+
+    public Set<String> getHiddenAttributes() {
+        return hiddenAttributes;
+    }
+
+    public Set<String> getRequiredAttributes() {
+        return requiredAttributes;
+    }
+
+    public void addReadOnlyAttribute(String name) {
+        if (readonlyAttributes == null) {
+            readonlyAttributes = new HashSet<>();
+        }
+        readonlyAttributes.add(name);
+    }
+
+    public void addRequiredAttribute(String name) {
+        if (requiredAttributes == null) {
+            requiredAttributes = new HashSet<>();
+        }
+        requiredAttributes.add(name);
+    }
+
+    public void addHiddenAttribute(String name) {
+        if (hiddenAttributes == null) {
+            hiddenAttributes = new HashSet<>();
+        }
+        hiddenAttributes.add(name);
+    }
+
+    @Override
+    public ResolvableType getResolvableType() {
+        ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.NAME);
+        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(getEntity().getMetaClass());
+        return ResolvableType.forClassWithGenerics(getClass(), ResolvableType.forClass(metaClass.getJavaClass()));
+    }
+}

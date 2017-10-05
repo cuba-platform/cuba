@@ -17,15 +17,16 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.google.common.collect.Sets;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.PersistenceSecurity;
-import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.app.events.SetupAttributeAccessEvent;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityTokenManager;
 import com.haulmont.cuba.core.sys.persistence.CubaEntityFetchGroup;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -33,10 +34,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+
+import static com.haulmont.cuba.core.entity.BaseEntityInternalAccess.getOrCreateSecurityState;
+import static java.lang.String.format;
 
 /**
  * Supports enforcing entity attribute permissions on Middleware.
@@ -58,11 +59,20 @@ public class AttributeSecuritySupport {
     @Inject
     protected ServerConfig config;
 
+    @Inject
+    protected SecurityTokenManager securityTokenManager;
+
+    @Inject
+    protected Events events;
+
+    @Inject
+    protected EntityStates entityStates;
+
     /**
      * Removes restricted attributes from a view.
      *
-     * @param view  source view
-     * @return      restricted view
+     * @param view source view
+     * @return restricted view
      */
     public View createRestrictedView(View view) {
         if (!isAuthorizationRequired()) {
@@ -111,9 +121,6 @@ public class AttributeSecuritySupport {
      * @param entities list of just loaded detached entities
      */
     public void afterLoad(Collection<? extends Entity> entities) {
-        if (!isAuthorizationRequired()) {
-            return;
-        }
         Preconditions.checkNotNullArgument(entities, "entities list is null");
 
         for (Entity entity : entities) {
@@ -150,38 +157,16 @@ public class AttributeSecuritySupport {
         if (!isAuthorizationRequired()) {
             return;
         }
-        MetaClass metaClass = metadata.getClassNN(entity.getClass());
-        FetchGroup fetchGroup = ((FetchGroupTracker) entity)._persistence_getFetchGroup();
-        if (fetchGroup != null) {
-            List<String> attributesToRemove = new ArrayList<>();
-            for (String attrName : fetchGroup.getAttributeNames()) {
-                String[] parts = attrName.split("\\.");
-                MetaClass tmpMetaClass = metaClass;
-                for (String part : parts) {
-                    if (!security.isEntityAttrUpdatePermitted(tmpMetaClass, part)) {
-                        attributesToRemove.add(attrName);
-                        break;
-                    }
-                    MetaProperty metaProperty = tmpMetaClass.getPropertyNN(part);
-                    if (metaProperty.getRange().isClass()) {
-                        tmpMetaClass = metaProperty.getRange().asClass();
-                    }
-                }
+        checkRequiredAttributes(entity);
+        applySecurityToFetchGroup(entity);
+        //apply fetch group constraints to embedded
+        for (MetaProperty metaProperty : entity.getMetaClass().getProperties()) {
+            String name = metaProperty.getName();
+            if (metadataTools.isEmbedded(metaProperty) && entityStates.isLoaded(entity, name)) {
+                Entity embedded = entity.getValue(name);
+                checkRequiredAttributes(embedded);
+                applySecurityToFetchGroup(embedded);
             }
-            if (!attributesToRemove.isEmpty()) {
-                List<String> attributeNames = new ArrayList<>(fetchGroup.getAttributeNames());
-                attributeNames.removeAll(attributesToRemove);
-                ((FetchGroupTracker) entity)._persistence_setFetchGroup(new CubaEntityFetchGroup(attributeNames));
-            }
-        } else {
-            List<String> attributeNames = new ArrayList<>();
-            for (MetaProperty metaProperty : metaClass.getProperties()) {
-                if (metadataTools.isSystem(metaProperty)
-                        || security.isEntityAttrUpdatePermitted(metaClass, metaProperty.getName())) {
-                    attributeNames.add(metaProperty.getName());
-                }
-            }
-            ((FetchGroupTracker) entity)._persistence_setFetchGroup(new CubaEntityFetchGroup(attributeNames));
         }
     }
 
@@ -199,11 +184,137 @@ public class AttributeSecuritySupport {
         }
     }
 
+    public void onLoad(Collection<? extends Entity> entities, View view) {
+        Preconditions.checkNotNullArgument(entities, "entities list is null");
+
+        for (Entity entity : entities) {
+            onLoad(entity, view);
+        }
+    }
+
+    public void onLoad(Entity entity, View view) {
+        if (entity instanceof BaseGenericIdEntity) {
+            BaseGenericIdEntity genericIdEntity = (BaseGenericIdEntity) entity;
+            setupAttributesAccess(genericIdEntity);
+            metadataTools.traverseAttributesByView(view, genericIdEntity, new AttributeSecurityVisitor(Sets.newHashSet(entity)));
+        }
+    }
+
+    protected <T extends Entity> void setupAttributesAccess(T entity) {
+        if (entity instanceof BaseGenericIdEntity || entity instanceof EmbeddableEntity) {
+            SetupAttributeAccessEvent<T> event = new SetupAttributeAccessEvent<>(entity);
+            events.publish(event);
+            boolean writeSecurityToken = false;
+            if (event.getReadonlyAttributes() != null) {
+                Set<String> attributes = event.getReadonlyAttributes();
+                SecurityState state = getOrCreateSecurityState(entity);
+                BaseEntityInternalAccess.addReadonlyAttributes(state,
+                        attributes.toArray(new String[attributes.size()]));
+                writeSecurityToken = true;
+            }
+            if (event.getRequiredAttributes() != null) {
+                Set<String> attributes = event.getRequiredAttributes();
+                SecurityState state = getOrCreateSecurityState(entity);
+                BaseEntityInternalAccess.addRequiredAttributes(state,
+                        attributes.toArray(new String[attributes.size()]));
+                writeSecurityToken = true;
+            }
+            if (event.getHiddenAttributes() != null) {
+                Set<String> attributes = event.getHiddenAttributes();
+                SecurityState state = getOrCreateSecurityState(entity);
+                BaseEntityInternalAccess.addHiddenAttributes(state,
+                        attributes.toArray(new String[attributes.size()]));
+                writeSecurityToken = true;
+            }
+            if (writeSecurityToken) {
+                securityTokenManager.writeSecurityToken(entity);
+            }
+        }
+    }
+
+    protected void checkRequiredAttributes(Entity entity) {
+        SecurityState securityState = BaseEntityInternalAccess.getSecurityState(entity);
+        if (securityState != null && !securityState.getRequiredAttributes().isEmpty()) {
+            for (MetaProperty metaProperty : entity.getMetaClass().getProperties()) {
+                String propertyName = metaProperty.getName();
+                if (isRequired(securityState, propertyName) && entity.getValue(propertyName) == null) {
+                    throw new RowLevelSecurityException(format("Attribute [%s] is required for entity %s", propertyName, entity),
+                            entity.getMetaClass().getName());
+                }
+            }
+        }
+    }
+
+    protected void applySecurityToFetchGroup(Entity entity) {
+        if (entity == null) {
+            return;
+        }
+        MetaClass metaClass = metadata.getClassNN(entity.getClass());
+        FetchGroupTracker fetchGroupTracker = (FetchGroupTracker) entity;
+        FetchGroup fetchGroup = fetchGroupTracker._persistence_getFetchGroup();
+        SecurityState securityState = BaseEntityInternalAccess.getSecurityState(entity);
+        if (fetchGroup != null) {
+            List<String> attributesToRemove = new ArrayList<>();
+            for (String attrName : fetchGroup.getAttributeNames()) {
+                String[] parts = attrName.split("\\.");
+                if (parts.length > 0 && isHiddenOrReadOnly(securityState, parts[0])) {
+                    attributesToRemove.add(attrName);
+                } else {
+                    MetaClass currentMetaClass = metaClass;
+                    for (String part : parts) {
+                        if (!security.isEntityAttrUpdatePermitted(currentMetaClass, part)) {
+                            attributesToRemove.add(attrName);
+                            break;
+                        }
+                        MetaProperty metaProperty = currentMetaClass.getPropertyNN(part);
+                        if (metaProperty.getRange().isClass()) {
+                            currentMetaClass = metaProperty.getRange().asClass();
+                        }
+                    }
+                }
+            }
+            if (!attributesToRemove.isEmpty()) {
+                List<String> attributeNames = new ArrayList<>(fetchGroup.getAttributeNames());
+                attributeNames.removeAll(attributesToRemove);
+                fetchGroupTracker._persistence_setFetchGroup(new CubaEntityFetchGroup(attributeNames));
+            }
+        } else {
+            List<String> attributeNames = new ArrayList<>();
+            for (MetaProperty metaProperty : metaClass.getProperties()) {
+                String propertyName = metaProperty.getName();
+                if (metadataTools.isSystem(metaProperty)) {
+                    attributeNames.add(propertyName);
+                }
+                if (security.isEntityAttrUpdatePermitted(metaClass, propertyName) &&
+                        !isHiddenOrReadOnly(securityState, propertyName)) {
+                    attributeNames.add(metaProperty.getName());
+                }
+            }
+            fetchGroupTracker._persistence_setFetchGroup(new CubaEntityFetchGroup(attributeNames));
+        }
+    }
+
+    protected boolean isHiddenOrReadOnly(SecurityState securityState, String attributeName) {
+        if (securityState == null) {
+            return false;
+        }
+        return securityState.getHiddenAttributes().contains(attributeName)
+                || securityState.getReadonlyAttributes().contains(attributeName);
+    }
+
+    protected boolean isRequired(SecurityState securityState, String attributeName) {
+        if (securityState == null) {
+            return false;
+        }
+        return securityState.getRequiredAttributes().contains(attributeName);
+    }
+
     private void addInaccessibleAttribute(BaseGenericIdEntity entity, String property) {
-        String[] attributes = BaseEntityInternalAccess.getInaccessibleAttributes(entity);
+        SecurityState securityState = BaseEntityInternalAccess.getOrCreateSecurityState(entity);
+        String[] attributes = BaseEntityInternalAccess.getInaccessibleAttributes(securityState);
         attributes = attributes == null ? new String[1] : Arrays.copyOf(attributes, attributes.length + 1);
         attributes[attributes.length - 1] = property;
-        BaseEntityInternalAccess.setInaccessibleAttributes(entity, attributes);
+        BaseEntityInternalAccess.setInaccessibleAttributes(securityState, attributes);
     }
 
     protected boolean isAuthorizationRequired() {
@@ -211,8 +322,15 @@ public class AttributeSecuritySupport {
                 && config.getEntityAttributePermissionChecking();
     }
 
-    private class FillingInaccessibleAttributesVisitor implements EntityAttributeVisitor {
+    protected void setNullPropertyValue(Entity entity, MetaProperty property) {
+        if (!metadataTools.isSystem(property) && !property.isReadOnly()) {
+            // Using reflective access to field because the attribute can be unfetched if loading not partial entities,
+            // which is the case when in-memory constraints exist
+            BaseEntityInternalAccess.setValue((BaseGenericIdEntity) entity, property.getName(), null);
+        }
+    }
 
+    protected class FillingInaccessibleAttributesVisitor implements EntityAttributeVisitor {
         @Override
         public boolean skip(MetaProperty property) {
             return metadataTools.isNotPersistent(property);
@@ -223,26 +341,35 @@ public class AttributeSecuritySupport {
             MetaClass metaClass = metadata.getClassNN(entity.getClass());
             if (!security.isEntityAttrReadPermitted(metaClass, property.getName())) {
                 addInaccessibleAttribute((BaseGenericIdEntity) entity, property.getName());
-                if (!metadataTools.isSystem(property) && !property.isReadOnly()) {
-                    // Using reflective access to field because the attribute can be unfetched if loading not partial entities,
-                    // which is the case when in-memory constraints exist
-                    BaseEntityInternalAccess.setValue((BaseGenericIdEntity) entity, property.getName(), null);
-                }
+                setNullPropertyValue(entity, property);
             }
         }
     }
 
-    private class ClearInaccessibleAttributesVisitor implements EntityAttributeVisitor {
+    protected class ClearInaccessibleAttributesVisitor implements EntityAttributeVisitor {
         @Override
         public void visit(Entity entity, MetaProperty property) {
             MetaClass metaClass = metadata.getClassNN(entity.getClass());
-            if (!security.isEntityAttrReadPermitted(metaClass, property.getName())) {
-                addInaccessibleAttribute((BaseGenericIdEntity) entity, property.getName());
-                if (!metadataTools.isSystem(property) && !property.isReadOnly()) {
-                    // Using reflective access to field because the attribute can be unfetched if loading not partial entities,
-                    // which is the case when in-memory constraints exist
-                    BaseEntityInternalAccess.setValue((BaseGenericIdEntity) entity, property.getName(), null);
-                }
+            String propertyName = property.getName();
+            if (!security.isEntityAttrReadPermitted(metaClass, propertyName)) {
+                addInaccessibleAttribute((BaseGenericIdEntity) entity, propertyName);
+                setNullPropertyValue(entity, property);
+            }
+        }
+    }
+
+    protected class AttributeSecurityVisitor implements EntityAttributeVisitor {
+        protected Set<Entity> visited = new HashSet<>();
+
+        public AttributeSecurityVisitor(Set<Entity> visited) {
+            this.visited = visited;
+        }
+
+        @Override
+        public void visit(Entity entity, MetaProperty property) {
+            if (!visited.contains(entity)) {
+                visited.add(entity);
+                setupAttributesAccess(entity);
             }
         }
     }

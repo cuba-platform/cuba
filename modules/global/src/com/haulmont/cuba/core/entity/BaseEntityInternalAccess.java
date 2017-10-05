@@ -17,11 +17,14 @@
 package com.haulmont.cuba.core.entity;
 
 import com.google.common.collect.Multimap;
+import com.google.common.collect.ObjectArrays;
 import com.haulmont.bali.util.Preconditions;
 import org.apache.commons.lang.reflect.FieldUtils;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -72,36 +75,141 @@ public final class BaseEntityInternalAccess {
         entity.__removed = removed;
     }
 
-    public static String[] getInaccessibleAttributes(BaseGenericIdEntity entity) {
-        return entity.__inaccessibleAttributes;
+    public static String[] getInaccessibleAttributes(Entity entity) {
+        SecurityState state = getSecurityState(entity);
+        return state != null ? getInaccessibleAttributes(state) : null;
     }
 
-    public static void setInaccessibleAttributes(BaseGenericIdEntity entity, String[] __inaccessibleAttributes) {
-        entity.__inaccessibleAttributes = __inaccessibleAttributes;
+    public static String[] getInaccessibleAttributes(SecurityState state) {
+        return state.inaccessibleAttributes;
     }
 
-    public static Multimap<String, Object> getFilteredData(BaseGenericIdEntity entity) {
-        return entity.__filteredData;
+    public static void setInaccessibleAttributes(SecurityState state, String[] inaccessibleAttributes) {
+        state.inaccessibleAttributes = inaccessibleAttributes;
     }
 
-    public static void setFilteredData(BaseGenericIdEntity entity, Multimap<String, Object> filteredData) {
-        entity.__filteredData = filteredData;
+    public static Multimap<String, Object> getFilteredData(Entity entity) {
+        SecurityState state = getSecurityState(entity);
+        return state != null ? getFilteredData(state) : null;
     }
 
-    public static byte[] getSecurityToken(BaseGenericIdEntity entity) {
-        return entity.__securityToken;
+    public static Multimap<String, Object> getFilteredData(SecurityState state) {
+        return state.filteredData;
     }
 
-    public static void setSecurityToken(BaseGenericIdEntity entity, byte[] securityToken) {
-        entity.__securityToken = securityToken;
+    public static void setFilteredData(SecurityState state, Multimap<String, Object> filteredData) {
+        state.filteredData = filteredData;
+    }
+
+    public static byte[] getSecurityToken(Entity entity) {
+        SecurityState state = getSecurityState(entity);
+        return state != null ? getSecurityToken(state) : null;
+    }
+
+    public static byte[] getSecurityToken(SecurityState state) {
+        return state.securityToken;
+    }
+
+    public static void setSecurityToken(SecurityState state, byte[] securityToken) {
+        state.securityToken = securityToken;
     }
 
     public static String[] getFilteredAttributes(BaseGenericIdEntity entity) {
-        return entity.__filteredAttributes;
+        SecurityState state = getSecurityState(entity);
+        return state != null ? getFilteredAttributes(state) : null;
     }
 
-    public static void setFilteredAttributes(BaseGenericIdEntity entity, String[] filteredAttributes) {
-        entity.__filteredAttributes = filteredAttributes;
+    public static String[] getFilteredAttributes(SecurityState state) {
+        return state.filteredAttributes;
+    }
+
+    public static void setFilteredAttributes(SecurityState state, String[] filteredAttributes) {
+        state.filteredAttributes = filteredAttributes;
+    }
+
+    public static String[] getReadonlyAttributes(SecurityState state) {
+        return state.readonlyAttributes;
+    }
+
+    public static void setReadonlyAttributes(SecurityState state, String[] readonlyAttributes) {
+        state.readonlyAttributes = readonlyAttributes;
+    }
+
+    public static void addReadonlyAttributes(SecurityState state, String[] readonlyAttributes) {
+        if (state.readonlyAttributes == null) {
+            state.readonlyAttributes = readonlyAttributes;
+        } else {
+            state.readonlyAttributes =
+                    ObjectArrays.concat(state.readonlyAttributes, readonlyAttributes, String.class);
+        }
+    }
+
+    public static String[] getRequiredAttributes(SecurityState state) {
+        return state.requiredAttributes;
+    }
+
+    public static void setRequiredAttributes(SecurityState state, String[] requiredAttributes) {
+        state.requiredAttributes = requiredAttributes;
+    }
+
+    public static void addRequiredAttributes(SecurityState state, String[] requiredAttributes) {
+        if (state.requiredAttributes == null) {
+            state.requiredAttributes = requiredAttributes;
+        }
+        state.requiredAttributes =
+                ObjectArrays.concat(state.requiredAttributes, requiredAttributes, String.class);
+    }
+
+    public static String[] getHiddenAttributes(SecurityState state) {
+        return state.hiddenAttributes;
+    }
+
+    public static void setHiddenAttributes(SecurityState state, String[] hiddenAttributes) {
+        state.hiddenAttributes = hiddenAttributes;
+    }
+
+    public static void addHiddenAttributes(SecurityState state, String[] hiddenAttributes) {
+        if (state.hiddenAttributes == null) {
+            state.hiddenAttributes = hiddenAttributes;
+        }
+        state.hiddenAttributes =
+                ObjectArrays.concat(state.hiddenAttributes, hiddenAttributes, String.class);
+    }
+
+    public static SecurityState getSecurityState(Entity entity) {
+        Preconditions.checkNotNullArgument(entity, "Entity is null");
+        SecurityState securityState;
+        if (entity instanceof BaseGenericIdEntity) {
+            BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
+            securityState = baseGenericIdEntity.__securityState;
+        } else if (entity instanceof EmbeddableEntity) {
+            EmbeddableEntity embeddableEntity = (EmbeddableEntity) entity;
+            securityState = embeddableEntity.__securityState;
+        } else {
+            throw new IllegalArgumentException(String.format("Entity with type [%s] does not support security state", entity.getMetaClass().getName()));
+        }
+        return securityState;
+    }
+
+    public static SecurityState getOrCreateSecurityState(Entity entity) {
+        Preconditions.checkNotNullArgument(entity, "Entity is null");
+        SecurityState securityState;
+        if (entity instanceof BaseGenericIdEntity) {
+            BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
+            if (baseGenericIdEntity.__securityState == null) {
+                baseGenericIdEntity.__securityState = new SecurityState();
+            }
+            securityState = baseGenericIdEntity.__securityState;
+        } else if (entity instanceof EmbeddableEntity) {
+            EmbeddableEntity embeddableEntity = (EmbeddableEntity) entity;
+            if (embeddableEntity.__securityState == null) {
+                embeddableEntity.__securityState = new SecurityState();
+            }
+            securityState = embeddableEntity.__securityState;
+        } else {
+            throw new IllegalArgumentException(String.format("Entity with type [%s] does not support security state", entity.getMetaClass().getName()));
+        }
+        return securityState;
     }
 
     public static void setValue(BaseGenericIdEntity entity, String attribute, @Nullable Object value) {

@@ -24,10 +24,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.HasUuid;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
@@ -161,7 +158,7 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
 
     @Override
     @SuppressWarnings("unchecked")
-    public void restoreFilteredData(BaseGenericIdEntity<?> resultEntity) {
+    public void restoreSecurityData(BaseGenericIdEntity<?> resultEntity) {
         MetaClass metaClass = metadata.getClassNN(resultEntity.getClass());
 
         String storeName = metadataTools.getStoreName(metaClass);

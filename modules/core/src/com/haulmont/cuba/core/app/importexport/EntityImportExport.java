@@ -45,7 +45,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import javax.validation.groups.Default;
 import java.io.ByteArrayInputStream;
@@ -346,17 +345,18 @@ public class EntityImportExport implements EntityImportExportAPI {
         if (srcEntity instanceof BaseGenericIdEntity) {
             String storeName = metadata.getTools().getStoreName(srcEntity.getMetaClass());
             DataStore dataStore = storeFactory.get(storeName);
-
+            BaseGenericIdEntity srcGenericIdEntity = (BaseGenericIdEntity) srcEntity;
             //row-level security works only for entities from RdbmsStore
             if (dataStore instanceof RdbmsStore) {
                 //create an entity copy here, because filtered items must not be reloaded in the srcEntity for now,
                 //we only need a collection of filtered properties
                 try (Transaction tx = persistence.getTransaction()) {
-                    byte[] securityToken = BaseEntityInternalAccess.getSecurityToken((BaseGenericIdEntity) srcEntity);
-                    Entity srcEntityCopy = metadata.getTools().deepCopy(srcEntity);
-                    BaseEntityInternalAccess.setSecurityToken((BaseGenericIdEntity) srcEntityCopy, securityToken);
-                    persistenceSecurity.restoreFilteredData((BaseGenericIdEntity<?>) srcEntityCopy);
-                    filteredItems = BaseEntityInternalAccess.getFilteredData((BaseGenericIdEntity) srcEntityCopy);
+                    BaseGenericIdEntity srcGenericIdEntityCopy = metadata.getTools().deepCopy(srcGenericIdEntity);
+                    byte[] securityToken = BaseEntityInternalAccess.getSecurityToken(srcGenericIdEntity);
+                    SecurityState securityStateCopy = BaseEntityInternalAccess.getOrCreateSecurityState(srcGenericIdEntity);
+                    BaseEntityInternalAccess.setSecurityToken(securityStateCopy, securityToken);
+                    persistenceSecurity.restoreSecurityData(srcGenericIdEntityCopy);
+                    filteredItems = BaseEntityInternalAccess.getFilteredData(srcGenericIdEntityCopy);
                     tx.commit();
                 }
             }
@@ -563,7 +563,7 @@ public class EntityImportExport implements EntityImportExportAPI {
             if (dataStore instanceof RdbmsStore) {
                 //restore filtered data, otherwise they will be lost
                 try (Transaction tx = persistence.getTransaction()) {
-                    persistenceSecurity.restoreFilteredData((BaseGenericIdEntity<?>) entity);
+                    persistenceSecurity.restoreSecurityData((BaseGenericIdEntity<?>) entity);
                     tx.commit();
                 }
             }

@@ -28,6 +28,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.SecurityState;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -450,8 +451,8 @@ public class XMLConverter2 implements Converter {
 
                 if (entity instanceof BaseGenericIdEntity && "__securityToken".equals(propertyEl.getName())) {
                     byte[] securityToken = Base64.getDecoder().decode(propertyEl.getText());
-
-                    BaseEntityInternalAccess.setSecurityToken((BaseGenericIdEntity) entity, securityToken);
+                    SecurityState securityState = BaseEntityInternalAccess.getOrCreateSecurityState((BaseGenericIdEntity) entity);
+                    BaseEntityInternalAccess.setSecurityToken(securityState, securityToken);
                     continue;
                 }
 

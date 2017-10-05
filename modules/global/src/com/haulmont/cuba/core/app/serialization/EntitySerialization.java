@@ -49,6 +49,8 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.haulmont.cuba.core.entity.BaseEntityInternalAccess.*;
+
 @Component(EntitySerializationAPI.NAME)
 public class EntitySerialization implements EntitySerializationAPI {
 
@@ -222,9 +224,12 @@ public class EntitySerialization implements EntitySerializationAPI {
             }
 
             if (entity instanceof BaseGenericIdEntity) {
-                byte[] securityToken = BaseEntityInternalAccess.getSecurityToken((BaseGenericIdEntity) entity);
-                if (securityToken != null) {
-                    jsonObject.addProperty("__securityToken", Base64.getEncoder().encodeToString(securityToken));
+                SecurityState securityState = getSecurityState((BaseGenericIdEntity) entity);
+                if (securityState != null) {
+                    byte[] securityToken = getSecurityToken(securityState);
+                    if (securityToken != null) {
+                        jsonObject.addProperty("__securityToken", Base64.getEncoder().encodeToString(securityToken));
+                    }
                 }
             }
 
@@ -450,7 +455,7 @@ public class EntitySerialization implements EntitySerializationAPI {
                 JsonPrimitive securityTokenJonPrimitive = jsonObject.getAsJsonPrimitive("__securityToken");
                 if (securityTokenJonPrimitive != null) {
                     byte[] securityToken = Base64.getDecoder().decode(securityTokenJonPrimitive.getAsString());
-                    BaseEntityInternalAccess.setSecurityToken((BaseGenericIdEntity) entity, securityToken);
+                    setSecurityToken(getOrCreateSecurityState((BaseGenericIdEntity)entity), securityToken);
                 }
             }
 

@@ -1100,11 +1100,15 @@ public abstract class WindowManager {
         }
 
         if (window instanceof AbstractWindow) {
+            AbstractWindow abstractWindow = (AbstractWindow) window;
+
+            abstractWindow.applyAttributeSecurity();
+
             StopWatch readyStopWatch = new Log4JStopWatch(window.getId() + "#" +
                     LifeCycle.READY,
                     Logger.getLogger(UIPerformanceLogger.class));
 
-            ((AbstractWindow) window).ready();
+            abstractWindow.ready();
 
             readyStopWatch.stop();
         }

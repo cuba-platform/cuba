@@ -22,6 +22,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.SecurityState;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.restapi.config.RestJsonTransformations;
 import com.haulmont.restapi.exception.RestAPIException;
@@ -120,9 +121,10 @@ public class RestControllerUtils {
     }
 
     private void addInaccessibleAttribute(BaseGenericIdEntity entity, String property) {
-        String[] attributes = BaseEntityInternalAccess.getInaccessibleAttributes(entity);
+        SecurityState securityState = BaseEntityInternalAccess.getOrCreateSecurityState(entity);
+        String[] attributes = BaseEntityInternalAccess.getInaccessibleAttributes(securityState);
         attributes = attributes == null ? new String[1] : Arrays.copyOf(attributes, attributes.length + 1);
         attributes[attributes.length - 1] = property;
-        BaseEntityInternalAccess.setInaccessibleAttributes(entity, attributes);
+        BaseEntityInternalAccess.setInaccessibleAttributes(securityState, attributes);
     }
 }

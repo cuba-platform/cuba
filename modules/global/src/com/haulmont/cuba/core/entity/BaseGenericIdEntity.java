@@ -17,7 +17,6 @@
 package com.haulmont.cuba.core.entity;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Multimap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
@@ -65,16 +64,7 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     protected boolean __removed;
 
     @Transient
-    protected String[] __inaccessibleAttributes;
-
-    @Transient
-    protected transient Multimap<String, Object> __filteredData = null;
-
-    @Transient
-    protected String[] __filteredAttributes;
-
-    @Transient
-    protected byte[] __securityToken;
+    protected SecurityState __securityState;
 
     @Transient
     protected Map<String, CategoryAttributeValue> dynamicAttributes = null;

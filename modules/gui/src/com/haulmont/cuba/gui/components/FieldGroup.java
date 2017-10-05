@@ -29,7 +29,8 @@ import java.util.Map;
  */
 public interface FieldGroup extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
                                     Component.HasBorder, Component.Editable, Component.Validatable,
-                                    Component.EditableChangeNotifier, Component.ChildEditableController {
+                                    Component.EditableChangeNotifier, Component.ChildEditableController,
+                                    Component.Container {
     String NAME = "fieldGroup";
 
     /**

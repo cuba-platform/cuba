@@ -16,6 +16,8 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.AttributeSecurity;
 import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
@@ -221,6 +223,11 @@ public class AbstractWindow extends AbstractFrame
     @Override
     public DialogOptions getDialogOptions() {
         return ((Window) frame).getDialogOptions();
+    }
+
+    public void applyAttributeSecurity() {
+        AttributeSecurity attributeSecurity = AppBeans.get(AttributeSecurity.NAME);
+        attributeSecurity.applyAttributeSecurity(frame);
     }
 
     /**
