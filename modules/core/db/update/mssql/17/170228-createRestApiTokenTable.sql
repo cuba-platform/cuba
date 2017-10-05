@@ -11,5 +11,4 @@ if not exists (select * from sysobjects where name='SYS_REST_API_TOKEN')
     EXPIRY datetime,
     --
     primary key (ID)
-)
-go^
+)^
