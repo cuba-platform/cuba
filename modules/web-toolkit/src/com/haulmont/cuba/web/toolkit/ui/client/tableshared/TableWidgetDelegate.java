@@ -134,12 +134,6 @@ public class TableWidgetDelegate {
                 VScrollTable.VScrollTableBody.VScrollTableRow row = (VScrollTable.VScrollTableBody.VScrollTableRow) rowWidget;
 
                 double realColWidth = row.getRealCellWidth(colIndex);
-
-                if ((hcell.getWidth() != -1) &&
-                        (hcell.getWidth() != realColWidth)) {
-                    return;
-                }
-
                 if (realColWidth > 0) {
                     if (realColWidth > minWidth) {
                         Style hStyle = hcell.getElement().getStyle();

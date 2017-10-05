@@ -412,6 +412,8 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         }
 
         protected class CubaGroupTableGroupRow extends CubaGroupTableRow {
+            protected static final int GROUP_DIVIDER_WIDTH = 15;
+            protected static final int ACCEPTABLE_WIDTH_GLITCH = 5;
 
             protected Integer groupColIndex;
             protected String groupKey;
@@ -549,9 +551,16 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
                 int totalSpannedWidth = 0;
                 for (int i = groupColIndex; i < cells; i++) {
+                    HeaderCell headerCell = tHead.getHeaderCell(i);
 
-                    int headerWidth = tHead.getHeaderCell(i).getOffsetWidth();
+                    int headerWidth = headerCell.getOffsetWidth() > headerCell.getWidth() + ACCEPTABLE_WIDTH_GLITCH ?
+                            headerCell.getWidth() : headerCell.getOffsetWidth();
+
                     totalSpannedWidth += headerWidth;
+                }
+
+                if (!isExpanded()) {
+                    totalSpannedWidth += GROUP_DIVIDER_WIDTH;
                 }
 
                 Element td = DOM.getChild(tr, DOM.getChildCount(tr) - 1);
