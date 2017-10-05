@@ -350,9 +350,16 @@ public class WindowConfig {
         return getWindowInfo(editorScreenId);
     }
 
+    /**
+     * Get available lookup screen by class of entity
+     *
+     * @param entityClass entity class
+     * @return id of lookup screen
+     * @throws NoSuchScreenException if the screen with specified ID is not registered
+     */
     public WindowInfo getLookupScreen(Class<? extends Entity> entityClass) {
         MetaClass metaClass = metadata.getSession().getClass(entityClass);
-        String lookupScreenId = getLookupScreenId(metaClass);
+        String lookupScreenId = getAvailableLookupScreenId(metaClass);
         return getWindowInfo(lookupScreenId);
     }
 
