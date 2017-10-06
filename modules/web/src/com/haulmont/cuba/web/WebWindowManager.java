@@ -666,6 +666,9 @@ public class WebWindowManager extends WindowManager {
             }
 
             tabSheet.setTabIcon(tabId, WebComponentsHelper.getIcon(window.getIcon()));
+
+            ContentSwitchMode contentSwitchMode = ContentSwitchMode.valueOf(window.getContentSwitchMode().name());
+            tabSheet.setContentSwitchMode(tabId, contentSwitchMode);
         } else {
             layout.markAsDirtyRecursive();
         }
@@ -1068,6 +1071,9 @@ public class WebWindowManager extends WindowManager {
                         }
 
                         tabSheet.setTabIcon(tabId, WebComponentsHelper.getIcon(currentWindow.getIcon()));
+
+                        ContentSwitchMode contentSwitchMode = ContentSwitchMode.valueOf(currentWindow.getContentSwitchMode().name());
+                        tabSheet.setContentSwitchMode(tabId, contentSwitchMode);
                     }
                 }
                 fireListeners(window, !tabs.isEmpty());
