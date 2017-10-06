@@ -706,22 +706,6 @@ public class MetadataTools {
     }
 
     /**
-     * Determine whether the given metaProperty relates to at least one non local property
-     */
-    public boolean isRelatedToNonLocalProperty(MetaProperty metaProperty) {
-        checkNotNullArgument(metaProperty, "metaProperty is null");
-
-        MetaClass metaClass = metaProperty.getDomain();
-        for (String relatedProperty : metadata.getTools().getRelatedProperties(metaProperty)) {
-            //noinspection ConstantConditions
-            if (metaClass.getProperty(relatedProperty).getRange().isClass()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * If the given property is a reference to an entity from different data store, returns the name of a persistent
      * property which stores the identifier of the related entity.
      *
