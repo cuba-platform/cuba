@@ -735,7 +735,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         LinkedList<Table.Column> nonSystemPropertyColumns = new LinkedList<>();
         LinkedList<Table.Column> systemPropertyColumns = new LinkedList<>();
         for (MetaProperty metaProperty : meta.getProperties()) {
-            if (metaProperty.getRange().isClass())
+            if (metaProperty.getRange().isClass() || isRelatedToNonLocalProperty(metaProperty))
                 continue; // because we use local views
             Table.Column column = new Table.Column(meta.getPropertyPath(metaProperty.getName()));
             if (!metadata.getTools().isSystem(metaProperty)) {
@@ -774,6 +774,20 @@ public class EntityInspectorEditor extends AbstractWindow {
         TabSheet.Tab tab = tablesTabSheet.addTab(childMeta.toString(), vbox);
         tab.setCaption(getPropertyCaption(metaClass, childMeta));
         tables.add(table);
+    }
+
+    /**
+     * Determine whether the given metaProperty relates to at least one non local property
+     */
+    protected boolean isRelatedToNonLocalProperty(MetaProperty metaProperty) {
+        MetaClass metaClass = metaProperty.getDomain();
+        for (String relatedProperty : metadata.getTools().getRelatedProperties(metaProperty)) {
+            //noinspection ConstantConditions
+            if (metaClass.getProperty(relatedProperty).getRange().isClass()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -917,10 +931,6 @@ public class EntityInspectorEditor extends AbstractWindow {
     protected View createView(MetaClass meta) {
         View view = new View(meta.getJavaClass(), false);
         for (MetaProperty metaProperty : meta.getProperties()) {
-            if (metaProperty.isReadOnly()) {
-                continue;
-            }
-
             switch (metaProperty.getType()) {
                 case DATATYPE:
                 case ENUM:
