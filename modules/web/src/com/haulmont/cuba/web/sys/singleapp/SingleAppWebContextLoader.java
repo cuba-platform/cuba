@@ -149,6 +149,17 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
             //Do nothing
         }
         if (hasFrontApp) {
+            String contextPath = servletContext.getContextPath();
+            String baseUrl = System.getProperty("cuba.front.baseUrl");
+            if (baseUrl == null || baseUrl.length() == 0) {
+                String path = "/" + FRONT_CONTEXT_NAME + "/";
+                System.setProperty("cuba.front.baseUrl", "/".equals(contextPath) ? path : contextPath + path);
+            }
+            String apiUrl = System.getProperty("cuba.front.apiUrl");
+            if (apiUrl == null || apiUrl.length() == 0) {
+                String path = "/rest/";
+                System.setProperty("cuba.front.apiUrl", "/".equals(contextPath) ? path : contextPath + path);
+            }
             DispatcherServlet frontServlet;
             try {
                 Class frontServletClass = ReflectionHelper.getClass("com.haulmont.cuba.web.sys.AppFrontServlet");
