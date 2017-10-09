@@ -18,9 +18,11 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 @MetaClass(name = "sys$CategoryAttributeEnumValue")
-public class CategoryAttributeEnumValue extends AbstractNotPersistentEntity {
+@SystemLevel
+public class CategoryAttributeEnumValue extends BaseUuidEntity {
 
     @MetaProperty
     protected String value;
