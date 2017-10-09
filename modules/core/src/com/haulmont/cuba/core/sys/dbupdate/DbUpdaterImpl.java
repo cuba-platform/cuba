@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.sys.dbupdate;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.ScriptExecutionPolicy;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.DbUpdater;
 import com.haulmont.cuba.core.sys.PostUpdateScripts;
@@ -32,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +49,6 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
     protected PostUpdateScripts postUpdate;
 
     protected Map<Closure, ScriptResource> postUpdateScripts = new HashMap<>();
-
-    private static final Logger log = LoggerFactory.getLogger(DbUpdaterImpl.class);
 
     @Inject
     public void setConfigProvider(Configuration configuration) {
@@ -71,7 +69,8 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
     protected boolean executeGroovyScript(final ScriptResource file) {
         Binding bind = new Binding();
         bind.setProperty("ds", getDataSource());
-        bind.setProperty("log", LoggerFactory.getLogger(file.getName()));
+        bind.setProperty("log", LoggerFactory.getLogger(String.format("%s$%s", DbUpdaterEngine.class.getName(),
+                StringUtils.removeEnd(file.getName(), ".groovy"))));
         if (!StringUtils.endsWithIgnoreCase(file.getName(), "." + UPGRADE_GROOVY_EXTENSION)) {
             bind.setProperty("postUpdate", new PostUpdateScripts() {
                 @Override
@@ -89,7 +88,7 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
         }
 
         try {
-            scripting.evaluateGroovy(file.getContent(), bind);
+            scripting.evaluateGroovy(file.getContent(), bind, ScriptExecutionPolicy.DO_NOT_USE_COMPILE_CACHE);
         } catch (Exception e) {
             throw new RuntimeException(ERROR + "Error executing Groovy script " + file.name + "\n" + e.getMessage(), e);
         }

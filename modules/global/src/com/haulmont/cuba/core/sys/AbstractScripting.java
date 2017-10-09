@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.ScriptExecutionPolicy;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.javacl.JavaClassLoader;
 import groovy.lang.Binding;
@@ -46,10 +47,7 @@ import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -131,35 +129,7 @@ public abstract class AbstractScripting implements Scripting {
                     new BaseKeyedPooledObjectFactory<String, Script>() {
                         @Override
                         public Script create(String key) throws Exception {
-                            StringBuilder sb = new StringBuilder();
-                            for (String importItem : imports) {
-                                sb.append("import ").append(importItem).append("\n");
-                            }
-
-                            Matcher matcher = IMPORT_PATTERN.matcher(key);
-                            String result;
-                            if (matcher.find()) {
-                                StringBuffer s = new StringBuffer();
-                                matcher.appendReplacement(s, sb + "$0");
-                                result = matcher.appendTail(s).toString();
-                            } else {
-                                Matcher packageMatcher = PACKAGE_PATTERN.matcher(key);
-                                if (packageMatcher.find()) {
-                                    StringBuffer s = new StringBuffer();
-                                    packageMatcher.appendReplacement(s, "$0\n" + sb);
-                                    result = packageMatcher.appendTail(s).toString();
-                                } else {
-                                    result = sb.append(key).toString();
-                                }
-                            }
-
-                            CompilerConfiguration cc = new CompilerConfiguration();
-                            cc.setClasspath(groovyClassPath);
-                            cc.setRecompileGroovySource(true);
-                            GroovyShell shell = new GroovyShell(javaClassLoader, new Binding(), cc);
-                            //noinspection UnnecessaryLocalVariable
-                            Script script = shell.parse(result);
-                            return script;
+                            return createScript(key);
                         }
 
                         @Override
@@ -173,6 +143,38 @@ public abstract class AbstractScripting implements Scripting {
         return pool;
     }
 
+    protected Script createScript(String text) {
+        StringBuilder sb = new StringBuilder();
+        for (String importItem : imports) {
+            sb.append("import ").append(importItem).append("\n");
+        }
+
+        Matcher matcher = IMPORT_PATTERN.matcher(text);
+        String result;
+        if (matcher.find()) {
+            StringBuffer s = new StringBuffer();
+            matcher.appendReplacement(s, sb + "$0");
+            result = matcher.appendTail(s).toString();
+        } else {
+            Matcher packageMatcher = PACKAGE_PATTERN.matcher(text);
+            if (packageMatcher.find()) {
+                StringBuffer s = new StringBuffer();
+                packageMatcher.appendReplacement(s, "$0\n" + sb);
+                result = packageMatcher.appendTail(s).toString();
+            } else {
+                result = sb.append(text).toString();
+            }
+        }
+
+        CompilerConfiguration cc = new CompilerConfiguration();
+        cc.setClasspath(groovyClassPath);
+        cc.setRecompileGroovySource(true);
+        GroovyShell shell = new GroovyShell(javaClassLoader, new Binding(), cc);
+        //noinspection UnnecessaryLocalVariable
+        Script script = shell.parse(result);
+        return script;
+    }
+
     protected Binding createBinding(Map<String, Object> map) {
         Binding binding = new Binding();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -183,15 +185,17 @@ public abstract class AbstractScripting implements Scripting {
     }
 
     @Override
-    public <T> T evaluateGroovy(String text, Binding binding) {
+    public <T> T evaluateGroovy(String text, Binding binding, ScriptExecutionPolicy... policies) {
+        boolean useCompilationCache = policies == null ||
+                !Arrays.asList(policies).contains(ScriptExecutionPolicy.DO_NOT_USE_COMPILE_CACHE);
         Script script = null;
         Object result;
         try {
-            script = getPool().borrowObject(text);
+            script = useCompilationCache ? getPool().borrowObject(text) : createScript(text);
             script.setBinding(binding);
             result = script.run();
         } catch (Exception e) {
-            if (script != null) {
+            if (script != null && useCompilationCache) {
                 try {
                     getPool().invalidateObject(text, script);
                 } catch (Exception e1) {
@@ -203,14 +207,21 @@ public abstract class AbstractScripting implements Scripting {
             else
                 throw new RuntimeException("Error evaluating Groovy expression", e);
         }
-        try {
-            script.setBinding(null); // free memory
-            getPool().returnObject(text, script);
-        } catch (Exception e) {
-            log.warn("Error returning object into the pool", e);
+        if (useCompilationCache) {
+            try {
+                script.setBinding(null); // free memory
+                getPool().returnObject(text, script);
+            } catch (Exception e) {
+                log.warn("Error returning object into the pool", e);
+            }
         }
         //noinspection unchecked
         return (T) result;
+    }
+
+    @Override
+    public <T> T evaluateGroovy(String text, Binding binding) {
+        return evaluateGroovy(text, binding, (ScriptExecutionPolicy[]) null);
     }
 
     @Override

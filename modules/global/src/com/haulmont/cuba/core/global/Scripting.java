@@ -37,6 +37,16 @@ public interface Scripting {
      * Evaluates Groovy expression.
      * @param text      expression text
      * @param binding   Groovy binding
+     * @param policies  policies for script execution {@link ScriptExecutionPolicy}
+     * @param <T>       result type
+     * @return          result of expression
+     */
+    <T> T evaluateGroovy(String text, Binding binding, ScriptExecutionPolicy... policies);
+
+    /**
+     * Evaluates Groovy expression.
+     * @param text      expression text
+     * @param binding   Groovy binding
      * @param <T>       result type
      * @return          result of expression
      */

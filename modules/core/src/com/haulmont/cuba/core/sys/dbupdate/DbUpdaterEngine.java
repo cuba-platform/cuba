@@ -54,7 +54,7 @@ public class DbUpdaterEngine implements DbUpdater {
                         "ERROR: Database update failed. See details below.\n" +
                         "=================================================\n";
 
-    private static final Logger log = LoggerFactory.getLogger(DbUpdaterEngine.class);
+    protected static final Logger log = LoggerFactory.getLogger(DbUpdaterEngine.class);
 
     protected DataSource dataSource;
 
@@ -377,7 +377,8 @@ public class DbUpdaterEngine implements DbUpdater {
 
             Binding bind = new Binding();
             bind.setProperty("ds", getDataSource());
-            bind.setProperty("log", LoggerFactory.getLogger(file.getName()));
+            bind.setProperty("log", LoggerFactory.getLogger(String.format("%s$%s", DbUpdaterEngine.class.getName(),
+                    StringUtils.removeEnd(file.getName(), ".groovy"))));
             if (!StringUtils.endsWithIgnoreCase(file.getName(), "." + UPGRADE_GROOVY_EXTENSION)) {
                 bind.setProperty("postUpdate", new PostUpdateScripts() {
                     @Override
