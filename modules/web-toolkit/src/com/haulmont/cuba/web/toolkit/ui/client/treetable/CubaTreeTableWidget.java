@@ -527,25 +527,28 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
                 }
 
                 if (w instanceof HasFocusHandlers) {
-                    ((HasFocusHandlers) w).addFocusHandler(new FocusHandler() {
-                        @Override
-                        public void onFocus(FocusEvent event) {
-                            if (childWidgets.indexOf(topWidget) < 0) {
-                                return;
-                            }
+                    ((HasFocusHandlers) w).addFocusHandler(e ->
+                            handleFocusAndClickEvents(e, topWidget));
+                } else if (w instanceof HasClickHandlers) {
+                    ((HasClickHandlers) w).addClickHandler(e ->
+                            handleFocusAndClickEvents(e, topWidget));
+                }
+            }
 
-                            lastFocusedWidget = w;
+            protected void handleFocusAndClickEvents(DomEvent e, Widget topWidget) {
+                if (childWidgets.indexOf(topWidget) < 0) {
+                    return;
+                }
 
-                            if (!isSelected()) {
-                                deselectAll();
+                lastFocusedWidget = ((Widget) e.getSource());
 
-                                toggleSelection();
-                                setRowFocus(CubaTreeTableRow.this);
+                if (!isSelected()) {
+                    deselectAll();
 
-                                sendSelectedRows();
-                            }
-                        }
-                    });
+                    toggleSelection();
+                    setRowFocus(CubaTreeTableWidget.CubaTreeTableBody.CubaTreeTableRow.this);
+
+                    sendSelectedRows();
                 }
             }
 
