@@ -293,8 +293,8 @@ configure(globalModule) {
     }
 
     task generateReleaseTimestamp(type: CubaReleaseTimeStamp) {
-        releaseTimeStampPath = "$buildDir/classes/main/com/haulmont/cuba/core/global/release.timestamp"
-        releaseNumberPath = "$buildDir/classes/main/com/haulmont/cuba/core/global/release.number"
+        releaseTimeStampPath = "${sourceSets.main.java.outputDir}/com/haulmont/cuba/core/global/release.timestamp"
+        releaseNumberPath = "${sourceSets.main.java.outputDir}/com/haulmont/cuba/core/global/release.number"
     }
 
     task enhance(type: CubaEnhancing)
@@ -332,7 +332,8 @@ configure(globalModule) {
     sourceJar {
         exclude '**/entity/dummy/*'
         exclude {
-            (it.file.name == 'base-persistence.xml' || it.file.name == 'cuba-persistence.xml') && sourceSets.main.java.srcDirs.contains(it.file.parentFile)
+            (it.file.name == 'base-persistence.xml' || it.file.name == 'cuba-persistence.xml') &&
+                    sourceSets.main.java.srcDirs.contains(it.file.parentFile)
         }
         from "$buildDir/tmp/filtered"
     }
