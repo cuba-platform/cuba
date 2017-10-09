@@ -220,25 +220,12 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
     @Nullable
     @Override
     public Component getComponent(String id) {
-        return getOwnComponent(id);
-    }
-
-    @Nonnull
-    @Override
-    public Component getComponentNN(String id) {
-        FieldConfig fieldConfig = getField(id);
-        if (fieldConfig != null && fieldConfig.isBound()) {
-            Component component = fieldConfig.getComponent();
-            if (component != null) {
-                return component;
-            }
-        }
-        throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
+        return ComponentsHelper.getComponent(this, id);
     }
 
     @Override
     public Collection<Component> getComponents() {
-        return getOwnComponents();
+        return ComponentsHelper.getComponents(this);
     }
 
     protected void addFieldInternal(FieldConfig fc, int colIndex, int rowIndex) {
