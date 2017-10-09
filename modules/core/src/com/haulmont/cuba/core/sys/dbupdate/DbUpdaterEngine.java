@@ -49,7 +49,7 @@ public class DbUpdaterEngine implements DbUpdater {
     private static final String GROOVY_EXTENSION = "groovy";
     protected static final String UPGRADE_GROOVY_EXTENSION = "upgrade.groovy";
 
-    private static final Logger log = LoggerFactory.getLogger(DbUpdaterEngine.class);
+    protected static final Logger log = LoggerFactory.getLogger(DbUpdaterEngine.class);
 
     protected DataSource dataSource;
 
@@ -374,7 +374,8 @@ public class DbUpdaterEngine implements DbUpdater {
 
             Binding bind = new Binding();
             bind.setProperty("ds", getDataSource());
-            bind.setProperty("log", LoggerFactory.getLogger(file.getName()));
+            bind.setProperty("log", LoggerFactory.getLogger(String.format("%s$%s", DbUpdaterEngine.class.getName(),
+                    StringUtils.removeEndIgnoreCase(file.getName(), ".groovy"))));
             if (!StringUtils.endsWithIgnoreCase(file.getName(), "." + UPGRADE_GROOVY_EXTENSION)) {
                 bind.setProperty("postUpdate", new PostUpdateScripts() {
                     @Override

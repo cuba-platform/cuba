@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.sys.dbupdate;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.ScriptExecutionPolicy;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.DbUpdater;
 import com.haulmont.cuba.core.sys.PostUpdateScripts;
@@ -26,7 +27,6 @@ import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import groovy.lang.Binding;
 import groovy.lang.Closure;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Component;
@@ -50,8 +50,6 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
 
     protected Map<Closure, ScriptResource> postUpdateScripts = new HashMap<>();
 
-    private static final Logger log = LoggerFactory.getLogger(DbUpdaterImpl.class);
-
     @Inject
     public void setConfigProvider(Configuration configuration) {
         String dbDirName = configuration.getConfig(ServerConfig.class).getDbDir();
@@ -71,7 +69,8 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
     protected boolean executeGroovyScript(final ScriptResource file) {
         Binding bind = new Binding();
         bind.setProperty("ds", getDataSource());
-        bind.setProperty("log", LoggerFactory.getLogger(file.getName()));
+        bind.setProperty("log", LoggerFactory.getLogger(String.format("%s$%s", DbUpdaterEngine.class.getName(),
+                StringUtils.removeEndIgnoreCase(file.getName(), ".groovy"))));
         if (!StringUtils.endsWithIgnoreCase(file.getName(), "." + UPGRADE_GROOVY_EXTENSION)) {
             bind.setProperty("postUpdate", new PostUpdateScripts() {
                 @Override
@@ -89,7 +88,7 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
         }
 
         try {
-            scripting.evaluateGroovy(file.getContent(), bind);
+            scripting.evaluateGroovy(file.getContent(), bind, ScriptExecutionPolicy.DO_NOT_USE_COMPILE_CACHE);
         } catch (IOException e) {
             throw new RuntimeException("An error occurred while executing Groovy script", e);
         }
