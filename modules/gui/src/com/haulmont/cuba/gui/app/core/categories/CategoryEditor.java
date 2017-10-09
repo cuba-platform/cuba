@@ -78,7 +78,6 @@ public class CategoryEditor extends AbstractEditor<Category> {
 
         Map<String, Object> options = new TreeMap<>();//the map sorts meta classes by the string key
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
-            String storeName = metadata.getTools().getStoreName(metaClass);
             if (metadata.getTools().hasCompositePrimaryKey(metaClass) && !HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
                 continue;
             }
