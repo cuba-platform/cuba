@@ -309,6 +309,7 @@ public class RdbmsStore implements DataStore {
         Set<Entity> res = new HashSet<>();
         List<Entity> persisted = new ArrayList<>();
         List<BaseGenericIdEntity> identityEntitiesToStoreDynamicAttributes = new ArrayList<>();
+        List<CategoryAttributeValue> attributeValuesToRemove = new ArrayList<>();
 
         try (Transaction tx = persistence.createTransaction(storeName)) {
             EntityManager em = persistence.getEntityManager(storeName);
@@ -394,7 +395,11 @@ public class RdbmsStore implements DataStore {
                     //noinspection ConstantConditions
                     for (CategoryAttributeValue categoryAttributeValue : dynamicAttributes.values()) {
                         if (!PersistenceHelper.isNew(categoryAttributeValue)) {
-                            em.remove(categoryAttributeValue);
+                            if (Stores.isMain(storeName)) {
+                                em.remove(categoryAttributeValue);
+                            } else {
+                                attributeValuesToRemove.add(categoryAttributeValue);
+                            }
                             if (!context.isDiscardCommitted()) {
                                 res.add(categoryAttributeValue);
                             }
@@ -408,6 +413,16 @@ public class RdbmsStore implements DataStore {
             }
 
             tx.commit();
+        }
+
+        if (!attributeValuesToRemove.isEmpty()) {
+            try (Transaction tx = persistence.createTransaction()) {
+                EntityManager em = persistence.getEntityManager();
+                for (CategoryAttributeValue entity : attributeValuesToRemove) {
+                    em.remove(entity);
+                }
+                tx.commit();
+            }
         }
 
         try (Transaction tx = persistence.createTransaction(storeName)) {
