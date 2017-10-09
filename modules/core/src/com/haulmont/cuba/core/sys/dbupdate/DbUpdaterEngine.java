@@ -378,7 +378,7 @@ public class DbUpdaterEngine implements DbUpdater {
             Binding bind = new Binding();
             bind.setProperty("ds", getDataSource());
             bind.setProperty("log", LoggerFactory.getLogger(String.format("%s$%s", DbUpdaterEngine.class.getName(),
-                    StringUtils.removeEnd(file.getName(), ".groovy"))));
+                    StringUtils.removeEndIgnoreCase(file.getName(), ".groovy"))));
             if (!StringUtils.endsWithIgnoreCase(file.getName(), "." + UPGRADE_GROOVY_EXTENSION)) {
                 bind.setProperty("postUpdate", new PostUpdateScripts() {
                     @Override
