@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.app.serialization;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.google.gson.*;
@@ -132,6 +133,12 @@ public class EntitySerialization implements EntitySerializationAPI {
         return createGsonForDeserialization(metaClass, options).fromJson(json, collectionType);
     }
 
+    @Override
+    public <T> T objectFromJson(String json, Class<T> clazz, EntitySerializationOption... options) {
+        context.remove();
+        return createGsonForDeserialization(null, options).fromJson(json, clazz);
+    }
+
     protected Gson createGsonForSerialization(@Nullable View view, EntitySerializationOption... options) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         if (ArrayUtils.contains(options, EntitySerializationOption.PRETTY_PRINT)) {
@@ -139,6 +146,7 @@ public class EntitySerialization implements EntitySerializationAPI {
         }
         gsonBuilder
                 .registerTypeHierarchyAdapter(Entity.class, new EntitySerializer(view, options))
+                .registerTypeHierarchyAdapter(Date.class, new DateSerializer())
                 .create();
         if (ArrayUtils.contains(options, EntitySerializationOption.SERIALIZE_NULLS)) {
             gsonBuilder.serializeNulls();
@@ -149,6 +157,7 @@ public class EntitySerialization implements EntitySerializationAPI {
     protected Gson createGsonForDeserialization(@Nullable MetaClass metaClass, EntitySerializationOption... options) {
         return new GsonBuilder()
                 .registerTypeHierarchyAdapter(Entity.class, new EntityDeserializer(metaClass, options))
+                .registerTypeHierarchyAdapter(Date.class, new DateDeserializer())
                 .create();
     }
 
@@ -606,6 +615,40 @@ public class EntitySerialization implements EntitySerializationAPI {
                 } else {
                     ((BaseGenericIdEntity) entity).setDynamicAttributes(new HashMap<>());
                 }
+            }
+        }
+    }
+
+    protected class DateSerializer implements JsonSerializer<Date> {
+
+        private final Datatype<Date> dateDatatype;
+
+        public DateSerializer() {
+            dateDatatype = Datatypes.get(Date.class);
+        }
+
+        @Override
+        public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
+            String formattedDate = dateDatatype.format(src);
+            return new JsonPrimitive(formattedDate);
+        }
+    }
+
+    protected class DateDeserializer implements JsonDeserializer<Date> {
+
+        private final Datatype<Date> dateDatatype;
+
+        public DateDeserializer() {
+            dateDatatype = Datatypes.get(Date.class);
+        }
+
+        @Override
+        public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            String formattedDate = json.getAsJsonPrimitive().getAsString();
+            try {
+                return Strings.isNullOrEmpty(formattedDate) ? null : dateDatatype.parse(formattedDate);
+            } catch (ParseException e) {
+                throw new EntitySerializationException("Cannot parse date " + formattedDate);
             }
         }
     }

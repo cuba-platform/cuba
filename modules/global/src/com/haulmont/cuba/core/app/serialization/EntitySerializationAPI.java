@@ -85,9 +85,10 @@ public interface EntitySerializationAPI {
 
     /**
      * Serializes any custom POJO or collection of POJOs or JSON. If some field in POJO is an entity then this field
-     * will be serialized according to entity serialization rules
+     * will be serialized according to entity serialization rules. Date fields are serialized according to the format of
+     * the {@link com.haulmont.chile.core.datatypes.impl.DateTimeDatatype}.
      *
-     * @param object any POJO or collection of POJOs
+     * @param object  any POJO or collection of POJOs
      * @param options options specifying how a JSON object graph for fields with type 'Entity' will be serialized
      * @return a string that represents a JSON object or JSON array
      */
@@ -122,4 +123,16 @@ public interface EntitySerializationAPI {
     <T extends Entity> Collection<T> entitiesCollectionFromJson(String json,
                                                                 @Nullable MetaClass metaClass,
                                                                 EntitySerializationOption... options);
+
+    /**
+     * Deserializes an object of any class from JSON. Date fields are deserialized according to the {@link
+     * com.haulmont.chile.core.datatypes.impl.DateTimeDatatype} format, entities object and fields of Entity type are
+     * deserialized like in the {@link #entityFromJson(String, MetaClass, EntitySerializationOption...)} method
+     *
+     * @param json    a string that represents an object
+     * @param clazz   java class of the object
+     * @param options options specifying how a JSON object graph was serialized
+     * @return deserialized object
+     */
+    <T> T objectFromJson(String json, Class<T> clazz, EntitySerializationOption... options);
 }

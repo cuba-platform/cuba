@@ -114,17 +114,11 @@ public class RestParseUtils {
             }
             return entitySerializationAPI.entitiesCollectionFromJson(value, metaClass);
         }
-        return deserializePOJO(value, clazz);
-    }
-
-    public Object deserializePOJO(String json, Class clazz) {
-        Gson gson = new Gson();
-        return gson.fromJson(json, clazz);
+        return deserialize(value, clazz);
     }
 
     public Object deserialize(String json, Class clazz) {
-        Gson gson = new Gson();
-        return gson.fromJson(json, clazz);
+        return entitySerializationAPI.objectFromJson(json, clazz);
     }
 
     public String serialize(Object instance) {
