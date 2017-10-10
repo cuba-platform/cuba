@@ -228,8 +228,11 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                                  String userLogin) {
         storeAccessTokenToMemory(tokenValue, accessTokenBytes, authenticationKey, authenticationBytes, tokenExpiry, userLogin);
         if (serverConfig.getRestStoreTokensInDb()) {
-            removeAccessTokenFromDatabase(tokenValue);
-            storeAccessTokenToDatabase(tokenValue, accessTokenBytes, authenticationKey, authenticationBytes, tokenExpiry, userLogin);
+            try (Transaction tx = persistence.getTransaction()) {
+                removeAccessTokenFromDatabase(tokenValue);
+                storeAccessTokenToDatabase(tokenValue, accessTokenBytes, authenticationKey, authenticationBytes, tokenExpiry, userLogin);
+                tx.commit();
+            }
         }
         clusterManagerAPI.send(new TokenStoreAddTokenMsg(tokenValue, accessTokenBytes, authenticationKey, authenticationBytes, tokenExpiry, userLogin));
     }
@@ -263,7 +266,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                                               byte[] authenticationBytes,
                                               Date tokenExpiry,
                                               String userLogin) {
-        try (Transaction tx = persistence.createTransaction()) {
+        try (Transaction tx = persistence.getTransaction()) {
             EntityManager em = persistence.getEntityManager();
             RestApiToken restApiToken = metadata.create(RestApiToken.class);
             restApiToken.setAccessTokenValue(tokenValue);
@@ -418,7 +421,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     }
 
     protected void removeAccessTokenFromDatabase(String accessTokenValue) {
-        try (Transaction tx = persistence.createTransaction()) {
+        try (Transaction tx = persistence.getTransaction()) {
             EntityManager em = persistence.getEntityManager();
             em.createQuery("delete from sys$RestApiToken t where t.accessTokenValue = :accessTokenValue")
                     .setParameter("accessTokenValue", accessTokenValue)
