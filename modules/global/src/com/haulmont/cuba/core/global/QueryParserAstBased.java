@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static java.lang.String.format;
@@ -225,19 +226,20 @@ public class QueryParserAstBased implements QueryParser {
         PathNode pathNode = returnedPathNodes.get(0);
         if (pathNode.getChildren() == null) {
             JpqlEntityModel entity = rootQueryVariableContext.getEntityByVariableName(pathNode.getEntityVariableName());
-            if (!entity.getName().equals(getEntityName())) {
-                return new EntityNameAndPath(entity.getName(), pathNode.getEntityVariableName());
-            }
+            if (entity != null) {
+                if (!Objects.equals(entity.getName(), getEntityName())) {
+                    return new EntityNameAndPath(entity.getName(), pathNode.getEntityVariableName());
+                }
 
-            //fix for scary Eclipselink which consider "select p from sec$GroupHierarchy h join h.parent p"
-            //(even if h.parent is also sec$GroupHierarchy)
-            //as report query and does not allow to set view
-            IdentificationVariableNode mainEntityIdentification = getQueryAnalyzer().getMainEntityIdentification();
-            if (mainEntityIdentification != null
-                    && !pathNode.getEntityVariableName().equals(mainEntityIdentification.getVariableName())) {
-                return entity.getName() != null ? new EntityNameAndPath(entity.getName(), pathNode.getEntityVariableName()) : null;
+                //fix for scary Eclipselink which consider "select p from sec$GroupHierarchy h join h.parent p"
+                //(even if h.parent is also sec$GroupHierarchy)
+                //as report query and does not allow to set view
+                IdentificationVariableNode mainEntityIdentification = getQueryAnalyzer().getMainEntityIdentification();
+                if (mainEntityIdentification != null
+                        && !pathNode.getEntityVariableName().equals(mainEntityIdentification.getVariableName())) {
+                    return entity.getName() != null ? new EntityNameAndPath(entity.getName(), pathNode.getEntityVariableName()) : null;
+                }
             }
-
             return null;
         }
 
@@ -246,19 +248,23 @@ public class QueryParserAstBased implements QueryParser {
         boolean collectionSelect = false;
         try {
             entity = rootQueryVariableContext.getEntityByVariableName(pathNode.getEntityVariableName());
-            entityPath = pathNode.asPathString();
+            if (entity != null) {
+                entityPath = pathNode.asPathString();
 
-            for (int i = 0; i < pathNode.getChildCount(); i++) {
-                String fieldName = pathNode.getChild(i).toString();
-                Attribute entityAttribute = entity.getAttributeByName(fieldName);
-                if (entityAttribute != null && entityAttribute.isEntityReferenceAttribute()) {
-                    entity = model.getEntityByName(entityAttribute.getReferencedEntityName());
-                    if (!collectionSelect) {
-                        collectionSelect = entityAttribute.isCollection();
+                for (int i = 0; i < pathNode.getChildCount(); i++) {
+                    String fieldName = pathNode.getChild(i).toString();
+                    Attribute entityAttribute = entity.getAttributeByName(fieldName);
+                    if (entityAttribute != null && entityAttribute.isEntityReferenceAttribute()) {
+                        entity = model.getEntityByName(entityAttribute.getReferencedEntityName());
+                        if (!collectionSelect) {
+                            collectionSelect = entityAttribute.isCollection();
+                        }
+                    } else {
+                        return null;
                     }
-                } else {
-                    return null;
                 }
+            } else {
+                return null;
             }
         } catch (UnknownEntityNameException e) {
             throw new RuntimeException(format("Unable to find entity by name %s", e.getEntityName()), e);

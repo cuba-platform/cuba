@@ -271,6 +271,12 @@ public class QueryParserAstBasedTest {
         assertNull(parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
 
         parser = new QueryParserAstBased(model,
+                "select g from sec$GroupHierarchy h join fetch h.group g"
+        );
+        assertNull(parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
+        assertNull(parser.getEntityPathIfSecondaryReturnedInsteadOfMain());
+
+        parser = new QueryParserAstBased(model,
                 "select h.parent.other from sec$GroupHierarchy h where h.userGroup = :par"
         );
         assertEquals("sec$GroupHierarchy", parser.getEntityNameIfSecondaryReturnedInsteadOfMain());
