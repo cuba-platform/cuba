@@ -367,9 +367,6 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                     if (instance instanceof FetchGroupTracker) {
                         ((FetchGroupTracker) instance)._persistence_setSession(null);
                     }
-                    if (instance instanceof ChangeTracker) {
-                        ((ChangeTracker) instance)._persistence_setPropertyChangeListener(null);
-                    }
                 }
 
                 for (AfterCompleteTransactionListener listener : afterCompleteTxListeners) {
