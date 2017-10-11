@@ -66,8 +66,8 @@ public class TrustedClientAuthenticationProvider extends AbstractAuthenticationP
 
         if (trustedClient.getClientIpAddress() != null) {
             // reject request from not permitted client ip
-            if (!trustedLoginHandler.checkAddress(trustedClient.getIpAddress())) {
-                log.warn("Attempt of trusted login from not permitted IP address: {} {}", login, trustedClient.getIpAddress());
+            if (!trustedLoginHandler.checkAddress(trustedClient.getClientIpAddress())) {
+                log.warn("Attempt of trusted login from not permitted IP address: {} {}", login, trustedClient.getClientIpAddress());
                 throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
             }
         } else {
