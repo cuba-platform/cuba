@@ -32,6 +32,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
+import com.haulmont.cuba.web.toolkit.ui.client.image.CubaImageWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.profiler.ScreenClientProfiler;
 import com.haulmont.cuba.web.toolkit.ui.client.tableshared.TableWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.tableshared.TableWidgetDelegate;
@@ -529,9 +530,6 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
                 if (w instanceof HasFocusHandlers) {
                     ((HasFocusHandlers) w).addFocusHandler(e ->
                             handleFocusAndClickEvents(e, topWidget));
-                } else if (w instanceof HasClickHandlers) {
-                    ((HasClickHandlers) w).addClickHandler(e ->
-                            handleFocusAndClickEvents(e, topWidget));
                 }
             }
 
@@ -644,6 +642,7 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
                             && !(targetWidget instanceof VLabel)
                             && !(targetWidget instanceof Panel)
                             && !(targetWidget instanceof VEmbedded)
+                            && !(widget instanceof CubaImageWidget)
                             && !(targetWidget instanceof VTextField && ((VTextField) targetWidget).isReadOnly())) {
                         return null;
                     }
