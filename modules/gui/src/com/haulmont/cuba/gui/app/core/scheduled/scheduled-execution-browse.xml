@@ -64,7 +64,7 @@
                 </column>
                 <column id="durationSec"/>
                 <column id="server"/>
-                <column id="result" maxTextLength="200"/>
+                <column id="result" maxTextLength="200" sortable="false"/>
             </columns>
             <rows datasource="executionsDs"/>
         </table>
