@@ -367,4 +367,30 @@ public interface WebConfig extends Config {
     @Property("cuba.web.webjars.jqueryPath")
     @Default("jquery/1.12.4/jquery.min.js")
     String getWebJarJQueryPath();
+
+    /**
+     * Defines which screen should be opened after login. This setting will be applied to all users.
+     */
+    @Property("cuba.web.defaultScreenId")
+    @Source(type = SourceType.DATABASE)
+    String getDefaultScreenId();
+    void setDefaultScreenId(String screenId);
+
+    /**
+     * Defines whether a user is able to choose the default screen or not.
+     */
+    @Property("cuba.web.userCanChooseDefaultScreen")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(true)
+    boolean getUserCanChooseDefaultScreen();
+    void setUserCanChooseDefaultScreen(boolean b);
+
+    /**
+     * Defines whether default screen can be closed or not when TABBED work area mode is used.
+     */
+    @Property("cuba.web.defaultScreenCanBeClosed")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(true)
+    boolean getDefaultScreenCanBeClosed();
+    void setDefaultScreenCanBeClosed(boolean b);
 }

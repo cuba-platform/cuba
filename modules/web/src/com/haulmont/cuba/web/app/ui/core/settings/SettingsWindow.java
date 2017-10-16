@@ -19,21 +19,27 @@ package com.haulmont.cuba.web.app.ui.core.settings;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.TimeZones;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
+import com.haulmont.cuba.gui.config.MenuConfig;
+import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserManagementService;
+import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.app.UserTimeZone;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.ui.ComboBox;
+import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -87,6 +93,18 @@ public class SettingsWindow extends AbstractWindow {
 
     @Inject
     protected CheckBox timeZoneAutoField;
+
+    @Inject
+    protected LookupField defaultScreenField;
+
+    @Inject
+    protected MenuConfig menuConfig;
+
+    @Inject
+    protected WebConfig webConfig;
+
+    @Inject
+    protected UserSettingService userSettingService;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -157,6 +175,48 @@ public class SettingsWindow extends AbstractWindow {
                 .withHandler(event ->
                         cancel()
                 ));
+
+        initDefaultScreenField();
+    }
+
+    protected void initDefaultScreenField() {
+        boolean userCanChooseDefaultScreen = webConfig.getUserCanChooseDefaultScreen();
+
+        defaultScreenField.setEditable(userCanChooseDefaultScreen);
+
+        if (!userCanChooseDefaultScreen) {
+            return;
+        }
+
+        Map<String, String> map = new LinkedHashMap<>();
+        for (MenuItem item : collectPermittedScreens(menuConfig.getRootItems())) {
+            map.put(menuConfig.getItemCaption(item.getId()), item.getScreen());
+        }
+        defaultScreenField.setOptionsMap(map);
+
+        defaultScreenField.setValue(userSettingService.loadSetting(ClientType.WEB, "userDefaultScreen"));
+    }
+
+    protected List<MenuItem> collectPermittedScreens(List<MenuItem> menuItems) {
+        List<MenuItem> collectedItems = new ArrayList<>();
+
+        for (MenuItem item : menuItems) {
+            if (item.isSeparator() ||
+                    !item.isPermitted(userSession) ||
+                    StringUtils.isNotEmpty(item.getBean()) ||
+                    StringUtils.isNotEmpty(item.getRunnableClass())) {
+                continue;
+            }
+
+            if (item.getChildren().isEmpty()) {
+                collectedItems.add(item);
+                continue;
+            }
+
+            collectedItems.addAll(collectPermittedScreens(item.getChildren()));
+        }
+
+        return collectedItems;
     }
 
     protected void commit() {
@@ -169,6 +229,10 @@ public class SettingsWindow extends AbstractWindow {
         userSettingsTools.saveAppWindowMode(m);
         saveTimeZoneSettings();
         saveLocaleSettings();
+
+        if (webConfig.getUserCanChooseDefaultScreen()) {
+            userSettingService.saveSetting(ClientType.WEB, "userDefaultScreen", defaultScreenField.getValue());
+        }
 
         showNotification(getMessage("modeChangeNotification"), NotificationType.HUMANIZED);
 

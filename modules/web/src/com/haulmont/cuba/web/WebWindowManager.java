@@ -22,6 +22,7 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.core.global.UuidSource;
@@ -43,11 +44,13 @@ import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.components.mainwindow.TopLevelWindowAttachListener;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.web.exception.ExceptionDialog;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
@@ -110,6 +113,10 @@ public class WebWindowManager extends WindowManager {
     protected ThemeConstantsManager themeConstantsManager;
     @Inject
     protected UuidSource uuidSource;
+    @Inject
+    protected UserSettingService userSettingService;
+    @Inject
+    protected WindowConfig windowConfig;
 
     protected final Map<ComponentContainer, WindowBreadCrumbs> tabs = new HashMap<>();
     protected final Map<WindowBreadCrumbs, Stack<Pair<Window, Integer>>> stacks = new HashMap<>();
@@ -214,7 +221,7 @@ public class WebWindowManager extends WindowManager {
                     return;
                 }
 
-                com.vaadin.ui.Component tabContent = (Component) openInfo.getData();
+                Component tabContent = (Component) openInfo.getData();
                 if (tabContent == null) {
                     return;
                 }
@@ -554,6 +561,11 @@ public class WebWindowManager extends WindowManager {
             tabSheet.setTabCloseHandler(layout, (targetTabSheet, tabContent) -> {
                 //noinspection SuspiciousMethodCalls
                 WindowBreadCrumbs breadCrumbs1 = tabs.get(tabContent);
+
+                if (!canWindowBeClosed(breadCrumbs1.getCurrentWindow())) {
+                    return;
+                }
+
                 Runnable closeTask = new TabCloseTask(breadCrumbs1);
                 closeTask.run();
 
@@ -711,7 +723,7 @@ public class WebWindowManager extends WindowManager {
         String closeShortcut = clientConfig.getCloseShortcut();
         KeyCombination closeCombination = KeyCombination.create(closeShortcut);
 
-        com.vaadin.event.ShortcutAction exitAction = new com.vaadin.event.ShortcutAction(
+        ShortcutAction exitAction = new ShortcutAction(
                 "closeShortcutAction",
                 closeCombination.getKey().getCode(),
                 KeyCombination.Modifier.codes(closeCombination.getModifiers())
@@ -914,6 +926,10 @@ public class WebWindowManager extends WindowManager {
         Frame keepOpenedFrame = keepOpenedCrumbs != null ? keepOpenedCrumbs.getCurrentWindow().getFrame() : null;
 
         for (Window window : getOpenWindows()) {
+            if (!canWindowBeClosed(window)) {
+                continue;
+            }
+
             OpenMode openMode = windowOpenMode.get(window).getOpenMode();
             WindowBreadCrumbs windowBreadCrumbs = tabs.get(windowOpenMode.get(window).getData());
             Window currentWindow = (windowBreadCrumbs != null && window != windowBreadCrumbs.getCurrentWindow())
@@ -1120,12 +1136,12 @@ public class WebWindowManager extends WindowManager {
     }
 
     @Override
-    public void showNotification(String caption, Frame.NotificationType type) {
+    public void showNotification(String caption, NotificationType type) {
         showNotification(caption, null, type);
     }
 
     @Override
-    public void showNotification(String caption, String description, Frame.NotificationType type) {
+    public void showNotification(String caption, String description, NotificationType type) {
         backgroundWorker.checkUIAccess();
 
         Notification notification = new Notification(caption, description, convertNotificationType(type));
@@ -1134,7 +1150,7 @@ public class WebWindowManager extends WindowManager {
         notification.show(Page.getCurrent());
     }
 
-    protected void setNotificationDelayMsec(Notification notification, Frame.NotificationType type) {
+    protected void setNotificationDelayMsec(Notification notification, NotificationType type) {
         switch (type) {
             case HUMANIZED:
             case HUMANIZED_HTML:
@@ -1495,7 +1511,7 @@ public class WebWindowManager extends WindowManager {
     @Override
     public void initDebugIds(final Frame frame) {
         if (ui.isTestMode()) {
-            com.haulmont.cuba.gui.ComponentsHelper.walkComponents(frame, (component, name) -> {
+            ComponentsHelper.walkComponents(frame, (component, name) -> {
                 if (component.getDebugId() == null) {
                     Frame componentFrame = null;
                     if (component instanceof BelongToFrame) {
@@ -1677,6 +1693,11 @@ public class WebWindowManager extends WindowManager {
                             tabSheet.focus();
 
                             WindowBreadCrumbs breadCrumbs = tabs.get(layout);
+
+                            if (!canWindowBeClosed(breadCrumbs.getCurrentWindow())) {
+                                return;
+                            }
+
                             if (isCloseWithShortcutPrevented(breadCrumbs.getCurrentWindow())) {
                                 return;
                             }
@@ -1707,6 +1728,57 @@ public class WebWindowManager extends WindowManager {
                 }
             }
         };
+    }
+
+    protected boolean canWindowBeClosed(Window window) {
+        if (webConfig.getDefaultScreenCanBeClosed()) {
+            return true;
+        }
+
+        String defaultScreenId = webConfig.getDefaultScreenId();
+
+        if (webConfig.getUserCanChooseDefaultScreen()) {
+            String userDefaultScreen = userSettingService.loadSetting(ClientType.WEB, "userDefaultScreen");
+            defaultScreenId = StringUtils.isEmpty(userDefaultScreen) ? defaultScreenId : userDefaultScreen;
+        }
+
+        return !window.getId().equals(defaultScreenId);
+    }
+
+    public void openDefaultWindow() {
+        String defaultScreenId = webConfig.getDefaultScreenId();
+
+        if (webConfig.getUserCanChooseDefaultScreen()) {
+            String userDefaultScreen = userSettingService.loadSetting(ClientType.WEB, "userDefaultScreen");
+            defaultScreenId = StringUtils.isEmpty(userDefaultScreen) ? defaultScreenId : userDefaultScreen;
+        }
+
+        if (StringUtils.isEmpty(defaultScreenId)) {
+            return;
+        }
+
+        if (!windowConfig.hasWindow(defaultScreenId)) {
+            log.info("Can't find default screen: {}", defaultScreenId);
+            return;
+        }
+
+        Window window = openWindow(windowConfig.getWindowInfo(defaultScreenId), OpenType.NEW_TAB);
+
+        boolean defaultScreenCanBeClosed = webConfig.getDefaultScreenCanBeClosed();
+        if (defaultScreenCanBeClosed) {
+            return;
+        }
+
+        WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
+        if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
+            TabSheetBehaviour tabSheetBehaviour = workArea.getTabbedWindowContainer()
+                    .getTabSheetBehaviour();
+
+            HasComponents tabLayout = WebComponentsHelper.getComposition(window).getParent();
+            String tabId = tabSheetBehaviour.getTab(tabLayout);
+
+            tabSheetBehaviour.setTabClosable(tabId, false);
+        }
     }
 
     protected boolean isCloseWithShortcutPrevented(Window currentWindow) {
