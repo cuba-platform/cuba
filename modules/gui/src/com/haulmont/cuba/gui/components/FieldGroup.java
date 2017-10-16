@@ -28,7 +28,7 @@ import java.util.Map;
  * Multi-column form component.
  */
 public interface FieldGroup extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
-                                    Component.HasBorder, Component.Editable, Component.Validatable,
+                                    Component.HasBorder, Component.Editable,
                                     Component.EditableChangeNotifier, Component.ChildEditableController,
                                     Component.Container {
     String NAME = "fieldGroup";
@@ -198,6 +198,10 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
      * @param ratio column expand ratio
      */
     void setColumnExpandRatio(int colIndex, float ratio);
+
+    boolean isValid();
+
+    void validate() throws ValidationException;
 
     /**
      * Field caption alignment.

@@ -13,8 +13,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Base class for controllers of combined browser/editor screens.
@@ -293,7 +292,13 @@ public class EntityCombinedScreen extends AbstractLookup {
     @SuppressWarnings("unchecked")
     public void save() {
         FieldGroup fieldGroup = getFieldGroup();
-        if (!validate(Collections.singletonList(fieldGroup))) {
+        List<Validatable> components = new ArrayList<>();
+        for (Component component: fieldGroup.getComponents()) {
+            if (component instanceof Validatable) {
+                components.add((Validatable)component);
+            }
+        }
+        if (!validate(components)) {
             return;
         }
         getDsContext().commit();
