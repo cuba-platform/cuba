@@ -17,13 +17,27 @@
 package com.haulmont.cuba.security.listener;
 
 import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.PersistenceTools;
+import com.haulmont.cuba.core.global.Events;
+import com.haulmont.cuba.core.listener.AfterDeleteEntityListener;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.events.UserInvalidationEvent;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
+import java.sql.Connection;
+
 @Component("cuba_UserEntityListener")
-public class UserEntityListener implements BeforeInsertEntityListener<User>, BeforeUpdateEntityListener<User> {
+public class UserEntityListener implements BeforeInsertEntityListener<User>, BeforeUpdateEntityListener<User>,
+        AfterDeleteEntityListener<User> {
+
+    @Inject
+    protected Events events;
+
+    @Inject
+    protected PersistenceTools persistenceTools;
 
     @Override
     public void onBeforeInsert(User entity, EntityManager entityManager) {
@@ -33,9 +47,20 @@ public class UserEntityListener implements BeforeInsertEntityListener<User>, Bef
     @Override
     public void onBeforeUpdate(User entity, EntityManager entityManager) {
         updateLoginLowerCase(entity);
+
+        //noinspection ConstantConditions
+        if (persistenceTools.getDirtyFields(entity).contains("active")
+                && ((Boolean) persistenceTools.getOldValue(entity, "active"))) {
+            events.publish(new UserInvalidationEvent(entity));
+        }
     }
 
     protected void updateLoginLowerCase(User user) {
         user.setLoginLowerCase(user.getLogin() != null ? user.getLogin().toLowerCase() : null);
+    }
+
+    @Override
+    public void onAfterDelete(User entity, Connection connection) {
+        events.publish(new UserInvalidationEvent(entity));
     }
 }
