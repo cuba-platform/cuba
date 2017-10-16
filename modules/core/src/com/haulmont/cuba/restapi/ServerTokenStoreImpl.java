@@ -16,8 +16,6 @@
 
 package com.haulmont.cuba.restapi;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;

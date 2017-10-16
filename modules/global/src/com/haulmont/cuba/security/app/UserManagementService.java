@@ -85,14 +85,15 @@ public interface UserManagementService {
     boolean checkPassword(UUID userId, String passwordHash);
 
     /**
-     * Remove remember me tokens for users
+     * Remove remember me tokens for users. The tokens reset is executed in the joined transaction
+     * if there is one at the moment, creates a new transaction otherwise.
      *
      * @param userIds User ids
      */
     void resetRememberMeTokens(List<UUID> userIds);
 
     /**
-     * Remove remember me tokens for all users
+     * Remove remember me tokens for all users. The tokens reset is always executed in a new transaction.
      */
     void resetRememberMeTokens();
 
