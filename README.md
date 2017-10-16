@@ -42,7 +42,7 @@ gradlew install
 Edit the `build.gradle` file of your project. Change the `ext.cubaVersion` property and add `mavenLocal()` to the `repositories` section, for example:
 ```
 buildscript {
-    ext.cubaVersion = '6.7-SNAPSHOT'
+    ext.cubaVersion = '6.8-SNAPSHOT'
     repositories {
         mavenLocal()
         maven { ...
