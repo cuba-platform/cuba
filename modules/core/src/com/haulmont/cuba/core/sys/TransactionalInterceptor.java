@@ -23,7 +23,6 @@ import com.haulmont.cuba.core.global.Stores;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.ClassUtils;
 
 import java.lang.reflect.Method;
@@ -45,8 +44,7 @@ public class TransactionalInterceptor {
 
         String storeName = Strings.isNullOrEmpty(transactional.value()) ? Stores.MAIN : transactional.value();
 
-        TransactionSynchronizationManager.registerSynchronization(
-                ((PersistenceImpl) persistence).createSynchronization(storeName));
+        ((PersistenceImpl) persistence).registerSynchronizations(storeName);
 
         return ctx.proceed();
     }

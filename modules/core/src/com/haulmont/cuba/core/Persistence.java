@@ -210,9 +210,4 @@ public interface Persistence {
      * @return context
      */
     EntityManagerContext getEntityManagerContext(String storeName);
-
-    /**
-     * Destroys the persistence configuration. Further use of this bean instance is impossible.
-     */
-    void dispose();
 }

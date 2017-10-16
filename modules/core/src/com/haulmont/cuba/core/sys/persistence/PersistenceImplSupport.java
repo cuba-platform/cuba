@@ -148,12 +148,15 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         return Strings.isNullOrEmpty(storeName) ? Stores.MAIN : storeName;
     }
 
-    protected ContainerResourceHolder getInstanceContainerResourceHolder(String storeName) {
+    public ContainerResourceHolder getInstanceContainerResourceHolder(String storeName) {
         ContainerResourceHolder holder =
                 (ContainerResourceHolder) TransactionSynchronizationManager.getResource(RESOURCE_HOLDER_KEY);
         if (holder == null) {
             holder = new ContainerResourceHolder(storeName);
             TransactionSynchronizationManager.bindResource(RESOURCE_HOLDER_KEY, holder);
+        } else if (!storeName.equals(holder.getStoreName())) {
+            throw new IllegalStateException("Cannot handle entity from " + storeName
+                    + " datastore because active transaction is for " + holder.getStoreName());
         }
 
         if (TransactionSynchronizationManager.isSynchronizationActive() && !holder.isSynchronizedWithTransaction()) {
@@ -244,7 +247,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
             this.storeName = storeName;
         }
 
-        public String getStorageName() {
+        public String getStoreName() {
             return storeName;
         }
 
@@ -308,7 +311,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                 log.trace("ContainerResourceSynchronization.beforeCommit: instances=" + container.getAllInstances() + ", readOnly=" + readOnly);
 
             if (!readOnly) {
-                traverseEntities(container, new OnCommitEntityVisitor(container.getStorageName()));
+                traverseEntities(container, new OnCommitEntityVisitor(container.getStoreName()));
             }
 
             Collection<Entity> instances = container.getAllInstances();
@@ -336,14 +339,14 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                         typeNames.add(entity.getMetaClass().getName());
                     }
 
-                    entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_DETACH, container.getStorageName());
+                    entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_DETACH, container.getStoreName());
                 }
             }
 
             if (!readOnly) {
                 Collection<Entity> allInstances = container.getAllInstances();
                 for (BeforeCommitTransactionListener transactionListener : beforeCommitTxListeners) {
-                    transactionListener.beforeCommit(persistence.getEntityManager(container.getStorageName()), allInstances);
+                    transactionListener.beforeCommit(persistence.getEntityManager(container.getStoreName()), allInstances);
                 }
 
                 queryCacheManager.invalidate(typeNames, true);

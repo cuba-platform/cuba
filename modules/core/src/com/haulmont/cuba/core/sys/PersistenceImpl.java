@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
+import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import com.haulmont.cuba.security.global.UserSession;
 import org.eclipse.persistence.internal.helper.CubaUtil;
 import org.springframework.core.Ordered;
@@ -33,7 +34,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManagerFactory;
@@ -57,6 +57,9 @@ public class PersistenceImpl implements Persistence {
 
     @Inject
     protected PersistenceTools tools;
+
+    @Inject
+    protected PersistenceImplSupport support;
 
     protected EntityManagerFactory jpaEmf;
 
@@ -211,7 +214,6 @@ public class PersistenceImpl implements Persistence {
     }
 
     @Override
-    @Nonnull
     public EntityManagerContext getEntityManagerContext() {
         return getEntityManagerContext(Stores.MAIN);
     }
@@ -224,7 +226,10 @@ public class PersistenceImpl implements Persistence {
         return emCtx;
     }
 
-    @Override
+    /**
+     * INTERNAL.
+     * Destroys the persistence configuration. Further use of this bean instance is impossible.
+     */
     public void dispose() {
         jpaEmf.close();
         for (String store : Stores.getAdditional()) {
@@ -233,7 +238,16 @@ public class PersistenceImpl implements Persistence {
         }
     }
 
-    public TransactionSynchronization createSynchronization(String store) {
+    /**
+     * INTERNAL.
+     * Register synchronizations with a just started transaction.
+     */
+    public void registerSynchronizations(String store) {
+        TransactionSynchronizationManager.registerSynchronization(createSynchronization(store));
+        support.getInstanceContainerResourceHolder(store);
+    }
+
+    protected TransactionSynchronization createSynchronization(String store) {
         return new EntityManagerContextSynchronization(store);
     }
 

@@ -23,7 +23,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.annotation.Nullable;
 
@@ -57,7 +56,7 @@ public class TransactionImpl implements Transaction {
 
         ts = tm.getTransaction(td);
 
-        TransactionSynchronizationManager.registerSynchronization(persistence.createSynchronization(storeName));
+        persistence.registerSynchronizations(storeName);
     }
 
     @Override
@@ -108,7 +107,7 @@ public class TransactionImpl implements Transaction {
         tm.commit(ts);
 
         ts = tm.getTransaction(td);
-        TransactionSynchronizationManager.registerSynchronization(persistence.createSynchronization(storeName));
+        persistence.registerSynchronizations(storeName);
     }
 
     @Override
