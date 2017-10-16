@@ -132,7 +132,7 @@ public class EntityFetcher {
                     }
                 } else if (value instanceof Entity) {
                     Entity e = (Entity) value;
-                    if (PersistenceHelper.isDetached(value) && !(value instanceof EmbeddableEntity)) {
+                    if (!metaProperty.isReadOnly() && PersistenceHelper.isDetached(value) && !(value instanceof EmbeddableEntity)) {
                         if (!optimizeForDetached || needReloading(e, propertyView)) {
                             if (log.isTraceEnabled()) {
                                 log.trace("Object " + value + " is detached, loading it");
