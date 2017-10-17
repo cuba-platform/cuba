@@ -233,7 +233,7 @@ public class EntitySerialization implements EntitySerializationAPI {
             }
 
             if (entity instanceof BaseGenericIdEntity) {
-                SecurityState securityState = getSecurityState((BaseGenericIdEntity) entity);
+                SecurityState securityState = getSecurityState(entity);
                 if (securityState != null) {
                     byte[] securityToken = getSecurityToken(securityState);
                     if (securityToken != null) {
