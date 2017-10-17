@@ -40,6 +40,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.CubaScrollBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaTokenListLabel;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.*;
@@ -652,15 +653,14 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             setWidthUndefined();
 
             composition = new VerticalLayout();
-            composition.setSpacing(true);
             composition.setSizeFull();
 
             tokenContainer = new CubaScrollBoxLayout();
             tokenContainer.setStyleName("c-tokenlist-scrollbox");
             tokenContainer.setSizeFull();
+            tokenContainer.setMargin(new MarginInfo(true, false, false, false));
 
             composition.addComponent(tokenContainer);
-            composition.setExpandRatio(tokenContainer, 1);
             setPrimaryStyleName("c-tokenlist");
         }
 
@@ -844,6 +844,12 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             } else {
                 removeStyleName("inline");
                 tokenContainer.setWidth(100, Unit.PERCENTAGE);
+            }
+
+            if (simple) {
+                tokenContainer.setMargin(false);
+            } else {
+                tokenContainer.setMargin(new MarginInfo(true, false, false, false));
             }
 
             if (editor != null) {

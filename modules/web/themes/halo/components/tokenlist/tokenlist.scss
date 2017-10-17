@@ -116,5 +116,9 @@
     max-width: 400px;
     max-height: 250px;
     overflow-y: auto;
+
+    &.v-csslayout-margin-top {
+      margin-top: $v-layout-margin-top;
+    }
   }
 }
