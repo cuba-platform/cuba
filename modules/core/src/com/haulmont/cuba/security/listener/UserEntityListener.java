@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.events.UserInvalidationEvent;
+import org.apache.commons.lang.BooleanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -50,7 +51,7 @@ public class UserEntityListener implements BeforeInsertEntityListener<User>, Bef
 
         //noinspection ConstantConditions
         if (persistenceTools.getDirtyFields(entity).contains("active")
-                && ((Boolean) persistenceTools.getOldValue(entity, "active"))) {
+                && BooleanUtils.isTrue((Boolean) persistenceTools.getOldValue(entity, "active"))) {
             events.publish(new UserInvalidationEvent(entity));
         }
     }
