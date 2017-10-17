@@ -108,6 +108,7 @@
                 <entry key="cuba_ServerTokenStore" value="com.haulmont.cuba.restapi.ServerTokenStore"/>
                 <entry key="cuba_IdpService" value="com.haulmont.cuba.security.idp.IdpService"/>
                 <entry key="cuba_ConstraintLocalizationService" value="com.haulmont.cuba.core.app.ConstraintLocalizationService"/>
+                <entry key="cuba_AttributeAccessService" value="com.haulmont.cuba.core.app.AttributeAccessService"/>
             </map>
         </property>
     </bean>

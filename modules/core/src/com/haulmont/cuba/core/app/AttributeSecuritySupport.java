@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
 import javax.inject.Inject;
 import java.util.*;
 
-import static com.haulmont.cuba.core.entity.BaseEntityInternalAccess.getOrCreateSecurityState;
+import static com.haulmont.cuba.core.entity.BaseEntityInternalAccess.*;
 import static java.lang.String.format;
 
 /**
@@ -195,12 +195,12 @@ public class AttributeSecuritySupport {
     public void onLoad(Entity entity, View view) {
         if (entity instanceof BaseGenericIdEntity) {
             BaseGenericIdEntity genericIdEntity = (BaseGenericIdEntity) entity;
-            setupAttributesAccess(genericIdEntity);
-            metadataTools.traverseAttributesByView(view, genericIdEntity, new AttributeSecurityVisitor(Sets.newHashSet(entity)));
+            setupAttributeAccess(genericIdEntity);
+            metadataTools.traverseAttributesByView(view, genericIdEntity, new AttributeAccessVisitor(Sets.newHashSet(entity)));
         }
     }
 
-    protected <T extends Entity> void setupAttributesAccess(T entity) {
+    public <T extends Entity> void setupAttributeAccess(T entity) {
         if (entity instanceof BaseGenericIdEntity || entity instanceof EmbeddableEntity) {
             SetupAttributeAccessEvent<T> event = new SetupAttributeAccessEvent<>(entity);
             events.publish(event);
@@ -208,22 +208,19 @@ public class AttributeSecuritySupport {
             if (event.getReadonlyAttributes() != null) {
                 Set<String> attributes = event.getReadonlyAttributes();
                 SecurityState state = getOrCreateSecurityState(entity);
-                BaseEntityInternalAccess.addReadonlyAttributes(state,
-                        attributes.toArray(new String[attributes.size()]));
+                addReadonlyAttributes(state, attributes.toArray(new String[attributes.size()]));
                 writeSecurityToken = true;
             }
             if (event.getRequiredAttributes() != null) {
                 Set<String> attributes = event.getRequiredAttributes();
                 SecurityState state = getOrCreateSecurityState(entity);
-                BaseEntityInternalAccess.addRequiredAttributes(state,
-                        attributes.toArray(new String[attributes.size()]));
+                addRequiredAttributes(state, attributes.toArray(new String[attributes.size()]));
                 writeSecurityToken = true;
             }
             if (event.getHiddenAttributes() != null) {
                 Set<String> attributes = event.getHiddenAttributes();
                 SecurityState state = getOrCreateSecurityState(entity);
-                BaseEntityInternalAccess.addHiddenAttributes(state,
-                        attributes.toArray(new String[attributes.size()]));
+                addHiddenAttributes(state, attributes.toArray(new String[attributes.size()]));
                 writeSecurityToken = true;
             }
             if (writeSecurityToken) {
@@ -233,7 +230,7 @@ public class AttributeSecuritySupport {
     }
 
     protected void checkRequiredAttributes(Entity entity) {
-        SecurityState securityState = BaseEntityInternalAccess.getSecurityState(entity);
+        SecurityState securityState = getSecurityState(entity);
         if (securityState != null && !securityState.getRequiredAttributes().isEmpty()) {
             for (MetaProperty metaProperty : entity.getMetaClass().getProperties()) {
                 String propertyName = metaProperty.getName();
@@ -252,7 +249,7 @@ public class AttributeSecuritySupport {
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
         FetchGroupTracker fetchGroupTracker = (FetchGroupTracker) entity;
         FetchGroup fetchGroup = fetchGroupTracker._persistence_getFetchGroup();
-        SecurityState securityState = BaseEntityInternalAccess.getSecurityState(entity);
+        SecurityState securityState = getSecurityState(entity);
         if (fetchGroup != null) {
             List<String> attributesToRemove = new ArrayList<>();
             for (String attrName : fetchGroup.getAttributeNames()) {
@@ -310,11 +307,11 @@ public class AttributeSecuritySupport {
     }
 
     private void addInaccessibleAttribute(BaseGenericIdEntity entity, String property) {
-        SecurityState securityState = BaseEntityInternalAccess.getOrCreateSecurityState(entity);
-        String[] attributes = BaseEntityInternalAccess.getInaccessibleAttributes(securityState);
+        SecurityState securityState = getOrCreateSecurityState(entity);
+        String[] attributes = getInaccessibleAttributes(securityState);
         attributes = attributes == null ? new String[1] : Arrays.copyOf(attributes, attributes.length + 1);
         attributes[attributes.length - 1] = property;
-        BaseEntityInternalAccess.setInaccessibleAttributes(securityState, attributes);
+        setInaccessibleAttributes(securityState, attributes);
     }
 
     protected boolean isAuthorizationRequired() {
@@ -358,10 +355,10 @@ public class AttributeSecuritySupport {
         }
     }
 
-    protected class AttributeSecurityVisitor implements EntityAttributeVisitor {
+    protected class AttributeAccessVisitor implements EntityAttributeVisitor {
         protected Set<Entity> visited = new HashSet<>();
 
-        public AttributeSecurityVisitor(Set<Entity> visited) {
+        public AttributeAccessVisitor(Set<Entity> visited) {
             this.visited = visited;
         }
 
@@ -369,7 +366,7 @@ public class AttributeSecuritySupport {
         public void visit(Entity entity, MetaProperty property) {
             if (!visited.contains(entity)) {
                 visited.add(entity);
-                setupAttributesAccess(entity);
+                setupAttributeAccess(entity);
             }
         }
     }

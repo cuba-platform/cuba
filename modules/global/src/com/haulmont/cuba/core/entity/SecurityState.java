@@ -23,8 +23,10 @@ import java.util.*;
 
 /**
  * Stores information about:
- * filtered data by row level security
- * hidden, readonly and required attributes for entity
+ * <ul>
+ *   <li>data that has been filtered by row level security;
+ *   <li>attributes that are hidden, read-only or required for this particular instance.
+ * </ul>
  */
 public class SecurityState implements Serializable {
 

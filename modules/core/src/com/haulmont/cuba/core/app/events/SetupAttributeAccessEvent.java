@@ -24,9 +24,17 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.ResolvableTypeProvider;
 
+import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A Spring application event that is sent by the framework to set up access to attributes of an entity instance.
+ * Subscribers should write appropriate attribute names into the event object using {@link #addHidden(String)},
+ * {@link #addReadOnly(String)} and {@link #addRequired(String)} methods.
+
+ * @param <T> type of entity
+ */
 public class SetupAttributeAccessEvent<T extends Entity> extends ApplicationEvent
         implements ResolvableTypeProvider {
 
@@ -40,42 +48,51 @@ public class SetupAttributeAccessEvent<T extends Entity> extends ApplicationEven
         super(entity);
     }
 
+    /**
+     * Entity instance in managed state.
+     */
     @SuppressWarnings("unchecked")
     public T getEntity() {
         return (T) getSource();
     }
 
+    @Nullable
     public Set<String> getReadonlyAttributes() {
         return readonlyAttributes;
     }
 
+    @Nullable
     public Set<String> getHiddenAttributes() {
         return hiddenAttributes;
     }
 
+    @Nullable
     public Set<String> getRequiredAttributes() {
         return requiredAttributes;
     }
 
-    public void addReadOnlyAttribute(String name) {
+    public SetupAttributeAccessEvent addReadOnly(String attributeName) {
         if (readonlyAttributes == null) {
             readonlyAttributes = new HashSet<>();
         }
-        readonlyAttributes.add(name);
+        readonlyAttributes.add(attributeName);
+        return this;
     }
 
-    public void addRequiredAttribute(String name) {
+    public SetupAttributeAccessEvent addRequired(String attributeName) {
         if (requiredAttributes == null) {
             requiredAttributes = new HashSet<>();
         }
-        requiredAttributes.add(name);
+        requiredAttributes.add(attributeName);
+        return this;
     }
 
-    public void addHiddenAttribute(String name) {
+    public SetupAttributeAccessEvent addHidden(String attributeName) {
         if (hiddenAttributes == null) {
             hiddenAttributes = new HashSet<>();
         }
-        hiddenAttributes.add(name);
+        hiddenAttributes.add(attributeName);
+        return this;
     }
 
     @Override
