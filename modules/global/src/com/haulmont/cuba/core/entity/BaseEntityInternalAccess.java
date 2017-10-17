@@ -23,9 +23,6 @@ import org.apache.commons.lang.reflect.FieldUtils;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * INTERNAL
@@ -191,6 +188,19 @@ public final class BaseEntityInternalAccess {
             throw new IllegalArgumentException(String.format("Entity with type [%s] does not support security state", entity.getMetaClass().getName()));
         }
         return securityState;
+    }
+
+    public static void setSecurityState(Entity entity, SecurityState securityState) {
+        Preconditions.checkNotNullArgument(entity, "Entity is null");
+        if (entity instanceof BaseGenericIdEntity) {
+            BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
+            baseGenericIdEntity.__securityState = securityState;
+        } else if (entity instanceof EmbeddableEntity) {
+            EmbeddableEntity embeddableEntity = (EmbeddableEntity) entity;
+            embeddableEntity.__securityState = securityState;
+        } else {
+            throw new IllegalArgumentException(String.format("Entity with type [%s] does not support security state", entity.getMetaClass().getName()));
+        }
     }
 
     public static SecurityState getOrCreateSecurityState(Entity entity) {

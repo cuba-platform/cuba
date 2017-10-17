@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.AttributeSecurity;
 import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
@@ -225,9 +223,12 @@ public class AbstractWindow extends AbstractFrame
         return ((Window) frame).getDialogOptions();
     }
 
-    public void applyAttributeSecurity() {
-        AttributeSecurity attributeSecurity = AppBeans.get(AttributeSecurity.NAME);
-        attributeSecurity.applyAttributeSecurity(frame);
+    /**
+     * Whether automatic applying of attribute access rules enabled. If you don't want to apply attribute access
+     * rules to a screen, override this method and return false.
+     */
+    public boolean isAttributeAccessControlEnabled() {
+        return true;
     }
 
     /**

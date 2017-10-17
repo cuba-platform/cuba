@@ -1102,7 +1102,10 @@ public abstract class WindowManager {
         if (window instanceof AbstractWindow) {
             AbstractWindow abstractWindow = (AbstractWindow) window;
 
-            abstractWindow.applyAttributeSecurity();
+            if (abstractWindow.isAttributeAccessControlEnabled()) {
+                AttributeAccessSupport attributeAccessSupport = AppBeans.get(AttributeAccessSupport.NAME);
+                attributeAccessSupport.applyAttributeAccess(abstractWindow, false);
+            }
 
             StopWatch readyStopWatch = new Log4JStopWatch(window.getId() + "#" +
                     LifeCycle.READY,
