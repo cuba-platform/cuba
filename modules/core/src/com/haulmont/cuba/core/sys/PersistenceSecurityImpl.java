@@ -24,7 +24,9 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.entity.*;
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
@@ -157,26 +159,21 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void restoreSecurityData(BaseGenericIdEntity<?> resultEntity) {
-        MetaClass metaClass = metadata.getClassNN(resultEntity.getClass());
+    public void restoreSecurityState(Entity entity) {
+        checkSecurityToken(entity);
+        securityTokenManager.readSecurityToken(entity);
+    }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public void restoreFilteredData(Entity entity) {
+        checkSecurityToken(entity);
+
+        MetaClass metaClass = metadata.getClassNN(entity.getClass());
         String storeName = metadataTools.getStoreName(metaClass);
         EntityManager entityManager = persistence.getEntityManager(storeName);
 
-        securityTokenManager.readSecurityToken(resultEntity);
-
-        if (BaseEntityInternalAccess.getSecurityToken(resultEntity) == null) {
-            List<ConstraintData> existingConstraints = getConstraints(metaClass,
-                    constraint -> constraint.getCheckType().memory());
-            if (CollectionUtils.isNotEmpty(existingConstraints)) {
-                throw new RowLevelSecurityException(format("Could not read security token from entity %s, " +
-                        "even though there are active constraints for the entity.", resultEntity),
-                        resultEntity.getMetaClass().getName());
-            }
-        }
-
-        Multimap<String, Object> filtered = BaseEntityInternalAccess.getFilteredData(resultEntity);
+        Multimap<String, Object> filtered = BaseEntityInternalAccess.getFilteredData(entity);
         if (filtered == null) {
             return;
         }
@@ -189,7 +186,7 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
                 Class entityClass = property.getRange().asClass().getJavaClass();
                 Class propertyClass = property.getJavaType();
                 if (Collection.class.isAssignableFrom(propertyClass)) {
-                    Collection currentCollection = resultEntity.getValue(property.getName());
+                    Collection currentCollection = entity.getValue(property.getName());
                     if (currentCollection == null) {
                         throw new RowLevelSecurityException(
                                 format("Could not restore an object to currentValue because it is null [%s]. Entity [%s].",
@@ -205,7 +202,24 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
                     Object entityId = filteredIds.iterator().next();
                     Entity reference = entityManager.getReference((Class<Entity>) entityClass, entityId);
                     //we ignore the situation when the field is read-only
-                    resultEntity.setValue(property.getName(), reference);
+                    entity.setValue(property.getName(), reference);
+                }
+            }
+        }
+    }
+
+    protected void checkSecurityToken(Entity entity) {
+        if (BaseEntityInternalAccess.getSecurityToken(entity) == null) {
+            MetaClass metaClass = metadata.getClassNN(entity.getClass());
+            for (MetaProperty metaProperty : metaClass.getProperties()) {
+                if (metaProperty.getRange().isClass()) {
+                    List<ConstraintData> existingConstraints = getConstraints(metaProperty.getRange().asClass(),
+                            constraint -> constraint.getCheckType().memory());
+                    if (CollectionUtils.isNotEmpty(existingConstraints)) {
+                        throw new RowLevelSecurityException(format("Could not read security token from entity %s, " +
+                                "even though there are active constraints for the entity.", entity),
+                                entity.getMetaClass().getName());
+                    }
                 }
             }
         }

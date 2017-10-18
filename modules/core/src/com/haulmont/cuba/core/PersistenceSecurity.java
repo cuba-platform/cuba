@@ -78,11 +78,25 @@ public interface PersistenceSecurity extends Security {
     boolean filterByConstraints(Entity entity);
 
     /**
-     * Reads security token and restores
-     * filtered data and readOnly, hidden, required attributes
-     * @param resultEntity -
+     * Reads security token and restores security state
+     * @param entity - entity to restore security state
      */
-    void restoreSecurityData(BaseGenericIdEntity<?> resultEntity);
+    void restoreSecurityState(Entity entity);
+
+    /**
+     * Restores filtered data from security token
+     * @param entity - entity to restore filtered data
+     */
+    void restoreFilteredData(Entity entity);
+
+    /**
+     * Reads security token and restores security state and filtered data
+     * @param entity - entity to restore
+     */
+    default void restoreSecurityStateAndFilteredData(Entity entity) {
+        restoreSecurityState(entity);
+        restoreFilteredData(entity);
+    }
 
     /**
      * Calculate filtered data

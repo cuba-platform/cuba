@@ -234,7 +234,7 @@ public class AttributeSecuritySupport {
         if (securityState != null && !securityState.getRequiredAttributes().isEmpty()) {
             for (MetaProperty metaProperty : entity.getMetaClass().getProperties()) {
                 String propertyName = metaProperty.getName();
-                if (isRequired(securityState, propertyName) && entity.getValue(propertyName) == null) {
+                if (BaseEntityInternalAccess.isRequired(securityState, propertyName) && entity.getValue(propertyName) == null) {
                     throw new RowLevelSecurityException(format("Attribute [%s] is required for entity %s", propertyName, entity),
                             entity.getMetaClass().getName());
                 }
@@ -254,7 +254,7 @@ public class AttributeSecuritySupport {
             List<String> attributesToRemove = new ArrayList<>();
             for (String attrName : fetchGroup.getAttributeNames()) {
                 String[] parts = attrName.split("\\.");
-                if (parts.length > 0 && isHiddenOrReadOnly(securityState, parts[0])) {
+                if (parts.length > 0 && BaseEntityInternalAccess.isHiddenOrReadOnly(securityState, parts[0])) {
                     attributesToRemove.add(attrName);
                 } else {
                     MetaClass currentMetaClass = metaClass;
@@ -283,27 +283,12 @@ public class AttributeSecuritySupport {
                     attributeNames.add(propertyName);
                 }
                 if (security.isEntityAttrUpdatePermitted(metaClass, propertyName) &&
-                        !isHiddenOrReadOnly(securityState, propertyName)) {
+                        !BaseEntityInternalAccess.isHiddenOrReadOnly(securityState, propertyName)) {
                     attributeNames.add(metaProperty.getName());
                 }
             }
             fetchGroupTracker._persistence_setFetchGroup(new CubaEntityFetchGroup(attributeNames));
         }
-    }
-
-    protected boolean isHiddenOrReadOnly(SecurityState securityState, String attributeName) {
-        if (securityState == null) {
-            return false;
-        }
-        return securityState.getHiddenAttributes().contains(attributeName)
-                || securityState.getReadonlyAttributes().contains(attributeName);
-    }
-
-    protected boolean isRequired(SecurityState securityState, String attributeName) {
-        if (securityState == null) {
-            return false;
-        }
-        return securityState.getRequiredAttributes().contains(attributeName);
     }
 
     private void addInaccessibleAttribute(BaseGenericIdEntity entity, String property) {
