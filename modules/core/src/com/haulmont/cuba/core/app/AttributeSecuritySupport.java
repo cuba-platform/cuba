@@ -171,16 +171,34 @@ public class AttributeSecuritySupport {
     }
 
     /**
-     * Should be called after merging an entity and transaction commit.
+     * Should be called after merging an entity and before transaction commit.
      *
      * @param entity detached entity
      */
-    public void afterMerge(Entity entity, View view) {
+    public void afterMerge(Entity entity) {
         if (!isAuthorizationRequired()) {
             return;
         }
         if (entity != null) {
-            metadataTools.traverseAttributesByView(view, entity, new ClearInaccessibleAttributesVisitor());
+            if (entity instanceof BaseGenericIdEntity) {
+                BaseGenericIdEntity genericIdEntity = (BaseGenericIdEntity) entity;
+                setupAttributeAccess(genericIdEntity);
+                metadataTools.traverseAttributes(genericIdEntity, new AttributeAccessVisitor(Sets.newHashSet(entity)));
+            }
+        }
+    }
+
+    /**
+     * Should be called after merging an entity and transaction commit.
+     *
+     * @param entity detached entity
+     */
+    public void afterCommit(Entity entity) {
+        if (!isAuthorizationRequired()) {
+            return;
+        }
+        if (entity != null) {
+            metadataTools.traverseAttributes(entity, new ClearInaccessibleAttributesVisitor());
         }
     }
 
@@ -291,7 +309,7 @@ public class AttributeSecuritySupport {
         }
     }
 
-    private void addInaccessibleAttribute(BaseGenericIdEntity entity, String property) {
+    private void addInaccessibleAttribute(Entity entity, String property) {
         SecurityState securityState = getOrCreateSecurityState(entity);
         String[] attributes = getInaccessibleAttributes(securityState);
         attributes = attributes == null ? new String[1] : Arrays.copyOf(attributes, attributes.length + 1);
@@ -305,10 +323,11 @@ public class AttributeSecuritySupport {
     }
 
     protected void setNullPropertyValue(Entity entity, MetaProperty property) {
-        if (!metadataTools.isSystem(property) && !property.isReadOnly()) {
-            // Using reflective access to field because the attribute can be unfetched if loading not partial entities,
-            // which is the case when in-memory constraints exist
-            BaseEntityInternalAccess.setValue((BaseGenericIdEntity) entity, property.getName(), null);
+        // Using reflective access to field because the attribute can be unfetched if loading not partial entities,
+        // which is the case when in-memory constraints exist
+        BaseEntityInternalAccess.setValue(entity, property.getName(), null);
+        if (property.getRange().isClass()) {
+            BaseEntityInternalAccess.setValueForHolder(entity, property.getName(), null);
         }
     }
 
@@ -322,8 +341,17 @@ public class AttributeSecuritySupport {
         public void visit(Entity entity, MetaProperty property) {
             MetaClass metaClass = metadata.getClassNN(entity.getClass());
             if (!security.isEntityAttrReadPermitted(metaClass, property.getName())) {
-                addInaccessibleAttribute((BaseGenericIdEntity) entity, property.getName());
-                setNullPropertyValue(entity, property);
+                addInaccessibleAttribute(entity, property.getName());
+                if (!metadataTools.isSystem(property) && !property.isReadOnly()) {
+                    setNullPropertyValue(entity, property);
+                }
+            }
+            SecurityState securityState = BaseEntityInternalAccess.getSecurityState(entity);
+            if (securityState != null && securityState.getHiddenAttributes().contains(property.getName())) {
+                addInaccessibleAttribute(entity, property.getName());
+                if (!metadataTools.isSystem(property)) {
+                    setNullPropertyValue(entity, property);
+                }
             }
         }
     }
@@ -334,8 +362,17 @@ public class AttributeSecuritySupport {
             MetaClass metaClass = metadata.getClassNN(entity.getClass());
             String propertyName = property.getName();
             if (!security.isEntityAttrReadPermitted(metaClass, propertyName)) {
-                addInaccessibleAttribute((BaseGenericIdEntity) entity, propertyName);
-                setNullPropertyValue(entity, property);
+                addInaccessibleAttribute(entity, propertyName);
+                if (!metadataTools.isSystem(property) && !property.isReadOnly()) {
+                    setNullPropertyValue(entity, property);
+                }
+            }
+            SecurityState securityState = BaseEntityInternalAccess.getSecurityState(entity);
+            if (securityState != null && securityState.getHiddenAttributes().contains(property.getName())) {
+                addInaccessibleAttribute(entity, property.getName());
+                if (!metadataTools.isSystem(property)) {
+                    setNullPropertyValue(entity, property);
+                }
             }
         }
     }

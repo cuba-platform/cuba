@@ -347,11 +347,12 @@ public class RdbmsStore implements DataStore {
             // merge the rest - instances can be detached or not
             for (Entity entity : context.getCommitInstances()) {
                 if (!PersistenceHelper.isNew(entity)) {
-                    security.restoreSecurityStateAndFilteredData((BaseGenericIdEntity) entity);
+                    security.restoreSecurityStateAndFilteredData(entity);
                     attributeSecurity.beforeMerge(entity);
 
                     Entity merged = em.merge(entity);
                     entityFetcher.fetch(merged, getViewFromContext(context, entity));
+                    attributeSecurity.afterMerge(merged);
 
                     checkOperationPermitted(merged, ConstraintOperationType.UPDATE);
                     if (!context.isDiscardCommitted()) {
@@ -372,13 +373,14 @@ public class RdbmsStore implements DataStore {
 
             // remove
             for (Entity entity : context.getRemoveInstances()) {
-                security.restoreSecurityStateAndFilteredData((BaseGenericIdEntity) entity);
+                security.restoreSecurityStateAndFilteredData(entity);
 
                 Entity e;
                 if (entity instanceof SoftDelete) {
                     attributeSecurity.beforeMerge(entity);
                     e = em.merge(entity);
                     entityFetcher.fetch(e, getViewFromContext(context, entity));
+                    attributeSecurity.afterMerge(e);
                 } else {
                     e = em.merge(entity);
                 }
@@ -439,11 +441,7 @@ public class RdbmsStore implements DataStore {
         if (!context.isDiscardCommitted()) {
             for (Entity entity : res) {
                 if (!persisted.contains(entity)) {
-                    View view = context.getViews().get(entity);
-                    if (view == null) {
-                        view = viewRepository.getView(entity.getClass(), View.LOCAL);
-                    }
-                    attributeSecurity.afterMerge(entity, view);
+                    attributeSecurity.afterCommit(entity);
                 }
             }
             updateReferences(persisted, res);
