@@ -251,6 +251,18 @@ public final class BaseEntityInternalAccess {
         }
     }
 
+    public static void setValueForHolder(Entity entity, String attribute, @Nullable Object value) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+        Field field = FieldUtils.getField(entity.getClass(), String.format("_persistence_%s_vh",attribute), true);
+        if (field == null)
+            return;
+        try {
+            field.set(entity, value);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(String.format("Unable to set value to %s.%s", entity.getClass().getSimpleName(), attribute), e);
+        }
+    }
+
     public static Object getValue(Entity entity, String attribute) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
         Field field = FieldUtils.getField(entity.getClass(), attribute, true);
