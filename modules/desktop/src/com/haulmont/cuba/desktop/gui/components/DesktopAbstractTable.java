@@ -231,14 +231,17 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
                 ColumnVisibilityAction columnVisibilityAction = super.createColumnVisibilityAction(column);
 
                 columnVisibilityAction.addPropertyChangeListener(evt -> {
-                    ColumnVisibilityAction action = (ColumnVisibilityAction) evt.getSource();
+                    if ("SwingSelectedKey".equals(evt.getPropertyName())
+                            && evt.getNewValue() instanceof Boolean) {
+                        ColumnVisibilityAction action = (ColumnVisibilityAction) evt.getSource();
 
-                    String columnName = action.getActionCommand();
-                    boolean collapsed = !((boolean) evt.getNewValue());
+                        String columnName = action.getActionCommand();
+                        boolean collapsed = !((boolean) evt.getNewValue());
 
-                    Column col = getColumn(columnName);
-                    if (col != null) {
-                        col.setCollapsed(collapsed);
+                        Column col = getColumn(columnName);
+                        if (col != null) {
+                            col.setCollapsed(collapsed);
+                        }
                     }
                 });
 
