@@ -231,8 +231,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         }
         List<FieldConfig> colFields = columnFieldMapping.get(colIndex);
         if (rowIndex < 0 || rowIndex > colFields.size()) {
-            throw new IllegalArgumentException(String.format("Illegal column number %s, available amount of columns is %s",
-                    colIndex, getColumns()));
+            throw new IllegalArgumentException(String.format("Illegal row number %s, available amount of rows is %s",
+                    rowIndex, getRows()));
         }
 
         addFieldInternal(fc, colIndex, rowIndex);
