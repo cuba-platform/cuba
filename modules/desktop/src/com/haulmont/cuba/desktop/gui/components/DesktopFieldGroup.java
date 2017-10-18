@@ -218,6 +218,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
 
         if (fc.getComponent() != null) {
             managedFieldComponentAssigned(fci, fci.getAttachMode());
+
+            impl.revalidate();
+            impl.repaint();
         }
     }
 
@@ -235,7 +238,18 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
             columnFieldMapping.get(colIndex).remove(fc);
             fields.remove(fc.getId());
 
+            boolean wasBound = fc.isBound();
             if (fc.isBound()) {
+                FieldConfigImpl fci = (FieldConfigImpl) fc;
+
+                impl.remove(fci.getCompositionNN().getComposition());
+                if (fci.getLabel() != null) {
+                    impl.remove(fci.getLabel());
+                }
+                if (fci.getToolTipButton() != null) {
+                    impl.remove(fci.getToolTipButton());
+                }
+
                 reattachColumnFields(colIndex);
 
                 this.rows = detectRowsCount();
@@ -245,6 +259,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
 
             if (fc.getComponent() != null) {
                 fc.getComponent().setParent(null);
+            }
+
+            if (wasBound) {
+                impl.revalidate();
+                impl.repaint();
             }
         }
     }
@@ -343,6 +362,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
                 reattachColumnFields(reattachColumnIndex);
             }
         }
+
+        impl.revalidate();
+        impl.repaint();
     }
 
     protected void reattachColumnFields(int colIndex) {
