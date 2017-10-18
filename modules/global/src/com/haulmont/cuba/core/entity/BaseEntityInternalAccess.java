@@ -224,7 +224,22 @@ public final class BaseEntityInternalAccess {
         return securityState;
     }
 
-    public static void setValue(BaseGenericIdEntity entity, String attribute, @Nullable Object value) {
+    public static boolean isHiddenOrReadOnly(SecurityState securityState, String attributeName) {
+        if (securityState == null) {
+            return false;
+        }
+        return securityState.getHiddenAttributes().contains(attributeName)
+                || securityState.getReadonlyAttributes().contains(attributeName);
+    }
+
+    public static boolean isRequired(SecurityState securityState, String attributeName) {
+        if (securityState == null) {
+            return false;
+        }
+        return securityState.getRequiredAttributes().contains(attributeName);
+    }
+
+    public static void setValue(Entity entity, String attribute, @Nullable Object value) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
         Field field = FieldUtils.getField(entity.getClass(), attribute, true);
         if (field == null)
@@ -236,7 +251,7 @@ public final class BaseEntityInternalAccess {
         }
     }
 
-    public static Object getValue(BaseGenericIdEntity entity, String attribute) {
+    public static Object getValue(Entity entity, String attribute) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
         Field field = FieldUtils.getField(entity.getClass(), attribute, true);
         if (field == null)

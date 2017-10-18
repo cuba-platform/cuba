@@ -232,8 +232,8 @@ public class EntitySerialization implements EntitySerializationAPI {
                 writeFields(entity, jsonObject, view, cyclicReferences);
             }
 
-            if (entity instanceof BaseGenericIdEntity) {
-                SecurityState securityState = getSecurityState((BaseGenericIdEntity) entity);
+            if (entity instanceof BaseGenericIdEntity || entity instanceof EmbeddableEntity) {
+                SecurityState securityState = getSecurityState(entity);
                 if (securityState != null) {
                     byte[] securityToken = getSecurityToken(securityState);
                     if (securityToken != null) {
@@ -464,7 +464,7 @@ public class EntitySerialization implements EntitySerializationAPI {
                 JsonPrimitive securityTokenJonPrimitive = jsonObject.getAsJsonPrimitive("__securityToken");
                 if (securityTokenJonPrimitive != null) {
                     byte[] securityToken = Base64.getDecoder().decode(securityTokenJonPrimitive.getAsString());
-                    setSecurityToken(getOrCreateSecurityState((BaseGenericIdEntity)entity), securityToken);
+                    setSecurityToken(getOrCreateSecurityState(entity), securityToken);
                 }
             }
 
@@ -558,6 +558,13 @@ public class EntitySerialization implements EntitySerializationAPI {
             Entity entity = metadata.create(metaClass);
             clearFields(entity);
             readFields(jsonObject, entity);
+            if (entity instanceof EmbeddableEntity) {
+                JsonPrimitive securityTokenJonPrimitive = jsonObject.getAsJsonPrimitive("__securityToken");
+                if (securityTokenJonPrimitive != null) {
+                    byte[] securityToken = Base64.getDecoder().decode(securityTokenJonPrimitive.getAsString());
+                    setSecurityToken(getOrCreateSecurityState(entity), securityToken);
+                }
+            }
             return entity;
         }
 

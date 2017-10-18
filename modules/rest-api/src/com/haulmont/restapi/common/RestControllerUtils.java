@@ -114,7 +114,15 @@ public class RestControllerUtils {
                 if (!metadataTools.isSystem(property) && !property.isReadOnly()) {
                     // Using reflective access to field because the attribute can be unfetched if loading not partial entities,
                     // which is the case when in-memory constraints exist
-                    BaseEntityInternalAccess.setValue((BaseGenericIdEntity) entity, property.getName(), null);
+                    BaseEntityInternalAccess.setValue(entity, property.getName(), null);
+                }
+            }
+            SecurityState securityState = BaseEntityInternalAccess.getSecurityState(entity);
+            if (securityState != null && securityState.getHiddenAttributes().contains(property.getName())) {
+                if (!metadataTools.isSystem(property)) {
+                    // Using reflective access to field because the attribute can be unfetched if loading not partial entities,
+                    // which is the case when in-memory constraints exist
+                    BaseEntityInternalAccess.setValue(entity, property.getName(), null);
                 }
             }
         }

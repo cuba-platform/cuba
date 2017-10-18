@@ -347,7 +347,7 @@ public class RdbmsStore implements DataStore {
             // merge the rest - instances can be detached or not
             for (Entity entity : context.getCommitInstances()) {
                 if (!PersistenceHelper.isNew(entity)) {
-                    security.restoreSecurityData((BaseGenericIdEntity) entity);
+                    security.restoreSecurityStateAndFilteredData((BaseGenericIdEntity) entity);
                     attributeSecurity.beforeMerge(entity);
 
                     Entity merged = em.merge(entity);
@@ -372,7 +372,7 @@ public class RdbmsStore implements DataStore {
 
             // remove
             for (Entity entity : context.getRemoveInstances()) {
-                security.restoreSecurityData((BaseGenericIdEntity) entity);
+                security.restoreSecurityStateAndFilteredData((BaseGenericIdEntity) entity);
 
                 Entity e;
                 if (entity instanceof SoftDelete) {

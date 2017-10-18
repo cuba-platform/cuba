@@ -33,6 +33,7 @@ import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.validation.CustomValidationException;
 import com.haulmont.cuba.core.global.validation.EntityValidationException;
 import com.haulmont.cuba.core.global.validation.groups.RestApiChecks;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -54,6 +55,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.CRC32;
+
+import static java.lang.String.format;
 
 @Component(EntityImportExportAPI.NAME)
 public class EntityImportExport implements EntityImportExportAPI {
@@ -275,9 +278,26 @@ public class EntityImportExport implements EntityImportExportAPI {
         //we must specify a view here because otherwise we may get UnfetchedAttributeException during merge
         commitContext.addInstanceToCommit(dstEntity, regularView);
 
+        SecurityState securityState = null;
+        if (srcEntity instanceof BaseGenericIdEntity) {
+            String storeName = metadata.getTools().getStoreName(srcEntity.getMetaClass());
+            DataStore dataStore = storeFactory.get(storeName);
+            //row-level security works only for entities from RdbmsStore
+            if (dataStore instanceof RdbmsStore) {
+                persistenceSecurity.restoreSecurityState(srcEntity);
+                securityState = BaseEntityInternalAccess.getSecurityState(srcEntity);
+            }
+        }
+
         for (EntityImportViewProperty importViewProperty : importView.getProperties()) {
             String propertyName = importViewProperty.getName();
             MetaProperty metaProperty = metaClass.getPropertyNN(propertyName);
+            if (BaseEntityInternalAccess.isHiddenOrReadOnly(securityState, propertyName)) {
+                continue;
+            }
+            if (BaseEntityInternalAccess.isRequired(securityState, propertyName) && srcEntity.getValue(propertyName) == null) {
+                throw new CustomValidationException(format("Attribute [%s] is required for entity %s", propertyName, srcEntity));
+            }
             if ((metaProperty.getRange().isDatatype() && !"version".equals(metaProperty.getName())) || metaProperty.getRange().isEnum()) {
                 dstEntity.setValue(propertyName, srcEntity.getValue(propertyName));
             } else if (metaProperty.getRange().isClass()) {
@@ -345,20 +365,9 @@ public class EntityImportExport implements EntityImportExportAPI {
         if (srcEntity instanceof BaseGenericIdEntity) {
             String storeName = metadata.getTools().getStoreName(srcEntity.getMetaClass());
             DataStore dataStore = storeFactory.get(storeName);
-            BaseGenericIdEntity srcGenericIdEntity = (BaseGenericIdEntity) srcEntity;
             //row-level security works only for entities from RdbmsStore
             if (dataStore instanceof RdbmsStore) {
-                //create an entity copy here, because filtered items must not be reloaded in the srcEntity for now,
-                //we only need a collection of filtered properties
-                try (Transaction tx = persistence.getTransaction()) {
-                    BaseGenericIdEntity srcGenericIdEntityCopy = metadata.getTools().deepCopy(srcGenericIdEntity);
-                    byte[] securityToken = BaseEntityInternalAccess.getSecurityToken(srcGenericIdEntity);
-                    SecurityState securityStateCopy = BaseEntityInternalAccess.getOrCreateSecurityState(srcGenericIdEntity);
-                    BaseEntityInternalAccess.setSecurityToken(securityStateCopy, securityToken);
-                    persistenceSecurity.restoreSecurityData(srcGenericIdEntityCopy);
-                    filteredItems = BaseEntityInternalAccess.getFilteredData(srcGenericIdEntityCopy);
-                    tx.commit();
-                }
+                filteredItems = BaseEntityInternalAccess.getFilteredData(srcEntity);
             }
         }
 
@@ -476,8 +485,25 @@ public class EntityImportExport implements EntityImportExportAPI {
             dstEmbeddedEntity = metadata.create(embeddedAttrMetaClass);
         }
 
+        SecurityState securityState = null;
+        if (srcEntity instanceof BaseGenericIdEntity) {
+            String storeName = metadata.getTools().getStoreName(srcEntity.getMetaClass());
+            DataStore dataStore = storeFactory.get(storeName);
+            //row-level security works only for entities from RdbmsStore
+            if (dataStore instanceof RdbmsStore) {
+                persistenceSecurity.restoreSecurityState(srcEmbeddedEntity);
+                securityState = BaseEntityInternalAccess.getSecurityState(srcEmbeddedEntity);
+            }
+        }
+
         for (EntityImportViewProperty vp : importViewProperty.getView().getProperties()) {
             MetaProperty mp = embeddedAttrMetaClass.getPropertyNN(vp.getName());
+            if (BaseEntityInternalAccess.isHiddenOrReadOnly(securityState, mp.getName())) {
+                continue;
+            }
+            if (BaseEntityInternalAccess.isRequired(securityState, mp.getName()) && srcEmbeddedEntity.getValue(mp.getName()) == null) {
+                throw new CustomValidationException(format("Attribute [%s] is required for entity %s", mp.getName(), srcEmbeddedEntity));
+            }
             if ((mp.getRange().isDatatype() && !"version".equals(mp.getName())) || mp.getRange().isEnum()) {
                 dstEmbeddedEntity.setValue(vp.getName(), srcEmbeddedEntity.getValue(vp.getName()));
             } else if (mp.getRange().isClass()) {
@@ -563,7 +589,7 @@ public class EntityImportExport implements EntityImportExportAPI {
             if (dataStore instanceof RdbmsStore) {
                 //restore filtered data, otherwise they will be lost
                 try (Transaction tx = persistence.getTransaction()) {
-                    persistenceSecurity.restoreSecurityData((BaseGenericIdEntity<?>) entity);
+                    persistenceSecurity.restoreSecurityStateAndFilteredData((BaseGenericIdEntity<?>) entity);
                     tx.commit();
                 }
             }
