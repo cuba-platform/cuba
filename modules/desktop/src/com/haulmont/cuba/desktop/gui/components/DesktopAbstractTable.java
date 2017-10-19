@@ -82,6 +82,7 @@ import java.util.stream.Collectors;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper.convertKeyCombination;
+import static java.util.Collections.singletonList;
 
 public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
         extends DesktopAbstractActionsHolderComponent<C>
@@ -1314,12 +1315,28 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
                 Column column = columnsOrder.get(i);
                 if (column.getId().equals(propertyId)) {
                     SortOrder sortOrder = ascending ? SortOrder.ASCENDING : SortOrder.DESCENDING;
-                    tableModel.sort(Collections.singletonList(new RowSorter.SortKey(i, sortOrder)));
+                    tableModel.sort(singletonList(new RowSorter.SortKey(i, sortOrder)));
                     onDataChange();
                     packRows();
                     break;
                 }
             }
+        }
+    }
+
+    @Override
+    public void sort(String columnId, SortDirection direction) {
+        Column column = getColumn(columnId);
+        if (column == null) {
+            throw new IllegalArgumentException("Unable to find column " + columnId);
+        }
+
+        if (isSortable()) {
+            SortOrder sortOrder = direction == SortDirection.ASCENDING ? SortOrder.ASCENDING : SortOrder.DESCENDING;
+            int columnIndex = columnsOrder.indexOf(column);
+            tableModel.sort(singletonList(new RowSorter.SortKey(columnIndex, sortOrder)));
+            onDataChange();
+            packRows();
         }
     }
 
