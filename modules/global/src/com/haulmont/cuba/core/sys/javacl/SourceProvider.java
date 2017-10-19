@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,15 +37,14 @@ class SourceProvider {
     public String getSourceString(String name) throws IOException {
         File srcFile = getSourceFile(name);
         if (!srcFile.exists()) {
-            throw new FileNotFoundException("Java source for " + name + " not found");
+            throw new FileNotFoundException(String.format("Java source for %s not found", name));
         }
-        return FileUtils.readFileToString(srcFile);
+        return FileUtils.readFileToString(srcFile, StandardCharsets.UTF_8);
     }
 
     public File getSourceFile(String name) {
         String path = name.replace(".", "/");
-        File srcFile = new File(rootDir, path + JAVA_EXT);
-        return srcFile;
+        return new File(rootDir, path + JAVA_EXT);
     }
 
     public boolean sourceExistsInFileSystem(String className) {
@@ -64,11 +64,13 @@ class SourceProvider {
         File srcDir = path != null ? new File(rootDir, path) : new File(rootDir);
         String[] fileNames = srcDir.list();
         List<String> classNames = new ArrayList<>();
-        for (String fileName : fileNames) {
-            if (fileName.endsWith(JAVA_EXT)) {
-                String className = fileName.replace(JAVA_EXT, "");
-                String fullClassName = packageName != null ? packageName + "." + className : className;
-                classNames.add(fullClassName);
+        if (fileNames != null) {
+            for (String fileName : fileNames) {
+                if (fileName.endsWith(JAVA_EXT)) {
+                    String className = fileName.replace(JAVA_EXT, "");
+                    String fullClassName = packageName != null ? packageName + "." + className : className;
+                    classNames.add(fullClassName);
+                }
             }
         }
         return classNames;
