@@ -18,11 +18,14 @@ package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.sys.remoting.RemoteClientInfo;
 import com.haulmont.cuba.security.auth.AnonymousSessionHolder;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.TrustedLoginHandler;
 import com.haulmont.cuba.security.sys.UserSessionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
@@ -35,6 +38,8 @@ import static com.haulmont.cuba.core.sys.AppContext.withSecurityContext;
 
 @Component(TrustedClientService.NAME)
 public class TrustedClientServiceBean implements TrustedClientService {
+
+    private final Logger log = LoggerFactory.getLogger(TrustedClientServiceBean.class);
 
     protected static final String MSG_PACK = "com.haulmont.cuba.security";
 
@@ -54,10 +59,7 @@ public class TrustedClientServiceBean implements TrustedClientService {
     @Nonnull
     @Override
     public UserSession getSystemSession(String trustedClientPassword) throws LoginException {
-        if (!trustedLoginHandler.checkPassword(trustedClientPassword)) {
-            throw new LoginException(getInvalidCredentialsMessage(serverConfig.getJmxUserLogin(),
-                    messages.getTools().getDefaultLocale()));
-        }
+        checkTrustedClientCredentials(trustedClientPassword);
 
         return withSecurityContext(null, () -> {
             UserSession userSession = authentication.begin();
@@ -70,10 +72,7 @@ public class TrustedClientServiceBean implements TrustedClientService {
     @Nonnull
     @Override
     public UserSession getAnonymousSession(String trustedClientPassword) throws LoginException {
-        if (!trustedLoginHandler.checkPassword(trustedClientPassword)) {
-            throw new LoginException(getInvalidCredentialsMessage(serverConfig.getJmxUserLogin(),
-                    messages.getTools().getDefaultLocale()));
-        }
+        checkTrustedClientCredentials(trustedClientPassword);
 
         return anonymousSessionHolder.getAnonymousSession();
     }
@@ -81,15 +80,29 @@ public class TrustedClientServiceBean implements TrustedClientService {
     @Nullable
     @Override
     public UserSession findSession(String trustedClientPassword, UUID sessionId) throws LoginException {
-        if (!trustedLoginHandler.checkPassword(trustedClientPassword)) {
-            throw new LoginException(getInvalidCredentialsMessage(serverConfig.getJmxUserLogin(),
-                    messages.getTools().getDefaultLocale()));
-        }
+        checkTrustedClientCredentials(trustedClientPassword);
 
         return userSessionManager.findSession(sessionId);
     }
 
     protected String getInvalidCredentialsMessage(String login, Locale locale) {
         return messages.formatMessage(MSG_PACK, "LoginException.InvalidLoginOrPassword", locale, login);
+    }
+
+    protected void checkTrustedClientCredentials(String trustedClientPassword) throws LoginException {
+        RemoteClientInfo remoteClientInfo = RemoteClientInfo.get();
+
+        if (remoteClientInfo != null && remoteClientInfo.getAddress() != null) {
+            // reject request from not permitted client ip
+            if (!trustedLoginHandler.checkAddress(remoteClientInfo.getAddress())) {
+                log.warn("Attempt trusted access from not permitted IP address: {}", remoteClientInfo.getAddress());
+                throw new LoginException("Trusted access denied");
+            }
+        }
+
+        if (!trustedLoginHandler.checkPassword(trustedClientPassword)) {
+            throw new LoginException(getInvalidCredentialsMessage(serverConfig.getJmxUserLogin(),
+                    messages.getTools().getDefaultLocale()));
+        }
     }
 }
