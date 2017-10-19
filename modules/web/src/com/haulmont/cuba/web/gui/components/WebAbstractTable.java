@@ -463,6 +463,20 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
     }
 
+    @Override
+    public void sort(String columnId, SortDirection direction) {
+        Column column = getColumn(columnId);
+        if (column == null) {
+            throw new IllegalArgumentException("Unable to find column " + columnId);
+        }
+
+        if (isSortable()) {
+            component.setSortAscending(direction == SortDirection.ASCENDING);
+            component.setSortContainerPropertyId(column.getId());
+            component.sort();
+        }
+    }
+
     @Nullable
     @Override
     public SortInfo getSortInfo() {

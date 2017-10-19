@@ -21,6 +21,7 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.config.AppPropertyEntity;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Table.SortDirection;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.settings.Settings;
 import org.apache.commons.lang.StringUtils;
@@ -68,7 +69,7 @@ public class AppPropertiesBrowse extends AbstractWindow {
         });
         paramsTable.setItemClickAction(editValueAction);
 
-        paramsTable.sortBy(paramsDs.getMetaClass().getPropertyPath("name"), true);
+        paramsTable.sort("name", SortDirection.ASCENDING);
 
         searchField.addValueChangeListener(e -> {
             paramsDs.refresh(ParamsMap.of("name", e.getValue()));
