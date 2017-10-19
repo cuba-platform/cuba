@@ -128,10 +128,12 @@ public class AuthenticationServiceBean implements AuthenticationService {
     protected void preprocessCredentials(Credentials credentials) {
         if (credentials instanceof TrustedClientCredentials) {
             RemoteClientInfo remoteClientInfo = RemoteClientInfo.get();
+
+            TrustedClientCredentials trustedClientCredentials = (TrustedClientCredentials) credentials;
             if (remoteClientInfo != null) {
-                ((TrustedClientCredentials) credentials).setClientIpAddress(remoteClientInfo.getAddress());
+                trustedClientCredentials.setClientIpAddress(remoteClientInfo.getAddress());
             } else {
-                log.warn("Unable to determine remote client IP");
+                trustedClientCredentials.setClientIpAddress(null);
             }
         }
     }
