@@ -176,8 +176,18 @@ public interface Table<E extends Entity>
      *
      * @param propertyId    column indicated by a corresponding {@code MetaPropertyPath} object
      * @param ascending     sort direction
+     * @deprecated Use {@link Table#sort(String, SortDirection)} method
      */
+    @Deprecated
     void sortBy(Object propertyId, boolean ascending);
+
+    /**
+     * Sorts the Table data for passed column id in the chosen sort direction.
+     *
+     * @param columnId  id of the column to sort
+     * @param direction sort direction
+     */
+    void sort(String columnId, SortDirection direction);
 
     /**
      * @return current sort information or null if no column is sorted
@@ -489,6 +499,21 @@ public interface Table<E extends Entity>
         public boolean getAscending() {
             return ascending;
         }
+    }
+
+    /**
+     * Describes sorting direction.
+     */
+    enum SortDirection {
+        /**
+         * Ascending (e.g. A-Z, 1..9) sort order
+         */
+        ASCENDING,
+
+        /**
+         * Descending (e.g. Z-A, 9..1) sort order
+         */
+        DESCENDING
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
