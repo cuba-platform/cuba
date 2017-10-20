@@ -16,6 +16,14 @@
 
 package com.haulmont.cuba.security.global;
 
+import com.haulmont.cuba.core.global.Logging;
+import com.haulmont.cuba.core.global.SupportedByClient;
+
+/**
+ * Exception that is thrown when user does not have permission to log in from the current IP.
+ */
+@SupportedByClient
+@Logging(Logging.Type.BRIEF)
 public class UserIpRestrictedException extends LoginException {
     public UserIpRestrictedException(String message) {
         super(message);
