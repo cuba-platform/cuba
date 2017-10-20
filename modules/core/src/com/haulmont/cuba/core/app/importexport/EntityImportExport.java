@@ -249,7 +249,7 @@ public class EntityImportExport implements EntityImportExportAPI {
             }
         }
 
-        return dataManager.commit(commitContext);
+        return dataManager.secure().commit(commitContext);
     }
 
     /**

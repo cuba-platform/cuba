@@ -176,15 +176,10 @@ public class AttributeSecuritySupport {
      * @param entity detached entity
      */
     public void afterMerge(Entity entity) {
-        if (!isAuthorizationRequired()) {
-            return;
-        }
-        if (entity != null) {
-            if (entity instanceof BaseGenericIdEntity) {
-                BaseGenericIdEntity genericIdEntity = (BaseGenericIdEntity) entity;
-                setupAttributeAccess(genericIdEntity);
-                metadataTools.traverseAttributes(genericIdEntity, new AttributeAccessVisitor(Sets.newHashSet(entity)));
-            }
+        if (entity instanceof BaseGenericIdEntity) {
+            BaseGenericIdEntity genericIdEntity = (BaseGenericIdEntity) entity;
+            setupAttributeAccess(genericIdEntity);
+            metadataTools.traverseAttributes(genericIdEntity, new AttributeAccessVisitor(Sets.newHashSet(entity)));
         }
     }
 
