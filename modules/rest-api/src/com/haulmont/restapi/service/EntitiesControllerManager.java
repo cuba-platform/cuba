@@ -325,6 +325,7 @@ public class EntitiesControllerManager {
         Collection<Entity> importedEntities;
         try {
             importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity), entityImportView, true);
+            importedEntities.forEach(it-> restControllerUtils.applyAttributesSecurity(it));
         } catch (EntityImportException e) {
             throw new RestAPIException("Entity update failed", e.getMessage(), HttpStatus.BAD_REQUEST, e);
         }
