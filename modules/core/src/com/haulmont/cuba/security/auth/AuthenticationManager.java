@@ -29,17 +29,6 @@ public interface AuthenticationManager {
     String NAME = "cuba_AuthenticationManager";
 
     /**
-     * Authenticates a user, starts session and provides authentication details.
-     * Obtained session can be used for service requests.
-     *
-     * @param credentials credentials
-     * @return authentication details
-     * @throws LoginException if authentication fails
-     */
-    @Nonnull
-    AuthenticationDetails login(Credentials credentials) throws LoginException;
-
-    /**
      * Authenticates a user and provides authentication details. Does not start session.
      * Obtained session cannot be used for service requests.
      *
@@ -51,11 +40,15 @@ public interface AuthenticationManager {
     AuthenticationDetails authenticate(Credentials credentials) throws LoginException;
 
     /**
-     * Log out and destroy an active user session.
+     * Authenticates a user, starts session and provides authentication details.
+     * Obtained session can be used for service requests.
      *
-     * @see AuthenticationService#logout()
+     * @param credentials credentials
+     * @return authentication details
+     * @throws LoginException if authentication fails
      */
-    void logout();
+    @Nonnull
+    AuthenticationDetails login(Credentials credentials) throws LoginException;
 
     /**
      * Substitute a user, obtaining all its security related environment.
@@ -71,5 +64,13 @@ public interface AuthenticationManager {
      * </ul>
      * @see AuthenticationService#substituteUser(User)
      */
+    @Nonnull
     UserSession substituteUser(User substitutedUser);
+
+    /**
+     * Log out and destroy an active user session.
+     *
+     * @see AuthenticationService#logout()
+     */
+    void logout();
 }

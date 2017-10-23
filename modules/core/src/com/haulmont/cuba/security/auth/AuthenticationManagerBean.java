@@ -62,6 +62,22 @@ public class AuthenticationManagerBean implements AuthenticationManager {
 
     @Override
     @Nonnull
+    public AuthenticationDetails authenticate(Credentials credentials) throws LoginException {
+        checkNotNullArgument(credentials, "credentials should not be null");
+
+        try (Transaction tx = persistence.getTransaction()) {
+            AuthenticationDetails authenticationDetails = authenticateInternal(credentials);
+
+            tx.commit();
+
+            userSessionManager.clearPermissionsOnUser(authenticationDetails.getSession());
+
+            return authenticationDetails;
+        }
+    }
+
+    @Override
+    @Nonnull
     public AuthenticationDetails login(Credentials credentials) throws LoginException {
         checkNotNullArgument(credentials, "credentials should not be null");
 
@@ -101,38 +117,7 @@ public class AuthenticationManagerBean implements AuthenticationManager {
         }
     }
 
-    @Override
     @Nonnull
-    public AuthenticationDetails authenticate(Credentials credentials) throws LoginException {
-        checkNotNullArgument(credentials, "credentials should not be null");
-
-        try (Transaction tx = persistence.getTransaction()) {
-            AuthenticationDetails authenticationDetails = authenticateInternal(credentials);
-
-            tx.commit();
-
-            userSessionManager.clearPermissionsOnUser(authenticationDetails.getSession());
-
-            return authenticationDetails;
-        }
-    }
-
-    @Override
-    public void logout() {
-        try {
-            UserSession session = userSessionSource.getUserSession();
-            userSessionManager.removeSession(session);
-            log.info("Logged out: {}", session);
-
-            publishUserLoggedOut(session);
-
-        } catch (SecurityException e) {
-            log.warn("Couldn't logout: {}", e);
-        } catch (NoUserSessionException e) {
-            log.warn("NoUserSessionException thrown on logout");
-        }
-    }
-
     @Override
     public UserSession substituteUser(User substitutedUser) {
         UserSession currentSession = userSessionSource.getUserSession();
@@ -161,6 +146,22 @@ public class AuthenticationManagerBean implements AuthenticationManager {
             userSessionManager.storeSession(session);
 
             return session;
+        }
+    }
+
+    @Override
+    public void logout() {
+        try {
+            UserSession session = userSessionSource.getUserSession();
+            userSessionManager.removeSession(session);
+            log.info("Logged out: {}", session);
+
+            publishUserLoggedOut(session);
+
+        } catch (SecurityException e) {
+            log.warn("Couldn't logout: {}", e);
+        } catch (NoUserSessionException e) {
+            log.warn("NoUserSessionException thrown on logout");
         }
     }
 
