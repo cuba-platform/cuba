@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.Collections;
 
@@ -43,6 +44,25 @@ public class AuthenticationServiceBean implements AuthenticationService {
     @Inject
     protected UserSessionLog userSessionLog;
 
+    @Nonnull
+    @Override
+    public AuthenticationDetails authenticate(Credentials credentials) throws LoginException {
+        try {
+            preprocessCredentials(credentials);
+
+            //noinspection UnnecessaryLocalVariable
+            AuthenticationDetails authenticationDetails = authenticationManager.authenticate(credentials);
+            return authenticationDetails;
+        } catch (LoginException e) {
+            log.info("Authentication failed: {}", e.toString());
+            throw e;
+        } catch (Throwable e) {
+            log.error("Authentication error", e);
+            throw wrapInLoginException(e);
+        }
+    }
+
+    @Nonnull
     @Override
     public AuthenticationDetails login(Credentials credentials) throws LoginException {
         try {
@@ -63,20 +83,20 @@ public class AuthenticationServiceBean implements AuthenticationService {
         }
     }
 
+    @Nonnull
     @Override
-    public AuthenticationDetails authenticate(Credentials credentials) throws LoginException {
+    public UserSession substituteUser(User substitutedUser) {
         try {
-            preprocessCredentials(credentials);
+            UserSession currentSession = userSessionSource.getUserSession();
+            userSessionLog.updateSessionLogRecord(currentSession, SessionAction.SUBSTITUTION);
 
-            //noinspection UnnecessaryLocalVariable
-            AuthenticationDetails authenticationDetails = authenticationManager.authenticate(credentials);
-            return authenticationDetails;
-        } catch (LoginException e) {
-            log.info("Authentication failed: {}", e.toString());
-            throw e;
+            UserSession substitutionSession = authenticationManager.substituteUser(substitutedUser);
+
+            userSessionLog.createSessionLogRecord(substitutionSession, SessionAction.LOGIN, currentSession, Collections.emptyMap());
+            return substitutionSession;
         } catch (Throwable e) {
-            log.error("Authentication error", e);
-            throw wrapInLoginException(e);
+            log.error("Substitution error", e);
+            throw new RuntimeException("Substitution error: " + e.toString());
         }
     }
 
@@ -97,22 +117,6 @@ public class AuthenticationServiceBean implements AuthenticationService {
         } catch (Throwable e) {
             log.error("Logout error", e);
             throw new RuntimeException("Logout error: " + e.toString());
-        }
-    }
-
-    @Override
-    public UserSession substituteUser(User substitutedUser) {
-        try {
-            UserSession currentSession = userSessionSource.getUserSession();
-            userSessionLog.updateSessionLogRecord(currentSession, SessionAction.SUBSTITUTION);
-
-            UserSession substitutionSession = authenticationManager.substituteUser(substitutedUser);
-
-            userSessionLog.createSessionLogRecord(substitutionSession, SessionAction.LOGIN, currentSession, Collections.emptyMap());
-            return substitutionSession;
-        } catch (Throwable e) {
-            log.error("Substitution error", e);
-            throw new RuntimeException("Substitution error: " + e.toString());
         }
     }
 
