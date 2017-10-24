@@ -32,6 +32,9 @@
     <context:annotation-config/>
     <context:component-scan base-package="com.haulmont.restapi"/>
 
+    <!-- Override web implementation bean in main context -->
+    <bean id="cuba_Events" class="com.haulmont.cuba.core.sys.EventsImpl"/>
+
     <mvc:annotation-driven/>
 
     <mvc:interceptors>
