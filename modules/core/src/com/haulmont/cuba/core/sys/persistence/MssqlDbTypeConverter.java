@@ -81,6 +81,8 @@ public class MssqlDbTypeConverter implements DbTypeConverter {
             return Types.VARCHAR;
         else if (javaClass == Boolean.class)
             return Types.BIT;
+        else if (javaClass == String.class)
+            return Types.VARCHAR;
         else if (javaClass == Integer.class)
             return Types.INTEGER;
         else if (javaClass == Long.class)
