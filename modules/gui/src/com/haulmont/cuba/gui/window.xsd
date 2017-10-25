@@ -1507,6 +1507,8 @@
                 <xs:attribute name="asyncSearchDelayMs" type="xs:integer"/>
                 <xs:attribute name="minSearchStringLength" type="xs:integer"/>
                 <xs:attribute name="suggestionsLimit" type="xs:integer"/>
+
+                <xs:attribute name="inputPrompt" type="resourceString"/>
                 
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasTabIndex"/>

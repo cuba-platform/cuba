@@ -210,4 +210,14 @@ public class CubaSuggestionField extends AbstractField<Object> {
     public int getSuggestionsLimit() {
         return suggestionsLimit;
     }
+
+    public String getInputPrompt() {
+        return getState(false).inputPrompt;
+    }
+
+    public void setInputPrompt(String inputPrompt) {
+        if (!StringUtils.equals(inputPrompt, getState(false).inputPrompt)) {
+            getState().inputPrompt = inputPrompt;
+        }
+    }
 }

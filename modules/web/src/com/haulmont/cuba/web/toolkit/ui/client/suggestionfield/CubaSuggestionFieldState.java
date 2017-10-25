@@ -27,4 +27,5 @@ public class CubaSuggestionFieldState extends AbstractFieldState {
     public int asyncSearchDelayMs = 300;
 
     public String text = "";
+    public String inputPrompt = "";
 }

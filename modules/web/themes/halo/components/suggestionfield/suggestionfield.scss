@@ -41,4 +41,23 @@ $cuba-suggestionfield-edit-color: scale-color(lighten($v-focus-color, 35%), $sat
   .#{$primary-stylename}-item-selected {
     @include valo-selection-item-selected-style;
   }
+
+  .#{$primary-stylename}.v-disabled,
+  .#{$primary-stylename}.v-readonly {
+    &::-webkit-input-placeholder {
+       color:transparent;
+    }
+
+    &:-moz-placeholder {
+       color:transparent;
+    }
+
+    &::-moz-placeholder {
+       color:transparent;
+    }
+
+    &:-ms-input-placeholder {
+       color:transparent;
+    }
+  }
 }
