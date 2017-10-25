@@ -40,6 +40,7 @@ public class SuggestionFieldLoader extends SuggestionFieldQueryLoader<Suggestion
         loadSuggestionsLimit(resultComponent, element);
 
         loadCaptionProperty(resultComponent, element);
+        loadInputPrompt(resultComponent, element);
 
         loadQuery(resultComponent, element);
     }

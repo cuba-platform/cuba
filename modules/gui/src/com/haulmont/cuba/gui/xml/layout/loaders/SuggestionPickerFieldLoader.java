@@ -18,7 +18,10 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.SuggestionPickerField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -46,6 +49,8 @@ public class SuggestionPickerFieldLoader extends SuggestionFieldQueryLoader<Sugg
         loadAsyncSearchDelayMs(resultComponent, element);
         loadMinSearchStringLength(resultComponent, element);
         loadSuggestionsLimit(resultComponent, element);
+
+        loadInputPrompt(resultComponent, element);
 
         loadQuery(resultComponent, element);
     }

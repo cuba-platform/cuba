@@ -351,6 +351,10 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
         return addHandler(handler, SelectionEvent.getType());
     }
 
+    public void setInputPrompt(String inputPrompt) {
+        textField.getElement().setAttribute("placeHolder", inputPrompt);
+    }
+
     protected class SuggestionPopup extends VOverlay implements PopupPanel.PositionCallback, CloseHandler<PopupPanel> {
         private static final int Z_INDEX = 30000;
 

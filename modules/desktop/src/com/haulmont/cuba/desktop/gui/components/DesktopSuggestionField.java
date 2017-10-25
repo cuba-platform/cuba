@@ -87,6 +87,9 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     private ArrowDownActionHandler arrowDownActionHandler;
     protected int suggestionsLimit = 10;
 
+    // just stub
+    protected String inputPrompt;
+
     public DesktopSuggestionField() {
         composition = new JPanel();
         composition.setLayout(new BorderLayout());
@@ -707,6 +710,16 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
         }
 
         handleSearchResults(suggestions);
+    }
+
+    @Override
+    public String getInputPrompt() {
+        return inputPrompt;
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        this.inputPrompt = inputPrompt;
     }
 
     // we don't need to select current item in suggestion list automatically

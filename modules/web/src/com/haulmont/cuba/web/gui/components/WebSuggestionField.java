@@ -325,4 +325,14 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
     public boolean isModified() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public String getInputPrompt() {
+        return component.getInputPrompt();
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        component.setInputPrompt(inputPrompt);
+    }
 }
