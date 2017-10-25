@@ -361,10 +361,7 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
             //noinspection unchecked
             Map<String, String> params =
                     (Map<String, String>) wrappedSession.getAttribute(LAST_REQUEST_PARAMS_ATTR);
-            if (params == null) {
-                log.warn("Unable to process the external link: lastRequestParams not found in session");
-                return;
-            }
+            params = params != null ? params : Collections.emptyMap();
 
             try {
                 LinkHandler linkHandler = AppBeans.getPrototype(LinkHandler.NAME, app, action, params);
