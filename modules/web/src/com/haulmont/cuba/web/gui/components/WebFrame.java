@@ -209,7 +209,8 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
         Collection<Component> components = ComponentsHelper.getComponents(this);
         for (Component component : components) {
             if (component instanceof Validatable) {
-                if (!((Validatable) component).isValid())
+                Component.Validatable validatable = (Component.Validatable) component;
+                if (validatable.isValidateOnCommit() && !validatable.isValid())
                     return false;
             }
         }
@@ -221,7 +222,10 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
         Collection<Component> components = ComponentsHelper.getComponents(this);
         for (Component component : components) {
             if (component instanceof Validatable) {
-                ((Validatable) component).validate();
+                Component.Validatable validatable = (Component.Validatable) component;
+                if (validatable.isValidateOnCommit()) {
+                    validatable.validate();
+                }
             }
         }
     }
@@ -254,15 +258,17 @@ public class WebFrame extends WebVBoxLayout implements Frame, WrappedFrame {
         for (Component component : components) {
             if (component instanceof Validatable) {
                 Validatable validatable = (Validatable) component;
-                try {
-                    validatable.validate();
-                } catch (ValidationException e) {
-                    if (log.isTraceEnabled())
-                        log.trace("Validation failed", e);
-                    else if (log.isDebugEnabled())
-                        log.debug("Validation failed: " + e);
+                if (validatable.isValidateOnCommit()) {
+                    try {
+                        validatable.validate();
+                    } catch (ValidationException e) {
+                        if (log.isTraceEnabled())
+                            log.trace("Validation failed", e);
+                        else if (log.isDebugEnabled())
+                            log.debug("Validation failed: " + e);
 
-                    ComponentsHelper.fillErrorMessages(validatable, e, errors);
+                        ComponentsHelper.fillErrorMessages(validatable, e, errors);
+                    }
                 }
             }
         }

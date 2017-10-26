@@ -181,7 +181,8 @@ public class WindowDelegate {
         Collection<Component> components = ComponentsHelper.getComponents(window);
         for (Component component : components) {
             if (component instanceof Component.Validatable) {
-                if (!((Component.Validatable) component).isValid())
+                Component.Validatable validatable = (Component.Validatable) component;
+                if (validatable.isValidateOnCommit() && !validatable.isValid())
                     return false;
             }
         }
@@ -192,7 +193,10 @@ public class WindowDelegate {
         Collection<Component> components = ComponentsHelper.getComponents(window);
         for (Component component : components) {
             if (component instanceof Component.Validatable) {
-                ((Component.Validatable) component).validate();
+                Component.Validatable validatable = (Component.Validatable) component;
+                if (validatable.isValidateOnCommit()) {
+                    validatable.validate();
+                }
             }
         }
     }

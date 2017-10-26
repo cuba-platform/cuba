@@ -833,6 +833,17 @@ public interface Component {
     interface Validatable {
         boolean isValid();
         void validate() throws ValidationException;
+
+        /**
+         * Enable/disable component validation on window commit for methods
+         * {@link Window#validateAll}, {@link Frame#validate},
+         * {@link Frame#validateAll}, {@link Frame#isValid}
+         * By default is true and component is validated on window commit.
+         * For FieldGroup is false.
+         */
+        default boolean isValidateOnCommit() {
+            return true;
+        }
     }
 
     /**
