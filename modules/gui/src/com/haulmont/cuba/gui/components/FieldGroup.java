@@ -28,7 +28,7 @@ import java.util.Map;
  * Multi-column form component.
  */
 public interface FieldGroup extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
-                                    Component.HasBorder, Component.Editable,
+                                    Component.HasBorder, Component.Editable, Component.Validatable,
                                     Component.EditableChangeNotifier, Component.ChildEditableController,
                                     Component.Container {
     String NAME = "fieldGroup";
@@ -484,6 +484,11 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
      * @param fieldFactory field factory
      */
     void setFieldFactory(FieldGroupFieldFactory fieldFactory);
+
+    @Override
+    default boolean isValidateOnCommit() {
+        return false;
+    }
 
     /*
      * Deprecated API

@@ -1457,15 +1457,18 @@ public class DesktopWindow implements Window, Component.Disposable,
         Collection<Component> components = ComponentsHelper.getComponents(this);
         for (Component component : components) {
             if (component instanceof Validatable) {
-                try {
-                    ((Validatable) component).validate();
-                } catch (ValidationException e) {
-                    if (log.isTraceEnabled())
-                        log.trace("Validation failed", e);
-                    else if (log.isDebugEnabled())
-                        log.debug("Validation failed: " + e);
+                Validatable validatable = (Validatable) component;
+                if (validatable.isValidateOnCommit()) {
+                    try {
+                        validatable.validate();
+                    } catch (ValidationException e) {
+                        if (log.isTraceEnabled())
+                            log.trace("Validation failed", e);
+                        else if (log.isDebugEnabled())
+                            log.debug("Validation failed: " + e);
 
-                    ComponentsHelper.fillErrorMessages((Validatable) component, e, errors);
+                        ComponentsHelper.fillErrorMessages(validatable, e, errors);
+                    }
                 }
             }
         }
