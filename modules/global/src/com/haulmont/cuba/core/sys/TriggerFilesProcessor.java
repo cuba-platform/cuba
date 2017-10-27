@@ -18,13 +18,16 @@
 package com.haulmont.cuba.core.sys;
 
 import com.google.common.collect.Iterables;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.IOException;
@@ -39,7 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component(TriggerFilesProcessor.NAME)
-public class TriggerFilesProcessor {
+public class TriggerFilesProcessor implements ApplicationContextAware {
     public static final String NAME = "cuba_TriggerFilesProcessor";
 
     private final Logger log = LoggerFactory.getLogger(TriggerFilesProcessor.class);
@@ -47,6 +50,7 @@ public class TriggerFilesProcessor {
     protected String tempDir;
 
     protected Pattern fileNamePattern = Pattern.compile("(.+?)\\.(.+?)(\\(.+?\\))?$");
+    protected ApplicationContext applicationContext;
 
     @Inject
     public void setConfiguration(Configuration configuration) {
@@ -114,12 +118,21 @@ public class TriggerFilesProcessor {
                 }
             }
 
-            log.info("Calling {}", fileName);
-            Object bean = AppBeans.get(beanName);
+            Object bean;
+            try {
+                bean = applicationContext.getBean(beanName);
+            } catch (NoSuchBeanDefinitionException e) {
+                log.warn("Bean \"{}\" is not found.", beanName);
+                return;
+            }
+
             Class<?> beanClass = bean.getClass();
             Method method = typesArray == null ?
                     beanClass.getMethod(methodName) :
                     beanClass.getMethod(methodName, typesArray);
+
+            log.info("Calling {}", fileName);
+
             Object result = paramsArray == null ?
                     method.invoke(bean) :
                     method.invoke(bean, (Object[]) paramsArray);
@@ -146,5 +159,10 @@ public class TriggerFilesProcessor {
         }
 
         return paths;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

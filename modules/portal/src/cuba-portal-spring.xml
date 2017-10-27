@@ -35,6 +35,9 @@
 
         <!-- Exclude default CUBA controllers -->
         <context:exclude-filter type="regex" expression="com.haulmont.cuba.portal.controllers.*"/>
+
+        <!-- Exclude Thymeleaf invalidation beans -->
+        <context:exclude-filter type="regex" expression="com.haulmont.cuba.portal.sys.thymeleaf.*"/>
     </context:component-scan>
 
     <bean id="cuba_UserSessionSource" class="com.haulmont.cuba.portal.sys.security.PortalUserSessionSource"/>
