@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.app.events.SetupAttributeAccessEvent;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.CubaApplicationEventMulticaster;
 import com.haulmont.cuba.core.sys.SecurityTokenManager;
 import com.haulmont.cuba.core.sys.persistence.CubaEntityFetchGroup;
 import org.eclipse.persistence.queries.FetchGroup;
@@ -67,6 +68,9 @@ public class AttributeSecuritySupport {
 
     @Inject
     protected EntityStates entityStates;
+
+    @Inject
+    protected CubaApplicationEventMulticaster applicationEventMulticaster;
 
     /**
      * Removes restricted attributes from a view.
@@ -217,29 +221,45 @@ public class AttributeSecuritySupport {
         if (entity instanceof BaseGenericIdEntity || entity instanceof EmbeddableEntity) {
             SetupAttributeAccessEvent<T> event = new SetupAttributeAccessEvent<>(entity);
             events.publish(event);
-            boolean writeSecurityToken = false;
             if (event.getReadonlyAttributes() != null) {
                 Set<String> attributes = event.getReadonlyAttributes();
                 SecurityState state = getOrCreateSecurityState(entity);
                 addReadonlyAttributes(state, attributes.toArray(new String[attributes.size()]));
-                writeSecurityToken = true;
             }
             if (event.getRequiredAttributes() != null) {
                 Set<String> attributes = event.getRequiredAttributes();
                 SecurityState state = getOrCreateSecurityState(entity);
                 addRequiredAttributes(state, attributes.toArray(new String[attributes.size()]));
-                writeSecurityToken = true;
             }
             if (event.getHiddenAttributes() != null) {
                 Set<String> attributes = event.getHiddenAttributes();
                 SecurityState state = getOrCreateSecurityState(entity);
                 addHiddenAttributes(state, attributes.toArray(new String[attributes.size()]));
-                writeSecurityToken = true;
             }
-            if (writeSecurityToken) {
+            if (isAttributeAccessEnabled(event)) {
                 securityTokenManager.writeSecurityToken(entity);
             }
         }
+    }
+
+    /**
+     * Checks if attribute access enabled for the current entity type.
+     * It's based on the existence of an event listener for SetupAttributeAccessEvent.
+     * @param entityClass - entity metaClass
+     */
+    @SuppressWarnings("unchecked")
+    public boolean isAttributeAccessEnabled(MetaClass entityClass) {
+        return isAttributeAccessEnabled(new SetupAttributeAccessEvent(metadata.create(entityClass)));
+    }
+
+    /**
+     * Checks if attribute access enabled for the current entity type.
+     * It's based on the existence of an event listener for SetupAttributeAccessEvent.
+     * @param event - SetupAttributeAccessEvent
+     */
+    public boolean isAttributeAccessEnabled(SetupAttributeAccessEvent event) {
+        Collection listeners = applicationEventMulticaster.getApplicationListeners(event, event.getResolvableType());
+        return listeners != null && listeners.size() > 0;
     }
 
     protected void checkRequiredAttributes(Entity entity) {

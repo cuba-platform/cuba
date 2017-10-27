@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.app.AttributeSecuritySupport;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
@@ -58,6 +59,9 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
 
     @Inject
     protected ReferenceToEntitySupport referenceToEntitySupport;
+
+    @Inject
+    protected AttributeSecuritySupport attributeSecuritySupport;
 
     @Override
     public boolean applyConstraints(Query query) {
@@ -221,6 +225,11 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
                                 entity.getMetaClass().getName());
                     }
                 }
+            }
+            if (attributeSecuritySupport.isAttributeAccessEnabled(metaClass)) {
+                throw new RowLevelSecurityException(format("Could not read security token from entity %s, " +
+                        "even though there are active attribute access for the entity.", entity),
+                        entity.getMetaClass().getName());
             }
         }
     }

@@ -270,16 +270,18 @@ public class EntityImportExport implements EntityImportExportAPI {
                                   CommitContext commitContext,
                                   Collection<ReferenceInfo> referenceInfoList) {
         MetaClass metaClass = srcEntity.getMetaClass();
+        boolean isNew = false;
         if (dstEntity == null) {
             dstEntity = metadata.create(metaClass);
             dstEntity.setValue("id", srcEntity.getId());
+            isNew = true;
         }
 
         //we must specify a view here because otherwise we may get UnfetchedAttributeException during merge
         commitContext.addInstanceToCommit(dstEntity, regularView);
 
         SecurityState securityState = null;
-        if (srcEntity instanceof BaseGenericIdEntity) {
+        if (srcEntity instanceof BaseGenericIdEntity  && !isNew) {
             String storeName = metadata.getTools().getStoreName(srcEntity.getMetaClass());
             DataStore dataStore = storeFactory.get(storeName);
             //row-level security works only for entities from RdbmsStore
