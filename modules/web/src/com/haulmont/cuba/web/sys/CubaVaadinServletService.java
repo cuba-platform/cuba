@@ -31,7 +31,6 @@ import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
 import com.vaadin.server.*;
 import com.vaadin.server.communication.*;
-import com.vaadin.shared.ApplicationConstants;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import elemental.json.Json;
@@ -346,6 +345,7 @@ public class CubaVaadinServletService extends VaadinServletService {
 
         @Override
         protected String getInitialUidl(VaadinRequest request, UI uI) throws IOException {
+            // CAUTION: copied from parent class
             try (StringWriter writer = new StringWriter()) {
                 writer.write("{");
 
@@ -353,6 +353,7 @@ public class CubaVaadinServletService extends VaadinServletService {
                 if (session.getConfiguration().isXsrfProtectionEnabled()) {
                     writer.write(getSecurityKeyUIDL(session));
                 }
+                writer.write(getPushIdUIDL(session));
                 new CubaUidlWriter().write(uI, writer, false);
                 writer.write("}");
 
@@ -360,14 +361,6 @@ public class CubaVaadinServletService extends VaadinServletService {
                 log.trace("Initial UIDL: {}", initialUIDL);
                 return initialUIDL;
             }
-        }
-
-        // Copied from Vaadin
-        private static String getSecurityKeyUIDL(VaadinSession session) {
-            String secKey = session.getCsrfToken();
-
-            return "\"" + ApplicationConstants.UIDL_SECURITY_TOKEN_ID + "\":\""
-                    + secKey + "\",";
         }
     }
 }
