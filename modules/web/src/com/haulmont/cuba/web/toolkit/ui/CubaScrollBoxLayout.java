@@ -25,8 +25,8 @@ public class CubaScrollBoxLayout extends CubaCssActionsLayout {
 
     public CubaScrollBoxLayout() {
         serverRpc = (scrollTop, scrollLeft) -> {
-            getState(false).scrollTop = scrollTop;
-            getState(false).scrollLeft = scrollLeft;
+            getState().scrollTop = scrollTop;
+            getState().scrollLeft = scrollLeft;
         };
         registerRpc(serverRpc);
     }
