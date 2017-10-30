@@ -158,10 +158,6 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
                 condition.setJoin(", sys$CategoryAttributeValue " + cavAlias + " ");
 
                 String paramStr = " ? ";
-                if (!op.isUnary())
-                    if (Op.IN.equals(op) || Op.NOT_IN.equals(op))
-                        paramStr = " ( ? ) ";
-
                 where = cavAlias + ".entity." + cavEntityId + "=" +
                         "{E}" +
                         propertyPath +
