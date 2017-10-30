@@ -314,7 +314,7 @@ NOT: 'NOT';
 IN: 'IN';
 
 in_item
-    : string_literal | numeric_literal | single_valued_input_parameter;
+    : string_literal | numeric_literal | single_valued_input_parameter | enum_function;
 like_expression
     : string_expression ('NOT')? 'LIKE' (string_expression | pattern_value | input_parameter)('ESCAPE' escape_character)?;
 null_comparison_expression
@@ -467,10 +467,13 @@ nullif_expression
 extension_functions
     : 'CAST(' function_arg WORD ('('INT_NUMERAL (',' INT_NUMERAL)*  ')')* ')'
     | extract_function
-    | '@ENUM' '(' enum_value_literal ')' -> ^(T_ENUM_MACROS<EnumConditionNode>[$enum_value_literal.text]);
+    | enum_function;
 
 extract_function
     : 'EXTRACT(' date_part 'FROM' function_arg ')';
+
+enum_function
+    : '@ENUM' '(' enum_value_literal ')' -> ^(T_ENUM_MACROS<EnumConditionNode>[$enum_value_literal.text]);
 
 fragment date_part
     : 'EPOCH' | 'YEAR' | 'QUARTER' | 'MONTH' | 'WEEK' |'DAY' | 'HOUR' |'MINUTE' | 'SECOND';
