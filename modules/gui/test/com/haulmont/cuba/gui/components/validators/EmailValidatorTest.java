@@ -31,10 +31,23 @@ public class EmailValidatorTest extends TestCase {
                 "selenium@google.com",
                 "a@mail.ru",
                 "test@pegas.travel",
-                "yuriy.pavlov@mail.ru",
+                "yuriy.pavlov@r7.com",
                 "yuriy-p@mail.ru",
                 "test@int64.ru",
-                "y_pavlov@mail.ru"
+                "y_pavlov@mail.ru",
+                "abc@hotmail.co.uk",
+                "fully-qualified-domain@example.com",
+                "zxc@safe-mail.net",
+                "asd@o2.co.uk",
+                "test@i.ua",
+                "example-indeed@strange-example.com",
+                "email@t-online.de",
+                "abc.xyz@yahoo.com.br",
+                "qwe-asd@oi.com.br",
+                "my.ema-il@123qwe.co.uk",
+                "i.van-petrov23@mail2cuba.com",
+                "other.email-with-dash@example.com",
+                "i.van-petrov23@mail-2-cuba.com"
         };
 
         for (String validEmail : validEmails) {
@@ -49,7 +62,19 @@ public class EmailValidatorTest extends TestCase {
                 "test@pegas.travelersessolong",
                 "yuriy.@mail.ru",
                 "yuriy-@mail.ru",
-                "_pavlov@mail.ru"
+                "_pavlov@mail.ru",
+                "Abc.example.com",
+                "just\"not\"right@example.com",
+                "_pavlov@-mail.ru",
+                "pavlov@mail-.ru",
+                "pavlov@-mail-.ru",
+                "test@-i.com",
+                "test@i-.ru",
+                "test@-i-.com",
+                "test@i--i.ru",
+                ".email@test.com",
+                "email.@test.com",
+                ".email.@test.com",
         };
 
         for (String invalidEmail : invalidEmails) {
