@@ -253,6 +253,10 @@ public class QueryParserAstBasedTest {
         parser = new QueryParserAstBased(model,
                 "select r from sec$Role r where (select r1.type from sec$Role r1 where r1.id = r.id) = @enum(com.haulmont.cuba.security.entity.RoleType.STANDARD)");
         parser.getEntityName();
+
+        parser = new QueryParserAstBased(model,
+                "select r from sec$Role r where r.type in (@enum(com.haulmont.cuba.security.entity.RoleType.STANDARD), @enum(com.haulmont.cuba.security.entity.RoleType.SUPER))");
+        parser.getEntityName();
     }
 
     @Test
