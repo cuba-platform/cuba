@@ -1486,8 +1486,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (!Strings.isNullOrEmpty(searchTerm)) {
             FtsFilterHelper.FtsSearchResult ftsSearchResult = ftsFilterHelper.search(searchTerm, datasource.getMetaClass().getName());
             int queryKey = ftsSearchResult.getQueryKey();
-            params.put("sessionId", userSessionSource.getUserSession().getId());
-            params.put("queryKey", queryKey);
+            params.put(FtsFilterHelper.SESSION_ID_PARAM_NAME, userSessionSource.getUserSession().getId());
+            params.put(FtsFilterHelper.QUERY_KEY_PARAM_NAME, queryKey);
 
             CustomCondition ftsCondition = ftsFilterHelper.createFtsCondition(datasource.getMetaClass().getName());
             conditions = new ConditionsTree();
