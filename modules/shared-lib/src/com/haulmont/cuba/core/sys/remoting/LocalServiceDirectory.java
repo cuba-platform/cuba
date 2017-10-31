@@ -22,24 +22,40 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class LocalServiceDirectory {
 
     private static Map<String, LocalServiceInvoker> invokers = new ConcurrentHashMap<>();
 
+    private static CountDownLatch latch = new CountDownLatch(1);
+
     private static Logger log = LoggerFactory.getLogger(LocalServiceDirectory.class);
 
     public static void registerInvoker(String name, LocalServiceInvoker invoker) {
-        log.debug("Registering service " + name);
+        log.debug("Registering service {}", name);
         invokers.put(name, invoker);
     }
 
     public static void unregisterInvoker(String name) {
-        log.debug("Unregistering service " + name);
+        log.debug("Unregistering service {}", name);
         invokers.remove(name);
     }
 
     public static LocalServiceInvoker getInvoker(String name) {
+        try {
+            latch.await(120, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("Interrupted awaiting for context to start");
+        }
         return invokers.get(name);
+    }
+
+    public static void start() {
+        log.debug("Starting local service bridge");
+
+        latch.countDown();
     }
 }

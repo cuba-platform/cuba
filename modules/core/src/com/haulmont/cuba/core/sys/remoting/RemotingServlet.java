@@ -104,6 +104,9 @@ public class RemotingServlet extends DispatcherServlet {
         }
 
         RemotingContextHolder.setRemotingApplicationContext(wac);
+
+        LocalServiceDirectory.start();
+
         return wac;
     }
 
