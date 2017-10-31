@@ -674,6 +674,26 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         }
 
         @Override
+        public void setHeight(String height) {
+            super.setHeight(height);
+
+            if (getHeight() > 0) {
+                composition.setSpacing(true);
+                composition.setExpandRatio(tokenContainer, 1);
+                tokenContainer.setMargin(false);
+            } else {
+                composition.setSpacing(false);
+                composition.setExpandRatio(tokenContainer, 0);
+
+                if (simple) {
+                    tokenContainer.setMargin(false);
+                } else {
+                    tokenContainer.setMargin(new MarginInfo(true, false, false, false));
+                }
+            }
+        }
+
+        @Override
         protected Component initContent() {
             return composition;
         }
@@ -840,7 +860,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         public void refreshComponent() {
             if (inline) {
                 addStyleName("inline");
-                tokenContainer.setSizeUndefined();
+                tokenContainer.setWidthUndefined();
             } else {
                 removeStyleName("inline");
                 tokenContainer.setWidth(100, Unit.PERCENTAGE);
