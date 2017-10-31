@@ -39,6 +39,7 @@ import java.util.*;
  * <ul>
  * <li>{@link #LOCAL}</li>
  * <li>{@link #MINIMAL}</li>
+ * <li>{@link #BASE}</li>
  * </ul>
  *
  */
