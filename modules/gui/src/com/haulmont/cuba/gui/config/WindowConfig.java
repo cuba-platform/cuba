@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.config;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -280,6 +281,8 @@ public class WindowConfig {
      * @throws NoSuchScreenException if the screen with specified ID is not registered
      */
     public WindowInfo getWindowInfo(String id) {
+        Preconditions.checkNotNullArgument(id, "Screen id cannot be null");
+
         return getWindowInfo(id, deviceInfoProvider.getDeviceInfo());
     }
 
