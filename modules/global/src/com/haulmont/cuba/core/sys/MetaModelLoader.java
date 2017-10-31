@@ -117,11 +117,9 @@ public class MetaModelLoader {
 
     @Nullable
     protected MetadataObjectInfo<MetaClass> loadClass(String packageName, Class<?> clazz, boolean persistent) {
-        MetaClassImpl metaClass = createClass(clazz, packageName);
+        MetaClassImpl metaClass = createClass(clazz, packageName, persistent);
         if (metaClass == null)
             return null;
-
-        onClassLoaded(metaClass, clazz, persistent);
 
         Collection<RangeInitTask> tasks = new ArrayList<>();
 
@@ -135,7 +133,7 @@ public class MetaModelLoader {
         return new MetadataObjectInfo<>(metaClass, tasks);
     }
 
-    protected MetaClassImpl createClass(Class<?> javaClass, String packageName) {
+    protected MetaClassImpl createClass(Class<?> javaClass, String packageName, boolean persistent) {
         if (AbstractInstance.class.equals(javaClass) || Object.class.equals(javaClass)) {
             return null;
         }
@@ -172,11 +170,13 @@ public class MetaModelLoader {
 
             Class<?> ancestor = javaClass.getSuperclass();
             if (ancestor != null) {
-                MetaClass ancestorClass = createClass(ancestor, packageName);
+                MetaClass ancestorClass = createClass(ancestor, packageName, persistent);
                 if (ancestorClass != null) {
                     metaClass.addAncestor(ancestorClass);
                 }
             }
+
+            onClassLoaded(metaClass, javaClass, persistent);
 
             return metaClass;
         } else {
