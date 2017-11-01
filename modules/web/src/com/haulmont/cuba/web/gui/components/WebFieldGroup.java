@@ -39,7 +39,6 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -660,7 +659,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
 
     @Override
     public void validate() throws ValidationException {
-        if (!isVisible() || !isEditable() || !isEnabled()) {
+        if (!isVisible() || !isEditableWithParent() || !isEnabled()) {
             return;
         }
 

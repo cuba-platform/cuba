@@ -381,7 +381,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     @Override
     public void updateMissingValueState() {
         Object implValue = impl.getValue();
-        boolean value = required && editable
+        boolean value = required && isEditableWithParent()
                 && (implValue == null || implValue instanceof String && StringUtils.isBlank((String) implValue));
         decorateMissingValue(impl, value);
     }
