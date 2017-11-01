@@ -293,7 +293,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     }
 
     protected void loadRequired(FieldGroup fieldGroup, FieldGroup.FieldConfig field) {
-        CategoryAttribute attribute = dynamicAttributes.getAttributeForMetaClass(rds.getMainDs().getMetaClass(), field.getId());
+        CategoryAttribute attribute = dynamicAttributes.getAttributeForMetaClass(rds.resolveCategorizedEntityClass(), field.getId());
         if (attribute != null) {
             String requiredMessage = messages.formatMessage(
                     AppConfig.getMessagesPack(),
@@ -309,7 +309,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         if (fieldGroup.isEditable()) {
             MetaClass metaClass = rds.resolveCategorizedEntityClass();
             MetaPropertyPath propertyPath = DynamicAttributesUtils.getMetaPropertyPath(
-                    rds.resolveCategorizedEntityClass(), field.getProperty());
+                    metaClass, field.getProperty());
             checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
             boolean editableFromPermissions = security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString());
             if (!editableFromPermissions) {
