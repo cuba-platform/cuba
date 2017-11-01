@@ -702,7 +702,7 @@ public abstract class WindowManager {
             window = createWindow(windowInfo, openType, params, LayoutLoaderConfig.getWindowLoaders(), false);
             String caption = loadCaption(window, params);
             String description = loadDescription(window, params);
-            if (openType.getOpenMode() == OpenMode.NEW_TAB) {
+            if (isOpenAsNewTab(openType)) {
                 putToWindowMap(window, hashCode);
             }
             showWindow(window, caption, description, openType, windowInfo.getMultipleOpen());
@@ -712,7 +712,7 @@ public abstract class WindowManager {
             Class screenClass = windowInfo.getScreenClass();
             if (screenClass != null) {
                 window = createWindowByScreenClass(windowInfo, params);
-                if (openType.getOpenMode() == OpenMode.NEW_TAB) {
+                if (isOpenAsNewTab(openType)) {
                     putToWindowMap(window, hashCode);
                 }
                 userActionsLog.trace("Window {} was opened", windowInfo.getId());
@@ -720,6 +720,10 @@ public abstract class WindowManager {
             } else
                 return null;
         }
+    }
+
+    protected boolean isOpenAsNewTab(OpenType openType) {
+        return openType.getOpenMode() == OpenMode.NEW_TAB;
     }
 
     public Window openWindow(WindowInfo windowInfo, OpenType openType) {

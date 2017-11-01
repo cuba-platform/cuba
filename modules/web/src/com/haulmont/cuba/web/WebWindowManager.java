@@ -206,6 +206,7 @@ public class WebWindowManager extends WindowManager {
 
         if (openInfo != null
                 && (openInfo.getOpenMode() == OpenMode.NEW_TAB
+                || openInfo.getOpenMode() == OpenMode.NEW_WINDOW
                 || openInfo.getOpenMode() == OpenMode.THIS_TAB)) {
             formattedCaption = formatTabCaption(caption, description);
         } else {
@@ -414,6 +415,11 @@ public class WebWindowManager extends WindowManager {
         afterShowWindow(window);
     }
 
+    @Override
+    public boolean isOpenAsNewTab(OpenType openType) {
+        return super.isOpenAsNewTab(openType) || openType == OpenType.NEW_WINDOW;
+    }
+
     /**
      * @param workArea Work area
      * @param window   Window implementation (WebWindow)
@@ -427,7 +433,9 @@ public class WebWindowManager extends WindowManager {
             WindowOpenInfo openInfo = windowOpenMode.get(window);
             if (openInfo != null) {
                 OpenMode openMode = openInfo.getOpenMode();
-                if (openMode == OpenMode.NEW_TAB || openMode == OpenMode.THIS_TAB) {
+                if (openMode == OpenMode.NEW_TAB
+                        || openMode == OpenMode.NEW_WINDOW
+                        || openMode == OpenMode.THIS_TAB) {
                     // show in tabsheet
                     Layout layout = (Layout) openInfo.getData();
 
@@ -1562,7 +1570,8 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     protected void checkCanOpenWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params) {
-        if (openType.getOpenMode() != OpenMode.NEW_TAB) {
+        if (openType.getOpenMode() != OpenMode.NEW_TAB
+                && openType.getOpenMode() != OpenMode.NEW_WINDOW) {
             return;
         }
 
