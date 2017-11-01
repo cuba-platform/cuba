@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
@@ -26,6 +27,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowParam;
@@ -48,6 +50,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.components.PickerField.LookupAction;
 
 /**
@@ -79,6 +82,9 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
     @Inject
     protected DynamicAttributesGuiTools dynamicAttributesGuiTools;
+
+    @Inject
+    protected Security security;
 
     @WindowParam
     protected String rows;
@@ -168,11 +174,10 @@ public class RuntimePropertiesFrame extends AbstractWindow {
             newRuntimeFieldGroup.bind();
         }
 
-        initCustomFields(newRuntimeFieldGroup, newRuntimeFieldGroup.getFields(), ds);
-
         for (FieldGroup.FieldConfig fieldConfig : newRuntimeFieldGroup.getFields()) {
             loadValidators(newRuntimeFieldGroup, fieldConfig);
             loadRequired(newRuntimeFieldGroup, fieldConfig);
+            loadEditable(newRuntimeFieldGroup, fieldConfig);
         }
 
         initFieldCaptionWidth(newRuntimeFieldGroup);
@@ -218,18 +223,11 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                 } else {
                     field.setWidth(fieldWidth);
                 }
-                if (attribute.getDataType() == PropertyType.ENUMERATION) {
-                    field.setCustom(true);
-                }
             } else {
                 field.setCaption(property.getName());
                 field.setWidth(fieldWidth);
             }
             fields.add(field);
-            Range range = property.getRange();
-            if (!range.isDatatype()) {
-                field.setCustom(true);
-            }
         }
         return fields;
     }
@@ -261,67 +259,6 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         }
     }
 
-    protected void initCustomFields(FieldGroup component, java.util.List<FieldGroup.FieldConfig> fields, final Datasource ds) {
-        @SuppressWarnings("unchecked")
-        Collection<DynamicAttributesMetaProperty> metaProperties = rds.getPropertiesFilteredByCategory();
-        for (final DynamicAttributesMetaProperty metaProperty : metaProperties) {
-            Range range = metaProperty.getRange();
-            if (!range.isDatatype()) {
-                component.addCustomField(metaProperty.getName(), new FieldGroup.CustomFieldGenerator() {
-                    @Override
-                    public Component generateField(Datasource datasource, String propertyId) {
-                        final PickerField pickerField;
-                        Boolean lookup = metaProperty.getAttribute().getLookup();
-                        if (lookup != null && lookup) {
-                            pickerField = componentsFactory.createComponent(LookupPickerField.class);
-
-                            CollectionDatasource optionsDs = DsBuilder.create(datasource.getDsContext())
-                                    .setMetaClass(metaProperty.getRange().asClass())
-                                    .setViewName(View.MINIMAL)
-                                    .buildCollectionDatasource();
-                            optionsDs.refresh();
-                            Action action = pickerField.getAction(LookupAction.NAME);
-                            if (action != null)
-                                pickerField.removeAction(action);
-
-                            ((LookupPickerField) pickerField).setOptionsDatasource(optionsDs);
-                        } else {
-                            pickerField = componentsFactory.createComponent(PickerField.class);
-                            dynamicAttributesGuiTools.initEntityPickerField(pickerField, metaProperty.getAttribute());
-                        }
-                        pickerField.setMetaClass(ds.getMetaClass());
-                        pickerField.setFrame(RuntimePropertiesFrame.this);
-                        pickerField.setDatasource(ds, propertyId);
-                        pickerField.addOpenAction();
-                        pickerField.setWidth(fieldWidth);
-                        return pickerField;
-                    }
-                });
-            } else {
-                if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
-                    final CategoryAttribute attribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-                    if (attribute.getDataType() == PropertyType.ENUMERATION) {
-                        for (FieldGroup.FieldConfig field : fields) {
-                            if (field.getId().equals(metaProperty.getName())) {
-                                component.addCustomField(metaProperty.getName(), new FieldGroup.CustomFieldGenerator() {
-                                    @Override
-                                    public Component generateField(Datasource datasource, String propertyId) {
-                                        LookupField field = componentsFactory.createComponent(LookupField.class);
-                                        field.setFrame(RuntimePropertiesFrame.this);
-                                        field.setOptionsMap(attribute.getLocalizedEnumerationMap());
-                                        field.setDatasource(rds, propertyId);
-                                        field.setWidth(fieldWidth);
-                                        return field;
-                                    }
-                                });
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     protected Field.Validator getValidator(MetaProperty property) {
         Field.Validator validator = null;
         if (property.getRange().isDatatype()) {
@@ -343,14 +280,14 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         return validator;
     }
 
-    protected void loadValidators(FieldGroup newRuntime, FieldGroup.FieldConfig field) {
-        MetaPropertyPath metaPropertyPath = rds.getMetaClass().getPropertyPath(field.getId());
+    protected void loadValidators(FieldGroup fieldGroup, FieldGroup.FieldConfig field) {
+        MetaPropertyPath metaPropertyPath = rds.getMetaClass().getPropertyPath(field.getProperty());
         if (metaPropertyPath != null) {
             MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
             Field.Validator validator = getValidator(metaProperty);
 
             if (validator != null) {
-                newRuntime.addValidator(field, validator);
+                field.addValidator(validator);
             }
         }
     }
@@ -363,8 +300,25 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                     "validation.required.defaultMsg",
                     attribute.getName()
             );
-            fieldGroup.setRequired(field,
-                    Boolean.TRUE.equals(attribute.getRequired()) && requiredControlEnabled, requiredMessage);
+            field.setRequired(Boolean.TRUE.equals(attribute.getRequired()) && requiredControlEnabled);
+            field.setRequiredMessage(requiredMessage);
+        }
+    }
+
+    protected void loadEditable(FieldGroup fieldGroup, FieldGroup.FieldConfig field) {
+        if (fieldGroup.isEditable()) {
+            MetaClass metaClass = rds.resolveCategorizedEntityClass();
+            MetaPropertyPath propertyPath = DynamicAttributesUtils.getMetaPropertyPath(
+                    rds.resolveCategorizedEntityClass(), field.getProperty());
+            checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
+            boolean editableFromPermissions = security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString());
+            if (!editableFromPermissions) {
+                field.setEditable(false);
+            }
+            boolean visibleFromPermissions = security.isEntityAttrReadPermitted(metaClass, propertyPath.toString());
+            if (!visibleFromPermissions) {
+                field.setVisible(false);
+            }
         }
     }
 

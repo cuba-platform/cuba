@@ -21,7 +21,7 @@
     <layout width="100%" spacing="true">
         <hbox id="categoryFieldBox" width="100%" expand="categoryField" spacing="true">
             <label id="categoryFieldLabel" value="msg://dynamicAttributes.category" align="MIDDLE_LEFT"/>
-            <lookupField id="categoryField" captionProperty="name"/>
+            <lookupField id="categoryField" captionProperty="localeName"/>
         </hbox>
         <!-- FieldGroup with dynamic attributes placed here -->
     </layout>
