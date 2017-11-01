@@ -64,7 +64,7 @@ public interface Datatype<T> {
     default String getName() {
         try {
             Field nameField = getClass().getField("NAME");
-            if (Modifier.isStatic(nameField.getModifiers()) && nameField.isAccessible()) {
+            if (Modifier.isStatic(nameField.getModifiers())) {
                 return (String) nameField.get(null);
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {
