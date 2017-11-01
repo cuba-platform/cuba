@@ -68,4 +68,10 @@ class DatatypeTest extends Specification {
         uuidDatatype.getJavaClass() == UUID
     }
 
+    def "deprecated method still works"() {
+        def stringDatatype = new StringDatatype()
+
+        expect:
+        stringDatatype.getName() == 'string'
+    }
 }
