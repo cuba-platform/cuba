@@ -27,8 +27,13 @@ import com.haulmont.cuba.web.sys.CubaApplicationServlet;
 import com.haulmont.cuba.web.sys.CubaDispatcherServlet;
 import com.haulmont.cuba.web.sys.CubaHttpFilter;
 import com.haulmont.cuba.web.sys.WebAppContextLoader;
+import com.haulmont.idp.sys.CubaIdpServlet;
+import com.haulmont.idp.sys.SingleAppIdpServlet;
 import com.haulmont.restapi.sys.CubaRestApiServlet;
 import com.haulmont.restapi.sys.SingleAppRestApiServlet;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -47,6 +52,9 @@ import java.util.function.Supplier;
  * {@link AppContext} loader of the web application block packed in a WAR together with the middleware block.
  */
 public class SingleAppWebContextLoader extends WebAppContextLoader {
+    protected static final String IDP_SERVICE_PROVIDERS_URLS = "cuba.idp.serviceProviderUrls";
+
+    private final Logger log = LoggerFactory.getLogger(SingleAppWebContextLoader.class);
 
     private Set<String> dependencyJars;
     private ServletContextListener webServletContextListener;
@@ -81,6 +89,8 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
         registerCubaHttpFilter(servletContext);
 
         registerFrontAppServlet(servletContext);
+
+        registerIdpServlet(servletContext);
 
         registerClassLoaderFilter(servletContext);
 
@@ -173,6 +183,34 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
             cubaServletReg.setAsyncSupported(true);
             cubaServletReg.addMapping(String.format("/%s/*", FRONT_CONTEXT_NAME));
         }
+    }
+
+    protected void registerIdpServlet(ServletContext servletContext) {
+        String serviceProvidersUrls = AppContext.getProperty(IDP_SERVICE_PROVIDERS_URLS);
+        if (StringUtils.isEmpty(serviceProvidersUrls)) {
+            log.debug("No service providers were found. IDP Servlet will not be started");
+            return;
+        }
+
+        CubaIdpServlet idpServlet = new SingleAppIdpServlet(dependencyJars);
+        try {
+            idpServlet.init(new CubaServletConfig("idp", servletContext));
+        } catch (ServletException e) {
+            throw new RuntimeException("An error occurred while initializing idp servlet", e);
+        }
+
+        ServletRegistration.Dynamic idpServletRegistration = servletContext.addServlet("idp", idpServlet);
+        idpServletRegistration.setLoadOnStartup(4);
+        idpServletRegistration.addMapping("/idp/*");
+
+        DelegatingFilterProxy idpSpringSecurityFilterChain = new DelegatingFilterProxy();
+        idpSpringSecurityFilterChain.setContextAttribute("org.springframework.web.servlet.FrameworkServlet.CONTEXT.idp");
+        idpSpringSecurityFilterChain.setTargetBeanName("springSecurityFilterChain");
+
+        FilterRegistration.Dynamic idpSpringSecurityFilterChainReg =
+                servletContext.addFilter("idpSpringSecurityFilterChain", idpSpringSecurityFilterChain);
+
+        idpSpringSecurityFilterChainReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/idp/*");
     }
 
     protected void registerCubaHttpFilter(ServletContext servletContext) {
