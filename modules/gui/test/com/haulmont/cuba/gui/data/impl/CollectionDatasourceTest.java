@@ -28,10 +28,12 @@ import mockit.NonStrictExpectations;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class CollectionDatasourceTest extends CubaClientTestCase {
 
@@ -104,5 +106,54 @@ public class CollectionDatasourceTest extends CubaClientTestCase {
         assertEquals(0, cpds.itemsToCreate.size());
         assertEquals(1, cpds.itemsToUpdate.size());
         assertEquals(0, cpds.itemsToDelete.size());
+    }
+
+    @Test
+    @SuppressWarnings("IncorrectCreateEntity")
+    public void testSuspendListeners() {
+        ArrayList<TestMasterEntity> itemsToRemove = new ArrayList<>(2);
+        itemsToRemove.add(new TestMasterEntity());
+        itemsToRemove.add(new TestMasterEntity());
+
+        ArrayList<TestMasterEntity> itemsToAdd = new ArrayList<>(3);
+        itemsToAdd.add(new TestMasterEntity());
+        itemsToAdd.add(new TestMasterEntity());
+        itemsToAdd.add(new TestMasterEntity());
+
+        CollectionDatasourceImpl<TestMasterEntity, UUID> cds = new CollectionDatasourceImpl<>();
+        cds.setMetaClass(metadata.getClassNN(TestMasterEntity.class));
+        cds.setRefreshMode(CollectionDatasource.RefreshMode.NEVER);
+        cds.valid();
+
+        TestMasterEntity entity = new TestMasterEntity();
+        cds.data.put(entity.getId(), entity);
+        itemsToRemove.forEach(testMasterEntity -> cds.data.put(testMasterEntity.getId(), testMasterEntity));
+
+        ArrayList<CollectionDatasource.Operation> operations = new ArrayList<>(2);
+        ArrayList<TestMasterEntity> removedItems = new ArrayList<>();
+        ArrayList<TestMasterEntity> addedItems = new ArrayList<>();
+
+        cds.addCollectionChangeListener(e -> {
+            assertFalse("CollectionChange listener worked, when they they are suspended", cds.listenersSuspended);
+            if (CollectionDatasource.Operation.ADD.equals(e.getOperation())) {
+                addedItems.clear();
+                addedItems.addAll(e.getItems());
+            } else if (CollectionDatasource.Operation.REMOVE.equals(e.getOperation())) {
+                removedItems.clear();
+                removedItems.addAll(e.getItems());
+            }
+            operations.add(e.getOperation());
+        });
+
+        cds.suspendListeners();
+        itemsToRemove.forEach(cds::removeItem);
+        itemsToAdd.forEach(cds::addItem);
+        cds.resumeListeners();
+
+        assertEquals(2, operations.size());
+        assertTrue("Not right order of operations", operations.get(0).equals(CollectionDatasource.Operation.REMOVE)
+                && operations.get(1).equals(CollectionDatasource.Operation.ADD));
+        assertTrue("Not all removed items passed on resume", removedItems.containsAll(itemsToRemove));
+        assertTrue("Not all added items passed on resume", addedItems.containsAll(itemsToAdd));
     }
 }

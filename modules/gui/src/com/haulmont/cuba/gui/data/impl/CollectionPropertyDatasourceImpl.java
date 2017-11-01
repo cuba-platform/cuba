@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.google.common.collect.Iterables;
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.*;
@@ -58,8 +59,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     protected SortInfo<MetaPropertyPath>[] sortInfos;
     protected boolean listenersSuspended;
-    protected Operation lastCollectionChangeOperation;
-    protected List<T> lastCollectionChangeItems;
+    protected final LinkedList<Pair<Operation, List<T>>> suspendedEvents = new LinkedList<>();
 
     protected boolean doNotModify;
 
@@ -804,8 +804,11 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     protected void fireCollectionChanged(Operation operation, List<T> items) {
         if (listenersSuspended) {
-            lastCollectionChangeOperation = operation;
-            lastCollectionChangeItems = items;
+            if (!suspendedEvents.isEmpty() && suspendedEvents.getFirst().getFirst().equals(operation)) {
+                suspendedEvents.getFirst().getSecond().addAll(items);
+            } else {
+                suspendedEvents.addFirst(new Pair<>(operation, new ArrayList<>(items)));
+            }
             return;
         }
         if (collectionChangeListeners != null && !collectionChangeListeners.isEmpty()) {
@@ -826,13 +829,11 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public void resumeListeners() {
         listenersSuspended = false;
 
-        if (lastCollectionChangeOperation != null) {
-            fireCollectionChanged(lastCollectionChangeOperation,
-                    lastCollectionChangeItems != null ? lastCollectionChangeItems : Collections.emptyList());
+        while(!suspendedEvents.isEmpty()) {
+            //noinspection unchecked
+            Pair<Operation, List<T>> pair = suspendedEvents.removeLast();
+            fireCollectionChanged(pair.getFirst(), pair.getSecond());
         }
-
-        lastCollectionChangeOperation = null;
-        lastCollectionChangeItems = null;
     }
 
     @Override
