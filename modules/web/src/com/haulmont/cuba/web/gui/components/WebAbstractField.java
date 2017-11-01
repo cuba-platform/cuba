@@ -365,7 +365,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField>
             setValidationError(null);
         }
 
-        if (!isVisible() || !isEditable() || !isEnabled()) {
+        if (!isVisible() || !isEditableWithParent() || !isEnabled()) {
             return;
         }
 

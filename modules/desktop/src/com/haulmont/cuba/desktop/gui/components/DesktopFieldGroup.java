@@ -893,7 +893,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
 
     @Override
     public void validate() throws ValidationException {
-        if (!isVisible() || !isEditable() || !isEnabled()) {
+        if (!isVisible() || !isEditableWithParent() || !isEnabled()) {
             return;
         }
 

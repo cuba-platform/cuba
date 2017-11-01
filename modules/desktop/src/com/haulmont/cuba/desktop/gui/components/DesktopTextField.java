@@ -97,7 +97,7 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
 
     protected void refreshInputPrompt() {
         if (StringUtils.isNotBlank(inputPrompt)) {
-            if (isEnabledWithParent() && isEditable()) {
+            if (isEnabledWithParent() && isEditableWithParent()) {
                 // Save old tooltipText value to use it later
                 String toolTipText = this.impl.getToolTipText();
 
@@ -136,7 +136,7 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     public void setInputPrompt(String inputPrompt) {
         this.inputPrompt = inputPrompt;
 
-        if ((!this.impl.isEditable() || !this.impl.isEnabled()) && StringUtils.isNotBlank(inputPrompt)) {
+        if ((!isEditableWithParent() || !this.impl.isEnabled()) && StringUtils.isNotBlank(inputPrompt)) {
             return;
         }
 

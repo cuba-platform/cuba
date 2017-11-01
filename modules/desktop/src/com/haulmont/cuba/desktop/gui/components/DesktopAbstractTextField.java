@@ -99,7 +99,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
 
     @Override
     public void updateMissingValueState() {
-        boolean state = required && editable && StringUtils.isBlank(impl.getText());
+        boolean state = isRequired() && isEditableWithParent() && StringUtils.isBlank(impl.getText());
         decorateMissingValue(impl, state);
         if (getComposition() instanceof JScrollPane) {
             decorateMissingValue(getComposition(), state);

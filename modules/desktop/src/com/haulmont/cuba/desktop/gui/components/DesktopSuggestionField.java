@@ -389,7 +389,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
     protected void updateEditState() {
         Component editorComponent = comboBox.getEditor().getEditorComponent();
-        boolean value = required && editable && enabled && editorComponent instanceof JTextComponent
+        boolean value = required && isEditableWithParent() && isEnabledWithParent() && editorComponent instanceof JTextComponent
                 && StringUtils.isEmpty(((JTextComponent) editorComponent).getText());
         if (value) {
             comboBox.setBackground(requiredBgColor);

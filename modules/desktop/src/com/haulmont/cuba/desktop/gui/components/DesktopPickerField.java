@@ -562,7 +562,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
             return;
         }
         JTextComponent editor = (JTextComponent) impl.getEditor();
-        boolean value = required && editable && StringUtils.isBlank(editor.getText());
+        boolean value = required && isEditableWithParent() && StringUtils.isBlank(editor.getText());
 
         decorateMissingValue(impl.getEditor(), value);
     }

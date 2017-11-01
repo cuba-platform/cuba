@@ -523,7 +523,7 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     @Override
     public void updateMissingValueState() {
         Component editorComponent = comboBox.getEditor().getEditorComponent();
-        boolean value = required && editable && enabled && editorComponent instanceof JTextComponent
+        boolean value = required && isEditableWithParent() && isEnabledWithParent() && editorComponent instanceof JTextComponent
                 && StringUtils.isEmpty(((JTextComponent) editorComponent).getText());
         decorateMissingValue(comboBox, value);
     }

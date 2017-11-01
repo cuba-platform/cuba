@@ -325,6 +325,9 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
     @Override
     public void validate() throws ValidationException {
+        if (!isVisible() || !isEditableWithParent() || !isEnabled())
+            return;
+
         try {
             constructDate();
             super.validate();
@@ -632,7 +635,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
     @Override
     public void updateMissingValueState() {
-        boolean value = required && editable && datePicker.getEditor().getValue() == null;
+        boolean value = required && isEditableWithParent() && datePicker.getEditor().getValue() == null;
         decorateMissingValue(datePicker.getEditor(), value);
         if (isHourUsed()) {
             decorateMissingValue(timeField.getImpl(), value);
