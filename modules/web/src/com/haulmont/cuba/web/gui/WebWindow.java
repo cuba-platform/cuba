@@ -1582,6 +1582,46 @@ public class WebWindow implements Window, Component.Wrapper,
         }
 
         @Override
+        public Integer getPositionX() {
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                return dialogWindow.getPositionX();
+            }
+
+            return super.getPositionX();
+        }
+
+        @Override
+        public DialogOptions setPositionX(Integer positionX) {
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                dialogWindow.setPositionX(positionX != null ? positionX : 0);
+            }
+
+            return super.setPositionX(positionX);
+        }
+
+        @Override
+        public Integer getPositionY() {
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                return dialogWindow.getPositionY();
+            }
+
+            return super.getPositionY();
+        }
+
+        @Override
+        public DialogOptions setPositionY(Integer positionY) {
+            com.vaadin.ui.Window dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                dialogWindow.setPositionY(positionY != null ? positionY : 0);
+            }
+
+            return super.setPositionY(positionY);
+        }
+
+        @Override
         public DialogOptions setMaximized(Boolean maximized) {
             super.setMaximized(maximized);
 

@@ -360,8 +360,7 @@ public class DesktopWindow implements Window, Component.Disposable,
         return false;
     }
 
-    // todo devyatkin find another way to get component to focus
-    private java.awt.Component getComponentToFocus(java.awt.Container component) {
+    protected java.awt.Component getComponentToFocus(java.awt.Container component) {
         if (component.isFocusable() && component.isEnabled()
                 && DesktopComponentsHelper.isRecursivelyVisible(component)) {
             if (component instanceof JComboBox
@@ -1658,6 +1657,54 @@ public class DesktopWindow implements Window, Component.Disposable,
             }
 
             return super.getResizable();
+        }
+
+        @Override
+        public Integer getPositionX() {
+            DialogWindow dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                return dialogWindow.getLocation().x;
+            }
+
+            return super.getPositionX();
+        }
+
+        @Override
+        public DialogOptions setPositionX(Integer positionX) {
+            super.setPositionX(positionX);
+
+            DialogWindow dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                Integer positionY = getPositionY();
+                dialogWindow.setLocation(positionX != null ? positionX : 0,
+                        positionY != null ? positionY : 0);
+            }
+
+            return this;
+        }
+
+        @Override
+        public Integer getPositionY() {
+            DialogWindow dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                return dialogWindow.getLocation().y;
+            }
+
+            return super.getPositionY();
+        }
+
+        @Override
+        public DialogOptions setPositionY(Integer positionY) {
+            super.setPositionY(positionY);
+
+            DialogWindow dialogWindow = asDialogWindow();
+            if (dialogWindow != null) {
+                Integer positionX = getPositionX();
+                dialogWindow.setLocation(positionX != null ? positionX : 0,
+                        positionY != null ? positionY : 0);
+            }
+
+            return this;
         }
     }
 

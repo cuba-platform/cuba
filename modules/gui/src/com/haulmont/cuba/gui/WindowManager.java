@@ -106,6 +106,10 @@ public abstract class WindowManager {
         private SizeUnit widthUnit;
         private Float height;
         private SizeUnit heightUnit;
+
+        private Integer positionX;
+        private Integer positionY;
+
         private Boolean resizable;
         private Boolean closeable;
         private Boolean modal;
@@ -264,6 +268,49 @@ public abstract class WindowManager {
             return instance;
         }
 
+        public Integer getPositionX() {
+            return positionX;
+        }
+
+        public OpenType setPositionX(Integer positionX) {
+            OpenType instance = getMutableInstance();
+
+            instance.positionX = positionX;
+            return instance;
+        }
+
+        public OpenType positionX(Integer positionX) {
+            OpenType instance = getMutableInstance();
+
+            instance.positionX = positionX;
+            return instance;
+        }
+
+        public Integer getPositionY() {
+            return positionY;
+        }
+
+        public OpenType setPositionY(Integer positionY) {
+            OpenType instance = getMutableInstance();
+
+            instance.positionY = positionY;
+            return instance;
+        }
+
+        public OpenType positionY(Integer positionY) {
+            OpenType instance = getMutableInstance();
+
+            instance.positionY = positionY;
+            return instance;
+        }
+
+        public OpenType center() {
+            OpenType instance = getMutableInstance();
+            instance.positionX = null;
+            instance.positionY = null;
+            return instance;
+        }
+
         public Boolean getResizable() {
             return resizable;
         }
@@ -415,6 +462,8 @@ public abstract class WindowManager {
             openType.setWidthUnit(widthUnit);
             openType.setCloseOnClickOutside(closeOnClickOutside);
             openType.setMaximized(maximized);
+            openType.setPositionX(positionX);
+            openType.setPositionY(positionY);
 
             return openType;
         }
@@ -1082,6 +1131,14 @@ public abstract class WindowManager {
 
         if (dialogOptions.getMaximized() != null) {
             mutableOpenType.setMaximized(dialogOptions.getMaximized());
+        }
+
+        if (dialogOptions.getPositionX() != null) {
+            mutableOpenType.setPositionX(dialogOptions.getPositionX());
+        }
+
+        if (dialogOptions.getPositionY() != null) {
+            mutableOpenType.setPositionY(dialogOptions.getPositionY());
         }
 
         return mutableOpenType;

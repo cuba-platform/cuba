@@ -42,6 +42,10 @@ public class DialogOptions {
     private SizeUnit widthUnit;
     private Float height;
     private SizeUnit heightUnit;
+
+    private Integer positionX;
+    private Integer positionY;
+
     private Boolean resizable;
     private Boolean closeable;
     private Boolean modal;
@@ -304,5 +308,41 @@ public class DialogOptions {
      */
     public Boolean getMaximized() {
         return maximized;
+    }
+
+    /**
+     * @return x position of top-left corner of dialog window
+     */
+    public Integer getPositionX() {
+        return positionX;
+    }
+
+    /**
+     * Set the distance of Window left border in pixels from left border of the
+     * containing (main window).
+     *
+     * @param positionX x position
+     */
+    public DialogOptions setPositionX(Integer positionX) {
+        this.positionX = positionX;
+        return this;
+    }
+
+    /**
+     * @return y position of top-left corner of dialog window
+     */
+    public Integer getPositionY() {
+        return positionY;
+    }
+
+    /**
+     * Sets the distance of Window left border in pixels from top border of the
+     * containing (main window).
+     *
+     * @param positionY y position
+     */
+    public DialogOptions setPositionY(Integer positionY) {
+        this.positionY = positionY;
+        return this;
     }
 }
