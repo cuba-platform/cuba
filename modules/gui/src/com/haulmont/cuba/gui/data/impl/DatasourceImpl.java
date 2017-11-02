@@ -165,7 +165,7 @@ public class DatasourceImpl<T extends Entity> extends AbstractDatasource<T> impl
             state = State.VALID;
             fireStateChanged(prevState);
         }
-        if (item != null) {
+        if (item != null && metadata.getTools().isPersistent(item.getClass())) {
             T prevItem = item;
             T reloadedItem = dataSupplier.reload(item, view);
             __setItem(reloadedItem);
