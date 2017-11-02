@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
@@ -27,9 +28,7 @@ import org.dom4j.Element;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class WindowLoader extends FrameLoader<Window> {
 
@@ -130,6 +129,16 @@ public class WindowLoader extends FrameLoader<Window> {
             if (StringUtils.isNotEmpty(maximized)) {
                 dialogOptions.setMaximized(Boolean.parseBoolean(maximized));
             }
+
+            String positionX = dialogModeElement.attributeValue("positionX");
+            if (StringUtils.isNotEmpty(positionX)) {
+                dialogOptions.setPositionX(Integer.parseInt(positionX));
+            }
+
+            String positionY = dialogModeElement.attributeValue("positionY");
+            if (StringUtils.isNotEmpty(positionY)) {
+                dialogOptions.setPositionY(Integer.parseInt(positionY));
+            }
         }
     }
 
@@ -179,10 +188,11 @@ public class WindowLoader extends FrameLoader<Window> {
         try {
             value = Integer.parseInt(delay);
         } catch (NumberFormatException e) {
-            Map<String, Object> info = new HashMap<>(2);
-            info.put("Timer delay", delay);
-            info.put("Timer ID", timer.getId());
-            throw new GuiDevelopmentException("Timer 'delay' must be numeric", context.getFullFrameId(), info);
+            throw new GuiDevelopmentException("Timer 'delay' must be numeric", context.getFullFrameId(),
+                    ParamsMap.of(
+                            "Timer delay", delay,
+                            "Timer ID", timer.getId()
+                    ));
         }
 
         if (value <= 0) {
@@ -193,8 +203,8 @@ public class WindowLoader extends FrameLoader<Window> {
         timer.setDelay(value);
         timer.setRepeating(Boolean.parseBoolean(element.attributeValue("repeating")));
 
-        final String onTimer = element.attributeValue("onTimer");
-        if (!StringUtils.isEmpty(onTimer)) {
+        String onTimer = element.attributeValue("onTimer");
+        if (StringUtils.isNotEmpty(onTimer)) {
             String timerMethodName = onTimer;
             if (StringUtils.startsWith(onTimer, "invoke:")) {
                 timerMethodName = StringUtils.substring(onTimer, "invoke:".length());
@@ -204,10 +214,12 @@ public class WindowLoader extends FrameLoader<Window> {
             addInitTimerMethodTask(timer, timerMethodName);
         }
 
-        boolean autostart = "true".equals(element.attributeValue("autostart"));
-        if (autostart) {
+        String autostart = element.attributeValue("autostart");
+        if (StringUtils.isNotEmpty(autostart)
+                && Boolean.parseBoolean(autostart)) {
             addAutoStartTimerTask(timer);
         }
+
         timer.setFrame(context.getFrame());
 
         component.addTimer(timer);
@@ -231,17 +243,16 @@ public class WindowLoader extends FrameLoader<Window> {
     }
 
     protected void addInitTimerMethodTask(Timer timer, String timerMethodName) {
-        context.addPostInitTask((context1, window) -> {
+        context.addPostInitTask((windowContext, window) -> {
             Method timerMethod;
             try {
                 timerMethod = window.getClass().getMethod(timerMethodName, Timer.class);
             } catch (NoSuchMethodException e) {
-                Map<String, Object> params = new HashMap<>(2);
-                params.put("Timer Id", timer.getId());
-                params.put("Method name", timerMethodName);
-
                 throw new GuiDevelopmentException("Unable to find invoke method for timer",
-                        context1.getFullFrameId(), params);
+                        windowContext.getFullFrameId(),
+                        ParamsMap.of(
+                                "Timer Id", timer.getId(),
+                                "Method name", timerMethodName));
             }
 
             timer.addActionListener(t -> {
@@ -255,6 +266,6 @@ public class WindowLoader extends FrameLoader<Window> {
     }
 
     protected void addAutoStartTimerTask(Timer timer) {
-        context.addPostInitTask((context1, window) -> timer.start());
+        context.addPostInitTask((windowContext, window) -> timer.start());
     }
 }

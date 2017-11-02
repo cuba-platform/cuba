@@ -633,7 +633,16 @@ public class DesktopWindowManager extends WindowManager {
 
         dialog.setMinimumSize(dim);
         dialog.pack();
-        dialog.setLocationRelativeTo(frame);
+
+        if (openType.getPositionY() == null
+                && openType.getPositionX() == null) {
+            dialog.setLocationRelativeTo(frame);
+        } else {
+            dialog.setLocation(
+                    openType.getPositionX() != null ? openType.getPositionX() : 0,
+                    openType.getPositionY() != null ? openType.getPositionY() : 0
+            );
+        }
 
         boolean modal = true;
         if (!hasModalWindow() && openType.getModal() != null) {

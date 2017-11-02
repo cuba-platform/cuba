@@ -35,12 +35,14 @@ import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.Component.BelongToFrame;
+import com.haulmont.cuba.gui.components.Component.Container;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.Window.BeforeCloseWithCloseButtonEvent;
 import com.haulmont.cuba.gui.components.Window.BeforeCloseWithShortcutEvent;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
+import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea.Mode;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.components.mainwindow.TopLevelWindowAttachListener;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
@@ -88,6 +90,7 @@ import static com.haulmont.cuba.gui.components.Frame.MessageType;
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertNotificationType;
 import static com.vaadin.server.Sizeable.Unit;
+import static java.util.Collections.singletonMap;
 
 @org.springframework.stereotype.Component(WebWindowManager.NAME)
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -218,7 +221,7 @@ public class WebWindowManager extends WindowManager {
                 com.vaadin.ui.Window dialog = (com.vaadin.ui.Window) openInfo.getData();
                 dialog.setCaption(formattedCaption);
             } else {
-                if (getConfiguredWorkArea(createWorkAreaContext(window)).getMode() == AppWorkArea.Mode.SINGLE) {
+                if (getConfiguredWorkArea(createWorkAreaContext(window)).getMode() == Mode.SINGLE) {
                     return;
                 }
 
@@ -335,7 +338,7 @@ public class WebWindowManager extends WindowManager {
                 final WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
                 workArea.switchTo(AppWorkArea.State.WINDOW_CONTAINER);
 
-                if (workArea.getMode() == AppWorkArea.Mode.SINGLE) {
+                if (workArea.getMode() == Mode.SINGLE) {
                     VerticalLayout mainLayout = workArea.getSingleWindowContainer();
                     if (mainLayout.iterator().hasNext()) {
                         ComponentContainer oldLayout = (ComponentContainer) mainLayout.iterator().next();
@@ -522,7 +525,7 @@ public class WebWindowManager extends WindowManager {
 
         WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
 
-        if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
+        if (workArea.getMode() == Mode.TABBED) {
             layout.addStyleName("c-app-tabbed-window");
             TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
 
@@ -635,7 +638,7 @@ public class WebWindowManager extends WindowManager {
         WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
 
         Layout layout;
-        if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
+        if (workArea.getMode() == Mode.TABBED) {
             TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
             layout = (Layout) tabSheet.getSelectedTab();
         } else {
@@ -672,7 +675,7 @@ public class WebWindowManager extends WindowManager {
 
         breadCrumbs.addWindow(window);
 
-        if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
+        if (workArea.getMode() == Mode.TABBED) {
             TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
             String tabId = tabSheet.getTab(layout);
             String formattedCaption = formatTabCaption(caption, description);
@@ -709,7 +712,7 @@ public class WebWindowManager extends WindowManager {
         throw new IllegalStateException("Application does not have any configured work area");
     }
 
-    protected Component showWindowDialog(final Window window, OpenType openType, boolean forciblyDialog) {
+    protected Component showWindowDialog(Window window, OpenType openType, boolean forciblyDialog) {
         final CubaWindow vWindow = createDialogWindow(window);
         vWindow.setStyleName("c-app-dialog-window");
         if (ui.isTestMode()) {
@@ -737,7 +740,7 @@ public class WebWindowManager extends WindowManager {
                 KeyCombination.Modifier.codes(closeCombination.getModifiers())
         );
 
-        Map<com.vaadin.event.Action, Runnable> actions = Collections.singletonMap(exitAction, () -> {
+        Map<com.vaadin.event.Action, Runnable> actions = singletonMap(exitAction, () -> {
             if (openType.getOpenMode() != OpenMode.DIALOG || BooleanUtils.isNotFalse(window.getDialogOptions().getCloseable())) {
                 if (isCloseWithShortcutPrevented(window)) {
                     return;
@@ -817,10 +820,21 @@ public class WebWindowManager extends WindowManager {
             }
         }
 
+        if (openType.getPositionX() == null
+                && openType.getPositionY() == null) {
+            vWindow.center();
+        } else {
+            if (openType.getPositionX() != null) {
+                vWindow.setPositionX(openType.getPositionX());
+            }
+            if (openType.getPositionY() != null) {
+                vWindow.setPositionY(openType.getPositionY());
+            }
+        }
+
         getDialogParams().reset();
 
         ui.addWindow(vWindow);
-        vWindow.center();
 
         return vWindow;
     }
@@ -850,9 +864,9 @@ public class WebWindowManager extends WindowManager {
             window = ((Window.Wrapper) window).getWrappedWindow();
         }
 
-        final WindowOpenInfo openInfo = windowOpenMode.get(window);
+        WindowOpenInfo openInfo = windowOpenMode.get(window);
         if (openInfo == null) {
-            log.warn("Problem closing window " + window + " : WindowOpenMode not found");
+            log.warn("Problem closing window {}: WindowOpenMode not found", window);
             return;
         }
         disableSavingScreenHistory = false;
@@ -896,8 +910,8 @@ public class WebWindowManager extends WindowManager {
         disableSavingScreenHistory = true;
         if (modified) {
             showOptionDialog(
-                    messages.getMessage(WebWindow.class, "closeUnsaved.caption"),
-                    messages.getMessage(WebWindow.class, "discardChangesOnClose"),
+                    messages.getMainMessage("closeUnsaved.caption"),
+                    messages.getMainMessage("discardChangesOnClose"),
                     MessageType.WARNING,
                     new Action[]{
                             new BaseAction("closeApplication")
@@ -962,7 +976,7 @@ public class WebWindowManager extends WindowManager {
                     messages.getMainMessage("discardChangesInTabs"),
                     MessageType.WARNING,
                     new Action[]{
-                            new AbstractAction(messages.getMessage(WebWindow.class, "closeTabs")) {
+                            new AbstractAction(messages.getMainMessage("closeTabs")) {
                                 {
                                     icon = themeConstantsManager.getThemeValue("actions.dialog.Ok.icon");
                                 }
@@ -1035,7 +1049,7 @@ public class WebWindowManager extends WindowManager {
 
                 WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
 
-                if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
+                if (workArea.getMode() == Mode.TABBED) {
                     TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
                     tabSheet.silentCloseTabAndSelectPrevious(layout);
                     tabSheet.removeComponent(layout);
@@ -1072,7 +1086,8 @@ public class WebWindowManager extends WindowManager {
                     Pair<Window, Integer> entry = getStack(breadCrumbs).pop();
                     putToWindowMap(entry.getFirst(), entry.getSecond());
                 }
-                final Component component = WebComponentsHelper.getComposition(currentWindow);
+
+                Component component = WebComponentsHelper.getComposition(currentWindow);
                 component.setSizeFull();
 
                 WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
@@ -1081,7 +1096,7 @@ public class WebWindowManager extends WindowManager {
                 if (app.getConnection().isConnected()) {
                     layout.addComponent(component);
 
-                    if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
+                    if (workArea.getMode() == Mode.TABBED) {
                         TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
                         String tabId = tabSheet.getTab(layout);
                         String formattedCaption = formatTabCaption(currentWindow.getCaption(), currentWindow.getDescription());
@@ -1114,9 +1129,8 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showFrame(com.haulmont.cuba.gui.components.Component parent, Frame frame) {
-        if (parent instanceof com.haulmont.cuba.gui.components.Component.Container) {
-            com.haulmont.cuba.gui.components.Component.Container container =
-                    (com.haulmont.cuba.gui.components.Component.Container) parent;
+        if (parent instanceof Container) {
+            Container container = (Container) parent;
             for (com.haulmont.cuba.gui.components.Component c : container.getComponents()) {
                 if (c instanceof com.haulmont.cuba.gui.components.Component.Disposable) {
                     com.haulmont.cuba.gui.components.Component.Disposable disposable =
@@ -1526,7 +1540,7 @@ public class WebWindowManager extends WindowManager {
                         componentFrame = ((BelongToFrame) component).getFrame();
                     }
                     if (componentFrame == null) {
-                        log.warn("Frame for component " + component.getClass() + " is not assigned");
+                        log.warn("Frame for component {} is not assigned", component.getClass());
                     } else {
                         if (component instanceof WebAbstractComponent) {
                             WebAbstractComponent webComponent = (WebAbstractComponent) component;
@@ -1556,7 +1570,7 @@ public class WebWindowManager extends WindowManager {
     @Override
     protected Window getWindow(Integer hashCode) {
         AppWorkArea workArea = getConfiguredWorkArea(null);
-        if (workArea == null || workArea.getMode() == AppWorkArea.Mode.SINGLE) {
+        if (workArea == null || workArea.getMode() == Mode.SINGLE) {
             return null;
         }
 
@@ -1670,7 +1684,7 @@ public class WebWindowManager extends WindowManager {
         Window.TopLevelWindow topLevelWindow = ui.getTopLevelWindow();
         CubaOrderedActionsLayout actionsLayout = topLevelWindow.unwrap(CubaOrderedActionsLayout.class);
 
-        if (getConfiguredWorkArea(createWorkAreaContext(topLevelWindow)).getMode() == AppWorkArea.Mode.TABBED) {
+        if (getConfiguredWorkArea(createWorkAreaContext(topLevelWindow)).getMode() == Mode.TABBED) {
             actionsLayout.addShortcutListener(createNextWindowTabShortcut(topLevelWindow));
             actionsLayout.addShortcutListener(createPreviousWindowTabShortcut(topLevelWindow));
         }
@@ -1694,7 +1708,7 @@ public class WebWindowManager extends WindowManager {
                     return;
                 }
 
-                if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
+                if (workArea.getMode() == Mode.TABBED) {
                     TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
                     if (tabSheet != null) {
                         Layout layout = (Layout) tabSheet.getSelectedTab();
@@ -1779,7 +1793,7 @@ public class WebWindowManager extends WindowManager {
         }
 
         WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
-        if (workArea.getMode() == AppWorkArea.Mode.TABBED) {
+        if (workArea.getMode() == Mode.TABBED) {
             TabSheetBehaviour tabSheetBehaviour = workArea.getTabbedWindowContainer()
                     .getTabSheetBehaviour();
 
