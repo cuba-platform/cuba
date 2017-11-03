@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.google.common.base.Strings;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -139,18 +140,23 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
 
     @Nullable
     protected GeneratedField createCurrencyField(FieldGroup.FieldConfig fc) {
-        if (DynamicAttributesUtils.isDynamicAttribute(fc.getProperty()))
+        String property = fc.getProperty();
+        if (DynamicAttributesUtils.isDynamicAttribute(property))
             return null;
 
-        MetaProperty metaProperty = fc.getTargetDatasource().getMetaClass().getPropertyNN(fc.getProperty());
+        Datasource datasource = fc.getTargetDatasource();
 
-        Object obj = metaProperty.getAnnotations().get(CurrencyValue.class.getName());
-        if (obj == null) {
+        MetaPropertyPath mpp = datasource.getMetaClass().getPropertyPath(property);
+        Preconditions.checkNotNullArgument(mpp, "Could not resolve property path '%s' in '%s'",
+                property, datasource.getMetaClass());
+
+        Object currencyAnnotation = mpp.getMetaProperty().getAnnotations().get(CurrencyValue.class.getName());
+        if (currencyAnnotation == null) {
             return null;
         }
 
         CurrencyField currencyField = componentsFactory.createComponent(CurrencyField.class);
-        currencyField.setDatasource(fc.getTargetDatasource(), fc.getProperty());
+        currencyField.setDatasource(datasource, property);
 
         return new GeneratedField(currencyField);
     }
