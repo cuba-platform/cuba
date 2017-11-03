@@ -144,7 +144,7 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
     protected void registerFrontAppServlet(ServletContext servletContext) {
         boolean hasFrontApp = false;
         try {
-            hasFrontApp = servletContext.getResource(FRONT_CONTEXT_NAME) != null;
+            hasFrontApp = servletContext.getResource("/" + FRONT_CONTEXT_NAME) != null;
         } catch (MalformedURLException e) {
             //Do nothing
         }
