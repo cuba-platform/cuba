@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -160,10 +161,12 @@ public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactor
         if (DynamicAttributesUtils.isDynamicAttribute(property))
             return null;
 
-        MetaProperty metaProperty = datasource.getMetaClass().getPropertyNN(property);
+        MetaPropertyPath mpp = datasource.getMetaClass().getPropertyPath(property);
+        Preconditions.checkNotNullArgument(mpp, "Could not resolve property path '%s' in '%s'",
+                property, datasource.getMetaClass());
 
-        Object obj = metaProperty.getAnnotations().get(CurrencyValue.class.getName());
-        if (obj == null) {
+        Object currencyAnnotation = mpp.getMetaProperty().getAnnotations().get(CurrencyValue.class.getName());
+        if (currencyAnnotation == null) {
             return null;
         }
 
