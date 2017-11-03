@@ -908,12 +908,18 @@ public class DesktopWindow implements Window, Component.Disposable,
         }
 
         // only Y direction
-        if (StringUtils.isEmpty(height) || "-1px".equals(height) || height.endsWith("%")) {
+        if (StringUtils.isEmpty(height) || AUTO_SIZE.equals(height) || height.endsWith("%")) {
             component.setHeight("100%");
         }
 
-        JComponent composition = DesktopComponentsHelper.getComposition(component);
-        layoutAdapter.expand(composition, height, width);
+        JComponent expandingChild = DesktopComponentsHelper.getComposition(component);
+
+        Pair<JPanel, BoxLayoutAdapter> wrapperInfo = wrappers.get(component);
+        if (wrapperInfo != null) {
+            expandingChild = wrapperInfo.getFirst();
+        }
+
+        layoutAdapter.expand(expandingChild, height, width);
 
         if (component instanceof DesktopComponent) {
             ((DesktopComponent) component).setExpanded(true);
