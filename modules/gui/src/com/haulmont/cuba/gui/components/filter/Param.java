@@ -611,6 +611,10 @@ public class Param {
         dateField.setResolution(resolution);
         dateField.setDateFormat(formatStr);
 
+		if (dateField instanceof DateField && userSessionSource.getUserSession() != null) {
+			((DateField) dateField).setTimeZone(userSessionSource.getUserSession().getTimeZone());
+		}
+
         dateField.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
 
         dateField.setValue(_getValue(valueProperty));
