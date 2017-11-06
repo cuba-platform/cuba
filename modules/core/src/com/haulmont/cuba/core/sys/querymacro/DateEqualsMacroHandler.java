@@ -24,7 +24,6 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -32,10 +31,10 @@ import java.util.regex.Pattern;
 @Scope("prototype")
 public class DateEqualsMacroHandler extends AbstractQueryMacroHandler {
 
-	private UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
-	private TimeZones timeZones = AppBeans.get(TimeZones.NAME);
+    private UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+    private TimeZones timeZones = AppBeans.get(TimeZones.NAME);
 
-	protected static final Pattern MACRO_PATTERN = Pattern.compile("@dateEquals\\s*\\(([^)]+)\\)");
+    protected static final Pattern MACRO_PATTERN = Pattern.compile("@dateEquals\\s*\\(([^)]+)\\)");
 
     protected Map<String, Object> namedParameters;
     protected List<Pair<String, String>> paramNames = new ArrayList<>();
@@ -72,17 +71,17 @@ public class DateEqualsMacroHandler extends AbstractQueryMacroHandler {
             if (date1 == null)
                 throw new RuntimeException("Parameter " + pair.getFirst() + " not found for macro");
 
-			TimeZone truncationTimeZone = getTruncationTimeZone();
-			TimeZone defaultTimeZone = TimeZone.getDefault();
+            TimeZone truncationTimeZone = getTruncationTimeZone();
+            TimeZone defaultTimeZone = TimeZone.getDefault();
 
-			Date toTruncate = timeZones.convert(date1, defaultTimeZone, truncationTimeZone);
+            Date toTruncate = timeZones.convert(date1, defaultTimeZone, truncationTimeZone);
 
-			Date truncatedStart = DateUtils.truncate(toTruncate, Calendar.DAY_OF_MONTH);
-			Date truncatedEnd = DateUtils.addDays(truncatedStart, 1);
+            Date truncatedStart = DateUtils.truncate(toTruncate, Calendar.DAY_OF_MONTH);
+            Date truncatedEnd = DateUtils.addDays(truncatedStart, 1);
 
-			params.put(pair.getFirst(), timeZones.convert(truncatedStart, truncationTimeZone, defaultTimeZone));
-			params.put(pair.getSecond(), timeZones.convert(truncatedEnd, truncationTimeZone, defaultTimeZone));
-		}
+            params.put(pair.getFirst(), timeZones.convert(truncatedStart, truncationTimeZone, defaultTimeZone));
+            params.put(pair.getSecond(), timeZones.convert(truncatedEnd, truncationTimeZone, defaultTimeZone));
+        }
         return params;
     }
 
@@ -91,16 +90,16 @@ public class DateEqualsMacroHandler extends AbstractQueryMacroHandler {
         return queryString;
     }
 
-	private TimeZone getTruncationTimeZone()
-	{
-		if (userSessionSource == null ||
-			userSessionSource.getUserSession() == null ||
-			userSessionSource.getUserSession().getTimeZone() == null
-			) {
-			TimeZone.getDefault();
-		}
+    private TimeZone getTruncationTimeZone()
+    {
+        if (userSessionSource == null ||
+            userSessionSource.getUserSession() == null ||
+            userSessionSource.getUserSession().getTimeZone() == null
+            ) {
+            TimeZone.getDefault();
+        }
 
-		return userSessionSource.getUserSession().getTimeZone();
-	}
+        return userSessionSource.getUserSession().getTimeZone();
+    }
 
 }
