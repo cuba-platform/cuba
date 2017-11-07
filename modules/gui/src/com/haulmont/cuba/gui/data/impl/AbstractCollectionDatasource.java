@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.google.common.base.Joiner;
-import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
@@ -65,7 +64,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     protected Map<String, Object> savedParameters;
     protected Throwable dataLoadError;
     protected boolean listenersSuspended;
-    protected final LinkedList<Pair<Operation, List<T>>> suspendedEvents = new LinkedList<>();
+    protected final LinkedList<CollectionChangeEvent<T,K>> suspendedEvents = new LinkedList<>();
     protected RefreshMode refreshMode = RefreshMode.ALWAYS;
     protected UserSession userSession = AppBeans.<UserSessionSource>get(UserSessionSource.NAME).getUserSession();
 
@@ -360,10 +359,10 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     protected void fireCollectionChanged(Operation operation, List<T> items) {
         if (listenersSuspended) {
-            if (!suspendedEvents.isEmpty() && suspendedEvents.getFirst().getFirst().equals(operation)) {
-                suspendedEvents.getFirst().getSecond().addAll(items);
+            if (!suspendedEvents.isEmpty() && suspendedEvents.getFirst().getOperation().equals(operation)) {
+                suspendedEvents.getFirst().getItems().addAll(items);
             } else {
-                suspendedEvents.addFirst(new Pair<>(operation, new ArrayList<>(items)));
+                suspendedEvents.addFirst(new CollectionChangeEvent<>(this, operation, new ArrayList<>(items)));
             }
             return;
         }
@@ -422,8 +421,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
         while(!suspendedEvents.isEmpty()) {
             //noinspection unchecked
-            Pair<Operation, List<T>> pair = suspendedEvents.removeLast();
-            fireCollectionChanged(pair.getFirst(), pair.getSecond());
+            CollectionChangeEvent<T,K> suspendedEvent = suspendedEvents.removeLast();
+            fireCollectionChanged(suspendedEvent.getOperation(), Collections.unmodifiableList(suspendedEvent.getItems()));
         }
     }
 

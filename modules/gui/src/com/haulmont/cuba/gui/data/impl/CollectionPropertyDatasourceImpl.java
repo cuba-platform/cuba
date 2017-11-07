@@ -59,7 +59,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     protected SortInfo<MetaPropertyPath>[] sortInfos;
     protected boolean listenersSuspended;
-    protected final LinkedList<Pair<Operation, List<T>>> suspendedEvents = new LinkedList<>();
+    protected final LinkedList<CollectionChangeEvent<T,K>> suspendedEvents = new LinkedList<>();
 
     protected boolean doNotModify;
 
@@ -804,10 +804,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     protected void fireCollectionChanged(Operation operation, List<T> items) {
         if (listenersSuspended) {
-            if (!suspendedEvents.isEmpty() && suspendedEvents.getFirst().getFirst().equals(operation)) {
-                suspendedEvents.getFirst().getSecond().addAll(items);
+            if (!suspendedEvents.isEmpty() && suspendedEvents.getFirst().getOperation().equals(operation)) {
+                suspendedEvents.getFirst().getItems().addAll(items);
             } else {
-                suspendedEvents.addFirst(new Pair<>(operation, new ArrayList<>(items)));
+                suspendedEvents.addFirst(new CollectionChangeEvent<>(this, operation, new ArrayList<>(items)));
             }
             return;
         }
@@ -831,8 +831,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
         while(!suspendedEvents.isEmpty()) {
             //noinspection unchecked
-            Pair<Operation, List<T>> pair = suspendedEvents.removeLast();
-            fireCollectionChanged(pair.getFirst(), pair.getSecond());
+            CollectionChangeEvent<T,K> suspendedEvent = suspendedEvents.removeLast();
+            fireCollectionChanged(suspendedEvent.getOperation(), Collections.unmodifiableList(suspendedEvent.getItems()));
         }
     }
 
