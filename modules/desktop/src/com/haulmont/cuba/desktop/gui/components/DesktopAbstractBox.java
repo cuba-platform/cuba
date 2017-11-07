@@ -94,7 +94,7 @@ public abstract class DesktopAbstractBox
         //if component have description without caption, we need to wrap
         // component to view Description button horizontally after component
         if (haveDescription) {
-            JPanel wrapper = new JPanel();
+            JPanel wrapper = new LayoutSlot();
             BoxLayoutAdapter adapter = BoxLayoutAdapter.create(wrapper);
             adapter.setExpandLayout(true);
             adapter.setSpacing(false);
