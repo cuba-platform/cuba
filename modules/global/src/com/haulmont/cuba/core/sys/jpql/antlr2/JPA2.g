@@ -361,6 +361,7 @@ arithmetic_factor
     : (( '+' | '-'))? arithmetic_primary;
 arithmetic_primary
     : path_expression
+    | decimal_literal
     | numeric_literal
     | '('arithmetic_expression')'
     | input_parameter
@@ -516,6 +517,8 @@ string_literal
     : STRING_LITERAL;
 numeric_literal
     : ('0x')? INT_NUMERAL ;
+decimal_literal
+    : INT_NUMERAL '.' INT_NUMERAL;
 single_valued_object_field
     : WORD;
 single_valued_embeddable_object_field

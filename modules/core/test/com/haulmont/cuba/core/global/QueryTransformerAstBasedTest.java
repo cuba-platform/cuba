@@ -117,6 +117,7 @@ public class QueryTransformerAstBasedTest {
         assertTransformsToSame(model, "SELECT max(p.age) FROM Player p");
         assertTransformsToSame(model, "SELECT min(p.age) FROM Player p");
         assertTransformsToSame(model, "SELECT avg(p.age) FROM Player p");
+        assertTransformsToSame(model, "SELECT avg(p.age)*4.1 FROM Player p");
         assertTransformsToSame(model, "SELECT sum(p.age) FROM Player p");
         assertTransformsToSame(model, "SELECT max(p.age), t FROM Player p join p.team t group by t");
         assertTransformsToSame(model, "SELECT max(p.age), t.name FROM Player p join p.team t group by t.name");
