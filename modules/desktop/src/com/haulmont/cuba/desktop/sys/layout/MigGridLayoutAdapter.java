@@ -18,6 +18,7 @@
 package com.haulmont.cuba.desktop.sys.layout;
 
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+import com.haulmont.cuba.desktop.gui.components.LayoutSlot;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
@@ -66,10 +67,6 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
 
         AC rowConstr = new AC();
         rowConstr.align("top");  // left-top align by default
-        // todo add them when they will be needed. Now seem to bug a little
-        /*for (int i = 0; i < rowCount; i++) {
-            rowConstr.grow(rowRatio[i], i);
-        }*/
         layout.setRowConstraints(rowConstr);
 
         AC colConstr = new AC();
@@ -85,11 +82,19 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
     public CC getConstraints(com.haulmont.cuba.gui.components.Component component) {
         CC defaultContraints = MigLayoutHelper.getConstraints(component);
 
-        JComponent composition = DesktopComponentsHelper.getComposition(component);
-        if (composition.getParent() == container) {
+        Component composition = DesktopComponentsHelper.getComposition(component);
+        Component layoutChild = composition;
+
+        Container parent = composition.getParent();
+        if (parent instanceof LayoutSlot) {
+            parent = parent.getParent();
+            layoutChild = composition.getParent();
+        }
+
+        if (parent == container) {
             // fill up span x span y
-            if (layout.getComponentConstraints(composition) instanceof CC) {
-                CC componentConstraints = (CC) layout.getComponentConstraints(composition);
+            if (layout.getComponentConstraints(layoutChild) instanceof CC) {
+                CC componentConstraints = (CC) layout.getComponentConstraints(layoutChild);
                 defaultContraints.setCellX(componentConstraints.getCellX());
                 defaultContraints.setCellY(componentConstraints.getCellY());
                 defaultContraints.setSpanX(componentConstraints.getSpanX());
@@ -126,19 +131,6 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
 
     @Override
     public void updateConstraints(JComponent component, Object constraints) {
-        // todo delete, evidently no needed
-        /*if (layout.isManagingComponent(component)
-                && layout.getComponentConstraints(component) instanceof CC
-                && constraints instanceof CC) {
-            // trying to keep the same cell and row for component
-            CC current = (CC) layout.getComponentConstraints(component);
-            int col = current.getCellX();
-            int row = current.getCellY();
-            int spanX = current.getSpanX();
-            int spanY = current.getSpanY();
-
-            ((CC) constraints).cell(col, row, spanX, spanY);
-        }*/
         layout.setComponentConstraints(component, constraints);
     }
 }
