@@ -64,8 +64,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     protected Map<String, Object> savedParameters;
     protected Throwable dataLoadError;
     protected boolean listenersSuspended;
-    protected Operation lastCollectionChangeOperation;
-    protected List<T> lastCollectionChangeItems;
+    protected final LinkedList<CollectionChangeEvent<T,K>> suspendedEvents = new LinkedList<>();
     protected RefreshMode refreshMode = RefreshMode.ALWAYS;
     protected UserSession userSession = AppBeans.<UserSessionSource>get(UserSessionSource.NAME).getUserSession();
 
@@ -360,8 +359,11 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     protected void fireCollectionChanged(Operation operation, List<T> items) {
         if (listenersSuspended) {
-            lastCollectionChangeOperation = operation;
-            lastCollectionChangeItems = items;
+            if (!suspendedEvents.isEmpty() && suspendedEvents.getFirst().getOperation().equals(operation)) {
+                suspendedEvents.getFirst().getItems().addAll(items);
+            } else {
+                suspendedEvents.addFirst(new CollectionChangeEvent<>(this, operation, new ArrayList<>(items)));
+            }
             return;
         }
 
@@ -417,13 +419,11 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     public void resumeListeners() {
         listenersSuspended = false;
 
-        if (lastCollectionChangeOperation != null) {
-            fireCollectionChanged(lastCollectionChangeOperation,
-                    lastCollectionChangeItems != null ? lastCollectionChangeItems : Collections.<T>emptyList());
+        while(!suspendedEvents.isEmpty()) {
+            //noinspection unchecked
+            CollectionChangeEvent<T,K> suspendedEvent = suspendedEvents.removeLast();
+            fireCollectionChanged(suspendedEvent.getOperation(), Collections.unmodifiableList(suspendedEvent.getItems()));
         }
-
-        lastCollectionChangeOperation = null;
-        lastCollectionChangeItems = null;
     }
 
     @Override
