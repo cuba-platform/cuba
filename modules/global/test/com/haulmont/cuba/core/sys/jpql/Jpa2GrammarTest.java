@@ -324,6 +324,8 @@ public class Jpa2GrammarTest {
     public void testNullIfCoalesce() throws RecognitionException {
         testQuery("SELECT NULLIF(emp.salary, 10) FROM app$Employee emp");
         testQuery("SELECT COALESCE(emp.salary, emp.salaryOld, 10) FROM app$Employee emp");
+        testQuery("SELECT COALESCE(emp.salary, emp.salaryOld, 10) * 5.7 FROM app$Employee emp");
+        testQuery("SELECT COALESCE(emp.salary, 10) * 1.18 FROM app$Employee emp");
     }
 
     @Test
@@ -374,7 +376,7 @@ public class Jpa2GrammarTest {
     @Test
     public void testAggregateFunctions() throws RecognitionException {
         testQuery("SELECT AVG(o.quantity)/2 FROM app$Order o");
-        //testQuery("SELECT AVG(o.quantity)/2.0 FROM app$Order o");
+        testQuery("SELECT AVG(o.quantity)/2.567 FROM app$Order o");
         testQuery("SELECT AVG(o.price) FROM app$Order o");
         testQuery("SELECT AVG(o.quantity * o.price) FROM app$Order o");
         testQuery("SELECT AVG(CASE WHEN o.orderType = 1 THEN o.price ELSE 0 END), AVG(CASE WHEN o.orderType = 2 THEN o.price ELSE 0 END) FROM app$Order o");
