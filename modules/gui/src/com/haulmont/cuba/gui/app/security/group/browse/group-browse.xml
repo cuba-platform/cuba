@@ -144,7 +144,8 @@
                                 <column id="whereClause" caption="msg://com.haulmont.cuba.security.entity/Constraint.whereClause" width="200px"/>
                                 <column id="groovyScript"
                                         caption="msg://com.haulmont.cuba.security.entity/Constraint.groovyScript"
-                                        width="200px"/>
+                                        width="200px"
+                                        sortable="false"/>
                             </columns>
                             <rows datasource="constraintsDs"/>
                         </table>
