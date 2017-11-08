@@ -21,7 +21,6 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -256,6 +255,13 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     @Override
     public void setCaptionProperty(String captionProperty) {
         this.captionProperty = captionProperty;
+
+        tryToAssignCaptionProperty();
+    }
+
+    @Override
+    public void setCaptionMode(CaptionMode captionMode) {
+        super.setCaptionMode(captionMode);
 
         tryToAssignCaptionProperty();
     }
