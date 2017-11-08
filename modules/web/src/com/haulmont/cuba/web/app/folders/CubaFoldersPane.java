@@ -44,7 +44,7 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.Action;
@@ -530,12 +530,12 @@ public class CubaFoldersPane extends VerticalLayout {
             if (webConfig.getShowFolderIcons()) {
                 if (folder instanceof SearchFolder) {
                     if (BooleanUtils.isTrue(((SearchFolder) folder).getIsSet())) {
-                        tree.setItemIcon(folder, new VersionedThemeResource("icons/set-small.png"));
+                        tree.setItemIcon(folder, WebComponentsHelper.getIcon("icons/set-small.png"));
                     } else {
-                        tree.setItemIcon(folder, new VersionedThemeResource("icons/search-folder-small.png"));
+                        tree.setItemIcon(folder, WebComponentsHelper.getIcon("icons/search-folder-small.png"));
                     }
                 } else if (folder instanceof AppFolder) {
-                    tree.setItemIcon(folder, new VersionedThemeResource("icons/app-folder-small.png"));
+                    tree.setItemIcon(folder, WebComponentsHelper.getIcon("icons/app-folder-small.png"));
                 }
             }
         }
