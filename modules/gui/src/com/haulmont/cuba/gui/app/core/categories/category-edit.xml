@@ -30,6 +30,10 @@
 
     <assign name="fieldWidth" value="theme://cuba.gui.category-edit.field.width"/>
 
+    <dialogMode height="theme://cuba.gui.dialogSize.height.xlarge"
+                width="theme://cuba.gui.dialogSize.width.xlarge"
+                resizable="true"/>
+
     <layout expand="categoryAttrsFrame" spacing="true">
         <hbox id="categoryProperties" spacing="true">
             <label value="msg://name" align="MIDDLE_LEFT"/>
