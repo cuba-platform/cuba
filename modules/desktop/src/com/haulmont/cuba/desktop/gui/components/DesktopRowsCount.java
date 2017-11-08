@@ -312,6 +312,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
 
         public RowsCountComponent() {
             LC lc = new LC();
+            lc.hideMode(2);
             lc.insetsAll("2");
 
             layout = new MigLayout(lc);
@@ -331,6 +332,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
             prevButton.setMinimumSize(size);
 
             label = new JLabel();
+            label.setMinimumSize(size);
             add(label);
 
             countButton = new JXHyperlink();
