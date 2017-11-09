@@ -23,6 +23,7 @@ import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.FilterImplementation;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.MarginInfo;
 import com.haulmont.cuba.gui.components.compatibility.ComponentExpandCollapseListenerWrapper;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
@@ -31,6 +32,7 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.dom4j.Element;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -385,5 +387,14 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     @Override
     public boolean isBorderVisible() {
         return borderVisible;
+    }
+
+    @Override
+    public void setFrame(Frame frame) {
+        super.setFrame(frame);
+
+        if (frame != null && frame.getId() == null) {
+            LoggerFactory.getLogger(DesktopFilter.class).warn("Filter is embedded in a frame without ID");
+        }
     }
 }
