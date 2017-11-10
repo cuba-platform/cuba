@@ -1,8 +1,7 @@
 <h1 align="center"> <a href="https://www.cuba-platform.com/"><img src="https://github.com/funxies/cuba/blob/master/Cuba_Logo.png" alt="CUBA Platform" width="600" align="center"></a>
-</h1>
-  <br>
-  
-  <h4 align="center">Java RAD framework for enterprise web applications</h4>
+</h1>  
+
+<h4 align="center">Java RAD framework for enterprise web applications</h4>
   
 <p align="center">
 <a href="http://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat" alt="license" title=""></a>
