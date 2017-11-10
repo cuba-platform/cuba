@@ -12,34 +12,33 @@
 
 <div align="center">
   <h3>
-    <a href="https://www.cuba-platform.com/">
+    <a href="https://www.cuba-platform.com/" target="_blank">
       Website
     </a>
     <span> | </span>
-    <a href="https://www.cuba-platform.com/online-demo">
+    <a href="https://www.cuba-platform.com/online-demo" target="_blank">
       Online Demo
     </a>
     <span> | </span>
-    <a href="https://www.cuba-platform.com/tutorials">
+    <a href="https://www.cuba-platform.com/tutorials" target="_blank">
       Tutorials
     </a>
     <span> | </span>
-    <a href="https://www.cuba-platform.com/documentation">
+    <a href="https://www.cuba-platform.com/documentation" target="_blank">
       Documentation
     </a>
     <span> | </span>
-    <a href="https://www.cuba-platform.com/discuss/">
+    <a href="https://www.cuba-platform.com/discuss/" target="_blank">
       Forum
     </a>
   </h3>
 </div>
-<br>
 
 <p align="center">
-<a href=""><img src="https://github.com/funxies/cuba/blob/master/img/twitter.png" height="36px" alt="" title=""></a>
-<a href=""><img src="https://github.com/funxies/cuba/blob/master/img/facebook.png" height="36px" margin-left="20px" alt="" title=""></a>
-<a href=""><img src="https://github.com/funxies/cuba/blob/master/img/linkedin.png" height="36px" margin-left="20px" alt="" title=""></a>
-<a href=""><img src="https://github.com/funxies/cuba/blob/master/img/vimeo.png" height="36px" margin-left="20px" alt="" title=""></a>
+<a href="https://twitter.com/CubaPlatform" target="_blank"><img src="https://github.com/funxies/cuba/blob/master/img/twitter.png" height="36px" alt="" title=""></a>
+<a href="https://www.facebook.com/CUBAplatform/" target="_blank"><img src="https://github.com/funxies/cuba/blob/master/img/facebook.png" height="36px" margin-left="20px" alt="" title=""></a>
+<a href="https://www.linkedin.com/company/cuba-platform/" target="_blank"><img src="https://github.com/funxies/cuba/blob/master/img/linkedin.png" height="36px" margin-left="20px" alt="" title=""></a>
+<a href="https://vimeo.com/channels/cubaplatform" target="_blank"><img src="https://github.com/funxies/cuba/blob/master/img/vimeo.png" height="36px" margin-left="20px" alt="" title=""></a>
 </p>
   
 [CUBA Platform](https://www.cuba-platform.com) is a high level framework for rapid development of enterprise applications with rich web interface.
