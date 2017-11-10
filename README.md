@@ -34,6 +34,13 @@
   </h3>
 </div>
 <br>
+
+<p align="center">
+<a href=""><img src="https://github.com/funxies/cuba/blob/master/img/twitter.png" height="36px" alt="" title=""></a>
+<a href=""><img src="https://github.com/funxies/cuba/blob/master/img/facebook.png" height="36px" margin-left="20px" alt="" title=""></a>
+<a href=""><img src="https://github.com/funxies/cuba/blob/master/img/linkedin.png" height="36px" margin-left="20px" alt="" title=""></a>
+<a href=""><img src="https://github.com/funxies/cuba/blob/master/img/vimeo.png" height="36px" margin-left="20px" alt="" title=""></a>
+</p>
   
 [CUBA Platform](https://www.cuba-platform.com) is a high level framework for rapid development of enterprise applications with rich web interface.
 
