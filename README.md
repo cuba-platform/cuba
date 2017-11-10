@@ -1,9 +1,41 @@
-# CUBA Platform
+<h1 align="center"> <a href="https://www.cuba-platform.com/"><img src="https://github.com/funxies/cuba/blob/master/Cuba_Logo.png" alt="CUBA Platform" width="600" align="center"></a>
+</h1>
+  <br>
+  
+  <h4 align="center">Java RAD framework for enterprise web applications</h4>
+  
+<p align="center">
+<a href="http://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat" alt="license" title=""></a>
+<a href="https://travis-ci.org/cuba-platform/cuba"><img src="https://travis-ci.org/cuba-platform/cuba.svg?branch=master" alt="Build Status" title=""></a>
+<a href="https://gitter.im/cuba-platform/cuba"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Join the chat at https://gitter.im/cuba-platform/cuba" title=""></a>
+</p>
 
-[![license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Build Status](https://travis-ci.org/cuba-platform/cuba.svg?branch=master)](https://travis-ci.org/cuba-platform/cuba)
-[![Join the chat at https://gitter.im/cuba-platform/cuba](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cuba-platform/cuba)
 
+<div align="center">
+  <h3>
+    <a href="https://www.cuba-platform.com/">
+      Website
+    </a>
+    <span> | </span>
+    <a href="https://www.cuba-platform.com/online-demo">
+      Online Demo
+    </a>
+    <span> | </span>
+    <a href="https://www.cuba-platform.com/tutorials">
+      Tutorials
+    </a>
+    <span> | </span>
+    <a href="https://www.cuba-platform.com/documentation">
+      Documentation
+    </a>
+    <span> | </span>
+    <a href="https://www.cuba-platform.com/discuss/">
+      Forum
+    </a>
+  </h3>
+</div>
+<br>
+  
 [CUBA Platform](https://www.cuba-platform.com) is a high level framework for rapid development of enterprise applications with rich web interface.
 
 The simplest way to start using the platform is to [download](https://www.cuba-platform.com/download) CUBA Studio and create a new project in it. A released version of the platform will be downloaded automatically from the artifact repository.
