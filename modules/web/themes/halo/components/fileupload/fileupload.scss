@@ -172,6 +172,10 @@
       transform: translateY(-50%) translateX(-50%);
     }
 
+    &[dropzone-prompt=""]:after {
+      display: none;
+    }
+
     & > div {
       opacity: 0.4;
     }
