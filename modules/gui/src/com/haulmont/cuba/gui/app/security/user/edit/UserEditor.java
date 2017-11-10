@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.WindowParams;
+import com.haulmont.cuba.gui.app.security.events.UserPasswordChangedEvent;
 import com.haulmont.cuba.gui.app.security.user.NameBuilderListener;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
@@ -166,25 +167,33 @@ public class UserEditor extends AbstractEditor<User> {
         initCustomFields(PersistenceHelper.isNew(WindowParams.ITEM.getEntity(params)));
 
         dsContext.addAfterCommitListener((context, result) -> {
-            for (Entity entity : result) {
-                if (entity.equals(userSession.getUser())) {
-                    userSession.setUser((User) entity);
-                }
-                if (entity.equals(userSession.getSubstitutedUser())) {
-                    userSession.setSubstitutedUser((User) entity);
-                }
-            }
+            updateSessionSubstitutions(result);
 
-            if (userSession.getUser().equals(getItem())) {
-                for (Entity entity : result) {
-                    if (entity instanceof UserSubstitution) {
-                        events.publish(new UserSubstitutionsChangedEvent(userSession.getUser()));
-
-                        break;
-                    }
-                }
+            if (passwField.getValue() != null) {
+                publishPasswordChangedEvent(getItem(), passwField.getValue());
             }
         });
+    }
+
+    protected void updateSessionSubstitutions(Set<Entity> committedEntities) {
+        for (Entity entity : committedEntities) {
+            if (entity.equals(userSession.getUser())) {
+                userSession.setUser((User) entity);
+            }
+            if (entity.equals(userSession.getSubstitutedUser())) {
+                userSession.setSubstitutedUser((User) entity);
+            }
+        }
+
+        if (userSession.getUser().equals(getItem())) {
+            for (Entity entity : committedEntities) {
+                if (entity instanceof UserSubstitution) {
+                    publishUserSubstitutionsChanged(userSession.getUser());
+
+                    break;
+                }
+            }
+        }
     }
 
     @Override
@@ -436,6 +445,14 @@ public class UserEditor extends AbstractEditor<User> {
         for (UserRole item : rolesDs.getItems()) {
             rolesDsImpl.modified(item);
         }
+    }
+
+    protected void publishUserSubstitutionsChanged(User user) {
+        events.publish(new UserSubstitutionsChangedEvent(user));
+    }
+
+    protected void publishPasswordChangedEvent(User user, String newPassword) {
+        events.publish(new UserPasswordChangedEvent(this, user, newPassword));
     }
 
     protected class AddRoleAction extends AbstractAction {

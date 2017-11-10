@@ -17,8 +17,10 @@
 package com.haulmont.cuba.gui.app.security.user.changepassw;
 
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.gui.WindowParam;
+import com.haulmont.cuba.gui.app.security.events.UserPasswordChangedEvent;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.User;
@@ -52,6 +54,9 @@ public class ChangePasswordDialog extends AbstractWindow {
 
     @Inject
     protected PasswordEncryption passwordEncryption;
+
+    @Inject
+    protected Events events;
 
     @Inject
     protected UserManagementService userManagementService;
@@ -149,19 +154,31 @@ public class ChangePasswordDialog extends AbstractWindow {
 
     public void changePassword() {
         if (validateAll()) {
+
+            User targetUser;
             UUID targetUserId;
             if (user == null) {
                 targetUserId = userSession.getUser().getId();
+                targetUser = userSession.getUser();
             } else {
                 targetUserId = user.getId();
+                targetUser = user;
             }
 
-            String passwordHash = passwordEncryption.getPasswordHash(targetUserId, passwField.getValue());
+            String newPassword = passwField.getValue();
+
+            String passwordHash = passwordEncryption.getPasswordHash(targetUserId, newPassword);
             userManagementService.changeUserPassword(targetUserId, passwordHash);
+
+            publishPasswordChangedEvent(targetUser, newPassword);
 
             showNotification(getMessage("passwordChanged"), NotificationType.HUMANIZED);
 
             close(COMMIT_ACTION_ID);
         }
+    }
+
+    protected void publishPasswordChangedEvent(User user, String newPassword) {
+        events.publish(new UserPasswordChangedEvent(this, user, newPassword));
     }
 }
