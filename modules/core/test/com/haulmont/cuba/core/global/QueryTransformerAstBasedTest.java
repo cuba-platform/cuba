@@ -308,7 +308,7 @@ public class QueryTransformerAstBasedTest {
 //        DomainModel model = new DomainModel(playerEntity, teamEntity);
 //
 //        assertTransformsToSame(model, "select p.owner from (select t from Team t where t.name in (select a.name from Player a)) p");
-//        // 'as' опускается
+//        // 'as' skipped
 //        QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model, "select p.owner from (select t.owner from Team as t where t.name = '1') p", "AsdfAsdfAsdf");
 //        String result = transformerAstBased.getResult();
 //        assertEquals("select p.owner from (select t.owner from Team t where t.name = '1') p", result);
