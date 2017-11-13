@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.bali.util.Preconditions;
 
 import java.util.List;
 import java.util.Map;
@@ -26,19 +26,20 @@ public interface SuggestionField extends Field, Component.Focusable, Component.H
 
     String NAME = "suggestionField";
 
-    interface SearchExecutor<E extends Entity> {
+    interface SearchExecutor<E> {
 
         /**
          * Executed on background thread.
          *
          * @param searchString search string as is
          * @param searchParams additional parameters, empty if SearchExecutor is not instance of {@link ParametrizedSearchExecutor}
-         * @return list with found entities
+         * @return list with found items. Item can be any type. {@link OptionWrapper} instances can be used as
+         * items to provide different value for displaying purpose.
          */
         List<E> search(String searchString, Map<String, Object> searchParams);
     }
 
-    interface ParametrizedSearchExecutor<E extends Entity> extends SearchExecutor<E> {
+    interface ParametrizedSearchExecutor<E> extends SearchExecutor<E> {
         /**
          * Called by the execution environment in UI thread to prepare execution parameters for {@link SearchExecutor#search(String, Map)}.
          *
@@ -159,11 +160,68 @@ public interface SuggestionField extends Field, Component.Focusable, Component.H
      *
      * @param suggestions suggestions to show
      */
-    void showSuggestions(List<? extends Entity> suggestions);
+    void showSuggestions(List<?> suggestions);
 
     CaptionMode getCaptionMode();
     void setCaptionMode(CaptionMode captionMode);
 
     String getCaptionProperty();
     void setCaptionProperty(String captionProperty);
+
+    /**
+     * Represent value and its string representation.
+     */
+    class OptionWrapper {
+        protected String caption;
+        protected Object value;
+
+        public OptionWrapper(String caption, Object value) {
+            Preconditions.checkNotNullArgument(caption);
+            Preconditions.checkNotNullArgument(value);
+
+            this.caption = caption;
+            this.value = value;
+        }
+
+        /**
+         * @return string representation
+         */
+        public String getCaption() {
+            return caption;
+        }
+
+        /**
+         * @return value
+         */
+        public Object getValue() {
+            return value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            OptionWrapper that = (OptionWrapper) o;
+
+            return caption.equals(that.caption) && value.equals(that.value);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = caption.hashCode();
+            result = 31 * result + value.hashCode();
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return caption;
+        }
+    }
 }

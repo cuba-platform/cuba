@@ -415,7 +415,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
 
     public class ObjectWrapper implements ValueWrapper<Object> {
 
-        private Object obj;
+        protected Object obj;
 
         public ObjectWrapper(Object obj) {
             this.obj = obj;

@@ -20,10 +20,10 @@ package com.haulmont.cuba.desktop.gui.components;
 import ca.odell.glazedlists.BasicEventList;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
@@ -41,7 +41,11 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,6 +59,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
     protected BasicEventList<Object> items = new BasicEventList<>();
     protected SearchAutoCompleteSupport<Object> autoComplete;
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
     protected boolean resetValueState = false;
     protected boolean enterHandling = false;
@@ -78,7 +83,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
     protected int asyncSearchDelayMs;
 
-    protected SearchExecutor<Entity> searchExecutor;
+    protected SearchExecutor<?> searchExecutor;
     protected EnterActionHandler enterActionHandler;
 
     protected Color searchEditBgColor = (Color) UIManager.get("cubaSearchEditBackground");
@@ -133,7 +138,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
                         boolean found = false;
                         String newFilter = (String) selectedItem;
                         if (prevValue != null) {
-                            if (StringUtils.equals(getDisplayString((Entity) prevValue), newFilter)) {
+                            if (StringUtils.equals(getDisplayString(prevValue), newFilter)) {
                                 found = true;
                             }
                         }
@@ -306,19 +311,19 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
         }
     }
 
-    protected SwingWorker<List<Entity>, Void> createSearchWorker(final String currentSearchString,
+    protected SwingWorker<List<?>, Void> createSearchWorker(final String currentSearchString,
                                                                  final Map<String, Object> params) {
-        final SearchExecutor<Entity> currentSearchExecutor = this.searchExecutor;
+        final SearchExecutor<?> currentSearchExecutor = this.searchExecutor;
         final int currentAsyncSearchTimeoutMs = this.asyncSearchDelayMs;
 
-        return new SwingWorker<List<Entity>, Void>() {
+        return new SwingWorker<List<?>, Void>() {
             @Override
-            protected List<Entity> doInBackground() throws Exception {
+            protected List<?> doInBackground() throws Exception {
                 Thread.currentThread().setName("ReactiveSearchField_AsyncThread");
 
                 Thread.sleep(currentAsyncSearchTimeoutMs);
 
-                List<Entity> result;
+                List<?> result;
                 try {
                     result = asyncSearch(currentSearchExecutor, currentSearchString, params);
                 } catch (RuntimeException e) {
@@ -334,7 +339,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
             protected void done() {
                 super.done();
 
-                List<Entity> searchResultItems;
+                List<?> searchResultItems;
                 try {
                     searchResultItems = get();
                 } catch (InterruptedException | ExecutionException | CancellationException e) {
@@ -349,7 +354,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     }
 
     // Called on background thread
-    protected List<Entity> asyncSearch(SearchExecutor<Entity> searchExecutor, String searchString, Map<String, Object> params)
+    protected List<?> asyncSearch(SearchExecutor<?> searchExecutor, String searchString, Map<String, Object> params)
             throws Exception {
         if (Thread.currentThread().isInterrupted()) {
             throw new InterruptedException();
@@ -357,10 +362,10 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
         log.debug("Search '{}'", searchString);
 
-        List<Entity> searchResultItems;
+        List<?> searchResultItems;
         if (searchExecutor instanceof ParametrizedSearchExecutor) {
             //noinspection unchecked
-            ParametrizedSearchExecutor<Entity> pSearchExecutor = (ParametrizedSearchExecutor<Entity>) searchExecutor;
+            ParametrizedSearchExecutor<?> pSearchExecutor = (ParametrizedSearchExecutor<?>) searchExecutor;
             searchResultItems = new ArrayList<>(pSearchExecutor.search(searchString, params));
         } else {
             searchResultItems = new ArrayList<>(searchExecutor.search(searchString, Collections.emptyMap()));
@@ -369,13 +374,13 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
         return searchResultItems;
     }
 
-    protected void handleSearchResults(List<? extends Entity> searchResultItems) {
+    protected void handleSearchResults(List<?> searchResultItems) {
         if (isVisible() && isEnabled() && isEditable()) {
             items.clear();
-            List<SearchEntityWrapper> wrappers = new ArrayList<>();
+            List<SearchObjectWrapper> wrappers = new ArrayList<>();
             for (int i = 0; i < searchResultItems.size() && i < suggestionsLimit; i++) {
-                Entity item = searchResultItems.get(i);
-                wrappers.add(new SearchEntityWrapper(item));
+                Object item = searchResultItems.get(i);
+                wrappers.add(new SearchObjectWrapper(item));
             }
             items.addAll(wrappers);
 
@@ -411,7 +416,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
                             comboBox.setBackground(searchEditBgColor);
                         }
                     } else {
-                        String valueText = getDisplayString((Entity) prevValue);
+                        String valueText = getDisplayString(prevValue);
 
                         if (!StringUtils.equals(inputText, valueText)) {
                             comboBox.setBackground(searchEditBgColor);
@@ -420,6 +425,14 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
                 }
             }
         }
+    }
+
+    protected String getDisplayString(Object value) {
+        if (value == null || value instanceof Entity) {
+            return super.getDisplayString((Entity) value);
+        }
+
+        return metadataTools.format(value);
     }
 
     protected void clearSearchVariants() {
@@ -599,6 +612,14 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     }
 
     @Override
+    public <T> T getValue() {
+        T value = super.getValue();
+        return value instanceof OptionWrapper
+                ? (T) ((OptionWrapper) value).getValue()
+                : value;
+    }
+
+    @Override
     public void setValue(Object value) {
         DesktopBackgroundWorker.checkSwingUIAccess();
 
@@ -703,7 +724,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     }
 
     @Override
-    public void showSuggestions(List<? extends Entity> suggestions) {
+    public void showSuggestions(List<?> suggestions) {
         if (asyncSearchWorker != null) {
             asyncSearchWorker.cancel(true);
             asyncSearchWorker = null;
@@ -722,45 +743,34 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
         this.inputPrompt = inputPrompt;
     }
 
-    // we don't need to select current item in suggestion list automatically
-    protected class SearchEntityWrapper extends EntityWrapper {
+    protected class SearchObjectWrapper extends ObjectWrapper {
 
-        public SearchEntityWrapper(Entity entity) {
-            super(entity);
+        public SearchObjectWrapper(Object obj) {
+            super(obj);
         }
 
         @Override
-        public boolean equals(Object obj) {
-            return this == obj;
-        }
-
-        @Override
-        public int hashCode() {
-            return System.identityHashCode(this);
+        public String toString() {
+            if (captionFormatter != null) {
+                return captionFormatter.formatValue(getValue());
+            }
+            return getDisplayString(obj);
         }
     }
 
-    protected class NullOption extends SearchEntityWrapper {
+    protected class NullOption extends SearchObjectWrapper {
         public NullOption() {
-            //noinspection IncorrectCreateEntity
-            super(new BaseUuidEntity() {
-                @Override
-                public String getInstanceName() {
-                    return String.valueOf(DesktopSuggestionField.this.nullOption);
-                }
-
-                // Used for captionProperty of null entity
-                @SuppressWarnings("unchecked")
-                @Override
-                public <T> T getValue(String s) {
-                    return (T) getInstanceName();
-                }
-            });
+            super(null);
         }
 
         @Override
         public Entity getValue() {
             return null;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(DesktopSuggestionField.this.nullOption);
         }
     }
 }

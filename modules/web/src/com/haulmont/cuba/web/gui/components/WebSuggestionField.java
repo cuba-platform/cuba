@@ -44,14 +44,14 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
 
     protected BackgroundWorker backgroundWorker = AppBeans.get(BackgroundWorker.NAME);
     protected UserSession userSession = AppBeans.get(UserSession.class);
-    protected BackgroundTaskHandler<List<Entity>> handler;
+    protected BackgroundTaskHandler<List<?>> handler;
 
-    protected SearchExecutor<Entity> searchExecutor;
+    protected SearchExecutor<?> searchExecutor;
 
     protected EnterActionHandler enterActionHandler;
     protected ArrowDownActionHandler arrowDownActionHandler;
 
-    protected StringToEntityConverter textViewConverter = new StringToEntityConverter();
+    protected StringToEntityConverter entityConverter = new StringToEntityConverter();
 
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
@@ -61,14 +61,27 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
     public WebSuggestionField() {
         component = new CubaSuggestionField();
 
-        component.setTextViewConverter(obj -> {
-            if (obj == null) {
-                return StringUtils.EMPTY;
-            }
+        component.setTextViewConverter(this::convertToTextView);
 
-            Entity entity = (Entity) obj;
+        component.setSearchExecutor(query -> {
+            cancelSearch();
+            searchSuggestions(query);
+        });
+
+        component.setCancelSearchHandler(this::cancelSearch);
+
+        attachListener(component);
+    }
+
+    protected String convertToTextView(Object value) {
+        if (value == null) {
+            return StringUtils.EMPTY;
+        }
+
+        if (value instanceof Entity) {
+            Entity entity = (Entity) value;
             if (captionMode == CaptionMode.ITEM) {
-                return textViewConverter.convertToPresentation(entity, String.class, userSession.getLocale());
+                return entityConverter.convertToPresentation(entity, String.class, userSession.getLocale());
             }
 
             if (StringUtils.isNotEmpty(captionProperty)) {
@@ -82,17 +95,18 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
 
             log.warn("Using StringToEntityConverter to get entity text presentation. Caption property is not defined " +
                     "while caption mode is \"PROPERTY\"");
-            return textViewConverter.convertToPresentation(entity, String.class, userSession.getLocale());
-        });
+            return entityConverter.convertToPresentation(entity, String.class, userSession.getLocale());
+        }
 
-        component.setSearchExecutor(query -> {
-            cancelSearch();
-            searchSuggestions(query);
-        });
+        return metadataTools.format(value);
+    }
 
-        component.setCancelSearchHandler(this::cancelSearch);
-
-        attachListener(component);
+    @Override
+    public <V> V getValue() {
+        V value = super.getValue();
+        return value instanceof OptionWrapper
+                ? (V) ((OptionWrapper) value).getValue()
+                : value;
     }
 
     @Override
@@ -131,30 +145,30 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
     }
 
     protected void searchSuggestions(final String query) {
-        BackgroundTask<Long, List<Entity>> task = getSearchSuggestionsTask(query);
+        BackgroundTask<Long, List<?>> task = getSearchSuggestionsTask(query);
         if (task != null) {
             handler = backgroundWorker.handle(task);
             handler.execute();
         }
     }
 
-    protected BackgroundTask<Long, List<Entity>> getSearchSuggestionsTask(final String query) {
+    protected BackgroundTask<Long, List<?>> getSearchSuggestionsTask(final String query) {
         if (this.searchExecutor == null)
             return null;
 
-        final SearchExecutor<Entity> currentSearchExecutor = this.searchExecutor;
+        final SearchExecutor<?> currentSearchExecutor = this.searchExecutor;
 
         Map<String, Object> params;
         if (currentSearchExecutor instanceof ParametrizedSearchExecutor) {
-            params = ((ParametrizedSearchExecutor<Entity>) currentSearchExecutor).getParams();
+            params = ((ParametrizedSearchExecutor<?>) currentSearchExecutor).getParams();
         } else {
             params = Collections.emptyMap();
         }
 
-        return new BackgroundTask<Long, List<Entity>>(0) {
+        return new BackgroundTask<Long, List<?>>(0) {
             @Override
-            public List<Entity> run(TaskLifeCycle<Long> taskLifeCycle) throws Exception {
-                List<Entity> result;
+            public List<?> run(TaskLifeCycle<Long> taskLifeCycle) throws Exception {
+                List<?> result;
                 try {
                     // todo: remove after fixing #PLI-213
                     //noinspection ChangingGuiFromBackgroundTask
@@ -169,7 +183,7 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
             }
 
             @Override
-            public void done(List<Entity> result) {
+            public void done(List<?> result) {
                 log.debug("Search results for '{}'", query);
 
                 handleSearchResult(result);
@@ -187,7 +201,7 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
         };
     }
 
-    protected List<Entity> asyncSearch(SearchExecutor<Entity> searchExecutor, String searchString,
+    protected List<?> asyncSearch(SearchExecutor<?> searchExecutor, String searchString,
                                        Map<String, Object> params) throws Exception {
         if (Thread.currentThread().isInterrupted()) {
             throw new InterruptedException();
@@ -195,10 +209,10 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
 
         log.debug("Search '{}'", searchString);
 
-        List<Entity> searchResultItems;
+        List<?> searchResultItems;
         if (searchExecutor instanceof ParametrizedSearchExecutor) {
             //noinspection unchecked
-            ParametrizedSearchExecutor<Entity> pSearchExecutor = (ParametrizedSearchExecutor<Entity>) searchExecutor;
+            ParametrizedSearchExecutor<?> pSearchExecutor = (ParametrizedSearchExecutor<?>) searchExecutor;
             searchResultItems = pSearchExecutor.search(searchString, params);
         } else {
             searchResultItems = searchExecutor.search(searchString, Collections.emptyMap());
@@ -207,7 +221,7 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
         return searchResultItems;
     }
 
-    protected void handleSearchResult(List<? extends Entity> results) {
+    protected void handleSearchResult(List<?> results) {
         showSuggestions(results);
     }
 
@@ -276,7 +290,7 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
     }
 
     @Override
-    public void showSuggestions(List<? extends Entity> suggestions) {
+    public void showSuggestions(List<?> suggestions) {
         component.showSuggestions(suggestions);
     }
 
