@@ -81,7 +81,7 @@ public class StatisticsCounter implements StatisticsCounterMBean {
     }
 
     @Override
-    public double getMiddlewareRequestsCount() {
+    public Long getMiddlewareRequestsCount() {
         return accumulator.getMiddlewareRequestsCount();
     }
 
@@ -91,7 +91,7 @@ public class StatisticsCounter implements StatisticsCounterMBean {
     }
 
     @Override
-    public double getCubaScheduledTasksCount() {
+    public Long getCubaScheduledTasksCount() {
         return accumulator.getCubaScheduledTasksCount();
     }
 
@@ -101,13 +101,18 @@ public class StatisticsCounter implements StatisticsCounterMBean {
     }
 
     @Override
-    public double getSpringScheduledTasksCount() {
+    public Long getSpringScheduledTasksCount() {
         return accumulator.getSpringScheduledTasksCount();
     }
 
     @Override
     public double getSpringScheduledTasksPerSecond() {
         return accumulator.getSpringScheduledTasksPerSecond();
+    }
+
+    @Override
+    public Long getImplicitFlushCount() {
+        return accumulator.getImplicitFlushCount();
     }
 
     private int getDbConnectionPoolMBeanAttr(String attrName) {

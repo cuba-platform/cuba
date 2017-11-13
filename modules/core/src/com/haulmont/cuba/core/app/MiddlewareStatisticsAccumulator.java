@@ -41,6 +41,7 @@ public class MiddlewareStatisticsAccumulator extends StatisticsAccumulator {
     protected AtomicLong rolledBackTransactionsCount = new AtomicLong();
     protected AtomicLong middlewareRequestsCount = new AtomicLong();
     protected AtomicLong cubaScheduledTasksCount = new AtomicLong();
+    protected AtomicLong implicitFlushCount = new AtomicLong();
 
     protected Parameter dbConnectionPoolNumActive = new Parameter();
     protected Parameter dbConnectionPoolNumIdle = new Parameter();
@@ -98,6 +99,10 @@ public class MiddlewareStatisticsAccumulator extends StatisticsAccumulator {
         cubaScheduledTasksCount.incrementAndGet();
     }
 
+    public void incImplicitFlushCount() {
+        implicitFlushCount.incrementAndGet();
+    }
+
     public Long getActiveTransactionsCount() {
         return (startedTransactionsCount.get() - committedTransactionsCount.get() - rolledBackTransactionsCount.get());
     }
@@ -120,6 +125,10 @@ public class MiddlewareStatisticsAccumulator extends StatisticsAccumulator {
 
     public Long getCubaScheduledTasksCount() {
         return cubaScheduledTasksCount.get();
+    }
+
+    public Long getImplicitFlushCount() {
+        return implicitFlushCount.get();
     }
 
     public double getCubaScheduledTasksPerSecond() {
