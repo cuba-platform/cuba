@@ -201,6 +201,7 @@ public class EntityImportExport implements EntityImportExportAPI {
     public Collection<Entity> importEntities(Collection<? extends Entity> entities, EntityImportView importView, boolean validate) {
         List<ReferenceInfo> referenceInfoList = new ArrayList<>();
         CommitContext commitContext = new CommitContext();
+        commitContext.setSoftDeletion(false);
 
         //import is performed in two steps. We have to do so, because imported entity may have a reference to
         //the reference that is imported in the same batch.
@@ -610,6 +611,7 @@ public class EntityImportExport implements EntityImportExportAPI {
                         entity.setValue(propertyName, entityFromCommitContext);
                     } else {
                         LoadContext<? extends Entity> ctx = LoadContext.create(propertyValue.getClass())
+                                .setSoftDeletion(false)
                                 .setId(propertyValue.getId());
                         dataManager.load(ctx);
                         Entity loadedReference = dataManager.load(ctx);
