@@ -80,16 +80,32 @@ public class QueriesController {
         return responseBuilder.body(resultJson);
     }
 
-    @GetMapping(value = "/{entityName}/{queryName}/count", produces = "text/plain;charset=UTF-8")
+    @GetMapping(value = "/{entityName}/{queryName}/count")
     public String getCountGet(@PathVariable String entityName,
-                           @PathVariable String queryName,
-                           @RequestParam(required = false) String modelVersion,
-                           @RequestParam Map<String, String> params) throws ClassNotFoundException, ParseException {
+                              @PathVariable String queryName,
+                              @RequestParam(required = false) String modelVersion,
+                              @RequestParam Map<String, String> params) throws ClassNotFoundException, ParseException {
         return queriesControllerManager.getCountGet(entityName, queryName, modelVersion, params);
     }
 
-    @PostMapping(value = "/{entityName}/{queryName}/count", produces = "text/plain;charset=UTF-8")
+    @GetMapping(value = "/{entityName}/{queryName}/count", produces = "text/plain;charset=UTF-8")
+    public String getCountGetText(@PathVariable String entityName,
+                              @PathVariable String queryName,
+                              @RequestParam(required = false) String modelVersion,
+                              @RequestParam Map<String, String> params) throws ClassNotFoundException, ParseException {
+        return queriesControllerManager.getCountGet(entityName, queryName, modelVersion, params);
+    }
+
+    @PostMapping(value = "/{entityName}/{queryName}/count")
     public String getCountPost(@PathVariable String entityName,
+                           @PathVariable String queryName,
+                           @RequestParam(required = false) String modelVersion,
+                           @RequestBody String paramsJson) throws ClassNotFoundException, ParseException {
+        return queriesControllerManager.getCountPost(entityName, queryName, modelVersion, paramsJson);
+    }
+
+    @PostMapping(value = "/{entityName}/{queryName}/count", produces = "text/plain;charset=UTF-8")
+    public String getCountPostText(@PathVariable String entityName,
                            @PathVariable String queryName,
                            @RequestParam(required = false) String modelVersion,
                            @RequestBody String paramsJson) throws ClassNotFoundException, ParseException {
