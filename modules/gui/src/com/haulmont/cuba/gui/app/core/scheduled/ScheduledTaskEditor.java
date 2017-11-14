@@ -151,7 +151,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
             if (ScheduledTaskDefinedBy.BEAN == e.getValue()) {
                 clear(classNameField, scriptNameField);
                 hideAll();
-                show(beanNameField, beanNameLabel, methodNameField, methodNameLabel, methodNameHbox, methodParamsBox);
+                show(beanNameField, beanNameLabel, methodNameField, methodNameLabel, methodNameHbox);
             } else if (ScheduledTaskDefinedBy.CLASS == e.getValue()) {
                 clear(beanNameField, methodNameField, scriptNameField);
                 hideAll();
@@ -170,6 +170,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
         beanNameField.setOptionsList(new ArrayList<>(availableBeans.keySet()));
         beanNameField.addValueChangeListener(e -> {
             methodNameField.setValue(null);
+            hide(methodParamsBox);
             if (e.getValue() == null) {
                 methodNameField.setOptionsList(Collections.emptyList());
             } else {
@@ -189,6 +190,11 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
             clearMethodParamsGrid();
             if (e.getValue() != null) {
                 createMethodParamsGrid((MethodInfo) e.getValue());
+                if (methodParamsBox.getComponents().size() > 1) {
+                    show(methodParamsBox);
+                } else {
+                    hide(methodParamsBox);
+                }
             }
 
             String methodName = (e.getValue() != null) ? ((MethodInfo) e.getValue()).getName() : null;
