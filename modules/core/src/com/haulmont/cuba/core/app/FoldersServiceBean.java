@@ -25,16 +25,13 @@ import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.CubaXStream;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
-import com.thoughtworks.xstream.core.DefaultConverterLookup;
-import com.thoughtworks.xstream.core.util.ClassLoaderReference;
-import com.thoughtworks.xstream.io.xml.XppDriver;
 import groovy.lang.Binding;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -336,15 +333,12 @@ public class FoldersServiceBean implements FoldersService {
     }
 
     protected XStream createXStream() {
-        XStream xStream = new XStream(null, new XppDriver(),
-                new ClassLoaderReference(Thread.currentThread().getContextClassLoader()),
-                null, new DefaultConverterLookup(), null);
+        XStream xStream = new CubaXStream();
         //createTs and createdBy removed from BaseGenericIdEntity,
         //and import from old versions (platform 6.2) is performed with errors
         //so omit field processing
         xStream.omitField(BaseGenericIdEntity.class, "createTs");
         xStream.omitField(BaseGenericIdEntity.class, "createdBy");
-        xStream.getConverterRegistry().removeConverter(ExternalizableConverter.class);
         return xStream;
     }
 

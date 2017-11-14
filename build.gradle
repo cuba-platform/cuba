@@ -355,9 +355,7 @@ configure(coreModule) {
         compile(sharedLibModule)
 
         compile(bom['javax.validation:validation-api'])
-        compile(bom['com.haulmont.thirdparty:xstream'])
-        runtime(bom['xpp3:xpp3_min'])
-        runtime(bom['xmlpull:xmlpull'])
+        compile(bom['com.thoughtworks.xstream:xstream'])
         compile(bom['org.jgroups:jgroups'])
         compile(bom['org.aspectj:aspectjrt'])
         compile(bom['org.aspectj:aspectjweaver'])

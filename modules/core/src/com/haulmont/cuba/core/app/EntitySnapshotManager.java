@@ -30,9 +30,9 @@ import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.diff.EntityDiff;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.CubaXStream;
 import com.haulmont.cuba.security.entity.User;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 import org.dom4j.*;
 import org.springframework.stereotype.Component;
@@ -223,7 +223,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     protected Object fromXML(String xml) {
         final List exclUpdateFields = Arrays.asList("updateTs", "updatedBy");
-        XStream xStream = new XStream() {
+        XStream xStream = new CubaXStream() {
             @Override
             protected MapperWrapper wrapMapper(MapperWrapper next) {
                 return new MapperWrapper(next) {
@@ -250,7 +250,6 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
                 };
             }
         };
-        xStream.getConverterRegistry().removeConverter(ExternalizableConverter.class);
         xStream.omitField(BaseGenericIdEntity.class, "createTs");
         xStream.omitField(BaseGenericIdEntity.class, "createdBy");
 
