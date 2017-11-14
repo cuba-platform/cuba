@@ -533,7 +533,7 @@ public class StatisticsDatasource extends GroupDatasourceImpl<PerformanceParamet
 
             name2attr.put(attrName, attribute);
             jmxControlAPI.loadAttributeValue(attribute);
-            return (Double) attribute.getValue();
+            return ((Number) attribute.getValue()).doubleValue();
         }
     }
 }

@@ -300,7 +300,7 @@ public class EntityManagerImpl implements EntityManager {
     @Override
     public void flush() {
         log.debug("flush");
-        support.fireEntityListeners(this);
+        support.fireEntityListeners(this, false);
         delegate.flush();
     }
 

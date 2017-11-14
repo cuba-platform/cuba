@@ -33,17 +33,19 @@ public interface StatisticsCounterMBean {
 
     double getTransactionsPerSecond();
 
-    double getMiddlewareRequestsCount();
+    Long getMiddlewareRequestsCount();
 
     double getMiddlewareRequestsPerSecond();
 
-    double getCubaScheduledTasksCount();
+    Long getCubaScheduledTasksCount();
 
     double getCubaScheduledTasksPerSecond();
 
-    double getSpringScheduledTasksCount();
+    Long getSpringScheduledTasksCount();
 
     double getSpringScheduledTasksPerSecond();
+
+    Long getImplicitFlushCount();
 
     int getDbConnectionPoolNumActive();
 

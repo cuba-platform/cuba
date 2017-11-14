@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
 import com.haulmont.cuba.core.listener.AfterCompleteTransactionListener;
 import com.haulmont.cuba.core.listener.BeforeCommitTransactionListener;
 import com.haulmont.cuba.core.app.FtsSender;
@@ -84,11 +85,16 @@ public class PersistenceImplSupport implements ApplicationContextAware {
     @Inject
     protected OrmCacheSupport ormCacheSupport;
 
+    @Inject
+    protected MiddlewareStatisticsAccumulator statisticsAccumulator;
+
     protected List<BeforeCommitTransactionListener> beforeCommitTxListeners;
 
     protected List<AfterCompleteTransactionListener> afterCompleteTxListeners;
 
     private static Logger log = LoggerFactory.getLogger(PersistenceImplSupport.class.getName());
+
+    private Logger implicitFlushLog = LoggerFactory.getLogger("com.haulmont.cuba.IMPLICIT_FLUSH");
 
     protected static Set<Entity> createEntitySet() {
         return Sets.newIdentityHashSet();
@@ -167,10 +173,10 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         return holder;
     }
 
-    public void fireEntityListeners(EntityManager entityManager) {
+    public void fireEntityListeners(EntityManager entityManager, boolean warnAboutImplicitFlush) {
         UnitOfWork unitOfWork = entityManager.getDelegate().unwrap(UnitOfWork.class);
         String storeName = getStorageName(unitOfWork);
-        traverseEntities(getInstanceContainerResourceHolder(storeName), new OnFlushEntityVisitor(storeName));
+        traverseEntities(getInstanceContainerResourceHolder(storeName), new OnFlushEntityVisitor(storeName), warnAboutImplicitFlush);
     }
 
     protected boolean isDeleted(BaseGenericIdEntity entity, AttributeChangeListener changeListener) {
@@ -185,12 +191,12 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         }
     }
 
-    protected void traverseEntities(ContainerResourceHolder container, EntityVisitor visitor) {
-        beforeStore(container, visitor, container.getAllInstances(), createEntitySet());
+    protected void traverseEntities(ContainerResourceHolder container, EntityVisitor visitor, boolean warnAboutImplicitFlush) {
+        beforeStore(container, visitor, container.getAllInstances(), createEntitySet(), warnAboutImplicitFlush);
     }
 
     protected void beforeStore(ContainerResourceHolder container, EntityVisitor visitor,
-                               Collection<Entity> instances, Set<Entity> processed) {
+                               Collection<Entity> instances, Set<Entity> processed, boolean warnAboutImplicitFlush) {
         boolean possiblyChanged = false;
         Set<Entity> withoutPossibleChanges = createEntitySet();
         for (Entity instance : instances) {
@@ -209,10 +215,25 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         if (!possiblyChanged)
             return;
 
+        if (warnAboutImplicitFlush) {
+            statisticsAccumulator.incImplicitFlushCount();
+            if (implicitFlushLog.isTraceEnabled()) {
+                StringBuilder sb = new StringBuilder();
+                StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+                for (int i = 1; i < stackTrace.length; i++) {
+                    StackTraceElement element = stackTrace[i];
+                    sb.append(element).append("\n");
+                }
+                implicitFlushLog.trace("Implicit flush due to query execution, see stack trace for the cause:\n" + sb);
+            } else {
+                implicitFlushLog.debug("Implicit flush due to query execution");
+            }
+        }
+
         Collection<Entity> afterProcessing = container.getAllInstances();
         if (afterProcessing.size() > processed.size()) {
             afterProcessing.removeAll(processed);
-            beforeStore(container, visitor, afterProcessing, processed);
+            beforeStore(container, visitor, afterProcessing, processed, false);
         }
 
         if (!withoutPossibleChanges.isEmpty()) {
@@ -226,7 +247,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                     })
                     .collect(Collectors.toList());
             if (!afterProcessing.isEmpty()) {
-                beforeStore(container, visitor, afterProcessing, processed);
+                beforeStore(container, visitor, afterProcessing, processed, false);
             }
         }
     }
@@ -311,7 +332,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                 log.trace("ContainerResourceSynchronization.beforeCommit: instances=" + container.getAllInstances() + ", readOnly=" + readOnly);
 
             if (!readOnly) {
-                traverseEntities(container, new OnCommitEntityVisitor(container.getStoreName()));
+                traverseEntities(container, new OnCommitEntityVisitor(container.getStoreName()), false);
             }
 
             Collection<Entity> instances = container.getAllInstances();
