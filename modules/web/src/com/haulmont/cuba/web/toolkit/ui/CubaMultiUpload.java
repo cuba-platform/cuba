@@ -17,18 +17,15 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.sys.WebJarResource;
 import com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadState;
-import com.vaadin.server.ClassResource;
-import com.vaadin.server.PaintException;
-import com.vaadin.server.PaintTarget;
-import com.vaadin.server.Resource;
+import com.vaadin.server.*;
 import com.vaadin.ui.LegacyComponent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.LoggerFactory;
 
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -201,7 +198,13 @@ public class CubaMultiUpload extends CubaAbstractUploadComponent implements Lega
 
     @Override
     public void beforeClientResponse(boolean initial) {
-        getState().jsessionId = RequestContext.get().getRequest().getSession().getId();
+        VaadinRequest currentRequest = VaadinService.getCurrentRequest();
+        if (currentRequest != null) {
+            getState().jsessionId = currentRequest.getWrappedSession().getId();
+        } else {
+            LoggerFactory.getLogger(CubaMultiUpload.class)
+                    .debug("Unable to set JSESSIONID for widget");
+        }
 
         super.beforeClientResponse(initial);
     }

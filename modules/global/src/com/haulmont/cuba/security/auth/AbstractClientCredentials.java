@@ -18,10 +18,14 @@ package com.haulmont.cuba.security.auth;
 
 import com.haulmont.cuba.core.global.ClientType;
 
+import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
-public abstract class AbstractClientCredentials extends AbstractCredentials implements SyncSessionCredentials {
+public abstract class AbstractClientCredentials extends AbstractCredentials
+        implements SyncSessionCredentials, SessionAttributesProvider, TimeZoneProvider {
+
     private String clientInfo;
     private String ipAddress;
     private String hostName;
@@ -29,6 +33,9 @@ public abstract class AbstractClientCredentials extends AbstractCredentials impl
     private boolean syncNewUserSessionReplication = false;
 
     private boolean checkClientPermissions = true;
+
+    private Map<String, Serializable> sessionAttributes;
+    private TimeZone timeZone;
 
     public AbstractClientCredentials(Locale locale, Map<String, Object> params) {
         super(locale, params);
@@ -69,6 +76,9 @@ public abstract class AbstractClientCredentials extends AbstractCredentials impl
         this.checkClientPermissions = checkClientPermissions;
     }
 
+    /**
+     * @return user identifier that represents to user login, not necessarily equal to login/email of a user.
+     */
     public abstract String getUserIdentifier();
 
     @Override
@@ -86,5 +96,23 @@ public abstract class AbstractClientCredentials extends AbstractCredentials impl
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
+    }
+
+    @Override
+    public Map<String, Serializable> getSessionAttributes() {
+        return sessionAttributes;
+    }
+
+    public void setSessionAttributes(Map<String, Serializable> sessionAttributes) {
+        this.sessionAttributes = sessionAttributes;
+    }
+
+    @Override
+    public TimeZone getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(TimeZone timeZone) {
+        this.timeZone = timeZone;
     }
 }

@@ -16,52 +16,36 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.PasswordEncryption;
+import com.haulmont.cuba.security.auth.Credentials;
+import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
+import com.haulmont.cuba.security.auth.RememberMeCredentials;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import org.slf4j.LoggerFactory;
+import com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection;
+import com.haulmont.cuba.web.security.AnonymousUserCredentials;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EventObject;
 import java.util.Locale;
-import java.util.function.Consumer;
 
 /**
  * Interface to be implemented by objects that connect web-client to the middleware.
  */
-public interface Connection {
+public interface Connection extends ExternallyAuthenticatedConnection {
 
     String NAME = "cuba_Connection";
 
-    enum SessionMode {
-        AUTHENTICATED,
-        ANONYMOUS
-    }
-
     /**
-     * Log in to the system.
-     * @param login             user login name
-     * @param password          encrypted user password
-     * @param locale            user locale
-     * @throws LoginException   in case of unsuccessful login due to wrong credentials or other issues
+     * Authenticates a user, starts session and changes state of the connection.
+     *
+     * @param credentials credentials
+     * @throws LoginException if authentication fails
      */
-    void login(String login, String password, Locale locale) throws LoginException;
-
-    /**
-     * Log in to the system.
-     * @param locale            user locale
-     * @throws LoginException   in case of unsuccessful login due to wrong credentials or other issues
-     */
-    void loginAnonymous(Locale locale) throws LoginException;
-
-    /**
-     * Log in to the system.
-     * @param login             user login name
-     * @param rememberMeToken   remember me token
-     * @param locale            user locale
-     * @throws LoginException   in case of unsuccessful login due to wrong credentials or other issues
-     */
-    void loginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException;
+    void login(Credentials credentials) throws LoginException;
 
     /**
      * Log out of the system.
@@ -69,23 +53,48 @@ public interface Connection {
     void logout();
 
     /**
+     * Get current user session.
+     *
+     * @return user session object or null if not connected
+     */
+    @Nullable
+    UserSession getSession();
+
+    /**
+     * Get current user session.
+     *
+     * @return user session object or null if not connected
+     */
+    @Nonnull
+    default UserSession getSessionNN() {
+        UserSession userSession = getSession();
+        if (userSession == null) {
+            throw new IllegalStateException("Unable to obtain session from connected Connection");
+        }
+        return userSession;
+    }
+
+    /**
      * Substitute a user in the current session with another user. This method creates a new UserSession instance,
      * but with the same session ID.
      * <p>New user is usually obtained from the current user's substitution list:
      * see {@link com.haulmont.cuba.security.entity.User#getSubstitutions()}</p>
-     * @param substitutedUser   new user
+     *
+     * @param substitutedUser new user
      */
     void substituteUser(User substitutedUser);
 
     /**
      * Check if the client is connected to the middleware.
-     * @return  true if connected
+     *
+     * @return true if connected
      */
     boolean isConnected();
 
     /**
      * Check if the client was authenticated.
-     * @return  true if authenticated
+     *
+     * @return true if authenticated
      */
     boolean isAuthenticated();
 
@@ -97,85 +106,106 @@ public interface Connection {
     boolean isAlive();
 
     /**
-     * Check if remember me token exists in db
-     *
-     * @param login           user login
-     * @param rememberMeToken remember me token
-     * @return true if remember me token exists in db
-     */
-    @Deprecated
-    default boolean checkRememberMe(String login, String rememberMeToken) {
-        LoggerFactory.getLogger(Connection.class)
-                .warn("LoginService checkRememberMe is not supported any more. Always returns false");
-        return false;
-    }
-
-    /**
-     * Get current user session.
-     * @return  user session object or null if not connected
-     */
-    @Nullable
-    UserSession getSession();
-
-    /**
-     * Update internal state with the passed user session object. Also fires connection listeners.
-     *
-     * @param session new UserSession object
-     * @throws LoginException in case of unsuccessful update
-     */
-    void update(UserSession session, SessionMode sessionMode) throws LoginException;
-
-    /**
-     * Update internal state with the passed user session object. Also fires connection listeners.
-     *
-     * @param session            new UserSession object
-     * @param sessionInitializer optional callback that will be triggered after session setup and before triggering
-     *                           connection state change listeners
-     * @throws LoginException in case of unsuccessful update
-     */
-    void update(UserSession session, SessionMode sessionMode,
-                @Nullable Consumer<UserSessionInitEvent> sessionInitializer) throws LoginException;
-
-    /**
      * Add a connection listener.
-     * @param listener  listener to add
+     *
+     * @param listener listener to add
      */
-    void addConnectionListener(ConnectionListener listener);
+    void addStateChangeListener(StateChangeListener listener);
+
     /**
      * Remove a connection listener.
-     * @param listener  listener to remove
+     *
+     * @param listener listener to remove
      */
-    void removeConnectionListener(ConnectionListener listener);
+    void removeStateChangeListener(StateChangeListener listener);
 
     /**
      * Add a user substitution listener.
-     * @param listener  listener to add
+     *
+     * @param listener listener to add
      */
-    void addSubstitutionListener(UserSubstitutionListener listener);
+    void addUserSubstitutionListener(UserSubstitutionListener listener);
+
     /**
      * Remove a user substitution listener.
-     * @param listener  listener to remove
+     *
+     * @param listener listener to remove
      */
-    void removeSubstitutionListener(UserSubstitutionListener listener);
+    void removeUserSubstitutionListener(UserSubstitutionListener listener);
 
     /**
-     * Event that is used for additional initialization during {@link Connection#update(UserSession, SessionMode, Consumer)}.
+     * Listener of connection events. See {@link com.haulmont.cuba.web.Connection}.
      */
-    class UserSessionInitEvent extends EventObject {
-        private final UserSession userSession;
+    @FunctionalInterface
+    interface StateChangeListener {
+        void connectionStateChanged(StateChangeEvent event);
+    }
 
-        public UserSessionInitEvent(Connection source, UserSession userSession) {
+    /**
+     * Listener of user substitution events. See {@link com.haulmont.cuba.web.Connection}.
+     */
+    @FunctionalInterface
+    interface UserSubstitutionListener {
+        void userSubstituted(UserSubstitutedEvent event);
+    }
+
+    class StateChangeEvent extends EventObject {
+        public StateChangeEvent(Connection source) {
             super(source);
-            this.userSession = userSession;
         }
 
         @Override
         public Connection getSource() {
             return (Connection) super.getSource();
         }
+    }
 
-        public UserSession getUserSession() {
-            return userSession;
+    class UserSubstitutedEvent extends EventObject {
+        public UserSubstitutedEvent(Connection source) {
+            super(source);
         }
+
+        @Override
+        public Connection getSource() {
+            return (Connection) super.getSource();
+        }
+    }
+
+    /**
+     * Log in to the system.
+     *
+     * @param login    user login name
+     * @param password encrypted user password
+     * @param locale   user locale
+     * @throws LoginException in case of unsuccessful login due to wrong credentials or other issues
+     */
+    @Deprecated
+    default void login(String login, String password, Locale locale) throws LoginException {
+        PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.class);
+        login(new LoginPasswordCredentials(login, passwordEncryption.getPlainHash(password), locale));
+    }
+
+    /**
+     * Log in to the system.
+     *
+     * @param locale user locale
+     * @throws LoginException in case of unsuccessful login due to wrong credentials or other issues
+     */
+    @Deprecated
+    default void loginAnonymous(Locale locale) throws LoginException {
+        login(new AnonymousUserCredentials(locale));
+    }
+
+    /**
+     * Log in to the system.
+     *
+     * @param login           user login name
+     * @param rememberMeToken remember me token
+     * @param locale          user locale
+     * @throws LoginException in case of unsuccessful login due to wrong credentials or other issues
+     */
+    @Deprecated
+    default void loginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException {
+        login(new RememberMeCredentials(login, rememberMeToken, locale));
     }
 }

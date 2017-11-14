@@ -19,6 +19,7 @@ package com.haulmont.restapi.auth;
 import com.google.common.base.Preconditions;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.auth.AuthenticationService;
 import com.haulmont.cuba.security.auth.TrustedClientCredentials;
@@ -26,6 +27,8 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.RestApiAccessDeniedException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.restapi.config.RestApiConfig;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -34,8 +37,11 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.*;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static com.haulmont.cuba.core.sys.AppContext.withSecurityContext;
@@ -81,7 +87,16 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
         try {
             TrustedClientCredentials credentials = new TrustedClientCredentials(login, config.getTrustedClientPassword(), locale);
             credentials.setClientType(ClientType.REST_API);
-            credentials.setClientInfo("REST API");
+
+            ServletRequestAttributes attributes =
+                    (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+            if (attributes != null) {
+                HttpServletRequest request = attributes.getRequest();
+                credentials.setIpAddress(request.getRemoteAddr());
+                credentials.setClientInfo(makeClientInfo(request.getHeader(HttpHeaders.USER_AGENT)));
+            } else {
+                credentials.setClientInfo(makeClientInfo(""));
+            }
             credentials.setParams(tokenRequest.getLoginParams());
 
             session = authenticationService.login(credentials).getSession();
@@ -143,5 +158,18 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
 
     protected List<GrantedAuthority> getRoleUserAuthorities(TokenRequest tokenRequest) {
         return new ArrayList<>();
+    }
+
+    protected String makeClientInfo(String userAgent) {
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
+
+        //noinspection UnnecessaryLocalVariable
+        String serverInfo = String.format("REST API (%s:%s/%s) %s",
+                globalConfig.getWebHostName(),
+                globalConfig.getWebPort(),
+                globalConfig.getWebContextName(),
+                StringUtils.trimToEmpty(userAgent));
+
+        return serverInfo;
     }
 }

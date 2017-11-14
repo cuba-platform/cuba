@@ -29,6 +29,6 @@ public class UserEditorCompanion implements UserEditor.Companion {
 
     @Override
     public void initPasswordField(PasswordField passwordField) {
-        passwordField.setRequired(!config.getExternalAuthentication());
+        passwordField.setRequired(config.getRequirePasswordForNewUsers());
     }
 }

@@ -77,7 +77,6 @@ def guiModule = project(':cuba-gui')
 def desktopModule = project(':cuba-desktop')
 def portalModule = project(':cuba-portal')
 def restApiModule = project(':cuba-rest-api')
-def webAuthModule = project(':cuba-web-auth')
 def webToolkitModule = project(':cuba-web-toolkit')
 def webModule = project(':cuba-web')
 def idpModule = project(':cuba-idp')
@@ -89,7 +88,7 @@ def coreTestsModule = project(':cuba-core-tests')
 def clientTestsModule = project(':cuba-client-tests')
 
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
-           webModule, desktopModule, portalModule, webAuthModule, restApiModule, idpModule, uberJarModule, frontModule]) {
+           webModule, desktopModule, portalModule, restApiModule, idpModule, uberJarModule, frontModule]) {
     apply(plugin: 'java')
     apply(plugin: 'groovy')
     apply(plugin: 'idea')
@@ -562,9 +561,12 @@ configure(webModule) {
     dependencies {
         compile(sharedLibModule)
         compile(guiModule)
-        compile(webAuthModule)
         compile(restApiModule)
         compile(idpModule)
+
+        compile(bom['org.springframework.ldap:spring-ldap-core']) {
+            exclude(group: 'org.slf4j', module: 'jcl-over-slf4j') // removed because it defines its own Log4j LogFactory via JDK services mechanism
+        }
 
         compile(bom['org.springframework:spring-webmvc'])
         compile(bom['commons-fileupload:commons-fileupload']) // required for Spring multipart resolver
@@ -693,18 +695,6 @@ configure(webModuleThemesModule) {
 
     dependencies {
         compile(bom['com.vaadin:vaadin-themes'])
-    }
-}
-
-configure(webAuthModule) {
-    dependencies {
-        compile(globalModule)
-
-        compile(bom['org.springframework.ldap:spring-ldap-core']) {
-            exclude(group: 'org.slf4j', module: 'jcl-over-slf4j') // removed because it defines its own Log4j LogFactory via JDK services mechanism
-        }
-
-        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
     }
 }
 

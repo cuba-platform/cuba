@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.*;
+import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.type.StringListTypeFactory;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
@@ -78,8 +79,9 @@ public interface WebConfig extends Config {
      *  @return Comma-separated list of URLs for CubaHttpFilter to bypass.
      */
     @Property("cuba.web.cubaHttpFilterBypassUrls")
+    @Factory(factory = CommaSeparatedStringListTypeFactory.class)
     @Default("/ws/,/dispatch/,/rest/,/idp/")
-    String getCubaHttpFilterBypassUrls();
+    List<String> getCubaHttpFilterBypassUrls();
 
     /**
      * @return Default main window mode.

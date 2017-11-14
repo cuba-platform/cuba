@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 
 public class AfterAuthenticationEvent extends ApplicationEvent {
 
-    private final AuthenticationDetails authenticationDetails;
+    protected final AuthenticationDetails authenticationDetails;
 
     public AfterAuthenticationEvent(Credentials source, @Nullable AuthenticationDetails authenticationDetails) {
         super(source);

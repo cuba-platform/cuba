@@ -22,7 +22,6 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.WebStatisticsAccumulator;
-import com.haulmont.cuba.web.auth.RequestContext;
 import com.vaadin.server.*;
 import com.vaadin.shared.ApplicationConstants;
 import groovy.lang.Writable;

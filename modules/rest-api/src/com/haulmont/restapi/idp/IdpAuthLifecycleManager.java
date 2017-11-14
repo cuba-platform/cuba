@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Events;
+import com.haulmont.cuba.core.sys.ConditionalOnAppProperty;
 import com.haulmont.restapi.auth.OAuthTokenRevoker;
 import com.haulmont.restapi.events.BeforeRestInvocationEvent;
 import com.haulmont.restapi.events.OAuthTokenRevokedResponseEvent;
@@ -59,6 +60,7 @@ import static com.haulmont.restapi.idp.IdpAuthController.IDP_SESSION_ID_TOKEN_AT
 /**
  * Component that synchronizes REST API token and IDP session life cycles.
  */
+@ConditionalOnAppProperty(property = "cuba.rest.idp.enabled", value = "true")
 @Component("cuba_IdpAuthLifecycleManager")
 public class IdpAuthLifecycleManager implements InitializingBean {
 

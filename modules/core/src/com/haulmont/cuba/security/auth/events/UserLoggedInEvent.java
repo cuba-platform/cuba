@@ -16,21 +16,30 @@
 
 package com.haulmont.cuba.security.auth.events;
 
+import com.haulmont.cuba.security.auth.AuthenticationDetails;
+import com.haulmont.cuba.security.auth.Credentials;
 import com.haulmont.cuba.security.global.UserSession;
 import org.springframework.context.ApplicationEvent;
 
 public class UserLoggedInEvent extends ApplicationEvent {
 
-    public UserLoggedInEvent(UserSession source) {
-        super(source);
+    protected final AuthenticationDetails authenticationDetails;
+
+    public UserLoggedInEvent(Credentials credentials, AuthenticationDetails authenticationDetails) {
+        super(credentials);
+        this.authenticationDetails = authenticationDetails;
     }
 
     @Override
-    public UserSession getSource() {
-        return (UserSession) super.getSource();
+    public Credentials getSource() {
+        return (Credentials) super.getSource();
     }
 
     public UserSession getUserSession() {
-        return (UserSession) super.getSource();
+        return authenticationDetails.getSession();
+    }
+
+    public AuthenticationDetails getAuthenticationDetails() {
+        return authenticationDetails;
     }
 }

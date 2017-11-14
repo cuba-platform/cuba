@@ -17,6 +17,7 @@
 package com.haulmont.restapi.auth;
 
 import com.google.common.base.Strings;
+import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
@@ -27,6 +28,8 @@ import com.haulmont.cuba.security.auth.TrustedClientCredentials;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.restapi.config.RestApiConfig;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -36,8 +39,11 @@ import org.springframework.security.oauth2.common.util.SerializationUtils;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.AuthenticationKeyGenerator;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
@@ -128,7 +134,8 @@ public class ClientProxyTokenStore implements TokenStore {
 
         if (sessionId == null) {
             @SuppressWarnings("unchecked")
-            Map<String, String> userAuthenticationDetails = (Map<String, String>) authentication.getUserAuthentication().getDetails();
+            Map<String, String> userAuthenticationDetails =
+                    (Map<String, String>) authentication.getUserAuthentication().getDetails();
             //sessionId parameter was put in the CubaUserAuthenticationProvider
             String sessionIdStr = userAuthenticationDetails.get("sessionId");
             if (!Strings.isNullOrEmpty(sessionIdStr)) {
@@ -147,11 +154,23 @@ public class ClientProxyTokenStore implements TokenStore {
 
         if (session == null) {
             @SuppressWarnings("unchecked")
-            Map<String, String> userAuthenticationDetails = (Map<String, String>) authentication.getUserAuthentication().getDetails();
+            Map<String, String> userAuthenticationDetails =
+                    (Map<String, String>) authentication.getUserAuthentication().getDetails();
             String username = userAuthenticationDetails.get("username");
             try {
+                ServletRequestAttributes attributes =
+                        (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+
                 TrustedClientCredentials credentials = new TrustedClientCredentials(username,
                         restApiConfig.getTrustedClientPassword(), getDefaultLocale());
+                credentials.setClientType(ClientType.REST_API);
+                if (attributes != null) {
+                    HttpServletRequest request = attributes.getRequest();
+                    credentials.setIpAddress(request.getRemoteAddr());
+                    credentials.setClientInfo(makeClientInfo(request.getHeader(HttpHeaders.USER_AGENT)));
+                } else {
+                    credentials.setClientInfo(makeClientInfo(""));
+                }
 
                 session = authenticationService.login(credentials).getSession();
             } catch (LoginException e) {
@@ -163,6 +182,17 @@ public class ClientProxyTokenStore implements TokenStore {
             serverTokenStore.putSessionId(tokenValue, session.getId());
             AppContext.setSecurityContext(new SecurityContext(session));
         }
+    }
+
+    protected String makeClientInfo(String userAgent) {
+        //noinspection UnnecessaryLocalVariable
+        String serverInfo = String.format("REST API (%s:%s/%s) %s",
+                globalConfig.getWebHostName(),
+                globalConfig.getWebPort(),
+                globalConfig.getWebContextName(),
+                StringUtils.trimToEmpty(userAgent));
+
+        return serverInfo;
     }
 
     protected Locale getDefaultLocale() {

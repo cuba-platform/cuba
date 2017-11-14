@@ -40,4 +40,9 @@ public class AnonymousUserCredentials extends AbstractCredentials {
     public AnonymousUserCredentials(Locale locale, Map<String, Object> params) {
         super(locale, params);
     }
+
+    @Override
+    public String toString() {
+        return "AnonymousUserCredentials{}";
+    }
 }

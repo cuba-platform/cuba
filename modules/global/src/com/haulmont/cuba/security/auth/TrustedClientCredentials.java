@@ -35,10 +35,6 @@ public class TrustedClientCredentials extends AbstractClientCredentials {
     public TrustedClientCredentials() {
     }
 
-    public TrustedClientCredentials(String trustedClientPassword) {
-        this.trustedClientPassword = trustedClientPassword;
-    }
-
     public TrustedClientCredentials(String login, String trustedClientPassword, Locale locale) {
         this(login, trustedClientPassword, locale, Collections.emptyMap());
     }

@@ -1220,7 +1220,8 @@ public abstract class WindowManager {
                 LifeCycle.INJECTION,
                 Logger.getLogger(UIPerformanceLogger.class));
 
-        ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingWindow, params);
+        ControllerDependencyInjector dependencyInjector =
+                AppBeans.getPrototype(ControllerDependencyInjector.NAME, wrappingWindow, params);
         dependencyInjector.inject();
 
         injectStopWatch.stop();

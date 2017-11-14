@@ -18,6 +18,7 @@ package com.haulmont.restapi.auth;
 
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
@@ -28,6 +29,8 @@ import com.haulmont.cuba.security.global.AccountLockedException;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.RestApiAccessDeniedException;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -87,8 +90,9 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider, S
                 String passwordHash = passwordEncryption.getPlainHash((String) token.getCredentials());
 
                 LoginPasswordCredentials credentials = new LoginPasswordCredentials(login, passwordHash, request.getLocale());
+                credentials.setIpAddress(ipAddress);
                 credentials.setClientType(ClientType.REST_API);
-                credentials.setClientInfo("REST API");
+                credentials.setClientInfo(makeClientInfo(request.getHeader(HttpHeaders.USER_AGENT)));
 
                 session = authenticationService.login(credentials).getSession();
             } catch (AccountLockedException le) {
@@ -114,6 +118,19 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider, S
         }
 
         return null;
+    }
+
+    protected String makeClientInfo(String userAgent) {
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
+
+        //noinspection UnnecessaryLocalVariable
+        String serverInfo = String.format("REST API (%s:%s/%s) %s",
+                globalConfig.getWebHostName(),
+                globalConfig.getWebPort(),
+                globalConfig.getWebContextName(),
+                StringUtils.trimToEmpty(userAgent));
+
+        return serverInfo;
     }
 
     @Override

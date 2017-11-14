@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.sys.remoting.RemoteClientInfo;
 import com.haulmont.cuba.security.app.UserSessionLog;
 import com.haulmont.cuba.security.entity.SessionAction;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.global.InternalAuthenticationException;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -53,6 +54,9 @@ public class AuthenticationServiceBean implements AuthenticationService {
             //noinspection UnnecessaryLocalVariable
             AuthenticationDetails authenticationDetails = authenticationManager.authenticate(credentials);
             return authenticationDetails;
+        } catch (InternalAuthenticationException ie) {
+            log.error("Authentication error", ie);
+            throw ie;
         } catch (LoginException e) {
             log.info("Authentication failed: {}", e.toString());
             throw e;
@@ -74,6 +78,9 @@ public class AuthenticationServiceBean implements AuthenticationService {
             userSessionLog.createSessionLogRecord(authenticationDetails.getSession(), SessionAction.LOGIN, Collections.emptyMap());
 
             return authenticationDetails;
+        } catch (InternalAuthenticationException ie) {
+            log.error("Login error", ie);
+            throw ie;
         } catch (LoginException e) {
             log.info("Login failed: {}", e.toString());
             throw e;
@@ -126,7 +133,10 @@ public class AuthenticationServiceBean implements AuthenticationService {
         if (rootCause == null)
             rootCause = throwable;
         // send text only to avoid ClassNotFoundException when the client has no dependency to some library
-        return new LoginException(rootCause.toString());
+
+        // todo rework, do not send exception messages they can contain sensitive configuration data
+
+        return new InternalAuthenticationException(rootCause.toString());
     }
 
     protected void preprocessCredentials(Credentials credentials) {

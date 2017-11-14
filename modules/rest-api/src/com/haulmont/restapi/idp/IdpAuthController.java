@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.sys.ConditionalOnAppProperty;
 import com.haulmont.cuba.security.global.IdpSession;
 import com.haulmont.restapi.auth.OAuthTokenIssuer;
 import com.haulmont.restapi.auth.OAuthTokenIssuer.OAuth2AccessTokenResult;
@@ -64,6 +65,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.*;
 
+@ConditionalOnAppProperty(property = "cuba.rest.idp.enabled", value = "true")
 @RestController
 public class IdpAuthController implements InitializingBean {
 

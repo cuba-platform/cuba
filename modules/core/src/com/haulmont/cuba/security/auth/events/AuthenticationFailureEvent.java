@@ -23,10 +23,11 @@ import org.springframework.context.ApplicationEvent;
 
 public class AuthenticationFailureEvent extends ApplicationEvent {
 
-    private final AuthenticationProvider provider;
-    private final LoginException exception;
+    protected final AuthenticationProvider provider;
+    protected final LoginException exception;
 
-    public AuthenticationFailureEvent(Credentials credentials, AuthenticationProvider provider, LoginException exception) {
+    public AuthenticationFailureEvent(Credentials credentials, AuthenticationProvider provider,
+                                      LoginException exception) {
         super(credentials);
         this.provider = provider;
         this.exception = exception;

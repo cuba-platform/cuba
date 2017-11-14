@@ -29,6 +29,8 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
+import com.haulmont.cuba.web.security.events.AppInitializedEvent;
+import com.haulmont.cuba.web.security.events.SessionHeartbeatEvent;
 import com.haulmont.cuba.web.sys.LinkHandler;
 import com.haulmont.cuba.web.toolkit.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.client.appui.AppUIClientRpc;
@@ -69,6 +71,9 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
 
     @Inject
     protected Messages messages;
+
+    @Inject
+    protected Events events;
 
     @Inject
     protected GlobalConfig globalConfig;
@@ -195,6 +200,8 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
                 app.init(request.getLocale());
 
                 this.app = app;
+
+                publishAppInitializedEvent(app);
             } else {
                 this.app = App.getInstance();
             }
@@ -209,6 +216,11 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
         }
 
         processExternalLink(request);
+    }
+
+    protected void publishAppInitializedEvent(App app) {
+        AppInitializedEvent event = new AppInitializedEvent(app);
+        events.publish(event);
     }
 
     protected void showCriticalExceptionMessage(Exception exception) {
@@ -258,9 +270,7 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
 
     protected void setupUI() throws LoginException {
         if (!app.getConnection().isConnected()) {
-            if (!app.loginOnStart()) {
-                app.getConnection().loginAnonymous(app.getLocale());
-            }
+            app.loginOnStart();
         } else {
             app.createTopLevelWindow(this);
         }
@@ -270,6 +280,7 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
     protected void refresh(VaadinRequest request) {
         super.refresh(request);
 
+        boolean sessionIsAlive = false;
         // handle page refresh
         if (app.getConnection().isAuthenticated()) {
             // Ping middleware session if connected
@@ -280,13 +291,17 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
                 if (session instanceof ClientUserSession
                         && ((ClientUserSession) session).isAuthenticated()) {
                     userSessionService.getUserSession(session.getId());
+
+                    sessionIsAlive = true;
                 }
             } catch (Exception e) {
                 app.exceptionHandlers.handle(new com.vaadin.server.ErrorEvent(e));
             }
         }
 
-        app.pingExternalAuthentication();
+        if (sessionIsAlive) {
+            events.publish(new SessionHeartbeatEvent(app));
+        }
     }
 
     @Override

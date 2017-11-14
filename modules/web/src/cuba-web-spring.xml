@@ -33,6 +33,14 @@
     </context:component-scan>
 
     <!-- Various beans with non-standard configuration -->
+    <bean id="vaadin" class="com.haulmont.cuba.web.sys.VaadinSessionScope"/>
+    <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+        <property name="scopes">
+            <map>
+                <entry key="vaadin" value-ref="vaadin"/>
+            </map>
+        </property>
+    </bean>
 
     <bean id="cuba_UserSession" factory-bean="cuba_UserSessionSource" factory-method="getUserSession" scope="prototype"/>
 

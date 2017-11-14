@@ -18,10 +18,10 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.ScreenProfiler;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.LegacyCommunicationManager;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.server.communication.UidlWriter;
 import com.vaadin.ui.UI;
 import org.apache.commons.lang.StringUtils;
@@ -58,7 +58,7 @@ public class CubaUidlWriter extends UidlWriter {
     @Override
     protected void handleAdditionalDependencies(List<Class<? extends ClientConnector>> newConnectorTypes,
                                                 List<String> scriptDependencies, List<String> styleDependencies) {
-        LegacyCommunicationManager manager = AppUI.getCurrent().getSession().getCommunicationManager();
+        LegacyCommunicationManager manager = VaadinSession.getCurrent().getCommunicationManager();
 
         for (Class<? extends ClientConnector> connector : newConnectorTypes) {
             WebJarResource webJarResource = connector.getAnnotation(WebJarResource.class);

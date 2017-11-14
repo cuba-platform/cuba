@@ -39,7 +39,7 @@ public interface AuthenticationProvider {
      * Obtained session cannot be used for service requests.
      *
      * @param credentials credentials
-     * @return authentication details
+     * @return authentication details or null if passed credentials object cannot be processed
      * @throws LoginException if authentication fails
      */
     @Nullable

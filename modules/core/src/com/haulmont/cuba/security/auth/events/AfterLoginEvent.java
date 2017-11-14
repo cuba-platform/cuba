@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.security.auth.events;
 
+import com.haulmont.cuba.security.auth.AuthenticationDetails;
 import com.haulmont.cuba.security.auth.Credentials;
 import com.haulmont.cuba.security.global.UserSession;
 import org.springframework.context.ApplicationEvent;
@@ -24,11 +25,11 @@ import javax.annotation.Nullable;
 
 public class AfterLoginEvent extends ApplicationEvent {
 
-    private final UserSession userSession;
+    protected final AuthenticationDetails authenticationDetails;
 
-    public AfterLoginEvent(Credentials source, @Nullable UserSession userSession) {
+    public AfterLoginEvent(Credentials source, @Nullable AuthenticationDetails authenticationDetails) {
         super(source);
-        this.userSession = userSession;
+        this.authenticationDetails = authenticationDetails;
     }
 
     @Override
@@ -42,6 +43,11 @@ public class AfterLoginEvent extends ApplicationEvent {
 
     @Nullable
     public UserSession getUserSession() {
-        return userSession;
+        return authenticationDetails != null ? authenticationDetails.getSession() : null;
+    }
+
+    @Nullable
+    public AuthenticationDetails getAuthenticationDetails() {
+        return authenticationDetails;
     }
 }

@@ -62,7 +62,7 @@ public abstract class AbstractAuthenticationProvider implements AuthenticationPr
 
         List list = q.getResultList();
         if (list.isEmpty()) {
-            log.warn("Failed to authenticate: {}", login);
+            log.debug("Unable to find user: {}", login);
             return null;
         } else {
             //noinspection UnnecessaryLocalVariable

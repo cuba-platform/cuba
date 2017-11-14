@@ -26,7 +26,6 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileUpload;
 import com.vaadin.server.*;
@@ -262,7 +261,7 @@ public class CubaVaadinServletService extends VaadinServletService {
         }
     }
 
-    // Add ability to handle hearbeats in App
+    // Add ability to handle heartbeats in App
     protected static class CubaHeartbeatHandler extends HeartbeatHandler {
         private final Logger log = LoggerFactory.getLogger(CubaHeartbeatHandler.class);
 
@@ -285,54 +284,63 @@ public class CubaVaadinServletService extends VaadinServletService {
 
     @Override
     protected VaadinSession createVaadinSession(VaadinRequest request) throws ServiceException {
-        if (testMode && !webAuthConfig.getExternalAuthentication()) {
-            return new VaadinSession(this) {
-                @Override
-                public String createConnectorId(ClientConnector connector) {
-                    if (connector instanceof Component) {
-                        Component component = (Component) connector;
-                        String id = component.getId() == null ? super.createConnectorId(connector) : component.getId();
-                        UserSession session = getAttribute(UserSession.class);
-
-                        String login = null;
-                        String locale = null;
-
-                        if (session != null) {
-                            login = session.getCurrentOrSubstitutedUser().getLogin();
-                            if (session.getLocale() != null) {
-                                locale = session.getLocale().toLanguageTag();
-                            }
-                        }
-
-                        StringBuilder idParts = new StringBuilder();
-                        if (login != null) {
-                            idParts.append(login);
-                        }
-                        if (locale != null) {
-                            idParts.append(locale);
-                        }
-                        idParts.append(id);
-
-                        return toLongNumberString(idParts.toString());
-                    }
-                    return super.createConnectorId(connector);
-                }
-
-                protected String toLongNumberString(String data) {
-                    HashCode hashCode = md5().hashString(data, StandardCharsets.UTF_8);
-                    byte[] hashBytes = hashCode.asBytes();
-                    byte[] shortBytes = new byte[Long.BYTES];
-
-                    System.arraycopy(hashBytes, 0, shortBytes, 0, Long.BYTES);
-
-                    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-                    buffer.put(shortBytes);
-                    buffer.flip();
-                    return Long.toString(Math.abs(buffer.getLong()));
-                }
-            };
+        if (testMode) {
+            return new TestVaadinSession(this);
         } else {
             return super.createVaadinSession(request);
+        }
+    }
+
+    /**
+     * Generates non-random IDs for components, used for performance testing.
+     */
+    protected static class TestVaadinSession extends VaadinSession {
+        public TestVaadinSession(VaadinService service) {
+            super(service);
+        }
+
+        @Override
+        public String createConnectorId(ClientConnector connector) {
+            if (connector instanceof Component) {
+                Component component = (Component) connector;
+                String id = component.getId() == null ? super.createConnectorId(connector) : component.getId();
+                UserSession session = getAttribute(UserSession.class);
+
+                String login = null;
+                String locale = null;
+
+                if (session != null) {
+                    login = session.getCurrentOrSubstitutedUser().getLogin();
+                    if (session.getLocale() != null) {
+                        locale = session.getLocale().toLanguageTag();
+                    }
+                }
+
+                StringBuilder idParts = new StringBuilder();
+                if (login != null) {
+                    idParts.append(login);
+                }
+                if (locale != null) {
+                    idParts.append(locale);
+                }
+                idParts.append(id);
+
+                return toLongNumberString(idParts.toString());
+            }
+            return super.createConnectorId(connector);
+        }
+
+        protected String toLongNumberString(String data) {
+            HashCode hashCode = md5().hashString(data, StandardCharsets.UTF_8);
+            byte[] hashBytes = hashCode.asBytes();
+            byte[] shortBytes = new byte[Long.BYTES];
+
+            System.arraycopy(hashBytes, 0, shortBytes, 0, Long.BYTES);
+
+            ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+            buffer.put(shortBytes);
+            buffer.flip();
+            return Long.toString(Math.abs(buffer.getLong()));
         }
     }
 

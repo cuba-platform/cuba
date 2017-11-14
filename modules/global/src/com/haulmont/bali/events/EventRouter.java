@@ -96,6 +96,12 @@ public class EventRouter {
         }
     }
 
+    public <L> void removeListeners(Class<L> listenerClass) {
+        if (events != null) {
+            events.remove(listenerClass);
+        }
+    }
+
     public <L> boolean hasListeners(Class<L> listenerClass) {
         if (events != null) {
             List<Object> listeners = events.getOrDefault(listenerClass, Collections.emptyList());

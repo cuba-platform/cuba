@@ -23,8 +23,6 @@ import com.haulmont.bali.datastruct.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.commons.lang.text.StrSubstitutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -36,8 +34,6 @@ import java.util.regex.Pattern;
  * Provides access to file-based application properties.
  */
 public class AppProperties {
-
-    private final Logger log = LoggerFactory.getLogger(AppProperties.class);
 
     public static final Pattern SEPARATOR_PATTERN = Pattern.compile("\\s");
 
@@ -95,6 +91,10 @@ public class AppProperties {
      */
     @Nullable
     public String getProperty(String key) {
+        if (key == null) {
+            throw new IllegalArgumentException("Null key passed as parameter");
+        }
+
         for (Pair<String, String> pair : DEPRECATED_PROPERTIES) {
             if (pair.getFirst().endsWith("*")) {
                 String substring1 = pair.getFirst().substring(0, pair.getFirst().length() - 1);

@@ -17,6 +17,7 @@
 package com.haulmont.restapi.ldap;
 
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.sys.ConditionalOnAppProperty;
 import com.haulmont.restapi.auth.OAuthTokenIssuer;
 import com.haulmont.restapi.auth.OAuthTokenIssuer.OAuth2AccessTokenResult;
 import org.apache.commons.lang.StringUtils;
@@ -49,6 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.*;
 
+@ConditionalOnAppProperty(property = "cuba.rest.ldap.enabled", value = "true")
 @RestController
 public class LdapAuthController implements InitializingBean {
 

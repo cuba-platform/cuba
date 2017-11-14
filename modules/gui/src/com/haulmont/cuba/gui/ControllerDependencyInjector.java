@@ -23,10 +23,8 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.haulmont.cuba.client.ClientConfiguration;
 import com.haulmont.cuba.core.config.Config;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Events;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -39,7 +37,12 @@ import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.event.EventListener;
 import org.springframework.util.ReflectionUtils;
 
@@ -55,7 +58,11 @@ import java.util.stream.Collectors;
 /**
  * Wires {@link Inject}, {@link Named}, {@link WindowParam} fields/setters and {@link EventListener} methods.
  */
-public class ControllerDependencyInjector {
+@org.springframework.stereotype.Component(ControllerDependencyInjector.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+public class ControllerDependencyInjector implements ApplicationContextAware {
+
+    public static final String NAME = "cuba_ControllerDependencyInjector";
 
     protected static final LoadingCache<Class<?>, List<Method>> eventListenerMethodsCache =
             CacheBuilder.newBuilder()
@@ -70,9 +77,16 @@ public class ControllerDependencyInjector {
     protected Frame frame;
     protected Map<String, Object> params;
 
+    protected ApplicationContext applicationContext;
+
     public ControllerDependencyInjector(Frame frame, Map<String, Object> params) {
         this.frame = frame;
         this.params = params;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
     public void inject() {
@@ -109,7 +123,7 @@ public class ControllerDependencyInjector {
         List<Method> eventListenerMethods = getAnnotatedListenerMethods(clazz);
 
         if (!eventListenerMethods.isEmpty()) {
-            Events events = AppBeans.get(Events.NAME);
+            Events events = (Events) applicationContext.getBean(Events.NAME);
 
             List<ApplicationListener> listeners = eventListenerMethods.stream()
                     .map(m -> new UiEventListenerMethodAdapter(frame, clazz, m, events))
@@ -260,11 +274,13 @@ public class ControllerDependencyInjector {
 
         } else if (ThemeConstants.class.isAssignableFrom(type)) {
             // Injecting a Theme
-            ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);
+            ThemeConstantsManager themeManager =
+                    (ThemeConstantsManager) applicationContext.getBean(ThemeConstantsManager.NAME);
             return themeManager.getConstants();
 
         } else if (Config.class.isAssignableFrom(type)) {
-            ClientConfiguration configuration = AppBeans.get(Configuration.NAME);
+            ClientConfiguration configuration =
+                    (ClientConfiguration) applicationContext.getBean(Configuration.NAME);
             //noinspection unchecked
             return configuration.getConfigCached((Class<? extends Config>) type);
 
@@ -273,7 +289,7 @@ public class ControllerDependencyInjector {
         } else {
             Object instance;
             // Try to find a Spring bean
-            Map<String, ?> beans = AppContext.getApplicationContext().getBeansOfType(type, true, true);
+            Map<String, ?> beans = applicationContext.getBeansOfType(type, true, true);
             if (!beans.isEmpty()) {
                 instance = beans.get(name);
                 // If a bean with required name found, return it. Otherwise return first found.
@@ -283,6 +299,7 @@ public class ControllerDependencyInjector {
                     return beans.values().iterator().next();
                 }
             }
+
             // There are no Spring beans of required type - the last option is Companion
             if (frame instanceof AbstractFrame) {
                 instance = ((AbstractFrame) frame).getCompanion();

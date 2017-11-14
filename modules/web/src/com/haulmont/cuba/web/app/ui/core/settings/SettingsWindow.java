@@ -38,14 +38,13 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.security.ExternalUserCredentials;
 import com.vaadin.ui.ComboBox;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import java.util.*;
-
-import static com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection.EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE;
 
 public class SettingsWindow extends AbstractWindow {
 
@@ -150,7 +149,7 @@ public class SettingsWindow extends AbstractWindow {
                 }));
 
         if (!user.equals(userSession.getCurrentOrSubstitutedUser())
-                || Boolean.TRUE.equals(userSession.getAttribute(EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE))) {
+                || ExternalUserCredentials.isLoggedInWithExternalAuth(userSession)) {
             changePasswordBtn.setEnabled(false);
         }
 

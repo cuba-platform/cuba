@@ -18,26 +18,25 @@ package com.haulmont.cuba.web.app.loginwindow;
 
 import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.PasswordEncryption;
-import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.app.UserManagementService;
+import com.haulmont.cuba.security.auth.AbstractClientCredentials;
+import com.haulmont.cuba.security.auth.Credentials;
+import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
+import com.haulmont.cuba.security.auth.RememberMeCredentials;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.global.InternalAuthenticationException;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.Connection;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.auth.CubaAuthProvider;
-import com.haulmont.cuba.web.auth.DomainAliasesResolver;
-import com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Locale;
 import java.util.Map;
@@ -86,19 +85,13 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
     protected WebAuthConfig webAuthConfig;
 
     @Inject
-    protected UserSessionSource userSessionSource;
-
-    @Inject
-    protected PasswordEncryption passwordEncryption;
-
-    @Inject
-    protected DomainAliasesResolver domainAliasesResolver;
-
-    @Inject
-    protected CubaAuthProvider authProvider;
-
-    @Inject
     protected UserManagementService userManagementService;
+
+    @Inject
+    protected App app;
+
+    @Inject
+    protected Connection connection;
 
     @Inject
     protected Embedded logoImage;
@@ -125,8 +118,6 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
     protected ValueChangeListener loginChangeListener;
 
-    protected Boolean bruteForceProtectionEnabled;
-
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -152,10 +143,8 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
     }
 
     protected void initLocales() {
-        Map<String, Locale> locales = globalConfig.getAvailableLocales();
-
-        localesSelect.setOptionsMap(locales);
-        localesSelect.setValue(App.getInstance().getLocale());
+        localesSelect.setOptionsMap(globalConfig.getAvailableLocales());
+        localesSelect.setValue(app.getLocale());
 
         boolean localeSelectVisible = globalConfig.getLocaleSelectVisible();
         localesSelect.setVisible(localeSelectVisible);
@@ -164,7 +153,6 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
         localesSelect.addValueChangeListener(e -> {
             Locale selectedLocale = (Locale) e.getValue();
 
-            App app = App.getInstance();
             app.setLocale(selectedLocale);
 
             authInfoThreadLocal.set(new AuthInfo(loginField.getValue(), passwordField.getValue(),
@@ -178,7 +166,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
     }
 
     protected void initLogoImage() {
-        String loginLogoImagePath = messages.getMainMessage("loginWindow.logoImage", userSessionSource.getLocale());
+        String loginLogoImagePath = messages.getMainMessage("loginWindow.logoImage", app.getLocale());
         if (StringUtils.isBlank(loginLogoImagePath) || "loginWindow.logoImage".equals(loginLogoImagePath)) {
             logoImage.setVisible(false);
         } else {
@@ -196,8 +184,6 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
             rememberMeCheckBox.setVisible(false);
             return;
         }
-
-        App app = App.getInstance();
 
         String rememberMeCookie = app.getCookieValue(COOKIE_REMEMBER_ME);
         if (Boolean.parseBoolean(rememberMeCookie)) {
@@ -232,63 +218,30 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
             return;
         }
 
-        App app = App.getInstance();
+        String defaultUser = webConfig.getLoginDialogDefaultUser();
+        if (!StringUtils.isBlank(defaultUser) && !"<disabled>".equals(defaultUser)) {
+            loginField.setValue(defaultUser);
+        } else {
+            loginField.setValue("");
+        }
 
-        if (webAuthConfig.getExternalAuthentication()) {
-            loginField.setValue(app.getPrincipal() == null ? "" : app.getPrincipal().getName());
+        String defaultPassw = webConfig.getLoginDialogDefaultPassword();
+        if (!StringUtils.isBlank(defaultPassw) && !"<disabled>".equals(defaultPassw)) {
+            passwordField.setValue(defaultPassw);
+        } else {
             passwordField.setValue("");
-        } else {
-            String defaultUser = webConfig.getLoginDialogDefaultUser();
-            if (!StringUtils.isBlank(defaultUser) && !"<disabled>".equals(defaultUser)) {
-                loginField.setValue(defaultUser);
-            } else {
-                loginField.setValue("");
-            }
-
-            String defaultPassw = webConfig.getLoginDialogDefaultPassword();
-            if (!StringUtils.isBlank(defaultPassw) && !"<disabled>".equals(defaultPassw)) {
-                passwordField.setValue(defaultPassw);
-            } else {
-                passwordField.setValue("");
-            }
         }
-    }
-
-    /**
-     * Convert userName to db form
-     * In database users stores in form DOMAIN&#92;userName
-     *
-     * @param login Login string
-     * @return login in form DOMAIN&#92;userName
-     */
-    protected String convertLoginString(String login) {
-        int slashPos = login.indexOf("\\");
-        if (slashPos >= 0) {
-            String domainAlias = login.substring(0, slashPos);
-            String domain = domainAliasesResolver.getDomainName(domainAlias).toUpperCase();
-            String userName = login.substring(slashPos + 1);
-            login = domain + "\\" + userName;
-        } else {
-            int atSignPos = login.indexOf("@");
-            if (atSignPos >= 0) {
-                String domainAlias = login.substring(atSignPos + 1);
-                String domain = domainAliasesResolver.getDomainName(domainAlias).toUpperCase();
-                String userName = login.substring(0, atSignPos);
-                login = domain + "\\" + userName;
-            }
-        }
-        return login;
     }
 
     protected void showUnhandledExceptionOnLogin(@SuppressWarnings("unused") Exception e) {
-        String title = messages.getMainMessage("loginWindow.loginFailed", userSessionSource.getLocale());
-        String message = messages.getMainMessage("loginWindow.pleaseContactAdministrator", userSessionSource.getLocale());
+        String title = messages.getMainMessage("loginWindow.loginFailed", app.getLocale());
+        String message = messages.getMainMessage("loginWindow.pleaseContactAdministrator", app.getLocale());
 
         showNotification(title, message, NotificationType.ERROR);
     }
 
     protected void showLoginException(String message) {
-        String title = messages.getMainMessage("loginWindow.loginFailed", userSessionSource.getLocale());
+        String title = messages.getMainMessage("loginWindow.loginFailed", app.getLocale());
 
         showNotification(title, message, NotificationType.ERROR);
 
@@ -303,9 +256,10 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
     public void login() {
         doLogin();
 
-        App app = App.getInstance();
-        Connection connection = app.getConnection();
+        setRememberMeCookies();
+    }
 
+    protected void setRememberMeCookies() {
         if (connection.isAuthenticated()) {
             if (webConfig.getRememberMeEnabled()) {
                 if (Boolean.TRUE.equals(rememberMeCheckBox.getValue())) {
@@ -347,35 +301,28 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
             return;
         }
 
-        App app = App.getInstance();
-
         try {
-            Connection connection = app.getConnection();
-
             Locale selectedLocale = localesSelect.getValue();
             app.setLocale(selectedLocale);
 
             if (loginByRememberMe && webConfig.getRememberMeEnabled()) {
-                doLoginByRememberMe(login, password, selectedLocale);
-            } else if (webAuthConfig.getExternalAuthentication()
-                    && !webAuthConfig.getStandardAuthenticationUsers().contains(login)) {
-                // we use resolved locale for error messages
-                // try to login as externally authenticated user, fallback to regular authentication if enabled
-                authenticateExternally(login, password, selectedLocale);
-                login = convertLoginString(login);
-                ((ExternallyAuthenticatedConnection) connection).loginAfterExternalAuthentication(login, selectedLocale);
+                doLogin(new RememberMeCredentials(login, password, selectedLocale));
             } else {
-                doLogin(login, passwordEncryption.getPlainHash(password), selectedLocale);
+                doLogin(new LoginPasswordCredentials(login, password, selectedLocale));
             }
 
             // locale could be set on the server
             if (connection.getSession() != null) {
-                Locale loggedInLocale = userSessionSource.getLocale();
+                Locale loggedInLocale = connection.getSession().getLocale();
 
                 if (globalConfig.getLocaleSelectVisible()) {
                     app.addCookie(App.COOKIE_LOCALE, loggedInLocale.toLanguageTag());
                 }
             }
+        } catch (InternalAuthenticationException e) {
+            log.error("Internal error during login", e);
+
+            showUnhandledExceptionOnLogin(e);
         } catch (LoginException e) {
             log.info("Login failed: {}", e.toString());
 
@@ -388,35 +335,10 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
         }
     }
 
-    protected void doLogin(String login, String password, Locale locale) throws LoginException {
-        App app = App.getInstance();
-
-        app.getConnection().login(login, password, locale);
-    }
-
-    protected void doLoginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException {
-        App app = App.getInstance();
-
-        app.getConnection().loginByRememberMe(login, rememberMeToken, locale);
-    }
-
-    protected void authenticateExternally(String login, String passwordValue, Locale locale) throws LoginException {
-        authProvider.authenticate(login, passwordValue, locale);
-    }
-
-    @Deprecated
-    protected boolean isBruteForceProtectionEnabled() {
-        return false;
-    }
-
-    @Deprecated
-    protected boolean bruteForceProtectionCheck(String login, String ipAddress) {
-        return true;
-    }
-
-    @Deprecated
-    @Nullable
-    protected String registerUnsuccessfulLoginAttempt(String login, String ipAddress) {
-        return null;
+    protected void doLogin(Credentials credentials) throws LoginException {
+        if (credentials instanceof AbstractClientCredentials) {
+            ((AbstractClientCredentials) credentials).setOverrideLocale(localesSelect.isVisible());
+        }
+        connection.login(credentials);
     }
 }

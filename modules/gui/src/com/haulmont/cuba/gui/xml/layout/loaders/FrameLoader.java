@@ -235,7 +235,8 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
                         UIPerformanceLogger.LifeCycle.INJECTION,
                         Logger.getLogger(UIPerformanceLogger.class));
 
-                ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingFrame, params);
+                ControllerDependencyInjector dependencyInjector =
+                        AppBeans.getPrototype(ControllerDependencyInjector.NAME, wrappingFrame, params);
                 dependencyInjector.inject();
 
                 injectStopWatch.stop();
