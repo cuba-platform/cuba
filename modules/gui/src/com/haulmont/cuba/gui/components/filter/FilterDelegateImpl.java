@@ -790,6 +790,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         int row = 0;
         int nextColumnStart = 0;
         GridLayout grid = componentsFactory.createComponent(GridLayout.class);
+        grid.setStyleName("conditions-grid");
         grid.setColumns(conditionsCount * 2);
         //set expand ratio only for cells with param edit components
         for (int i = 0; i < conditionsCount; i++) {
@@ -849,13 +850,13 @@ public class FilterDelegateImpl implements FilterDelegate {
                 grid.add(groupCellContent, nextColumnStart * 2, row, nextColumnEnd * 2 + 1, row);
             }
             if (labelAndOperationCellContent != null) {
-                labelAndOperationCellContent.setHeight("100%");
+                labelAndOperationCellContent.addStyleName("param-label-layout");
                 grid.add(labelAndOperationCellContent, nextColumnStart * 2, row, nextColumnStart * 2, row);
                 if (nextColumnStart != 0)
                     labelAndOperationCellContent.setMargin(false, false, false, true);
             }
             if (paramEditComponentCellContent != null) {
-                paramEditComponentCellContent.setAlignment(Alignment.MIDDLE_LEFT);
+                paramEditComponentCellContent.addStyleName("param-field-layout");
                 grid.add(paramEditComponentCellContent, nextColumnStart * 2 + 1, row, nextColumnEnd * 2 + 1, row);
             }
 
@@ -907,6 +908,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected Component createGroupConditionBox(AbstractCondition condition, Node<AbstractCondition> node, ConditionsFocusType conditionsFocusType, boolean focusSet, int level) {
         Component groupCellContent;
         GroupBoxLayout groupBox = componentsFactory.createComponent(GroupBoxLayout.class);
+        groupBox.setStyleName("conditions-group");
         groupBox.setWidth("100%");
         groupBox.setCaption(condition.getLocCaption());
 

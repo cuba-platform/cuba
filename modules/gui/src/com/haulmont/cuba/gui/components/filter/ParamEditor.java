@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component.Alignment;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
@@ -26,7 +27,7 @@ import java.util.Date;
 public class ParamEditor implements AbstractCondition.Listener {
 
     protected AbstractCondition condition;
-    private boolean removeButtonVisible;
+    protected boolean removeButtonVisible;
     protected Component field;
     protected String fieldWidth = null;
     protected Label captionLbl;
@@ -38,22 +39,21 @@ public class ParamEditor implements AbstractCondition.Listener {
     protected ComponentsFactory componentsFactory;
     protected Action removeButtonAction;
 
-    public ParamEditor(final AbstractCondition condition, boolean removeButtonVisible, boolean operationEditable) {
+    public ParamEditor(AbstractCondition condition, boolean removeButtonVisible, boolean operationEditable) {
         this.condition = condition;
         this.removeButtonVisible = removeButtonVisible;
 
         componentsFactory = AppBeans.get(ComponentsFactory.class);
         labelAndOperationLayout = componentsFactory.createComponent(HBoxLayout.class);
         labelAndOperationLayout.setSpacing(true);
-        labelAndOperationLayout.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        labelAndOperationLayout.setAlignment(Alignment.MIDDLE_RIGHT);
 
         captionLbl = componentsFactory.createComponent(Label.class);
-        captionLbl.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        captionLbl.setAlignment(Alignment.MIDDLE_RIGHT);
         captionLbl.setValue(condition.getLocCaption());
         labelAndOperationLayout.add(captionLbl);
 
         operationEditor = condition.createOperationEditor().getComponent();
-        operationEditor.setAlignment(Component.Alignment.MIDDLE_RIGHT);
         operationEditor.setEnabled(operationEditable);
         labelAndOperationLayout.add(operationEditor);
 
@@ -66,19 +66,20 @@ public class ParamEditor implements AbstractCondition.Listener {
         if (paramEditComponentLayout == null){
             paramEditComponentLayout = componentsFactory.createComponent(HBoxLayout.class);
             paramEditComponentLayout.setSpacing(true);
-            paramEditComponentLayout.setWidth("100%");
+            paramEditComponentLayout.setWidthFull();
         }
 
         paramEditComponent = condition.getParam().createEditComponent(Param.ValueProperty.VALUE);
-        paramEditComponent.setAlignment(Component.Alignment.MIDDLE_LEFT);
+        paramEditComponent.addStyleName("param-field");
         if (paramEditComponent instanceof Field) {
             ((Field) paramEditComponent).setRequired(condition.getRequired());
         }
         paramEditComponentLayout.add(paramEditComponent);
 
         removeButton = componentsFactory.createComponent(LinkButton.class);
+        removeButton.setStyleName("condition-remove-btn");
         removeButton.setIcon("icons/item-remove.png");
-        removeButton.setAlignment(Component.Alignment.MIDDLE_LEFT);
+        removeButton.setAlignment(Alignment.MIDDLE_LEFT);
         removeButton.setVisible(removeButtonVisible);
         removeButton.setAction(removeButtonAction);
         paramEditComponentLayout.add(removeButton);
