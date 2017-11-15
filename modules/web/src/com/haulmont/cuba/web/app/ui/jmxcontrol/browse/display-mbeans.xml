@@ -72,6 +72,7 @@
                 <button action="mbeans.refresh" icon="theme://actions.Refresh.icon"/>
                 <button action="mbeans.inspect" icon="theme://actions.Edit.icon"/>
             </buttonsPanel>
+            <rowsCount/>
             <actions>
                 <action id="refresh"/>
                 <action id="inspect"/>

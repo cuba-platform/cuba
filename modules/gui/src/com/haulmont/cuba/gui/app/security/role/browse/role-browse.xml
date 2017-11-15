@@ -34,8 +34,11 @@
                 width="theme://cuba.gui.dialogSize.width.xlarge"
                 resizable="true"/>
 
-    <layout>
-        <table id="rolesTable" height="100%" width="100%" editable="true" multiselect="true">
+    <layout expand="rolesTable">
+        <filter applyTo="rolesTable" datasource="rolesDs" margin="false,false,true,false" collapsed="true">
+            <properties include=".*"/>
+        </filter>
+        <table id="rolesTable" width="100%" editable="true" multiselect="true">
             <actions>
                 <action id="create"/>
                 <action id="edit"/>
@@ -61,6 +64,7 @@
                         uploadButtonIcon="icons/upload.png"
                         uploadButtonDescription="mainMsg://actions.Import"/>
             </buttonsPanel>
+            <rowsCount/>
             <columns>
                 <column id="name" caption="msg://role.name"/>
                 <column id="locName" caption="msg://role.locName"/>

@@ -129,6 +129,7 @@
                                 <button action="constraintsTable.remove"/>
                                 <button action="constraintsTable.localizationEdit"/>
                             </buttonsPanel>
+                            <rowsCount/>
                             <actions>
                                 <action id="create"/>
                                 <action id="edit"/>
@@ -158,6 +159,7 @@
                                 <button action="attributesTable.edit"/>
                                 <button action="attributesTable.remove"/>
                             </buttonsPanel>
+                            <rowsCount/>
                             <actions>
                                 <action id="create"/>
                                 <action id="edit"/>
