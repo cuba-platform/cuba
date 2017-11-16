@@ -19,12 +19,30 @@ package com.haulmont.cuba.web.toolkit.ui.client.grid;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
-import com.haulmont.cuba.web.toolkit.ui.client.grid.events.*;
+import com.haulmont.cuba.web.toolkit.ui.client.grid.events.CubaGridClickEvent;
+import com.haulmont.cuba.web.toolkit.ui.client.grid.events.CubaGridDoubleClickEvent;
+import com.haulmont.cuba.web.toolkit.ui.client.grid.events.CubaGridKeyDownEvent;
+import com.haulmont.cuba.web.toolkit.ui.client.grid.events.CubaGridKeyPressEvent;
+import com.haulmont.cuba.web.toolkit.ui.client.grid.events.CubaGridKeyUpEvent;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.widget.escalator.EscalatorUpdater;
 import com.vaadin.client.widget.escalator.FlyweightCell;
 import com.vaadin.client.widget.escalator.RowContainer;
-import com.vaadin.client.widget.grid.events.*;
+import com.vaadin.client.widget.grid.events.BodyClickHandler;
+import com.vaadin.client.widget.grid.events.BodyDoubleClickHandler;
+import com.vaadin.client.widget.grid.events.BodyKeyDownHandler;
+import com.vaadin.client.widget.grid.events.BodyKeyPressHandler;
+import com.vaadin.client.widget.grid.events.BodyKeyUpHandler;
+import com.vaadin.client.widget.grid.events.FooterClickHandler;
+import com.vaadin.client.widget.grid.events.FooterDoubleClickHandler;
+import com.vaadin.client.widget.grid.events.FooterKeyDownHandler;
+import com.vaadin.client.widget.grid.events.FooterKeyPressHandler;
+import com.vaadin.client.widget.grid.events.FooterKeyUpHandler;
+import com.vaadin.client.widget.grid.events.HeaderClickHandler;
+import com.vaadin.client.widget.grid.events.HeaderDoubleClickHandler;
+import com.vaadin.client.widget.grid.events.HeaderKeyDownHandler;
+import com.vaadin.client.widget.grid.events.HeaderKeyPressHandler;
+import com.vaadin.client.widget.grid.events.HeaderKeyUpHandler;
 import com.vaadin.client.widgets.Grid;
 import elemental.json.JsonObject;
 
@@ -82,15 +100,18 @@ public class CubaGridWidget extends Grid<JsonObject> {
     @Override
     protected boolean isWidgetAllowsClickHandling(Element targetElement) {
         // by default, clicking on widget renderer prevents row selection
-        // for some widget renderers we want to allow row selection
-        return isClickThroughEnabled(targetElement);
+        // we want to allow row selection
+        return true;
     }
 
     @Override
     protected boolean isEventHandlerShouldHandleEvent(Element targetElement) {
         // by default, clicking on widget renderer prevents cell focus changing
         // for some widget renderers we want to allow focus changing
-        return isClickThroughEnabled(targetElement);
+        Widget widget = WidgetUtil.findWidget(targetElement, null);
+        return !(widget instanceof com.vaadin.client.Focusable
+                || widget instanceof com.google.gwt.user.client.ui.Focusable)
+                || isClickThroughEnabled(targetElement);
     }
 
     protected boolean isClickThroughEnabled(Element e) {
