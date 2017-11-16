@@ -39,6 +39,7 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.ui.ComboBox;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
@@ -201,19 +202,16 @@ public class SettingsWindow extends AbstractWindow {
         List<MenuItem> collectedItems = new ArrayList<>();
 
         for (MenuItem item : menuItems) {
-            if (item.isSeparator() ||
-                    !item.isPermitted(userSession) ||
-                    StringUtils.isNotEmpty(item.getBean()) ||
-                    StringUtils.isNotEmpty(item.getRunnableClass())) {
+            if (!item.isPermitted(userSession))
                 continue;
-            }
 
-            if (item.getChildren().isEmpty()) {
+            if (StringUtils.isNotEmpty(item.getScreen())) {
                 collectedItems.add(item);
-                continue;
             }
 
-            collectedItems.addAll(collectPermittedScreens(item.getChildren()));
+            if (CollectionUtils.isNotEmpty(item.getChildren())) {
+                collectedItems.addAll(collectPermittedScreens(item.getChildren()));
+            }
         }
 
         return collectedItems;
