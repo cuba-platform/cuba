@@ -326,6 +326,8 @@ public class Jpa2GrammarTest {
         testQuery("SELECT COALESCE(emp.salary, emp.salaryOld, 10) FROM app$Employee emp");
         testQuery("SELECT COALESCE(emp.salary, emp.salaryOld, 10) * 5.7 FROM app$Employee emp");
         testQuery("SELECT COALESCE(emp.salary, 10) * 1.18 FROM app$Employee emp");
+        testQuery("SELECT emp FROM app$Employee emp where COALESCE(emp.salary60,0)+COALESCE(emp.salary90,0)+COALESCE(emp.salary90,0) >= :param$Param1");
+        testQuery("SELECT emp FROM app$Employee emp where COALESCE(emp.salary60,0)*COALESCE(emp.salary90,0)*COALESCE(emp.salary90,0) >= :param$Param1");
     }
 
     @Test
