@@ -99,6 +99,12 @@ public interface PersistenceSecurity extends Security {
     }
 
     /**
+     * Validate that security token exists for specific cases.
+     * For example, security constraints exists
+     */
+    void checkSecurityToken(Entity entity);
+
+    /**
      * Calculate filtered data
      * @param entity for which will calculate filtered data
      */
