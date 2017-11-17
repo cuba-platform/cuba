@@ -160,15 +160,12 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
 
     @Override
     public void restoreSecurityState(Entity entity) {
-        checkSecurityToken(entity);
         securityTokenManager.readSecurityToken(entity);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void restoreFilteredData(Entity entity) {
-        checkSecurityToken(entity);
-
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
         String storeName = metadataTools.getStoreName(metaClass);
         EntityManager entityManager = persistence.getEntityManager(storeName);
@@ -208,7 +205,8 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
         }
     }
 
-    protected void checkSecurityToken(Entity entity) {
+    @Override
+    public void checkSecurityToken(Entity entity) {
         if (BaseEntityInternalAccess.getSecurityToken(entity) == null) {
             MetaClass metaClass = metadata.getClassNN(entity.getClass());
             for (MetaProperty metaProperty : metaClass.getProperties()) {
@@ -217,7 +215,7 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
                             constraint -> constraint.getCheckType().memory());
                     if (CollectionUtils.isNotEmpty(existingConstraints)) {
                         throw new RowLevelSecurityException(format("Could not read security token from entity %s, " +
-                                "even though there are active constraints for the entity.", entity),
+                                "even though there are active constraints for the related entities.", entity),
                                 entity.getMetaClass().getName());
                     }
                 }

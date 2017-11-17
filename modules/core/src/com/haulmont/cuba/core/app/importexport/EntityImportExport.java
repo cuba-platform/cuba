@@ -285,6 +285,7 @@ public class EntityImportExport implements EntityImportExportAPI {
             DataStore dataStore = storeFactory.get(storeName);
             //row-level security works only for entities from RdbmsStore
             if (dataStore instanceof RdbmsStore) {
+                persistenceSecurity.checkSecurityToken(srcEntity);
                 persistenceSecurity.restoreSecurityState(srcEntity);
                 securityState = BaseEntityInternalAccess.getSecurityState(srcEntity);
             }
@@ -492,6 +493,7 @@ public class EntityImportExport implements EntityImportExportAPI {
             DataStore dataStore = storeFactory.get(storeName);
             //row-level security works only for entities from RdbmsStore
             if (dataStore instanceof RdbmsStore) {
+                persistenceSecurity.checkSecurityToken(srcEmbeddedEntity);
                 persistenceSecurity.restoreSecurityState(srcEmbeddedEntity);
                 securityState = BaseEntityInternalAccess.getSecurityState(srcEmbeddedEntity);
             }
@@ -590,6 +592,7 @@ public class EntityImportExport implements EntityImportExportAPI {
             if (dataStore instanceof RdbmsStore) {
                 //restore filtered data, otherwise they will be lost
                 try (Transaction tx = persistence.getTransaction()) {
+                    persistenceSecurity.checkSecurityToken((BaseGenericIdEntity<?>) entity);
                     persistenceSecurity.restoreSecurityStateAndFilteredData((BaseGenericIdEntity<?>) entity);
                     tx.commit();
                 }
