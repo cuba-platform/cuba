@@ -352,10 +352,10 @@ comparison_operator
     | '<='
     | '<>';
 arithmetic_expression
-    : arithmetic_term ('+' | '-') arithmetic_term
+    : arithmetic_term (('+' | '-') arithmetic_term)+
     | arithmetic_term;
 arithmetic_term
-    : arithmetic_factor ( '*' | '/') arithmetic_factor
+    : arithmetic_factor (( '*' | '/') arithmetic_factor)+
     | arithmetic_factor;
 arithmetic_factor
     : (( '+' | '-'))? arithmetic_primary;
