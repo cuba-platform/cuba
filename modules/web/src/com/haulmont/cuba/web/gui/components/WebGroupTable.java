@@ -45,6 +45,7 @@ import org.dom4j.Element;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -54,6 +55,8 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
 
     protected boolean rerender = true;
     protected boolean showItemsCountForGroup = true;
+
+    protected GroupCellValueFormatter<E> groupCellValueFormatter;
 
     public WebGroupTable() {
         component = createGroupTableComponent();
@@ -225,6 +228,16 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
             column.setGroupAllowed(allowed);
         }
         component.setColumnGroupAllowed(column.getId(), allowed);
+    }
+
+    @Override
+    public GroupCellValueFormatter<E> getGroupCellValueFormatter() {
+        return groupCellValueFormatter;
+    }
+
+    @Override
+    public void setGroupCellValueFormatter(GroupCellValueFormatter<E> formatter) {
+        this.groupCellValueFormatter = formatter;
     }
 
     @Override
@@ -781,6 +794,16 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         @Override
         public String format(Object groupId, @Nullable Object value) {
             String formattedValue = super.format(groupId, value);
+
+            if (groupCellValueFormatter != null) {
+                List<Entity> groupItems = component.getGroupItemIds(groupId).stream()
+                    .map(itemId -> ((ItemWrapper) component.getItem(itemId)).getItem())
+                    .collect(Collectors.toList());
+
+                GroupCellContext<E> context = new GroupCellContext<>((GroupInfo) groupId, value, formattedValue,
+                        (List<E>) groupItems);
+                return groupCellValueFormatter.format(context);
+            }
 
             if (showItemsCountForGroup) {
                 int count = WebGroupTable.this.component.getGroupItemsCount(groupId);

@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public interface GroupTable<E extends Entity> extends Table<E> {
 
@@ -36,6 +37,9 @@ public interface GroupTable<E extends Entity> extends Table<E> {
 
     boolean getColumnGroupAllowed(Table.Column column);
     void setColumnGroupAllowed(Table.Column column, boolean allowed);
+
+    GroupCellValueFormatter<E> getGroupCellValueFormatter();
+    void setGroupCellValueFormatter(GroupCellValueFormatter<E> formatter);
 
     void expandAll();
     void expand(GroupInfo groupId);
@@ -75,5 +79,40 @@ public interface GroupTable<E extends Entity> extends Table<E> {
          */
         @Nullable
         String getStyleName(GroupInfo info);
+    }
+
+    @FunctionalInterface
+    interface GroupCellValueFormatter<E> {
+        String format(GroupCellContext<E> context);
+    }
+
+    class GroupCellContext<E> {
+        private GroupInfo groupInfo;
+        private Object value;
+        private String formattedValue;
+        private List<E> groupItems;
+
+        public GroupCellContext(GroupInfo groupInfo, Object value, String formattedValue, List<E> groupItems) {
+            this.groupInfo = groupInfo;
+            this.value = value;
+            this.formattedValue = formattedValue;
+            this.groupItems = groupItems;
+        }
+
+        public GroupInfo getGroupInfo() {
+            return groupInfo;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        public List<E> getGroupItems() {
+            return groupItems;
+        }
+
+        public String getFormattedValue() {
+            return formattedValue;
+        }
     }
 }

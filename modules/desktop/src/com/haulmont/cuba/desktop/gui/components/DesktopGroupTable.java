@@ -27,6 +27,7 @@ public class DesktopGroupTable<E extends Entity>
         implements GroupTable<E> {
 
     protected boolean showItemsCountForGroup = true;
+    protected GroupCellValueFormatter<E> groupCellValueFormatter; // stub
 
     @Override
     public GroupDatasource getDatasource() {
@@ -53,6 +54,16 @@ public class DesktopGroupTable<E extends Entity>
 
     @Override
     public void setColumnGroupAllowed(Column column, boolean allowed) {
+    }
+
+    @Override
+    public GroupCellValueFormatter<E> getGroupCellValueFormatter() {
+        return groupCellValueFormatter;
+    }
+
+    @Override
+    public void setGroupCellValueFormatter(GroupCellValueFormatter<E> formatter) {
+        this.groupCellValueFormatter = formatter;
     }
 
     @Override
