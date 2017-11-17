@@ -1,9 +1,46 @@
-# CUBA Platform
+<h1 align="center"> <a href="https://www.cuba-platform.com/"><img src="https://github.com/funxies/cuba/blob/master/img/Cuba_Logo.png" alt="CUBA Platform" width="600" align="center"></a>
+</h1>  
 
-[![license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Build Status](https://travis-ci.org/cuba-platform/cuba.svg?branch=master)](https://travis-ci.org/cuba-platform/cuba)
-[![Join the chat at https://gitter.im/cuba-platform/cuba](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cuba-platform/cuba)
+<h4 align="center">Java RAD framework for enterprise web applications</h4>
+  
+<p align="center">
+<a href="http://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat" alt="license" title=""></a>
+<a href="https://travis-ci.org/cuba-platform/cuba"><img src="https://travis-ci.org/cuba-platform/cuba.svg?branch=master" alt="Build Status" title=""></a>
+<a href="https://gitter.im/cuba-platform/cuba"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Join the chat at https://gitter.im/cuba-platform/cuba" title=""></a>
+</p>
 
+
+<div align="center">
+  <h3>
+    <a href="https://www.cuba-platform.com/" target="_blank">
+      Website
+    </a>
+    <span> | </span>
+    <a href="https://www.cuba-platform.com/online-demo" target="_blank">
+      Online Demo
+    </a>
+    <span> | </span>
+    <a href="https://www.cuba-platform.com/tutorials" target="_blank">
+      Tutorials
+    </a>
+    <span> | </span>
+    <a href="https://www.cuba-platform.com/documentation" target="_blank">
+      Documentation
+    </a>
+    <span> | </span>
+    <a href="https://www.cuba-platform.com/discuss/" target="_blank">
+      Forum
+    </a>
+  </h3>
+</div>
+
+<p align="center">
+<a href="https://twitter.com/CubaPlatform" target="_blank"><img src="https://github.com/funxies/cuba/blob/master/img/twitter.png" height="36px" alt="" title=""></a>
+<a href="https://www.facebook.com/CUBAplatform/" target="_blank"><img src="https://github.com/funxies/cuba/blob/master/img/facebook.png" height="36px" margin-left="20px" alt="" title=""></a>
+<a href="https://www.linkedin.com/company/cuba-platform/" target="_blank"><img src="https://github.com/funxies/cuba/blob/master/img/linkedin.png" height="36px" margin-left="20px" alt="" title=""></a>
+<a href="https://vimeo.com/channels/cubaplatform" target="_blank"><img src="https://github.com/funxies/cuba/blob/master/img/vimeo.png" height="36px" margin-left="20px" alt="" title=""></a>
+</p>
+  
 [CUBA Platform](https://www.cuba-platform.com) is a high level framework for rapid development of enterprise applications with rich web interface.
 
 The simplest way to start using the platform is to [download](https://www.cuba-platform.com/download) CUBA Studio and create a new project in it. A released version of the platform will be downloaded automatically from the artifact repository.
