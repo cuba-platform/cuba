@@ -1043,7 +1043,12 @@ public class FilterDelegateImpl implements FilterDelegate {
                 }
             }
         }
-        return null;
+
+        FilterEntity globalDefaultFilter = filters.stream()
+                .filter(FilterEntity::getGlobalDefault)
+                .findAny()
+                .orElse(null);
+        return globalDefaultFilter;
     }
 
     protected void initFiltersPopupButton() {

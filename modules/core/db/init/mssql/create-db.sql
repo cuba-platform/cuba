@@ -488,6 +488,7 @@ create table SEC_FILTER (
     CODE varchar(200),
     XML varchar(max),
     USER_ID uniqueidentifier,
+    GLOBAL_DEFAULT tinyint,
     --
     primary key nonclustered (ID),
     constraint FK_SEC_FILTER_USER foreign key (USER_ID) references SEC_USER(ID)
@@ -956,7 +957,7 @@ values ('0c018061-b26f-4de2-a5be-dff348347f93', current_timestamp, 0, 'Administr
 insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
 values ('c838be0a-96d0-4ef4-a7c0-dff348347f93', current_timestamp, 0, '60885987-1b61-4247-94c7-dff348347f93', '0c018061-b26f-4de2-a5be-dff348347f93')^
 
-insert into SEC_FILTER (ID,CREATE_TS,CREATED_BY,VERSION,UPDATE_TS,UPDATED_BY,DELETE_TS,DELETED_BY,COMPONENT,NAME,XML,USER_ID)
+insert into SEC_FILTER (ID,CREATE_TS,CREATED_BY,VERSION,UPDATE_TS,UPDATED_BY,DELETE_TS,DELETED_BY,COMPONENT,NAME,XML,USER_ID,GLOBAL_DEFAULT)
 values ('b61d18cb-e79a-46f3-b16d-eaf4aebb10dd',{ts '2010-03-01 11:14:06.830'},'admin',2,{ts '2010-03-01 11:52:53.170'},'admin',null,null,'[sec$User.browse].genericFilter','Search by role',
 '<?xml version="1.0" encoding="UTF-8"?>
 <filter>
@@ -966,4 +967,4 @@ values ('b61d18cb-e79a-46f3-b16d-eaf4aebb10dd',{ts '2010-03-01 11:14:06.830'},'a
     </c>
   </and>
 </filter>',
-'60885987-1b61-4247-94c7-dff348347f93')^
+'60885987-1b61-4247-94c7-dff348347f93',0)^

@@ -19,7 +19,6 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.StandardEntity;
-import com.haulmont.cuba.core.entity.annotation.EnableRestore;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
@@ -49,6 +48,9 @@ public class FilterEntity extends StandardEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     protected User user;
+
+    @Column(name = "GLOBAL_DEFAULT")
+    protected Boolean globalDefault = false;
 
     @Transient
     protected Boolean isDefault = false;
@@ -132,5 +134,13 @@ public class FilterEntity extends StandardEntity {
 
     public void setIsSet(Boolean isSet){
         this.isSet=isSet;
+    }
+
+    public Boolean getGlobalDefault() {
+        return globalDefault;
+    }
+
+    public void setGlobalDefault(Boolean globalDefault) {
+        this.globalDefault = globalDefault;
     }
 }

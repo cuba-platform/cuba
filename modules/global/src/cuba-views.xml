@@ -29,6 +29,7 @@
         <property name="name"/>
         <property name="code"/>
         <property name="xml"/>
+        <property name="globalDefault"/>
         <property name="user" view="app"/>
     </view>
 

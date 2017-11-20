@@ -19,9 +19,7 @@ package com.haulmont.cuba.gui.components.filter.edit;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParam;
@@ -40,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Window for generic filter edit
@@ -77,6 +76,12 @@ public class FilterEditor extends AbstractWindow {
 
     @Inject
     protected Label defaultLabel;
+
+    @Inject
+    private CheckBox globalDefaultCb;
+
+    @Inject
+    private Label globalDefaultLabel;
 
     @Inject
     protected CheckBox applyDefaultCb;
@@ -135,6 +140,8 @@ public class FilterEditor extends AbstractWindow {
             "requiredLabel", "required", "widthLabel", "width", "captionLabel", "caption");
 
     protected final List<String> componentsForHiddenOption = Arrays.asList("hiddenLabel", "hidden");
+    @Inject
+    private DataManager dataManager;
 
     public interface Companion {
         void showComponentName(WindowManager windowManager, String title, String message);
@@ -170,11 +177,22 @@ public class FilterEditor extends AbstractWindow {
         availableForAllCb.setValue(filterEntity.getUser() == null);
         defaultCb.setValue(filterEntity.getIsDefault());
         applyDefaultCb.setValue(filterEntity.getApplyDefault());
+        globalDefaultCb.setValue(filterEntity.getGlobalDefault());
 
         if (!userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION)) {
             availableForAllCb.setVisible(false);
             availableForAllLabel.setVisible(false);
+            globalDefaultCb.setVisible(false);
+            globalDefaultLabel.setVisible(false);
         }
+
+        availableForAllCb.addValueChangeListener(e -> {
+            Boolean isFilterAvailableForAll = (Boolean) e.getValue();
+            globalDefaultCb.setEnabled(isFilterAvailableForAll);
+            if (!isFilterAvailableForAll) {
+                globalDefaultCb.setValue(null);
+            }
+        });
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         boolean manualApplyRequired = filter.getManualApplyRequired() != null ?
@@ -303,7 +321,46 @@ public class FilterEditor extends AbstractWindow {
         }
         filterEntity.setIsDefault(defaultCb.getValue());
         filterEntity.setApplyDefault(applyDefaultCb.getValue());
-        close(COMMIT_ACTION_ID, true);
+
+        boolean globalDefaultShouldBeChecked = !filterEntity.getGlobalDefault() && globalDefaultCb.getValue();
+        filterEntity.setGlobalDefault(globalDefaultCb.getValue());
+
+        if (globalDefaultShouldBeChecked) {
+            checkGlobalDefaultAndCloseEditor();
+        } else {
+            close(COMMIT_ACTION_ID, true);
+        }
+    }
+
+    protected void checkGlobalDefaultAndCloseEditor() {
+        List<FilterEntity> otherDefaultFilters = dataManager.loadList(LoadContext.create(FilterEntity.class)
+                .setQuery(LoadContext.createQuery("select f from sec$Filter f where f.globalDefault = true and " +
+                        "f.componentId = :componentId and " +
+                        "f.id <> :currentId ")
+                        .setParameter("componentId", filterEntity.getComponentId())
+                        .setParameter("currentId", filterEntity.getId())));
+
+        if (!otherDefaultFilters.isEmpty()) {
+            String otherFilterNamesStr = otherDefaultFilters.stream()
+                    .map(FilterEntity::getName)
+                    .collect(Collectors.joining(", "));
+            showOptionDialog(getMessage("filter.editor.anotherGlobalDefaultFilterFound.dialogTitle"),
+                    formatMessage("filter.editor.anotherGlobalDefaultFilterFound.dialogMessage", otherFilterNamesStr),
+                    MessageType.WARNING,
+                    new Action[]{
+                            new DialogAction(DialogAction.Type.YES, Action.Status.PRIMARY).withHandler(e -> {
+                                otherDefaultFilters.forEach(otherDefaultFilter -> otherDefaultFilter.setGlobalDefault(false));
+                                dataManager.commit(new CommitContext(otherDefaultFilters));
+                                close(COMMIT_ACTION_ID, true);
+                            }),
+                            new DialogAction(DialogAction.Type.NO, Action.Status.NORMAL).withHandler(e -> {
+                                filterEntity.setGlobalDefault(false);
+                                close(COMMIT_ACTION_ID, true);
+                            }),
+                    });
+        } else {
+            close(COMMIT_ACTION_ID, true);
+        }
     }
 
     protected boolean hasEmptyGroupConditions() {

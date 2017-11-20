@@ -53,6 +53,10 @@
                             <checkBox id="availableForAllCb"/>
                         </row>
                         <row>
+                            <label id="globalDefaultLabel" value="mainMsg://filter.editor.globalDefault" align="MIDDLE_LEFT"/>
+                            <checkBox id="globalDefaultCb"/>
+                        </row>
+                        <row>
                             <label id="defaultLabel" value="mainMsg://filter.editor.default" align="MIDDLE_LEFT"/>
                             <checkBox id="defaultCb"/>
                         </row>
