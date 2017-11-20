@@ -29,6 +29,7 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
+import com.haulmont.cuba.web.events.UIRefreshEvent;
 import com.haulmont.cuba.web.security.events.AppInitializedEvent;
 import com.haulmont.cuba.web.security.events.SessionHeartbeatEvent;
 import com.haulmont.cuba.web.sys.LinkHandler;
@@ -280,27 +281,34 @@ public class AppUI extends UI implements ErrorHandler, CubaHistoryControl.Histor
     protected void refresh(VaadinRequest request) {
         super.refresh(request);
 
-        boolean sessionIsAlive = false;
-        // handle page refresh
-        if (app.getConnection().isAuthenticated()) {
+        boolean sessionIsAlive = true;
+
+        Connection connection = app.getConnection();
+
+        if (connection.isAuthenticated()) {
             // Ping middleware session if connected
             log.debug("Ping middleware session");
 
             try {
-                UserSession session = app.getConnection().getSession();
+                UserSession session = connection.getSession();
                 if (session instanceof ClientUserSession
                         && ((ClientUserSession) session).isAuthenticated()) {
                     userSessionService.getUserSession(session.getId());
 
-                    sessionIsAlive = true;
                 }
             } catch (Exception e) {
+                sessionIsAlive = false;
+
                 app.exceptionHandlers.handle(new com.vaadin.server.ErrorEvent(e));
+            }
+
+            if (sessionIsAlive) {
+                events.publish(new SessionHeartbeatEvent(app));
             }
         }
 
         if (sessionIsAlive) {
-            events.publish(new SessionHeartbeatEvent(app));
+            events.publish(new UIRefreshEvent(this));
         }
     }
 
