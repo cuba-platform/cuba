@@ -54,6 +54,10 @@ public class IdpAuthProvider extends BaseIdpSessionFilter implements CubaAuthPro
     @Inject
     protected IdpLoginLifecycleManager idpLoginLifecycleManager;
 
+    public IdpAuthProvider() {
+        log.warn("IdpAuthProvider mechanism is DEPRECATED, use 'cuba.web.idp.enabled' application property instead");
+    }
+
     @Override
     public void authenticate(String login, String password, Locale locale) throws LoginException {
         throw new UnsupportedOperationException("IdpAuthProvider does not support login using login form");

@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.security.ldap.WebLdapConfig;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.LoggerFactory;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.filter.AndFilter;
@@ -48,6 +49,11 @@ public class LdapAuthProvider implements CubaAuthProvider {
     protected LdapContextSource ldapContextSource;
 
     protected LdapTemplate ldapTemplate;
+
+    public LdapAuthProvider() {
+        LoggerFactory.getLogger(LdapAuthProvider.class)
+                .warn("LdapAuthProvider mechanism is DEPRECATED, use 'cuba.web.ldap.enabled' application property instead");
+    }
 
     @Override
     public void authenticate(String login, String password, Locale messagesLocale) throws LoginException {
