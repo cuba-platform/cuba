@@ -44,7 +44,7 @@ import java.util.*;
 import static com.haulmont.cuba.web.security.ExternalUserCredentials.EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE;
 
 @ConditionalOnAppProperty(property = "cuba.web.ldap.enabled", value = "true")
-@ConditionalOnAppProperty(property = "cuba.web.externalAuthentication", value = "false")
+@ConditionalOnAppProperty(property = "cuba.web.externalAuthentication", value = "false", defaultValue = "false")
 @Component("cuba_LdapLoginProvider")
 public class LdapLoginProvider implements LoginProvider, Ordered {
 
@@ -114,7 +114,7 @@ public class LdapLoginProvider implements LoginProvider, Ordered {
 
         tcCredentials.setSessionAttributes(targetSessionAttributes);
 
-        return authenticationService.login(credentials);
+        return authenticationService.login(tcCredentials);
     }
 
     @Override

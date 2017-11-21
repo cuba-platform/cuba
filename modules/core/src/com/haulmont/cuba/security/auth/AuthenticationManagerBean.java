@@ -205,7 +205,9 @@ public class AuthenticationManagerBean implements AuthenticationManager {
 
         AuthenticationDetails details = null;
         try {
-            for (AuthenticationProvider provider : getProviders()) {
+            List<AuthenticationProvider> providers = getProviders();
+
+            for (AuthenticationProvider provider : providers) {
                 if (!provider.supports(credentialsClass)) {
                     continue;
                 }

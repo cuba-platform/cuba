@@ -189,7 +189,9 @@ public class ConnectionImpl extends EventRouter implements Connection {
 
         AuthenticationDetails details = null;
         try {
-            for (LoginProvider provider : getProviders()) {
+            List<LoginProvider> providers = getProviders();
+
+            for (LoginProvider provider : providers) {
                 if (!provider.supports(credentialsClass)) {
                     continue;
                 }
