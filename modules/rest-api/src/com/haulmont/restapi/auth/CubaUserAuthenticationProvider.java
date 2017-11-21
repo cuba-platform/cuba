@@ -53,7 +53,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class CubaUserAuthenticationProvider implements AuthenticationProvider, Serializable {
+public class CubaUserAuthenticationProvider implements AuthenticationProvider {
 
     protected static final String SESSION_ID_DETAILS_ATTRIBUTE = "sessionId";
 
