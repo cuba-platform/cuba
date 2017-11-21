@@ -21,12 +21,14 @@ import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.restapi.RestUserSessionInfo;
 import com.haulmont.cuba.restapi.ServerTokenStore;
 import com.haulmont.cuba.security.app.TrustedClientService;
 import com.haulmont.cuba.security.auth.AuthenticationService;
 import com.haulmont.cuba.security.auth.TrustedClientCredentials;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.restapi.common.RestAuthUtils;
 import com.haulmont.restapi.config.RestApiConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
@@ -73,6 +75,9 @@ public class ClientProxyTokenStore implements TokenStore {
 
     protected AuthenticationKeyGenerator authenticationKeyGenerator;
 
+    @Inject
+    protected RestAuthUtils restAuthUtils;
+
     public void setAuthenticationKeyGenerator(AuthenticationKeyGenerator authenticationKeyGenerator) {
         this.authenticationKeyGenerator = authenticationKeyGenerator;
     }
@@ -96,12 +101,18 @@ public class ClientProxyTokenStore implements TokenStore {
     public void storeAccessToken(OAuth2AccessToken token, OAuth2Authentication authentication) {
         String authenticationKey = authenticationKeyGenerator.extractKey(authentication);
         String userLogin = authentication.getName();
+
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        Locale locale = restAuthUtils.extractLocaleFromRequestHeader(request);
+
         serverTokenStore.storeAccessToken(token.getValue(),
                 serializeAccessToken(token),
                 authenticationKey,
                 serializeAuthentication(authentication),
                 token.getExpiration(),
-                userLogin);
+                userLogin,
+                locale);
         processSession(authentication, token.getValue());
         log.info("REST API access token stored: [{}] {}", authentication.getPrincipal(), token.getValue()) ;
     }
@@ -130,8 +141,8 @@ public class ClientProxyTokenStore implements TokenStore {
      * the id doesn't exist in the middleware, then the trusted login attempt is performed.
      */
     protected void processSession(OAuth2Authentication authentication, String tokenValue) {
-        UUID sessionId = serverTokenStore.getSessionIdByTokenValue(tokenValue);
-
+        RestUserSessionInfo sessionInfo = serverTokenStore.getSessionInfoByTokenValue(tokenValue);
+        UUID sessionId = sessionInfo != null ? sessionInfo.getId() : null;
         if (sessionId == null) {
             @SuppressWarnings("unchecked")
             Map<String, String> userAuthenticationDetails =
@@ -160,9 +171,11 @@ public class ClientProxyTokenStore implements TokenStore {
             try {
                 ServletRequestAttributes attributes =
                         (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-
+                Locale locale = sessionInfo != null ?
+                        sessionInfo.getLocale() :
+                        null;
                 TrustedClientCredentials credentials = new TrustedClientCredentials(username,
-                        restApiConfig.getTrustedClientPassword(), getDefaultLocale());
+                        restApiConfig.getTrustedClientPassword(), locale);
                 credentials.setClientType(ClientType.REST_API);
                 if (attributes != null) {
                     HttpServletRequest request = attributes.getRequest();
@@ -172,6 +185,11 @@ public class ClientProxyTokenStore implements TokenStore {
                     credentials.setClientInfo(makeClientInfo(""));
                 }
 
+                //if locale was not determined then use the user locale
+                if (locale == null) {
+                    credentials.setOverrideLocale(false);
+                }
+
                 session = authenticationService.login(credentials).getSession();
             } catch (LoginException e) {
                 throw new OAuth2Exception("Cannot login to the middleware");
@@ -179,7 +197,7 @@ public class ClientProxyTokenStore implements TokenStore {
         }
 
         if (session != null) {
-            serverTokenStore.putSessionId(tokenValue, session.getId());
+            serverTokenStore.putSessionInfo(tokenValue, new RestUserSessionInfo(session));
             AppContext.setSecurityContext(new SecurityContext(session));
         }
     }

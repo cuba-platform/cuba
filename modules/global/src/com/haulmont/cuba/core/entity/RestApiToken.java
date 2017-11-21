@@ -54,6 +54,9 @@ public class RestApiToken extends BaseUuidEntity implements Creatable{
     @Column(name = "USER_LOGIN")
     protected String userLogin;
 
+    @Column(name = "LOCALE")
+    protected String locale;
+
     public String getAccessTokenValue() {
         return accessTokenValue;
     }
@@ -120,5 +123,13 @@ public class RestApiToken extends BaseUuidEntity implements Creatable{
     @Override
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 }

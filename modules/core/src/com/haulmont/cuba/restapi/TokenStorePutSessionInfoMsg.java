@@ -22,20 +22,20 @@ import java.util.UUID;
 /**
  * Cluster message containing an information about the mapping between token value and middleware session
  */
-public class TokenStorePutSessionMsg implements Serializable {
+public class TokenStorePutSessionInfoMsg implements Serializable {
     protected String tokenValue;
-    protected UUID sessionId;
+    protected RestUserSessionInfo sessionInfo;
 
-    public TokenStorePutSessionMsg(String tokenValue, UUID sessionId) {
+    public TokenStorePutSessionInfoMsg(String tokenValue, RestUserSessionInfo sessionInfo) {
         this.tokenValue = tokenValue;
-        this.sessionId = sessionId;
+        this.sessionInfo = sessionInfo;
     }
 
     public String getTokenValue() {
         return tokenValue;
     }
 
-    public UUID getSessionId() {
-        return sessionId;
+    public RestUserSessionInfo getSessionInfo() {
+        return sessionInfo;
     }
 }

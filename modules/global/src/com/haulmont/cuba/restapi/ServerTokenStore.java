@@ -17,8 +17,8 @@
 package com.haulmont.cuba.restapi;
 
 import java.util.Date;
+import java.util.Locale;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * OAuth token store for the REST API.
@@ -31,15 +31,16 @@ public interface ServerTokenStore {
 
     Set<String> getTokenValuesByUserLogin(String userLogin);
 
-    void storeAccessToken(String tokenValue, byte[] accessTokenBytes, String authenticationKey, byte[] authenticationBytes, Date tokenExpiry, String userLogin);
+    void storeAccessToken(String tokenValue, byte[] accessTokenBytes, String authenticationKey,
+                          byte[] authenticationBytes, Date tokenExpiry, String userLogin, Locale locale);
 
     byte[] getAccessTokenByTokenValue(String tokenValue);
 
     byte[] getAuthenticationByTokenValue(String tokenValue);
 
-    UUID getSessionIdByTokenValue(String authenticationKey);
+    RestUserSessionInfo getSessionInfoByTokenValue(String tokenValue);
 
-    UUID putSessionId(String authenticationKey, UUID sessionId);
+    RestUserSessionInfo putSessionInfo(String tokenValue, RestUserSessionInfo sessionInfo);
 
     void removeAccessToken(String tokenValue);
 

@@ -17,18 +17,15 @@
 package com.haulmont.restapi.auth;
 
 import com.google.common.base.Strings;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Events;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.core.sys.UserInvocationContext;
+import com.haulmont.restapi.common.RestAuthUtils;
 import com.haulmont.restapi.events.AfterRestInvocationEvent;
 import com.haulmont.restapi.events.BeforeRestInvocationEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
@@ -39,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Locale;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -56,10 +52,15 @@ public class CubaRestLastSecurityFilter implements Filter {
 
     @Inject
     protected Configuration configuration;
+
     @Inject
     protected MessageTools messageTools;
+
     @Inject
     protected Events events;
+
+    @Inject
+    protected RestAuthUtils restAuthUtils;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -126,26 +127,14 @@ public class CubaRestLastSecurityFilter implements Filter {
      * Method parses the request locale and sets it to the {@link UserInvocationContext}
      */
     protected void parseRequestLocale(ServletRequest request) {
-        //Take the locale value either from the 'Accept-Language' http header or take the default one
-        Locale locale = null;
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        if (!Strings.isNullOrEmpty(httpServletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE))) {
-            Locale requestLocale = request.getLocale();
-
-            GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
-            Map<String, Locale> availableLocales = globalConfig.getAvailableLocales();
-            if (availableLocales.values().contains(requestLocale)) {
-                locale = requestLocale;
-            }
-        }
-        if (locale == null) {
-            locale = messageTools.getDefaultLocale();
-        }
-        SecurityContext securityContext = AppContext.getSecurityContext();
-        if (securityContext != null) {
-            UUID sessionId = securityContext.getSessionId();
-            if (sessionId != null) {
-                UserInvocationContext.setRequestScopeInfo(sessionId, locale, null, null, null);
+        Locale locale = restAuthUtils.extractLocaleFromRequestHeader((HttpServletRequest) request);
+        if (locale != null) {
+            SecurityContext securityContext = AppContext.getSecurityContext();
+            if (securityContext != null) {
+                UUID sessionId = securityContext.getSessionId();
+                if (sessionId != null) {
+                    UserInvocationContext.setRequestScopeInfo(sessionId, locale, null, null, null);
+                }
             }
         }
     }

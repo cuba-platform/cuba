@@ -31,6 +31,7 @@ import com.haulmont.cuba.security.global.RestApiAccessDeniedException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
+import com.haulmont.restapi.common.RestAuthUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -49,6 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class CubaUserAuthenticationProvider implements AuthenticationProvider, Serializable {
@@ -65,6 +67,9 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider, S
 
     @Inject
     protected Configuration configuration;
+
+    @Inject
+    protected RestAuthUtils restAuthUtils;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -89,10 +94,20 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider, S
             try {
                 String passwordHash = passwordEncryption.getPlainHash((String) token.getCredentials());
 
-                LoginPasswordCredentials credentials = new LoginPasswordCredentials(login, passwordHash, request.getLocale());
+                LoginPasswordCredentials credentials = new LoginPasswordCredentials(login, passwordHash);
                 credentials.setIpAddress(ipAddress);
                 credentials.setClientType(ClientType.REST_API);
                 credentials.setClientInfo(makeClientInfo(request.getHeader(HttpHeaders.USER_AGENT)));
+
+                //if the locale value is explicitly passed in the Accept-Language header then set its value to the
+                //credentials. Otherwise, the locale of the user should be used
+                Locale locale = restAuthUtils.extractLocaleFromRequestHeader(request);
+                if (locale != null) {
+                    credentials.setLocale(locale);
+                    credentials.setOverrideLocale(true);
+                } else {
+                    credentials.setOverrideLocale(false);
+                }
 
                 session = authenticationService.login(credentials).getSession();
             } catch (AccountLockedException le) {

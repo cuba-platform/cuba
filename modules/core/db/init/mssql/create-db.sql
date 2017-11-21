@@ -900,6 +900,7 @@ create table SYS_REST_API_TOKEN (
     AUTHENTICATION_BYTES image,
     EXPIRY datetime,
     USER_LOGIN varchar(50),
+    LOCALE varchar(200),
     --
     primary key (ID)
 )^
