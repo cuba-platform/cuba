@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.google.common.base.Splitter;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -51,7 +50,6 @@ public class MaxResultsFieldHelper {
     public LookupField setUpMaxResultsLookupField(LookupField maxResultsLookupField) {
         ThemeConstants theme = themeConstantsManager.getConstants();
 
-        maxResultsLookupField.setAlignment(Component.Alignment.MIDDLE_RIGHT);
         maxResultsLookupField.setWidth(theme.get("cuba.gui.Filter.maxResults.lookup.width"));
         filterHelper.setLookupTextInputAllowed(maxResultsLookupField, false);
         filterHelper.setLookupNullSelectionAllowed(maxResultsLookupField, false);
