@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.app.core.file;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.AccessDeniedException;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.AbstractLookup;
@@ -29,6 +30,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.PermissionType;
 
 import javax.inject.Inject;
 import java.util.Collection;
@@ -68,6 +70,10 @@ public class FileBrowser extends AbstractLookup {
         BaseAction multiUploadAction = new BaseAction("multiupload")
                 .withCaption(getMessage("multiupload"))
                 .withHandler(event -> {
+                    if (!security.isEntityOpPermitted(FileDescriptor.class, EntityOp.READ)) {
+                        throw new AccessDeniedException(PermissionType.ENTITY_OP, FileDescriptor.class.getSimpleName());
+                    }
+
                     Window window = openWindow("multiuploadDialog", OpenType.DIALOG);
                     window.addCloseListener(actionId -> {
                         if (COMMIT_ACTION_ID.equals(actionId)) {
