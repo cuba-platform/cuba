@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.sys.ConditionalOnAppProperty;
 import com.haulmont.cuba.security.global.IdpSession;
 import com.haulmont.restapi.auth.OAuthTokenIssuer;
 import com.haulmont.restapi.auth.OAuthTokenIssuer.OAuth2AccessTokenResult;
+import com.haulmont.restapi.config.RestApiConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -79,6 +80,7 @@ public class IdpAuthController implements InitializingBean {
     protected OAuthTokenIssuer oAuthTokenIssuer;
 
     protected RestIdpConfig idpConfig;
+    protected RestApiConfig restApiConfig;
 
     protected String idpBaseURL;
     protected String idpTrustedServicePassword;
@@ -195,6 +197,11 @@ public class IdpAuthController implements InitializingBean {
             throw new BadCredentialsException("Bad credentials");
         }
 
+        if (restApiConfig.getStandardAuthenticationUsers().contains(idpSession.getLogin())) {
+            log.info("User {} is not allowed to use external login in REST API", idpSession.getLogin());
+            throw new BadCredentialsException("Bad credentials");
+        }
+
         OAuthTokenIssuer.OAuth2AccessTokenRequest tokenRequest = new OAuthTokenIssuer.OAuth2AccessTokenRequest();
         tokenRequest.setLogin(idpSession.getLogin());
         tokenRequest.setLocale(locale);
@@ -260,6 +267,7 @@ public class IdpAuthController implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         this.idpConfig = configuration.getConfig(RestIdpConfig.class);
+        this.restApiConfig = configuration.getConfig(RestApiConfig.class);
 
         if (idpConfig.getIdpEnabled()) {
             checkRequiredConfigProperties(idpConfig);

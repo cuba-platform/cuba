@@ -22,16 +22,16 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.restapi.RestConfig;
 import com.haulmont.cuba.security.auth.AuthenticationService;
 import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
 import com.haulmont.cuba.security.global.AccountLockedException;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.RestApiAccessDeniedException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.restapi.common.RestAuthUtils;
+import com.haulmont.restapi.config.RestApiConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
-import com.haulmont.restapi.common.RestAuthUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -47,7 +47,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -79,7 +78,7 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider {
         String ipAddress = request.getRemoteAddr();
 
         if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            RestConfig config = configuration.getConfig(RestConfig.class);
+            RestApiConfig config = configuration.getConfig(RestApiConfig.class);
             if (!config.getStandardAuthenticationEnabled()) {
                 log.debug("Standard authentication is disabled. Property cuba.rest.standardAuthenticationEnabled is false");
 

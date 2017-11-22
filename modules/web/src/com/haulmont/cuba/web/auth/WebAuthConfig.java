@@ -68,7 +68,7 @@ public interface WebAuthConfig extends Config {
 
     /**
      * @return list of users that are not allowed to use external authentication. They can use only standard authentication.
-     *         Empty list means that no one is allowed to login using standard authentication.
+     *         Empty list means that everyone is allowed to login using external authentication.
      */
     @Property("cuba.web.standardAuthenticationUsers")
     @Factory(factory = CommaSeparatedStringListTypeFactory.class)

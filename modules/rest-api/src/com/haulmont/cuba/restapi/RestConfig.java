@@ -34,8 +34,4 @@ public interface RestConfig extends Config {
     @Property("cuba.rest.apiVersion")
     @DefaultInt(2)
     int getRestApiVersion();
-
-    @Property("cuba.rest.standardAuthenticationEnabled")
-    @DefaultBoolean(true)
-    boolean getStandardAuthenticationEnabled();
 }

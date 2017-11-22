@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.ConditionalOnAppProperty;
 import com.haulmont.restapi.auth.OAuthTokenIssuer;
 import com.haulmont.restapi.auth.OAuthTokenIssuer.OAuth2AccessTokenResult;
+import com.haulmont.restapi.config.RestApiConfig;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +70,7 @@ public class LdapAuthController implements InitializingBean {
     protected OAuthTokenIssuer oAuthTokenIssuer;
 
     protected RestLdapConfig ldapConfig;
+    protected RestApiConfig restApiConfig;
 
     protected Set<HttpMethod> allowedRequestMethods = Collections.singleton(HttpMethod.POST);
 
@@ -109,6 +111,12 @@ public class LdapAuthController implements InitializingBean {
         }
 
         String username = parameters.get("username");
+
+        if (restApiConfig.getStandardAuthenticationUsers().contains(username)) {
+            log.info("User {} is not allowed to use external login in REST API", username);
+            throw new BadCredentialsException("Bad credentials");
+        }
+
         String ipAddress = request.getRemoteAddr();
 
         String password = parameters.get("password");
@@ -132,6 +140,7 @@ public class LdapAuthController implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         this.ldapConfig = configuration.getConfig(RestLdapConfig.class);
+        this.restApiConfig = configuration.getConfig(RestApiConfig.class);
 
         if (ldapConfig.getLdapEnabled()) {
             checkRequiredConfigProperties(ldapConfig);
