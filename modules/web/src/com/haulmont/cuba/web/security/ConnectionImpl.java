@@ -113,12 +113,17 @@ public class ConnectionImpl extends EventRouter implements Connection {
             clientCredentials.setClientInfo(makeClientInfo());
             clientCredentials.setTimeZone(detectTimeZone());
 
-            this.userRemoteAddress = getUserRemoteAddress();
+            String currentUserRemoteAddress = getUserRemoteAddress();
+            // update userRemoteAddress if current HTTP request is available
+            if (currentUserRemoteAddress != null) {
+                this.userRemoteAddress = currentUserRemoteAddress;
+            }
 
             clientCredentials.setIpAddress(userRemoteAddress);
         }
     }
 
+    @Nullable
     protected String getUserRemoteAddress() {
         VaadinRequest currentRequest = VaadinService.getCurrentRequest();
 
