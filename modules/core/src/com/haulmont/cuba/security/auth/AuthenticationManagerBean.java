@@ -212,7 +212,7 @@ public class AuthenticationManagerBean implements AuthenticationManager {
                     continue;
                 }
 
-                log.debug("Authentication attempt using {}", provider.getClass().getName());
+                log.trace("Authentication attempt using {}", provider.getClass().getName());
 
                 try {
                     details = provider.authenticate(credentials);
@@ -223,7 +223,7 @@ public class AuthenticationManagerBean implements AuthenticationManager {
                                     "Authentication provider returned authentication details without session");
                         }
 
-                        log.debug("Authentication successful for {}", credentials);
+                        log.trace("Authentication successful for {}", credentials);
 
                         // publish auth success
                         publishAuthenticationSuccess(details, credentials);

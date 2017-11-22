@@ -196,13 +196,13 @@ public class ConnectionImpl extends EventRouter implements Connection {
                     continue;
                 }
 
-                log.debug("Login attempt using {}", provider.getClass().getName());
+                log.trace("Login attempt using {}", provider.getClass().getName());
 
                 try {
                     details = provider.login(credentials);
 
                     if (details != null) {
-                        log.debug("Login successful for {}", credentials);
+                        log.trace("Login successful for {}", credentials);
 
                         // publish login success
                         publishUserSessionStartedEvent(credentials, details);
