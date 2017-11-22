@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -61,23 +62,26 @@ public class QueryFilter extends FilterParser {
         }
 
         query = TemplateHelper.processTemplate(query, paramValues);
-        QueryTransformer transformer = QueryTransformerFactory.createTransformer(query);
 
         if (isActual(root, params)) {
             Condition refined = refine(root, params);
-            String where = new FilterJpqlGenerator().generateJpql(refined);
+            if (refined != null) {
+                QueryTransformer transformer = QueryTransformerFactory.createTransformer(query);
+                String where = new FilterJpqlGenerator().generateJpql(refined);
 
-            if (!StringUtils.isBlank(where)) {
-                Set<String> joins = refined.getJoins();
-                if (!joins.isEmpty()) {
-                    String joinsStr = new StrBuilder().appendWithSeparators(joins, " ").toString();
-                    transformer.addJoinAndWhere(joinsStr, where);
-                } else {
-                    transformer.addWhere(where);
+                if (!StringUtils.isBlank(where)) {
+                    Set<String> joins = refined.getJoins();
+                    if (!joins.isEmpty()) {
+                        String joinsStr = new StrBuilder().appendWithSeparators(joins, " ").toString();
+                        transformer.addJoinAndWhere(joinsStr, where);
+                    } else {
+                        transformer.addWhere(where);
+                    }
                 }
+                return transformer.getResult();
             }
         }
-        return transformer.getResult();
+        return query;
     }
 
     protected boolean paramValueIsOk(Object value) {
@@ -86,13 +90,19 @@ public class QueryFilter extends FilterParser {
         else return value != null;
     }
 
+    @Nullable
     protected Condition refine(Condition src, Set<String> params) {
         Condition copy = src.copy();
         List<Condition> list = new ArrayList<>();
         for (Condition condition : src.getConditions()) {
             if (isActual(condition, params)) {
-                list.add(refine(condition, params));
+                Condition refined = refine(condition, params);
+                if (refined != null && !(refined instanceof LogicalCondition && refined.getConditions().isEmpty()))
+                    list.add(refined);
             }
+        }
+        if (copy instanceof LogicalCondition && list.isEmpty()) {
+            return null;
         }
         copy.setConditions(list.isEmpty() ? Collections.EMPTY_LIST : list);
         return copy;
