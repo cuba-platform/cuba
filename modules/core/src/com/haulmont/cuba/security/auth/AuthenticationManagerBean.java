@@ -177,13 +177,13 @@ public class AuthenticationManagerBean implements AuthenticationManager {
                     continue;
                 }
 
-                log.debug("Authentication attempt using {}", provider.getClass().getName());
+                log.trace("Authentication attempt using {}", provider.getClass().getName());
 
                 try {
                     details = provider.authenticate(credentials);
 
                     if (details != null) {
-                        log.debug("Authentication successful for {}", credentials);
+                        log.trace("Authentication successful for {}", credentials);
 
                         // publish auth success
                         publishAuthenticationSuccess(details, credentials);
