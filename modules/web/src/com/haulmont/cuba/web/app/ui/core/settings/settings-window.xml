@@ -58,6 +58,7 @@
                         <lookupField id="defaultScreenField"
                                      description="msg://defaultScreenDescription"
                                      newOptionAllowed="false"
+                                     nullName="msg://noDefaultScreen"
                                      width="theme://cuba.web.settings-window.defaultScreenField.width"/>
                     </row>
                     <row>

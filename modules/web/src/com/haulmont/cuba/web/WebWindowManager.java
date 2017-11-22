@@ -1786,21 +1786,22 @@ public class WebWindowManager extends WindowManager {
         }
 
         Window window = openWindow(windowConfig.getWindowInfo(defaultScreenId), OpenType.NEW_TAB);
-
-        boolean defaultScreenCanBeClosed = webConfig.getDefaultScreenCanBeClosed();
-        if (defaultScreenCanBeClosed) {
+        // in case of window is created by Runnable instance
+        if (window == null) {
             return;
         }
 
-        WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
-        if (workArea.getMode() == Mode.TABBED) {
-            TabSheetBehaviour tabSheetBehaviour = workArea.getTabbedWindowContainer()
-                    .getTabSheetBehaviour();
+        if (!webConfig.getDefaultScreenCanBeClosed()) {
+            WebAppWorkArea workArea = getConfiguredWorkArea(createWorkAreaContext(window));
+            if (workArea.getMode() == Mode.TABBED) {
+                TabSheetBehaviour tabSheetBehaviour = workArea.getTabbedWindowContainer()
+                        .getTabSheetBehaviour();
 
-            HasComponents tabLayout = WebComponentsHelper.getComposition(window).getParent();
-            String tabId = tabSheetBehaviour.getTab(tabLayout);
+                HasComponents tabLayout = WebComponentsHelper.getComposition(window).getParent();
+                String tabId = tabSheetBehaviour.getTab(tabLayout);
 
-            tabSheetBehaviour.setTabClosable(tabId, false);
+                tabSheetBehaviour.setTabClosable(tabId, false);
+            }
         }
     }
 

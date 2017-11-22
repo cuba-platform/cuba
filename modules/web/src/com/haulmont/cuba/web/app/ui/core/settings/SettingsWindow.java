@@ -180,12 +180,10 @@ public class SettingsWindow extends AbstractWindow {
     }
 
     protected void initDefaultScreenField() {
-        boolean userCanChooseDefaultScreen = webConfig.getUserCanChooseDefaultScreen();
-
-        defaultScreenField.setEditable(userCanChooseDefaultScreen);
-
-        if (!userCanChooseDefaultScreen) {
-            return;
+        boolean screenSelectionEnabled = webConfig.getUserCanChooseDefaultScreen();
+        if (!screenSelectionEnabled) {
+            defaultScreenField.setEditable(false);
+            defaultScreenField.setDescription(getMessage("defaultScreenSelectionDisabled"));
         }
 
         Map<String, String> map = new LinkedHashMap<>();
@@ -194,7 +192,11 @@ public class SettingsWindow extends AbstractWindow {
         }
         defaultScreenField.setOptionsMap(map);
 
-        defaultScreenField.setValue(userSettingService.loadSetting(ClientType.WEB, "userDefaultScreen"));
+        String defaultScreen = userSettingService.loadSetting(ClientType.WEB, "userDefaultScreen");
+        if (StringUtils.isEmpty(defaultScreen) || !screenSelectionEnabled) {
+            defaultScreen = webConfig.getDefaultScreenId();
+        }
+        defaultScreenField.setValue(defaultScreen);
     }
 
     protected List<MenuItem> collectPermittedScreens(List<MenuItem> menuItems) {
