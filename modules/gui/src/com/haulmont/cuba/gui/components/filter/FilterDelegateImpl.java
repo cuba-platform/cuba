@@ -432,7 +432,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         maxResultsLayout = componentsFactory.createComponent(HBoxLayout.class);
         maxResultsLayout.setStyleName("c-maxresults");
         maxResultsLayout.setSpacing(true);
-        maxResultsLayout.setAlignment(Alignment.MIDDLE_RIGHT);
         Label maxResultsLabel = componentsFactory.createComponent(Label.class);
         maxResultsLabel.setStyleName("c-maxresults-label");
         maxResultsLabel.setValue(messages.getMainMessage("filter.maxResults.label1"));
@@ -441,7 +440,6 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         maxResultsTextField = componentsFactory.createComponent(TextField.class);
         maxResultsTextField.setStyleName("c-maxresults-input");
-        maxResultsTextField.setAlignment(Alignment.MIDDLE_RIGHT);
         maxResultsTextField.setMaxLength(4);
         maxResultsTextField.setWidth(theme.get("cuba.gui.Filter.maxResults.width"));
         maxResultsTextField.setDatatype(Datatypes.get("int"));
