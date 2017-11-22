@@ -201,6 +201,12 @@
         <property name="allowedHeaders" value="*"/>
         <property name="allowedMethods" value="*"/>
         <property name="allowCredentials" value="true"/>
+        <property name="exposedHeaders">
+            <list>
+                <value>X-Total-Count</value>
+                <value>Content-Disposition</value>
+            </list>
+        </property>
     </bean>
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
