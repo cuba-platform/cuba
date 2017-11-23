@@ -400,7 +400,7 @@ public class CubaApplicationServlet extends VaadinServlet {
             }
         }
 
-        SimpleTemplateEngine templateEngine = new SimpleTemplateEngine();
+        SimpleTemplateEngine templateEngine = new SimpleTemplateEngine(getServletContext().getClassLoader());
         Template template = getTemplate(templateEngine, templateContent);
 
         Writable writable = template.make(binding);
