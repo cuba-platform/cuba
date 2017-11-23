@@ -16,6 +16,9 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.core.global.Events;
+import com.haulmont.cuba.core.sys.events.ApplicationContextStartedEvent;
+import com.haulmont.cuba.core.sys.events.ApplicationContextStoppedEvent;
 import com.haulmont.cuba.core.sys.logging.LogMdc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +48,9 @@ public class AppContext {
     /**
      * Application startup/shutdown listener.
      * Implementors should be passed to {@link AppContext#addListener(com.haulmont.cuba.core.sys.AppContext.Listener)} method.
+     *
+     * It is recommended to use {@link ApplicationContextStartedEvent} and {@link ApplicationContextStoppedEvent}
+     * instead.
      */
     public interface Listener {
 
@@ -233,6 +239,10 @@ public class AppContext {
         for (Listener listener : listeners) {
             listener.applicationStarted();
         }
+
+        Events events = (Events) getApplicationContext().getBean(Events.NAME);
+        events.publish(new ApplicationContextStartedEvent(context));
+
         listenersNotified = true;
     }
 
@@ -248,6 +258,10 @@ public class AppContext {
             Listener listener = listeners.get(i);
             listener.applicationStopped();
         }
+
+        Events events = (Events) getApplicationContext().getBean(Events.NAME);
+        events.publish(new ApplicationContextStoppedEvent(context));
+
         if (context != null && context instanceof ConfigurableApplicationContext) {
             ((ConfigurableApplicationContext) context).close();
         }
