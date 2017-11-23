@@ -75,6 +75,9 @@ public class UserManagementServiceBean implements UserManagementService {
     protected Resources resources;
 
     @Inject
+    protected Scripting scripting;
+
+    @Inject
     protected ServerConfig serverConfig;
 
     @Inject
@@ -217,7 +220,7 @@ public class UserManagementServiceBean implements UserManagementService {
         String resetPasswordBodyTemplate = serverConfig.getResetPasswordEmailBodyTemplate();
         String resetPasswordSubjectTemplate = serverConfig.getResetPasswordEmailSubjectTemplate();
 
-        SimpleTemplateEngine templateEngine = new SimpleTemplateEngine();
+        SimpleTemplateEngine templateEngine = new SimpleTemplateEngine(scripting.getClassLoader());
 
         Map<String, Template> localizedBodyTemplates = new HashMap<>();
         Map<String, Template> localizedSubjectTemplates = new HashMap<>();
