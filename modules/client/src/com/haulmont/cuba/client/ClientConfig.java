@@ -204,7 +204,7 @@ public interface ClientConfig extends Config {
      */
     @Property("cuba.gui.genericFilterControlsLayout")
     @Source(type = SourceType.DATABASE)
-    @Default("[filters_popup] [add_condition] [spacer] [settings | save, save_as, edit, remove, make_default, pin, save_search_folder, save_app_folder] [max_results] [fts_switch]")
+    @Default("[filters_popup] [add_condition] [spacer] [settings | save, save_with_values, save_as, edit, remove, make_default, pin, save_search_folder, save_app_folder] [max_results] [fts_switch]")
     String getGenericFilterControlsLayout();
 
     /**

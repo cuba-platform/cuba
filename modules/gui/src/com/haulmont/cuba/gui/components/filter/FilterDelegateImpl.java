@@ -154,6 +154,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected PopupButton settingsBtn;
     protected Component applyTo;
     protected SaveAction saveAction;
+    protected SaveAction saveWithValuesAction;
     protected TextField ftsSearchCriteriaField;
     protected CheckBox ftsSwitch;
     protected LinkButton addConditionBtn;
@@ -628,6 +629,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         boolean saveAsAppFolderActionEnabled = folderActionsEnabled && !isFolder && !hasCode && userCanEditGlobalAppFolder;
 
         saveAction.setEnabled(saveActionEnabled);
+        saveWithValuesAction.setEnabled(filterSavingPossible && !conditions.toConditionsList().isEmpty());
         saveAsAction.setEnabled(saveAsActionEnabled);
         editAction.setEnabled(editActionEnabled);
         removeAction.setEnabled(removeActionEnabled);
@@ -645,13 +647,15 @@ public class FilterDelegateImpl implements FilterDelegate {
         saveAsSearchFolderAction.setVisible(folderActionsEnabled);
         saveAsAppFolderAction.setVisible(folderActionsEnabled);
         saveAction.setVisible(editable);
+        saveWithValuesAction.setVisible(editable);
         saveAsAction.setVisible(editable);
         editAction.setVisible(editable);
         removeAction.setVisible(editable);
     }
 
     protected void createFilterActions() {
-        saveAction = new SaveAction();
+        saveAction = new SaveAction("save", false, getMainMessage("filter.save"));
+        saveWithValuesAction = new SaveAction("save_with_values", true, getMainMessage("filter.saveWithValues"));
         saveAsAction = new SaveAsAction();
         editAction = new EditAction();
         makeDefaultAction = new MakeDefaultAction();
@@ -972,6 +976,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected void updateFilterModifiedIndicator() {
         boolean filterModified = isFilterModified();
         saveAction.setEnabled(filterSavingPossible && filterModified);
+        saveWithValuesAction.setEnabled(filterSavingPossible);
 
         String currentCaption = groupBoxLayout.getCaption();
         if (StringUtils.isEmpty(currentCaption))
@@ -2094,8 +2099,13 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected class SaveAction extends AbstractAction {
 
-        public SaveAction() {
-            super("save");
+        private final boolean saveWithValues;
+        protected String caption;
+
+        public SaveAction(String id, boolean saveWithValues, String caption) {
+            super(id);
+            this.saveWithValues = saveWithValues;
+            this.caption = caption;
         }
 
         @Override
@@ -2111,12 +2121,18 @@ public class FilterDelegateImpl implements FilterDelegate {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         String filterName = window.getFilterName();
                         filterEntity.setName(filterName);
+
+                        if (saveWithValues) {
+                            conditions.toConditionsList().forEach(condition -> {
+                                condition.getParam().setDefaultValue(condition.getParam().getValue());
+                            });
+                        }
+
                         filterEntity.setXml(filterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
                         saveFilterEntity();
                         initAdHocFilter();
                         initFilterSelectComponents();
                         updateWindowCaption();
-
                         //recreate layout to remove delete conditions buttons
                         initialConditions = conditions.toConditionsList();
                         fillConditionsLayout(ConditionsFocusType.NONE);
@@ -2124,16 +2140,23 @@ public class FilterDelegateImpl implements FilterDelegate {
                     settingsBtn.requestFocus();
                 });
             } else {
+                if (saveWithValues) {
+                    conditions.toConditionsList().forEach(condition -> {
+                        condition.getParam().setDefaultValue(condition.getParam().getValue());
+                    });
+                }
+
                 String xml = filterEntity.getFolder() == null ?  filterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
                         : filterParser.getXml(conditions, Param.ValueProperty.VALUE);
                 filterEntity.setXml(xml);
                 saveFilterEntity();
+                initFilterSelectComponents();
             }
         }
 
         @Override
         public String getCaption() {
-            return getMainMessage("filter.save");
+            return caption;
         }
 
         @Override
@@ -2487,6 +2510,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         protected void initFilterActions() {
             filterActions.put("save", saveAction);
+            filterActions.put("save_with_values", saveWithValuesAction);
             filterActions.put("save_as", saveAsAction);
             filterActions.put("edit", editAction);
             filterActions.put("remove", removeAction);
@@ -2552,6 +2576,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     return controlsLayoutGap;
                 case "pin":
                 case "save":
+                case "save_with_values":
                 case "save_as":
                 case "edit":
                 case "remove":
