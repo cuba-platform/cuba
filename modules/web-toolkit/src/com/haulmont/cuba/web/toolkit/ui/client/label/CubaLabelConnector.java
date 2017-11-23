@@ -23,11 +23,17 @@ import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
 import com.vaadin.client.Profiler;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.Icon;
 import com.vaadin.client.ui.label.LabelConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(value = CubaLabel.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaLabelConnector extends LabelConnector {
+
+    @Override
+    public boolean delegateCaptionHandling() {
+        return false;
+    }
 
     @Override
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
@@ -77,12 +83,21 @@ public class CubaLabelConnector extends LabelConnector {
             getWidget().removeStyleDependentName("empty");
         }
 
+        updateIcon();
+
         Profiler.leave("LabelConnector.onStateChanged update content");
 
         if (sinkOnloads) {
             Profiler.enter("LabelConnector.onStateChanged sinkOnloads");
             WidgetUtil.sinkOnloadForImages(getWidget().getElement());
             Profiler.leave("LabelConnector.onStateChanged sinkOnloads");
+        }
+    }
+
+    protected void updateIcon() {
+        Icon icon = getIcon();
+        if (icon != null) {
+            getWidget().getElement().insertFirst(icon.getElement());
         }
     }
 }

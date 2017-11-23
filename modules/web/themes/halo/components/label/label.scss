@@ -16,9 +16,6 @@
  */
 
 @mixin halo-label($primary-stylename: v-label) {
-  .v-caption-c-label-caption-on-left {
-    font-size: $v-font-size;
-  }
 
   .#{$primary-stylename} {
     word-wrap: break-word;
@@ -94,15 +91,15 @@
     font-family: $v-font-family;
   }
 
-  .v-caption-c-label-caption-on-left {
-    display: inline-block;
-
-    + div:empty {
-      margin-left: 0;
+  .#{$primary-stylename}-icon {
+    .v-icon {
+      margin-right: round($v-unit-size/5);
     }
   }
 
-  .#{$primary-stylename}-c-label-caption-on-left {
-    margin-left: round($v-unit-size/5);
+  .#{$primary-stylename}-icon.#{$primary-stylename}-empty {
+    .v-icon {
+      margin-right: 0;
+    }
   }
 }

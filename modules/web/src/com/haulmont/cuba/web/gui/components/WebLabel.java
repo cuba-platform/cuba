@@ -36,15 +36,12 @@ import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEnumConverter;
 import com.vaadin.shared.ui.label.ContentMode;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
 public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implements Label {
-
-    protected static final String CAPTION_STYLENAME = "c-label-caption-on-left";
 
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
@@ -271,20 +268,5 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
     @Override
     public void setCaption(String caption) {
         // do nothing
-    }
-
-    @Override
-    public void setIcon(String icon) {
-        super.setIcon(icon);
-        if (!StringUtils.isEmpty(icon)) {
-            getComposition().addStyleName(CAPTION_STYLENAME);
-        } else {
-            getComposition().removeStyleName(CAPTION_STYLENAME);
-        }
-    }
-
-    @Override
-    public String getStyleName() {
-        return StringUtils.normalizeSpace(super.getStyleName().replace(CAPTION_STYLENAME, ""));
     }
 }
