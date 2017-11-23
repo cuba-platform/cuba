@@ -2100,7 +2100,6 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected class SaveAction extends AbstractAction {
 
         private final boolean saveWithValues;
-        protected String caption;
 
         public SaveAction(String id, boolean saveWithValues, String caption) {
             super(id);
@@ -2152,11 +2151,6 @@ public class FilterDelegateImpl implements FilterDelegate {
                 saveFilterEntity();
                 initFilterSelectComponents();
             }
-        }
-
-        @Override
-        public String getCaption() {
-            return caption;
         }
 
         @Override
