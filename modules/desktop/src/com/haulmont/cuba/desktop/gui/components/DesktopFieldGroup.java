@@ -209,7 +209,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
 
     @Override
     public void addField(FieldConfig fc, int colIndex) {
-        checkArgument(!fields.containsKey(fc.getId()), "Field is already registered");
+        checkArgument(!fields.containsKey(fc.getId()), "Field '%s' is already registered", fc.getId());
         checkArgument(this == ((FieldConfigImpl) fc).getOwner(), "Field does not belong to this FieldGroup");
 
         if (colIndex < 0 || colIndex >= getColumns()) {
@@ -222,7 +222,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
 
     @Override
     public void addField(FieldConfig fc, int colIndex, int rowIndex) {
-        checkArgument(!fields.containsKey(fc.getId()), "Field is already registered");
+        checkArgument(!fields.containsKey(fc.getId()), "Field '%s' is already registered", fc.getId());
         checkArgument(this == ((FieldConfigImpl) fc).getOwner(), "Field does not belong to this FieldGroup");
 
         if (colIndex < 0 || colIndex >= getColumns()) {
