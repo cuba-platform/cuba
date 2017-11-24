@@ -66,15 +66,20 @@ public class EntityCopyUtils {
                             && srcProperty.getType() == MetaProperty.Type.COMPOSITION) {
                         //noinspection unchecked
                         Collection<Entity> srcCollection = (Collection) value;
-                        Collection<Entity> dstCollection;
-                        if (value instanceof List)
-                            dstCollection = new ArrayList<>();
-                        else
-                            dstCollection = new LinkedHashSet<>();
+
+                        // Copy first to a Set to remove duplicates that could be created on repeated editing newly
+                        // added items
+                        Collection<Entity> tmpCollection = new LinkedHashSet<>();
                         for (Entity item : srcCollection) {
                             Entity copy = copyCompositions(item);
-                            dstCollection.add(copy);
+                            tmpCollection.add(copy);
                         }
+
+                        Collection<Entity> dstCollection;
+                        if (value instanceof List)
+                            dstCollection = new ArrayList<>(tmpCollection);
+                        else
+                            dstCollection = tmpCollection;
                         dest.setValue(name, dstCollection);
 
                     } else {
