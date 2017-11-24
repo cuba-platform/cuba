@@ -426,8 +426,16 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 setItem(null);
             }
 
-            collection.remove(item);
-            detachListener(item);
+            // In case of 2nd-level composition and using List as attribute type, there may be duplicated instances
+            // after repeated editing of newly added item. So remove them all.
+            Iterator<T> iterator = collection.iterator();
+            while (iterator.hasNext()) {
+                T entity = iterator.next();
+                if (entity.equals(item)) {
+                    detachListener(entity);
+                    iterator.remove();
+                }
+            }
 
             modified = true;
             if (cascadeProperty) {
