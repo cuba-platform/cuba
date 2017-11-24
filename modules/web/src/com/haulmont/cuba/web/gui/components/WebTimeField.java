@@ -47,7 +47,6 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
 
     protected String placeholder;
     protected String timeFormat;
-
     protected DateField.Resolution resolution;
 
     public WebTimeField() {
@@ -181,7 +180,8 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
         Object value = super.getValue();
         if (value instanceof String) {
             try {
-                return new SimpleDateFormat(timeFormat).parse((String) value);
+                SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
+                return sdf.parse((String) value);
             } catch (ParseException e) {
                 LoggerFactory.getLogger(WebTimeField.class)
                         .debug("Unable to parse value of component {}\n{}", getId(), e.getMessage());
@@ -196,10 +196,10 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
     public void setValue(Object value) {
         Preconditions.checkArgument(value == null || value instanceof Date, "Value must be an instance of Date");
         if (value != null) {
-            SimpleDateFormat format = new SimpleDateFormat(this.timeFormat);
-            format.setLenient(false);
+            SimpleDateFormat sdf = new SimpleDateFormat(this.timeFormat);
+            sdf.setLenient(false);
 
-            super.setValue(format.format(value));
+            super.setValue(sdf.format(value));
         } else {
             super.setValue(null);
         }
@@ -283,7 +283,8 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
                     public String getFormattedValue() {
                         Object value = this.getValue();
                         if (value instanceof Date) {
-                            return new SimpleDateFormat(timeFormat).format(value);
+                            SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
+                            return sdf.format(value);
                         }
 
                         return super.getFormattedValue();
@@ -296,8 +297,9 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
                                 try {
                                     SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
                                     Date date = sdf.parse((String) newValue);
-                                    if (component.getComponentError() != null)
+                                    if (component.getComponentError() != null) {
                                         component.setComponentError(null);
+                                    }
                                     return date;
                                 } catch (Exception e) {
                                     LoggerFactory.getLogger(WebTimeField.class).debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());

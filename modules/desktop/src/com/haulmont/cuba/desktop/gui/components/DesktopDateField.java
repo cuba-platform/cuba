@@ -72,7 +72,6 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
     protected TimeZone timeZone;
     protected UserSession userSession;
-    protected TimeZones timeZones = AppBeans.get(TimeZones.NAME);
 
     protected Datasource.ItemChangeListener itemChangeListener;
     protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
@@ -166,7 +165,12 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
             timeField.setResolution(resolution);
             // while changing resolution, timeField loses its value, so we need to set it again
             updateTimeFieldResolution = true;
-            timeField.setValue(datePicker.getDate());
+            Date value = datePicker.getDate();
+            if (value == null) {
+                timeField.setValue(null);
+            } else {
+                timeField.setValue(extractTime(value));
+            }
             updateTimeFieldResolution = false;
         }
     }
@@ -219,33 +223,35 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     @Override
     public void setTimeZone(TimeZone timeZone) {
         TimeZone prevTimeZone = this.timeZone;
+        if (prevTimeZone == null && timeZone == null) {
+            return;
+        }
         Date value = getValue();
         this.timeZone = timeZone;
+        datePicker.setTimeZone(timeZone);
         if (value != null && !ObjectUtils.equals(prevTimeZone, timeZone)) {
-            Date newValue = timeZones.convert(value,
-                    TimeZone.getDefault(), timeZone != null ? timeZone : TimeZone.getDefault());
-            updateComponent(newValue);
+            updateComponent(value);
         }
     }
 
     @Override
     public void setRangeStart(Date value) {
-        startDate = toUserDate(value);
+        startDate = value;
     }
 
     @Override
     public Date getRangeStart() {
-        return toServerDate(startDate);
+        return startDate;
     }
 
     @Override
     public void setRangeEnd(Date value) {
-        endDate = toUserDate(value);
+        endDate = value;
     }
 
     @Override
     public Date getRangeEnd() {
-        return toServerDate(endDate);
+        return endDate;
     }
 
     protected boolean checkRange(Date value) {
@@ -279,7 +285,11 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         updatingInstance = true;
         try {
             datePicker.setDate((Date) prevValue);
-            timeField.setValue((Date) prevValue);
+            if (prevValue == null) {
+                timeField.setValue(null);
+            } else {
+                timeField.setValue(extractTime((Date) prevValue));
+            }
         } finally {
             updatingInstance = false;
         }
@@ -310,17 +320,9 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
             Date targetDate = (Date) value;
 
             updateInstance(targetDate);
-            updateComponent(toUserDate((Date) value));
+            updateComponent((Date) value);
             fireChangeListeners(value);
         }
-    }
-
-    protected Date toUserDate(Date date) {
-        return timeZone == null ? date : timeZones.convert(date, TimeZone.getDefault(), timeZone);
-    }
-
-    protected Date toServerDate(Date date) {
-        return timeZone == null ? date : timeZones.convert(date, timeZone, TimeZone.getDefault());
     }
 
     @Override
@@ -377,7 +379,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
                 return;
             }
             Date value = getEntityValue(e.getItem());
-            updateComponent(toUserDate(value));
+            updateComponent(value);
             fireChangeListeners(value);
         };
         //noinspection unchecked
@@ -388,7 +390,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
                 return;
             }
             if (e.getProperty().equals(metaPropertyPath.toString())) {
-                updateComponent(toUserDate((Date) e.getValue()));
+                updateComponent((Date) e.getValue());
                 fireChangeListeners(e.getValue());
             }
         };
@@ -398,7 +400,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {
                 Date value = getEntityValue(datasource.getItem());
-                updateComponent(toUserDate(value));
+                updateComponent(value);
                 fireChangeListeners(value);
             }
         }
@@ -489,7 +491,11 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
     protected void setDateParts(Date value) {
         datePicker.setDate(value);
-        timeField.setValueInternal(value);
+        if (value == null) {
+            timeField.setValueInternal(null);
+        } else {
+            timeField.setValueInternal(extractTime(value));
+        }
     }
 
     @Override
@@ -597,24 +603,43 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
             return null;
         }
 
-        Calendar c = Calendar.getInstance(userSession.getLocale());
-        c.setTime(datePickerDate);
+        Calendar dateCalendar = Calendar.getInstance(userSession.getLocale());
+        if (timeZone != null) {
+            dateCalendar.setTimeZone(timeZone);
+        }
+        dateCalendar.setTime(datePickerDate);
         if (timeField.getValue() == null) {
-            c.set(Calendar.HOUR_OF_DAY, 0);
-            c.set(Calendar.MINUTE, 0);
-            c.set(Calendar.SECOND, 0);
+            dateCalendar.set(Calendar.HOUR_OF_DAY, 0);
+            dateCalendar.set(Calendar.MINUTE, 0);
+            dateCalendar.set(Calendar.SECOND, 0);
         } else {
-            Calendar c2 = Calendar.getInstance(userSession.getLocale());
-            c2.setTime(timeField.<Date>getValue());
+            Calendar timeCalendar = Calendar.getInstance(userSession.getLocale());
+            timeCalendar.setTime(timeField.<Date>getValue());
 
-            c.set(Calendar.HOUR_OF_DAY, c2.get(Calendar.HOUR_OF_DAY));
-            c.set(Calendar.MINUTE, c2.get(Calendar.MINUTE));
-            c.set(Calendar.SECOND, c2.get(Calendar.SECOND));
+            dateCalendar.set(Calendar.HOUR_OF_DAY, timeCalendar.get(Calendar.HOUR_OF_DAY));
+            dateCalendar.set(Calendar.MINUTE, timeCalendar.get(Calendar.MINUTE));
+            dateCalendar.set(Calendar.SECOND, timeCalendar.get(Calendar.SECOND));
         }
 
         //noinspection UnnecessaryLocalVariable
-        Date serverDate = toServerDate(c.getTime());
-        return serverDate;
+        return dateCalendar.getTime();
+    }
+
+    protected Date extractTime(Date date) {
+        Calendar dateCalendar = Calendar.getInstance(userSession.getLocale());
+        if (timeZone != null) {
+            dateCalendar.setTimeZone(timeZone);
+        }
+        dateCalendar.setTime(date);
+
+        Calendar timeCalendar = Calendar.getInstance(userSession.getLocale());
+        timeCalendar.setTimeInMillis(0);
+
+        timeCalendar.set(Calendar.HOUR_OF_DAY, dateCalendar.get(Calendar.HOUR_OF_DAY));
+        timeCalendar.set(Calendar.MINUTE, dateCalendar.get(Calendar.MINUTE));
+        timeCalendar.set(Calendar.SECOND, dateCalendar.get(Calendar.SECOND));
+
+        return timeCalendar.getTime();
     }
 
     protected boolean isHourUsed() {

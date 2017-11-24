@@ -65,8 +65,6 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
     protected UserSession userSession;
 
-    protected TimeZones timeZones = AppBeans.get(TimeZones.NAME);
-
     protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
     protected WeakItemPropertyChangeListener weakItemPropertyChangeListener;
 
@@ -154,22 +152,22 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
     @Override
     public void setRangeStart(Date value) {
-        dateField.setRangeStart(toUserDate(value));
+        dateField.setRangeStart(value);
     }
 
     @Override
     public Date getRangeStart() {
-        return toServerDate(dateField.getRangeStart());
+        return dateField.getRangeStart();
     }
 
     @Override
     public void setRangeEnd(Date value) {
-        dateField.setRangeEnd(toUserDate(value));
+        dateField.setRangeEnd(value);
     }
 
     @Override
     public Date getRangeEnd() {
-        return toServerDate(dateField.getRangeEnd());
+        return dateField.getRangeEnd();
     }
 
     protected boolean checkRange(Date value) {
@@ -204,7 +202,11 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         updatingInstance = true;
         try {
             dateField.setValue((Date) prevValue);
-            timeField.setValue((Date) prevValue);
+            if (prevValue == null) {
+                timeField.setValue(null);
+            } else {
+                timeField.setValue(extractTime((Date) prevValue));
+            }
         } finally {
             updatingInstance = false;
         }
@@ -245,10 +247,9 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         TimeZone prevTimeZone = this.timeZone;
         Date value = getValue();
         this.timeZone = timeZone;
+        dateField.setTimeZone(timeZone);
         if (value != null && !ObjectUtils.equals(prevTimeZone, timeZone)) {
-            Date newValue = timeZones.convert(value,
-                    TimeZone.getDefault(), timeZone != null ? timeZone : TimeZone.getDefault());
-            setValueToFields(newValue);
+            setValueToFields(value);
         }
     }
 
@@ -287,7 +288,12 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             timeField.setResolution(resolution);
             // while changing resolution, timeField loses its value, so we need to set it again
             updateTimeFieldResolution = true;
-            timeField.setValue(dateField.getValue());
+            Date value = dateField.getValue();
+            if (value == null) {
+                timeField.setValue(null);
+            } else {
+                timeField.setValue(extractTime(value));
+            }
             updateTimeFieldResolution = false;
         } else {
             dateField.setResolution(WebComponentsHelper.convertDateFieldResolution(resolution));
@@ -302,7 +308,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
     @Override
     public void setValue(Object value) {
-        setValueToFields(toUserDate((Date) value));
+        setValueToFields((Date) value);
         updateInstance();
     }
 
@@ -334,7 +340,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     public void discard() {
         if (datasource != null && datasource.getItem() != null) {
             Date value = getEntityValue(datasource.getItem());
-            setValueToFields(toUserDate(value));
+            setValueToFields(value);
             fireValueChanged(value);
         }
     }
@@ -358,20 +364,15 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         dateField.setModified(modified);
     }
 
-    protected Date toUserDate(Date date) {
-        return timeZone == null ? date : timeZones.convert(date, TimeZone.getDefault(), timeZone);
-    }
-
-    protected Date toServerDate(Date date) {
-        return timeZone == null ? date : timeZones.convert(date, timeZone, TimeZone.getDefault());
-    }
-
     protected void setValueToFields(Date value) {
         updatingInstance = true;
         try {
             dateField.setValueIgnoreReadOnly(value);
-
-            timeField.setValue(value);
+            if (value == null) {
+                timeField.setValue(null);
+            } else {
+                timeField.setValue(extractTime(value));
+            }
         } finally {
             updatingInstance = false;
         }
@@ -480,6 +481,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
                 Object ignoreUserTimeZone = metaProperty.getAnnotations().get(IgnoreUserTimeZone.class.getName());
                 if (!Boolean.TRUE.equals(ignoreUserTimeZone)) {
                     timeZone = userSession.getTimeZone();
+                    dateField.setTimeZone(timeZone);
                 }
             }
 
@@ -488,7 +490,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
                     return;
                 }
                 Date value = getEntityValue(e.getItem());
-                setValueToFields(toUserDate(value));
+                setValueToFields(value);
                 fireValueChanged(value);
             };
             weakItemChangeListener = new WeakItemChangeListener(datasource, itemChangeListener);
@@ -500,7 +502,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
                     return;
                 }
                 if (!isBuffered() && e.getProperty().equals(metaPropertyPath.toString())) {
-                    setValueToFields(toUserDate((Date) e.getValue()));
+                    setValueToFields((Date) e.getValue());
                     fireValueChanged(e.getValue());
                 }
             };
@@ -512,7 +514,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
                 if (property.equals(metaPropertyPath.toString())) {
                     Date value = getEntityValue(datasource.getItem());
-                    setValueToFields(toUserDate(value));
+                    setValueToFields(value);
                     fireValueChanged(value);
                 }
             }
@@ -596,42 +598,61 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         }
     }
 
-    // Returns date value in server time zone
     protected Date constructDate() {
         final Date datePickerDate = dateField.getValue();
         if (datePickerDate == null) {
             return null;
         }
 
-        Calendar c = Calendar.getInstance(userSession.getLocale());
-        c.setTime(datePickerDate);
+        Calendar dateCalendar = Calendar.getInstance(userSession.getLocale());
+        if (timeZone != null) {
+            dateCalendar.setTimeZone(timeZone);
+        }
+        dateCalendar.setTime(datePickerDate);
         if (timeField.getValue() == null) {
-            c.set(Calendar.HOUR_OF_DAY, 0);
-            c.set(Calendar.MINUTE, 0);
-            c.set(Calendar.SECOND, 0);
+            dateCalendar.set(Calendar.HOUR_OF_DAY, 0);
+            dateCalendar.set(Calendar.MINUTE, 0);
+            dateCalendar.set(Calendar.SECOND, 0);
         } else {
-            Calendar c2 = Calendar.getInstance(userSession.getLocale());
-            c2.setTime(timeField.<Date>getValue());
+            Calendar timeCalendar = Calendar.getInstance(userSession.getLocale());
+            timeCalendar.setTime(timeField.<Date>getValue());
 
-            c.set(Calendar.HOUR_OF_DAY, c2.get(Calendar.HOUR_OF_DAY));
-            c.set(Calendar.MINUTE, c2.get(Calendar.MINUTE));
-            c.set(Calendar.SECOND, c2.get(Calendar.SECOND));
+            dateCalendar.set(Calendar.HOUR_OF_DAY, timeCalendar.get(Calendar.HOUR_OF_DAY));
+            dateCalendar.set(Calendar.MINUTE, timeCalendar.get(Calendar.MINUTE));
+            dateCalendar.set(Calendar.SECOND, timeCalendar.get(Calendar.SECOND));
         }
 
-        Date serverDate = toServerDate(c.getTime());
+        Date resultDate = dateCalendar.getTime();
 
         if (metaProperty != null) {
             Class javaClass = metaProperty.getRange().asDatatype().getJavaClass();
             if (javaClass.equals(java.sql.Date.class)) {
-                return new java.sql.Date(serverDate.getTime());
+                return new java.sql.Date(resultDate.getTime());
             } else if (javaClass.equals(Time.class)) {
-                return new Time(serverDate.getTime());
+                return new Time(resultDate.getTime());
             } else {
-                return serverDate;
+                return resultDate;
             }
         } else {
-            return serverDate;
+            return resultDate;
         }
+    }
+
+    protected Date extractTime(Date date) {
+        Calendar dateCalendar = Calendar.getInstance(userSession.getLocale());
+        if (timeZone != null) {
+            dateCalendar.setTimeZone(timeZone);
+        }
+        dateCalendar.setTime(date);
+
+        Calendar timeCalendar = Calendar.getInstance(userSession.getLocale());
+        timeCalendar.setTimeInMillis(0);
+
+        timeCalendar.set(Calendar.HOUR_OF_DAY, dateCalendar.get(Calendar.HOUR_OF_DAY));
+        timeCalendar.set(Calendar.MINUTE, dateCalendar.get(Calendar.MINUTE));
+        timeCalendar.set(Calendar.SECOND, dateCalendar.get(Calendar.SECOND));
+
+        return timeCalendar.getTime();
     }
 
     @Override

@@ -17,7 +17,9 @@
 
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.TimeZoneAwareDatatype;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -41,9 +43,6 @@ public class DatatypeFormatter {
     @Inject
     protected UserSessionSource uss;
 
-    @Inject
-    protected TimeZones timeZones;
-
     /**
      * Format Date (date without time) using {@code dateFormat} string specified in the main message pack.
      * @return string representation or empty string if the value is null
@@ -66,11 +65,12 @@ public class DatatypeFormatter {
      * @return string representation or empty string if the value is null
      */
     public String formatDateTime(@Nullable Date value) {
-        TimeZone tz = uss.getUserSession().getTimeZone();
-        if (tz != null)
-            value = timeZones.convert(value, TimeZone.getDefault(), tz);
-
-        return Datatypes.getNN(Date.class).format(value, uss.getLocale());
+        TimeZone timeZone = uss.getUserSession().getTimeZone();
+        Datatype<Date> datatype = Datatypes.getNN(Date.class);
+        if (datatype instanceof TimeZoneAwareDatatype) {
+            return ((TimeZoneAwareDatatype) datatype).format(value, uss.getLocale(), timeZone);
+        }
+        return datatype.format(value, uss.getLocale());
     }
 
     /**
@@ -138,13 +138,12 @@ public class DatatypeFormatter {
      */
     @Nullable
     public Date parseDateTime(String str) throws ParseException {
-        Date date = Datatypes.getNN(Date.class).parse(str, uss.getLocale());
-
-        TimeZone tz = uss.getUserSession().getTimeZone();
-        if (tz != null)
-            date = timeZones.convert(date, tz, TimeZone.getDefault());
-
-        return date;
+        TimeZone timeZone = uss.getUserSession().getTimeZone();
+        Datatype<Date> datatype = Datatypes.getNN(Date.class);
+        if (datatype instanceof TimeZoneAwareDatatype) {
+            return (Date)((TimeZoneAwareDatatype) datatype).parse(str, uss.getLocale(), timeZone);
+        }
+        return datatype.parse(str, uss.getLocale());
     }
 
     /**

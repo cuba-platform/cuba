@@ -19,23 +19,22 @@ package com.haulmont.chile.core.datatypes.impl;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.annotations.JavaClass;
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.FormatStrings;
-import com.haulmont.chile.core.datatypes.FormatStringsRegistry;
-import com.haulmont.chile.core.datatypes.ParameterizedDatatype;
+import com.haulmont.chile.core.datatypes.*;
 import com.haulmont.cuba.core.global.AppBeans;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 @JavaClass(Date.class)
-public class DateTimeDatatype implements Datatype<Date>, ParameterizedDatatype {
+public class DateTimeDatatype implements Datatype<Date>, ParameterizedDatatype, TimeZoneAwareDatatype<Date> {
 
     private String formatPattern;
 
@@ -60,6 +59,11 @@ public class DateTimeDatatype implements Datatype<Date>, ParameterizedDatatype {
 
     @Override
     public String format(Object value, Locale locale) {
+        return format(value, locale, null);
+    }
+
+    @Override
+    public String format(@Nullable Object value, Locale locale, TimeZone timeZone) {
         if (value == null) {
             return "";
         }
@@ -70,6 +74,10 @@ public class DateTimeDatatype implements Datatype<Date>, ParameterizedDatatype {
         }
 
         DateFormat format = new SimpleDateFormat(formatStrings.getDateTimeFormat());
+        if (timeZone != null) {
+            format.setTimeZone(timeZone);
+        }
+
         return format.format(value);
     }
 
@@ -90,6 +98,12 @@ public class DateTimeDatatype implements Datatype<Date>, ParameterizedDatatype {
 
     @Override
     public Date parse(String value, Locale locale) throws ParseException {
+        return parse(value, locale, null);
+    }
+
+    @Nullable
+    @Override
+    public Date parse(@Nullable String value, Locale locale, TimeZone timeZone) throws ParseException {
         if (StringUtils.isBlank(value)) {
             return null;
         }
@@ -100,9 +114,13 @@ public class DateTimeDatatype implements Datatype<Date>, ParameterizedDatatype {
         }
 
         DateFormat format = new SimpleDateFormat(formatStrings.getDateTimeFormat());
+
+        if (timeZone != null) {
+            format.setTimeZone(timeZone);
+        }
+
         return format.parse(value.trim());
     }
-
 
     @Override
     public Map<String, Object> getParameters() {

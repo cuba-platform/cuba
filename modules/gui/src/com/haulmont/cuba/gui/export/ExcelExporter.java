@@ -20,6 +20,7 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
@@ -36,10 +37,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.util.LocaleUtil;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
-import javax.persistence.TemporalType;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
@@ -84,8 +85,6 @@ public class ExcelExporter {
 
     private final UserSessionSource userSessionSource;
 
-    private final TimeZones timeZones;
-
     public enum ExportMode {
         SELECTED_ROWS,
         ALL_ROWS
@@ -94,7 +93,6 @@ public class ExcelExporter {
     public ExcelExporter() {
         messages = AppBeans.get(Messages.NAME);
         userSessionSource = AppBeans.get(UserSessionSource.NAME);
-        timeZones = AppBeans.get(TimeZones.NAME);
 
         trueStr = messages.getMessage(getClass(), "excelExporter.true");
         falseStr = messages.getMessage(getClass(), "excelExporter.false");
@@ -607,41 +605,43 @@ public class ExcelExporter {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (cellValue instanceof Date) {
-            TemporalType temporalType = null;
-            Boolean ignoreUserTimeZone = null;
-
+            Class javaClass = null;
+            boolean supportTimezones = false;
+            TimeZone timeZone = userSessionSource.getUserSession().getTimeZone();
             if (metaPropertyPath != null) {
-                Map<String, Object> annotations = metaPropertyPath.getMetaProperty().getAnnotations();
-                temporalType = (TemporalType) annotations.get(MetadataTools.TEMPORAL_ANN_NAME);
-                ignoreUserTimeZone = (Boolean) annotations.get(IgnoreUserTimeZone.class.getName());
-            }
-
-            TimeZone userTimeZone = userSessionSource.getUserSession().getTimeZone();
-            Date date;
-            if (userTimeZone != null && temporalType != null && temporalType == TemporalType.TIMESTAMP
-                    && (ignoreUserTimeZone == null || Boolean.FALSE.equals(ignoreUserTimeZone))) {
-                date = timeZones.convert((Date) cellValue, TimeZone.getDefault(), userTimeZone);
-            } else {
-                date = (Date) cellValue;
-            }
-
-            cell.setCellValue(date);
-
-            if (temporalType != null) {
-                switch (temporalType) {
-                    case DATE:
-                        cell.setCellStyle(dateFormatCellStyle);
-                        break;
-                    case TIME:
-                        cell.setCellStyle(timeFormatCellStyle);
-                        break;
-                    case TIMESTAMP:
-                        cell.setCellStyle(dateTimeFormatCellStyle);
+                MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
+                if (metaProperty.getRange().isDatatype()) {
+                    javaClass = metaProperty.getRange().asDatatype().getJavaClass();
                 }
+                Boolean ignoreUserTimeZone = (Boolean) metaProperty.getAnnotations().get(IgnoreUserTimeZone.class.getName());
+                supportTimezones = timeZone != null
+                        && Objects.equals(Date.class, javaClass)
+                        && !Boolean.TRUE.equals(ignoreUserTimeZone);
+            }
+            Date date = (Date) cellValue;
+            if (supportTimezones) {
+                TimeZone currentTimeZone = LocaleUtil.getUserTimeZone();
+                try {
+                    LocaleUtil.setUserTimeZone(timeZone);
+                    cell.setCellValue(date);
+                } finally {
+                    if (Objects.equals(currentTimeZone, TimeZone.getDefault())) {
+                        LocaleUtil.resetUserTimeZone();
+                    } else {
+                        LocaleUtil.setUserTimeZone(currentTimeZone);
+                    }
+                }
+            } else {
+                cell.setCellValue(date);
+            }
+
+            if (Objects.equals(java.sql.Time.class, javaClass)) {
+                cell.setCellStyle(timeFormatCellStyle);
+            } else if (Objects.equals(java.sql.Date.class, javaClass)) {
+                cell.setCellStyle(dateFormatCellStyle);
             } else {
                 cell.setCellStyle(dateTimeFormatCellStyle);
             }
-
             if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
                 String str = Datatypes.getNN(Date.class).format(date);
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
