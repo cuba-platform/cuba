@@ -59,6 +59,7 @@ public class EditorWindowDelegate extends WindowDelegate {
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
     protected LockService lockService = AppBeans.get(LockService.NAME);
     protected Configuration configuration = AppBeans.get(Configuration.NAME);
+    protected EntityStates entityStates = AppBeans.get(EntityStates.NAME);
 
     public EditorWindowDelegate(Window window) {
         super(window);
@@ -151,7 +152,8 @@ public class EditorWindowDelegate extends WindowDelegate {
             if (!PersistenceHelper.isNew(item)
                     && !parentDs.getItemsToCreate().contains(item) && !parentDs.getItemsToUpdate().contains(item)
                     && parentDs instanceof CollectionDatasource
-                    && ((CollectionDatasource) parentDs).containsItem(item.getId())) {
+                    && ((CollectionDatasource) parentDs).containsItem(item.getId())
+                    && !entityStates.isLoadedWithView(item, ds.getView())) {
                 item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), ds.getLoadDynamicAttributes());
                 if (parentDs instanceof CollectionPropertyDatasourceImpl) {
                     ((CollectionPropertyDatasourceImpl) parentDs).replaceItem(item);
