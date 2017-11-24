@@ -18,13 +18,17 @@ package com.haulmont.cuba.gui.components.listeditor;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.TimeZoneAwareDatatype;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.ListEditor;
+import com.haulmont.cuba.security.global.UserSession;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.TimeZone;
 
 import static com.haulmont.cuba.gui.components.ListEditor.ItemType.*;
 
@@ -32,7 +36,7 @@ import static com.haulmont.cuba.gui.components.ListEditor.ItemType.*;
  */
 public class ListEditorHelper {
 
-    public static String getValueCaption(Object v, ListEditor.ItemType itemType) {
+    public static String getValueCaption(Object v, ListEditor.ItemType itemType, TimeZone timeZone) {
         if (v == null)
             return null;
         switch (itemType) {
@@ -46,7 +50,13 @@ public class ListEditorHelper {
             case DATE:
                 return Datatypes.getNN(java.sql.Date.class).format(v);
             case DATETIME:
-                return Datatypes.getNN(Date.class).format(v);
+                UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+                UserSession userSession = userSessionSource.getUserSession();
+                if (timeZone != null) {
+                    return ((TimeZoneAwareDatatype)Datatypes.getNN(Date.class)).format(v, userSession.getLocale(), timeZone);
+                } else {
+                    return Datatypes.getNN(Date.class).format(v, userSession.getLocale());
+                }
             case INTEGER:
                 return Datatypes.getNN(Integer.class).format(v);
             case LONG:

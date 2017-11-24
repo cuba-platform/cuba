@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.components.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.function.Supplier;
 
 /**
@@ -82,4 +83,7 @@ public interface ListEditorDelegate {
 
     void setEditorParamsSupplier(Supplier<Map<String, Object>> paramsSupplier);
     Supplier<Map<String, Object>> getEditorParamsSupplier();
+
+    void setTimeZone(TimeZone timeZone);
+    TimeZone getTimeZone();
 }

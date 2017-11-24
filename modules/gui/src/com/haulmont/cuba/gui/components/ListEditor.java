@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.function.Supplier;
 
 /**
@@ -108,6 +109,14 @@ public interface ListEditor extends Field, Component.Focusable {
     void setEditorParamsSupplier(Supplier<Map<String, Object>> paramsSupplier);
 
     Supplier<Map<String, Object>> getEditorParamsSupplier();
+
+    /**
+     *
+     * @param timeZone - for DateTime fields and date formatting
+     */
+    void setTimeZone(TimeZone timeZone);
+
+    TimeZone getTimeZone();
 
     enum ItemType {
         STRING,

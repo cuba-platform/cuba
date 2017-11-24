@@ -27,6 +27,7 @@ import org.apache.commons.lang.ObjectUtils;
 import javax.swing.*;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.function.Supplier;
 
 public class DesktopListEditor extends DesktopAbstractField<JPanel> implements ListEditor {
@@ -227,5 +228,15 @@ public class DesktopListEditor extends DesktopAbstractField<JPanel> implements L
     @Override
     public Supplier<Map<String, Object>> getEditorParamsSupplier() {
         return null;
+    }
+
+    @Override
+    public void setTimeZone(TimeZone timeZone) {
+        delegate.setTimeZone(timeZone);
+    }
+
+    @Override
+    public TimeZone getTimeZone() {
+        return delegate.getTimeZone();
     }
 }

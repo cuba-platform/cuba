@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.entity.annotation.Lookup;
 import com.haulmont.cuba.core.entity.annotation.LookupType;
 import com.haulmont.cuba.core.global.*;
@@ -46,6 +47,7 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -573,17 +575,26 @@ public class Param {
     }
 
     protected Component createDateField(Class javaClass, final ValueProperty valueProperty) {
+        UserSession userSession = userSessionSource.getUserSession();
+        boolean supportTimezones = false;
+        boolean dateOnly = false;
+        if (property != null) {
+            TemporalType tt = (TemporalType) property.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
+            dateOnly = (tt == TemporalType.DATE);
+            Object ignoreUserTimeZone = property.getAnnotations().get(IgnoreUserTimeZone.class.getName());
+            supportTimezones = !dateOnly && !Boolean.TRUE.equals(ignoreUserTimeZone);
+        } else if (javaClass.equals(java.sql.Date.class)) {
+            dateOnly = true;
+        } else {
+            supportTimezones = true;
+        }
         if (inExpr) {
-            if (property != null) {
-                TemporalType tt = (TemporalType) property.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
-                if (tt == TemporalType.DATE) {
-                    javaClass = java.sql.Date.class;
-                }
-            }
-
             ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
-            ListEditor.ItemType itemType = java.sql.Date.class.equals(javaClass) ? ListEditor.ItemType.DATE : ListEditor.ItemType.DATETIME;
+            ListEditor.ItemType itemType = dateOnly ? ListEditor.ItemType.DATE : ListEditor.ItemType.DATETIME;
             listEditor.setItemType(itemType);
+            if (userSession.getTimeZone() != null && supportTimezones) {
+                listEditor.setTimeZone(userSession.getTimeZone());
+            }
             initListEditor(listEditor, valueProperty);
             return listEditor;
         }
@@ -592,15 +603,7 @@ public class Param {
 
         DateField.Resolution resolution;
         String formatStr;
-        boolean dateOnly = false;
-        if (property != null) {
-            TemporalType tt = (TemporalType) property.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
-            dateOnly = (tt == TemporalType.DATE);
-        } else if (javaClass.equals(java.sql.Date.class)) {
-            dateOnly = true;
-        }
         Messages messages = AppBeans.get(Messages.NAME);
-
         if (dateOnly) {
             resolution = com.haulmont.cuba.gui.components.DateField.Resolution.DAY;
             formatStr = messages.getMainMessage("dateFormat");
@@ -610,6 +613,9 @@ public class Param {
         }
         dateField.setResolution(resolution);
         dateField.setDateFormat(formatStr);
+        if (userSession.getTimeZone() != null && supportTimezones) {
+            dateField.setTimeZone(userSession.getTimeZone());
+        }
 
         dateField.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
 

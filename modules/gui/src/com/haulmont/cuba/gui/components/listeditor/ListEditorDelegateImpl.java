@@ -64,6 +64,7 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
     protected String entityJoinClause;
     protected String entityWhereClause;
     protected Class<? extends Enum> enumClass;
+    protected TimeZone timeZone;
 
     protected TextField displayValuesField;
     protected HBoxLayout layout;
@@ -106,6 +107,7 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
                 params.put("entityWhereClause", entityWhereClause);
                 params.put("values", getValue());
                 params.put("editable", editable);
+                params.put("timeZone", timeZone);
 
                 if (editorParamsSupplier != null) {
                     Map<String, Object> additionalParams = getEditorParamsSupplier().get();
@@ -173,7 +175,7 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
                 }
             } else {
                 captions = ((List<Object>) newValue).stream()
-                        .map(o -> ListEditorHelper.getValueCaption(o, itemType))
+                        .map(o -> ListEditorHelper.getValueCaption(o, itemType, timeZone))
                         .collect(Collectors.toList());
             }
             strValue = Joiner.on(", ").join(captions);
@@ -358,5 +360,15 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
     @Override
     public Supplier<Map<String, Object>> getEditorParamsSupplier() {
         return editorParamsSupplier;
+    }
+
+    @Override
+    public void setTimeZone(TimeZone timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    @Override
+    public TimeZone getTimeZone() {
+        return timeZone;
     }
 }

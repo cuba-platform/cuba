@@ -89,6 +89,9 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
     @WindowParam
     protected Boolean editable;
 
+    @WindowParam
+    protected TimeZone timeZone;
+
     @Inject
     protected Metadata metadata;
 
@@ -138,7 +141,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
         }
 
         valuesMap = values.stream()
-                .collect(Collectors.toMap(Function.identity(), o -> ListEditorHelper.getValueCaption(o, itemType)));
+                .collect(Collectors.toMap(Function.identity(), o -> ListEditorHelper.getValueCaption(o, itemType, timeZone)));
 
         for (Map.Entry<Object, String> entry : valuesMap.entrySet()) {
             addValueToLayout(entry.getKey(), entry.getValue());
@@ -224,7 +227,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
         if (value != null) {
             componentForAdding.setValue(null);
             if (!valueExists(value)) {
-                addValueToLayout(value, ListEditorHelper.getValueCaption(value, itemType));
+                addValueToLayout(value, ListEditorHelper.getValueCaption(value, itemType, timeZone));
             }
         }
     }
@@ -284,7 +287,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
         componentForEntity.addValueChangeListener(e -> {
             Entity selectedEntity = (Entity) e.getValue();
             if (selectedEntity != null && !valueExists(selectedEntity)) {
-                this.addValueToLayout(selectedEntity, ListEditorHelper.getValueCaption(selectedEntity, itemType));
+                this.addValueToLayout(selectedEntity, ListEditorHelper.getValueCaption(selectedEntity, itemType, timeZone));
             }
             componentForEntity.setValue(null);
         });
@@ -294,6 +297,9 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
     protected DateField createComponentForDate(DateField.Resolution resolution) {
         DateField dateField = componentsFactory.createComponent(DateField.class);
         dateField.setResolution(resolution);
+        if (timeZone != null) {
+            dateField.setTimeZone(timeZone);
+        }
         return dateField;
     }
 
@@ -302,7 +308,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
         lookupField.addValueChangeListener(e -> {
             Object selectedValue = e.getValue();
             if (selectedValue != null) {
-                this.addValueToLayout(selectedValue, ListEditorHelper.getValueCaption(selectedValue, itemType));
+                this.addValueToLayout(selectedValue, ListEditorHelper.getValueCaption(selectedValue, itemType, timeZone));
             }
             lookupField.setValue(null);
         });

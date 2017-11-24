@@ -121,7 +121,7 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
         }
 
         valuesMap = values.stream()
-                .collect(Collectors.toMap(Function.identity(), o -> ListEditorHelper.getValueCaption(o, ListEditor.ItemType.STRING)));
+                .collect(Collectors.toMap(Function.identity(), o -> ListEditorHelper.getValueCaption(o, ListEditor.ItemType.STRING, null)));
 
         if (!valuesMap.isEmpty()) {
             Map<String, String> localizedValues = LocaleHelper.getLocalizedValuesMap(enumerationLocales);
@@ -180,7 +180,7 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
             if (!valueExists(value)) {
                 valueField.setValue(null);
                 addValueToDatasource(value, null);
-                valuesMap.put(value, ListEditorHelper.getValueCaption(value, ListEditor.ItemType.STRING));
+                valuesMap.put(value, ListEditorHelper.getValueCaption(value, ListEditor.ItemType.STRING, null));
             }
         }
     }
