@@ -17,6 +17,7 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.MetaClass;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -24,6 +25,7 @@ import java.util.UUID;
 
 @Embeddable
 @MetaClass(name = "sys$ReferenceToEntity")
+@SystemLevel
 public class ReferenceToEntity extends EmbeddableEntity {
     private static final long serialVersionUID = -3667689055952380345L;
 
