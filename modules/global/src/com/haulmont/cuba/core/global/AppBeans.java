@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
@@ -41,6 +42,8 @@ public class AppBeans {
      * @return an instance of the single bean matching the required type
      */
     public static <T> T get(Class<T> beanType) {
+        ApplicationContext applicationContext = getApplicationContext();
+
         String name = null;
         Optional<String> optName = names.get(beanType);
         if (optName == null) {
@@ -56,9 +59,9 @@ public class AppBeans {
         }
         // If the name is found, look up the bean by name because it is much faster
         if (name == null)
-            return AppContext.getApplicationContext().getBean(beanType);
+            return applicationContext.getBean(beanType);
         else
-            return AppContext.getApplicationContext().getBean(name, beanType);
+            return applicationContext.getBean(name, beanType);
     }
 
     /**
@@ -67,8 +70,9 @@ public class AppBeans {
      * @return      bean instance
      * @see         org.springframework.beans.factory.BeanFactory#getBean(java.lang.String)
      */
+    @SuppressWarnings("unchecked")
     public static <T> T get(String name) {
-        return (T) AppContext.getApplicationContext().getBean(name);
+        return (T) getApplicationContext().getBean(name);
     }
 
     /**
@@ -80,7 +84,7 @@ public class AppBeans {
      * @return          bean instance
      */
     public static <T> T get(String name, @Nullable Class<T> beanType) {
-        return AppContext.getApplicationContext().getBean(name, beanType);
+        return getApplicationContext().getBean(name, beanType);
     }
 
     /**
@@ -90,7 +94,7 @@ public class AppBeans {
      * @return      bean instance
      */
     public static <T> T getPrototype(String name, Object... args) {
-        return (T) AppContext.getApplicationContext().getBean(name, args);
+        return (T) getApplicationContext().getBean(name, args);
     }
 
     /**
@@ -104,13 +108,20 @@ public class AppBeans {
      * keys and the corresponding bean instances as values
      */
     public static <T> Map<String, T> getAll(Class<T> beanType) {
-        return AppContext.getApplicationContext().getBeansOfType(beanType);
+        return getApplicationContext().getBeansOfType(beanType);
     }
 
     /**
      * @return whether a bean with the given name is present
      */
     public static boolean containsBean(String name) {
-        return AppContext.getApplicationContext().containsBean(name);
+        return getApplicationContext().containsBean(name);
+    }
+
+    private static ApplicationContext getApplicationContext() {
+        ApplicationContext applicationContext = AppContext.getApplicationContext();
+        if (applicationContext == null)
+            throw new IllegalStateException("Application context is not initialized");
+        return applicationContext;
     }
 }
