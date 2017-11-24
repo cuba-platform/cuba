@@ -107,7 +107,11 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
 
     sourceSets {
         test {
+            java {
+                include '**/testmodel/**'
+            }
             groovy {
+                exclude '**/testmodel/**'
                 srcDir 'test'
             }
         }
