@@ -84,6 +84,9 @@
         </property>
     </bean>
 
+    <bean id="cuba_TriggerFilesProcessor"
+          class="com.haulmont.cuba.core.sys.TriggerFilesProcessor"/>
+
     <bean id="scheduler" class="com.haulmont.cuba.core.sys.CubaThreadPoolTaskScheduler">
         <property name="daemon" value="true"/>
         <property name="poolSize" value="10"/>

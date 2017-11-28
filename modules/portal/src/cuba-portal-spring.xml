@@ -38,6 +38,8 @@
 
         <!-- Exclude Thymeleaf invalidation beans -->
         <context:exclude-filter type="regex" expression="com.haulmont.cuba.portal.sys.thymeleaf.*"/>
+
+        <context:exclude-filter type="regex" expression="com.haulmont.cuba.core.sys.TriggerFilesProcessor"/>
     </context:component-scan>
 
     <bean id="cuba_UserSessionSource" class="com.haulmont.cuba.portal.sys.security.PortalUserSessionSource"/>
