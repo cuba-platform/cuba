@@ -644,7 +644,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
         protected CubaScrollBoxLayout tokenContainer;
 
-        protected Component editor;
+        protected HorizontalLayout editor;
 
         protected Map<Instance, CubaTokenListLabel> itemComponents = new HashMap<>();
         protected Map<CubaTokenListLabel, Instance> componentItems = new HashMap<>();
@@ -653,11 +653,11 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             setWidthUndefined();
 
             composition = new VerticalLayout();
-            composition.setSizeFull();
+            composition.setWidthUndefined();
 
             tokenContainer = new CubaScrollBoxLayout();
             tokenContainer.setStyleName("c-tokenlist-scrollbox");
-            tokenContainer.setSizeFull();
+            tokenContainer.setWidthUndefined();
             tokenContainer.setMargin(new MarginInfo(true, false, false, false));
 
             composition.addComponent(tokenContainer);
@@ -678,11 +678,9 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             super.setHeight(height);
 
             if (getHeight() > 0) {
-                composition.setSpacing(true);
                 composition.setExpandRatio(tokenContainer, 1);
                 tokenContainer.setMargin(false);
             } else {
-                composition.setSpacing(false);
                 composition.setExpandRatio(tokenContainer, 0);
 
                 if (simple) {
@@ -701,15 +699,11 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         protected void initField() {
             final HorizontalLayout layout = new HorizontalLayout();
             layout.setSpacing(true);
-            layout.setWidth("100%");
+            layout.setWidthUndefined();
 
             if (!isSimple()) {
-                lookupPickerField.setWidth("100%");
-                Component lookupComponent = WebComponentsHelper.getComposition(lookupPickerField);
-                lookupComponent.setWidth("100%");
-
-                layout.addComponent(lookupComponent);
-                layout.setExpandRatio(lookupComponent, 1);
+                lookupPickerField.setWidthAuto();
+                layout.addComponent(WebComponentsHelper.getComposition(lookupPickerField));
             } else {
                 lookupPickerField.setVisible(false);
             }
@@ -860,16 +854,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         public void refreshComponent() {
             if (inline) {
                 addStyleName("inline");
-                tokenContainer.setWidthUndefined();
             } else {
                 removeStyleName("inline");
-                tokenContainer.setWidth(100, Unit.PERCENTAGE);
-            }
-
-            if (simple) {
-                tokenContainer.setMargin(false);
-            } else {
-                tokenContainer.setMargin(new MarginInfo(true, false, false, false));
             }
 
             if (editor != null) {
@@ -889,8 +875,17 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                     composition.addComponentAsFirst(editor);
                 } else {
                     composition.addComponent(editor);
-                    editor.setWidth("100%");
                 }
+            }
+
+            if (tokenContainer.isVisible()) {
+                if (position == Position.TOP) {
+                    editor.setMargin(new MarginInfo(false, false, true, false));
+                } else {
+                    editor.setMargin(new MarginInfo(true, false, false, false));
+                }
+            } else {
+                editor.setMargin(false);
             }
 
             tokenContainer.removeAllComponents();
@@ -924,7 +919,43 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                     }
                 }
 
-                tokenContainer.setVisible(CollectionUtils.isNotEmpty(datasource.getItems()));
+                if (getHeight() < 0) {
+                    tokenContainer.setVisible(CollectionUtils.isNotEmpty(datasource.getItems()));
+                }
+            }
+
+            updateSizes();
+        }
+
+        protected void updateSizes() {
+            if (getHeight() > 0) {
+                composition.setHeight("100%");
+                tokenContainer.setHeight("100%");
+            } else {
+                composition.setHeightUndefined();
+                tokenContainer.setHeightUndefined();
+            }
+
+            if (getWidth() > 0) {
+                composition.setWidth("100%");
+                editor.setWidth("100%");
+
+                if (!isSimple()) {
+                    lookupPickerField.setWidthFull();
+                    editor.setExpandRatio(WebComponentsHelper.getComposition(lookupPickerField), 1);
+                }
+
+                tokenContainer.setWidth("100%");
+            } else {
+                composition.setWidthUndefined();
+                editor.setWidthUndefined();
+
+                if (!isSimple()) {
+                    lookupPickerField.setWidthAuto();
+                    editor.setExpandRatio(WebComponentsHelper.getComposition(lookupPickerField), 0);
+                }
+
+                tokenContainer.setWidthUndefined();
             }
         }
 
