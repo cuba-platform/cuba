@@ -22,8 +22,9 @@
     height: 25px;
     background: #fafafa;
     cursor: pointer;
-    display: block;
+    display: table;
     padding-left: 5px;
+    width: 100%;
   }
 
   .#{$primary-stylename}.readonly .c-tokenlist-label-close{
@@ -73,6 +74,8 @@
       clear: none;
       margin-right: 5px;
       float: left;
+      width: auto;
+      display: inline-block;
     }
 
     .c-tokenlist-label.v-widget {
@@ -89,8 +92,6 @@
   }
 
   .#{$primary-stylename} {
-    width: 250px;
-
     &.v-has-width .c-tokenlist-scrollbox {
       max-width: none;
     }
@@ -103,6 +104,6 @@
   .#{$primary-stylename}-scrollbox {
     max-width: 400px;
     max-height: 250px;
-    overflow-y: auto;
+    overflow: auto;
   }
 }

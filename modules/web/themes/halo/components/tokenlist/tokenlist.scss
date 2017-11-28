@@ -21,8 +21,9 @@
     margin: 0 round($v-layout-margin-right/2) round($v-layout-margin-bottom/2) 0;
     height: $v-unit-size;
     cursor: pointer;
-    display: block;
+    display: table;
     padding-left: round($v-layout-margin-left/2);
+    width: 100%;
   }
 
   .#{$primary-stylename} .c-tokenlist-label-close {
@@ -85,6 +86,8 @@
       clear: none;
       margin-right: round($v-layout-margin-right/2);
       float: left;
+      width: auto;
+      display: inline-block;
     }
 
     .c-tokenlist-label.v-widget {
@@ -101,8 +104,6 @@
   }
 
   .#{$primary-stylename} {
-    width: 250px;
-
     &.v-has-width .c-tokenlist-scrollbox {
       max-width: none;
     }
@@ -115,10 +116,6 @@
   .#{$primary-stylename}-scrollbox {
     max-width: 400px;
     max-height: 250px;
-    overflow-y: auto;
-
-    &.v-csslayout-margin-top {
-      margin-top: $v-layout-margin-top;
-    }
+    overflow: auto;
   }
 }
