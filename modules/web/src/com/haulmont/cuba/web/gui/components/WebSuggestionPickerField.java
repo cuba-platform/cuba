@@ -17,8 +17,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SuggestionPickerField;
@@ -254,5 +252,26 @@ public class WebSuggestionPickerField extends WebSuggestionField implements Sugg
     @Override
     public boolean isModified() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setStyleName(String name) {
+        super.setStyleName(name);
+
+        component.setPopupStyleName(name);
+    }
+
+    @Override
+    public void addStyleName(String styleName) {
+        super.addStyleName(styleName);
+
+        component.addPopupStyleName(styleName);
+    }
+
+    @Override
+    public void removeStyleName(String styleName) {
+        super.removeStyleName(styleName);
+
+        component.removePopupStyleName(styleName);
     }
 }

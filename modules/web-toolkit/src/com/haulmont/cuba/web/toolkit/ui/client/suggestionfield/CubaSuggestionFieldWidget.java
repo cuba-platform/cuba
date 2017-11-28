@@ -40,6 +40,7 @@ import elemental.json.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, Focusable, HasAllKeyHandlers,
         HasValue<String>, HasSelectionHandlers<CubaSuggestionFieldWidget.Suggestion> {
@@ -72,6 +73,7 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
     public boolean iePreventBlur = false;
 
     protected List<Suggestion> suggestions = new ArrayList<>();
+    protected String popupStylename = "";
 
     public CubaSuggestionFieldWidget() {
         textField = GWT.create(VTextField.class);
@@ -353,6 +355,17 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
 
     public void setInputPrompt(String inputPrompt) {
         textField.getElement().setAttribute("placeHolder", inputPrompt);
+    }
+
+    public void setPopupStyleName(List<String> styleName) {
+        if (popupStylename != null && !popupStylename.isEmpty()) {
+            suggestionsContainer.removeStyleName(popupStylename);
+        }
+
+        popupStylename = styleName.stream()
+                .collect(Collectors.joining(" "));
+
+        suggestionsContainer.addStyleName(popupStylename);
     }
 
     protected class SuggestionPopup extends VOverlay implements PopupPanel.PositionCallback, CloseHandler<PopupPanel> {

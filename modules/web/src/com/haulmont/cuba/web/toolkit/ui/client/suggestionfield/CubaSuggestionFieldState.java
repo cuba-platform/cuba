@@ -18,6 +18,8 @@ package com.haulmont.cuba.web.toolkit.ui.client.suggestionfield;
 
 import com.vaadin.shared.AbstractFieldState;
 
+import java.util.List;
+
 public class CubaSuggestionFieldState extends AbstractFieldState {
     {
         primaryStyleName = "c-suggestionfield";
@@ -28,4 +30,6 @@ public class CubaSuggestionFieldState extends AbstractFieldState {
 
     public String text = "";
     public String inputPrompt = "";
+
+    public List<String> popupStylename = null;
 }

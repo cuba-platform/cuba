@@ -349,4 +349,25 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
     public void setInputPrompt(String inputPrompt) {
         component.setInputPrompt(inputPrompt);
     }
+
+    @Override
+    public void setStyleName(String name) {
+        super.setStyleName(name);
+
+        component.setPopupStyleName(name);
+    }
+
+    @Override
+    public void addStyleName(String styleName) {
+        super.addStyleName(styleName);
+
+        component.addPopupStyleName(styleName);
+    }
+
+    @Override
+    public void removeStyleName(String styleName) {
+        super.removeStyleName(styleName);
+
+        component.removePopupStyleName(styleName);
+    }
 }

@@ -28,9 +28,12 @@ import com.vaadin.ui.AbstractField;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -218,6 +221,59 @@ public class CubaSuggestionField extends AbstractField<Object> {
     public void setInputPrompt(String inputPrompt) {
         if (!StringUtils.equals(inputPrompt, getState(false).inputPrompt)) {
             getState().inputPrompt = inputPrompt;
+        }
+    }
+
+    // copied from com.vaadin.ui.AbstractComponent#setStyleName
+    public void setPopupStyleName(String styleName) {
+        if (StringUtils.isEmpty(styleName)) {
+            getState().popupStylename = null;
+            return;
+        }
+
+        if (getState().popupStylename == null) {
+            getState().popupStylename = new ArrayList<>();
+        }
+
+        List<String> styles = getState().popupStylename;
+        styles.clear();
+
+        StringTokenizer tokenizer = new StringTokenizer(styleName, " ");
+        while (tokenizer.hasMoreTokens()) {
+            styles.add(tokenizer.nextToken());
+        }
+    }
+
+    // copied from com.vaadin.ui.AbstractComponent#addStyleName
+    public void addPopupStyleName(String styleName) {
+        if (StringUtils.isEmpty(styleName)) {
+            return;
+        }
+        if (styleName.contains(" ")) {
+            // Split space separated stylename names and add them one by one.
+            StringTokenizer tokenizer = new StringTokenizer(styleName, " ");
+            while (tokenizer.hasMoreTokens()) {
+                addPopupStyleName(tokenizer.nextToken());
+            }
+            return;
+        }
+
+        if (getState(false).popupStylename == null) {
+            getState().popupStylename = new ArrayList<>();
+        }
+        List<String> styleNames = getState().popupStylename;
+        if (!styleNames.contains(styleName)) {
+            styleNames.add(styleName);
+        }
+    }
+
+    // copied from com.vaadin.ui.AbstractComponent#removeStyleName
+    public void removePopupStyleName(String styleName) {
+        if (CollectionUtils.isNotEmpty(getState(false).popupStylename)) {
+            StringTokenizer tokenizer = new StringTokenizer(styleName, " ");
+            while (tokenizer.hasMoreTokens()) {
+                getState().popupStylename.remove(tokenizer.nextToken());
+            }
         }
     }
 }
