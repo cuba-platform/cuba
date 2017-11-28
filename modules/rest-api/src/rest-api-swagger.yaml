@@ -61,7 +61,7 @@ info:
 #                  Host, Base Path, Schemes and Content Types                  #
 ################################################################################
 
-basePath: /rest/v2
+basePath: /app/rest/v2
 produces:
   - application/json
 consumes:
@@ -173,19 +173,6 @@ definitions:
       scope:
         type: string
         example: rest-api
-
-  tokenRevokeRequest:
-    type: object
-    properties:
-      token:
-        type: string
-        description: Token value
-        example: 2YotnFZFEjr1zCsicMWpAA
-      token_type:
-        type: string
-        description: Token type. Can be `access_token` or `refresh_token`
-        example: access_token
-    required: [token]
 
   entity:
     type: object
@@ -470,7 +457,7 @@ securityDefinitions:
   oauth2:
     type: oauth2
     flow: password
-    tokenUrl: http://localhost:8080/app/dispatch/api/oauth/token
+    tokenUrl: http://localhost:8080/app/rest/v2/oauth/token
     scopes:
       rest-api: use REST API
   tokenEndpointBasic:
@@ -542,13 +529,20 @@ paths:
       consumes:
         - application/x-www-form-urlencoded
       parameters:
-        - name: tokenRevokeRequest
-          in: body
-          schema:
-            $ref: '#/definitions/tokenRevokeRequest'
+        - name: token
+          in: formData
+          type: string
+          description: The token that the client wants to get revoked.
+        - name: token_type
+          in: formData
+          type: string
+          description: A hint about the type of the token submitted for revocation. May be access_token or refresh_token
+          default: access_token
       responses:
         200:
           description: Success
+      security:
+        - tokenEndpointBasic: []
 
 ############################### Entities ###################################
   /entities/{entityName}:
