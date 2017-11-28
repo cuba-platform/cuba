@@ -328,7 +328,7 @@ definitions:
               type: boolean
             readOnly:
               type: boolean
-            transient:
+            persistent:
               type: boolean
 
   enumMetadata:
