@@ -41,7 +41,11 @@ public class CubaSuggestionFieldConnector extends AbstractFieldConnector {
         widget.searchExecutor = query -> serverRpc.searchSuggestions(query);
         widget.arrowDownActionHandler = query -> serverRpc.onArrowDownKeyPressed(query);
         widget.enterActionHandler = query -> serverRpc.onEnterKeyPressed(query);
-        widget.suggestionSelectedHandler = suggestion -> serverRpc.selectSuggestion(suggestion.getId());
+        widget.suggestionSelectedHandler = suggestion -> {
+            serverRpc.selectSuggestion(suggestion.getId());
+
+            updateWidgetValue(widget);
+        };
         widget.cancelSearchHandler = () -> serverRpc.cancelSearch();
     }
 
@@ -69,7 +73,7 @@ public class CubaSuggestionFieldConnector extends AbstractFieldConnector {
         }
 
         if (stateChangeEvent.hasPropertyChanged("text")) {
-            widget.setValue(getState().text, false);
+            updateWidgetValue(widget);
         }
 
         if (stateChangeEvent.hasPropertyChanged("inputPrompt")) {
@@ -77,5 +81,12 @@ public class CubaSuggestionFieldConnector extends AbstractFieldConnector {
         }
 
         widget.setReadonly(isReadOnly());
+    }
+
+    protected void updateWidgetValue(CubaSuggestionFieldWidget widget) {
+        String stateValue = getState().text;
+        if (!stateValue.equals(widget.getValue())) {
+            widget.setValue(stateValue, false);
+        }
     }
 }
