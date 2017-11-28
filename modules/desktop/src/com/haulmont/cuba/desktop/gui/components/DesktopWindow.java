@@ -52,6 +52,7 @@ import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.settings.Settings;
 import net.miginfocom.layout.CC;
@@ -121,6 +122,7 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     protected Configuration configuration = AppBeans.get(Configuration.NAME);
     protected Messages messages = AppBeans.get(Messages.NAME);
+    protected Icons icons = AppBeans.get(Icons.class);
 
     protected ComponentSize widthSize;
     protected ComponentSize heightSize;
@@ -1514,6 +1516,11 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    @Override
+    public void setIconByName(Icons.Icon icon) {
+        this.icon = icons.get(icon);
     }
 
     @Override

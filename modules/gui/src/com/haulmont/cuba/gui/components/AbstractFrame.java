@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.icons.Icons;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationListener;
@@ -233,6 +234,11 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     @Override
     public void setIcon(String icon) {
         frame.setIcon(icon);
+    }
+
+    @Override
+    public void setIconByName(Icons.Icon icon) {
+        frame.setIconByName(icon);
     }
 
     @Override

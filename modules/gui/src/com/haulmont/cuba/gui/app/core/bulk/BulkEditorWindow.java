@@ -33,6 +33,8 @@ import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsContextImpl;
 import com.haulmont.cuba.gui.data.impl.EmbeddedDatasourceImpl;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -531,7 +533,8 @@ public class BulkEditorWindow extends AbstractWindow {
                             MessageType.CONFIRMATION, new Action[]{
                                     new AbstractAction("actions.Apply") {
                                         {
-                                            icon = themeConstants.get("actions.dialog.Ok.icon");
+                                            icon = AppBeans.get(Icons.class)
+                                                    .get(CubaIcon.DIALOG_OK);
                                         }
 
                                         @Override

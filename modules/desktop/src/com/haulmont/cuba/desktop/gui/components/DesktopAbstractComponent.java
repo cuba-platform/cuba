@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.icons.Icons;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -513,6 +514,11 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public void setIcon(String icon) {
+        // do nothing
+    }
+
+    @Override
+    public void setIconByName(Icons.Icon icon) {
         // do nothing
     }
 

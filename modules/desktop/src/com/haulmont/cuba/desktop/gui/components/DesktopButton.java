@@ -17,11 +17,13 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.desktop.gui.icons.IconResolver;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareActionListener;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -170,9 +172,16 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
     public void setIcon(String icon) {
         this.icon = icon;
         if (icon != null)
-            impl.setIcon(App.getInstance().getResources().getIcon(icon));
+            impl.setIcon(AppBeans.get(IconResolver.class).getIconResource(icon));
         else
             impl.setIcon(null);
+    }
+
+    @Override
+    public void setIconByName(Icons.Icon icon) {
+        String iconPath = AppBeans.get(Icons.class)
+                .get(icon);
+        setIcon(iconPath);
     }
 
     public boolean isShouldBeFocused() {

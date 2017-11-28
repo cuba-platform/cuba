@@ -49,8 +49,9 @@ import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
-import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.web.exception.ExceptionDialog;
@@ -113,7 +114,7 @@ public class WebWindowManager extends WindowManager {
     @Inject
     protected ScreenProfiler screenProfiler;
     @Inject
-    protected ThemeConstantsManager themeConstantsManager;
+    protected Icons icons;
     @Inject
     protected UuidSource uuidSource;
     @Inject
@@ -916,7 +917,7 @@ public class WebWindowManager extends WindowManager {
                     new Action[]{
                             new BaseAction("closeApplication")
                                     .withCaption(messages.getMainMessage("closeApplication"))
-                                    .withIcon(themeConstantsManager.getThemeValue("actions.dialog.Ok.icon"))
+                                    .withIcon(icons.get(CubaIcon.DIALOG_OK))
                                     .withHandler(event -> {
 
                                 closeAllWindows();
@@ -978,7 +979,7 @@ public class WebWindowManager extends WindowManager {
                     new Action[]{
                             new AbstractAction(messages.getMainMessage("closeTabs")) {
                                 {
-                                    icon = themeConstantsManager.getThemeValue("actions.dialog.Ok.icon");
+                                    icon = icons.get(CubaIcon.DIALOG_OK);
                                 }
 
                                 @Override

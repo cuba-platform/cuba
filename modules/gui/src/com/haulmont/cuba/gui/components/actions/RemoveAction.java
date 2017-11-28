@@ -32,7 +32,8 @@ import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
-import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.springframework.context.annotation.Scope;
@@ -133,8 +134,7 @@ public class RemoveAction extends ItemTrackingAction implements Action.HasBefore
         this.autocommit = autocommit;
         this.caption = messages.getMainMessage("actions.Remove");
 
-        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
-        this.icon = thCM.getThemeValue("actions.Remove.icon");
+        this.icon = AppBeans.get(Icons.class).get(CubaIcon.REMOVE_ACTION);
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig config = configuration.getConfig(ClientConfig.class);

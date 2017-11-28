@@ -18,9 +18,9 @@
     <layout>
         <hbox spacing="true" stylename="c-lookup-window-actions">
             <button id="selectButton" action="lookupSelectAction" caption="mainMsg://actions.Select"
-                    icon="theme://actions.Lookup.Ok.icon" stylename="c-window-action-button"/>
+                    icon="OK" stylename="c-window-action-button"/>
             <button id="cancelButton" action="lookupCancelAction" caption="mainMsg://actions.Cancel"
-                    icon="theme://actions.Lookup.Cancel.icon" stylename="c-window-action-button"/>
+                    icon="CANCEL" stylename="c-window-action-button"/>
         </hbox>
     </layout>
 </window>

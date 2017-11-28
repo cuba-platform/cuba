@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.components.TabSheet;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleTabSheetSelectedTabChangeListener;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.lang.StringUtils;
@@ -750,6 +751,11 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
         @Override
         public void setIcon(String icon) {
             // do nothing
+        }
+
+        // just stub
+        @Override
+        public void setIconByName(Icons.Icon icon) {
         }
     }
 

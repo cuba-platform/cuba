@@ -18,8 +18,8 @@
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd">
     <layout>
         <hbox spacing="true" stylename="c-edit-window-actions">
-            <button id="windowCommit" action="windowCommit" icon="theme://actions.Editor.Ok.icon"/>
-            <button id="windowClose" action="windowClose" icon="theme://actions.Editor.Cancel.icon"/>
+            <button id="windowCommit" action="windowCommit" icon="OK"/>
+            <button id="windowClose" action="windowClose" icon="CANCEL"/>
         </hbox>
     </layout>
 </window>

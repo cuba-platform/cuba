@@ -22,6 +22,8 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.WindowManager.OpenMode;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
@@ -61,7 +63,7 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
     public BulkEditAction(ListComponent target) {
         super(target, "bulkEdit");
 
-        this.icon = "icons/bulk-edit.png";
+        this.icon = AppBeans.get(Icons.class).get(CubaIcon.BULK_EDIT_ACTION);
         this.caption = messages.getMessage(getClass(), "actions.BulkEdit");
         this.constraintOperationType = ConstraintOperationType.UPDATE;
 

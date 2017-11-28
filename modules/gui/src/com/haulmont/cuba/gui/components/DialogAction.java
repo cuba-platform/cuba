@@ -18,7 +18,8 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
-import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
 
 /**
  * Standard action for option dialogs.
@@ -48,17 +49,17 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 public class DialogAction extends BaseAction {
 
     public enum Type {
-        OK("ok", "actions.Ok", "actions.dialog.Ok.icon"),
-        CANCEL("cancel", "actions.Cancel", "actions.dialog.Cancel.icon"),
-        YES("yes", "actions.Yes", "actions.dialog.Yes.icon"),
-        NO("no", "actions.No", "actions.dialog.No.icon"),
-        CLOSE("close", "actions.Close", "actions.dialog.Close.icon");
+        OK("ok", "actions.Ok", CubaIcon.DIALOG_OK),
+        CANCEL("cancel", "actions.Cancel", CubaIcon.DIALOG_CANCEL),
+        YES("yes", "actions.Yes", CubaIcon.DIALOG_YES),
+        NO("no", "actions.No", CubaIcon.DIALOG_NO),
+        CLOSE("close", "actions.Close", CubaIcon.DIALOG_CLOSE);
 
         private String id;
         private String msgKey;
-        private String iconKey;
+        private Icons.Icon iconKey;
 
-        Type(String id, String msgKey, String iconKey) {
+        Type(String id, String msgKey, Icons.Icon iconKey) {
             this.id = id;
             this.msgKey = msgKey;
             this.iconKey = iconKey;
@@ -72,7 +73,7 @@ public class DialogAction extends BaseAction {
             return msgKey;
         }
 
-        public String getIconKey() {
+        public Icons.Icon getIconKey() {
             return iconKey;
         }
     }
@@ -84,13 +85,13 @@ public class DialogAction extends BaseAction {
         this.type = type;
         this.caption = messages.getMainMessage(type.msgKey);
 
-        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
-        this.icon = thCM.getThemeValue(type.iconKey);
+        this.icon = AppBeans.get(Icons.class)
+                .get(type.iconKey);
     }
 
     public DialogAction(Type type, boolean primary) {
         this(type);
-        this.primary = primary;;
+        this.primary = primary;
     }
 
     public DialogAction(Type type, Status status) {

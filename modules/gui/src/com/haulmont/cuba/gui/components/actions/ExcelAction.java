@@ -24,7 +24,8 @@ import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Frame.MessageType;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
-import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
 import org.springframework.context.annotation.Scope;
 
 import java.util.List;
@@ -146,8 +147,7 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
         this.display = display;
         this.caption = messages.getMainMessage("actions.Excel");
 
-        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
-        this.icon = thCM.getThemeValue("actions.Excel.icon");
+        this.icon = AppBeans.get(Icons.class).get(CubaIcon.EXCEL_ACTION);
     }
 
     /**

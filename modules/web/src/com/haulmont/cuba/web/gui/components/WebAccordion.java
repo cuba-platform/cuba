@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
@@ -28,11 +29,14 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleAccordionSelectedTabChangeListener;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebWindowManager;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.toolkit.ui.CubaAccordion;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.StringUtils;
@@ -237,10 +241,19 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion> implements
         public void setIcon(String icon) {
             this.icon = icon;
             if (!StringUtils.isEmpty(icon)) {
-                getVaadinTab().setIcon(WebComponentsHelper.getIcon(icon));
+                Resource iconResource = AppBeans.get(IconResolver.class)
+                        .getIconResource(this.icon);
+                getVaadinTab().setIcon(iconResource);
             } else {
                 getVaadinTab().setIcon(null);
             }
+        }
+
+        @Override
+        public void setIconByName(Icons.Icon icon) {
+            String iconPath = AppBeans.get(Icons.class)
+                    .get(icon);
+            setIcon(iconPath);
         }
     }
 

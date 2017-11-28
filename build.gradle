@@ -603,6 +603,8 @@ configure(webModule) {
         compile(bom['org.webjars:swfupload'])
         compile(bom['org.webjars.npm:object-fit-images'])
 
+        compile(bom['com.haulmont.cuba-resources:cuba-png-icons'])
+
         provided(bom['org.apache.tomcat:tomcat-servlet-api'])
 
         themes(bom['com.vaadin:vaadin-themes'])
@@ -799,6 +801,8 @@ configure(desktopModule) {
         compile(bom['com.fifesoft:rsyntaxtextarea'])
         compile(bom['com.haulmont.thirdparty:glazedlists'])
         compile(bom['com.haulmont.thirdparty:swingx-core'])
+
+        compile(bom['com.haulmont.cuba-resources:cuba-png-icons'])
 
         testCompile(clientModule.sourceSets.test.output)
         testCompile(guiModule.sourceSets.test.output)

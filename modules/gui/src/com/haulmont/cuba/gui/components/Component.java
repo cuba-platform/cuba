@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import org.dom4j.Element;
 
@@ -809,6 +810,13 @@ public interface Component {
     interface HasIcon {
         String getIcon();
         void setIcon(String icon);
+
+        /**
+         * Sets the given <code>icon</code> to the component.
+         *
+         * @param icon {@link Icons.Icon} instance
+         */
+        void setIconByName(Icons.Icon icon);
     }
 
     /**

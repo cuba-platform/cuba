@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.settings.Settings;
 import org.dom4j.Element;
 
@@ -314,6 +315,11 @@ public class AbstractWindow extends AbstractFrame
     @Override
     public void setIcon(String icon) {
         frame.setIcon(icon);
+    }
+
+    @Override
+    public void setIconByName(Icons.Icon icon) {
+        frame.setIconByName(icon);
     }
 
     @Override

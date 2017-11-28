@@ -22,10 +22,12 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopResources;
 import com.haulmont.cuba.desktop.TopLevelFrame;
+import com.haulmont.cuba.desktop.gui.icons.IconResolver;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.compatibility.MultiUploadFieldListenerWrapper;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.io.FileUtils;
 
@@ -205,9 +207,16 @@ public class DesktopFileMultiUploadField extends DesktopAbstractUploadComponent<
     public void setIcon(String icon) {
         this.icon = icon;
         if (icon != null)
-            impl.setIcon(App.getInstance().getResources().getIcon(icon));
+            impl.setIcon(AppBeans.get(IconResolver.class).getIconResource(icon));
         else
             impl.setIcon(null);
+    }
+
+    @Override
+    public void setIconByName(Icons.Icon icon) {
+        String iconPath = AppBeans.get(Icons.class)
+                .get(icon);
+        setIcon(iconPath);
     }
 
     protected void fireFileUploadStart(String fileName, long contentLength) {

@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
-import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
@@ -117,8 +117,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
         reloginBtn.addClickListener(event -> relogin());
         reloginBtn.setCaption(messages.getMainMessage(Type.OK.getMsgKey()));
 
-        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
-        String iconName = thCM.getThemeValue(Type.OK.getIconKey());
+        String iconName = AppBeans.get(Icons.class).get(Type.OK.getIconKey());
         reloginBtn.setIcon(WebComponentsHelper.getIcon(iconName));
 
         ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);

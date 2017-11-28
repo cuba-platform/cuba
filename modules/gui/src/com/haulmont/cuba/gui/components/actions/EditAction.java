@@ -29,7 +29,8 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
-import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.springframework.context.annotation.Scope;
 
@@ -146,8 +147,7 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
         this.target = target;
         this.openType = openType;
 
-        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
-        this.icon = thCM.getThemeValue("actions.Edit.icon");
+        this.icon = AppBeans.get(Icons.class).get(CubaIcon.EDIT_ACTION);
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig config = configuration.getConfig(ClientConfig.class);

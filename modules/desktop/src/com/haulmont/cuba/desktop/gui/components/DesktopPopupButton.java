@@ -17,14 +17,17 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopResources;
+import com.haulmont.cuba.desktop.gui.icons.IconResolver;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.icons.Icons;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
@@ -286,10 +289,12 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
     @Override
     public void setIcon(String icon) {
         this.icon = icon;
+
+        IconResolver iconResolver = AppBeans.get(IconResolver.class);
         if (icon != null) {
-            captionLabel.setIcon(resources.getIcon(icon));
+            captionLabel.setIcon(iconResolver.getIconResource(icon));
         } else {
-            captionLabel.setIcon(resources.getIcon(DROP_DOWN_ICON));
+            captionLabel.setIcon(iconResolver.getIconResource(DROP_DOWN_ICON));
         }
 
         if (StringUtils.isNotEmpty(getCaption()) || icon != null) {
@@ -297,6 +302,13 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
         } else {
             rightIcon.setBorder(null);
         }
+    }
+
+    @Override
+    public void setIconByName(Icons.Icon icon) {
+        String iconPath = AppBeans.get(Icons.class)
+                .get(icon);
+        setIcon(iconPath);
     }
 
     @Override
@@ -506,6 +518,11 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
 
         @Override
         public void setIcon(String icon) {
+        }
+
+        // just stub
+        @Override
+        public void setIconByName(Icons.Icon icon) {
         }
 
         @Override

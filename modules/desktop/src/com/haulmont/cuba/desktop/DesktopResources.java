@@ -32,6 +32,7 @@ import java.util.*;
 import java.util.List;
 
 public class DesktopResources {
+    protected static final String CLASSPATH_PREFIX = "classpath:";
 
     private Logger log = LoggerFactory.getLogger(DesktopResources.class);
 
@@ -66,13 +67,21 @@ public class DesktopResources {
     }
 
     protected byte[] getImageBytes(String name) {
-        if (!name.startsWith("/"))
+        if (!name.startsWith("/") && !name.startsWith("classpath:"))
             name = "/" + name;
+
+        boolean fromClassPath = false;
+        if (name.startsWith(CLASSPATH_PREFIX)) {
+            fromClassPath = true;
+            name = name.substring("classpath:".length());
+        }
 
         byte[] bytes = cache.get(name);
         if (bytes == null) {
             for (String root : roots) {
-                InputStream stream = resources.getResourceAsStream(root + name);
+                String fullPath = fromClassPath ? name : root + name;
+
+                InputStream stream = resources.getResourceAsStream(fullPath);
                 if (stream != null) {
                     try {
                         bytes = IOUtils.toByteArray(stream);

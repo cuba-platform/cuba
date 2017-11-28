@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component.Alignment;
 import com.haulmont.cuba.gui.components.validators.*;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.DeclarativeAction;
@@ -52,8 +53,10 @@ import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 public abstract class AbstractComponentLoader<T extends Component> implements ComponentLoader<T> {
+    protected static final Pattern ICON_LITERAL_REGEX = Pattern.compile("[A-Z_]*");
 
     protected static final Map<String, Function<ClientConfig, String>> shortcutAliases =
             ImmutableMap.<String, Function<ClientConfig, String>>builder()
@@ -412,9 +415,18 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         if (element.attribute("icon") != null) {
             String icon = element.attributeValue("icon");
 
-            String themeValue = loadThemeString(icon);
-            icon = loadResourceString(themeValue);
-            component.setIcon(icon);
+            String iconPath = null;
+
+            if (ICON_LITERAL_REGEX.matcher(icon).matches()) {
+                iconPath = AppBeans.get(Icons.class).get(icon);
+            }
+
+            if (StringUtils.isEmpty(iconPath)) {
+                String themeValue = loadThemeString(icon);
+                iconPath = loadResourceString(themeValue);
+            }
+
+            component.setIcon(iconPath);
         }
     }
 

@@ -67,7 +67,7 @@
             <vbox id="topBox" spacing="true" margin="false,true,false,false" height="100%" expand="groupsTree">
                 <tree id="groupsTree" width="100%" multiselect="true">
                     <buttonsPanel>
-                        <popupButton id="groupCreateButton" caption="msg://create.caption" icon="theme://actions.Create.icon"/>
+                        <popupButton id="groupCreateButton" caption="msg://create.caption" icon="CREATE_ACTION"/>
                         <button action="groupsTree.edit"/>
                         <button id="removeButton" action="groupsTree.remove"/>
                         <popupButton id="exportBtn" icon="icons/download.png">

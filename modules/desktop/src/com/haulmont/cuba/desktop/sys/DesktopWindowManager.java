@@ -30,6 +30,7 @@ import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopAbstractComponent;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.gui.components.DesktopWindow;
+import com.haulmont.cuba.desktop.gui.icons.IconResolver;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAlertHolder;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareAction;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareWindowClosingListener;
@@ -48,9 +49,9 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.executors.*;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
-import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
@@ -1307,7 +1308,7 @@ public class DesktopWindowManager extends WindowManager {
             String icon = action.getIcon();
 
             if (icon != null) {
-                button.setIcon(App.getInstance().getResources().getIcon(icon));
+                button.setIcon(AppBeans.get(IconResolver.class).getIconResource(icon));
             }
 
             final DialogActionHandler dialogActionHandler = new DialogActionHandler(dialog, action);
@@ -2101,8 +2102,8 @@ public class DesktopWindowManager extends WindowManager {
 
         @Override
         public String getIcon() {
-            ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
-            return thCM.getThemeValue(type.getIconKey());
+            Icons icons = AppBeans.get(Icons.class);
+            return icons.get(type.getIconKey());
         }
 
         @Override

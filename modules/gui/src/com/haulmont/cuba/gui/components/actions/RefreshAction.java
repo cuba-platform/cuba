@@ -20,7 +20,8 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
 import org.springframework.context.annotation.Scope;
 
 import java.util.Collections;
@@ -88,8 +89,7 @@ public class RefreshAction extends BaseAction {
         this.owner = target;
         this.caption = messages.getMainMessage("actions.Refresh");
 
-        ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
-        this.icon = thCM.getThemeValue("actions.Refresh.icon");
+        this.icon = AppBeans.get(Icons.class).get(CubaIcon.REFRESH_ACTION);
     }
 
     /**

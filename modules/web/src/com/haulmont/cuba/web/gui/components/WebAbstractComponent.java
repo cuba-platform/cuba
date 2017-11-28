@@ -17,11 +17,15 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.EventRouter;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.gui.icons.IconResolver;
+import com.vaadin.server.Resource;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractComponent;
@@ -260,12 +264,21 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.AbstractCompo
     public void setIcon(String icon) {
         this.icon = icon;
         if (!StringUtils.isEmpty(icon)) {
-            getComposition().setIcon(WebComponentsHelper.getIcon(icon));
+            Resource iconResource = AppBeans.get(IconResolver.class)
+                    .getIconResource(this.icon);
+            getComposition().setIcon(iconResource);
             getComposition().addStyleName(ICON_STYLE);
         } else {
             getComposition().setIcon(null);
             getComposition().removeStyleName(ICON_STYLE);
         }
+    }
+
+    @Override
+    public void setIconByName(Icons.Icon icon) {
+        String iconName = AppBeans.get(Icons.class)
+                .get(icon);
+        setIcon(iconName);
     }
 
     /**
