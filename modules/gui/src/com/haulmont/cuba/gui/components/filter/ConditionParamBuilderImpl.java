@@ -84,7 +84,7 @@ public class ConditionParamBuilderImpl implements ConditionParamBuilder{
                 builder.setEntityView(condition.getEntityParamView());
                 builder.setDataSource(condition.getDatasource());
                 builder.setInExpr(condition.getInExpr());
-                builder.setUseUserTimeZone(condition.getUseUserTimeZone());
+                builder.setUseUserTimeZone(Boolean.TRUE.equals(condition.getUseUserTimeZone()));
             }
 
             return builder;
