@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.EntityManagerContext;
 import com.haulmont.cuba.core.sys.persistence.EntityAttributeChanges;
 import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.lang.BooleanUtils;
@@ -89,6 +90,101 @@ public class EntityLog implements EntityLogAPI {
     @Override
     public boolean isLoggingForCurrentThread() {
         return !Boolean.FALSE.equals(entityLogSwitchedOn.get());
+    }
+
+    @Override
+    public void flush() {
+        EntityManagerContext context = persistence.getEntityManagerContext();
+        List<EntityLogItem> items = context.getAttribute(EntityLog.class.getName());
+        if (items == null || items.isEmpty())
+            return;
+
+        for (EntityLogItem item : items) {
+            List<EntityLogItem> sameEntityList = items.stream()
+                    .filter(entityLogItem -> entityLogItem.getObjectEntityId().equals(item.getObjectEntityId()))
+                    .collect(Collectors.toList());
+            EntityLogItem itemToSave = sameEntityList.get(0);
+            computeChanges(itemToSave, sameEntityList);
+            saveItem(itemToSave);
+        }
+    }
+
+    private void computeChanges(EntityLogItem itemToSave, List<EntityLogItem> sameEntityList) {
+        Set<String> allAttributes = sameEntityList.stream()
+                .flatMap(entityLogItem -> entityLogItem.getAttributes().stream().map(EntityLogAttr::getName))
+                .collect(Collectors.toSet());
+
+        for (String attributeName : allAttributes) {
+            // old value from the first item
+            sameEntityList.get(0).getAttributes().stream()
+                    .filter(entityLogAttr -> entityLogAttr.getName().equals(attributeName))
+                    .findFirst()
+                    .ifPresent(entityLogAttr -> setAttributeOldValue(entityLogAttr, itemToSave));
+            // new value from the last item
+            sameEntityList.get(sameEntityList.size() - 1).getAttributes().stream()
+                    .filter(entityLogAttr -> entityLogAttr.getName().equals(attributeName))
+                    .findFirst()
+                    .ifPresent(entityLogAttr -> setAttributeNewValue(entityLogAttr, itemToSave));
+        }
+
+        Properties properties = new Properties();
+
+        for (EntityLogAttr attr : itemToSave.getAttributes()) {
+            properties.setProperty(attr.getName(), attr.getValue());
+            if (attr.getValueId() != null) {
+                properties.setProperty(attr.getName() + EntityLogAttr.VALUE_ID_SUFFIX, attr.getValueId());
+            }
+            if (attr.getOldValue() != null) {
+                properties.setProperty(attr.getName() + EntityLogAttr.OLD_VALUE_SUFFIX, attr.getOldValue());
+            }
+            if (attr.getOldValueId() != null) {
+                properties.setProperty(attr.getName() + EntityLogAttr.OLD_VALUE_ID_SUFFIX, attr.getOldValueId());
+            }
+            if (attr.getMessagesPack() != null) {
+                properties.setProperty(attr.getName() + EntityLogAttr.MP_SUFFIX, attr.getMessagesPack() );
+            }
+        }
+
+        itemToSave.setChanges(getChanges(properties));
+    }
+
+    private void setAttributeOldValue(EntityLogAttr entityLogAttr, EntityLogItem itemToSave) {
+        EntityLogAttr attr = getAttrToSave(entityLogAttr, itemToSave);
+        attr.setOldValue(entityLogAttr.getOldValue());
+        attr.setOldValueId(entityLogAttr.getOldValueId());
+    }
+
+    private void setAttributeNewValue(EntityLogAttr entityLogAttr, EntityLogItem itemToSave) {
+        EntityLogAttr attr = getAttrToSave(entityLogAttr, itemToSave);
+        attr.setValue(entityLogAttr.getValue());
+        attr.setValueId(entityLogAttr.getValueId());
+    }
+
+    private EntityLogAttr getAttrToSave(EntityLogAttr entityLogAttr, EntityLogItem itemToSave) {
+        EntityLogAttr attr = itemToSave.getAttributes().stream()
+                .filter(a -> a.getName().equals(entityLogAttr.getName()))
+                .findFirst()
+                .orElse(null);
+        if (attr == null) {
+            attr = metadata.create(EntityLogAttr.class);
+            itemToSave.getAttributes().add(attr);
+        }
+        return attr;
+    }
+
+    private void saveItem(EntityLogItem item) {
+        String storeName = metadataTools.getStoreName(metadata.getClassNN(item.getEntity()));
+        if (Stores.isMain(storeName)) {
+            EntityManager em = persistence.getEntityManager();
+            em.persist(item);
+        } else {
+            // Create a new transaction in main DB if we are saving an entity from additional data store
+            try (Transaction tx = persistence.createTransaction()) {
+                EntityManager em = persistence.getEntityManager();
+                em.persist(item);
+                tx.commit();
+            }
+        }
     }
 
     @Override
@@ -258,14 +354,9 @@ public class EntityLog implements EntityLogAPI {
         item.setType(EntityLogItem.Type.CREATE);
         item.setEntity(entityName);
         item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
+        item.setAttributes(createAttributes(entity, attributes, null));
 
-        Properties properties = new Properties();
-        for (String attr : attributes) {
-            writeAttribute(properties, entity, null, attr);
-        }
-        item.setChanges(getChanges(properties));
-
-        em.persist(item);
+        enqueueItem(item);
     }
 
     protected User findUser(EntityManager em) {
@@ -281,6 +372,16 @@ public class EntityLog implements EntityLogAPI {
             else
                 throw new RuntimeException("The user '" + login + "' specified in cuba.jmxUserLogin does not exist");
         }
+    }
+
+    private void enqueueItem(EntityLogItem item) {
+        EntityManagerContext context = persistence.getEntityManagerContext();
+        List<EntityLogItem> items = context.getAttribute(EntityLog.class.getName());
+        if (items == null) {
+            items = new ArrayList<>();
+            context.setAttribute(EntityLog.class.getName(), items);
+        }
+        items.add(item);
     }
 
     @Override
@@ -338,72 +439,83 @@ public class EntityLog implements EntityLogAPI {
             dirty = changes.getAttributes();
         }
 
+        Set<EntityLogAttr> entityLogAttrs;
         EntityLogItem.Type type;
-        Properties properties = new Properties();
         if (entity instanceof SoftDelete && dirty.contains("deleteTs") && !((SoftDelete) entity).isDeleted()) {
             type = EntityLogItem.Type.RESTORE;
-            for (String attr : attributes) {
-                writeAttribute(properties, entity, changes, attr);
-            }
+            entityLogAttrs = createAttributes(entity, attributes, changes);
         } else {
             type = EntityLogItem.Type.MODIFY;
+            Set<String> dirtyAttributes = new HashSet<>();
             for (String attr : attributes) {
                 if (dirty.contains(attr)) {
-                    writeAttribute(properties, entity, changes, attr);
+                    dirtyAttributes.add(attr);
                 } else if (!Stores.getAdditional().isEmpty()) {
                     String idAttr = metadataTools.getCrossDataStoreReferenceIdProperty(storeName, metaClass.getPropertyNN(attr));
                     if (idAttr != null && dirty.contains(idAttr)) {
-                        writeAttribute(properties, entity, changes, attr);
+                        dirtyAttributes.add(attr);
                     }
                 }
             }
+            entityLogAttrs = createAttributes(entity, dirtyAttributes, changes);
         }
-        if (!properties.isEmpty() || type == EntityLogItem.Type.RESTORE) {
+        if (!entityLogAttrs.isEmpty() || type == EntityLogItem.Type.RESTORE) {
             EntityLogItem item = metadata.create(EntityLogItem.class);
             item.setEventTs(ts);
             item.setUser(findUser(em));
             item.setType(type);
             item.setEntity(metaClass.getName());
             item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
-            item.setChanges(getChanges(properties));
+            item.setAttributes(entityLogAttrs);
 
-            em.persist(item);
+            enqueueItem(item);
         }
     }
 
-    protected String getChanges(Properties properties) throws IOException {
-        StringWriter writer = new StringWriter();
-        properties.store(writer, null);
-        String changes = writer.toString();
-        if (changes.startsWith("#"))
-            changes = changes.substring(changes.indexOf("\n") + 1); // cut off comments line
-        return changes;
-    }
+    private Set<EntityLogAttr> createAttributes(Entity entity, Set<String> attributes,
+                                                @Nullable EntityAttributeChanges changes) {
+        Set<EntityLogAttr> result = new HashSet<>();
+        for (String name : attributes) {
+            EntityLogAttr attr = metadata.create(EntityLogAttr.class);
+            attr.setName(name);
 
-    protected void writeAttribute(Properties properties, Entity entity, @Nullable EntityAttributeChanges changes, String attr) {
-        if (!PersistenceHelper.isLoaded(entity, attr))
-            return;
+            String value = stringify(entity.getValue(name));
+            attr.setValue(value);
 
-        Object value = entity.getValue(attr);
-        properties.setProperty(attr, stringify(value));
+            Object valueId = getValueId(value);
+            if (valueId != null)
+                attr.setValueId(valueId.toString());
 
-        Object valueId = getValueId(value);
-        if (valueId != null)
-            properties.setProperty(attr + EntityLogAttr.VALUE_ID_SUFFIX, valueId.toString());
-
-        if (changes != null) {
-            Object oldValue = changes.getOldValue(attr);
-            properties.setProperty(attr + EntityLogAttr.OLD_VALUE_SUFFIX, stringify(oldValue));
-            Object oldValueId = getValueId(oldValue);
-            if (oldValueId != null) {
-                properties.setProperty(attr + EntityLogAttr.OLD_VALUE_ID_SUFFIX, oldValueId.toString());
+            if (changes != null) {
+                Object oldValue = changes.getOldValue(name);
+                attr.setOldValue(stringify(oldValue));
+                Object oldValueId = getValueId(oldValue);
+                if (oldValueId != null) {
+                    attr.setOldValueId(oldValueId.toString());
+                }
             }
-        }
 
-        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-        String mp = messageTools.inferMessagePack(attr, entity);
-        if (mp != null)
-            properties.setProperty(attr + EntityLogAttr.MP_SUFFIX, mp);
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            String mp = messageTools.inferMessagePack(name, entity);
+            if (mp != null)
+                attr.setMessagesPack(mp);
+
+            result.add(attr);
+        }
+        return result;
+    }
+
+    protected String getChanges(Properties properties) {
+        try {
+            StringWriter writer = new StringWriter();
+            properties.store(writer, null);
+            String changes = writer.toString();
+            if (changes.startsWith("#"))
+                changes = changes.substring(changes.indexOf("\n") + 1); // cut off comments line
+            return changes;
+        } catch (IOException e) {
+            throw new RuntimeException("Error writing entity log attributes", e);
+        }
     }
 
     @Override
@@ -454,14 +566,9 @@ public class EntityLog implements EntityLogAPI {
         item.setType(EntityLogItem.Type.DELETE);
         item.setEntity(entityName);
         item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
+        item.setAttributes(createAttributes(entity, attributes, null));
 
-        Properties properties = new Properties();
-        for (String attr : attributes) {
-            writeAttribute(properties, entity, null, attr);
-        }
-        item.setChanges(getChanges(properties));
-
-        em.persist(item);
+        enqueueItem(item);
     }
 
     protected Set<String> getAllAttributes(Entity entity) {

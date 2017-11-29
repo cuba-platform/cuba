@@ -95,4 +95,10 @@ public interface EntityLogAPI {
      * @see #processLoggingForCurrentThread(boolean)
      */
     boolean isLoggingForCurrentThread();
+
+    /**
+     * Flush records accumulated by invocations of {@link #registerCreate(Entity)} and other registration methods
+     * to the database.
+     */
+    void flush();
 }

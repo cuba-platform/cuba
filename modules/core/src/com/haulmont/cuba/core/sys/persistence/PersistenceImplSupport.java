@@ -333,6 +333,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
 
             if (!readOnly) {
                 traverseEntities(container, new OnCommitEntityVisitor(container.getStoreName()), false);
+                entityLog.flush();
             }
 
             Collection<Entity> instances = container.getAllInstances();
@@ -505,6 +506,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
             if (BaseEntityInternalAccess.isNew(entity)
                     && !getSavedInstances(storeName).contains(entity)) {
                 entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_INSERT, storeName);
+                entityLog.registerCreate(entity, true);
                 return true;
             }
 
@@ -515,10 +517,19 @@ public class PersistenceImplSupport implements ApplicationContextAware {
 
             if (isDeleted(entity, changeListener)) {
                 entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_DELETE, storeName);
+                entityLog.registerDelete(entity, true);
                 return true;
 
             } else if (changeListener.hasChanges()) {
                 entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_UPDATE, storeName);
+                if (BaseEntityInternalAccess.isNew(entity)) {
+                    // it can happen if flush has already happened, so the entity is still New but was saved
+                    entityLog.registerCreate(entity, true);
+                } else {
+                    EntityAttributeChanges changes = new EntityAttributeChanges();
+                    changes.addChanges(changeListener.getObjectChangeSet());
+                    entityLog.registerModify(entity, true, changes);
+                }
                 return true;
             }
 
