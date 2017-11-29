@@ -72,6 +72,11 @@
                     <label value=""/>
                 </row>
                 <row>
+                    <label id="useUserTimeZoneLab" value="mainMsg://filter.customConditionFrame.useUserTimeZone"/>
+                    <checkBox id="useUserTimeZone"/>
+                    <label value=""/>
+                </row>
+                <row>
                     <label id="entityLab" value="mainMsg://filter.customConditionFrame.entity" align="MIDDLE_LEFT"/>
                     <lookupField id="entitySelect" width="theme://cuba.gui.customConditionFrame.field.width" requiredMessage="mainMsg://filter.customConditionFrame.fillEntity"/>
                     <label value=""/>

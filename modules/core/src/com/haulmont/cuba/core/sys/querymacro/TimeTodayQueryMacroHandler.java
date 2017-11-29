@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 @Component("cuba_TimeTodayQueryMacroHandler")
@@ -57,17 +58,25 @@ public class TimeTodayQueryMacroHandler extends AbstractQueryMacroHandler {
     @Override
     protected String doExpand(String macro) {
         count++;
-        String param1 = macro.replace(".", "_") + "_" + count + "_1";
-        String param2 = macro.replace(".", "_") + "_" + count + "_2";
+        String[] args = macro.split(",");
+        if (args.length != 1 && args.length != 2)
+            throw new RuntimeException("Invalid macro: " + macro);
+        String field = args[0].trim();
+        String param1 = field.replace(".", "_") + "_" + count + "_1";
+        String param2 = field.replace(".", "_") + "_" + count + "_2";
 
-        Calendar cal = Calendar.getInstance();
+        TimeZone timeZone = awareTimeZoneFromArgs(args, 1);
+        if (timeZone == null) {
+            timeZone = TimeZone.getDefault();
+        }
+        Calendar cal = Calendar.getInstance(timeZone);
         cal.setTime(AppBeans.get(TimeSource.class).currentTimestamp());
-//        cal.setTime(new Date());
-        params.put(param1, DateUtils.truncate(cal.getTime(), Calendar.DAY_OF_MONTH));
+
+        params.put(param1, DateUtils.truncate(cal, Calendar.DAY_OF_MONTH).getTime());
 
         cal.add(Calendar.DAY_OF_MONTH, 1);
-        params.put(param2, DateUtils.truncate(cal.getTime(), Calendar.DAY_OF_MONTH));
+        params.put(param2, DateUtils.truncate(cal, Calendar.DAY_OF_MONTH).getTime());
 
-        return String.format("(%s >= :%s and %s < :%s)", macro, param1, macro, param2);
+        return String.format("(%s >= :%s and %s < :%s)", field, param1, field, param2);
     }
 }

@@ -36,6 +36,7 @@ import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.security.global.UserSession;
 import org.antlr.runtime.RecognitionException;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -75,6 +76,9 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
     protected SourceCodeEditor entityParamWhereField;
 
     @Inject
+    protected CheckBox useUserTimeZone;
+
+    @Inject
     protected Label paramViewLab;
 
     @Inject
@@ -85,6 +89,12 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
     @Inject
     protected Label nameLab;
+
+    @Inject
+    protected Label useUserTimeZoneLab;
+
+    @Inject
+    protected UserSessionSource userSessionSource;
 
     protected boolean initializing;
 
@@ -109,6 +119,8 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
             boolean isEntity = ParamType.ENTITY.equals(typeSelect.getValue());
             boolean isEnum = ParamType.ENUM.equals(typeSelect.getValue());
+            boolean isDate = ParamType.DATE.equals(typeSelect.getValue());
+
             entityLab.setEnabled(isEntity || isEnum);
             entitySelect.setEnabled(isEntity || isEnum);
             entitySelect.setRequired(entitySelect.isEnabled());
@@ -116,6 +128,10 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
             entityParamWhereField.setEnabled(isEntity);
             paramViewLab.setEnabled(isEntity);
             entityParamViewField.setEnabled(isEntity);
+
+            useUserTimeZoneLab.setVisible(isDate);
+            useUserTimeZone.setVisible(isDate);
+
             Param param = condition.getParam();
             fillEntitySelect(param);
 
@@ -143,6 +159,23 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
             }
         });
 
+        useUserTimeZone.addValueChangeListener(e -> {
+            if (defaultValueComponent != null) {
+                DateField dateField = (DateField) defaultValueComponent;
+                if (Boolean.TRUE.equals(e.getValue())) {
+                    UserSession userSession = userSessionSource.getUserSession();
+                    if (userSession.getTimeZone() != null) {
+                        dateField.setTimeZone(userSession.getTimeZone());
+                    }
+                    dateField.setValue(null);
+                    dateField.setEditable(false);
+                } else {
+                    dateField.setTimeZone(TimeZone.getDefault());
+                    dateField.setEditable(true);
+                }
+            }
+        });
+
         entitySelect.addValueChangeListener(e -> {
             if (initializing || !defaultValueLayout.isVisible()) {
                 return;
@@ -163,33 +196,17 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
         filterHelper.setLookupNullSelectionAllowed(typeSelect, false);
         filterHelper.setLookupFieldPageLength(typeSelect, 12);
 
-        joinField.setSuggester(new Suggester() {
-            @Override
-            public List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition) {
-                return requestHint(joinField, text, cursorPosition);
-            }
-        });
+        joinField.setSuggester((source, text, cursorPosition) -> requestHint(joinField, text, cursorPosition));
         joinField.setHighlightActiveLine(false);
         joinField.setShowGutter(false);
 
-        whereField.setSuggester(new Suggester() {
-            @Override
-            public List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition) {
-                return requestHint(whereField, text, cursorPosition);
-            }
-        });
+        whereField.setSuggester((source, text, cursorPosition) -> requestHint(whereField, text, cursorPosition));
         whereField.setHighlightActiveLine(false);
         whereField.setShowGutter(false);
 
-        entityParamWhereField.setSuggester(new Suggester() {
-            @Override
-            public List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition) {
-                return requestHintParamWhere(entityParamWhereField, text, cursorPosition);
-            }
-        });
+        entityParamWhereField.setSuggester((source, text, cursorPosition) -> requestHintParamWhere(entityParamWhereField, text, cursorPosition));
         entityParamWhereField.setHighlightActiveLine(false);
         entityParamWhereField.setShowGutter(false);
-
     }
 
     @Override
@@ -207,6 +224,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
         inExprCb.setValue(condition.getInExpr());
         entityParamWhereField.setValue(condition.getEntityParamWhere());
         entityParamViewField.setValue(condition.getEntityParamView());
+        useUserTimeZone.setValue(condition.getUseUserTimeZone());
 
         fillTypeSelect(condition.getParam());
         fillEntitySelect(condition.getParam());
@@ -370,6 +388,8 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
         String entityParamView = entityParamViewField.getValue();
         condition.setEntityParamView(entityParamView);
 
+        condition.setUseUserTimeZone(useUserTimeZone.getValue());
+
         Param param = Param.Builder.getInstance()
                 .setName(paramName)
                 .setJavaClass(javaClass)
@@ -378,6 +398,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
                 .setDataSource(condition.getDatasource())
                 .setInExpr(condition.getInExpr())
                 .setRequired(condition.getRequired())
+                .setUseUserTimeZone(condition.getUseUserTimeZone())
                 .build();
 
         param.setDefaultValue(condition.getParam().getDefaultValue());

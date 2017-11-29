@@ -16,11 +16,12 @@
  */
 package com.haulmont.cuba.core.sys.querymacro;
 
-import com.haulmont.bali.datastruct.Pair;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -31,7 +32,10 @@ public class DateEqualsMacroHandler extends AbstractQueryMacroHandler {
     protected static final Pattern MACRO_PATTERN = Pattern.compile("@dateEquals\\s*\\(([^)]+)\\)");
 
     protected Map<String, Object> namedParameters;
-    protected List<Pair<String, String>> paramNames = new ArrayList<>();
+    protected List<MacroArgs> paramNames = new ArrayList<>();
+
+    @Inject
+    protected UserSessionSource userSessionSource;
 
     public DateEqualsMacroHandler() {
         super(MACRO_PATTERN);
@@ -46,13 +50,14 @@ public class DateEqualsMacroHandler extends AbstractQueryMacroHandler {
     protected String doExpand(String macro) {
         count++;
         String[] args = macro.split(",");
-        if (args.length != 2)
+        if (args.length != 2 && args.length != 3)
             throw new RuntimeException("Invalid macro: " + macro);
 
         String field = args[0].trim();
         String param1 = args[1].trim().substring(1);
         String param2 = field.replace(".", "_") + "_" + count;
-        paramNames.add(new Pair<>(param1, param2));
+        TimeZone timeZone = awareTimeZoneFromArgs(args, 2);
+        paramNames.add(new MacroArgs(param1, param2, timeZone));
 
         return String.format("(%s >= :%s and %s < :%s)", field, param1, field, param2);
     }
@@ -60,15 +65,23 @@ public class DateEqualsMacroHandler extends AbstractQueryMacroHandler {
     @Override
     public Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();
-        for (Pair<String, String> pair : paramNames) {
-            Date date1 = (Date) namedParameters.get(pair.getFirst());
-            if (date1 == null)
-                throw new RuntimeException("Parameter " + pair.getFirst() + " not found for macro");
-            date1 = DateUtils.truncate(date1, Calendar.DAY_OF_MONTH);
-            Date date2 = DateUtils.addDays(date1, 1);
+        for (MacroArgs macroArgs : paramNames) {
+            TimeZone timeZone = macroArgs.timeZone == null ? TimeZone.getDefault() : macroArgs.timeZone;
+            Date date1 = (Date) namedParameters.get(macroArgs.firstParamName);
+            if (date1 == null) {
+                throw new RuntimeException(String.format("Parameter %s not found for macro",
+                        macroArgs.firstParamName));
+            }
+            Calendar calendar1 = Calendar.getInstance(timeZone);
+            calendar1.setTime(date1);
+            calendar1 = DateUtils.truncate(calendar1, Calendar.DAY_OF_MONTH);
 
-            params.put(pair.getFirst(), date1);
-            params.put(pair.getSecond(), date2);
+            Calendar calendar2 = Calendar.getInstance(timeZone);
+            calendar2.setTime(calendar1.getTime());
+            calendar2.add(Calendar.DAY_OF_MONTH, 1);
+
+            params.put(macroArgs.firstParamName, calendar1.getTime());
+            params.put(macroArgs.secondParamName, calendar2.getTime());
         }
         return params;
     }
@@ -76,5 +89,17 @@ public class DateEqualsMacroHandler extends AbstractQueryMacroHandler {
     @Override
     public String replaceQueryParams(String queryString, Map<String, Object> params) {
         return queryString;
+    }
+
+    protected static class MacroArgs {
+        protected String firstParamName;
+        protected String secondParamName;
+        protected TimeZone timeZone;
+
+        public MacroArgs(String firstParamName, String secondParamName, TimeZone timeZone) {
+            this.firstParamName = firstParamName;
+            this.secondParamName = secondParamName;
+            this.timeZone = timeZone;
+        }
     }
 }

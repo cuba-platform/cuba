@@ -149,6 +149,10 @@ public class QueryTransformerAstBasedTest {
         result = transformerAstBased.getResult();
         assertEquals("SELECT p FROM Player p where @dateEquals ( p.birthDate, :d)", result);
 
+        transformerAstBased = new QueryTransformerAstBased(model, "SELECT p FROM Player p where @dateEquals(p.birthDate, :d, USER_TIMEZONE) ");
+        result = transformerAstBased.getResult();
+        assertEquals("SELECT p FROM Player p where @dateEquals ( p.birthDate, :d, USER_TIMEZONE)", result);
+
         transformerAstBased = new QueryTransformerAstBased(model, "SELECT p FROM Player p where @today(p.birthDate) ");
         result = transformerAstBased.getResult();
         assertEquals("SELECT p FROM Player p where @today ( p.birthDate)", result);

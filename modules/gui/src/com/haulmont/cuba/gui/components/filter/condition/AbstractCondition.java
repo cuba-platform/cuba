@@ -79,6 +79,7 @@ public abstract class AbstractCondition extends BaseUuidEntity {
     protected Boolean required = false;
     protected String entityParamWhere;
     protected String entityParamView;
+    protected Boolean useUserTimeZone;
     protected Datasource datasource;
     protected Integer width = 1;
     protected Op operator;
@@ -111,6 +112,7 @@ public abstract class AbstractCondition extends BaseUuidEntity {
         this.param = other.param;
         this.text = other.text;
         this.operator = other.operator;
+        this.useUserTimeZone = other.useUserTimeZone;
     }
 
     protected AbstractCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
@@ -129,6 +131,7 @@ public abstract class AbstractCondition extends BaseUuidEntity {
         inExpr = Boolean.valueOf(element.attributeValue("inExpr"));
         hidden = Boolean.valueOf(element.attributeValue("hidden"));
         required = Boolean.valueOf(element.attributeValue("required"));
+        useUserTimeZone = Boolean.valueOf(element.attributeValue("useUserTimeZone"));
         entityParamWhere = element.attributeValue("paramWhere");
         entityParamView = element.attributeValue("paramView");
         width = Strings.isNullOrEmpty(element.attributeValue("width")) ? 1 : Integer.parseInt(element.attributeValue("width"));
@@ -292,6 +295,14 @@ public abstract class AbstractCondition extends BaseUuidEntity {
         this.required = required;
     }
 
+    public Boolean getUseUserTimeZone() {
+        return useUserTimeZone;
+    }
+
+    public void setUseUserTimeZone(Boolean useUserTimeZone) {
+        this.useUserTimeZone = useUserTimeZone;
+    }
+
     public void toXml(Element element, Param.ValueProperty valueProperty) {
         String text = getText();
         if (StringUtils.isNotBlank(text))
@@ -316,6 +327,9 @@ public abstract class AbstractCondition extends BaseUuidEntity {
 
         if (required)
             element.addAttribute("required", "true");
+
+        if (Boolean.TRUE.equals(useUserTimeZone))
+            element.addAttribute("useUserTimeZone", "true");
 
         if (operator != null) {
             element.addAttribute("operatorType", operator.name());

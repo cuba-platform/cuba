@@ -25,10 +25,7 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -97,17 +94,21 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
     protected String doExpand(String macro) {
         count++;
         String[] args = macro.split(",");
-        if (args.length != 4)
+        if (args.length != 4 && args.length != 5)
             throw new RuntimeException("Invalid macro: " + macro);
 
         String field = args[0];
-        String param1 = getParam(args, 1);
-        String param2 = getParam(args, 2);
+        TimeZone timeZone = awareTimeZoneFromArgs(args, 4);
+        if (timeZone == null) {
+            timeZone = TimeZone.getDefault();
+        }
+        String param1 = getParam(args, 1, timeZone);
+        String param2 = getParam(args, 2, timeZone);
 
         return String.format("(%s >= :%s and %s < :%s)", field, param1, field, param2);
     }
 
-    protected String getParam(String[] args, int idx) {
+    protected String getParam(String[] args, int idx, TimeZone timeZone) {
         String arg = args[idx].trim();
         String unit = args[3].trim();
 
@@ -126,7 +127,7 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
             throw new RuntimeException("Invalid macro argument: " + arg, e);
         }
 
-        Date date = computeDate(num, unit);
+        Date date = computeDate(num, unit, timeZone);
 
         String paramName = args[0].trim().replace(".", "_") + "_" + count + "_" + idx;
         params.put(paramName, date);
@@ -134,14 +135,14 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
         return paramName;
     }
 
-    protected Date computeDate(int num, String unit) {
-        Calendar cal = Calendar.getInstance();
+    protected Date computeDate(int num, String unit, TimeZone timeZone) {
+        Calendar cal = Calendar.getInstance(timeZone);
         cal.setTime(AppBeans.get(TimeSource.class).currentTimestamp());
         int calField = getCalendarField(unit);
         if (num != 0) {
             cal.add(calField, num);
         }
-        return DateUtils.truncate(cal.getTime(), calField);
+        return DateUtils.truncate(cal, calField).getTime();
     }
 
     protected int getCalendarField(String unit) {

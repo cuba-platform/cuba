@@ -16,8 +16,12 @@
 
 package com.haulmont.cuba.core.sys.querymacro;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.QueryMacroHandler;
+import com.haulmont.cuba.security.global.UserSession;
 
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,4 +47,17 @@ public abstract class AbstractQueryMacroHandler implements QueryMacroHandler {
     }
 
     protected abstract String doExpand(String macro);
+
+    protected TimeZone awareTimeZoneFromArgs(String[] args, int pos) {
+        if (pos < args.length) {
+            if ("USER_TIMEZONE".equalsIgnoreCase(args[pos].trim())) {
+                UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+                if (userSessionSource.checkCurrentUserSession()) {
+                    UserSession userSession = userSessionSource.getUserSession();
+                    return userSession.getTimeZone();
+                }
+            }
+        }
+        return null;
+    }
 }

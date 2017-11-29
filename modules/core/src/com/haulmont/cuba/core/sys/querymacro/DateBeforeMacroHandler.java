@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.core.sys.querymacro;
 
+import com.haulmont.bali.datastruct.Pair;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,7 @@ public class DateBeforeMacroHandler extends AbstractQueryMacroHandler {
     protected static final Pattern MACRO_PATTERN = Pattern.compile("@dateBefore\\s*\\(([^)]+)\\)");
 
     protected Map<String, Object> namedParameters;
-    protected List<String> paramNames = new ArrayList<>();
+    protected List<Pair<String, TimeZone>> paramNames = new ArrayList<>();
 
     public DateBeforeMacroHandler() {
         super(MACRO_PATTERN);
@@ -40,12 +41,13 @@ public class DateBeforeMacroHandler extends AbstractQueryMacroHandler {
     protected String doExpand(String macro) {
         count++;
         String[] args = macro.split(",");
-        if (args.length != 2)
+        if (args.length != 2 && args.length != 3)
             throw new RuntimeException("Invalid macro: " + macro);
 
         String field = args[0].trim();
         String param = args[1].trim().substring(1);
-        paramNames.add(param);
+        TimeZone timeZone = awareTimeZoneFromArgs(args, 2);
+        paramNames.add(new Pair<>(param, timeZone));
 
         return String.format("(%s < :%s)", field, param);
     }
@@ -58,13 +60,17 @@ public class DateBeforeMacroHandler extends AbstractQueryMacroHandler {
     @Override
     public Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();
-        for (String paramName : paramNames) {
+        for (Pair<String, TimeZone> pair : paramNames) {
+            String paramName = pair.getFirst();
+            TimeZone timeZone = pair.getSecond() == null ? TimeZone.getDefault() : pair.getSecond();
             Date date = (Date) namedParameters.get(paramName);
             if (date == null)
                 throw new RuntimeException("Parameter " + paramName + " not found for macro");
 
-            Date d = DateUtils.truncate(date, Calendar.DAY_OF_MONTH);
-            params.put(paramName, d);
+            Calendar calendar = Calendar.getInstance(timeZone);
+            calendar.setTime(date);
+            calendar = DateUtils.truncate(calendar, Calendar.DAY_OF_MONTH);
+            params.put(paramName, calendar.getTime());
         }
         return params;
     }

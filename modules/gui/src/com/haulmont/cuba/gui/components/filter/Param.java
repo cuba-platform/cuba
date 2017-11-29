@@ -86,6 +86,7 @@ public class Param {
     protected Class javaClass;
     protected Object value;
     protected Object defaultValue;
+    protected boolean useUserTimeZone;
     protected String entityWhere;
     protected String entityView;
     protected Datasource datasource;
@@ -115,6 +116,7 @@ public class Param {
         private boolean required;
         private UUID categoryAttrId;
         private boolean isDateInterval;
+        private boolean useUserTimeZone;
 
         private Builder() {
         }
@@ -168,6 +170,11 @@ public class Param {
             return this;
         }
 
+        public Builder setUseUserTimeZone(boolean useUserTimeZone) {
+            this.useUserTimeZone = useUserTimeZone;
+            return this;
+        }
+
         public Param build() {
             return AppBeans.getPrototype(Param.NAME, this);
         }
@@ -188,6 +195,7 @@ public class Param {
         required = builder.required;
         categoryAttrId = builder.categoryAttrId;
         isDateInterval = builder.isDateInterval;
+        useUserTimeZone = builder.useUserTimeZone;
 
         if (DynamicAttributesUtils.isDynamicAttribute(builder.property)) {
             CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(builder.property);
@@ -235,6 +243,14 @@ public class Param {
 
     public void setInExpr(boolean inExpr) {
         this.inExpr = inExpr;
+    }
+
+    public boolean isUseUserTimeZone() {
+        return useUserTimeZone;
+    }
+
+    public void setUseUserTimeZone(boolean useUserTimeZone) {
+        this.useUserTimeZone = useUserTimeZone;
     }
 
     public Class getJavaClass() {
@@ -585,6 +601,9 @@ public class Param {
             supportTimezones = !dateOnly && !Boolean.TRUE.equals(ignoreUserTimeZone);
         } else if (javaClass.equals(java.sql.Date.class)) {
             dateOnly = true;
+            if (useUserTimeZone) {
+                supportTimezones = true;
+            }
         } else {
             supportTimezones = true;
         }
