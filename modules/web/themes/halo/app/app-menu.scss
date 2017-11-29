@@ -104,6 +104,10 @@ $cuba-menubar-menuitem-text-selected-color: #e8e8e8 !default;
       .v-ie11 & {
         border-right: 1px solid transparent;
       }
+
+      .v-edge & {
+        border-radius: 0;
+      }
     }
 
     .v-menubar-menuitem-shortcut {
@@ -115,6 +119,10 @@ $cuba-menubar-menuitem-text-selected-color: #e8e8e8 !default;
 
       .v-ie11 & {
         border-left: 1px solid transparent;
+      }
+
+      .v-edge & {
+        border-radius: 0;
       }
     }
 
@@ -162,6 +170,10 @@ $cuba-menubar-menuitem-text-selected-color: #e8e8e8 !default;
 
       .v-ie11 & {
         border-left: 1px solid transparent;
+      }
+
+      .v-edge & {
+        border-radius: 0;
       }
     }
   }
