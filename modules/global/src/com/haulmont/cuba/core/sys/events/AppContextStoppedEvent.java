@@ -23,9 +23,9 @@ import org.springframework.context.event.ApplicationContextEvent;
 /**
  * Application startup event. Published by {@link AppContext} before application shutdown.
  */
-public class ApplicationContextStoppedEvent extends ApplicationContextEvent {
+public class AppContextStoppedEvent extends ApplicationContextEvent {
 
-    public ApplicationContextStoppedEvent(ApplicationContext source) {
+    public AppContextStoppedEvent(ApplicationContext source) {
         super(source);
     }
 }
