@@ -179,6 +179,10 @@ public class FilterEditor extends AbstractWindow {
         applyDefaultCb.setValue(filterEntity.getApplyDefault());
         globalDefaultCb.setValue(filterEntity.getGlobalDefault());
 
+        if (filterEntity.getUser() != null) {
+            globalDefaultCb.setEnabled(false);
+        }
+
         if (!userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION)) {
             availableForAllCb.setVisible(false);
             availableForAllLabel.setVisible(false);
