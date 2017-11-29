@@ -49,7 +49,7 @@ public class IconsImpl implements Icons {
     @Inject
     protected ThemeConstantsManager themeConstantsManager;
 
-    protected static List<Class<? extends Icon>> iconSets = new ArrayList<>();
+    protected static final List<Class<? extends Icon>> iconSets = new ArrayList<>();
 
     protected ReadWriteLock lock = new ReentrantReadWriteLock();
     protected volatile boolean initialized;
