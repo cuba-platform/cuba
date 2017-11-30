@@ -34,7 +34,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.support.CronSequenceGenerator;
@@ -109,7 +109,7 @@ public class Scheduling implements SchedulingAPI {
 
         authentication.begin();
         try {
-            StopWatch sw = new Log4JStopWatch("Scheduling.processTasks");
+            StopWatch sw = new Slf4JStopWatch("Scheduling.processTasks");
             Coordinator.Context context = coordinator.begin();
             try {
                 for (ScheduledTask task : context.getTasks()) {
@@ -291,7 +291,7 @@ public class Scheduling implements SchedulingAPI {
     }
 
     protected long calculateNextCronDate(ScheduledTask task, long date, long currentDate, long frame) {
-        StopWatch sw = new Log4JStopWatch("Cron next date calculations");
+        StopWatch sw = new Slf4JStopWatch("Cron next date calculations");
         CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(task.getCron(), getCurrentTimeZone());
         //if last start = 0 (task never has run) or to far in the past, we use (NOW - FRAME) timestamp for pivot time
         //this approach should work fine cause cron works with absolute time

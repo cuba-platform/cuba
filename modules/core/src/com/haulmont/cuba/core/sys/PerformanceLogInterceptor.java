@@ -18,12 +18,12 @@ package com.haulmont.cuba.core.sys;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
 
 public class PerformanceLogInterceptor {
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "UnnecessaryLocalVariable"})
     private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {
-        StopWatch stopWatch = new Log4JStopWatch(ctx.getSignature().toShortString());
+        StopWatch stopWatch = new Slf4JStopWatch(ctx.getSignature().toShortString());
         try {
             stopWatch.start();
             Object res = ctx.proceed();

@@ -28,7 +28,7 @@ import org.jgroups.*;
 import org.jgroups.conf.XmlConfigurator;
 import org.jgroups.jmx.JmxConfigurator;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -122,7 +122,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener, O
     }
 
     protected void internalSend(Serializable message, boolean sync) {
-        StopWatch sw = new Log4JStopWatch(String.format("sendClusterMessage(%s)", message.getClass().getSimpleName()));
+        StopWatch sw = new Slf4JStopWatch(String.format("sendClusterMessage(%s)", message.getClass().getSimpleName()));
         try {
             byte[] bytes = SerializationSupport.serialize(message);
             log.debug("Sending message: {}: {} ({} bytes)", message.getClass(), message, bytes.length);
@@ -395,7 +395,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener, O
                 log.debug("Null buffer received");
                 return;
             }
-            StopWatch sw = new Log4JStopWatch();
+            StopWatch sw = new Slf4JStopWatch();
             String simpleClassName = null;
             try {
                 Serializable data = (Serializable) SerializationSupport.deserialize(bytes);
@@ -428,7 +428,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener, O
                 Map<String, byte[]> state = new HashMap<>();
                 for (Map.Entry<String, ClusterListener> entry : listeners.entrySet()) {
                     byte[] data;
-                    StopWatch sw = new Log4JStopWatch(String.format("getClusterState(%s)", entry.getKey()));
+                    StopWatch sw = new Slf4JStopWatch(String.format("getClusterState(%s)", entry.getKey()));
                     try {
                         data = entry.getValue().getState();
                     } finally {
@@ -476,7 +476,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener, O
                 for (int i = 0; i < count; i++) {
                     String name = in.readUTF();
                     int len = in.readInt();
-                    StopWatch sw = new Log4JStopWatch(String.format("setClusterState(%s)", name));
+                    StopWatch sw = new Slf4JStopWatch(String.format("setClusterState(%s)", name));
                     try {
                         log.debug("Receiving state: {} ({} bytes)", name, len);
                         byte[] data = new byte[len];

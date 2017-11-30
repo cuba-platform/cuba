@@ -23,12 +23,12 @@ import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
+import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.entity.ManagedBeanDomain;
 import com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo;
-import com.haulmont.cuba.web.jmx.JmxControlAPI;
-import org.apache.log4j.Logger;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -41,7 +41,7 @@ public class ManagedBeanInfoDatasource extends AbstractTreeDatasource<ManagedBea
     @Override
     protected Tree<ManagedBeanInfo> loadTree(Map<String, Object> params) {
         String tag = getLoggingTag("TDS");
-        StopWatch sw = new Log4JStopWatch(tag, Logger.getLogger(UIPerformanceLogger.class));
+        StopWatch sw = new Slf4JStopWatch(tag, LoggerFactory.getLogger(UIPerformanceLogger.class));
         List<Node<ManagedBeanInfo>> nodes = new ArrayList<>();
 
         if (jmxInstance != null) {
@@ -50,7 +50,7 @@ public class ManagedBeanInfoDatasource extends AbstractTreeDatasource<ManagedBea
             Map<String, Node<ManagedBeanInfo>> domainMap = new HashMap<>();
 
             for (ManagedBeanDomain mbd : domains) {
-                ManagedBeanInfo dummy = new ManagedBeanInfo();
+                ManagedBeanInfo dummy = metadata.create(ManagedBeanInfo.class);
                 dummy.setDomain(mbd.getName());
 
                 Node<ManagedBeanInfo> node = new Node<>(dummy);

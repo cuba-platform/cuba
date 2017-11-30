@@ -31,9 +31,9 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.log4j.Logger;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -602,7 +602,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
 
         String tag = getLoggingTag("CDS");
-        StopWatch sw = new Log4JStopWatch(tag, Logger.getLogger(UIPerformanceLogger.class));
+        StopWatch sw = new Slf4JStopWatch(tag, LoggerFactory.getLogger(UIPerformanceLogger.class));
 
         if (needLoading()) {
             LoadContext context = beforeLoadData(params);

@@ -22,9 +22,9 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
-import org.apache.log4j.Logger;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.UUID;
@@ -36,7 +36,7 @@ public class JmxInstancesDatasource extends CollectionDatasourceImpl<JmxInstance
     @Override
     protected void loadData(Map<String, Object> params) {
         String tag = getLoggingTag("CDS");
-        StopWatch sw = new Log4JStopWatch(tag, Logger.getLogger(UIPerformanceLogger.class));
+        StopWatch sw = new Slf4JStopWatch(tag, LoggerFactory.getLogger(UIPerformanceLogger.class));
 
         detachListener(data.values());
         data.clear();

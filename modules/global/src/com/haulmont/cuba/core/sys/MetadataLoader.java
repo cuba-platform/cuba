@@ -45,7 +45,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -263,7 +263,7 @@ public class MetadataLoader {
     }
 
     protected void replaceExtendedMetaClasses() {
-        StopWatch sw = new Log4JStopWatch("Metadata.replaceExtendedMetaClasses");
+        StopWatch sw = new Slf4JStopWatch("Metadata.replaceExtendedMetaClasses");
 
         for (MetaModel model : session.getModels()) {
             MetaModelImpl modelImpl = (MetaModelImpl) model;

@@ -25,12 +25,12 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AbstractMessages;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.perf4j.StopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.net.SocketException;
 import java.util.List;
@@ -74,7 +74,7 @@ public class MessagesClientImpl extends AbstractMessages {
         if (log.isTraceEnabled())
             log.trace("searchRemotely: " + pack + "/" + locale + "/" + key);
 
-        StopWatch stopWatch = new Log4JStopWatch("Messages.searchRemotely");
+        StopWatch stopWatch = new Slf4JStopWatch("Messages.searchRemotely");
         try {
             String message = localizedMessageService.getMessage(pack, key, locale);
             if (key.equals(message))

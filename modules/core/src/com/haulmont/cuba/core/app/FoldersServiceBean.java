@@ -42,7 +42,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -86,7 +86,7 @@ public class FoldersServiceBean implements FoldersService {
     public List<AppFolder> loadAppFolders() {
         log.debug("Loading AppFolders");
 
-        StopWatch stopWatch = new Log4JStopWatch("AppFolders");
+        StopWatch stopWatch = new Slf4JStopWatch("AppFolders");
         stopWatch.start();
 
         List<AppFolder> resultList;
@@ -157,7 +157,7 @@ public class FoldersServiceBean implements FoldersService {
     public List<AppFolder> reloadAppFolders(List<AppFolder> folders) {
         log.debug("Reloading AppFolders {}", folders);
 
-        StopWatch stopWatch = new Log4JStopWatch("AppFolders");
+        StopWatch stopWatch = new Slf4JStopWatch("AppFolders");
         stopWatch.start();
 
         try {
@@ -210,7 +210,7 @@ public class FoldersServiceBean implements FoldersService {
     public List<SearchFolder> loadSearchFolders() {
         log.debug("Loading SearchFolders");
 
-        StopWatch stopWatch = new Log4JStopWatch("SearchFolders");
+        StopWatch stopWatch = new Slf4JStopWatch("SearchFolders");
         stopWatch.start();
 
         Transaction tx = persistence.createTransaction();

@@ -32,7 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -71,7 +71,7 @@ public class MenuCommand {
     }
 
     public void execute() {
-        StopWatch sw = new Log4JStopWatch("MenuItem." + item.getId());
+        StopWatch sw = new Slf4JStopWatch("MenuItem." + item.getId());
 
         command.run();
 

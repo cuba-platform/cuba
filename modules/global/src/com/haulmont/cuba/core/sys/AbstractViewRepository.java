@@ -33,7 +33,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +89,7 @@ public class AbstractViewRepository implements ViewRepository {
     }
 
     protected void init() {
-        StopWatch initTiming = new Log4JStopWatch("ViewRepository.init." + getClass().getSimpleName());
+        StopWatch initTiming = new Slf4JStopWatch("ViewRepository.init." + getClass().getSimpleName());
 
         storage.clear();
         readFileNames.clear();
@@ -471,7 +471,7 @@ public class AbstractViewRepository implements ViewRepository {
     }
 
     protected void replaceOverridden(View replacementView) {
-        Log4JStopWatch replaceTiming = new Log4JStopWatch("ViewRepository.replaceOverridden");
+        StopWatch replaceTiming = new Slf4JStopWatch("ViewRepository.replaceOverridden");
 
         HashSet<View> checked = new HashSet<>();
 

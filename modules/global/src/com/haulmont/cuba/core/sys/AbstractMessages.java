@@ -28,7 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -401,7 +401,7 @@ public abstract class AbstractMessages implements Messages {
     }
 
     protected String searchFiles(String pack, String key, Locale locale, Locale truncatedLocale, Set<String> passedPacks) {
-        StopWatch stopWatch = new Log4JStopWatch("Messages.searchFiles");
+        StopWatch stopWatch = new Slf4JStopWatch("Messages.searchFiles");
         try {
             String cacheKey = makeCacheKey(pack, key, locale, truncatedLocale);
 
@@ -433,7 +433,7 @@ public abstract class AbstractMessages implements Messages {
     }
 
     protected String searchClasspath(String pack, String key, Locale locale, Locale truncatedLocale, Set<String> passedPacks) {
-        StopWatch stopWatch = new Log4JStopWatch("Messages.searchClasspath");
+        StopWatch stopWatch = new Slf4JStopWatch("Messages.searchClasspath");
         try {
             String cacheKey = makeCacheKey(pack, key, locale, truncatedLocale);
 

@@ -44,10 +44,9 @@ import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
@@ -545,9 +544,9 @@ public abstract class WindowManager {
             checkPermission(windowInfo);
         }
 
-        StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
+        StopWatch loadDescriptorWatch = new Slf4JStopWatch(windowInfo.getId() + "#" +
                 LifeCycle.LOAD,
-                Logger.getLogger(UIPerformanceLogger.class));
+                LoggerFactory.getLogger(UIPerformanceLogger.class));
 
         Element element = screenXmlLoader.load(windowInfo.getTemplate(), windowInfo.getId(), params);
 
@@ -588,9 +587,9 @@ public abstract class WindowManager {
             initDebugIds(clientSpecificWindow);
         }
 
-        StopWatch uiPermissionsWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
+        StopWatch uiPermissionsWatch = new Slf4JStopWatch(windowInfo.getId() + "#" +
                 LifeCycle.UI_PERMISSIONS,
-                Logger.getLogger(UIPerformanceLogger.class));
+                LoggerFactory.getLogger(UIPerformanceLogger.class));
 
         // apply ui permissions
         WindowCreationHelper.applyUiPermissions(clientSpecificWindow);
@@ -682,9 +681,9 @@ public abstract class WindowManager {
 
         init(window, params);
 
-        StopWatch uiPermissionsWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
+        StopWatch uiPermissionsWatch = new Slf4JStopWatch(windowInfo.getId() + "#" +
                 LifeCycle.UI_PERMISSIONS,
-                Logger.getLogger(UIPerformanceLogger.class));
+                LoggerFactory.getLogger(UIPerformanceLogger.class));
 
         // apply ui permissions
         WindowCreationHelper.applyUiPermissions(window);
@@ -882,9 +881,9 @@ public abstract class WindowManager {
         }
         ((Window.Editor) window).setParentDs(parentDs);
 
-        StopWatch setItemWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
+        StopWatch setItemWatch = new Slf4JStopWatch(windowInfo.getId() + "#" +
                 LifeCycle.SET_ITEM,
-                Logger.getLogger(UIPerformanceLogger.class));
+                LoggerFactory.getLogger(UIPerformanceLogger.class));
 
         ((Window.Editor) window).setItem(item);
 
@@ -980,9 +979,9 @@ public abstract class WindowManager {
         loader.setLocale(getLocale());
         loader.setMessagesPack(parentFrame.getMessagesPack());
 
-        StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
+        StopWatch loadDescriptorWatch = new Slf4JStopWatch(windowInfo.getId() + "#" +
                 LifeCycle.LOAD,
-                Logger.getLogger(UIPerformanceLogger.class));
+                LoggerFactory.getLogger(UIPerformanceLogger.class));
 
         Frame component;
         String frameId = id != null ? id : windowInfo.getId();
@@ -1168,9 +1167,9 @@ public abstract class WindowManager {
                 attributeAccessSupport.applyAttributeAccess(abstractWindow, false);
             }
 
-            StopWatch readyStopWatch = new Log4JStopWatch(window.getId() + "#" +
+            StopWatch readyStopWatch = new Slf4JStopWatch(window.getId() + "#" +
                     LifeCycle.READY,
-                    Logger.getLogger(UIPerformanceLogger.class));
+                    LoggerFactory.getLogger(UIPerformanceLogger.class));
 
             abstractWindow.ready();
 
@@ -1206,9 +1205,9 @@ public abstract class WindowManager {
         if (wrappingWindow instanceof AbstractWindow) {
             Element companionsElem = element.element("companions");
             if (companionsElem != null) {
-                StopWatch companionStopWatch = new Log4JStopWatch(wrappingWindow.getId() + "#" +
+                StopWatch companionStopWatch = new Slf4JStopWatch(wrappingWindow.getId() + "#" +
                         LifeCycle.COMPANION,
-                        Logger.getLogger(UIPerformanceLogger.class));
+                        LoggerFactory.getLogger(UIPerformanceLogger.class));
 
                 initCompanion(companionsElem, (AbstractWindow) wrappingWindow);
 
@@ -1216,9 +1215,9 @@ public abstract class WindowManager {
             }
         }
 
-        StopWatch injectStopWatch = new Log4JStopWatch(wrappingWindow.getId() + "#" +
+        StopWatch injectStopWatch = new Slf4JStopWatch(wrappingWindow.getId() + "#" +
                 LifeCycle.INJECTION,
-                Logger.getLogger(UIPerformanceLogger.class));
+                LoggerFactory.getLogger(UIPerformanceLogger.class));
 
         ControllerDependencyInjector dependencyInjector =
                 AppBeans.getPrototype(ControllerDependencyInjector.NAME, wrappingWindow, params);
@@ -1236,9 +1235,9 @@ public abstract class WindowManager {
 
     protected void init(Window window, Map<String, Object> params) {
         if (window instanceof AbstractWindow) {
-            StopWatch initStopWatch = new Log4JStopWatch(window.getId() +
+            StopWatch initStopWatch = new Slf4JStopWatch(window.getId() +
                     "#" + LifeCycle.INIT,
-                    Logger.getLogger(UIPerformanceLogger.class));
+                    LoggerFactory.getLogger(UIPerformanceLogger.class));
 
             ((AbstractWindow) window).init(params);
 

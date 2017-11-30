@@ -26,10 +26,10 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
+import org.slf4j.LoggerFactory;
 
 public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
 
@@ -119,9 +119,9 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
             }
         }
 
-        StopWatch loadDescriptorWatch = new Log4JStopWatch(screenPath + "#" +
+        StopWatch loadDescriptorWatch = new Slf4JStopWatch(screenPath + "#" +
                 UIPerformanceLogger.LifeCycle.LOAD,
-                Logger.getLogger(UIPerformanceLogger.class));
+                LoggerFactory.getLogger(UIPerformanceLogger.class));
         loadDescriptorWatch.start();
 
         String currentFrameId = context.getCurrentFrameId();

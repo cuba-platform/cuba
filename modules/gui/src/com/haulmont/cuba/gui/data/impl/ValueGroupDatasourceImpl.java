@@ -26,9 +26,9 @@ import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
-import org.apache.log4j.Logger;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -78,7 +78,7 @@ public class ValueGroupDatasourceImpl
     @Override
     protected void loadData(Map<String, Object> params) {
         String tag = getLoggingTag("VGDS");
-        StopWatch sw = new Log4JStopWatch(tag, Logger.getLogger(UIPerformanceLogger.class));
+        StopWatch sw = new Slf4JStopWatch(tag, LoggerFactory.getLogger(UIPerformanceLogger.class));
 
         delegate.loadData(params);
 

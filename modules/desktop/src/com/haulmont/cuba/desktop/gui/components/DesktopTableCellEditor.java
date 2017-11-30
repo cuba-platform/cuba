@@ -20,11 +20,11 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.desktop.sys.vcl.DatePicker.DatePicker;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.Table;
 import org.jdesktop.swingx.JXHyperlink;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -32,7 +32,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.Component;
 import java.util.*;
 
 import static com.haulmont.cuba.gui.components.Component.BelongToFrame;
@@ -125,7 +124,7 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
     protected Component getCellComponent(int row) {
         Entity item = desktopAbstractTable.getTableModel().getItem(row);
 
-        StopWatch sw = new Log4JStopWatch("TableColumnGenerator." + desktopAbstractTable.getId());
+        StopWatch sw = new Slf4JStopWatch("TableColumnGenerator." + desktopAbstractTable.getId());
         @SuppressWarnings("unchecked")
         com.haulmont.cuba.gui.components.Component component = columnGenerator.generateCell(item);
         sw.stop();

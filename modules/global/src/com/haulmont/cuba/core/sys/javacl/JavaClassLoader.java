@@ -24,7 +24,8 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.SpringBeanLoader;
 import com.haulmont.cuba.core.sys.javacl.compiler.CharSequenceCompiler;
 import org.apache.commons.lang.StringUtils;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.StopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -101,7 +102,7 @@ public class JavaClassLoader extends URLClassLoader {
     public Class loadClass(final String fullClassName, boolean resolve) throws ClassNotFoundException {
         String containerClassName = StringUtils.substringBefore(fullClassName, "$");
 
-        Log4JStopWatch loadingWatch = new Log4JStopWatch("LoadClass");
+        StopWatch loadingWatch = new Slf4JStopWatch("LoadClass");
         try {
             lock(containerClassName);
             Class clazz;

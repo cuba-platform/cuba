@@ -27,14 +27,14 @@ import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.QCodec;
 import org.apache.commons.lang.StringUtils;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Component;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.mail.Message;
@@ -63,11 +63,11 @@ public class EmailSender implements EmailSenderAPI {
     public void sendEmail(SendingMessage sendingMessage) throws MessagingException {
         MimeMessage msg = createMimeMessage(sendingMessage);
 
-        StopWatch sw = new Log4JStopWatch("EmailSender.send");
+        StopWatch sw = new Slf4JStopWatch("EmailSender.send");
         mailSender.send(msg);
         sw.stop();
 
-        log.info("Email '" + msg.getSubject() + "' to '" + sendingMessage.getAddress() + "' has been sent successfully");
+        log.info("Email '{}' to '{}' has been sent successfully", msg.getSubject(), sendingMessage.getAddress());
     }
 
     protected MimeMessage createMimeMessage(SendingMessage sendingMessage) throws MessagingException {
@@ -154,7 +154,7 @@ public class EmailSender implements EmailSenderAPI {
             if (emailHeader != null) {
                 message.addHeader(emailHeader.getName(), emailHeader.getValue());
             } else {
-                log.warn("Can't parse email header: '" + header + "'");
+                log.warn("Can't parse email header: '{}'", header);
             }
         }
     }

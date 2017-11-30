@@ -29,10 +29,9 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
@@ -221,9 +220,9 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
                 if (wrappingFrame instanceof AbstractFrame) {
                     Element companionsElem = element.element("companions");
                     if (companionsElem != null) {
-                        StopWatch companionStopWatch = new Log4JStopWatch(loggingId + "#" +
+                        StopWatch companionStopWatch = new Slf4JStopWatch(loggingId + "#" +
                                 UIPerformanceLogger.LifeCycle.COMPANION,
-                                Logger.getLogger(UIPerformanceLogger.class));
+                                LoggerFactory.getLogger(UIPerformanceLogger.class));
 
                         initCompanion(companionsElem, (AbstractFrame) wrappingFrame);
 
@@ -231,9 +230,9 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
                     }
                 }
 
-                StopWatch injectStopWatch = new Log4JStopWatch(loggingId + "#" +
+                StopWatch injectStopWatch = new Slf4JStopWatch(loggingId + "#" +
                         UIPerformanceLogger.LifeCycle.INJECTION,
-                        Logger.getLogger(UIPerformanceLogger.class));
+                        LoggerFactory.getLogger(UIPerformanceLogger.class));
 
                 ControllerDependencyInjector dependencyInjector =
                         AppBeans.getPrototype(ControllerDependencyInjector.NAME, wrappingFrame, params);
@@ -263,9 +262,9 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
                 String loggingId = ComponentsHelper.getFullFrameId(this.frame);
 
                 if (this.frame instanceof AbstractFrame) {
-                    StopWatch initStopWatch = new Log4JStopWatch(loggingId + "#" +
+                    StopWatch initStopWatch = new Slf4JStopWatch(loggingId + "#" +
                             UIPerformanceLogger.LifeCycle.INIT,
-                            Logger.getLogger(UIPerformanceLogger.class));
+                            LoggerFactory.getLogger(UIPerformanceLogger.class));
 
                     ((AbstractFrame) this.frame).init(params);
 
@@ -291,9 +290,9 @@ public class FrameLoader<T extends Frame> extends ContainerLoader<T> {
             if (wrapped) {
                 String loggingId = ComponentsHelper.getFullFrameId(this.frame);
 
-                StopWatch uiPermissionsWatch = new Log4JStopWatch(loggingId + "#" +
+                StopWatch uiPermissionsWatch = new Slf4JStopWatch(loggingId + "#" +
                         UIPerformanceLogger.LifeCycle.UI_PERMISSIONS,
-                        Logger.getLogger(UIPerformanceLogger.class));
+                        LoggerFactory.getLogger(UIPerformanceLogger.class));
 
                 // apply ui permissions
                 WindowCreationHelper.applyUiPermissions(window);

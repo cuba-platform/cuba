@@ -59,7 +59,7 @@ import org.jdesktop.swingx.table.ColumnControlButton;
 import org.jdesktop.swingx.table.TableColumnExt;
 import org.jdesktop.swingx.table.TableColumnModelExt;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
 
 import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
@@ -2141,7 +2141,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
         int preferredRowHeight = -1;
         boolean equalsRowHeight = true;
 
-        StopWatch sw = new Log4JStopWatch("DAT packRows " + id);
+        StopWatch sw = new Slf4JStopWatch("DAT packRows " + id);
         for (int r = 0; r < impl.getRowCount(); r++) {
             int h = getPreferredRowHeight(r);
 
