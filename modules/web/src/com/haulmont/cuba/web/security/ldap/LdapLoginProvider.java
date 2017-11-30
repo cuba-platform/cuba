@@ -84,7 +84,8 @@ public class LdapLoginProvider implements LoginProvider, Ordered {
 
         if (!ldapTemplate.authenticate(LdapUtils.emptyLdapName(), buildPersonFilter(login), password)) {
             throw new LoginException(
-                    messages.formatMainMessage("LoginException.InvalidLoginOrPassword", locale, login)
+                    messages.formatMessage(LdapLoginProvider.class, "LoginException.InvalidLoginOrPassword",
+                            locale, login)
             );
         }
 
