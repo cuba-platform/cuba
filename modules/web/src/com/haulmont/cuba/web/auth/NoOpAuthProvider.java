@@ -28,6 +28,7 @@ import java.util.Locale;
 public class NoOpAuthProvider implements CubaAuthProvider {
     @Override
     public void authenticate(String login, String password, Locale messagesLocale) throws LoginException {
+        throw new UnsupportedOperationException("NoOpAuthProvider does not support login using login form");
     }
 
     @Override
