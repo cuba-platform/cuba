@@ -16,8 +16,10 @@
  */
 package com.haulmont.cuba.web.exception;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.EmailService;
+import com.haulmont.cuba.core.app.ExceptionReportService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
@@ -50,6 +52,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -71,6 +74,8 @@ public class ExceptionDialog extends CubaWindow {
     protected boolean isStackTraceVisible = false;
 
     protected Messages messages = AppBeans.get(Messages.NAME);
+
+    protected ExceptionReportService exceptionReport = AppBeans.get(ExceptionReportService.NAME);
 
     protected WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
 
@@ -356,23 +361,16 @@ public class ExceptionDialog extends CubaWindow {
         try {
             User user = userSessionSource.getUserSession().getUser();
             String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(timeSource.currentTimestamp());
+            message = message.replace("\n", "<br/>");
 
-            //noinspection StringBufferReplaceableByString
-            StringBuilder sb = new StringBuilder("<html><body>");
-            sb.append("<p>").append(date).append("</p>");
-            sb.append("<p>").append(message.replace("\n", "<br/>")).append("</p>");
-            sb.append("<p>").append(stackTrace).append("</p>");
-            sb.append("</body></html>");
+            exceptionReport.sendExceptionReport(clientConfig.getSupportEmail(), ParamsMap.of(
+                    "timestamp", date,
+                    "errorMessage", message,
+                    "stacktrace", stackTrace,
+                    "systemId", clientConfig.getSystemID(),
+                    "userLogin", user.getLogin()
+            ));
 
-            EmailInfo info = new EmailInfo(
-                    clientConfig.getSupportEmail(),
-                    "[" + clientConfig.getSystemID() + "] [" + user.getLogin() + "] Exception Report",
-                    sb.toString());
-            if (user.getEmail() != null) {
-                info.setFrom(user.getEmail());
-            }
-
-            emailService.sendEmail(info);
             Notification.show(messages.getMainMessage("exceptionDialog.emailSent"));
         } catch (Throwable e) {
             log.error("Error sending exception report", e);

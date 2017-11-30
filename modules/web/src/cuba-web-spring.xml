@@ -121,6 +121,7 @@
                 <entry key="cuba_IdpService" value="com.haulmont.cuba.security.idp.IdpService"/>
                 <entry key="cuba_ConstraintLocalizationService" value="com.haulmont.cuba.core.app.ConstraintLocalizationService"/>
                 <entry key="cuba_AttributeAccessService" value="com.haulmont.cuba.core.app.AttributeAccessService"/>
+                <entry key="cuba_ExceptionReportService" value="com.haulmont.cuba.core.app.ExceptionReportService"/>
             </map>
         </property>
     </bean>
