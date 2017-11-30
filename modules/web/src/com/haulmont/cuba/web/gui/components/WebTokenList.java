@@ -921,6 +921,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
                 if (getHeight() < 0) {
                     tokenContainer.setVisible(CollectionUtils.isNotEmpty(datasource.getItems()));
+                } else {
+                    tokenContainer.setVisible(true);
                 }
             }
 
