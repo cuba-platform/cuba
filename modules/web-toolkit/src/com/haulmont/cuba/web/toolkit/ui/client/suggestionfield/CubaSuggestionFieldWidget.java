@@ -362,10 +362,14 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
             suggestionsContainer.removeStyleName(popupStylename);
         }
 
-        popupStylename = styleName.stream()
-                .collect(Collectors.joining(" "));
+        popupStylename = null;
 
-        suggestionsContainer.addStyleName(popupStylename);
+        if (styleName != null) {
+            popupStylename = styleName.stream()
+                    .collect(Collectors.joining(" "));
+
+            suggestionsContainer.addStyleName(popupStylename);
+        }
     }
 
     protected class SuggestionPopup extends VOverlay implements PopupPanel.PositionCallback, CloseHandler<PopupPanel> {
