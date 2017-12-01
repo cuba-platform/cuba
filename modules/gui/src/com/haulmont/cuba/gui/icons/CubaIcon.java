@@ -49,6 +49,11 @@ public enum CubaIcon implements Icons.Icon {
     PICKERFIELD_OPEN("font-icon:SEARCH"),
     PICKERFIELD_OPEN_READONLY("font-icon:SEARCH"),
 
+    LOOKUP_OK("font-icon:CHECK"),
+    LOOKUP_CANCEL("font-icon:BAN"),
+    EDITOR_OK("font-icon:CHECK"),
+    EDITOR_CANCEL("font-icon:BAN"),
+
     ADJUST("font-icon:ADJUST"),
     ALIGN_CENTER("font-icon:ALIGN_CENTER"),
     ALIGN_JUSTIFY("font-icon:ALIGN_JUSTIFY"),
