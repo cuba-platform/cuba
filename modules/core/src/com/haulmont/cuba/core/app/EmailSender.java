@@ -173,7 +173,7 @@ public class EmailSender implements EmailSenderAPI {
         String disposition = attachment.getDisposition() != null ? attachment.getDisposition() : Part.INLINE;
         String charset = MimeUtility.mimeCharset(attachment.getEncoding() != null ?
                 attachment.getEncoding() : StandardCharsets.UTF_8.name());
-        String contentTypeValue = String.format("%s; charset=%s; name=%s", mimeType, charset, encodedFileName);
+        String contentTypeValue = String.format("%s; charset=%s; name=\"%s\"", mimeType, charset, encodedFileName);
 
         MimeBodyPart attachmentPart = new MimeBodyPart();
         attachmentPart.setDataHandler(new DataHandler(source));
