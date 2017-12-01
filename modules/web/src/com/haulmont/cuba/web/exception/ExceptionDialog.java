@@ -16,9 +16,7 @@
  */
 package com.haulmont.cuba.web.exception;
 
-import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.app.EmailService;
 import com.haulmont.cuba.core.app.ExceptionReportService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
@@ -43,8 +41,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -73,9 +71,11 @@ public class ExceptionDialog extends CubaWindow {
 
     protected boolean isStackTraceVisible = false;
 
+    protected Map<String, Object> additionalExceptionReportBinding = null;
+
     protected Messages messages = AppBeans.get(Messages.NAME);
 
-    protected ExceptionReportService exceptionReport = AppBeans.get(ExceptionReportService.NAME);
+    protected ExceptionReportService reportService = AppBeans.get(ExceptionReportService.NAME);
 
     protected WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
 
@@ -84,8 +84,6 @@ public class ExceptionDialog extends CubaWindow {
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
     protected TimeSource timeSource = AppBeans.get(TimeSource.NAME);
-
-    protected EmailService emailService = AppBeans.get(EmailService.NAME);
 
     protected Security security = AppBeans.get(Security.NAME);
 
@@ -128,7 +126,6 @@ public class ExceptionDialog extends CubaWindow {
         final String text = message != null ? message : getText(throwable);
         Throwable exception = removeRemoteException(throwable);
         final String stackTrace = getStackTrace(exception);
-        final String htmlStackTrace = convertToHtml(stackTrace);
 
         mainLayout = new VerticalLayout();
         mainLayout.setSpacing(true);
@@ -189,7 +186,7 @@ public class ExceptionDialog extends CubaWindow {
             if (!StringUtils.isBlank(clientConfig.getSupportEmail())) {
                 Button reportButton = new CubaButton(messages.getMainMessage("exceptionDialog.reportBtn"));
                 reportButton.addClickListener((Button.ClickListener) event -> {
-                    sendSupportEmail(text, htmlStackTrace);
+                    sendSupportEmail(text, stackTrace);
                     reportButton.setEnabled(false);
                 });
                 buttonsLayout.addComponent(reportButton);
@@ -238,15 +235,6 @@ public class ExceptionDialog extends CubaWindow {
 
     protected String getStackTrace(Throwable throwable) {
         return ExceptionUtils.getStackTrace(throwable);
-    }
-
-    protected String convertToHtml(String text) {
-        String html = StringEscapeUtils.escapeHtml(text);
-        html = StringUtils.replace(html, "\n", "<br/>");
-        html = StringUtils.replace(html, " ", "&nbsp;");
-        html = StringUtils.replace(html, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
-
-        return html;
     }
 
     protected Throwable removeRemoteException(Throwable throwable) {
@@ -361,15 +349,19 @@ public class ExceptionDialog extends CubaWindow {
         try {
             User user = userSessionSource.getUserSession().getUser();
             String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(timeSource.currentTimestamp());
-            message = message.replace("\n", "<br/>");
 
-            exceptionReport.sendExceptionReport(clientConfig.getSupportEmail(), ParamsMap.of(
-                    "timestamp", date,
-                    "errorMessage", message,
-                    "stacktrace", stackTrace,
-                    "systemId", clientConfig.getSystemID(),
-                    "userLogin", user.getLogin()
-            ));
+            Map<String, Object> binding = new HashMap<>();
+            binding.put("timestamp", date);
+            binding.put("errorMessage", message);
+            binding.put("stacktrace", stackTrace);
+            binding.put("systemId", clientConfig.getSystemID());
+            binding.put("userLogin", user.getLogin());
+
+            if (MapUtils.isNotEmpty(additionalExceptionReportBinding)) {
+                binding.putAll(additionalExceptionReportBinding);
+            }
+
+            reportService.sendExceptionReport(clientConfig.getSupportEmail(), MapUtils.unmodifiableMap(binding));
 
             Notification.show(messages.getMainMessage("exceptionDialog.emailSent"));
         } catch (Throwable e) {
@@ -418,5 +410,13 @@ public class ExceptionDialog extends CubaWindow {
 
             Page.getCurrent().open(url, "_self");
         }
+    }
+
+    public void setAdditionalExceptionReportBinding(Map<String, Object> binding) {
+        additionalExceptionReportBinding = binding;
+    }
+
+    public Map<String, Object> getAdditionalExceptionReportBinding() {
+        return additionalExceptionReportBinding;
     }
 }

@@ -18,13 +18,13 @@
 package com.haulmont.cuba.desktop.sys;
 
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.app.EmailService;
+import com.haulmont.cuba.core.app.ExceptionReportService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.security.entity.User;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.jdesktop.swingx.JXErrorPane;
@@ -36,11 +36,15 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class JXErrorPaneExt extends JXErrorPane {
 
     protected ActionListener copyToClipboardListener;
+
+    protected Map<String, Object> additionalExceptionReportBinding = null;
 
     public JXErrorPaneExt() {
 
@@ -101,6 +105,7 @@ public class JXErrorPaneExt extends JXErrorPane {
     private void sendSupportEmail(ErrorInfo jXErrorPaneInfo) {
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
+        ExceptionReportService reportService = AppBeans.get(ExceptionReportService.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         TopLevelFrame mainFrame = App.getInstance().getMainFrame();
         Messages messages = AppBeans.get(Messages.NAME);
@@ -110,26 +115,21 @@ public class JXErrorPaneExt extends JXErrorPane {
             TimeSource timeSource = AppBeans.get(TimeSource.NAME);
             String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(timeSource.currentTimestamp());
 
-            //noinspection StringBufferReplaceableByString
-            StringBuilder sb = new StringBuilder("<html><body>");
-            sb.append("<p>").append(date).append("</p>");
-            sb.append("<p>").append(jXErrorPaneInfo.getBasicErrorMessage().replace("\n", "<br/>")).append("</p>");
-            sb.append("<p>").append(getStackTrace(jXErrorPaneInfo.getErrorException())).append("</p>");
-            sb.append("</body></html>");
-
             UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
             User user = userSessionSource.getUserSession().getUser();
-            EmailInfo info = new EmailInfo(
-                    clientConfig.getSupportEmail(),
-                    "[" + clientConfig.getSystemID() + "] [" + user.getLogin() + "] Exception Report",
-                    sb.toString());
 
-            if (user.getEmail() != null) {
-                info.setFrom(user.getEmail());
+            Map<String, Object> binding = new HashMap<>();
+            binding.put("timestamp", date);
+            binding.put("errorMessage", jXErrorPaneInfo.getBasicErrorMessage());
+            binding.put("stacktrace", getStackTrace(jXErrorPaneInfo.getErrorException()));
+            binding.put("systemId", clientConfig.getSystemID());
+            binding.put("userLogin", user.getLogin());
+
+            if (MapUtils.isNotEmpty(additionalExceptionReportBinding)) {
+                binding.putAll(additionalExceptionReportBinding);
             }
 
-            EmailService emailService = AppBeans.get(EmailService.NAME);
-            emailService.sendEmail(info);
+            reportService.sendExceptionReport(clientConfig.getSupportEmail(), MapUtils.unmodifiableMap(binding));
 
             mainFrame.showNotification(messages.getMainMessage("errorPane.emailSent", locale),
                     Frame.NotificationType.TRAY);
@@ -150,12 +150,15 @@ public class JXErrorPaneExt extends JXErrorPane {
             }
         }
 
-        String html = StringEscapeUtils.escapeHtml(ExceptionUtils.getStackTrace(throwable));
-        html = StringUtils.replace(html, "\n", "<br/>");
-        html = StringUtils.replace(html, " ", "&nbsp;");
-        html = StringUtils.replace(html, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+        return ExceptionUtils.getStackTrace(throwable);
+    }
 
-        return html;
+    public void setAdditionalExceptionReportBinding(Map<String, Object> binding) {
+        additionalExceptionReportBinding = binding;
+    }
+
+    public Map<String, Object> getAdditionalExceptionReportBinding() {
+        return additionalExceptionReportBinding;
     }
 
     public static class ErrorPaneUIExt extends BasicErrorPaneUI {

@@ -16,12 +16,14 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.bali.util.HtmlUtils;
 import com.haulmont.cuba.core.global.EmailInfo;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
+import org.codehaus.groovy.runtime.MethodClosure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -57,6 +59,7 @@ public class ExceptionReportServiceBean implements ExceptionReportService {
         try {
             Map<String, Object> map = new HashMap<>();
             map.putAll(binding);
+            map.put("toHtml", new MethodClosure(HtmlUtils.class, "convertToHtml"));
 
             String body = getExceptionReportBody(map);
             String subject = getExceptionReportSubject(map);

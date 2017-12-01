@@ -1,7 +1,7 @@
 <html>
 <body>
 <p>${timestamp}</p>
-<p>${errorMessage}</p>
-<p>${stacktrace}</p>
+<p>${toHtml(errorMessage)}</p>
+<p>${toHtml(stacktrace)}</p>
 </body>
 </html>
