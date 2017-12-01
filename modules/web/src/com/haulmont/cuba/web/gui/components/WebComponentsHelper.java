@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.components.Component.HasButtonsPanel;
 import com.haulmont.cuba.gui.components.Component.ShortcutTriggeredEvent;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.App;
@@ -477,6 +478,10 @@ public class WebComponentsHelper {
         return new VersionedThemeResource(iconName);
     }
 
+    /**
+     * @deprecated use the {@link Icons#get(com.haulmont.cuba.gui.icons.Icons.Icon)} bean
+     * and {@link com.haulmont.cuba.gui.icons.CubaIcon} icon set instead
+     */
     @Nullable
     public static Resource getFontIconResource(String fontIcon)
             throws NoSuchFieldException, IllegalAccessException {
@@ -494,6 +499,10 @@ public class WebComponentsHelper {
         return null;
     }
 
+    /**
+     * @deprecated use the {@link Icons#get(com.haulmont.cuba.gui.icons.Icons.Icon)} bean
+     * and {@link com.haulmont.cuba.gui.icons.CubaIcon} icon set instead
+     */
     @Nullable
     public static Resource getFontIconResource(String fontIconName, String fontIconField)
             throws NoSuchFieldException, IllegalAccessException {
