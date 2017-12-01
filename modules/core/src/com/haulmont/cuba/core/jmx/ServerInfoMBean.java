@@ -16,28 +16,32 @@
  */
 package com.haulmont.cuba.core.jmx;
 
+import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
  * JMX interface for {@link com.haulmont.cuba.core.app.ServerInfoAPI}.
  *
  */
-@ManagedResource(description = "Provides basic information about this Middleware unit")
+@ManagedResource(description = "Provides basic information about this middleware block")
 public interface ServerInfoMBean
 {
     /**
      * @return  release number
      */
+    @ManagedAttribute(description = "CUBA platform release number")
     String getReleaseNumber();
 
     /**
      * @return  release timestamp
      */
+    @ManagedAttribute(description = "CUBA platform release timestamp")
     String getReleaseTimestamp();
 
     /**
      * @return  this middleware instance identifier
      * @see     com.haulmont.cuba.core.app.ServerInfoAPI#getServerId()
      */
+    @ManagedAttribute(description = "This middleware block identifier")
     String getServerId();
 }
