@@ -19,21 +19,20 @@ package com.haulmont.cuba.core.entity.diff;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.ViewProperty;
 
 /**
  * Diff between properties in entity snapshots
- *
  */
 @MetaClass(name = "sys$EntityPropertyDiff")
 @SystemLevel
 public abstract class EntityPropertyDiff extends BaseUuidEntity {
-
-    protected static final int CAPTION_CHAR_COUNT = 30;
+    private static final long serialVersionUID = -6467322033937742101L;
 
     public enum ItemState {
         Normal,
@@ -42,22 +41,23 @@ public abstract class EntityPropertyDiff extends BaseUuidEntity {
         Removed
     }
 
-    private static final long serialVersionUID = -6467322033937742101L;
-
-    private ViewProperty viewProperty;
     protected String propertyCaption;
     protected String label = "";
-    protected String metaClassName = "";
+    protected String metaClassName;
+    protected String propertyName;
 
-    protected EntityPropertyDiff(ViewProperty viewProperty, com.haulmont.chile.core.model.MetaProperty metaProperty) {
-        this.viewProperty = viewProperty;
-        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-        this.propertyCaption = messageTools.getPropertyCaption(metaProperty.getDomain(), metaProperty.getName());
-        this.metaClassName = metaProperty.getDomain().getName();
-    }
+    protected static final int CAPTION_CHAR_COUNT = 30;
 
-    public ViewProperty getViewProperty() {
-        return viewProperty;
+    protected EntityPropertyDiff(com.haulmont.chile.core.model.MetaProperty metaProperty) {
+        metaClassName = metaProperty.getDomain().getName();
+        propertyName = metaProperty.getName();
+        if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+            CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
+            propertyCaption = categoryAttribute.getLocaleName();
+        } else {
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            propertyCaption = messageTools.getPropertyCaption(metaProperty.getDomain(), metaProperty.getName());
+        }
     }
 
     public String getMetaClassName() {
@@ -123,7 +123,10 @@ public abstract class EntityPropertyDiff extends BaseUuidEntity {
 
     @MetaProperty
     public void setItemState(ItemState itemState) {
+    }
 
+    public String getPropertyName() {
+        return propertyName;
     }
 
     public boolean itemStateVisible() {

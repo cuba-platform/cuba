@@ -30,7 +30,6 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
@@ -530,7 +529,16 @@ public class EntitySerialization implements EntitySerializationAPI {
                             if (metadataTools.isEmbedded(metaProperty)) {
                                 entity.setValue(propertyName, readEmbeddedEntity(propertyValue.getAsJsonObject(), metaProperty));
                             } else {
-                                entity.setValue(propertyName, readEntity(propertyValue.getAsJsonObject(), propertyRange.asClass()));
+                                if (isCollectionDynamicAttribute(metaProperty)) {
+                                    Collection<Entity> entities = new ArrayList<>();
+                                    propertyValue.getAsJsonArray().forEach(jsonElement -> {
+                                        Entity entityForList = readEntity(jsonElement.getAsJsonObject(), metaProperty.getRange().asClass());
+                                        entities.add(entityForList);
+                                    });
+                                    entity.setValue(propertyName, entities);
+                                } else {
+                                    entity.setValue(propertyName, readEntity(propertyValue.getAsJsonObject(), propertyRange.asClass()));
+                                }
                             }
                         } else if (Collection.class.isAssignableFrom(propertyType)) {
                             Collection entities = readCollection(propertyValue.getAsJsonArray(), metaProperty);
@@ -662,7 +670,7 @@ public class EntitySerialization implements EntitySerializationAPI {
 
     protected boolean isCollectionDynamicAttribute(MetaProperty metaProperty) {
         if (DynamicAttributesUtils.isDynamicAttribute(metaProperty.getName())) {
-            CategoryAttribute attribute = ((DynamicAttributesMetaProperty)metaProperty).getAttribute();
+            CategoryAttribute attribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
             return attribute != null && BooleanUtils.isTrue(attribute.getIsCollection());
         }
         return false;

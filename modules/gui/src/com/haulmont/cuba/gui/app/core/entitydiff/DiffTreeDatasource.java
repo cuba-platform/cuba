@@ -60,13 +60,10 @@ public class DiffTreeDatasource extends AbstractTreeDatasource<EntityPropertyDif
     protected Node<EntityPropertyDiff> loadPropertyDiff(EntityPropertyDiff propertyDiff) {
         Node<EntityPropertyDiff> diffNode = null;
         if (propertyDiff != null) {
-            // check security
-            String propName = propertyDiff.getViewProperty().getName();
-            MetaClass propMetaClass = metadata.getSession().getClass(propertyDiff.getMetaClassName());
-
             Security security = AppBeans.get(Security.NAME);
+            MetaClass propMetaClass = metadata.getClassNN(propertyDiff.getMetaClassName());
             if (!security.isEntityOpPermitted(propMetaClass, EntityOp.READ)
-                || !security.isEntityAttrPermitted(propMetaClass, propName, EntityAttrAccess.VIEW)) {
+                || !security.isEntityAttrPermitted(propMetaClass, propertyDiff.getPropertyName(), EntityAttrAccess.VIEW)) {
                 return null;
             }
 

@@ -22,7 +22,6 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.ViewProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,14 +46,14 @@ public class EntityClassPropertyDiff extends EntityPropertyDiff {
     private String afterString = "";
 
     public EntityClassPropertyDiff(Object beforeValue, Object afterValue,
-                                   ViewProperty viewProperty, MetaProperty metaProperty,
+                                   MetaProperty metaProperty,
                                    boolean linkChange) {
-        super(viewProperty, metaProperty);
+        super(metaProperty);
         this.beforeValue = beforeValue;
         this.afterValue = afterValue;
         this.isLinkChange = linkChange;
 
-        if ((afterValue != null) && isLinkChange)
+        if (afterValue != null && isLinkChange)
             label = InstanceUtils.getInstanceName((Instance) afterValue);
         else
             label = "";
@@ -64,6 +63,12 @@ public class EntityClassPropertyDiff extends EntityPropertyDiff {
 
         if (beforeValue != null)
             beforeString = InstanceUtils.getInstanceName((Instance) beforeValue);
+    }
+
+    public EntityClassPropertyDiff(Object beforeValue,
+                                   Object afterValue,
+                                   MetaProperty metaProperty) {
+        this(beforeValue, afterValue, metaProperty, true);
     }
 
     @Override

@@ -20,10 +20,14 @@ package com.haulmont.cuba.core.entity.diff;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.ViewProperty;
+import com.haulmont.cuba.core.global.Metadata;
+
+import java.util.Collection;
 
 @MetaClass(name = "sys$EntityBasicPropertyDiff")
 @SystemLevel
@@ -35,9 +39,10 @@ public class EntityBasicPropertyDiff extends EntityPropertyDiff {
 
     private Object afterValue;
 
-    public EntityBasicPropertyDiff(ViewProperty viewProperty, MetaProperty metaProperty,
-                                   Object beforeValue, Object afterValue) {
-        super(viewProperty, metaProperty);
+    public EntityBasicPropertyDiff(Object beforeValue,
+                                   Object afterValue,
+                                   MetaProperty metaProperty) {
+        super(metaProperty);
         this.beforeValue = beforeValue;
         this.afterValue = afterValue;
     }
@@ -68,8 +73,11 @@ public class EntityBasicPropertyDiff extends EntityPropertyDiff {
     @Override
     public String getBeforeString() {
         if (beforeValue != null) {
-            if (beforeValue instanceof EnumClass)
+            if (beforeValue instanceof EnumClass) {
                 return getEnumItemName(beforeValue);
+            } else if (beforeValue instanceof Collection) {
+                return getCollectionString(beforeValue);
+            }
             return String.valueOf(beforeValue);
         }
         return super.getBeforeString();
@@ -78,8 +86,11 @@ public class EntityBasicPropertyDiff extends EntityPropertyDiff {
     @Override
     public String getAfterString() {
         if (afterValue != null) {
-            if (afterValue instanceof EnumClass)
+            if (afterValue instanceof EnumClass) {
                 return getEnumItemName(afterValue);
+            } else if (afterValue instanceof Collection) {
+                return getCollectionString(afterValue);
+            }
             return String.valueOf(afterValue);
         }
         return super.getAfterString();
@@ -89,6 +100,16 @@ public class EntityBasicPropertyDiff extends EntityPropertyDiff {
         String nameKey = enumItem.getClass().getSimpleName() + "." + enumItem.toString();
         Messages messages = AppBeans.get(Messages.NAME);
         return messages.getMessage(enumItem.getClass(), nameKey);
+    }
+
+    private String getCollectionString(Object collection) {
+        if (DynamicAttributesUtils.isDynamicAttribute(propertyName)) {
+            Metadata metadata = AppBeans.get(Metadata.class);
+            com.haulmont.chile.core.model.MetaClass metaClass = metadata.getClassNN(metaClassName);
+            MetaPropertyPath path = DynamicAttributesUtils.getMetaPropertyPath(metaClass, propertyName);
+            return metadata.getTools().format(collection, path.getMetaProperty());
+        }
+        return String.valueOf(beforeValue);
     }
 
     @Override

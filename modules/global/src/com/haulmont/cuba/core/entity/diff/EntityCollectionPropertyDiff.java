@@ -20,7 +20,6 @@ package com.haulmont.cuba.core.entity.diff;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.ViewProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,6 @@ import java.util.List;
 @MetaClass(name = "sys$EntityCollectionPropertyDiff")
 @SystemLevel
 public class EntityCollectionPropertyDiff extends EntityPropertyDiff {
-
     private static final long serialVersionUID = -7472572229609999760L;
 
     private List<EntityPropertyDiff> addedEntities = new ArrayList<>();
@@ -37,9 +35,8 @@ public class EntityCollectionPropertyDiff extends EntityPropertyDiff {
 
     private List<EntityPropertyDiff> modifiedEntities = new ArrayList<>();
 
-    public EntityCollectionPropertyDiff(ViewProperty viewProperty,
-                                        MetaProperty metaProperty) {
-        super(viewProperty, metaProperty);
+    public EntityCollectionPropertyDiff(MetaProperty metaProperty) {
+        super(metaProperty);
     }
 
     public List<EntityPropertyDiff> getAddedEntities() {

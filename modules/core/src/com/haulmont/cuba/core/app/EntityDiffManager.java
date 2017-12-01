@@ -23,12 +23,16 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.entity.diff.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ViewHelper;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,24 +46,26 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Diff algorithm for Entities.
- *
  */
 @Component("cuba_EntityDiffManager")
 public class EntityDiffManager {
 
     @Inject
-    private EntitySnapshotAPI snapshotAPI;
+    protected EntitySnapshotAPI snapshotAPI;
 
     @Inject
-    private MetadataTools metadataTools;
+    protected MetadataTools metadataTools;
 
     @Inject
-    private ExtendedEntities extendedEntities;
+    protected ExtendedEntities extendedEntities;
 
     @Inject
-    private Metadata metadata;
+    protected Metadata metadata;
 
-    private Logger log = LoggerFactory.getLogger(EntityDiffManager.class);
+    @Inject
+    protected DynamicAttributesManagerAPI dynamicAttributesManagerAPI;
+
+    protected Logger log = LoggerFactory.getLogger(EntityDiffManager.class);
 
     public EntityDiff getDifference(@Nullable EntitySnapshot first, EntitySnapshot second) {
 
@@ -73,9 +79,9 @@ public class EntityDiffManager {
             secondTime = second.getSnapshotDate().getTime();
 
         if (secondTime < firstTime) {
-            EntitySnapshot temp = first;
+            EntitySnapshot snapshot = first;
             first = second;
-            second = temp;
+            second = snapshot;
         }
 
         checkNotNull(second, "Diff could not be create for null snapshot");
@@ -95,7 +101,7 @@ public class EntityDiffManager {
         return getDifferenceByView(first, second, diffView);
     }
 
-    private EntityDiff getDifferenceByView(EntitySnapshot first, EntitySnapshot second, View diffView) {
+    protected EntityDiff getDifferenceByView(EntitySnapshot first, EntitySnapshot second, View diffView) {
         EntityDiff result = new EntityDiff(diffView);
         result.setBeforeSnapshot(first);
         result.setAfterSnapshot(second);
@@ -108,7 +114,9 @@ public class EntityDiffManager {
             result.setAfterEntity(secondEntity);
 
             Stack<Object> diffBranch = new Stack<>();
-            diffBranch.push(second);
+            if (secondEntity != null) {
+                diffBranch.push(secondEntity);
+            }
 
             List<EntityPropertyDiff> propertyDiffs = getPropertyDiffs(diffView, firstEntity, secondEntity, diffBranch);
             result.setPropertyDiffs(propertyDiffs);
@@ -125,8 +133,8 @@ public class EntityDiffManager {
      * @param diffBranch   Diff branch
      * @return Diff list
      */
-    private List<EntityPropertyDiff> getPropertyDiffs(View diffView, Entity firstEntity, Entity secondEntity,
-                                                      Stack<Object> diffBranch) {
+    protected List<EntityPropertyDiff> getPropertyDiffs(View diffView, Entity firstEntity, Entity secondEntity,
+                                                        Stack<Object> diffBranch) {
         List<EntityPropertyDiff> propertyDiffs = new LinkedList<>();
 
         MetaClass viewMetaClass = metadata.getSession().getClass(diffView.getEntityClass());
@@ -149,12 +157,22 @@ public class EntityDiffManager {
             }
         }
 
-        Comparator<EntityPropertyDiff> comparator = new Comparator<EntityPropertyDiff>() {
-            @Override
-            public int compare(EntityPropertyDiff o1, EntityPropertyDiff o2) {
-                return o1.getName().compareTo(o2.getName());
+        Collection<CategoryAttribute> categoryAttributes = dynamicAttributesManagerAPI.getAttributesForMetaClass(metaClass);
+        if (categoryAttributes != null) {
+            for (CategoryAttribute categoryAttribute : categoryAttributes) {
+                MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, categoryAttribute);
+                MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
+
+                Object firstValue = firstEntity != null ? getPropertyValue(firstEntity, metaPropertyPath) : null;
+                Object secondValue = secondEntity != null ? getPropertyValue(secondEntity, metaPropertyPath) : null;
+
+                EntityPropertyDiff diff = getDynamicAttributeDifference(firstValue, secondValue, metaProperty, categoryAttribute);
+                if (diff != null)
+                    propertyDiffs.add(diff);
             }
-        };
+        }
+
+        Comparator<EntityPropertyDiff> comparator = Comparator.comparing(EntityPropertyDiff::getName);
         Collections.sort(propertyDiffs, comparator);
 
         return propertyDiffs;
@@ -170,20 +188,18 @@ public class EntityDiffManager {
      * @param diffBranch   Branch with passed diffs
      * @return Diff
      */
-    private EntityPropertyDiff getPropertyDifference(Object firstValue, Object secondValue,
-                                                     MetaProperty metaProperty, ViewProperty viewProperty,
-                                                     Stack<Object> diffBranch) {
+    protected EntityPropertyDiff getPropertyDifference(Object firstValue, Object secondValue,
+                                                       MetaProperty metaProperty, ViewProperty viewProperty,
+                                                       Stack<Object> diffBranch) {
         EntityPropertyDiff propertyDiff = null;
 
         Range range = metaProperty.getRange();
         if (range.isDatatype() || range.isEnum()) {
-            // datatype
-            if (!ObjectUtils.equals(firstValue, secondValue))
-                propertyDiff = new EntityBasicPropertyDiff(viewProperty, metaProperty, firstValue, secondValue);
-
+            if (!Objects.equals(firstValue, secondValue)) {
+                propertyDiff = new EntityBasicPropertyDiff(firstValue, secondValue, metaProperty);
+            }
         } else if (range.getCardinality().isMany()) {
             propertyDiff = getCollectionDiff(firstValue, secondValue, viewProperty, metaProperty, diffBranch);
-
         } else if (range.isClass()) {
             propertyDiff = getClassDiff(firstValue, secondValue, viewProperty, metaProperty, diffBranch);
         }
@@ -191,9 +207,9 @@ public class EntityDiffManager {
         return propertyDiff;
     }
 
-    private EntityPropertyDiff getClassDiff(@Nullable Object firstValue, @Nullable Object secondValue,
-                                            ViewProperty viewProperty, MetaProperty metaProperty,
-                                            Stack<Object> diffBranch) {
+    protected EntityPropertyDiff getClassDiff(@Nullable Object firstValue, @Nullable Object secondValue,
+                                              ViewProperty viewProperty, MetaProperty metaProperty,
+                                              Stack<Object> diffBranch) {
         EntityPropertyDiff propertyDiff = null;
         if (viewProperty.getView() != null) {
             // check exist value in diff branch
@@ -230,16 +246,16 @@ public class EntityDiffManager {
      * @param diffBranch   Diff branch
      * @return Property difference
      */
-    private EntityPropertyDiff generateClassDiffFor(Object diffObject,
-                                                    @Nullable Object firstValue, @Nullable Object secondValue,
-                                                    ViewProperty viewProperty, MetaProperty metaProperty,
-                                                    Stack<Object> diffBranch) {
+    protected EntityPropertyDiff generateClassDiffFor(Object diffObject,
+                                                      @Nullable Object firstValue, @Nullable Object secondValue,
+                                                      ViewProperty viewProperty, MetaProperty metaProperty,
+                                                      Stack<Object> diffBranch) {
         // link
         boolean isLinkChange = !ObjectUtils.equals(firstValue, secondValue);
         isLinkChange = !(diffObject instanceof EmbeddableEntity) && isLinkChange;
 
         EntityClassPropertyDiff classPropertyDiff = new EntityClassPropertyDiff(firstValue, secondValue,
-                viewProperty, metaProperty, isLinkChange);
+                metaProperty, isLinkChange);
 
         boolean isInternalChange = false;
         diffBranch.push(diffObject);
@@ -260,9 +276,9 @@ public class EntityDiffManager {
             return null;
     }
 
-    private EntityPropertyDiff getCollectionDiff(Object firstValue, Object secondValue,
-                                                 ViewProperty viewProperty, MetaProperty metaProperty,
-                                                 Stack<Object> diffBranch) {
+    protected EntityPropertyDiff getCollectionDiff(Object firstValue, Object secondValue,
+                                                   ViewProperty viewProperty, MetaProperty metaProperty,
+                                                   Stack<Object> diffBranch) {
         EntityPropertyDiff propertyDiff = null;
 
         Collection<Entity> addedEntities = new LinkedList<>();
@@ -270,8 +286,8 @@ public class EntityDiffManager {
         Collection<Pair<Entity, Entity>> modifiedEntities = new LinkedList<>();
 
         // collection
-        Collection firstCollection = getCollection(firstValue);
-        Collection secondCollection = getCollection(secondValue);
+        Collection firstCollection = firstValue == null ? Collections.emptyList() : (Collection) firstValue;
+        Collection secondCollection = secondValue == null ? Collections.emptyList() : (Collection) secondValue;
 
         // added or modified
         for (Object item : secondCollection) {
@@ -280,7 +296,7 @@ public class EntityDiffManager {
             if (firstEntity == null)
                 addedEntities.add(secondEntity);
             else
-                modifiedEntities.add(new Pair<Entity, Entity>(firstEntity, secondEntity));
+                modifiedEntities.add(new Pair<>(firstEntity, secondEntity));
         }
 
         // removed
@@ -293,7 +309,7 @@ public class EntityDiffManager {
 
         boolean changed = !(addedEntities.isEmpty() && removedEntities.isEmpty() && modifiedEntities.isEmpty());
         if (changed) {
-            EntityCollectionPropertyDiff diff = new EntityCollectionPropertyDiff(viewProperty, metaProperty);
+            EntityCollectionPropertyDiff diff = new EntityCollectionPropertyDiff(metaProperty);
 
             for (Entity entity : addedEntities) {
                 EntityPropertyDiff addedDiff = getClassDiff(null, entity, viewProperty, metaProperty, diffBranch);
@@ -332,7 +348,58 @@ public class EntityDiffManager {
         return propertyDiff;
     }
 
-    private Entity getRelatedItem(Collection collection, Entity entity) {
+    protected EntityPropertyDiff getDynamicAttributeDifference(Object firstValue,
+                                                               Object secondValue,
+                                                               MetaProperty metaProperty,
+                                                               CategoryAttribute categoryAttribute) {
+        Range range = metaProperty.getRange();
+        if (range.isDatatype() || range.isEnum()) {
+            if (!Objects.equals(firstValue, secondValue)) {
+                return new EntityBasicPropertyDiff(firstValue, secondValue, metaProperty);
+            }
+        } else if (range.isClass()) {
+            if (BooleanUtils.isTrue(categoryAttribute.getIsCollection())) {
+                return getDynamicAttributeCollectionDiff(firstValue, secondValue, metaProperty);
+            } else {
+                if (!Objects.equals(firstValue, secondValue)) {
+                    return new EntityClassPropertyDiff(firstValue, secondValue, metaProperty);
+                }
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected EntityPropertyDiff getDynamicAttributeCollectionDiff(Object firstValue,
+                                                                   Object secondValue,
+                                                                   MetaProperty metaProperty) {
+        Collection<Entity> firstCollection = Optional.of((Collection<Entity>)firstValue).orElse(Collections.emptyList());
+        Collection<Entity> secondCollection = Optional.of((Collection<Entity>)secondValue).orElse(Collections.emptyList());
+        EntityCollectionPropertyDiff collectionDiff = new EntityCollectionPropertyDiff(metaProperty);
+        boolean hasChanges = false;
+        for (Entity item : secondCollection) {
+            if (!firstCollection.contains(item)) {
+                EntityPropertyDiff diff = new EntityClassPropertyDiff(null, item, metaProperty);
+                diff.setName(InstanceUtils.getInstanceName(item));
+                diff.setItemState(EntityPropertyDiff.ItemState.Added);
+                collectionDiff.getAddedEntities().add(diff);
+                hasChanges = true;
+            }
+        }
+
+        for (Entity item : firstCollection) {
+            if (!secondCollection.contains(item)) {
+                EntityPropertyDiff diff = new EntityClassPropertyDiff(item, null, metaProperty);
+                diff.setName(InstanceUtils.getInstanceName(item));
+                diff.setItemState(EntityPropertyDiff.ItemState.Removed);
+                collectionDiff.getAddedEntities().add(diff);
+                hasChanges = true;
+            }
+        }
+        return hasChanges ? collectionDiff : null;
+    }
+
+    protected Entity getRelatedItem(Collection collection, Entity entity) {
         for (Object item : collection) {
             Entity itemEntity = (Entity) item;
             if (entity.getId().equals(itemEntity.getId()))
@@ -341,16 +408,7 @@ public class EntityDiffManager {
         return null;
     }
 
-    private Collection getCollection(Object value) {
-        Collection collection;
-        if (value == null)
-            collection = Collections.emptyList();
-        else
-            collection = (Collection) value;
-        return collection;
-    }
-
-    private Object getPropertyValue(Entity entity, MetaPropertyPath propertyPath) {
+    protected Object getPropertyValue(Entity entity, MetaPropertyPath propertyPath) {
         return entity.getValue(propertyPath.toString());
     }
 }
