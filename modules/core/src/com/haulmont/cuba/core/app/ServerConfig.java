@@ -275,4 +275,12 @@ public interface ServerConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
     boolean getRestStoreTokensInDb();
+
+    /**
+     * @return if true, sequences for BaseLongIdEntity and BaseIntegerIdEntity subclasses are created in data stores
+     * of these entities. Otherwise (by default), sequences for all entities are created in the main data store.
+     */
+    @Property("cuba.useEntityDataStoreForIdSequence")
+    @DefaultBoolean(false)
+    boolean getUseEntityDataStoreForIdSequence();
 }

@@ -23,6 +23,9 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.sys.NumberIdSequence;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.SequenceSupport;
@@ -30,7 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 
 import org.springframework.stereotype.Component;
-import javax.annotation.PostConstruct;
+
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -51,23 +54,35 @@ public class NumberIdWorker implements NumberIdSequence {
     protected Persistence persistence;
 
     @Inject
-    protected GlobalConfig config;
+    protected Metadata metadata;
+
+    @Inject
+    protected MetadataTools metadataTools;
+
+    @Inject
+    protected GlobalConfig globalConfig;
+
+    @Inject
+    protected ServerConfig serverConfig;
 
     protected Set<String> existingSequences = Collections.synchronizedSet(new HashSet<String>());
 
-    protected SequenceSupport sequenceSupport;
-
-    @PostConstruct
-    public void init() {
-        sequenceSupport = DbmsSpecificFactory.getSequenceSupport();
-    }
-
     @Override
     public Long createLongId(String entityName) {
-        String seqName = getSequenceName(entityName);
-        String sqlScript = sequenceSupport.getNextValueSql(seqName);
+        String sqlScript = getSequenceSupport(entityName).getNextValueSql(getSequenceName(entityName));
+        return getResult(entityName, sqlScript, 0, globalConfig.getNumberIdCacheSize());
+    }
 
-        return getResult(seqName, sqlScript, 0, config.getNumberIdCacheSize());
+    protected String getDataStore(String entityName) {
+        if (!serverConfig.getUseEntityDataStoreForIdSequence()) {
+            return Stores.MAIN;
+        } else {
+            return metadataTools.getStoreName(metadata.getClassNN(entityName));
+        }
+    }
+
+    protected SequenceSupport getSequenceSupport(String entityName) {
+        return DbmsSpecificFactory.getSequenceSupport(getDataStore(entityName));
     }
 
     protected String getSequenceName(String entityName) {
@@ -77,12 +92,12 @@ public class NumberIdWorker implements NumberIdSequence {
         return "seq_id_" + entityName.replace("$", "_");
     }
 
-    protected long getResult(String seqName, String sqlScript, long startValue, long increment) {
-        Transaction tx = persistence.getTransaction();
+    protected long getResult(String entityName, String sqlScript, long startValue, long increment) {
+        Transaction tx = persistence.getTransaction(getDataStore(entityName));
         try {
-            checkSequenceExists(seqName, startValue, increment);
+            checkSequenceExists(entityName, startValue, increment);
 
-            Object value = executeScript(sqlScript);
+            Object value = executeScript(entityName, sqlScript);
             tx.commit();
             if (value instanceof Long)
                 return (Long) value;
@@ -99,16 +114,17 @@ public class NumberIdWorker implements NumberIdSequence {
         }
     }
 
-    protected void checkSequenceExists(String seqName, long startValue, long increment) {
+    protected void checkSequenceExists(String entityName, long startValue, long increment) {
+        String seqName = getSequenceName(entityName);
         if (existingSequences.contains(seqName))
             return;
 
         // Create sequence in separate transaction because it's name is cached and we want to be sure it is created
         // regardless of possible errors in the invoking code
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = persistence.createTransaction(getDataStore(entityName));
         try {
-            EntityManager em = persistence.getEntityManager();
-
+            EntityManager em = persistence.getEntityManager(getDataStore(entityName));
+            SequenceSupport sequenceSupport = getSequenceSupport(entityName);
             Query query = em.createNativeQuery(sequenceSupport.sequenceExistsSql(seqName));
             List list = query.getResultList();
             if (list.isEmpty()) {
@@ -123,8 +139,8 @@ public class NumberIdWorker implements NumberIdSequence {
         }
     }
 
-    protected Object executeScript(String sqlScript) {
-        EntityManager em = persistence.getEntityManager();
+    protected Object executeScript(String entityName, String sqlScript) {
+        EntityManager em = persistence.getEntityManager(getDataStore(entityName));
         StrTokenizer tokenizer = new StrTokenizer(sqlScript, SequenceSupport.SQL_DELIMITER);
         Object value = null;
         Connection connection = em.getConnection();
