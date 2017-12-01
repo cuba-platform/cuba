@@ -309,4 +309,7 @@
         <property name="user" view="_local"/>
         <property name="substitutedUser" view="_local"/>
     </view>
+
+    <view class="com.haulmont.cuba.core.entity.Config" extends="_local" systemProperties="true" name="appProperties"/>
+
 </views>

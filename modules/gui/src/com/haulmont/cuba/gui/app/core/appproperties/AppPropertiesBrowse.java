@@ -102,6 +102,8 @@ public class AppPropertiesBrowse extends AbstractWindow {
             for (AppPropertyEntity entity : entities) {
                 if (entity.getName().equals(paramsDs.getItem().getName())) {
                     paramsDs.getItem().setCurrentValue(entity.getCurrentValue());
+                    paramsDs.getItem().setUpdateTs(entity.getUpdateTs());
+                    paramsDs.getItem().setUpdatedBy(entity.getUpdatedBy());
                     break;
                 }
             }

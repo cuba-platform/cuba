@@ -20,13 +20,22 @@ package com.haulmont.cuba.core.config;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+
+import java.util.Date;
 
 @SystemLevel
 @MetaClass(name = "sys$AppPropertyEntity")
-public class AppPropertyEntity extends BaseUuidEntity implements Comparable<AppPropertyEntity> {
+public class AppPropertyEntity extends BaseUuidEntity implements Updatable, Comparable<AppPropertyEntity> {
 
     private static final long serialVersionUID = 546387295440108557L;
+
+    @MetaProperty
+    private Date updateTs;
+
+    @MetaProperty
+    private String updatedBy;
 
     @MetaProperty
     private AppPropertyEntity parent;
@@ -51,6 +60,26 @@ public class AppPropertyEntity extends BaseUuidEntity implements Comparable<AppP
 
     @MetaProperty
     private String enumValues;
+
+    @Override
+    public Date getUpdateTs() {
+        return updateTs;
+    }
+
+    @Override
+    public void setUpdateTs(Date updateTs) {
+        this.updateTs = updateTs;
+    }
+
+    @Override
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    @Override
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
 
     public AppPropertyEntity getParent() {
         return parent;

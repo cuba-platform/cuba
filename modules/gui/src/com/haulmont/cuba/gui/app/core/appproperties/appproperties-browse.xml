@@ -56,6 +56,8 @@
             <columns>
                 <column id="name" caption="msg://name"/>
                 <column id="currentValue" caption="msg://currentValue"/>
+                <column id="updateTs" caption="msg://lastUpdatedAt"/>
+                <column id="updatedBy" caption="msg://lastUpdatedBy"/>
             </columns>
             <rows datasource="paramsDs"/>
         </treeTable>

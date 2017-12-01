@@ -26,6 +26,8 @@ import com.haulmont.cuba.core.config.defaults.*;
 import com.haulmont.cuba.core.config.type.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
@@ -72,6 +74,9 @@ public class AppPropertiesLocator {
 
     @Inject
     protected DatatypeRegistry datatypes;
+
+    @Inject
+    protected DataManager dataManager;
 
     public List<AppPropertyEntity> getAppProperties() {
         log.trace("Locating app properties");
@@ -152,6 +157,8 @@ public class AppPropertiesLocator {
             }
         }
 
+        List<com.haulmont.cuba.core.entity.Config> dbContent = loadDbContent();
+
         for (Map.Entry<Method, Object> entry : propertyMethods.entrySet()) {
             Method method = entry.getKey();
             Property propertyAnn = method.getAnnotation(Property.class);
@@ -164,11 +171,32 @@ public class AppPropertiesLocator {
             entity.setDefaultValue(getDefaultValue(method));
             entity.setCurrentValue(getCurrentValue(method, entry.getValue()));
             entity.setOverridden(StringUtils.isNotEmpty(AppContext.getProperty(name)));
+            if (!entity.getOverridden()) {
+                assignLastUpdated(entity, dbContent);
+            }
             setDataType(method, entity);
             result.add(entity);
         }
 
         return result;
+    }
+
+    protected List<com.haulmont.cuba.core.entity.Config> loadDbContent() {
+        LoadContext<com.haulmont.cuba.core.entity.Config> loadContext =
+                LoadContext.create(com.haulmont.cuba.core.entity.Config.class).setQuery(
+                        LoadContext.createQuery("select c from sys$Config c")
+                ).setView("appProperties");
+        return dataManager.loadList(loadContext);
+    }
+
+    protected void assignLastUpdated(AppPropertyEntity entity, List<com.haulmont.cuba.core.entity.Config> dbContent) {
+        dbContent.stream()
+                .filter(config -> config.getName().equals(entity.getName()))
+                .findFirst()
+                .ifPresent(config -> {
+                    entity.setUpdateTs(config.getUpdateTs() != null ? config.getUpdateTs() : config.getCreateTs());
+                    entity.setUpdatedBy(config.getUpdatedBy() != null ? config.getUpdatedBy() : config.getCreatedBy());
+                });
     }
 
     protected String getCurrentValue(Method method, Object config) {
