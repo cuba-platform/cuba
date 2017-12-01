@@ -76,8 +76,7 @@ public class ExternalUserLoginProvider implements LoginProvider, Ordered {
         Map<String, Serializable> targetSessionAttributes;
         if (sessionAttributes != null
                 && !sessionAttributes.isEmpty()) {
-            targetSessionAttributes = new HashMap<>();
-            targetSessionAttributes.putAll(sessionAttributes);
+            targetSessionAttributes = new HashMap<>(sessionAttributes);
             targetSessionAttributes.put(EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE, true);
         } else {
             targetSessionAttributes = ImmutableMap.of(EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE, true);

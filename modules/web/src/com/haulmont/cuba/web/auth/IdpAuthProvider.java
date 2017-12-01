@@ -23,7 +23,7 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.idp.IdpService;
 import com.haulmont.cuba.web.security.idp.BaseIdpSessionFilter;
-import com.haulmont.cuba.web.security.idp.IdpLoginLifecycleManager;
+import com.haulmont.cuba.web.security.idp.IdpSessionPingConnector;
 import com.haulmont.cuba.web.security.idp.IdpSessionPrincipal;
 import com.haulmont.cuba.web.sys.RequestContext;
 import com.vaadin.server.VaadinRequest;
@@ -52,7 +52,7 @@ public class IdpAuthProvider extends BaseIdpSessionFilter implements CubaAuthPro
     protected UserSessionSource userSessionSource;
 
     @Inject
-    protected IdpLoginLifecycleManager idpLoginLifecycleManager;
+    protected IdpSessionPingConnector idpSessionPingConnector;
 
     public IdpAuthProvider() {
         log.warn("IdpAuthProvider mechanism is DEPRECATED, use 'cuba.web.idp.enabled' application property instead");
@@ -85,7 +85,7 @@ public class IdpAuthProvider extends BaseIdpSessionFilter implements CubaAuthPro
     public void pingUserSession(UserSession session) {
         String idpSessionId = session.getAttribute(IdpService.IDP_USER_SESSION_ATTRIBUTE);
         if (idpSessionId != null) {
-            idpLoginLifecycleManager.pingIdpSessionServer(idpSessionId);
+            idpSessionPingConnector.pingIdpSessionServer(idpSessionId);
         }
     }
 

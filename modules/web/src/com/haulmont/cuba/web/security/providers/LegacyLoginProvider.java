@@ -40,7 +40,7 @@ import static com.haulmont.cuba.web.security.ExternalUserCredentials.EXTERNAL_AU
 
 @Deprecated
 @ConditionalOnAppProperty(property = "cuba.web.externalAuthentication", value = "true")
-@Component("cuba_LegacyAuthLoginProvider")
+@Component("cuba_LegacyLoginProvider")
 public class LegacyLoginProvider implements LoginProvider, Ordered {
 
     private final Logger log = LoggerFactory.getLogger(LegacyLoginProvider.class);
@@ -85,8 +85,7 @@ public class LegacyLoginProvider implements LoginProvider, Ordered {
         Map<String, Serializable> targetSessionAttributes;
         if (sessionAttributes != null
                 && !sessionAttributes.isEmpty()) {
-            targetSessionAttributes = new HashMap<>();
-            targetSessionAttributes.putAll(sessionAttributes);
+            targetSessionAttributes = new HashMap<>(sessionAttributes);
             targetSessionAttributes.put(EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE, true);
         } else {
             targetSessionAttributes = ImmutableMap.of(EXTERNAL_AUTH_USER_SESSION_ATTRIBUTE, true);
