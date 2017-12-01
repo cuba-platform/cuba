@@ -34,6 +34,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -227,7 +229,8 @@ public interface PickerField extends Field, Component.ActionsHolder, Component.B
         public LookupAction(PickerField pickerField) {
             super(NAME, pickerField);
             caption = "";
-            icon = "components/pickerfield/images/lookup-btn.png";
+            icon = AppBeans.get(Icons.class)
+                    .get(CubaIcon.PICKERFIELD_LOOKUP);
             setShortcut(clientConfig.getPickerLookupShortcut());
         }
 
@@ -482,7 +485,8 @@ public interface PickerField extends Field, Component.ActionsHolder, Component.B
         public ClearAction(PickerField pickerField) {
             super(NAME, pickerField);
             caption = "";
-            icon = "components/pickerfield/images/clear-btn.png";
+            icon = AppBeans.get(Icons.class)
+                    .get(CubaIcon.PICKERFIELD_CLEAR);
             setShortcut(clientConfig.getPickerClearShortcut());
         }
 
@@ -559,7 +563,8 @@ public interface PickerField extends Field, Component.ActionsHolder, Component.B
         public OpenAction(PickerField pickerField) {
             super(NAME, pickerField);
             caption = "";
-            icon = "components/pickerfield/images/open-btn.png";
+            icon = AppBeans.get(Icons.class)
+                    .get(CubaIcon.PICKERFIELD_OPEN);
             setShortcut(clientConfig.getPickerOpenShortcut());
         }
 

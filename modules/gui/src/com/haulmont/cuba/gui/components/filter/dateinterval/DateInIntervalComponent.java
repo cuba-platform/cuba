@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -66,7 +67,7 @@ public class DateInIntervalComponent {
         layout.add(textField);
 
         Button openEditorBtn = componentsFactory.createComponent(Button.class);
-        openEditorBtn.setIcon("components/pickerfield/images/lookup-btn.png");
+        openEditorBtn.setIconByName(CubaIcon.PICKERFIELD_LOOKUP);
         openEditorBtn.setStyleName("c-dateintervaleditor-button");
         openEditorBtn.setCaption("");
         openEditorBtn.setAction(new AbstractAction("openEditor") {
@@ -94,7 +95,7 @@ public class DateInIntervalComponent {
         layout.add(openEditorBtn);
 
         Button clearBtn = componentsFactory.createComponent(Button.class);
-        clearBtn.setIcon("components/pickerfield/images/clear-btn.png");
+        clearBtn.setIconByName(CubaIcon.PICKERFIELD_CLEAR);
         clearBtn.setStyleName("c-dateintervaleditor-button");
         clearBtn.setCaption("");
         clearBtn.setAction(new AbstractAction("clear") {

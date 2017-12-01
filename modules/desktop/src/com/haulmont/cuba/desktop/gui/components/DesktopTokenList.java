@@ -44,6 +44,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
+import com.haulmont.cuba.gui.icons.CubaIcon;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.ObjectUtils;
@@ -753,7 +754,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
                     return "";
                 }
             });
-            openButton.setIcon("/components/pickerfield/images/open-btn.png");
+            openButton.setIconByName(CubaIcon.PICKERFIELD_OPEN);
             composition.add(openButton);
             openButton.setVisible(false);
 
