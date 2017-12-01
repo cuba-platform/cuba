@@ -370,4 +370,14 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
 
         component.removePopupStyleName(styleName);
     }
+
+    @Override
+    public void setPopupWidth(String popupWidth) {
+        component.setPopupWidth(popupWidth);
+    }
+
+    @Override
+    public String getPopupWidth() {
+        return component.getPopupWidth();
+    }
 }

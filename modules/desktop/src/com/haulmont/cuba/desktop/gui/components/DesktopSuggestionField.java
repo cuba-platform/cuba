@@ -41,11 +41,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -94,6 +90,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
     // just stub
     protected String inputPrompt;
+    protected String popupWidth;
 
     public DesktopSuggestionField() {
         composition = new JPanel();
@@ -741,6 +738,18 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     @Override
     public void setInputPrompt(String inputPrompt) {
         this.inputPrompt = inputPrompt;
+    }
+
+    // just stub
+    @Override
+    public void setPopupWidth(String width) {
+        this.popupWidth = width;
+    }
+
+    // just stub
+    @Override
+    public String getPopupWidth() {
+        return popupWidth;
     }
 
     protected class SearchObjectWrapper extends ObjectWrapper {

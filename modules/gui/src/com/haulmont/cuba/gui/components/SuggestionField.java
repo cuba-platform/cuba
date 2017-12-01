@@ -162,6 +162,21 @@ public interface SuggestionField extends Field, Component.Focusable, Component.H
      */
     void showSuggestions(List<?> suggestions);
 
+    /**
+     * Sets the given {@code width} to the component popup.
+     *
+     * @param width width of the component popup
+     */
+    void setPopupWidth(String width);
+
+    String POPUP_AUTO_WIDTH = "auto";
+    String POPUP_PARENT_WIDTH = "parent";
+
+    /**
+     * @return component popup width
+     */
+    String getPopupWidth();
+
     CaptionMode getCaptionMode();
     void setCaptionMode(CaptionMode captionMode);
 

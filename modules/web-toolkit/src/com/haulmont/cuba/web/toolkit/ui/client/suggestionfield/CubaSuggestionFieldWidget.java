@@ -74,6 +74,7 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
 
     protected List<Suggestion> suggestions = new ArrayList<>();
     protected String popupStylename = "";
+    protected String popupWidth;
 
     public CubaSuggestionFieldWidget() {
         textField = GWT.create(VTextField.class);
@@ -372,11 +373,18 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
         }
     }
 
-    protected class SuggestionPopup extends VOverlay implements PopupPanel.PositionCallback, CloseHandler<PopupPanel> {
-        private static final int Z_INDEX = 30000;
+    public void setPopupWidth(String popupWidth) {
+        this.popupWidth = popupWidth;
+    }
 
-        private int popupOuterPadding = -1;
-        private int topPosition;
+    protected class SuggestionPopup extends VOverlay implements PopupPanel.PositionCallback, CloseHandler<PopupPanel> {
+        protected static final int Z_INDEX = 30000;
+        protected static final String C_HAS_WIDTH = "c-has-width";
+        protected static final String POPUP_PARENT_WIDTH = "parent";
+        protected static final String POPUP_AUTO_WIDTH = "auto";
+
+        protected int popupOuterPadding = -1;
+        protected int topPosition;
 
         @SuppressWarnings("deprecation")
         public SuggestionPopup(Widget widget) {
@@ -445,30 +453,45 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
         protected void updateWidth() {
             setWidth("");
 
-            int mainWidgetWidth = CubaSuggestionFieldWidget.this.getParent().getOffsetWidth();
+            int fieldWidth = CubaSuggestionFieldWidget.this.getOffsetWidth();
             double popupMarginBorderPaddingWidth = getMarginBorderPaddingWidth(getWidget().getElement());
 
+            String newPopupWidth = null;
+
+            if (POPUP_PARENT_WIDTH.equals(popupWidth)) {
+                newPopupWidth = fieldWidth - popupMarginBorderPaddingWidth + "px";
+            }
+
+            if (newPopupWidth == null && !POPUP_AUTO_WIDTH.equals(popupWidth)) {
+                newPopupWidth = popupWidth;
+            }
+
             List<SuggestionItem> suggestions = suggestionsContainer.getSuggestions();
-            if (suggestions == null || suggestions.isEmpty()) {
-                setWidth(mainWidgetWidth - popupMarginBorderPaddingWidth + "px");
-                return;
+            if (newPopupWidth == null &&
+                    (suggestions == null || suggestions.isEmpty())) {
+                newPopupWidth = fieldWidth - popupMarginBorderPaddingWidth + "px";
             }
 
-            int maxSuggestionWidth = 0;
-            for (SuggestionItem suggestionItem : suggestions) {
-                maxSuggestionWidth = Math.max(suggestionItem.getOffsetWidth(), maxSuggestionWidth);
+            if (newPopupWidth == null) {
+                int maxSuggestionWidth = 0;
+                for (SuggestionItem suggestionItem : suggestions) {
+                    maxSuggestionWidth = Math.max(suggestionItem.getOffsetWidth(), maxSuggestionWidth);
+                }
+
+                com.google.gwt.user.client.Element suggestionElement = suggestions.get(0).getElement();
+                double suggestionMarginBorderPaddingWidth = getMarginBorderPaddingWidth(suggestionElement);
+
+                if (maxSuggestionWidth <= fieldWidth) {
+                    suggestionMarginBorderPaddingWidth = 0;
+                }
+
+                int maxWidth = Math.max(maxSuggestionWidth, fieldWidth);
+
+                newPopupWidth = maxWidth - popupMarginBorderPaddingWidth + suggestionMarginBorderPaddingWidth + "px";
             }
 
-            com.google.gwt.user.client.Element suggestionElement = suggestions.get(0).getElement();
-            double suggestionMarginBorderPaddingWidth = getMarginBorderPaddingWidth(suggestionElement);
-
-            if (maxSuggestionWidth <= mainWidgetWidth) {
-                suggestionMarginBorderPaddingWidth = 0;
-            }
-
-            int maxWidth = Math.max(maxSuggestionWidth, mainWidgetWidth);
-
-            setWidth(maxWidth - popupMarginBorderPaddingWidth + suggestionMarginBorderPaddingWidth + "px");
+            setWidth(newPopupWidth);
+            suggestionsContainer.addStyleName(C_HAS_WIDTH);
         }
     }
 

@@ -20,10 +20,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.suggestionfield.CubaSuggestionFie
 import com.haulmont.cuba.web.toolkit.ui.client.suggestionfield.CubaSuggestionFieldServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.suggestionfield.CubaSuggestionFieldState;
 import com.vaadin.event.FieldEvents;
-import com.vaadin.server.AbstractErrorMessage;
-import com.vaadin.server.CompositeErrorMessage;
-import com.vaadin.server.ErrorMessage;
-import com.vaadin.server.KeyMapper;
+import com.vaadin.server.*;
 import com.vaadin.ui.AbstractField;
 import elemental.json.Json;
 import elemental.json.JsonArray;
@@ -33,9 +30,13 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.StringTokenizer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import static com.haulmont.cuba.gui.components.SuggestionField.POPUP_AUTO_WIDTH;
+import static com.haulmont.cuba.gui.components.SuggestionField.POPUP_PARENT_WIDTH;
 
 public class CubaSuggestionField extends AbstractField<Object> {
     protected static final String SUGGESTION_ID = "id";
@@ -275,5 +276,32 @@ public class CubaSuggestionField extends AbstractField<Object> {
                 getState().popupStylename.remove(tokenizer.nextToken());
             }
         }
+    }
+
+    public void setPopupWidth(String popupWidth) {
+        if (popupWidth == null || popupWidth.isEmpty()) {
+            throw new IllegalArgumentException("Popup width cannot be empty");
+        }
+
+        if (Objects.equals(getState(false).popupWidth, popupWidth))
+            return;
+
+        if (isPredefinedPopupWidth(popupWidth)) {
+            getState().popupWidth = popupWidth;
+            return;
+        }
+
+        // try to parse to be sure that string is correct
+        SizeWithUnit.parseStringSize(popupWidth);
+
+        getState().popupWidth = popupWidth;
+    }
+
+    protected boolean isPredefinedPopupWidth(String popupWidth) {
+        return POPUP_AUTO_WIDTH.equals(popupWidth) || POPUP_PARENT_WIDTH.equals(popupWidth);
+    }
+
+    public String getPopupWidth() {
+        return getState(false).popupWidth;
     }
 }

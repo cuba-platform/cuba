@@ -25,6 +25,11 @@ $cuba-suggestionfield-edit-color: scale-color(lighten($v-focus-color, 35%), $sat
     max-width: 400px;
     overflow-y: auto;
     outline: 0px;
+
+    &.c-has-width {
+      min-width: auto;
+      max-width: none;
+    }
   }
 
   .#{$primary-stylename}-item {
