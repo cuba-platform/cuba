@@ -204,6 +204,26 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
     }
 
     @Override
+    public String getContextHelpText() {
+        return pickerField.getContextHelpText();
+    }
+
+    @Override
+    public void setContextHelpText(String contextHelpText) {
+        pickerField.setContextHelpText(contextHelpText);
+    }
+
+    @Override
+    public boolean isContextHelpTextHtmlEnabled() {
+        return pickerField.isContextHelpTextHtmlEnabled();
+    }
+
+    @Override
+    public void setContextHelpTextHtmlEnabled(boolean enabled) {
+        pickerField.setContextHelpTextHtmlEnabled(enabled);
+    }
+
+    @Override
     @Nullable
     public Action getAction(String id) {
         return pickerField.getAction(id);

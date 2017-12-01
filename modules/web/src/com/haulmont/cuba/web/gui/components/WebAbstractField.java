@@ -426,4 +426,24 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.AbstractField>
 
         return getClass().getSimpleName();
     }
+
+    @Override
+    public String getContextHelpText() {
+        return component.getContextHelpText();
+    }
+
+    @Override
+    public void setContextHelpText(String contextHelpText) {
+        component.setContextHelpText(contextHelpText);
+    }
+
+    @Override
+    public boolean isContextHelpTextHtmlEnabled() {
+        return component.isContextHelpTextHtmlEnabled();
+    }
+
+    @Override
+    public void setContextHelpTextHtmlEnabled(boolean enabled) {
+        component.setContextHelpTextHtmlEnabled(enabled);
+    }
 }

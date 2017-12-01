@@ -432,6 +432,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
             }
         }
         loadDescription(field, element);
+        loadContextHelp(field, element);
 
         field.setXmlDescriptor(element);
 
@@ -488,6 +489,19 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         }
 
         return field;
+    }
+
+    protected void loadContextHelp(FieldGroup.FieldConfig field, Element element) {
+        String contextHelpText = element.attributeValue("contextHelpText");
+        if (StringUtils.isNotEmpty(contextHelpText)) {
+            contextHelpText = loadResourceString(contextHelpText);
+            field.setContextHelpText(contextHelpText);
+        }
+
+        String htmlEnabled = element.attributeValue("contextHelpTextHtmlEnabled");
+        if (StringUtils.isNotEmpty(htmlEnabled)) {
+            field.setContextHelpTextHtmlEnabled(Boolean.parseBoolean(htmlEnabled));
+        }
     }
 
     protected String getDefaultCaption(FieldGroup.FieldConfig fieldConfig, Datasource fieldDatasource) {

@@ -45,6 +45,7 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
 
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
+        loadContextHelp(resultComponent, element);
 
         loadTabIndex(resultComponent, element);
 

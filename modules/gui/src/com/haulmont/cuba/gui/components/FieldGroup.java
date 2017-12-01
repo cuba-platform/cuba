@@ -441,6 +441,36 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
          * @return options datasource
          */
         CollectionDatasource getOptionsDatasource();
+
+        /**
+         * @return context help text
+         */
+        String getContextHelpText();
+
+        /**
+         * Set context help text for declarative field.
+         *
+         * If {@link #isBound()} is true and Component implements {@link Field} then sets context help text
+         * to the connected Component.
+         *
+         * @param contextHelpText context help text to be set
+         */
+        void setContextHelpText(String contextHelpText);
+
+        /**
+         * @return true if field accepts context help text in HTML format, null if not set for a declarative field
+         */
+        Boolean isContextHelpTextHtmlEnabled();
+
+        /**
+         * Defines if context help text can be presented as HTML.
+         * <p>
+         * If {@link #isBound()} is true and Component implements {@link Field} then sets this attribute
+         * to the connected Component.
+         *
+         * @param enabled true if field accepts context help text in HTML format
+         */
+        void setContextHelpTextHtmlEnabled(Boolean enabled);
     }
 
     /**

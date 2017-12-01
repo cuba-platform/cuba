@@ -20,20 +20,17 @@ package com.haulmont.cuba.web.toolkit.ui.client.tooltip;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
+import com.haulmont.cuba.web.toolkit.ui.client.checkbox.CubaCheckBoxWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.CubaResizableTextAreaWrapperWidget;
 import com.vaadin.client.*;
-import com.vaadin.client.ui.VGridLayout;
-import com.vaadin.client.ui.gridlayout.GridLayoutConnector;
-import com.vaadin.client.ui.layout.ComponentConnectorLayoutSlot;
-import com.vaadin.client.ui.orderedlayout.Slot;
+
+import static com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget.CONTEXT_HELP_CLASSNAME;
 
 public class CubaTooltip extends VTooltip {
 
@@ -43,7 +40,11 @@ public class CubaTooltip extends VTooltip {
     // If required indicators are not visible we show tooltip on mouse hover otherwise only by mouse click
     protected static Boolean requiredIndicatorVisible = null;
 
+    protected Element contextHelpElement = DOM.createDiv();
+
     public CubaTooltip() {
+        contextHelpElement.setClassName("c-tooltip-context-help");
+        DOM.appendChild(getWidget().getElement(), contextHelpElement);
         tooltipEventHandler = new CubaTooltipEventHandler();
     }
 
@@ -81,13 +82,57 @@ public class CubaTooltip extends VTooltip {
         Profiler.leave("VTooltip.connectHandlersToWidget");
     }
 
+    @Override
+    protected void setTooltipText(TooltipInfo info) {
+        super.setTooltipText(info);
+
+        if (info.getTitle() != null && !info.getTitle().isEmpty()) {
+            description.removeAttribute("aria-hidden");
+        } else {
+            description.setAttribute("aria-hidden", "true");
+        }
+
+        String contextHelp = info.getContextHelp();
+        if (contextHelp != null && !contextHelp.isEmpty()) {
+            if (info.isContextHelpHtmlEnabled()) {
+                contextHelpElement.setInnerHTML(contextHelp);
+            } else {
+                if (contextHelp.contains("\n")) {
+                    contextHelp = WidgetUtil.escapeHTML(contextHelp).replace("\n", "<br/>");
+                    contextHelpElement.setInnerHTML(contextHelp);
+                } else {
+                    contextHelpElement.setInnerText(contextHelp);
+                }
+            }
+            contextHelpElement.getStyle().clearDisplay();
+        } else {
+            contextHelpElement.setInnerHTML("");
+            contextHelpElement.getStyle().setDisplay(Style.Display.NONE);
+        }
+    }
+
+    @Override
+    public void hide() {
+        contextHelpElement.setInnerHTML("");
+        super.hide();
+    }
+
     public class CubaTooltipEventHandler extends TooltipEventHandler {
 
         protected ComponentConnector currentConnector = null;
 
         protected boolean isTooltipElement(Element element) {
-            return (REQUIRED_INDICATOR.equals(element.getClassName())
-                    || ERROR_INDICATOR.equals(element.getClassName()));
+            return (isRequiredIndicator(element)
+                    || isContextHelpElement(element));
+        }
+
+        protected boolean isRequiredIndicator(Element element) {
+            return REQUIRED_INDICATOR.equals(element.getClassName())
+                    || ERROR_INDICATOR.equals(element.getClassName());
+        }
+
+        protected boolean isContextHelpElement(Element element) {
+            return CONTEXT_HELP_CLASSNAME.equals(element.getClassName());
         }
 
         protected void checkRequiredIndicatorVisible() {
@@ -114,22 +159,21 @@ public class CubaTooltip extends VTooltip {
 
         @Override
         protected TooltipInfo getTooltipFor(Element element) {
-            checkRequiredIndicatorVisible();
+            Element originalElement = element;
 
-            if (!requiredIndicatorVisible) {
-                if (isClassNameExcluded(element.getClassName())) {
-                    return null;
-                } else {
-                    return super.getTooltipFor(element);
-                }
+            if (isClassNameExcluded(element.getClassName())) {
+                return null;
             }
 
             if (isTooltipElement(element)) {
                 element = element.getParentElement().cast();
 
-                int index = DOM.getChildIndex(element.getParentElement().cast(), element);
-                int indexOfComponent = index == 0 ? index + 1 : index - 1;
-                element = DOM.getChild(element.getParentElement().cast(), indexOfComponent);
+                Widget widget = WidgetUtil.findWidget(element);
+                if (!(widget instanceof CubaCheckBoxWidget)) {
+                    int index = DOM.getChildIndex(element.getParentElement().cast(), element);
+                    int indexOfComponent = index == 0 ? index + 1 : index - 1;
+                    element = DOM.getChild(element.getParentElement().cast(), indexOfComponent);
+                }
             }
 
             ApplicationConnection ac = getApplicationConnection();
@@ -159,35 +203,40 @@ public class CubaTooltip extends VTooltip {
                         + " returned a tooltip even though hasTooltip claims there are no tooltips for the connector.";
                 currentConnector = connector;
 
-                return info;
+                return updateTooltip(info, originalElement);
             }
 
             return null;
         }
 
+        protected TooltipInfo updateTooltip(TooltipInfo info, Element element) {
+            if (isContextHelpElement(element)) {
+                info.setTitle(null);
+                info.setErrorMessage(null);
+            } else {
+                info.setContextHelp(null);
+                checkRequiredIndicatorVisible();
+
+                if (requiredIndicatorVisible && isRequiredIndicator(element)) {
+                    info.setTitle(null);
+                }
+            }
+            return info;
+        }
+
         @Override
         public void onMouseDown(MouseDownEvent event) {
-            checkRequiredIndicatorVisible();
-
-            if (requiredIndicatorVisible) {
-                Element element = event.getNativeEvent().getEventTarget().cast();
-                if (isTooltipElement(element)) {
-                    closeNow();
-                    handleShowHide(event, false);
-                } else {
-                    hideTooltip();
-                }
+            Element element = event.getNativeEvent().getEventTarget().cast();
+            if (isTooltipElement(element)) {
+                closeNow();
+                handleShowHide(event, false);
+            } else {
+                hideTooltip();
             }
         }
 
         @Override
         protected void handleShowHide(DomEvent domEvent, boolean isFocused) {
-            checkRequiredIndicatorVisible();
-
-            if (!requiredIndicatorVisible) {
-                super.handleShowHide(domEvent, isFocused);
-            }
-
             // CAUTION copied from parent with changes
             Event event = Event.as(domEvent.getNativeEvent());
             Element element = Element.as(event.getEventTarget());
@@ -214,28 +263,25 @@ public class CubaTooltip extends VTooltip {
                 handleHideEvent();
                 currentConnector = null;
             } else {
-                boolean hasTooltipIndicator = hasIndicators(currentConnector);
                 boolean elementIsIndicator = elementIsIndicator(element);
 
-                if ((hasTooltipIndicator && elementIsIndicator) || (!hasTooltipIndicator)) {
-                    if (closing) {
-                        closeTimer.cancel();
-                        closing = false;
-                    }
-
-                    if (isTooltipOpen()) {
-                        closeNow();
-                    }
-
-                    setTooltipText(info);
-                    updatePosition(event, isFocused);
-
-                    if (BrowserInfo.get().isIOS()) {
-                        element.focus();
-                    }
-
-                    showTooltip(domEvent instanceof MouseDownEvent && elementIsIndicator);
+                if (closing) {
+                    closeTimer.cancel();
+                    closing = false;
                 }
+
+                if (isTooltipOpen()) {
+                    closeNow();
+                }
+
+                setTooltipText(info);
+                updatePosition(event, isFocused);
+
+                if (BrowserInfo.get().isIOS()) {
+                    element.focus();
+                }
+
+                showTooltip(domEvent instanceof MouseDownEvent && elementIsIndicator);
             }
 
             handledByFocus = isFocused;
@@ -244,59 +290,7 @@ public class CubaTooltip extends VTooltip {
 
         protected boolean elementIsIndicator(Element relativeElement) {
             return relativeElement != null
-                    && (REQUIRED_INDICATOR.equals(relativeElement.getClassName())
-                        || ERROR_INDICATOR.equals(relativeElement.getClassName()));
-        }
-
-        protected boolean hasIndicators(ComponentConnector connector) {
-            if (connector == null || connector.getWidget() == null) {
-                return false;
-            }
-
-            Widget parentWidget = connector.getWidget().getParent();
-
-            if (parentWidget instanceof Slot) {
-                Slot slot = (Slot) parentWidget;
-                if (slot.getCaptionElement() != null) {
-                    com.google.gwt.user.client.Element captionElement = slot.getCaptionElement();
-                    for (int i = 0; i < captionElement.getChildCount(); i++) {
-                        Node child = captionElement.getChild(i);
-                        if (child instanceof Element
-                                && (elementIsIndicator(((Element) child)))) {
-                            return true;
-                        }
-                    }
-                }
-            } else if (connector.getParent() instanceof GridLayoutConnector) {
-                GridLayoutConnector gridLayoutConnector = (GridLayoutConnector) connector.getParent();
-                VGridLayout gridWidget = gridLayoutConnector.getWidget();
-                VGridLayout.Cell cell = gridWidget.widgetToCell.get(connector.getWidget());
-
-                ComponentConnectorLayoutSlot slot = cell.slot;
-                if (slot != null) {
-                    VCaption caption = slot.getCaption();
-                    if (caption != null) {
-                        com.google.gwt.user.client.Element captionElement = caption.getElement();
-                        for (int i = 0; i < captionElement.getChildCount(); i++) {
-                            Node child = captionElement.getChild(i);
-                            if (child instanceof Element
-                                    && (elementIsIndicator(((Element) child)))) {
-                                return true;
-                            }
-                        }
-                    }
-
-                    if (caption instanceof CubaCaptionWidget) {
-                        CubaCaptionWidget cubaCaptionWidget = (CubaCaptionWidget) caption;
-                        if (cubaCaptionWidget.getRequiredIndicatorElement() != null
-                                || cubaCaptionWidget.getErrorIndicatorElement() != null) {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
+                    && isTooltipElement(relativeElement);
         }
     }
 }

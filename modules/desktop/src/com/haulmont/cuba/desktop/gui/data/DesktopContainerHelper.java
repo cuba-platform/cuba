@@ -21,6 +21,7 @@ import com.haulmont.cuba.desktop.gui.components.DesktopCheckBox;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponent;
 import com.haulmont.cuba.desktop.gui.components.DesktopContainer;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Component.HasContextHelp;
 import com.haulmont.cuba.gui.components.Field;
 import org.apache.commons.lang.StringUtils;
 
@@ -52,6 +53,18 @@ public class DesktopContainerHelper {
             if (StringUtils.isNotEmpty(description)) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    public static boolean mayHaveExternalContextHelp(Component component) {
+        return component instanceof HasContextHelp;
+    }
+
+    public static boolean hasExternalContextHelp(Component component) {
+        if (component instanceof HasContextHelp) {
+            final String contextHelp = ((HasContextHelp) component).getContextHelpText();
+            return StringUtils.isNotEmpty(contextHelp);
         }
         return false;
     }

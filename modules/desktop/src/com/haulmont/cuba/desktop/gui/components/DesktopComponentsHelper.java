@@ -28,6 +28,8 @@ import com.haulmont.cuba.desktop.sys.vcl.JTabbedPaneExt;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.Action;
@@ -42,6 +44,8 @@ public class DesktopComponentsHelper {
 
     public static final int BUTTON_HEIGHT = 30;
     public static final int FIELD_HEIGHT = 28;
+    public static final int TOOLTIP_WIDTH = 500;
+
 
     // todo move nimbus constants to theme
     public static final Color defaultBgColor = (Color) UIManager.get("nimbusLightBackground");
@@ -457,5 +461,12 @@ public class DesktopComponentsHelper {
                 LoggerFactory.getLogger(DesktopComponentsHelper.class).warn("Error while problem component focusing", e);
             }
         }
+    }
+
+    public static String getContextHelpText(String contextHelpText, boolean contextHelpTextHtmlEnabled) {
+        if (StringUtils.isNotEmpty(contextHelpText)) {
+            return contextHelpTextHtmlEnabled ? contextHelpText : StringEscapeUtils.escapeHtml(contextHelpText);
+        }
+        return null;
     }
 }

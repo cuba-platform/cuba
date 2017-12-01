@@ -17,12 +17,13 @@
 package com.haulmont.cuba.web.toolkit.ui.client.cssactionslayout;
 
 import com.haulmont.cuba.web.toolkit.ui.CubaCssActionsLayout;
-import com.vaadin.client.ApplicationConnection;
-import com.vaadin.client.Paintable;
-import com.vaadin.client.UIDL;
+import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
+import com.vaadin.client.*;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.csslayout.CssLayoutConnector;
+import com.vaadin.shared.AbstractComponentState;
+import com.vaadin.shared.AbstractFieldState;
 import com.vaadin.shared.ui.Connect;
 import com.vaadin.shared.ui.MarginInfo;
 
@@ -59,5 +60,18 @@ public class CubaCssActionsLayoutConnector extends CssLayoutConnector implements
                 getWidget().getShortcutHandler().updateActionMap(childUidl);
             }
         }
+    }
+
+    @Override
+    protected VCaption createCaption(ComponentConnector child) {
+        return new CubaCaptionWidget(child, getConnection());
+    }
+
+    @Override
+    protected boolean isCaptionNeeded(ComponentConnector child) {
+        AbstractComponentState state = child.getState();
+        return super.isCaptionNeeded(child) || (state instanceof AbstractFieldState
+                && ((AbstractFieldState) state).contextHelpText != null
+                && !((AbstractFieldState) state).contextHelpText.isEmpty());
     }
 }

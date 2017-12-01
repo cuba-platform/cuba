@@ -393,6 +393,8 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
             return loadInsets(element);
         } else if ("dimension".equals(elementName)) {
             return loadDimension(element);
+        } else if ("int".equals(elementName)) {
+            return Integer.parseInt(element.attributeValue("value"));
         } else {
             log.error("Uknown UI property value: " + elementName);
             return null;

@@ -67,6 +67,26 @@ public class WebSuggestionPickerField extends WebSuggestionField implements Sugg
         return pickerField.getDescription();
     }
 
+    @Override
+    public String getContextHelpText() {
+        return pickerField.getContextHelpText();
+    }
+
+    @Override
+    public void setContextHelpText(String contextHelpText) {
+        pickerField.setContextHelpText(contextHelpText);
+    }
+
+    @Override
+    public boolean isContextHelpTextHtmlEnabled() {
+        return pickerField.isContextHelpTextHtmlEnabled();
+    }
+
+    @Override
+    public void setContextHelpTextHtmlEnabled(boolean enabled) {
+        pickerField.setContextHelpTextHtmlEnabled(enabled);
+    }
+
     protected void initValueSync(WebPickerField.Picker picker) {
         component.addValueChangeListener(e -> {
             if (updateComponentValue)

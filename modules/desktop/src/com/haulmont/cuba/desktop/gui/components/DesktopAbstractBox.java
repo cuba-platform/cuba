@@ -21,6 +21,7 @@ import com.google.common.collect.Iterables;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
+import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
@@ -74,37 +75,31 @@ public abstract class DesktopAbstractBox
             remove(component);
         }
 
-        int implIndex = getActualIndex(index);
-
-        // add caption first
-        ComponentCaption caption = null;
-        boolean haveDescription = false;
-        if (DesktopContainerHelper.hasExternalCaption(component)) {
-            caption = new ComponentCaption(component);
-            captions.put(component, caption);
-            impl.add(caption, layoutAdapter.getCaptionConstraints(component), implIndex); // CAUTION this dramatically wrong
-            implIndex++;
-        } else if (DesktopContainerHelper.hasExternalDescription(component)) {
-            caption = new ComponentCaption(component);
-            captions.put(component, caption);
-            haveDescription = true;
-        }
-
         JComponent composition = DesktopComponentsHelper.getComposition(component);
-        //if component have description without caption, we need to wrap
-        // component to view Description button horizontally after component
-        if (haveDescription) {
+        boolean hasExternalCaption = DesktopContainerHelper.hasExternalCaption(component);
+        if (hasExternalCaption
+                || DesktopContainerHelper.hasExternalContextHelp(component)) {
+            ComponentCaption caption  = new ComponentCaption(component);
+            captions.put(component, caption);
+
             JPanel wrapper = new LayoutSlot();
             BoxLayoutAdapter adapter = BoxLayoutAdapter.create(wrapper);
             adapter.setExpandLayout(true);
             adapter.setSpacing(false);
             adapter.setMargin(false);
             wrapper.add(composition);
-            wrapper.add(caption,new CC().alignY("top"));
-            impl.add(wrapper, layoutAdapter.getConstraints(component), implIndex);
+
+            if (hasExternalCaption) {
+                adapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.Y);
+                wrapper.add(caption, 0);
+            } else {
+                wrapper.add(caption, new CC().alignY("top"));
+            }
+
+            impl.add(wrapper, layoutAdapter.getConstraints(component), index);
             wrappers.put(component, new Pair<>(wrapper, adapter));
         } else {
-            impl.add(composition, layoutAdapter.getConstraints(component), implIndex);
+            impl.add(composition, layoutAdapter.getConstraints(component), index);
         }
 
         if (component.getId() != null) {
@@ -150,16 +145,6 @@ public abstract class DesktopAbstractBox
 
     protected void attachToFrame(Component component) {
         frame.registerComponent(component);
-    }
-
-    protected int getActualIndex(int originalIndex) {
-        int index = originalIndex;
-        Object[] components = ownComponents.toArray();
-        for (int i = 0; i < originalIndex; i++) {
-            if (DesktopContainerHelper.hasExternalCaption((Component)components[i]))
-                index++;
-        }
-        return index;
     }
 
     @Override
@@ -269,15 +254,16 @@ public abstract class DesktopAbstractBox
 
     protected void updateComponentInternal(Component child) {
         boolean componentReAdded = false;
-        if (DesktopContainerHelper.mayHaveExternalCaption(child)) {
+        if (DesktopContainerHelper.mayHaveExternalCaption(child)
+                || DesktopContainerHelper.mayHaveExternalContextHelp(child)) {
             if (captions.containsKey(child)
                     && !DesktopContainerHelper.hasExternalCaption(child)
-                    && !DesktopContainerHelper.hasExternalDescription(child)) {
+                    && !DesktopContainerHelper.hasExternalContextHelp(child)) {
                 reAddChild(child);
                 componentReAdded = true;
             } else if (!captions.containsKey(child)
                     && (DesktopContainerHelper.hasExternalCaption(child)
-                    || DesktopContainerHelper.hasExternalDescription(child))) {
+                    || DesktopContainerHelper.hasExternalContextHelp(child))) {
                 reAddChild(child);
                 componentReAdded = true;
             } else if (captions.containsKey(child)) {
@@ -295,6 +281,19 @@ public abstract class DesktopAbstractBox
             JComponent composition;
             if (wrappers.containsKey(child)) {
                 composition = wrappers.get(child).getFirst();
+                CC constraints = MigLayoutHelper.getConstraints(child);
+                if (child.getHeight() == -1.0) {
+                    MigLayoutHelper.applyHeight(constraints, -1, UNITS_PIXELS, false);
+                } else {
+                    MigLayoutHelper.applyHeight(constraints, 100, UNITS_PERCENTAGE, false);
+                }
+                if (child.getWidth() == -1.0) {
+                    MigLayoutHelper.applyWidth(constraints, -1, UNITS_PIXELS, false);
+                } else {
+                    MigLayoutHelper.applyWidth(constraints, 100, UNITS_PERCENTAGE, false);
+                }
+                BoxLayoutAdapter adapter = wrappers.get(child).getSecond();
+                adapter.updateConstraints(DesktopComponentsHelper.getComposition(child), constraints);
             } else {
                 composition = DesktopComponentsHelper.getComposition(child);
             }

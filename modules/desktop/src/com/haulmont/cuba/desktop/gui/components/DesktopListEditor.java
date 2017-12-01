@@ -200,6 +200,24 @@ public class DesktopListEditor extends DesktopAbstractField<JPanel> implements L
     }
 
     @Override
+    public String getContextHelpText() {
+        return null;
+    }
+
+    @Override
+    public void setContextHelpText(String contextHelpText) {
+    }
+
+    @Override
+    public boolean isContextHelpTextHtmlEnabled() {
+        return false;
+    }
+
+    @Override
+    public void setContextHelpTextHtmlEnabled(boolean enabled) {
+    }
+
+    @Override
     protected void setEditableToComponent(boolean editable) {
         delegate.setEditable(editable);
     }

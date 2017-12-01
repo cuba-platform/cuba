@@ -44,6 +44,7 @@
                 <xs:element name="font" type="fontType"/>
                 <xs:element name="insets" type="insetsType"/>
                 <xs:element name="dimension" type="dimensionType"/>
+                <xs:element name="int" type="intType" maxOccurs="unbounded" minOccurs="0"/>
             </xs:choice>
         </xs:sequence>
     </xs:complexType>
@@ -68,6 +69,11 @@
     <xs:complexType name="dimensionType">
         <xs:attribute type="xs:string" name="property" use="required"/>
         <xs:attribute type="xs:string" name="value" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="intType">
+        <xs:attribute type="xs:string" name="property" use="required"/>
+        <xs:attribute type="xs:integer" name="value" use="required"/>
     </xs:complexType>
 
     <xs:complexType name="layoutSettingsType">

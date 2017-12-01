@@ -29,6 +29,20 @@
       cursor: pointer;
     }
 
+    .c-context-help-button {
+      display: inline-block;
+
+      color: transparent;
+      background: transparent no-repeat top right;
+      background-image: url(sprites/question.png); /** sprite-ref: components; */
+      width: 16px;
+      height: 16px;
+    }
+
+    .c-context-help-button:hover {
+      cursor: pointer;
+    }
+
     .#{$primary-stylename}text {
       padding-bottom: 2px;
     }

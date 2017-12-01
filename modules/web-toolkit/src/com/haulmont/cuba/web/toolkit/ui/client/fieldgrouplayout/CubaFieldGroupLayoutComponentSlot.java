@@ -39,7 +39,7 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
     protected static final String INDICATORS_CLASSNAME = "caption-indicators";
 
     protected Element requiredElement = null;
-    protected Element tooltipElement = null;
+    protected Element contextHelpIndicatorElement = null;
     protected Element errorIndicatorElement = null;
 
     protected Element rightCaption = null;
@@ -363,6 +363,15 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
         } else if (requiredElement != null) {
             requiredElement.removeFromParent();
             requiredElement = null;
+        }
+
+        if (captionWidget.getContextHelpIndicatorElement() != null) {
+            captionWidget.getContextHelpIndicatorElement().removeFromParent();
+            contextHelpIndicatorElement = captionWidget.getContextHelpIndicatorElement();
+            rightCaption.appendChild(contextHelpIndicatorElement);
+        } else if (contextHelpIndicatorElement != null) {
+            contextHelpIndicatorElement.removeFromParent();
+            contextHelpIndicatorElement = null;
         }
 
         if (captionWidget.getErrorIndicatorElement() != null) {

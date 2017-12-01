@@ -887,6 +887,11 @@
         <xs:attribute name="description" type="resourceString"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="hasContextHelp">
+        <xs:attribute name="contextHelpText" type="resourceString"/>
+        <xs:attribute name="contextHelpTextHtmlEnabled" type="xs:boolean"/>
+    </xs:attributeGroup>
+
     <xs:attributeGroup name="hasCaptionProp">
         <xs:attribute name="caption" type="resourceString"/>
     </xs:attributeGroup>
@@ -1157,6 +1162,7 @@
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="hasDatasource"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1205,6 +1211,7 @@
                 <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="hasRequirements"/>
                 <xs:attributeGroup ref="hasDatasource"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -2106,6 +2113,7 @@
         <xs:attributeGroup ref="hasEditState"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasTabIndex"/>
+        <xs:attributeGroup ref="hasContextHelp"/>
 
         <xs:attribute name="width" type="componentSize"/>
 
@@ -2210,6 +2218,7 @@
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasDatasourceProp"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
 
                 <xs:attribute name="refreshOptionsOnLookupClose" type="xs:boolean"/>
                 <xs:attribute name="position" type="tokenListPosition"/>

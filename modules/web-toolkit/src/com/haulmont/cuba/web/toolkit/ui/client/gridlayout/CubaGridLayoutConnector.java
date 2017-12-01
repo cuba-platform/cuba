@@ -25,6 +25,8 @@ import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.client.ui.gridlayout.GridLayoutConnector;
 import com.vaadin.client.ui.layout.VLayoutSlot;
+import com.vaadin.shared.AbstractComponentState;
+import com.vaadin.shared.AbstractFieldState;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaGridLayout.class)
@@ -43,7 +45,11 @@ public class CubaGridLayoutConnector extends GridLayoutConnector implements Pain
         // CAUTION copied from GridLayoutConnector.updateCaption(ComponentConnector childConnector)
         VGridLayout layout = getWidget();
         VGridLayout.Cell cell = layout.widgetToCell.get(childConnector.getWidget());
-        if (VCaption.isNeeded(childConnector.getState())) {
+        AbstractComponentState state = childConnector.getState();
+        if (VCaption.isNeeded(state)
+                || (state instanceof AbstractFieldState
+                && ((AbstractFieldState) state).contextHelpText != null
+                && !((AbstractFieldState) state).contextHelpText.isEmpty())) {
             VLayoutSlot layoutSlot = cell.slot;
             VCaption caption = layoutSlot.getCaption();
             if (caption == null) {

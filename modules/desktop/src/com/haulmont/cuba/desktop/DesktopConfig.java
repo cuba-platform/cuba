@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
+import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.type.IntegerListTypeFactory;
 
@@ -115,4 +116,9 @@ public interface DesktopConfig extends Config {
     @Property("cuba.desktop.loginDialogDefaultPassword")
     @Default("admin")
     String getLoginDialogDefaultPassword();
+
+    @Property("cuba.desktop.showTooltipShortcut")
+    @Source(type = SourceType.DATABASE)
+    @DefaultString("F1")
+    String getShowTooltipShortcut();
 }

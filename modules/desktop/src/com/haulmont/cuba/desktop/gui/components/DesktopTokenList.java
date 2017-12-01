@@ -46,6 +46,7 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
@@ -599,6 +600,22 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     public void setDescription(String description) {
         getImpl().setToolTipText(description);
         DesktopToolTipManager.getInstance().registerTooltip(impl);
+    }
+
+    @Override
+    public void setContextHelpText(String contextHelpText) {
+        if (!ObjectUtils.equals(this.contextHelpText, contextHelpText)) {
+            this.contextHelpText = contextHelpText;
+
+            // for now, DesktopTokenList doesn't provide context help
+        }
+    }
+
+    @Override
+    public void setContextHelpTextHtmlEnabled(boolean enabled) {
+        if (!ObjectUtils.equals(this.contextHelpTextHtmlEnable, enabled)) {
+            contextHelpTextHtmlEnable = enabled;
+        }
     }
 
     @Override

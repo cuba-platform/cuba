@@ -17,13 +17,18 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.checkbox;
 
+import com.google.gwt.aria.client.Roles;
+import com.google.gwt.user.client.DOM;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
+import com.vaadin.client.VTooltip;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.checkbox.CheckBoxConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(value = CubaCheckBox.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaCheckBoxConnector extends CheckBoxConnector {
+
+    public static final String CONTEXT_HELP_CLASSNAME = "c-context-help-button";
 
     @Override
     public boolean delegateCaptionHandling() {
@@ -45,5 +50,20 @@ public class CubaCheckBoxConnector extends CheckBoxConnector {
         getWidget().captionManagedByLayout = getState().captionManagedByLayout;
 
         super.onStateChanged(stateChangeEvent);
+
+        if (!getWidget().captionManagedByLayout
+                && getState().contextHelpText != null
+                && !getState().contextHelpText.isEmpty()) {
+            getWidget().contextHelpIcon = DOM.createSpan();
+            getWidget().contextHelpIcon.setInnerHTML("?");
+            getWidget().contextHelpIcon.setClassName(CONTEXT_HELP_CLASSNAME);
+            Roles.getTextboxRole().setAriaHiddenState(getWidget().contextHelpIcon, true);
+
+            getWidget().getElement().appendChild(getWidget().contextHelpIcon);
+            DOM.sinkEvents(getWidget().contextHelpIcon, VTooltip.TOOLTIP_EVENTS);
+        } else if (getWidget().contextHelpIcon != null) {
+            getWidget().contextHelpIcon.removeFromParent();
+            getWidget().contextHelpIcon = null;
+        }
     }
 }

@@ -17,9 +17,16 @@
 
 package com.haulmont.cuba.desktop.sys;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.desktop.DesktopConfig;
+import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.vcl.ToolTipButton;
+import com.haulmont.cuba.gui.components.KeyCombination;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
+import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -28,24 +35,23 @@ import java.awt.event.*;
  */
 public class DesktopToolTipManager extends MouseAdapter {
 
-    public static final int F1_CODE = 112;
+    protected static int CLOSE_TIME = 500;
+    protected static int SHOW_TIME = 1000;
 
-    private static int CLOSE_TIME = 500;
-    private static int SHOW_TIME = 1000;
+    protected boolean tooltipShowing = false;
 
-    private boolean tooltipShowing = false;
+    protected JToolTip toolTipWindow;
+    protected Popup window;
+    protected JComponent component;
 
-    private JToolTip toolTipWindow;
-    private Popup window;
-    private JComponent component;
+    protected Timer showTimer = new Timer(SHOW_TIME, null);
+    protected Timer closeTimer;
 
-    private Timer showTimer = new Timer(SHOW_TIME, null);
-    private Timer closeTimer;
+    protected Configuration configuration = AppBeans.get(Configuration.NAME);
 
-    private MouseListener componentMouseListener = new ComponentMouseListener();
-    private KeyListener fieldKeyListener = new FieldKeyListener();
-    private ActionListener btnActionListener = new ButtonClickListener();
-
+    protected MouseListener componentMouseListener = new ComponentMouseListener();
+    protected KeyListener fieldKeyListener = new FieldKeyListener();
+    protected ActionListener btnActionListener = new ButtonClickListener();
 
     private static DesktopToolTipManager instance;
 
@@ -61,23 +67,20 @@ public class DesktopToolTipManager extends MouseAdapter {
         return instance;
     }
 
-    private DesktopToolTipManager() {
+    protected DesktopToolTipManager() {
         closeTimer = new Timer(CLOSE_TIME, null);
         closeTimer.setRepeats(false);
-        closeTimer.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                window.hide();
-                window = null;
-                tooltipShowing = false;
-                toolTipWindow.removeMouseListener(DesktopToolTipManager.this);
-                component.removeMouseListener(DesktopToolTipManager.this);
+        closeTimer.addActionListener(e -> {
+            window.hide();
+            window = null;
+            tooltipShowing = false;
+            toolTipWindow.removeMouseListener(DesktopToolTipManager.this);
+            component.removeMouseListener(DesktopToolTipManager.this);
 
-            }
         });
 
         Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-            private MouseEvent event;
+            protected MouseEvent event;
 
             @Override
             public void eventDispatched(AWTEvent e) {
@@ -96,7 +99,7 @@ public class DesktopToolTipManager extends MouseAdapter {
         }, AWTEvent.MOUSE_EVENT_MASK);
     }
 
-    private boolean isPointInComponent(Point point, JComponent component) {
+    protected boolean isPointInComponent(Point point, JComponent component) {
         if (!component.isShowing())
             return false;
 
@@ -108,7 +111,7 @@ public class DesktopToolTipManager extends MouseAdapter {
 
     /**
      * Register tooltip for component.
-     * Tooltip is displayed when user press F1 on focused component
+     * The tooltip is displayed when a user either presses F1 on a focused component or hovers over it.
      * ToolTip text is taken from {@link javax.swing.JComponent#getToolTipText()}.
      *
      * @param component component to register
@@ -116,6 +119,9 @@ public class DesktopToolTipManager extends MouseAdapter {
     public void registerTooltip(final JComponent component) {
         component.removeKeyListener(fieldKeyListener);
         component.addKeyListener(fieldKeyListener);
+
+        component.removeMouseListener(componentMouseListener);
+        component.addMouseListener(componentMouseListener);
     }
 
     /**
@@ -154,7 +160,7 @@ public class DesktopToolTipManager extends MouseAdapter {
         btn.addActionListener(btnActionListener);
     }
 
-    private void hideTooltip() {
+    protected void hideTooltip() {
         closeTimer.stop();
         if (window != null) {
             window.hide();
@@ -165,9 +171,13 @@ public class DesktopToolTipManager extends MouseAdapter {
         }
     }
 
-    private void showTooltip(JComponent field, String text) {
+    protected void showTooltip(JComponent field, String text) {
         if (!field.isShowing())
             return;
+
+        if (StringUtils.isEmpty(text)) {
+            return;
+        }
 
         PointerInfo pointerInfo = MouseInfo.getPointerInfo();
         if (pointerInfo == null) {
@@ -198,18 +208,40 @@ public class DesktopToolTipManager extends MouseAdapter {
         }
 
         component = field;
-        final JToolTip toolTip = new JToolTip();
 
-        toolTip.setTipText("<html>" + text + "</html>");
+        final JToolTip toolTip = new CubaToolTip();
+        toolTip.setTipText(text);
         final Popup tooltipContainer = PopupFactory.getSharedInstance().getPopup(field, toolTip, x, y);
         tooltipContainer.show();
         window = tooltipContainer;
         toolTipWindow = toolTip;
 
         tooltipShowing = true;
-        if ((!(field instanceof ToolTipButton)) && ((field instanceof AbstractButton) || (field instanceof JLabel))) {
+        if (!(field instanceof ToolTipButton)) {
             toolTip.addMouseListener(this);
             field.addMouseListener(this);
+        }
+    }
+
+    protected class CubaToolTip extends JToolTip {
+        @Override
+        public void setTipText(String tipText) {
+            UIDefaults lafDefaults = UIManager.getLookAndFeelDefaults();
+            int maxTooltipWidth = lafDefaults.getInt("Tooltip.maxWidth");
+            if (maxTooltipWidth == 0) {
+                maxTooltipWidth = DesktopComponentsHelper.TOOLTIP_WIDTH;
+            }
+
+            FontMetrics fontMetrics = StyleContext.getDefaultStyleContext().getFontMetrics(getFont());
+            int actualWidth = SwingUtilities.computeStringWidth(fontMetrics, tipText);
+
+            if (actualWidth < maxTooltipWidth) {
+                tipText = "<html>" + tipText + "</html>";
+            } else {
+                tipText = "<html><body width=\"" + maxTooltipWidth + "px\">" + tipText + "</body></html>";
+            }
+
+            super.setTipText(tipText);
         }
     }
 
@@ -225,9 +257,9 @@ public class DesktopToolTipManager extends MouseAdapter {
         }
     }
 
-    private class ComponentMouseListener extends MouseAdapter {
+    protected class ComponentMouseListener extends MouseAdapter {
 
-        private JComponent cmp;
+        protected JComponent cmp;
 
         {
             showTimer.setRepeats(false);
@@ -243,7 +275,7 @@ public class DesktopToolTipManager extends MouseAdapter {
         @Override
         public void mouseEntered(MouseEvent e) {
             if (window != null) {
-                if (e.getSource() != component && e.getSource() != toolTipWindow && component instanceof AbstractButton) {
+                if (e.getSource() != component && e.getSource() != toolTipWindow) {
                     hideTooltip();
                     cmp = (JComponent) e.getSource();
                     showTimer.start();
@@ -272,10 +304,14 @@ public class DesktopToolTipManager extends MouseAdapter {
         }
     }
 
-    private class FieldKeyListener extends KeyAdapter {
+    protected class FieldKeyListener extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == F1_CODE) {
+            String showTooltipShortcut = configuration.getConfig(DesktopConfig.class).getShowTooltipShortcut();
+            KeyStroke keyStroke = DesktopComponentsHelper
+                    .convertKeyCombination(KeyCombination.create(showTooltipShortcut));
+
+            if (KeyStroke.getKeyStrokeForEvent(e).equals(keyStroke)) {
                 hideTooltip();
                 JComponent field = (JComponent) e.getSource();
                 showTooltip(field, field.getToolTipText());
@@ -287,7 +323,7 @@ public class DesktopToolTipManager extends MouseAdapter {
         }
     }
 
-    private class ButtonClickListener implements ActionListener {
+    protected class ButtonClickListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {

@@ -31,6 +31,9 @@ import com.vaadin.shared.ui.ComponentStateUtil;
 public class CubaCaptionWidget extends VCaption {
 
     public static final String CUBA_CLASSNAME = "c-caption";
+    public static final String CONTEXT_HELP_CLASSNAME = "c-context-help-button";
+
+    protected Element contextHelpIndicatorElement;
 
     protected boolean captionPlacedAfterComponentByDefault = true;
 
@@ -141,6 +144,13 @@ public class CubaCaptionWidget extends VCaption {
             captionText = null;
         }
 
+        if (ComponentStateUtil.hasDescription(owner.getState())
+                && captionText != null) {
+            addStyleDependentName("hasdescription");
+        } else {
+            removeStyleDependentName("hasdescription");
+        }
+
         AriaHelper.handleInputRequired(owner.getWidget(), showRequired);
 
         if (showRequired) {
@@ -160,6 +170,24 @@ public class CubaCaptionWidget extends VCaption {
             // Remove existing
             requiredFieldIndicator.removeFromParent();
             requiredFieldIndicator = null;
+        }
+
+        if (owner.getState() instanceof AbstractFieldState) {
+            AbstractFieldState state = (AbstractFieldState) owner
+                    .getState();
+            if (state.contextHelpText != null && !state.contextHelpText.isEmpty()) {
+                if (contextHelpIndicatorElement == null) {
+                    contextHelpIndicatorElement = DOM.createDiv();
+                    contextHelpIndicatorElement.setClassName(CONTEXT_HELP_CLASSNAME);
+
+                    DOM.insertChild(getElement(), contextHelpIndicatorElement, getContextHelpInsertPosition());
+                }
+            } else {
+                if (contextHelpIndicatorElement != null) {
+                    contextHelpIndicatorElement.removeFromParent();
+                    contextHelpIndicatorElement = null;
+                }
+            }
         }
 
         AriaHelper.handleInputInvalid(owner.getWidget(), showError);
@@ -209,6 +237,9 @@ public class CubaCaptionWidget extends VCaption {
         if (errorIndicatorElement != null && errorIndicatorElement.getParentElement() == getElement()) {
             width += WidgetUtil.getRequiredWidth(errorIndicatorElement);
         }
+        if (contextHelpIndicatorElement != null && contextHelpIndicatorElement.getParentElement() == getElement()) {
+            width += WidgetUtil.getRequiredWidth(contextHelpIndicatorElement);
+        }
         return width;
     }
 
@@ -218,12 +249,31 @@ public class CubaCaptionWidget extends VCaption {
         return super.getTextElement();
     }
 
+    public Element getContextHelpIndicatorElement() {
+        return contextHelpIndicatorElement;
+    }
+
     public Element getRequiredIndicatorElement() {
         return requiredFieldIndicator;
     }
 
     public Element getErrorIndicatorElement() {
         return errorIndicatorElement;
+    }
+
+    @Override
+    protected int getInsertPosition(InsertPosition element) {
+        int pos = super.getInsertPosition(element);
+
+        if (contextHelpIndicatorElement != null) {
+            pos++;
+        }
+
+        return pos;
+    }
+
+    protected int getContextHelpInsertPosition() {
+        return super.getInsertPosition(null);
     }
 
     public void setCaptionHolder(CaptionHolder captionHolder) {

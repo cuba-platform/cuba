@@ -35,12 +35,16 @@ import java.util.List;
 
 public class CubaOrderedLayoutSlot extends Slot {
 
+    public static final String CONTEXT_HELP_CLASSNAME = "c-context-help-button";
+
+    protected Element contextHelpIcon;
+    protected String contextHelpText;
+
     public CubaOrderedLayoutSlot(VAbstractOrderedLayout layout, Widget widget) {
         super(layout, widget);
     }
 
-    @Override
-    public void setCaption(String captionText, Icon icon, List<String> styles,
+    public void setCaption(String captionText, String contextHelpText, Icon icon, List<String> styles,
                            String error, boolean showError, boolean required, boolean enabled, boolean captionAsHtml) {
         // CAUTION copied from super
         // Caption wrappers
@@ -48,7 +52,7 @@ public class CubaOrderedLayoutSlot extends Slot {
         final Element focusedElement = WidgetUtil.getFocusedElement();
         // By default focus will not be lost
         boolean focusLost = false;
-        if (captionText != null || icon != null || error != null || required) {
+        if (captionText != null || icon != null || error != null || required || contextHelpText != null) {
             if (caption == null) {
                 caption = DOM.createDiv();
                 captionWrap = DOM.createDiv();
@@ -132,6 +136,30 @@ public class CubaOrderedLayoutSlot extends Slot {
         } else if (requiredIcon != null) {
             requiredIcon.removeFromParent();
             requiredIcon = null;
+        }
+
+        // Context Help
+        // Haulmont API
+        this.contextHelpText = contextHelpText;
+        if (contextHelpText != null && !contextHelpText.isEmpty()) {
+            if (contextHelpIcon == null) {
+                contextHelpIcon = DOM.createSpan();
+                // TODO decide something better (e.g. use CSS to insert the
+                // character)
+                contextHelpIcon.setInnerHTML("?");
+                contextHelpIcon.setClassName(CONTEXT_HELP_CLASSNAME);
+
+                // The question mark should not be read by the screen reader, as it is
+                // purely visual. Required state is set at the element level for
+                // the screen reader.
+                Roles.getTextboxRole().setAriaHiddenState(contextHelpIcon, true);
+            }
+            if (caption != null) {
+                caption.appendChild(contextHelpIcon);
+            }
+        } else if (this.contextHelpIcon != null) {
+            this.contextHelpIcon.removeFromParent();
+            this.contextHelpIcon = null;
         }
 
         // Error

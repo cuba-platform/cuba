@@ -41,6 +41,8 @@
         <dimension property="DateField.dimension" value="110 28"/>
         <!--the expected dimension of one digit. to configure width only-->
         <dimension property="TimeField.digitWidth" value="23 -1"/>
+
+        <int property="Tooltip.maxWidth" value="500"/>
     </ui-defaults>
 
     <layout margin-size="5" spacing-size="3"/>

@@ -48,6 +48,7 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
         loadCaption(resultComponent, element);
         loadIcon(resultComponent, element);
         loadDescription(resultComponent, element);
+        loadContextHelp(resultComponent, element);
 
         loadHeight(resultComponent, element);
         loadWidth(resultComponent, element);
