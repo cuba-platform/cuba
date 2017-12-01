@@ -31,10 +31,10 @@ import org.perf4j.log4j.Log4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Component;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.mail.Message;
@@ -173,7 +173,7 @@ public class EmailSender implements EmailSenderAPI {
         String disposition = attachment.getDisposition() != null ? attachment.getDisposition() : Part.INLINE;
         String charset = MimeUtility.mimeCharset(attachment.getEncoding() != null ?
                 attachment.getEncoding() : StandardCharsets.UTF_8.name());
-        String contentTypeValue = String.format("%s; charset=%s; name=%s", mimeType, charset, encodedFileName);
+        String contentTypeValue = String.format("%s; charset=%s; name=\"%s\"", mimeType, charset, encodedFileName);
 
         MimeBodyPart attachmentPart = new MimeBodyPart();
         attachmentPart.setDataHandler(new DataHandler(source));
