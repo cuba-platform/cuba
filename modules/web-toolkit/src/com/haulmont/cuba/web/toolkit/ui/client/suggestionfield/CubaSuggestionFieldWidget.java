@@ -49,6 +49,7 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
 
     protected static final String SUGGESTION_CAPTION = "caption";
     protected static final String SUGGESTION_ID = "id";
+    protected static final String SUGGESTION_STYLE_NAME = "styleName";
 
     protected int asyncSearchDelayMs = 300;
     protected int minSearchStringLength = 0;
@@ -112,7 +113,8 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
             JsonObject jsonSuggestion = suggestions.getObject(i);
             Suggestion suggestion = new Suggestion(
                     jsonSuggestion.getString(SUGGESTION_ID),
-                    jsonSuggestion.getString(SUGGESTION_CAPTION)
+                    jsonSuggestion.getString(SUGGESTION_CAPTION),
+                    jsonSuggestion.getString(SUGGESTION_STYLE_NAME)
             );
             this.suggestions.add(suggestion);
         }
@@ -127,6 +129,11 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
             for (Suggestion suggestion : suggestions) {
                 SuggestionItem menuItem = new SuggestionItem(suggestion);
                 menuItem.setScheduledCommand(this::selectSuggestion);
+
+                String styleName = suggestion.getStyleName();
+                if (styleName != null && !styleName.isEmpty()) {
+                    menuItem.addStyleName(suggestion.getStyleName());
+                }
 
                 suggestionsContainer.addItem(menuItem);
             }
@@ -550,10 +557,12 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
 
         private final String id;
         private final String caption;
+        private final String styleName;
 
-        protected Suggestion(String id, String caption) {
+        protected Suggestion(String id, String caption, String styleName) {
             this.id = id;
             this.caption = caption;
+            this.styleName = styleName;
         }
 
         public String getId() {
@@ -562,6 +571,10 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
 
         public String getCaption() {
             return caption;
+        }
+
+        public String getStyleName() {
+            return styleName;
         }
     }
 }

@@ -57,6 +57,7 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
     protected String captionProperty;
 
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+    protected OptionsStyleProvider optionsStyleProvider;
 
     public WebSuggestionField() {
         component = new CubaSuggestionField();
@@ -379,5 +380,22 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
     @Override
     public String getPopupWidth() {
         return component.getPopupWidth();
+    }
+
+    @Override
+    public void setOptionsStyleProvider(OptionsStyleProvider optionsStyleProvider) {
+        this.optionsStyleProvider = optionsStyleProvider;
+
+        if (optionsStyleProvider != null) {
+            component.setOptionsStyleProvider(item ->
+                    optionsStyleProvider.getItemStyleName(this, item));
+        } else {
+            component.setOptionsStyleProvider(null);
+        }
+    }
+
+    @Override
+    public OptionsStyleProvider getOptionsStyleProvider() {
+        return optionsStyleProvider;
     }
 }

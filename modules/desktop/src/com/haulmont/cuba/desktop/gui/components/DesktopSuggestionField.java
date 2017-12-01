@@ -91,6 +91,8 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     // just stub
     protected String inputPrompt;
     protected String popupWidth;
+    // just stub
+    protected OptionsStyleProvider optionsStyleProvider;
 
     public DesktopSuggestionField() {
         composition = new JPanel();
@@ -750,6 +752,18 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     @Override
     public String getPopupWidth() {
         return popupWidth;
+    }
+
+    // just stub
+    @Override
+    public void setOptionsStyleProvider(OptionsStyleProvider optionsStyleProvider) {
+        this.optionsStyleProvider = optionsStyleProvider;
+    }
+
+    // just stub
+    @Override
+    public OptionsStyleProvider getOptionsStyleProvider() {
+        return optionsStyleProvider;
     }
 
     protected class SearchObjectWrapper extends ObjectWrapper {

@@ -1040,6 +1040,34 @@ public interface Component {
     }
 
     /**
+     * A component that is marked with this interface allows to manage additional style names for options displayed
+     * by this component.
+     */
+    interface HasOptionsStyleProvider {
+        /**
+         * Sets the given {@code optionsStyleProvider} to the component.
+         *
+         * @param optionsStyleProvider {@link OptionsStyleProvider} instance that will be user by this component
+         */
+        void setOptionsStyleProvider(OptionsStyleProvider optionsStyleProvider);
+
+        /**
+         * @return {@link OptionsStyleProvider} instance that is used by this component
+         */
+        OptionsStyleProvider getOptionsStyleProvider();
+    }
+
+    /**
+     * An object that returns stylename for the given {@code item} (option) that is displayed by the given
+     * {@code component}.
+     */
+    @FunctionalInterface
+    interface OptionsStyleProvider {
+
+        String getItemStyleName(Component component, Object item);
+    }
+
+    /**
      * Class to store mouse event details.
      */
     class MouseEventDetails {

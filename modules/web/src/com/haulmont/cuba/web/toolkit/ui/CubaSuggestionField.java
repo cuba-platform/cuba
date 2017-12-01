@@ -41,6 +41,7 @@ import static com.haulmont.cuba.gui.components.SuggestionField.POPUP_PARENT_WIDT
 public class CubaSuggestionField extends AbstractField<Object> {
     protected static final String SUGGESTION_ID = "id";
     protected static final String SUGGESTION_CAPTION = "caption";
+    protected static final String SUGGESTION_STYLE_NAME = "styleName";
 
     protected Consumer<String> searchExecutor;
     protected Consumer<String> enterActionHandler;
@@ -54,6 +55,7 @@ public class CubaSuggestionField extends AbstractField<Object> {
 
     protected Function<Object, String> textViewConverter;
     protected int suggestionsLimit = 10;
+    protected Function<Object, String> optionsStyleProvider;
 
     public CubaSuggestionField() {
         setValidationVisible(false);
@@ -204,6 +206,12 @@ public class CubaSuggestionField extends AbstractField<Object> {
 
         String caption = textViewConverter.apply(suggestion);
         object.put(SUGGESTION_CAPTION, Json.create(caption));
+
+        if (optionsStyleProvider != null) {
+            String styleName = optionsStyleProvider.apply(suggestion);
+            object.put(SUGGESTION_STYLE_NAME, Json.create(styleName));
+        }
+
         return object;
     }
 
@@ -303,5 +311,9 @@ public class CubaSuggestionField extends AbstractField<Object> {
 
     public String getPopupWidth() {
         return getState(false).popupWidth;
+    }
+
+    public void setOptionsStyleProvider(Function<Object, String> optionsStyleProvider) {
+        this.optionsStyleProvider = optionsStyleProvider;
     }
 }
