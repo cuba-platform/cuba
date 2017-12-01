@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.SequenceSupport;
 import org.apache.commons.lang.StringUtils;
@@ -45,7 +46,6 @@ import java.util.regex.Pattern;
 
 /**
  * Provides unique numbers based on database sequences.
- *
  */
 @Component(UniqueNumbersAPI.NAME)
 public class UniqueNumbers implements UniqueNumbersAPI {
@@ -58,23 +58,14 @@ public class UniqueNumbers implements UniqueNumbersAPI {
     @GuardedBy("lock")
     protected Set<String> existingSequences = new HashSet<>();
 
-    protected SequenceSupport sequenceSupport;
-
     public static final Pattern SEQ_PATTERN = Pattern.compile("[a-zA-Z0-9_]+");
-
-    @PostConstruct
-    public void init() {
-        sequenceSupport = DbmsSpecificFactory.getSequenceSupport();
-    }
 
     @Override
     public long getNextNumber(String domain) {
-        String seqName = getSequenceName(domain);
-        String sqlScript = sequenceSupport.getNextValueSql(seqName);
-
+        String sqlScript = getSequenceSupport(domain).getNextValueSql(getSequenceName(domain));
         try {
             lock.readLock().lock();
-            return getResult(seqName, sqlScript);
+            return getResult(domain, sqlScript);
         } finally {
             lock.readLock().unlock();
         }
@@ -82,12 +73,10 @@ public class UniqueNumbers implements UniqueNumbersAPI {
 
     @Override
     public long getCurrentNumber(String domain) {
-        String seqName = getSequenceName(domain);
-        String sqlScript = sequenceSupport.getCurrentValueSql(seqName);
-
+        String sqlScript = getSequenceSupport(domain).getCurrentValueSql(getSequenceName(domain));
         try {
             lock.readLock().lock();
-            return getResult(seqName, sqlScript);
+            return getResult(domain, sqlScript);
         } finally {
             lock.readLock().unlock();
         }
@@ -95,14 +84,13 @@ public class UniqueNumbers implements UniqueNumbersAPI {
 
     @Override
     public void setCurrentNumber(String domain, long value) {
-        String seqName = getSequenceName(domain);
-        String sqlScript = sequenceSupport.modifySequenceSql(seqName, value);
+        String sqlScript = getSequenceSupport(domain).modifySequenceSql(getSequenceName(domain), value);
 
-        Transaction tx = persistence.getTransaction();
+        Transaction tx = persistence.getTransaction(getDataStore(domain));
         try {
             lock.readLock().lock();
-            checkSequenceExists(seqName);
-            executeScript(sqlScript);
+            checkSequenceExists(domain);
+            executeScript(domain, sqlScript);
             tx.commit();
         } finally {
             lock.readLock().unlock();
@@ -118,9 +106,9 @@ public class UniqueNumbers implements UniqueNumbersAPI {
             throw new IllegalStateException("Attempt to delete nonexistent sequence " + domain);
         }
         
-        String sqlScript = sequenceSupport.deleteSequenceSql(seqName);
+        String sqlScript = getSequenceSupport(domain).deleteSequenceSql(seqName);
 
-        Transaction tx = persistence.getTransaction();
+        Transaction tx = persistence.getTransaction(getDataStore(domain));
         try {
             lock.writeLock().lock();
             if (!containsSequence(seqName)) {
@@ -128,7 +116,7 @@ public class UniqueNumbers implements UniqueNumbersAPI {
                 return;
             }
 
-            executeScript(sqlScript);
+            executeScript(domain, sqlScript);
             tx.commit();
             existingSequences.remove(seqName);
         } finally {
@@ -137,12 +125,26 @@ public class UniqueNumbers implements UniqueNumbersAPI {
         }
     }
 
-    protected long getResult(String seqName, String sqlScript) {
-        Transaction tx = persistence.getTransaction();
-        try {
-            checkSequenceExists(seqName);
+    /**
+     * Override this method if you want to control in what datastore a sequence is created for a particular domain
+     *
+     * @param domain    sequence identifier passed to the interface methods
+     * @return          datastore id (by default, the main datastore)
+     */
+    protected String getDataStore(String domain) {
+        return Stores.MAIN;
+    }
 
-            Object value = executeScript(sqlScript);
+    protected SequenceSupport getSequenceSupport(String domain) {
+        return DbmsSpecificFactory.getSequenceSupport(getDataStore(domain));
+    }
+
+    protected long getResult(String domain, String sqlScript) {
+        Transaction tx = persistence.getTransaction(getDataStore(domain));
+        try {
+            checkSequenceExists(domain);
+
+            Object value = executeScript(domain, sqlScript);
             tx.commit();
             if (value instanceof Long)
                 return (Long) value;
@@ -161,8 +163,8 @@ public class UniqueNumbers implements UniqueNumbersAPI {
         }
     }
 
-    protected Object executeScript(String sqlScript) {
-        EntityManager em = persistence.getEntityManager();
+    protected Object executeScript(String domain, String sqlScript) {
+        EntityManager em = persistence.getEntityManager(getDataStore(domain));
         StrTokenizer tokenizer = new StrTokenizer(sqlScript, SequenceSupport.SQL_DELIMITER);
         Object value = null;
         Connection connection = em.getConnection();
@@ -186,22 +188,24 @@ public class UniqueNumbers implements UniqueNumbersAPI {
         return value;
     }
 
-    protected void checkSequenceExists(String seqName) {
-        if (containsSequence(seqName)) return;
+    protected void checkSequenceExists(String domain) {
+        String seqName = getSequenceName(domain);
+        if (containsSequence(seqName))
+            return;
 
         // Create sequence in separate transaction because it's name is cached and we want to be sure it is created
         // regardless of possible errors in the invoking code
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = persistence.createTransaction(getDataStore(domain));
         try {
             lock.readLock().unlock();
             lock.writeLock().lock();
 
-            EntityManager em = persistence.getEntityManager();
+            EntityManager em = persistence.getEntityManager(getDataStore(domain));
 
-            Query query = em.createNativeQuery(sequenceSupport.sequenceExistsSql(seqName));
+            Query query = em.createNativeQuery(getSequenceSupport(domain).sequenceExistsSql(seqName));
             List list = query.getResultList();
             if (list.isEmpty()) {
-                query = em.createNativeQuery(sequenceSupport.createSequenceSql(seqName, 1, 1));
+                query = em.createNativeQuery(getSequenceSupport(domain).createSequenceSql(seqName, 1, 1));
                 query.executeUpdate();
             }
             tx.commit();
