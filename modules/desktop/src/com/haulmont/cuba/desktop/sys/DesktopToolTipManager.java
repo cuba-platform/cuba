@@ -35,8 +35,8 @@ import java.awt.event.*;
  */
 public class DesktopToolTipManager extends MouseAdapter {
 
-    protected static int CLOSE_TIME = 500;
-    protected static int SHOW_TIME = 1000;
+    protected static final int CLOSE_TIME = 500;
+    protected static final int SHOW_TIME = 1000;
 
     protected boolean tooltipShowing = false;
 
