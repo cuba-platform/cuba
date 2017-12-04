@@ -2176,6 +2176,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     metadata.getTools().copy(filterEntity, newFilterEntity);
                     newFilterEntity.setCode(null);
                     newFilterEntity.setId(UuidProvider.createUuid());
+                    newFilterEntity.setGlobalDefault(false);
                     //if filter was global but current user cannot create global filter then new filter
                     //will be connected with current user
                     if (newFilterEntity.getUser() == null && !uerCanEditGlobalFilter()) {
