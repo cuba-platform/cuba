@@ -41,22 +41,30 @@ public class CubaHttpFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        if (configuration.getConfig(WebAuthConfig.class).getExternalAuthentication()) {
-            try {
-                authProvider = AppBeans.get(CubaAuthProvider.NAME);
-                authProvider.init(filterConfig);
-            } catch (Exception e) {
-                throw new ServletException(e);
-            }
-            // Fill bypassUrls
-            String urls = configuration.getConfig(WebConfig.class).getCubaHttpFilterBypassUrls();
-            String[] strings = urls.split("[, ]");
-            for (String string : strings) {
-                if (StringUtils.isNotBlank(string)) {
-                    bypassUrls.add(string);
+        try {
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+            if (configuration.getConfig(WebAuthConfig.class).getExternalAuthentication()) {
+                try {
+                    authProvider = AppBeans.get(CubaAuthProvider.NAME);
+                    authProvider.init(filterConfig);
+                } catch (Exception e) {
+                    throw new ServletException(e);
+                }
+                // Fill bypassUrls
+                String urls = configuration.getConfig(WebConfig.class).getCubaHttpFilterBypassUrls();
+                String[] strings = urls.split("[, ]");
+                for (String string : strings) {
+                    if (StringUtils.isNotBlank(string)) {
+                        bypassUrls.add(string);
+                    }
                 }
             }
+
+            log.debug("CubaHttpFilter initialized");
+        } catch (RuntimeException e) {
+            log.error("Error initializing CubaHttpFilter", e);
+
+            throw e;
         }
     }
 
