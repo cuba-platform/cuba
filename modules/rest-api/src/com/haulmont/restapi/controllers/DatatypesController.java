@@ -27,7 +27,7 @@ import javax.inject.Inject;
 /**
  * Controller that is used for getting datatypes information.
  */
-@RestController
+@RestController("cuba_DatatypesController")
 @RequestMapping(value = "/v2/metadata/datatypes", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class DatatypesController {
     @Inject

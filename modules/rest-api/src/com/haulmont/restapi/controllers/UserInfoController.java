@@ -28,7 +28,7 @@ import javax.inject.Inject;
 /**
  * REST controller that is used for getting an information about the current user
  */
-@RestController
+@RestController("cuba_UserInfoController")
 @RequestMapping(value = "/v2/userInfo", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class UserInfoController {
 

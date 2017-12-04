@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.inject.Inject;
 import java.io.IOException;
 
-@RestController
+@RestController("cuba_DocumentationController")
 @RequestMapping("/v2/docs")
 public class DocumentationController {
     @Inject

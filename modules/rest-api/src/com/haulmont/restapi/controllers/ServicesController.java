@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * Controller that is used for service method invocations with the REST API
  */
-@RestController
+@RestController("cuba_ServicesController")
 @RequestMapping(value = "/v2/services")
 public class ServicesController {
 

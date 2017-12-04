@@ -32,7 +32,7 @@ import java.io.IOException;
 /**
  * Provides health check URL for the blocks running REST API.
  */
-@Controller
+@Controller("cuba_HealthCheckController")
 public class HealthCheckController {
 
     private Logger log = LoggerFactory.getLogger(HealthCheckController.class);

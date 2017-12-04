@@ -36,7 +36,7 @@ import java.security.Principal;
 /**
  * REST controller that is used for token revocation
  */
-@RestController
+@RestController("cuba_OAuthTokenController")
 public class OAuthTokenController {
 
     private final Logger log = LoggerFactory.getLogger(OAuthTokenController.class);

@@ -48,7 +48,7 @@ import java.util.Collections;
 /**
  * REST API controller that is used for uploading files
  */
-@RestController
+@RestController("cuba_FileUploadController")
 @RequestMapping(path = "/v2/files")
 public class FileUploadController {
 

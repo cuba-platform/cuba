@@ -31,7 +31,7 @@ import java.util.Collection;
  * Controller that is used for getting entities metadata. User permissions for entities access aren't taken into account
  * at the moment.
  */
-@RestController
+@RestController("cuba_EntitiesMetadataController")
 @RequestMapping(value = "/v2/metadata", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class EntitiesMetadataController {
     @Inject

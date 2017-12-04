@@ -40,7 +40,7 @@ import java.util.UUID;
 /**
  * REST API controller that is used for downloading files by the {@link FileDescriptor} identifier
  */
-@RestController
+@RestController("cuba_FileDownloadController")
 @RequestMapping("/v2/files")
 public class FileDownloadController {
 

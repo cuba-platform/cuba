@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * Controller that is used for operations with predefined JPQL queries
  */
-@RestController
+@RestController("cuba_QueriesController")
 @RequestMapping(value = "/v2/queries", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class QueriesController {
 
