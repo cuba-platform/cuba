@@ -43,27 +43,35 @@ public class CubaHttpFilter extends CompositeFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        // Fill bypassUrls
-        WebConfig webConfig = configuration.getConfig(WebConfig.class);
-        bypassUrls.addAll(webConfig.getCubaHttpFilterBypassUrls());
+        try {
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+            // Fill bypassUrls
+            WebConfig webConfig = configuration.getConfig(WebConfig.class);
+            bypassUrls.addAll(webConfig.getCubaHttpFilterBypassUrls());
 
-        List<Filter> filters = new ArrayList<>();
+            List<Filter> filters = new ArrayList<>();
 
-        if (configuration.getConfig(WebAuthConfig.class).getExternalAuthentication()) {
-            try {
-                CubaAuthProvider authProvider = AppBeans.get(CubaAuthProvider.NAME);
-                filters.add(authProvider);
-            } catch (Exception e) {
-                throw new ServletException(e);
+            if (configuration.getConfig(WebAuthConfig.class).getExternalAuthentication()) {
+                try {
+                    CubaAuthProvider authProvider = AppBeans.get(CubaAuthProvider.NAME);
+                    filters.add(authProvider);
+                } catch (Exception e) {
+                    throw new ServletException(e);
+                }
             }
+
+            filters.addAll(getHttpRequestFilterBeans());
+
+            setFilters(filters);
+
+            super.init(filterConfig);
+
+            log.debug("CubaHttpFilter initialized");
+        } catch (RuntimeException e) {
+            log.error("Error initializing CubaHttpFilter", e);
+
+            throw e;
         }
-
-        filters.addAll(getHttpRequestFilterBeans());
-
-        setFilters(filters);
-
-        super.init(filterConfig);
     }
 
     protected List<HttpRequestFilter> getHttpRequestFilterBeans() {
