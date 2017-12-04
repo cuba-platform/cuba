@@ -92,7 +92,7 @@ public class IdpAuthLifecycleManager implements InitializingBean {
                     Object details = event.getAuthentication().getDetails();
                     String accessToken = ((OAuth2AuthenticationDetails) details).getTokenValue();
 
-                    oAuthTokenRevoker.revokeToken(accessToken);
+                    oAuthTokenRevoker.revokeAccessToken(accessToken);
 
                     log.info("IDP session is expired. REST token {} revoked", accessToken);
 
@@ -119,8 +119,8 @@ public class IdpAuthLifecycleManager implements InitializingBean {
     @EventListener
     public void handleOAuthTokenRevocationResponse(OAuthTokenRevokedResponseEvent event) {
         if (idpConfig.getIdpEnabled()) {
-            if (event.getAccessToken() != null) {
-                log.debug("OAuth2AccessToken {} revoked by client, redirect to IDP", event.getAccessToken());
+            if (event.getTokenValue() != null) {
+                log.debug("OAuth2AccessToken {} revoked by client, redirect to IDP", event.getTokenValue());
 
                 String idpLoginUrl = getIdpLogoutUrl(idpConfig.getIdpDefaultRedirectUrl());
 

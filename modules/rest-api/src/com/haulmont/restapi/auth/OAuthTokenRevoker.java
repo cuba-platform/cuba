@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -43,19 +44,19 @@ public class OAuthTokenRevoker {
     protected Events events;
 
     @Nullable
-    public OAuth2AccessToken revokeToken(String token, Authentication clientAuth) {
-        log.debug("revokeToken: token = {}, clientAuth = {}", token, clientAuth);
+    public String revokeAccessToken(String token, Authentication clientAuth) {
+        log.debug("revokeAccessToken: token = {}, clientAuth = {}", token, clientAuth);
         return revokeAccessToken(token, clientAuth, TokenRevocationInitiator.CLIENT);
     }
 
     @Nullable
-    public OAuth2AccessToken revokeToken(String token) {
-        log.debug("revokeToken: token = {} without clientAuth", token);
+    public String revokeAccessToken(String token) {
+        log.debug("revokeAccessToken: token = {} without clientAuth", token);
         return revokeAccessToken(token, null, TokenRevocationInitiator.SERVER);
     }
 
     @Nullable
-    protected OAuth2AccessToken revokeAccessToken(String token, @Nullable Authentication clientAuth,
+    protected String revokeAccessToken(String token, @Nullable Authentication clientAuth,
                                                   TokenRevocationInitiator revocationInitiator) {
         OAuth2AccessToken accessToken = tokenStore.readAccessToken(token);
         if (accessToken != null) {
@@ -75,10 +76,26 @@ public class OAuthTokenRevoker {
                 events.publish(new OAuthTokenRevokedEvent(accessToken, revocationInitiator));
             }
 
-            return accessToken;
+            return accessToken.getValue();
         }
 
         log.debug("No access token {} found in the token store", token);
+        return null;
+    }
+
+    @Nullable
+    public String revokeRefreshToken(String tokenValue, Authentication clientAuth) {
+        OAuth2RefreshToken refreshToken = tokenStore.readRefreshToken(tokenValue);
+        if (refreshToken != null) {
+            OAuth2Authentication authToRevoke = tokenStore.readAuthenticationForRefreshToken(refreshToken);
+            checkIfTokenIsIssuedToClient(clientAuth, authToRevoke);
+            tokenStore.removeAccessTokenUsingRefreshToken(refreshToken);
+            tokenStore.removeRefreshToken(refreshToken);
+            log.debug("Successfully removed refresh token {} (and any associated access token).", refreshToken);
+            return refreshToken.getValue();
+        }
+
+        log.debug("No refresh token {} found in the token store.", tokenValue);
         return null;
     }
 

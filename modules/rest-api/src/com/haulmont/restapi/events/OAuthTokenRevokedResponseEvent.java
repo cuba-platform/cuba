@@ -27,15 +27,15 @@ import javax.annotation.Nullable;
  */
 public class OAuthTokenRevokedResponseEvent extends ApplicationEvent {
     protected String requestedRevocationToken;
-    protected OAuth2AccessToken accessToken;
+    protected String tokenValue;
     protected ResponseEntity responseEntity;
 
     public OAuthTokenRevokedResponseEvent(String requestedRevocationToken,
-                                          @Nullable OAuth2AccessToken accessToken) {
+                                          @Nullable String tokenValue) {
         super(requestedRevocationToken);
 
         this.requestedRevocationToken = requestedRevocationToken;
-        this.accessToken = accessToken;
+        this.tokenValue = tokenValue;
     }
 
     @Override
@@ -48,8 +48,8 @@ public class OAuthTokenRevokedResponseEvent extends ApplicationEvent {
     }
 
     @Nullable
-    public OAuth2AccessToken getAccessToken() {
-        return accessToken;
+    public String getTokenValue() {
+        return tokenValue;
     }
 
     @Nullable

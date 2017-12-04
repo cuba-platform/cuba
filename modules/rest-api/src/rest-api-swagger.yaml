@@ -163,10 +163,13 @@ definitions:
     properties:
       access_token:
         type: string
-        example: 2YotnFZFEjr1zCsicMWpAA
+        example: ead2bcb0-6fed-42ec-8a8f-c3196d038d8b
       token_type:
         type: string
         example: password
+      refresh_token:
+        type: string
+        example: fd00550e-5bb0-41b6-89d6-57bbfb6732a1
       expires_in:
         type: string
         example: 3600
@@ -486,6 +489,9 @@ paths:
         is not the same as platform user credentials. By client we mean an application that uses the REST API.
         The default client credentials are defined by the following application properties: `cuba.rest.client.id` and `cuba.rest.client.secret`.
         User credentials must be passed in the request body. The request format must be `application/x-www-form-urlencoded`.
+
+        To disable refresh tokens for the default client, remove the refresh_token type from the
+        `cuba.rest.client.authorizedGrandTypes` application property value.
       consumes:
         - application/x-www-form-urlencoded
       parameters:
@@ -526,6 +532,8 @@ paths:
         Revokes an authentication token. The endpoint is protected with the basic authentication. The request must
         contain an `Authorization` header for basic authentication with REST API client credentials. See the `/oauth/token`
         endpoint documentation for more details.
+        When the refresh token is revoked, the correspondig access token is also revoked.
+        When the access token is revoked, the correspondding refresh token is also revoked.
       consumes:
         - application/x-www-form-urlencoded
       parameters:
@@ -533,11 +541,12 @@ paths:
           in: formData
           type: string
           description: The token that the client wants to get revoked.
-        - name: token_type
+        - name: token_type_hint
           in: formData
           type: string
-          description: A hint about the type of the token submitted for revocation. May be access_token or refresh_token
-          default: access_token
+          description: |
+            A hint about the type of the token submitted for revocation. May be access_token or refresh_token.
+            The parameter is optional.
       responses:
         200:
           description: Success

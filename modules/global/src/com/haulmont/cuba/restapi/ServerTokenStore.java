@@ -29,10 +29,13 @@ public interface ServerTokenStore {
 
     byte[] getAccessTokenByAuthentication(String authenticationKey);
 
-    Set<String> getTokenValuesByUserLogin(String userLogin);
+    Set<String> getAccessTokenValuesByUserLogin(String userLogin);
+
+    Set<String> getRefreshTokenValuesByUserLogin(String userLogin);
 
     void storeAccessToken(String tokenValue, byte[] accessTokenBytes, String authenticationKey,
-                          byte[] authenticationBytes, Date tokenExpiry, String userLogin, Locale locale);
+                          byte[] authenticationBytes, Date tokenExpiry, String userLogin, Locale locale,
+                          String refreshTokenValue);
 
     byte[] getAccessTokenByTokenValue(String tokenValue);
 
@@ -45,4 +48,15 @@ public interface ServerTokenStore {
     void removeAccessToken(String tokenValue);
 
     void deleteExpiredTokens();
+
+    void storeRefreshToken(String refreshTokenValue, byte[] refreshTokenBytes, byte[] authenticationBytes,
+                           Date tokenExpiry, String userLogin);
+
+    byte[] getRefreshTokenByTokenValue(String tokenValue);
+
+    byte[] getAuthenticationByRefreshTokenValue(String tokenValue);
+
+    void removeRefreshToken(String tokenValue);
+
+    void removeAccessTokenUsingRefreshToken(String refreshTokenValue);
 }

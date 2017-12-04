@@ -24,7 +24,8 @@ import com.haulmont.cuba.core.app.ClusterListener;
 import com.haulmont.cuba.core.app.ClusterListenerAdapter;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
-import com.haulmont.cuba.core.entity.RestApiToken;
+import com.haulmont.cuba.core.entity.AccessToken;
+import com.haulmont.cuba.core.entity.RefreshToken;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.View;
@@ -80,14 +81,20 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
 
     protected ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    private ConcurrentHashMap<String, byte[]> tokenValueToAccessTokenStore = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, byte[]> tokenValueToAuthenticationStore = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, byte[]> accessTokenValueToAccessTokenStore = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, byte[]> accessTokenValueToAuthenticationStore = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, byte[]> authenticationToAccessTokenStore = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, RestUserSessionInfo> tokenValueToSessionInfoStore = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, String> tokenValueToAuthenticationKeyStore = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, String> tokenValueToUserLoginStore = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, RestUserSessionInfo> accessTokenValueToSessionInfoStore = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, String> accessTokenValueToAuthenticationKeyStore = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, String> accessTokenValueToUserLoginStore = new ConcurrentHashMap<>();
 
-    private final DelayQueue<TokenExpiry> expiryQueue = new DelayQueue<>();
+    private ConcurrentHashMap<String, byte[]> refreshTokenValueToRefreshTokenStore = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, byte[]> refreshTokenValueToAuthenticationStore = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, String> refreshTokenValueToAccessTokenValueStore = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, String> refreshTokenValueToUserLoginStore = new ConcurrentHashMap<>();
+
+    private final DelayQueue<TokenExpiry> accessTokensExpiryQueue = new DelayQueue<>();
+    private final DelayQueue<TokenExpiry> refreshTokensExpiryQueue = new DelayQueue<>();
 
     @PostConstruct
     public void init() {
@@ -95,22 +102,30 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     }
 
     protected void initClusterListeners() {
-        clusterManagerAPI.addListener(TokenStoreAddTokenMsg.class, new ClusterListener<TokenStoreAddTokenMsg>() {
+        clusterManagerAPI.addListener(TokenStoreAddAccessTokenMsg.class, new ClusterListener<TokenStoreAddAccessTokenMsg>() {
             @Override
-            public void receive(TokenStoreAddTokenMsg message) {
-                storeAccessTokenToMemory(message.getTokenValue(),
+            public void receive(TokenStoreAddAccessTokenMsg message) {
+                storeAccessTokenToMemory(message.getAccessTokenValue(),
                         message.getAccessTokenBytes(),
                         message.getAuthenticationKey(),
                         message.getAuthenticationBytes(),
                         message.getTokenExpiry(),
-                        message.getUserLogin());
+                        message.getUserLogin(),
+                        message.getRefreshTokenValue());
             }
 
             @Override
             public byte[] getState() {
-                if (tokenValueToAccessTokenStore.isEmpty() && tokenValueToAuthenticationStore.isEmpty() && authenticationToAccessTokenStore.isEmpty()
-                        && tokenValueToSessionInfoStore.isEmpty() && tokenValueToAuthenticationKeyStore.isEmpty()
-                        && tokenValueToUserLoginStore.isEmpty()) {
+                if (accessTokenValueToAccessTokenStore.isEmpty() &&
+                        accessTokenValueToAuthenticationStore.isEmpty() &&
+                        authenticationToAccessTokenStore.isEmpty() &&
+                        accessTokenValueToSessionInfoStore.isEmpty() &&
+                        accessTokenValueToAuthenticationKeyStore.isEmpty() &&
+                        accessTokenValueToUserLoginStore.isEmpty() &&
+                        refreshTokenValueToRefreshTokenStore.isEmpty() &&
+                        refreshTokenValueToAuthenticationStore.isEmpty() &&
+                        refreshTokenValueToAccessTokenValueStore.isEmpty() &&
+                        refreshTokenValueToUserLoginStore.isEmpty()) {
                     return new byte[0];
                 }
 
@@ -119,12 +134,16 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                 lock.readLock().lock();
                 try {
                     ObjectOutputStream oos = new ObjectOutputStream(bos);
-                    oos.writeObject(tokenValueToAccessTokenStore);
-                    oos.writeObject(tokenValueToAuthenticationStore);
+                    oos.writeObject(accessTokenValueToAccessTokenStore);
+                    oos.writeObject(accessTokenValueToAuthenticationStore);
                     oos.writeObject(authenticationToAccessTokenStore);
-                    oos.writeObject(tokenValueToSessionInfoStore);
-                    oos.writeObject(tokenValueToAuthenticationKeyStore);
-                    oos.writeObject(tokenValueToUserLoginStore);
+                    oos.writeObject(accessTokenValueToSessionInfoStore);
+                    oos.writeObject(accessTokenValueToAuthenticationKeyStore);
+                    oos.writeObject(accessTokenValueToUserLoginStore);
+                    oos.writeObject(refreshTokenValueToRefreshTokenStore);
+                    oos.writeObject(refreshTokenValueToAuthenticationStore);
+                    oos.writeObject(refreshTokenValueToAccessTokenValueStore);
+                    oos.writeObject(refreshTokenValueToUserLoginStore);
                 } catch (IOException e) {
                     throw new RuntimeException("Unable to serialize ServerTokenStore fields for cluster state", e);
                 } finally {
@@ -145,12 +164,16 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                 lock.writeLock().lock();
                 try {
                     ObjectInputStream ois = new ObjectInputStream(bis);
-                    tokenValueToAccessTokenStore = (ConcurrentHashMap<String, byte[]>) ois.readObject();
-                    tokenValueToAuthenticationStore = (ConcurrentHashMap<String, byte[]>) ois.readObject();
+                    accessTokenValueToAccessTokenStore = (ConcurrentHashMap<String, byte[]>) ois.readObject();
+                    accessTokenValueToAuthenticationStore = (ConcurrentHashMap<String, byte[]>) ois.readObject();
                     authenticationToAccessTokenStore = (ConcurrentHashMap<String, byte[]>) ois.readObject();
-                    tokenValueToSessionInfoStore = (ConcurrentHashMap<String, RestUserSessionInfo>) ois.readObject();
-                    tokenValueToAuthenticationKeyStore = (ConcurrentHashMap<String, String>) ois.readObject();
-                    tokenValueToUserLoginStore = (ConcurrentHashMap<String, String>) ois.readObject();
+                    accessTokenValueToSessionInfoStore = (ConcurrentHashMap<String, RestUserSessionInfo>) ois.readObject();
+                    accessTokenValueToAuthenticationKeyStore = (ConcurrentHashMap<String, String>) ois.readObject();
+                    accessTokenValueToUserLoginStore = (ConcurrentHashMap<String, String>) ois.readObject();
+                    refreshTokenValueToRefreshTokenStore = (ConcurrentHashMap<String, byte[]>) ois.readObject();
+                    refreshTokenValueToAuthenticationStore = (ConcurrentHashMap<String, byte[]>) ois.readObject();
+                    refreshTokenValueToAccessTokenValueStore = (ConcurrentHashMap<String, String>) ois.readObject();
+                    refreshTokenValueToUserLoginStore = (ConcurrentHashMap<String, String>) ois.readObject();
                 } catch (IOException | ClassNotFoundException e) {
                     log.error("Error receiving state", e);
                 } finally {
@@ -166,9 +189,27 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
             }
         });
 
-        clusterManagerAPI.addListener(TokenStoreRemoveTokenMsg.class, new ClusterListenerAdapter<TokenStoreRemoveTokenMsg>() {
+        clusterManagerAPI.addListener(TokenStoreRemoveAccessTokenMsg.class, new ClusterListenerAdapter<TokenStoreRemoveAccessTokenMsg>() {
             @Override
-            public void receive(TokenStoreRemoveTokenMsg message) {
+            public void receive(TokenStoreRemoveAccessTokenMsg message) {
+                removeAccessTokenFromMemory(message.getTokenValue());
+            }
+        });
+
+        clusterManagerAPI.addListener(TokenStoreAddRefreshTokenMsg.class, new ClusterListenerAdapter<TokenStoreAddRefreshTokenMsg>() {
+            @Override
+            public void receive(TokenStoreAddRefreshTokenMsg message) {
+                storeRefreshTokenToMemory(message.getTokenValue(),
+                        message.getTokenBytes(),
+                        message.getAuthenticationBytes(),
+                        message.getTokenExpiry(),
+                        message.getUserLogin());
+            }
+        });
+
+        clusterManagerAPI.addListener(TokenStoreRemoveRefreshTokenMsg.class, new ClusterListenerAdapter<TokenStoreRemoveRefreshTokenMsg>() {
+            @Override
+            public void receive(TokenStoreRemoveRefreshTokenMsg message) {
                 removeAccessTokenFromMemory(message.getTokenValue());
             }
         });
@@ -179,10 +220,10 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         byte[] accessTokenBytes;
         accessTokenBytes = getAccessTokenByAuthenticationFromMemory(authenticationKey);
         if (accessTokenBytes == null && serverConfig.getRestStoreTokensInDb()) {
-            RestApiToken restApiToken = getRestApiTokenByAuthenticationKeyFromDatabase(authenticationKey);
-            if (restApiToken != null) {
-                accessTokenBytes = restApiToken.getAccessTokenBytes();
-                restoreInMemoryTokenData(restApiToken);
+            AccessToken accessToken = getAccessTokenByAuthenticationKeyFromDatabase(authenticationKey);
+            if (accessToken != null) {
+                accessTokenBytes = accessToken.getTokenBytes();
+                restoreAccessTokenIntoMemory(accessToken);
             }
         }
         return accessTokenBytes;
@@ -193,25 +234,52 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     }
 
     @Override
-    public Set<String> getTokenValuesByUserLogin(String userLogin) {
-        Set<String> tokenValues = getTokenValuesByUserLoginFromMemory(userLogin);
+    public Set<String> getAccessTokenValuesByUserLogin(String userLogin) {
+        Set<String> tokenValues = getAccessTokenValuesByUserLoginFromMemory(userLogin);
         if (serverConfig.getRestStoreTokensInDb()) {
-            tokenValues.addAll(getTokenValuesByUserLoginFromDatabase(userLogin));
+            tokenValues.addAll(getAccessTokenValuesByUserLoginFromDatabase(userLogin));
         }
         return tokenValues;
     }
 
-    protected Set<String> getTokenValuesByUserLoginFromMemory(String userLogin) {
-        return tokenValueToUserLoginStore.entrySet().stream()
+    protected Set<String> getAccessTokenValuesByUserLoginFromMemory(String userLogin) {
+        return accessTokenValueToUserLoginStore.entrySet().stream()
                 .filter(entry -> userLogin.equals(entry.getValue()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
     }
 
-    protected Set<String> getTokenValuesByUserLoginFromDatabase(String userLogin) {
+    protected Set<String> getAccessTokenValuesByUserLoginFromDatabase(String userLogin) {
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
-            List<String> result = em.createQuery("select e.accessTokenValue from sys$RestApiToken e where e.userLogin = :userLogin", String.class)
+            List<String> result = em.createQuery("select e.tokenValue from sys$AccessToken e where e.userLogin = :userLogin", String.class)
+                    .setParameter("userLogin", userLogin)
+                    .getResultList();
+            tx.commit();
+            return new HashSet<>(result);
+        }
+    }
+
+    @Override
+    public Set<String> getRefreshTokenValuesByUserLogin(String userLogin) {
+        Set<String> tokenValues = getRefreshTokenValuesByUserLoginFromMemory(userLogin);
+        if (serverConfig.getRestStoreTokensInDb()) {
+            tokenValues.addAll(getRefreshTokenValuesByUserLoginFromDatabase(userLogin));
+        }
+        return tokenValues;
+    }
+
+    protected Set<String> getRefreshTokenValuesByUserLoginFromMemory(String userLogin) {
+        return refreshTokenValueToUserLoginStore.entrySet().stream()
+                .filter(entry -> userLogin.equals(entry.getValue()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+    }
+
+    protected Set<String> getRefreshTokenValuesByUserLoginFromDatabase(String userLogin) {
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            List<String> result = em.createQuery("select e.tokenValue from sys$RefreshToken e where e.userLogin = :userLogin", String.class)
                     .setParameter("userLogin", userLogin)
                     .getResultList();
             tx.commit();
@@ -226,39 +294,46 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                                  byte[] authenticationBytes,
                                  Date tokenExpiry,
                                  String userLogin,
-                                 Locale locale) {
-        storeAccessTokenToMemory(tokenValue, accessTokenBytes, authenticationKey, authenticationBytes, tokenExpiry, userLogin);
+                                 Locale locale,
+                                 String refreshTokenValue) {
+        storeAccessTokenToMemory(tokenValue, accessTokenBytes, authenticationKey, authenticationBytes, tokenExpiry,
+                userLogin, refreshTokenValue);
         if (serverConfig.getRestStoreTokensInDb()) {
             try (Transaction tx = persistence.getTransaction()) {
                 removeAccessTokenFromDatabase(tokenValue);
                 storeAccessTokenToDatabase(tokenValue, accessTokenBytes, authenticationKey, authenticationBytes,
-                        tokenExpiry, userLogin, locale);
+                        tokenExpiry, userLogin, locale, refreshTokenValue);
                 tx.commit();
             }
         }
-        clusterManagerAPI.send(new TokenStoreAddTokenMsg(tokenValue, accessTokenBytes, authenticationKey, authenticationBytes, tokenExpiry, userLogin));
+        clusterManagerAPI.send(new TokenStoreAddAccessTokenMsg(tokenValue, accessTokenBytes, authenticationKey,
+                authenticationBytes, tokenExpiry, userLogin, refreshTokenValue));
     }
 
-    protected void storeAccessTokenToMemory(String tokenValue,
+    protected void storeAccessTokenToMemory(String accessTokenValue,
                                             byte[] accessTokenBytes,
                                             String authenticationKey,
                                             byte[] authenticationBytes,
                                             Date tokenExpiry,
-                                            String userLogin) {
+                                            String userLogin,
+                                            @Nullable String refreshTokenValue) {
         lock.writeLock().lock();
         try {
-            tokenValueToAccessTokenStore.put(tokenValue, accessTokenBytes);
+            accessTokenValueToAccessTokenStore.put(accessTokenValue, accessTokenBytes);
             authenticationToAccessTokenStore.put(authenticationKey, accessTokenBytes);
-            tokenValueToAuthenticationStore.put(tokenValue, authenticationBytes);
-            tokenValueToAuthenticationKeyStore.put(tokenValue, authenticationKey);
-            tokenValueToUserLoginStore.put(tokenValue, userLogin);
+            accessTokenValueToAuthenticationStore.put(accessTokenValue, authenticationBytes);
+            accessTokenValueToAuthenticationKeyStore.put(accessTokenValue, authenticationKey);
+            accessTokenValueToUserLoginStore.put(accessTokenValue, userLogin);
+            if (!Strings.isNullOrEmpty(refreshTokenValue)) {
+                refreshTokenValueToAccessTokenValueStore.put(refreshTokenValue, accessTokenValue);
+            }
         } finally {
             lock.writeLock().unlock();
         }
 
         if (tokenExpiry != null) {
-            TokenExpiry expiry = new TokenExpiry(tokenValue, tokenExpiry);
-            this.expiryQueue.put(expiry);
+            TokenExpiry expiry = new TokenExpiry(accessTokenValue, tokenExpiry);
+            this.accessTokensExpiryQueue.put(expiry);
         }
     }
 
@@ -268,18 +343,72 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                                               byte[] authenticationBytes,
                                               Date tokenExpiry,
                                               String userLogin,
-                                              @Nullable Locale locale) {
+                                              @Nullable Locale locale,
+                                              @Nullable String refreshTokenValue) {
         try (Transaction tx = persistence.getTransaction()) {
             EntityManager em = persistence.getEntityManager();
-            RestApiToken restApiToken = metadata.create(RestApiToken.class);
-            restApiToken.setAccessTokenValue(tokenValue);
-            restApiToken.setAccessTokenBytes(accessTokenBytes);
-            restApiToken.setAuthenticationKey(authenticationKey);
-            restApiToken.setAuthenticationBytes(authenticationBytes);
-            restApiToken.setExpiry(tokenExpiry);
-            restApiToken.setUserLogin(userLogin);
-            restApiToken.setLocale(locale != null ? locale.toString() : null);
-            em.persist(restApiToken);
+            AccessToken accessToken = metadata.create(AccessToken.class);
+            accessToken.setCreateTs(timeSource.currentTimestamp());
+            accessToken.setTokenValue(tokenValue);
+            accessToken.setTokenBytes(accessTokenBytes);
+            accessToken.setAuthenticationKey(authenticationKey);
+            accessToken.setAuthenticationBytes(authenticationBytes);
+            accessToken.setExpiry(tokenExpiry);
+            accessToken.setUserLogin(userLogin);
+            accessToken.setLocale(locale != null ? locale.toString() : null);
+            accessToken.setRefreshTokenValue(refreshTokenValue);
+            em.persist(accessToken);
+            tx.commit();
+        }
+    }
+
+    @Override
+    public void storeRefreshToken(String refreshTokenValue,
+                                  byte[] refreshTokenBytes,
+                                  byte[] authenticationBytes,
+                                  Date tokenExpiry,
+                                  String userLogin) {
+        storeRefreshTokenToMemory(refreshTokenValue, refreshTokenBytes, authenticationBytes, tokenExpiry, userLogin);
+        if (serverConfig.getRestStoreTokensInDb()) {
+            try (Transaction tx = persistence.getTransaction()) {
+                removeRefreshTokenFromDatabase(refreshTokenValue);
+                storeRefreshTokenToDatabase(refreshTokenValue, refreshTokenBytes, authenticationBytes,
+                        tokenExpiry, userLogin);
+                tx.commit();
+            }
+        }
+    }
+
+    protected void storeRefreshTokenToMemory(String refreshTokenValue,
+                                             byte[] refreshTokenBytes,
+                                             byte[] authenticationBytes,
+                                             Date tokenExpiry,
+                                             String userLogin) {
+        refreshTokenValueToRefreshTokenStore.put(refreshTokenValue, refreshTokenBytes);
+        refreshTokenValueToAuthenticationStore.put(refreshTokenValue, authenticationBytes);
+        refreshTokenValueToUserLoginStore.put(refreshTokenValue, userLogin);
+
+        if (tokenExpiry != null) {
+            TokenExpiry expiry = new TokenExpiry(refreshTokenValue, tokenExpiry);
+            this.refreshTokensExpiryQueue.put(expiry);
+        }
+    }
+
+    protected void storeRefreshTokenToDatabase(String tokenValue,
+                                              byte[] tokenBytes,
+                                              byte[] authenticationBytes,
+                                              Date tokenExpiry,
+                                              String userLogin) {
+        try (Transaction tx = persistence.getTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            RefreshToken refreshToken = metadata.create(RefreshToken.class);
+            refreshToken.setCreateTs(timeSource.currentTimestamp());
+            refreshToken.setTokenValue(tokenValue);
+            refreshToken.setTokenBytes(tokenBytes);
+            refreshToken.setAuthenticationBytes(authenticationBytes);
+            refreshToken.setExpiry(tokenExpiry);
+            refreshToken.setUserLogin(userLogin);
+            em.persist(refreshToken);
             tx.commit();
         }
     }
@@ -289,17 +418,17 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         byte[] accessTokenBytes;
         accessTokenBytes = getAccessTokenByTokenValueFromMemory(accessTokenValue);
         if (accessTokenBytes == null && serverConfig.getRestStoreTokensInDb()) {
-            RestApiToken restApiToken = getRestApiTokenByTokenValueFromDatabase(accessTokenValue);
-            if (restApiToken != null) {
-                accessTokenBytes = restApiToken.getAccessTokenBytes();
-                restoreInMemoryTokenData(restApiToken);
+            AccessToken accessToken = getAccessTokenByTokenValueFromDatabase(accessTokenValue);
+            if (accessToken != null) {
+                accessTokenBytes = accessToken.getTokenBytes();
+                restoreAccessTokenIntoMemory(accessToken);
             }
         }
         return accessTokenBytes;
     }
 
     protected byte[] getAccessTokenByTokenValueFromMemory(String tokenValue) {
-        return tokenValueToAccessTokenStore.get(tokenValue);
+        return accessTokenValueToAccessTokenStore.get(tokenValue);
     }
 
     @Override
@@ -307,57 +436,99 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         byte[] authenticationBytes;
         authenticationBytes = getAuthenticationByTokenValueFromMemory(tokenValue);
         if (authenticationBytes == null && serverConfig.getRestStoreTokensInDb()) {
-            RestApiToken restApiToken = getRestApiTokenByTokenValueFromDatabase(tokenValue);
-            if (restApiToken != null) {
-                authenticationBytes = restApiToken.getAuthenticationBytes();
-                restoreInMemoryTokenData(restApiToken);
+            AccessToken accessToken = getAccessTokenByTokenValueFromDatabase(tokenValue);
+            if (accessToken != null) {
+                authenticationBytes = accessToken.getAuthenticationBytes();
+                restoreAccessTokenIntoMemory(accessToken);
             }
         }
         return authenticationBytes;
     }
 
     protected byte[] getAuthenticationByTokenValueFromMemory(String tokenValue) {
-        return tokenValueToAuthenticationStore.get(tokenValue);
+        return accessTokenValueToAuthenticationStore.get(tokenValue);
     }
 
     @Nullable
-    protected RestApiToken getRestApiTokenByTokenValueFromDatabase(String accessTokenValue) {
-        RestApiToken restApiToken;
+    protected AccessToken getAccessTokenByTokenValueFromDatabase(String accessTokenValue) {
+        AccessToken accessToken;
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
-            restApiToken = em.createQuery("select e from sys$RestApiToken e where e.accessTokenValue = :accessTokenValue", RestApiToken.class)
-                    .setParameter("accessTokenValue", accessTokenValue)
+            accessToken = em.createQuery("select e from sys$AccessToken e where e.tokenValue = :tokenValue", AccessToken.class)
+                    .setParameter("tokenValue", accessTokenValue)
                     .setViewName(View.LOCAL)
                     .getFirstResult();
             tx.commit();
-            return restApiToken;
+            return accessToken;
         }
     }
 
     @Nullable
-    protected RestApiToken getRestApiTokenByAuthenticationKeyFromDatabase(String authenticationKey) {
-        RestApiToken restApiToken;
+    protected RefreshToken getRefreshTokenByTokenValueFromDatabase(String refreshTokenValue) {
+        RefreshToken refreshToken;
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
-            restApiToken = em.createQuery("select e from sys$RestApiToken e where e.authenticationKey = :authenticationKey", RestApiToken.class)
+            refreshToken = em.createQuery("select e from sys$RefreshToken e where e.tokenValue = :tokenValue", RefreshToken.class)
+                    .setParameter("tokenValue", refreshTokenValue)
+                    .setViewName(View.LOCAL)
+                    .getFirstResult();
+            tx.commit();
+            return refreshToken;
+        }
+    }
+
+    @Nullable
+    protected AccessToken getAccessTokenByAuthenticationKeyFromDatabase(String authenticationKey) {
+        AccessToken accessToken;
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            accessToken = em.createQuery("select e from sys$AccessToken e where e.authenticationKey = :authenticationKey", AccessToken.class)
                     .setParameter("authenticationKey", authenticationKey)
                     .setViewName(View.LOCAL)
                     .getFirstResult();
             tx.commit();
-            return restApiToken;
+            return accessToken;
+        }
+    }
+
+    @Override
+    public byte[] getRefreshTokenByTokenValue(String tokenValue) {
+        byte[] tokenBytes = getRefreshTokenByTokenValueFromMemory(tokenValue);
+        if (tokenBytes == null && serverConfig.getRestStoreTokensInDb()) {
+            RefreshToken refreshToken = getRefreshTokenByTokenValueFromDatabase(tokenValue);
+            if (refreshToken != null) {
+                tokenBytes = refreshToken.getTokenBytes();
+                restoreRefreshTokenIntoMemory(refreshToken);
+            }
+        }
+        return tokenBytes;
+    }
+
+    /**
+     * Method fills in-memory maps from the {@link AccessToken} object got from the database
+     */
+    protected void restoreAccessTokenIntoMemory(AccessToken accessToken) {
+        lock.writeLock().lock();
+        try {
+            accessTokenValueToAccessTokenStore.put(accessToken.getTokenValue(), accessToken.getTokenBytes());
+            authenticationToAccessTokenStore.put(accessToken.getAuthenticationKey(), accessToken.getTokenBytes());
+            accessTokenValueToAuthenticationStore.put(accessToken.getTokenValue(), accessToken.getAuthenticationBytes());
+            accessTokenValueToAuthenticationKeyStore.put(accessToken.getTokenValue(), accessToken.getAuthenticationKey());
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     /**
-     * Method fills in-memory maps from the {@link RestApiToken} object got from the database
+     * Method fills in-memory maps from the {@link RefreshToken} object got from the database
      */
-    protected void restoreInMemoryTokenData(RestApiToken restApiToken) {
+    protected void restoreRefreshTokenIntoMemory(RefreshToken refreshToken) {
         lock.writeLock().lock();
         try {
-            tokenValueToAccessTokenStore.put(restApiToken.getAccessTokenValue(), restApiToken.getAccessTokenBytes());
-            authenticationToAccessTokenStore.put(restApiToken.getAuthenticationKey(), restApiToken.getAccessTokenBytes());
-            tokenValueToAuthenticationStore.put(restApiToken.getAccessTokenValue(), restApiToken.getAuthenticationBytes());
-            tokenValueToAuthenticationKeyStore.put(restApiToken.getAccessTokenValue(), restApiToken.getAuthenticationKey());
+            refreshTokenValueToRefreshTokenStore.put(refreshToken.getTokenValue(), refreshToken.getTokenBytes());
+            refreshTokenValueToAuthenticationStore.put(refreshToken.getTokenValue(), refreshToken.getAuthenticationBytes());
+
+
         } finally {
             lock.writeLock().unlock();
         }
@@ -365,11 +536,11 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
 
     @Override
     public RestUserSessionInfo getSessionInfoByTokenValue(String tokenValue) {
-        RestUserSessionInfo sessionInfo = tokenValueToSessionInfoStore.get(tokenValue);
+        RestUserSessionInfo sessionInfo = accessTokenValueToSessionInfoStore.get(tokenValue);
         if (sessionInfo == null && serverConfig.getRestStoreTokensInDb()) {
-            RestApiToken restApiToken = getRestApiTokenByTokenValueFromDatabase(tokenValue);
-            if (restApiToken != null) {
-                String localeStr = restApiToken.getLocale();
+            AccessToken accessToken = getAccessTokenByTokenValueFromDatabase(tokenValue);
+            if (accessToken != null) {
+                String localeStr = accessToken.getLocale();
                 if (!Strings.isNullOrEmpty(localeStr)) {
                     Locale locale = LocaleUtils.toLocale(localeStr);
                     return new RestUserSessionInfo(null, locale);
@@ -390,7 +561,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     protected RestUserSessionInfo _putSessionInfo(String tokenValue, RestUserSessionInfo sessionInfo) {
         lock.writeLock().lock();
         try {
-            return tokenValueToSessionInfoStore.put(tokenValue, sessionInfo);
+            return accessTokenValueToSessionInfoStore.put(tokenValue, sessionInfo);
         } finally {
             lock.writeLock().unlock();
         }
@@ -402,21 +573,21 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         if (serverConfig.getRestStoreTokensInDb()) {
             removeAccessTokenFromDatabase(tokenValue);
         }
-        clusterManagerAPI.send(new TokenStoreRemoveTokenMsg(tokenValue));
+        clusterManagerAPI.send(new TokenStoreRemoveAccessTokenMsg(tokenValue));
     }
 
     protected void removeAccessTokenFromMemory(String tokenValue) {
         RestUserSessionInfo sessionInfo;
         lock.writeLock().lock();
         try {
-            tokenValueToAccessTokenStore.remove(tokenValue);
-            tokenValueToAuthenticationStore.remove(tokenValue);
-            tokenValueToUserLoginStore.remove(tokenValue);
-            String authenticationKey = tokenValueToAuthenticationKeyStore.remove(tokenValue);
+            accessTokenValueToAccessTokenStore.remove(tokenValue);
+            accessTokenValueToAuthenticationStore.remove(tokenValue);
+            accessTokenValueToUserLoginStore.remove(tokenValue);
+            String authenticationKey = accessTokenValueToAuthenticationKeyStore.remove(tokenValue);
             if (authenticationKey != null) {
                 authenticationToAccessTokenStore.remove(authenticationKey);
             }
-            sessionInfo = tokenValueToSessionInfoStore.remove(tokenValue);
+            sessionInfo = accessTokenValueToSessionInfoStore.remove(tokenValue);
         } finally {
             lock.writeLock().unlock();
         }
@@ -439,8 +610,38 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     protected void removeAccessTokenFromDatabase(String accessTokenValue) {
         try (Transaction tx = persistence.getTransaction()) {
             EntityManager em = persistence.getEntityManager();
-            em.createQuery("delete from sys$RestApiToken t where t.accessTokenValue = :accessTokenValue")
-                    .setParameter("accessTokenValue", accessTokenValue)
+            em.createQuery("delete from sys$AccessToken t where t.tokenValue = :tokenValue")
+                    .setParameter("tokenValue", accessTokenValue)
+                    .executeUpdate();
+            tx.commit();
+        }
+    }
+
+    @Override
+    public void removeRefreshToken(String refreshTokenValue) {
+        removeRefreshTokenFromMemory(refreshTokenValue);
+
+        if (serverConfig.getRestStoreTokensInDb()) {
+            removeRefreshTokenFromDatabase(refreshTokenValue);
+        }
+    }
+
+    protected void removeRefreshTokenFromMemory(String refreshTokenValue) {
+        lock.writeLock().lock();
+        try {
+            refreshTokenValueToRefreshTokenStore.remove(refreshTokenValue);
+            refreshTokenValueToAuthenticationStore.remove(refreshTokenValue);
+            refreshTokenValueToAccessTokenValueStore.remove(refreshTokenValue);
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    protected void removeRefreshTokenFromDatabase(String refreshTokenValue) {
+        try (Transaction tx = persistence.getTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            em.createQuery("delete from sys$RefreshToken t where t.tokenValue = :tokenValue")
+                    .setParameter("tokenValue", refreshTokenValue)
                     .executeUpdate();
             tx.commit();
         }
@@ -448,24 +649,80 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
 
     @Override
     public void deleteExpiredTokens() {
-        deleteExpiredTokensInMemory();
+        deleteExpiredAccessTokensInMemory();
+        deleteExpiredRefreshTokensInMemory();
         if (serverConfig.getRestStoreTokensInDb() && clusterManagerAPI.isMaster()) {
-            deleteExpiredTokensInDatabase();
+            deleteExpiredAccessTokensInDatabase();
+            deleteExpiredRefreshTokensInDatabase();
         }
     }
 
-    protected void deleteExpiredTokensInMemory() {
-        TokenExpiry expiry = expiryQueue.poll();
-        while (expiry != null) {
-            removeAccessToken(expiry.getValue());
-            expiry = expiryQueue.poll();
-        }
+    protected byte[] getRefreshTokenByTokenValueFromMemory(String tokenValue) {
+        return refreshTokenValueToRefreshTokenStore.get(tokenValue);
     }
 
-    protected void deleteExpiredTokensInDatabase() {
+    @Override
+    public byte[] getAuthenticationByRefreshTokenValue(String tokenValue) {
+        return refreshTokenValueToAuthenticationStore.get(tokenValue);
+    }
+
+    @Override
+    public void removeAccessTokenUsingRefreshToken(String refreshTokenValue) {
+        String accessTokenValue = getAccessTokenValueByRefreshTokenValue(refreshTokenValue);
+        if (accessTokenValue != null)
+            removeAccessToken(accessTokenValue);
+    }
+
+    protected String getAccessTokenValueByRefreshTokenValue(String refreshTokenValue) {
+        String accessTokenValue = refreshTokenValueToAccessTokenValueStore.get(refreshTokenValue);
+        if (accessTokenValue == null && serverConfig.getRestStoreTokensInDb()) {
+            accessTokenValue = getAccessTokenValueByRefreshTokenValueFromDatabase(refreshTokenValue);
+        }
+        return accessTokenValue;
+    }
+
+    @Nullable
+    protected String getAccessTokenValueByRefreshTokenValueFromDatabase(String refreshTokenValue) {
+        String accessTokenValue;
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
-            em.createQuery("delete from sys$RestApiToken t where t.expiry < CURRENT_TIMESTAMP")
+            accessTokenValue = em.createQuery("select e.tokenValue from sys$AccessToken e where e.refreshTokenValue = :refreshTokenValue", String.class)
+                    .setParameter("refreshTokenValue", refreshTokenValue)
+                    .getFirstResult();
+            tx.commit();
+            return accessTokenValue;
+        }
+    }
+
+    protected void deleteExpiredAccessTokensInMemory() {
+        TokenExpiry expiry = accessTokensExpiryQueue.poll();
+        while (expiry != null) {
+            removeAccessToken(expiry.getValue());
+            expiry = accessTokensExpiryQueue.poll();
+        }
+    }
+
+    protected void deleteExpiredRefreshTokensInMemory() {
+        TokenExpiry expiry = refreshTokensExpiryQueue.poll();
+        while (expiry != null) {
+            removeRefreshToken(expiry.getValue());
+            expiry = refreshTokensExpiryQueue.poll();
+        }
+    }
+
+    protected void deleteExpiredAccessTokensInDatabase() {
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            em.createQuery("delete from sys$AccessToken t where t.expiry < CURRENT_TIMESTAMP")
+                    .executeUpdate();
+            tx.commit();
+        }
+    }
+
+    protected void deleteExpiredRefreshTokensInDatabase() {
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            em.createQuery("delete from sys$RefreshToken t where t.expiry < CURRENT_TIMESTAMP")
                     .executeUpdate();
             tx.commit();
         }

@@ -16,6 +16,7 @@
 
 package com.haulmont.restapi.controllers;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.restapi.auth.OAuthTokenRevoker;
 import com.haulmont.restapi.events.OAuthTokenRevokedResponseEvent;
@@ -42,24 +43,41 @@ public class OAuthTokenController {
 
     @Inject
     protected OAuthTokenRevoker oAuthTokenRevoker;
+
     @Inject
     protected Events events;
 
     @PostMapping("/v2/oauth/revoke")
-    public ResponseEntity revokeToken(@RequestParam("token") String token, Principal principal) {
+    public ResponseEntity revokeToken(@RequestParam("token") String token,
+                                      @RequestParam(value = "token_type_hint", required = false) String tokenTypeHint,
+                                      Principal principal) {
         if (!(principal instanceof Authentication)) {
             throw new InsufficientAuthenticationException(
                     "There is no client authentication. Try adding an appropriate authentication filter.");
         }
-        log.info("POST /oauth/revoke; token = {},", token);
-        // Invalid token revocations (token does not exist) must respond with 200 code
-        OAuth2AccessToken revokedToken = oAuthTokenRevoker.revokeToken(token, (Authentication) principal);
-        if (revokedToken == null) {
+        log.info("POST /oauth/revoke; token = {}, token_type_hint = {}", token, tokenTypeHint);
+
+        String revokedTokenValue = null;
+        if ("refresh_token".equals(tokenTypeHint)) {
+            revokedTokenValue = oAuthTokenRevoker.revokeRefreshToken(token, (Authentication) principal);
+            if (revokedTokenValue == null) {
+                revokedTokenValue = oAuthTokenRevoker.revokeAccessToken(token, (Authentication) principal);
+            }
+        }
+
+        if (revokedTokenValue == null) {
+            revokedTokenValue = oAuthTokenRevoker.revokeAccessToken(token, (Authentication) principal);
+            if (revokedTokenValue == null) {
+                revokedTokenValue = oAuthTokenRevoker.revokeRefreshToken(token, (Authentication) principal);
+            }
+        }
+
+        if (revokedTokenValue == null) {
             log.debug("No token with value {} was revoked.", token);
         }
 
         if (events != null) {
-            OAuthTokenRevokedResponseEvent event = new OAuthTokenRevokedResponseEvent(token, revokedToken);
+            OAuthTokenRevokedResponseEvent event = new OAuthTokenRevokedResponseEvent(token, revokedTokenValue);
 
             events.publish(event);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2017 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,25 +20,23 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Cluster message containing an information about the REST API token to be stored
+ * Cluster message containing an information about the REST API refresh token to be stored
  */
-public class TokenStoreAddTokenMsg implements Serializable {
+public class TokenStoreAddRefreshTokenMsg implements Serializable {
     protected String tokenValue;
-    protected byte[] accessTokenBytes;
-    protected String authenticationKey;
+    protected byte[] tokenBytes;
     protected byte[] authenticationBytes;
     protected Date tokenExpiry;
     protected String userLogin;
 
-    public TokenStoreAddTokenMsg(String tokenValue,
-                                 byte[] accessTokenBytes,
-                                 String authenticationKey,
-                                 byte[] authenticationBytes,
-                                 Date tokenExpiry,
-                                 String userLogin) {
+    public TokenStoreAddRefreshTokenMsg(String tokenValue,
+                                        byte[] tokenBytes,
+                                        byte[] authenticationBytes,
+                                        Date tokenExpiry,
+                                        String userLogin,
+                                        String refreshTokenValue) {
         this.tokenValue = tokenValue;
-        this.accessTokenBytes = accessTokenBytes;
-        this.authenticationKey = authenticationKey;
+        this.tokenBytes = tokenBytes;
         this.authenticationBytes = authenticationBytes;
         this.tokenExpiry = tokenExpiry;
         this.userLogin = userLogin;
@@ -48,12 +46,8 @@ public class TokenStoreAddTokenMsg implements Serializable {
         return tokenValue;
     }
 
-    public byte[] getAccessTokenBytes() {
-        return accessTokenBytes;
-    }
-
-    public String getAuthenticationKey() {
-        return authenticationKey;
+    public byte[] getTokenBytes() {
+        return tokenBytes;
     }
 
     public byte[] getAuthenticationBytes() {

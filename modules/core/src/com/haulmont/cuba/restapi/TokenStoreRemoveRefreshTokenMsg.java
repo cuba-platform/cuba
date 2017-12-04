@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2017 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,13 @@ package com.haulmont.cuba.restapi;
 import java.io.Serializable;
 
 /**
- * Cluster message containing an information about the token to be revoked
+ * Cluster message containing an information about the refresh token to be revoked
  */
-public class TokenStoreRemoveTokenMsg implements Serializable {
+public class TokenStoreRemoveRefreshTokenMsg implements Serializable {
+
     protected String tokenValue;
 
-    public TokenStoreRemoveTokenMsg(String tokenValue) {
+    public TokenStoreRemoveRefreshTokenMsg(String tokenValue) {
         this.tokenValue = tokenValue;
     }
 

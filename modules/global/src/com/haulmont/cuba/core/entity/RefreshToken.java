@@ -19,31 +19,25 @@ package com.haulmont.cuba.core.entity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.Column;
-import javax.persistence.Table;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
  */
-@Entity(name = "sys$RestApiToken")
-@Table(name = "SYS_REST_API_TOKEN")
+@Entity(name = "sys$RefreshToken")
+@Table(name = "SYS_REFRESH_TOKEN")
 @SystemLevel
-public class RestApiToken extends BaseUuidEntity implements Creatable{
+public class RefreshToken extends BaseUuidEntity {
 
     @Column(name = "CREATE_TS")
     protected Date createTs;
 
-    @Column(name = "CREATED_BY", length = 50)
-    protected String createdBy;
+    @Column(name = "TOKEN_VALUE")
+    protected String tokenValue;
 
-    @Column(name = "ACCESS_TOKEN_VALUE")
-    protected String accessTokenValue;
-
-    @Column(name = "ACCESS_TOKEN_BYTES")
-    protected byte[] accessTokenBytes;
-
-    @Column(name = "AUTHENTICATION_KEY")
-    protected String authenticationKey;
+    @Column(name = "TOKEN_BYTES")
+    protected byte[] tokenBytes;
 
     @Column(name = "AUTHENTICATION_BYTES")
     protected byte[] authenticationBytes;
@@ -54,31 +48,20 @@ public class RestApiToken extends BaseUuidEntity implements Creatable{
     @Column(name = "USER_LOGIN")
     protected String userLogin;
 
-    @Column(name = "LOCALE")
-    protected String locale;
-
-    public String getAccessTokenValue() {
-        return accessTokenValue;
+    public String getTokenValue() {
+        return tokenValue;
     }
 
-    public void setAccessTokenValue(String accessTokenValue) {
-        this.accessTokenValue = accessTokenValue;
+    public void setTokenValue(String tokenValue) {
+        this.tokenValue = tokenValue;
     }
 
-    public byte[] getAccessTokenBytes() {
-        return accessTokenBytes;
+    public byte[] getTokenBytes() {
+        return tokenBytes;
     }
 
-    public void setAccessTokenBytes(byte[] accessTokenBytes) {
-        this.accessTokenBytes = accessTokenBytes;
-    }
-
-    public String getAuthenticationKey() {
-        return authenticationKey;
-    }
-
-    public void setAuthenticationKey(String authenticationKey) {
-        this.authenticationKey = authenticationKey;
+    public void setTokenBytes(byte[] tokenBytes) {
+        this.tokenBytes = tokenBytes;
     }
 
     public byte[] getAuthenticationBytes() {
@@ -105,31 +88,11 @@ public class RestApiToken extends BaseUuidEntity implements Creatable{
         this.userLogin = userLogin;
     }
 
-    @Override
     public Date getCreateTs() {
         return createTs;
     }
 
-    @Override
     public void setCreateTs(Date createTs) {
         this.createTs = createTs;
-    }
-
-    @Override
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    @Override
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public String getLocale() {
-        return locale;
-    }
-
-    public void setLocale(String locale) {
-        this.locale = locale;
     }
 }

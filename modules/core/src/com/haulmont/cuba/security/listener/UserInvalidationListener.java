@@ -72,8 +72,11 @@ public class UserInvalidationListener {
 
             sessionsIds.forEach(userSessionsAPI::killSession);
 
-            serverTokenStore.getTokenValuesByUserLogin(user.getLogin())
+            serverTokenStore.getAccessTokenValuesByUserLogin(user.getLogin())
                     .forEach(serverTokenStore::removeAccessToken);
+
+            serverTokenStore.getRefreshTokenValuesByUserLogin(user.getLogin())
+                    .forEach(serverTokenStore::removeRefreshToken);
 
             userManagementService.resetRememberMeTokens(Collections.singletonList(user.getId()));
 

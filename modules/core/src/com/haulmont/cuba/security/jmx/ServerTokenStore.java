@@ -36,7 +36,7 @@ public class ServerTokenStore implements ServerTokenStoreMBean {
         }
 
         try {
-            Set<String> tokens = serverTokenStore.getTokenValuesByUserLogin(userLogin);
+            Set<String> tokens = serverTokenStore.getAccessTokenValuesByUserLogin(userLogin);
             if (tokens.isEmpty()) {
                 return String.format("No tokens found for user '%s'", userLogin);
             }

@@ -74,7 +74,8 @@
         <oauth2:client client-id="${cuba.rest.client.id}"
                        secret="${cuba.rest.client.secret}"
                        access-token-validity="${cuba.rest.client.tokenExpirationTimeSec}"
-                       authorized-grant-types="password,external"
+                       refresh-token-validity="${cuba.rest.client.refreshTokenExpirationTimeSec}"
+                       authorized-grant-types="${cuba.rest.client.authorizedGrandTypes}"
                        scope="rest-api"/>
     </oauth2:client-details-service>
 
@@ -88,6 +89,7 @@
                                  authorization-request-manager-ref="oauthAuthorizationRequestManager"
                                  client-details-service-ref="clientDetailsService"
                                  token-services-ref="tokenServices">
+        <oauth2:refresh-token/>
         <oauth2:password authentication-manager-ref="userAuthenticationManager"/>
     </oauth2:authorization-server>
 
@@ -100,6 +102,8 @@
     <bean id="tokenEnhancer" class="com.haulmont.restapi.auth.CubaTokenEnhancer"/>
 
     <bean id="tokenServices" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
+        <property name="supportRefreshToken" value="${cuba.rest.supportRefreshToken}"/>
+        <property name="reuseRefreshToken" value="${cuba.rest.reuseRefreshToken}"/>
         <property name="tokenStore" ref="tokenStore"/>
         <property name="clientDetailsService" ref="clientDetailsService"/>
         <property name="tokenEnhancer" ref="tokenEnhancer"/>

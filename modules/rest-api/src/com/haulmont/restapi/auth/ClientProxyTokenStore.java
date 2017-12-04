@@ -34,6 +34,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.oauth2.common.ExpiringOAuth2RefreshToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
@@ -46,10 +47,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A token store that redirects request from the client to the {@link ServerTokenStore} located at the middleware.
@@ -105,14 +103,15 @@ public class ClientProxyTokenStore implements TokenStore {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         Locale locale = restAuthUtils.extractLocaleFromRequestHeader(request);
-
+        String refreshTokenValue = token.getRefreshToken() != null ? token.getRefreshToken().getValue() : null;
         serverTokenStore.storeAccessToken(token.getValue(),
                 serializeAccessToken(token),
                 authenticationKey,
                 serializeAuthentication(authentication),
                 token.getExpiration(),
                 userLogin,
-                locale);
+                locale,
+                refreshTokenValue);
         processSession(authentication, token.getValue());
         log.info("REST API access token stored: [{}] {}", authentication.getPrincipal(), token.getValue()) ;
     }
@@ -235,27 +234,37 @@ public class ClientProxyTokenStore implements TokenStore {
 
     @Override
     public void storeRefreshToken(OAuth2RefreshToken refreshToken, OAuth2Authentication authentication) {
-        throw new UnsupportedOperationException();
+        Date tokenExpiry = refreshToken instanceof ExpiringOAuth2RefreshToken ?
+                ((ExpiringOAuth2RefreshToken) refreshToken).getExpiration() :
+                null;
+        String userLogin = authentication.getName();
+        serverTokenStore.storeRefreshToken(refreshToken.getValue(),
+                SerializationUtils.serialize(refreshToken),
+                SerializationUtils.serialize(authentication),
+                tokenExpiry,
+                userLogin);
     }
 
     @Override
     public OAuth2RefreshToken readRefreshToken(String tokenValue) {
-        throw new UnsupportedOperationException();
+        byte[] refreshTokenBytes = serverTokenStore.getRefreshTokenByTokenValue(tokenValue);
+        return refreshTokenBytes != null ? SerializationUtils.deserialize(refreshTokenBytes) : null;
     }
 
     @Override
     public OAuth2Authentication readAuthenticationForRefreshToken(OAuth2RefreshToken token) {
-        throw new UnsupportedOperationException();
+        byte[] authenticationBytes = serverTokenStore.getAuthenticationByRefreshTokenValue(token.getValue());
+        return authenticationBytes != null ? SerializationUtils.deserialize(authenticationBytes) : null;
     }
 
     @Override
     public void removeRefreshToken(OAuth2RefreshToken token) {
-        throw new UnsupportedOperationException();
+        serverTokenStore.removeRefreshToken(token.getValue());
     }
 
     @Override
     public void removeAccessTokenUsingRefreshToken(OAuth2RefreshToken refreshToken) {
-        throw new UnsupportedOperationException();
+        serverTokenStore.removeAccessTokenUsingRefreshToken(refreshToken.getValue());
     }
 
     @Override
