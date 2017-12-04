@@ -131,7 +131,8 @@ public class LegacyLoginEventsForwarder {
         Connection connection = event.getApp().getConnection();
 
         if (webAuthConfig.getExternalAuthentication()
-                && isLoggedInWithExternalAuth(connection.getSessionNN())) {
+                && event.getLoggedOutSession() != null
+                && isLoggedInWithExternalAuth(event.getLoggedOutSession())) {
             String loggedOutUrl = connection.logoutExternalAuthentication();
             event.setRedirectUrl(loggedOutUrl);
         }

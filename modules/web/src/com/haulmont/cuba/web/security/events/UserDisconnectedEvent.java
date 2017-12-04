@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.security.events;
 
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.Connection;
 import org.springframework.context.ApplicationEvent;
 
@@ -25,8 +26,11 @@ import org.springframework.context.ApplicationEvent;
  */
 public class UserDisconnectedEvent extends ApplicationEvent {
 
-    public UserDisconnectedEvent(Connection source) {
+    protected final UserSession loggedOutSession;
+
+    public UserDisconnectedEvent(Connection source, UserSession loggedOutSession) {
         super(source);
+        this.loggedOutSession = loggedOutSession;
     }
 
     @Override
@@ -36,5 +40,9 @@ public class UserDisconnectedEvent extends ApplicationEvent {
 
     public Connection getConnection() {
         return (Connection) super.getSource();
+    }
+
+    public UserSession getLoggedOutSession() {
+        return loggedOutSession;
     }
 }

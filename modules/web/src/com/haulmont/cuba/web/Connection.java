@@ -150,13 +150,30 @@ public interface Connection extends ExternallyAuthenticatedConnection {
     }
 
     class StateChangeEvent extends EventObject {
-        public StateChangeEvent(Connection source) {
+        private final UserSession previousSession;
+        private final UserSession newSession;
+
+        public StateChangeEvent(Connection source, UserSession previousSession, UserSession newSession) {
             super(source);
+            this.previousSession = previousSession;
+            this.newSession = newSession;
         }
 
         @Override
         public Connection getSource() {
             return (Connection) super.getSource();
+        }
+
+        public Connection getConnection() {
+            return (Connection) super.getSource();
+        }
+
+        public UserSession getPreviousSession() {
+            return previousSession;
+        }
+
+        public UserSession getNewSession() {
+            return newSession;
         }
     }
 

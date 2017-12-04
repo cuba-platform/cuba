@@ -96,7 +96,9 @@ public class IdpLoginLifecycleManager {
     @EventListener
     protected void onAppLoggedOut(AppLoggedOutEvent event) {
         if (webIdpConfig.getIdpEnabled()
-                && event.getRedirectUrl() != null) {
+                && event.getLoggedOutSession() != null
+                && event.getLoggedOutSession().getAttribute(IdpService.IDP_USER_SESSION_ATTRIBUTE) != null
+                && event.getRedirectUrl() == null) {
 
             RequestContext requestContext = RequestContext.get();
             if (requestContext != null) {
@@ -104,9 +106,10 @@ public class IdpLoginLifecycleManager {
             }
 
             String idpBaseURL = webIdpConfig.getIdpBaseURL();
-            if (Strings.isNullOrEmpty(idpBaseURL)) {
-                log.error("Application property cuba.web.idp.url is not set");
+            if (!Strings.isNullOrEmpty(idpBaseURL)) {
                 event.setRedirectUrl(getIdpLogoutUrl());
+            } else {
+                log.error("Application property cuba.web.idp.url is not set");
             }
         }
     }

@@ -95,11 +95,13 @@ public class ConnectionImpl extends EventRouter implements Connection {
             clientUserSession.setAuthenticated(true);
         }
 
+        UserSession previousSession = getSession();
+
         setSessionInternal(clientUserSession);
 
         publishUserConnectedEvent(credentials);
 
-        fireStateChangeListeners();
+        fireStateChangeListeners(previousSession, clientUserSession);
     }
 
     protected ClientUserSession createSession(UserSession userSession) {
@@ -238,8 +240,8 @@ public class ConnectionImpl extends EventRouter implements Connection {
                         + credentialsClass.getName());
     }
 
-    protected void fireStateChangeListeners() {
-        StateChangeEvent event = new StateChangeEvent(this);
+    protected void fireStateChangeListeners(UserSession previousSession, UserSession newSession) {
+        StateChangeEvent event = new StateChangeEvent(this, previousSession, newSession);
         fireEvent(StateChangeListener.class, StateChangeListener::connectionStateChanged, event);
     }
 
@@ -318,13 +320,15 @@ public class ConnectionImpl extends EventRouter implements Connection {
 
         publishUserSessionFinishedEvent(session);
 
+        UserSession previousSession = getSession();
+
         setSessionInternal(null);
 
         removeListeners(UserSubstitutionListener.class);
 
-        publishDisconnectedEvent();
+        publishDisconnectedEvent(previousSession);
 
-        fireStateChangeListeners();
+        fireStateChangeListeners(previousSession, null);
     }
 
     private void publishUserSessionFinishedEvent(ClientUserSession session) {
@@ -332,8 +336,8 @@ public class ConnectionImpl extends EventRouter implements Connection {
         events.publish(event);
     }
 
-    protected void publishDisconnectedEvent() {
-        events.publish(new UserDisconnectedEvent(this));
+    protected void publishDisconnectedEvent(UserSession previousSession) {
+        events.publish(new UserDisconnectedEvent(this, previousSession));
     }
 
     @Override

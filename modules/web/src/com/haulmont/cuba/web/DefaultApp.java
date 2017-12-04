@@ -107,12 +107,12 @@ public class DefaultApp extends App implements StateChangeListener, UserSubstitu
                 throw new RuntimeException("Unable to login as anonymous!");
             }
 
-            publishAppLoggedOutEvent();
+            publishAppLoggedOutEvent(event.getPreviousSession());
         }
     }
 
-    protected void publishAppLoggedOutEvent() {
-        AppLoggedOutEvent event = new AppLoggedOutEvent(this);
+    protected void publishAppLoggedOutEvent(UserSession previousSession) {
+        AppLoggedOutEvent event = new AppLoggedOutEvent(this, previousSession);
         events.publish(event);
 
         String loggedOutUrl = event.getRedirectUrl();

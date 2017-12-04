@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.web.auth;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.security.auth.Credentials;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.Connection;
@@ -52,6 +53,7 @@ public interface ExternallyAuthenticatedConnection {
      */
     @Deprecated
     default String logoutExternalAuthentication() {
-        return null; // do nothing
+        CubaAuthProvider authProvider = AppBeans.get(CubaAuthProvider.class);
+        return authProvider.logout();
     }
 }

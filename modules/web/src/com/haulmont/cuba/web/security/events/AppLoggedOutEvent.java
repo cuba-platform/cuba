@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.security.events;
 
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import org.springframework.context.ApplicationEvent;
 
@@ -24,10 +25,13 @@ import org.springframework.context.ApplicationEvent;
  */
 public class AppLoggedOutEvent extends ApplicationEvent {
 
+    protected final UserSession loggedOutSession;
+
     protected String redirectUrl;
 
-    public AppLoggedOutEvent(App source) {
+    public AppLoggedOutEvent(App source, UserSession loggedOutSession) {
         super(source);
+        this.loggedOutSession = loggedOutSession;
     }
 
     @Override
@@ -37,6 +41,10 @@ public class AppLoggedOutEvent extends ApplicationEvent {
 
     public App getApp() {
         return (App) super.getSource();
+    }
+
+    public UserSession getLoggedOutSession() {
+        return loggedOutSession;
     }
 
     public void setRedirectUrl(String redirectUrl) {
