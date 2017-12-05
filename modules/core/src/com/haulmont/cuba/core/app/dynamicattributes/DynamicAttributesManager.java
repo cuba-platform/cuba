@@ -90,47 +90,50 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
     protected void doLoadCache(boolean sendClusterMessage, boolean stopIfNotNull) {
         loadCacheLock.lock();
-        Transaction tx = persistence.createTransaction();
         try {
-            if (stopIfNotNull && dynamicAttributesCache != null) {
-                return;
-            }
-
-            EntityManager entityManager = persistence.getEntityManager();
-            TypedQuery<Category> query = entityManager.createQuery("select c from sys$Category c", Category.class);
-            query.setViewName("for.cache");
-            List<Category> resultList = query.getResultList();
-
-            Multimap<String, Category> categoriesCache = HashMultimap.create();
-            Map<String, Map<String, CategoryAttribute>> attributesCache = new LinkedHashMap<>();
-
-            for (Category category : resultList) {
-                MetaClass metaClass = resolveTargetMetaClass(metadata.getSession().getClass(category.getEntityType()));
-                if (metaClass != null) {
-                    categoriesCache.put(metaClass.getName(), category);
-                    Map<String, CategoryAttribute> attributes = attributesCache.get(metaClass.getName());
-                    if (attributes == null) {
-                        attributes = new LinkedHashMap<>();
-                        attributesCache.put(metaClass.getName(), attributes);
-                    }
-
-                    for (CategoryAttribute categoryAttribute : category.getCategoryAttrs()) {
-                        attributes.put(categoryAttribute.getCode(), categoryAttribute);
-                    }
-                } else {
-                    log.warn(format("Could not resolve meta class name [%s] for the category [%s].",
-                            category.getEntityType(), category.getName()));
+            Transaction tx = persistence.createTransaction();
+            try {
+                if (stopIfNotNull && dynamicAttributesCache != null) {
+                    return;
                 }
-            }
-            tx.commit();
 
-            dynamicAttributesCache = new DynamicAttributesCache(categoriesCache, attributesCache, timeSource.currentTimestamp());
-            if (sendClusterMessage) {
-                clusterManager.send(new ReloadCacheMsg());
+                EntityManager entityManager = persistence.getEntityManager();
+                TypedQuery<Category> query = entityManager.createQuery("select c from sys$Category c", Category.class);
+                query.setViewName("for.cache");
+                List<Category> resultList = query.getResultList();
+
+                Multimap<String, Category> categoriesCache = HashMultimap.create();
+                Map<String, Map<String, CategoryAttribute>> attributesCache = new LinkedHashMap<>();
+
+                for (Category category : resultList) {
+                    MetaClass metaClass = resolveTargetMetaClass(metadata.getSession().getClass(category.getEntityType()));
+                    if (metaClass != null) {
+                        categoriesCache.put(metaClass.getName(), category);
+                        Map<String, CategoryAttribute> attributes = attributesCache.get(metaClass.getName());
+                        if (attributes == null) {
+                            attributes = new LinkedHashMap<>();
+                            attributesCache.put(metaClass.getName(), attributes);
+                        }
+
+                        for (CategoryAttribute categoryAttribute : category.getCategoryAttrs()) {
+                            attributes.put(categoryAttribute.getCode(), categoryAttribute);
+                        }
+                    } else {
+                        log.warn(format("Could not resolve meta class name [%s] for the category [%s].",
+                                category.getEntityType(), category.getName()));
+                    }
+                }
+                tx.commit();
+
+                dynamicAttributesCache = new DynamicAttributesCache(categoriesCache, attributesCache, timeSource.currentTimestamp());
+                if (sendClusterMessage) {
+                    clusterManager.send(new ReloadCacheMsg());
+                }
+            } finally {
+                tx.end();
             }
         } finally {
             loadCacheLock.unlock();
-            tx.end();
         }
     }
 
