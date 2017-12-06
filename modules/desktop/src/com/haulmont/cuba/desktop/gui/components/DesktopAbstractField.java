@@ -306,6 +306,10 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
             this.contextHelpText = contextHelpText;
 
             requestContainerUpdate();
+
+            if (parent instanceof DesktopFieldGroup) {
+                ((DesktopFieldGroup) parent).updateContextHelp(this);
+            }
         }
     }
 
@@ -320,6 +324,10 @@ public abstract class DesktopAbstractField<C extends JComponent> extends Desktop
             contextHelpTextHtmlEnable = enabled;
 
             requestContainerUpdate();
+
+            if (parent instanceof DesktopFieldGroup) {
+                ((DesktopFieldGroup) parent).updateContextHelp(this);
+            }
         }
     }
 }

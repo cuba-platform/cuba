@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.desktop.App;
@@ -371,17 +370,6 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
                 DesktopAbstractComponent fieldImpl = (DesktopAbstractComponent) fieldComponent;
                 fci.setComposition(fieldImpl);
 
-                if (fci.getContextHelpText() != null) {
-                    ToolTipButton tooltipBtn = new ToolTipButton();
-                    tooltipBtn.setVisible(fieldComponent.isVisible());
-                    tooltipBtn.setToolTipText(DesktopComponentsHelper.getContextHelpText(
-                            fci.getContextHelpText(),
-                            fci.isContextHelpTextHtmlEnabled()));
-                    fci.setToolTipButton(tooltipBtn);
-                } else {
-                    fci.setToolTipButton(null);
-                }
-
                 assignTypicalAttributes(fieldComponent);
 
                 if (generatedField.getAttachMode() == FieldAttachMode.APPLY_DEFAULTS) {
@@ -457,20 +445,10 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
                     impl.add(label, labelCc.cell(colIndex * 3, insertRowIndex, 1, 1));
                 }
 
-                if (Strings.isNullOrEmpty(fci.getContextHelpText())) {
-                    fci.setToolTipButton(null);
-                } else if (fci.getToolTipButton() == null) {
-                    ToolTipButton toolTipButton = new ToolTipButton();
-                    toolTipButton.setToolTipText(DesktopComponentsHelper.getContextHelpText(
-                            fci.getContextHelpText(),
-                            fci.isContextHelpTextHtmlEnabled()));
-                    toolTipButton.setVisible(fieldComponent.isVisible());
-                    fci.setToolTipButton(toolTipButton);
-                }
-
                 ToolTipButton toolTipButton = fci.getToolTipButton();
-                if (toolTipButton != null) {
-                    toolTipButton.setVisible(fieldComponent.isVisible());
+                if (fci.getToolTipButton() != null) {
+                    updateTooltipButton(fci, fieldComponent.isVisible());
+
                     DesktopToolTipManager.getInstance().registerTooltip(toolTipButton);
                     impl.add(toolTipButton, new CC().cell(colIndex * 3 + 2, insertRowIndex, 1, 1).alignY("top"));
                 }
@@ -508,15 +486,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         DesktopAbstractComponent fieldImpl = (DesktopAbstractComponent) fci.getComponentNN();
         fci.setComposition(fieldImpl);
 
-        if (fci.getContextHelpText() != null) {
-            ToolTipButton tooltipBtn = new ToolTipButton();
-            tooltipBtn.setVisible(fci.getComponentNN().isVisible());
-            tooltipBtn.setToolTipText(DesktopComponentsHelper.getContextHelpText(
-                    fci.getContextHelpText(),
-                    fci.isContextHelpTextHtmlEnabled()));
-            fci.setToolTipButton(tooltipBtn);
-        } else {
-            fci.setToolTipButton(null);
+        if (StringUtils.isNotEmpty(fci.getContextHelpText())) {
+            updateTooltipButton(fci, fci.getComponentNN().isVisible());
         }
 
         if (fieldImpl.getCaption() != null) {
@@ -988,6 +959,27 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         }
     }
 
+    public void updateContextHelp(DesktopAbstractComponent child) {
+        FieldConfig field = fields.values().stream()
+                .filter(entry -> entry.getComponent() == child)
+                .findFirst()
+                .orElse(null);
+
+        FieldConfigImpl fci = (FieldConfigImpl) field;
+        if (fci != null) {
+            updateTooltipButton(fci, child.isVisible());
+        }
+    }
+
+    protected void updateTooltipButton(FieldConfigImpl fci, boolean componentVisible) {
+        ToolTipButton toolTipButton = fci.getToolTipButton();
+        String contextHelpText = DesktopComponentsHelper.getContextHelpText(
+                fci.getContextHelpText(),
+                fci.isContextHelpTextHtmlEnabled());
+        toolTipButton.setToolTipText(contextHelpText);
+        toolTipButton.setVisible(componentVisible && StringUtils.isNotEmpty(contextHelpText));
+    }
+
     @Override
     public void applyPermission(UiPermissionDescriptor permissionDescriptor) {
         checkNotNullArgument(permissionDescriptor);
@@ -1052,7 +1044,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         protected Component component;
         protected DesktopAbstractComponent composition;
         protected JLabel label = new JLabel();
-        protected ToolTipButton toolTipButton;
+        protected ToolTipButton toolTipButton = new ToolTipButton();
 
         protected boolean managed = false;
 
