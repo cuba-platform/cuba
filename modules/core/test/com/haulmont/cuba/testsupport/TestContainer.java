@@ -164,6 +164,9 @@ public class TestContainer extends ExternalResource {
         if (entities == null)
             return;
         for (Entity entity : entities) {
+            if (entity == null)
+                continue;
+
             MetadataTools metadataTools = metadata().getTools();
             MetaClass metaClass = metadata().getClassNN(entity.getClass());
 

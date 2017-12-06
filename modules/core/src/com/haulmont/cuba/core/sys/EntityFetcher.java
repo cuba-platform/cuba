@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -137,24 +138,23 @@ public class EntityFetcher {
                             if (log.isTraceEnabled()) {
                                 log.trace("Object " + value + " is detached, loading it");
                             }
-                            //noinspection unchecked
                             String storeName = metadata.getTools().getStoreName(e.getMetaClass());
-                            EntityManager em;
-                            if (storeName == null) {
-                                em = persistence.getEntityManager();
-                            } else {
-                                em = persistence.getEntityManager(storeName);
+                            if (storeName != null) {
+                                try (Transaction tx = persistence.getTransaction(storeName)) {
+                                    EntityManager em = persistence.getEntityManager(storeName);
+                                    //noinspection unchecked
+                                    Entity managed = em.find(e.getClass(), e.getId());
+                                    if (managed != null) { // the instance here can be null if it has been deleted
+                                        entity.setValue(property.getName(), managed);
+                                        fetch(managed, propertyView, visited, optimizeForDetached);
+                                    }
+                                    tx.commit();
+                                }
                             }
-                            value = em.find(e.getClass(), e.getId());
-                            if (value == null) {
-                                // the instance is most probably deleted
-                                continue;
-                            }
-                            entity.setValue(property.getName(), value);
-                            e = (Entity) value;
                         }
+                    } else {
+                        fetch(e, propertyView, visited, optimizeForDetached);
                     }
-                    fetch(e, propertyView, visited, optimizeForDetached);
                 }
             }
         }
